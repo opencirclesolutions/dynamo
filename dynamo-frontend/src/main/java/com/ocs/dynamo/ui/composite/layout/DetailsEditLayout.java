@@ -154,6 +154,10 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             return form.validateAllFields();
         }
 
+        public ModelBasedEditForm<ID, T> getForm() {
+            return form;
+        }
+
     }
 
     private static final long serialVersionUID = -1203245694503350276L;
@@ -658,5 +662,9 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
             error |= f.validateAllFields();
         }
         return error;
+    }
+    
+    public ModelBasedEditForm<ID,T> getForm(int index) {
+        return getFormContainer(index).getForm();
     }
 }

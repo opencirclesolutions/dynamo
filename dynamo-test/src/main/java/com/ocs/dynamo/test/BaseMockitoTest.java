@@ -15,9 +15,9 @@ package com.ocs.dynamo.test;
 
 import java.text.DecimalFormat;
 
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 
@@ -27,10 +27,10 @@ import com.ocs.dynamo.constants.DynamoConstants;
  * 
  * @author bas.rutten
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public abstract class BaseMockitoTest {
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
     }

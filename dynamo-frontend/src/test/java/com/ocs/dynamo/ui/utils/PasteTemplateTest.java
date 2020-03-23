@@ -13,14 +13,15 @@
  */
 package com.ocs.dynamo.ui.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.test.BaseMockitoTest;
@@ -43,7 +44,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testIgnoreForSingleValue() {
-		Mockito.when(event.getValue()).thenReturn("3");
+		when(event.getValue()).thenReturn("3");
 		final List<String> values = new ArrayList<>();
 
 		template = new PasteTemplate<TestEntity>(locale, grid, event) {
@@ -60,12 +61,12 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		};
 
 		template.execute();
-		Assert.assertEquals(0, values.size());
+		assertEquals(0, values.size());
 	}
 
 	@Test
 	public void testMultipleValues() {
-		Mockito.when(event.getValue()).thenReturn("3 4 5");
+		when(event.getValue()).thenReturn("3 4 5");
 		final List<String> values = new ArrayList<>();
 
 		template = new PasteTemplate<TestEntity>(locale, grid, event) {
@@ -82,15 +83,15 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		};
 
 		template.execute();
-		Assert.assertEquals(3, values.size());
-		Assert.assertEquals("3", values.get(0));
-		Assert.assertEquals("4", values.get(1));
-		Assert.assertEquals("5", values.get(2));
+		assertEquals(3, values.size());
+		assertEquals("3", values.get(0));
+		assertEquals("4", values.get(1));
+		assertEquals("5", values.get(2));
 	}
 
 	@Test
 	public void testMultipleValuesWithTabs() {
-		Mockito.when(event.getValue()).thenReturn("3\t4\t5");
+		when(event.getValue()).thenReturn("3\t4\t5");
 		final List<String> values = new ArrayList<>();
 
 		template = new PasteTemplate<TestEntity>(locale, grid, event) {
@@ -107,10 +108,10 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		};
 
 		template.execute();
-		Assert.assertEquals(3, values.size());
-		Assert.assertEquals("3", values.get(0));
-		Assert.assertEquals("4", values.get(1));
-		Assert.assertEquals("5", values.get(2));
+		assertEquals(3, values.size());
+		assertEquals("3", values.get(0));
+		assertEquals("4", values.get(1));
+		assertEquals("5", values.get(2));
 	}
 
 	/**
@@ -119,7 +120,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testSeparatorReplace() {
-		Mockito.when(event.getValue()).thenReturn("4.2 5.2");
+		when(event.getValue()).thenReturn("4.2 5.2");
 		final List<String> values = new ArrayList<>();
 
 		template = new PasteTemplate<TestEntity>(locale, grid, event) {
@@ -136,8 +137,8 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		};
 
 		template.execute();
-		Assert.assertEquals(2, values.size());
-		Assert.assertEquals("4,2", values.get(0));
-		Assert.assertEquals("5,2", values.get(1));
+		assertEquals(2, values.size());
+		assertEquals("4,2", values.get(0));
+		assertEquals("5,2", values.get(1));
 	}
 }

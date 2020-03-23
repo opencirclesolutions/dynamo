@@ -13,11 +13,12 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.flow.data.binder.Result;
@@ -33,22 +34,22 @@ public class BigDecimalConverterTest extends BaseConverterTest {
 		// default using European locale
 		BigDecimalConverter converter = new BigDecimalConverter("message", 2, false);
 		Result<BigDecimal> result = converter.convertToModel("3,14", createContext());
-		Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN),
+		assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN),
 				result.getOrThrow(x -> new OCSRuntimeException()));
 
 		converter = new BigDecimalConverter("message", 2, false);
 		result = converter.convertToModel("3.142", createUsContext());
-		Assert.assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN),
+		assertEquals(BigDecimal.valueOf(3.14).setScale(2, RoundingMode.HALF_EVEN),
 				result.getOrThrow(x -> new OCSRuntimeException()));
 
 		converter = new BigDecimalConverter("message", 3, false);
 		result = converter.convertToModel("3.142", createUsContext());
-		Assert.assertEquals(3.142, result.getOrThrow(x -> new OCSRuntimeException()).doubleValue(), 0.0001);
+		assertEquals(3.142, result.getOrThrow(x -> new OCSRuntimeException()).doubleValue(), 0.0001);
 
 		// no decimals at all
 		converter = new BigDecimalConverter("message", 0, false);
 		result = converter.convertToModel("3.142", createUsContext());
-		Assert.assertEquals(3, result.getOrThrow(x -> new OCSRuntimeException()).doubleValue(), 0.0001);
+		assertEquals(3, result.getOrThrow(x -> new OCSRuntimeException()).doubleValue(), 0.0001);
 	}
 
 	/**
@@ -60,19 +61,19 @@ public class BigDecimalConverterTest extends BaseConverterTest {
 		// using default European locale
 		BigDecimalConverter converter = new BigDecimalConverter("message", 2, false);
 		String result = converter.convertToPresentation(BigDecimal.valueOf(3.14), createContext());
-		Assert.assertEquals("3,14", result);
+		assertEquals("3,14", result);
 
 		converter = new BigDecimalConverter("message", 2, false);
 		result = converter.convertToPresentation(BigDecimal.valueOf(3.14), createUsContext());
-		Assert.assertEquals("3.14", result);
+		assertEquals("3.14", result);
 
 		converter = new BigDecimalConverter("message", 0, false);
 		result = converter.convertToPresentation(BigDecimal.valueOf(3.14), createUsContext());
-		Assert.assertEquals("3", result);
+		assertEquals("3", result);
 
 		converter = new BigDecimalConverter("message", 3, false);
 		result = converter.convertToPresentation(BigDecimal.valueOf(3.14), createUsContext());
-		Assert.assertEquals("3.140", result);
+		assertEquals("3.140", result);
 	}
 
 }

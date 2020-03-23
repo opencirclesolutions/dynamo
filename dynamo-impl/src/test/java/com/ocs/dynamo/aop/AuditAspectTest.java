@@ -1,21 +1,21 @@
 package com.ocs.dynamo.aop;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.mockito.Mockito.when;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.junit.Before;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.ocs.dynamo.domain.AbstractAuditableEntity;
 import com.ocs.dynamo.service.UserDetailsService;
 
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 public class AuditAspectTest {
 
     @InjectMocks
@@ -27,7 +27,7 @@ public class AuditAspectTest {
     @Mock
     private ProceedingJoinPoint joinPoint;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         when(userDetailsService.getCurrentUserName()).thenReturn("Kevin");
     }

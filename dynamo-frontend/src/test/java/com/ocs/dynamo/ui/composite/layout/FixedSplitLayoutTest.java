@@ -1,12 +1,16 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.util.Collection;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.google.common.collect.Lists;
@@ -38,7 +42,7 @@ public class FixedSplitLayoutTest extends FrontendIntegrationTest {
     @Inject
     private TestEntity2Service testEntity2Service;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);
@@ -72,19 +76,19 @@ public class FixedSplitLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         // layout must contain 2 items
-        Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(2, layout.getGridWrapper().getDataProviderSize());
 
         // select an item and check that the edit form is generated
         layout.getGridWrapper().getGrid().select(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
-        Assert.assertNotNull(layout.getEditForm());
-        Assert.assertFalse(layout.getEditForm().isViewMode());
+        assertEquals(e1, layout.getSelectedItem());
+        assertNotNull(layout.getEditForm());
+        assertFalse(layout.getEditForm().isViewMode());
 
         // no quick search field for this component
-        Assert.assertNull(layout.getQuickSearchField());
+        assertNull(layout.getQuickSearchField());
 
         layout.getGridWrapper().getGrid().deselectAll();
-        Assert.assertNull(layout.getSelectedItem());
+        assertNull(layout.getSelectedItem());
 
         layout.reload();
     }
@@ -108,8 +112,8 @@ public class FixedSplitLayoutTest extends FrontendIntegrationTest {
 
         layout.build();
 
-        Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
-        Assert.assertEquals(e1, layout.getParentEntity());
+        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(e1, layout.getParentEntity());
 
         layout.reload();
     }

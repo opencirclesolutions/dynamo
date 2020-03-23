@@ -1,12 +1,15 @@
 package com.ocs.dynamo.ui.composite.grid;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
@@ -35,7 +38,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 
     private TestEntity entity;
 
-    @Before
+    @BeforeEach
     public void setup() {
         entity = new TestEntity("Bob", 45L);
         entity = testEntityService.save(entity);
@@ -54,8 +57,8 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
         ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(),
                 false, GridEditMode.SINGLE_ROW);
 
-        Assert.assertEquals(17, grid.getColumns().size());
-        Assert.assertNotNull(grid.getDataProvider().getId(entity));
+        assertEquals(17, grid.getColumns().size());
+        assertNotNull(grid.getDataProvider().getId(entity));
     }
 
     @Test
@@ -67,14 +70,14 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
                 new FormOptions(), null, new HashMap<String, SerializablePredicate<?>>(), null, false);
         wrapper.build();
 
-        Assert.assertNotNull(wrapper.getGrid());
-        Assert.assertEquals(0, wrapper.getSortOrders().size());
-        Assert.assertEquals(0, wrapper.getJoins().length);
+        assertNotNull(wrapper.getGrid());
+        assertEquals(0, wrapper.getSortOrders().size());
+        assertEquals(0, wrapper.getJoins().length);
         DataProvider<TestEntity, SerializablePredicate<TestEntity>> provider = wrapper.getDataProvider();
-        Assert.assertNotNull(provider);
+        assertNotNull(provider);
 
         wrapper.forceSearch();
-        Assert.assertEquals(1, wrapper.getDataProviderSize());
+        assertEquals(1, wrapper.getDataProviderSize());
 
         // add an entity and refresh the container - check that the new item
         // shows up
@@ -82,11 +85,11 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
         testEntityService.save(t2);
 
         wrapper.forceSearch();
-        Assert.assertEquals(2, wrapper.getDataProviderSize());
+        assertEquals(2, wrapper.getDataProviderSize());
 
         wrapper.search(new EqualsPredicate<TestEntity>("name", "John"));
         wrapper.forceSearch();
-        Assert.assertEquals(0, wrapper.getDataProviderSize());
+        assertEquals(0, wrapper.getDataProviderSize());
     }
 
     @Test
@@ -98,9 +101,9 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
                 Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
         wrapper.build();
 
-        Assert.assertNotNull(wrapper.getGrid());
-        Assert.assertEquals("name", wrapper.getSortOrders().get(0).getSorted());
-        Assert.assertEquals(0, wrapper.getJoins().length);
+        assertNotNull(wrapper.getGrid());
+        assertEquals("name", wrapper.getSortOrders().get(0).getSorted());
+        assertEquals(0, wrapper.getJoins().length);
 
     }
 
@@ -116,8 +119,8 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
                 Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
         wrapper.build();
 
-        Assert.assertTrue(wrapper.getDataProvider() instanceof PagingDataProvider);
-        Assert.assertEquals(17, wrapper.getGrid().getColumns().size());
+        assertTrue(wrapper.getDataProvider() instanceof PagingDataProvider);
+        assertEquals(17, wrapper.getGrid().getColumns().size());
 
     }
 

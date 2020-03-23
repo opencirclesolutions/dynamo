@@ -1,7 +1,11 @@
 package com.ocs.dynamo.dao;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.exception.OCSRuntimeException;
@@ -10,32 +14,32 @@ public class SortOrderTest {
 
     @Test
     public void testDirectionFromString() {
-        Assert.assertEquals(Direction.ASC, Direction.fromString("asc"));
-        Assert.assertEquals(Direction.ASC, Direction.fromString("ASC"));
-        Assert.assertEquals(Direction.DESC, Direction.fromString("DESC"));
-        Assert.assertEquals(Direction.DESC, Direction.fromString("desc"));
+        assertEquals(Direction.ASC, Direction.fromString("asc"));
+        assertEquals(Direction.ASC, Direction.fromString("ASC"));
+        assertEquals(Direction.DESC, Direction.fromString("DESC"));
+        assertEquals(Direction.DESC, Direction.fromString("desc"));
     }
 
-    @Test(expected = OCSRuntimeException.class)
+    @Test
     public void testDirectionFromStringFail() {
-        Direction.fromString("bogus");
+        assertThrows(OCSRuntimeException.class, () -> Direction.fromString("bogus"));
     }
 
     @Test
     public void testCreate() {
         SortOrder order = new SortOrder("test");
-        Assert.assertEquals("test", order.getProperty());
-        Assert.assertEquals(Direction.ASC, order.getDirection());
+        assertEquals("test", order.getProperty());
+        assertEquals(Direction.ASC, order.getDirection());
 
         order = new SortOrder("test", Direction.DESC);
-        Assert.assertEquals("test", order.getProperty());
-        Assert.assertEquals(Direction.DESC, order.getDirection());
+        assertEquals("test", order.getProperty());
+        assertEquals(Direction.DESC, order.getDirection());
 
         order = order.withDirection(Direction.ASC);
-        Assert.assertEquals(Direction.ASC, order.getDirection());
+        assertEquals(Direction.ASC, order.getDirection());
 
         order = order.withDirection(Direction.fromString("desc"));
-        Assert.assertEquals(Direction.DESC, order.getDirection());
+        assertEquals(Direction.DESC, order.getDirection());
     }
 
     @Test
@@ -44,11 +48,11 @@ public class SortOrderTest {
         SortOrder order2 = new SortOrder("test");
         SortOrder order3 = new SortOrder("test", Direction.DESC);
 
-        Assert.assertFalse(order1.equals(null));
-        Assert.assertFalse(order1.equals(new Object()));
+        assertFalse(order1.equals(null));
+        assertFalse(order1.equals(new Object()));
 
-        Assert.assertTrue(order1.equals(order1));
-        Assert.assertTrue(order1.equals(order2));
-        Assert.assertFalse(order1.equals(order3));
+        assertTrue(order1.equals(order1));
+        assertTrue(order1.equals(order2));
+        assertFalse(order1.equals(order3));
     }
 }

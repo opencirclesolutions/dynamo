@@ -13,8 +13,9 @@
  */
 package com.ocs.dynamo.ui.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -27,15 +28,15 @@ public class SortUtilTest {
 
 		com.ocs.dynamo.dao.SortOrder[] orders = SortUtils
 				.translateSortOrders(new SortOrder<String>("test1", SortDirection.ASCENDING));
-		Assert.assertEquals(1, orders.length);
+		assertEquals(1, orders.length);
 
-		Assert.assertEquals("test1", orders[0].getProperty());
-		Assert.assertEquals(Direction.ASC, orders[0].getDirection());
+		assertEquals("test1", orders[0].getProperty());
+		assertEquals(Direction.ASC, orders[0].getDirection());
 
 		orders = SortUtils.translateSortOrders(new SortOrder<String>("test2", SortDirection.DESCENDING));
-		Assert.assertEquals(1, orders.length);
+		assertEquals(1, orders.length);
 
-		Assert.assertEquals("test2", orders[0].getProperty());
-		Assert.assertEquals(Direction.DESC, orders[0].getDirection());
+		assertEquals("test2", orders[0].getProperty());
+		assertEquals(Direction.DESC, orders[0].getDirection());
 	}
 }

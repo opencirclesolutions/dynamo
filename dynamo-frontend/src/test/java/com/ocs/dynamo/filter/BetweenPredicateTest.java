@@ -1,9 +1,10 @@
 package com.ocs.dynamo.filter;
 
-import static org.junit.Assert.assertFalse;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 
@@ -22,15 +23,15 @@ public class BetweenPredicateTest {
 
 		// lower boundary
 		t1.setAge(10L);
-		Assert.assertTrue(p1.test(t1));
+		assertTrue(p1.test(t1));
 
 		// inside
 		t1.setAge(15L);
-		Assert.assertTrue(p1.test(t1));
+		assertTrue(p1.test(t1));
 
 		// upper boundary
 		t1.setAge(20L);
-		Assert.assertTrue(p1.test(t1));
+		assertTrue(p1.test(t1));
 
 		// too high
 		t1.setAge(21L);

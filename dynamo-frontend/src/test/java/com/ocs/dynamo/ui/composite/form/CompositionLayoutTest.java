@@ -1,10 +1,11 @@
 package com.ocs.dynamo.ui.composite.form;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
@@ -26,9 +27,9 @@ public class CompositionLayoutTest extends BaseMockitoTest {
 
     private SimpleEditLayout<Integer, TestEntity> nested1;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        Mockito.when(testEntityService.getEntityClass()).thenReturn(TestEntity.class);
+        when(testEntityService.getEntityClass()).thenReturn(TestEntity.class);
         MockVaadin.setup();
     }
 
@@ -53,11 +54,11 @@ public class CompositionLayoutTest extends BaseMockitoTest {
 
         TestEntity t2 = new TestEntity();
         t2.setId(44);
-        Mockito.when(testEntityService.fetchById(44)).thenReturn(t2);
+        when(testEntityService.fetchById(44)).thenReturn(t2);
 
         layout.assignEntity(t2);
         layout.reload();
 
-        Assert.assertEquals(t2, nested1.getEntity());
+        assertEquals(t2, nested1.getEntity());
     }
 }

@@ -1,8 +1,10 @@
 package com.ocs.dynamo.ui.composite.form;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -22,78 +24,75 @@ import com.vaadin.flow.component.textfield.TextField;
 
 public class FilterGroupTest extends FrontendIntegrationTest {
 
-	@Autowired
-	private EntityModelFactory emf;
+    @Autowired
+    private EntityModelFactory emf;
 
-	private EntityModel<TestEntity> model;
+    private EntityModel<TestEntity> model;
 
-	private FieldFactory factory = FieldFactory.getInstance();
+    private FieldFactory factory = FieldFactory.getInstance();
 
-	private boolean listened = false;
+    private boolean listened = false;
 
-	@Before
-	public void setUp() {
-		model = emf.getModel(TestEntity.class);
-		listened = false;
-	}
+    @BeforeEach
+    public void setUp() {
+        model = emf.getModel(TestEntity.class);
+        listened = false;
+    }
 
-	private Component constructField(String name) {
-		AttributeModel am = model.getAttributeModel(name);
-		FieldFactoryContext context = FieldFactoryContext.create().setSearch(true).setAttributeModel(am);
-		return factory.constructField(context);
-	}
+    private Component constructField(String name) {
+        AttributeModel am = model.getAttributeModel(name);
+        FieldFactoryContext context = FieldFactoryContext.create().setSearch(true).setAttributeModel(am);
+        return factory.constructField(context);
+    }
 
-	@Test
-	public void testTextFieldStringLike() {
+    @Test
+    public void testTextFieldStringLike() {
 
-		TextField tf = (TextField) constructField("name");
-		FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("name"), FilterType.LIKE, null, tf,
-				null);
-		fg.addListener(event -> {
-			Assert.assertTrue(event.getNewFilter() instanceof SimpleStringPredicate);
-			listened = true;
-		});
+        TextField tf = (TextField) constructField("name");
+        FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("name"), FilterType.LIKE, null, tf, null);
+        fg.addListener(event -> {
+            assertTrue(event.getNewFilter() instanceof SimpleStringPredicate);
+            listened = true;
+        });
 
-		tf.setValue("bob");
-		Assert.assertTrue(listened);
-	}
+        tf.setValue("bob");
+        assertTrue(listened);
+    }
 
-	@Test
-	public void testLongFieldBetween() {
-		TextField tf = (TextField) constructField("age");
-		FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("age"), FilterType.BETWEEN, null, tf,
-				null);
-		fg.addListener(event -> {
-			Assert.assertTrue(event.getNewFilter() instanceof GreaterOrEqualPredicate);
-			listened = true;
-		});
+    @Test
+    public void testLongFieldBetween() {
+        TextField tf = (TextField) constructField("age");
+        FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("age"), FilterType.BETWEEN, null, tf, null);
+        fg.addListener(event -> {
+            assertTrue(event.getNewFilter() instanceof GreaterOrEqualPredicate);
+            listened = true;
+        });
 
-		tf.setValue("4");
-		Assert.assertTrue(listened);
-	}
+        tf.setValue("4");
+        assertTrue(listened);
+    }
 
-	@Test
-	public void testLongFieldBetween2() {
-		TextField main = (TextField) constructField("age");
-		TextField aux = (TextField) constructField("age");
+    @Test
+    public void testLongFieldBetween2() {
+        TextField main = (TextField) constructField("age");
+        TextField aux = (TextField) constructField("age");
 
-		FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("age"), FilterType.BETWEEN, null, main,
-				aux);
-		fg.addListener(event -> {
-			if (!listened) {
-				Assert.assertTrue(event.getNewFilter() instanceof GreaterOrEqualPredicate);
-				listened = true;
-			} else {
-				// if both filters set, then we return an "And" filter that combines both
-				Assert.assertTrue(event.getNewFilter() instanceof AndPredicate);
-			}
-		});
+        FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("age"), FilterType.BETWEEN, null, main, aux);
+        fg.addListener(event -> {
+            if (!listened) {
+                assertTrue(event.getNewFilter() instanceof GreaterOrEqualPredicate);
+                listened = true;
+            } else {
+                // if both filters set, then we return an "And" filter that combines both
+                assertTrue(event.getNewFilter() instanceof AndPredicate);
+            }
+        });
 
-		main.setValue("4");
-		Assert.assertTrue(listened);
+        main.setValue("4");
+        assertTrue(listened);
 
-		aux.setValue("10");
-	}
+        aux.setValue("10");
+    }
 
 //	@Test
 //	public void testIntSlider() {
@@ -107,40 +106,38 @@ public class FilterGroupTest extends FrontendIntegrationTest {
 //		});
 //
 //		main.setValue(100.);
-//		Assert.assertTrue(listened);
+//		assertTrue(listened);
 //
 //		// check that value is reset to minimum
 //		fg.reset();
-//		Assert.assertEquals(main.getMin(), main.getValue(), 0.01);
-//		Assert.assertEquals(aux.getMin(), main.getValue(), 0.01);
+//		assertEquals(main.getMin(), main.getValue(), 0.01);
+//		assertEquals(aux.getMin(), main.getValue(), 0.01);
 //	}
 
-	@Test
-	public void testTextFieldStringEqual() {
+    @Test
+    public void testTextFieldStringEqual() {
 
-		TextField tf = (TextField) constructField("name");
-		FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("name"), FilterType.EQUAL, null, tf,
-				null);
-		fg.addListener(event -> {
-			Assert.assertTrue(event.getNewFilter() instanceof EqualsPredicate);
-			listened = true;
-		});
+        TextField tf = (TextField) constructField("name");
+        FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("name"), FilterType.EQUAL, null, tf, null);
+        fg.addListener(event -> {
+            assertTrue(event.getNewFilter() instanceof EqualsPredicate);
+            listened = true;
+        });
 
-		tf.setValue("bob");
-		Assert.assertTrue(listened);
-	}
+        tf.setValue("bob");
+        assertTrue(listened);
+    }
 
-	@Test
-	public void testReset() {
+    @Test
+    public void testReset() {
 
-		TextField tf = (TextField) constructField("name");
-		FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("name"), FilterType.LIKE, null, tf,
-				null);
-		tf.setValue("bob");
+        TextField tf = (TextField) constructField("name");
+        FilterGroup<TestEntity> fg = new FilterGroup<>(model.getAttributeModel("name"), FilterType.LIKE, null, tf, null);
+        tf.setValue("bob");
 
-		// test the resetting the field works
-		fg.reset();
-		Assert.assertEquals("", tf.getValue());
-	}
+        // test the resetting the field works
+        fg.reset();
+        assertEquals("", tf.getValue());
+    }
 
 }

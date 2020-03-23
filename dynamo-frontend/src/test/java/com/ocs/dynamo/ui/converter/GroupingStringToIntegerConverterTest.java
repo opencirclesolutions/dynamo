@@ -13,50 +13,49 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.flow.data.binder.Result;
 
 /**
- * Test cases for the PlainStringToIntegerConverter
  * 
- * @author bas.rutten
+ * @author Bas Rutten
+ *
  */
 public class GroupingStringToIntegerConverterTest extends BaseConverterTest {
 
-	GroupingStringToIntegerConverter converter = new GroupingStringToIntegerConverter("message", false);
+    GroupingStringToIntegerConverter converter = new GroupingStringToIntegerConverter("message", false);
 
-	@Test
-	public void testToModel() {
-		Result<Integer> value = converter.convertToModel("3000", createContext());
-		Assert.assertEquals(3000, value.getOrThrow(r -> new OCSRuntimeException()).intValue());
-	}
+    @Test
+    public void testToModel() {
+        Result<Integer> value = converter.convertToModel("3000", createContext());
+        assertEquals(3000, value.getOrThrow(r -> new OCSRuntimeException()).intValue());
+    }
 
-	/**
-	 * Make sure there is no grouping indicator
-	 */
-	@Test
-	public void testToPresentation() {
-		String value = converter.convertToPresentation(3000, createContext());
-		Assert.assertEquals("3000", value);
-	}
+    /**
+     * Make sure there is no grouping indicator
+     */
+    @Test
+    public void testToPresentation() {
+        String value = converter.convertToPresentation(3000, createContext());
+        assertEquals("3000", value);
+    }
 
-	/**
-	 * Make sure there is a grouping indicator
-	 */
-	@Test
-	public void testToPresentationWithGrouping() {
-		String value = new GroupingStringToIntegerConverter("message", true).convertToPresentation(3000,
-				createContext());
-		Assert.assertEquals("3.000", value);
-	}
+    /**
+     * Make sure there is a grouping indicator
+     */
+    @Test
+    public void testToPresentationWithGrouping() {
+        String value = new GroupingStringToIntegerConverter("message", true).convertToPresentation(3000, createContext());
+        assertEquals("3.000", value);
+    }
 
-	@Test
-	public void testToModelWithGrouping() {
-		Result<Integer> value = new GroupingStringToIntegerConverter("message", true).convertToModel("3.000",
-				createContext());
-		Assert.assertEquals(3000, value.getOrThrow(r -> new OCSRuntimeException()).intValue());
-	}
+    @Test
+    public void testToModelWithGrouping() {
+        Result<Integer> value = new GroupingStringToIntegerConverter("message", true).convertToModel("3.000", createContext());
+        assertEquals(3000, value.getOrThrow(r -> new OCSRuntimeException()).intValue());
+    }
 }

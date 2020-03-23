@@ -1,13 +1,19 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import java.util.List;
+
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -45,7 +51,7 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 
     private boolean entitySelected = false;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
 
@@ -74,25 +80,25 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
         layout.setQuickSearchFilterSupplier(value -> new EqualsPredicate<TestEntity>("name", "%" + value + "%"));
         layout.build();
 
-        Assert.assertNull(layout.getFilter());
+        assertNull(layout.getFilter());
 
         // select an item and check that the edit form is generated
         layout.getGridWrapper().getGrid().select(e1);
-        Assert.assertNotNull(layout.getEditForm());
-        Assert.assertFalse(layout.getEditForm().isViewMode());
+        assertNotNull(layout.getEditForm());
+        assertFalse(layout.getEditForm().isViewMode());
 
         // check that a quick search field is created
-        Assert.assertNotNull(layout.getQuickSearchField());
+        assertNotNull(layout.getQuickSearchField());
 
         // test selection
         layout.setSelectedItems(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
 
-        layout.setSelectedItems(Lists.newArrayList(e2));
-        Assert.assertEquals(e2, layout.getSelectedItem());
+        layout.setSelectedItems(List.of(e2));
+        assertEquals(e2, layout.getSelectedItem());
 
         layout.setSelectedItem(null);
-        Assert.assertNull(layout.getSelectedItem());
+        assertNull(layout.getSelectedItem());
     }
 
     /**
@@ -108,14 +114,14 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 
         // test selection
         layout.getGridWrapper().getGrid().select(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
 
         // try saving
         TextField tf = (TextField) layout.getEditForm().getField("name");
         tf.setValue("NewName");
         layout.getEditForm().getSaveButtons().get(0).click();
 
-        Assert.assertEquals("NewName", e1.getName());
+        assertEquals("NewName", e1.getName());
 
     }
 
@@ -128,10 +134,10 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
         layout.setFilterSupplier(() -> new EqualsPredicate<TestEntity>("name", "Bob"));
         layout.build();
 
-        Assert.assertNotNull(layout.getFilter());
+        assertNotNull(layout.getFilter());
 
         // no quick search field this time
-        Assert.assertNull(layout.getQuickSearchField());
+        assertNull(layout.getQuickSearchField());
     }
 
     @Test
@@ -160,14 +166,14 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
         // select an item and check that the edit form is generated (in view
         // mode)
         layout.getGridWrapper().getGrid().select(e1);
-        Assert.assertNotNull(layout.getEditForm());
-        Assert.assertTrue(layout.getEditForm().isViewMode());
+        assertNotNull(layout.getEditForm());
+        assertTrue(layout.getEditForm().isViewMode());
 
         // change into edit mode
         layout.getEditForm().getEditButtons().get(0).click();
-        Assert.assertFalse(layout.getEditForm().isViewMode());
-        Assert.assertTrue(modeChanged);
-        Assert.assertTrue(entitySelected);
+        assertFalse(layout.getEditForm().isViewMode());
+        assertTrue(modeChanged);
+        assertTrue(entitySelected);
     }
 
     /**
@@ -183,9 +189,9 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
         layout.build();
         layout.getGridWrapper().forceSearch();
 
-        Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
-        Assert.assertEquals(e1, layout.getParentEntity());
-        Assert.assertNotNull(layout.getFilter());
+        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(e1, layout.getParentEntity());
+        assertNotNull(layout.getFilter());
 
         layout.reload();
     }

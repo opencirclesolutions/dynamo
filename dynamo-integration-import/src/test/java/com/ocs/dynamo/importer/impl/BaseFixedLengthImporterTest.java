@@ -13,18 +13,23 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import com.google.common.collect.Lists;
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
-import com.ocs.dynamo.utils.DateUtils;
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import com.google.common.collect.Lists;
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
+import com.ocs.dynamo.utils.DateUtils;
+
+@Disabled
 public class BaseFixedLengthImporterTest {
 
     private BaseFixedLengthImporter importer = new BaseFixedLengthImporter();
@@ -33,7 +38,7 @@ public class BaseFixedLengthImporterTest {
     public void testCountRows() throws IOException {
         byte[] bytes = readFile("importertest.csv");
         int rows = importer.countRows(bytes, 0);
-        Assert.assertEquals(7, rows);
+        assertEquals(7, rows);
     }
 
     /**
@@ -47,34 +52,34 @@ public class BaseFixedLengthImporterTest {
         List<String[]> lines = importer.readFixedLengthFile(bytes, Lists.newArrayList(10, 10, 10, 10, 10, 10, 10, 10,10));
 
         PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
-        Assert.assertNotNull(dto);
-        Assert.assertEquals("Bas", dto.getName());
-        Assert.assertEquals(1, dto.getNumber().intValue());
-        Assert.assertEquals(2.4, dto.getFactor().doubleValue(), 0.001);
-        Assert.assertEquals("abc", dto.getRandom());
-        Assert.assertEquals(Gender.M, dto.getGender());
-        Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
-        Assert.assertEquals(DateUtils.createLocalDate("01022016"), dto.getDate());
+        assertNotNull(dto);
+        assertEquals("Bas", dto.getName());
+        assertEquals(1, dto.getNumber().intValue());
+        assertEquals(2.4, dto.getFactor().doubleValue(), 0.001);
+        assertEquals("abc", dto.getRandom());
+        assertEquals(Gender.M, dto.getGender());
+        assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
+        assertEquals(DateUtils.createLocalDate("01022016"), dto.getDate());
 
         // check that default values are set
         dto = importer.processRow(1, lines.get(1), PersonDTO.class);
-        Assert.assertNotNull(dto);
-        Assert.assertEquals("Unknown", dto.getName());
-        Assert.assertEquals(2, dto.getNumber().intValue());
-        Assert.assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
-        Assert.assertEquals(DateUtils.createLocalDate("01022015"), dto.getDate());
+        assertNotNull(dto);
+        assertEquals("Unknown", dto.getName());
+        assertEquals(2, dto.getNumber().intValue());
+        assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
+        assertEquals(DateUtils.createLocalDate("01022015"), dto.getDate());
 
         // check negative values
         dto = importer.processRow(1, lines.get(2), PersonDTO.class);
-        Assert.assertNotNull(dto);
-        Assert.assertEquals("Endy", dto.getName());
-        Assert.assertEquals(-3, dto.getNumber().intValue());
+        assertNotNull(dto);
+        assertEquals("Endy", dto.getName());
+        assertEquals(-3, dto.getNumber().intValue());
     }
 
     @Test
     public void testParseFieldLengths() {
         List<Integer> list = importer.parseFieldLengths("1,2,3,4");
-        Assert.assertEquals(Lists.newArrayList(1, 2, 3, 4), list);
+        assertEquals(Lists.newArrayList(1, 2, 3, 4), list);
     }
 
     @Test
@@ -82,7 +87,7 @@ public class BaseFixedLengthImporterTest {
         try {
             importer.parseFieldLengths("1,a,3,4");
         } catch (OCSImportException ex) {
-            Assert.assertEquals("Invalid field length entered", ex.getMessage());
+            assertEquals("Invalid field length entered", ex.getMessage());
         }
     }
 

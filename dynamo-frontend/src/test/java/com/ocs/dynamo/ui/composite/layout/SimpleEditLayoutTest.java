@@ -1,13 +1,17 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
@@ -34,7 +38,7 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 
     private boolean modeChanged;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);
@@ -54,17 +58,17 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
         layout.setFieldFilters(ff);
         layout.build();
 
-        Assert.assertNotNull(layout.getEditForm());
+        assertNotNull(layout.getEditForm());
 
-        Assert.assertEquals(1, layout.getFieldFilters().size());
-        Assert.assertEquals("Bob", ((HasValue<?, ?>) layout.getEditForm().getField("name")).getValue());
+        assertEquals(1, layout.getFieldFilters().size());
+        assertEquals("Bob", ((HasValue<?, ?>) layout.getEditForm().getField("name")).getValue());
 
         // check that the screen is not in view mode
-        Assert.assertFalse(layout.isViewMode());
-        Assert.assertTrue(layout.getEditForm().getSaveButtons().get(0).isVisible());
+        assertFalse(layout.isViewMode());
+        assertTrue(layout.getEditForm().getSaveButtons().get(0).isVisible());
 
         layout.setEntity(e2);
-        Assert.assertEquals("Harry", ((HasValue<?, ?>) layout.getEditForm().getField("name")).getValue());
+        assertEquals("Harry", ((HasValue<?, ?>) layout.getEditForm().getField("name")).getValue());
 
     }
 
@@ -77,36 +81,36 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
                 new FormOptions().setOpenInViewMode(true).setEditAllowed(true));
         layout.build();
 
-        Assert.assertNotNull(layout.getEditForm());
+        assertNotNull(layout.getEditForm());
 
         // check that the screen is in view mode and no save buttons are visible
-        Assert.assertTrue(layout.isViewMode());
-        Assert.assertTrue(layout.getEditForm().getSaveButtons().isEmpty());
+        assertTrue(layout.isViewMode());
+        assertTrue(layout.getEditForm().getSaveButtons().isEmpty());
 
         modeChanged = false;
 
         // click the edit button
-        Assert.assertFalse(layout.getEditForm().getCancelButtons().get(0).isVisible());
-        Assert.assertTrue(layout.getEditForm().getEditButtons().get(0).isVisible());
-        Assert.assertFalse(layout.getEditForm().getBackButtons().get(0).isVisible());
+        assertFalse(layout.getEditForm().getCancelButtons().get(0).isVisible());
+        assertTrue(layout.getEditForm().getEditButtons().get(0).isVisible());
+        assertFalse(layout.getEditForm().getBackButtons().get(0).isVisible());
         layout.getEditForm().getEditButtons().get(0).click();
 
         // check that we are now in edit mode
-        Assert.assertFalse(layout.isViewMode());
-        Assert.assertTrue(layout.getEditForm().getCancelButtons().get(0).isVisible());
-        Assert.assertFalse(layout.getEditForm().getEditButtons().get(0).isVisible());
-        Assert.assertTrue(modeChanged);
+        assertFalse(layout.isViewMode());
+        assertTrue(layout.getEditForm().getCancelButtons().get(0).isVisible());
+        assertFalse(layout.getEditForm().getEditButtons().get(0).isVisible());
+        assertTrue(modeChanged);
 
         // back to view mode
         layout.getEditForm().getCancelButtons().get(0).click();
-        Assert.assertTrue(layout.isViewMode());
+        assertTrue(layout.isViewMode());
 
         layout.getEditForm().getEditButtons().get(0).click();
-        Assert.assertFalse(layout.isViewMode());
+        assertFalse(layout.isViewMode());
 
         // after a reload we go back to the view mode
         layout.reload();
-        Assert.assertTrue(layout.isViewMode());
+        assertTrue(layout.isViewMode());
     }
 
     /**
@@ -119,11 +123,11 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         // try hiding an attribute group
-        Assert.assertTrue(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
+        assertTrue(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
         layout.getEditForm().setAttributeGroupVisible("testentity.group.1", false);
-        Assert.assertFalse(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
+        assertFalse(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
 
-        Assert.assertTrue(layout.getEditForm().isAttributeGroupVisible("ocs.default.attribute.group"));
+        assertTrue(layout.getEditForm().isAttributeGroupVisible("ocs.default.attribute.group"));
     }
 
     /**
@@ -136,11 +140,11 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         // try hiding an attribute group
-        Assert.assertTrue(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
+        assertTrue(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
         layout.getEditForm().setAttributeGroupVisible("testentity.group.1", false);
-        Assert.assertFalse(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
+        assertFalse(layout.getEditForm().isAttributeGroupVisible("testentity.group.1"));
 
-        Assert.assertTrue(layout.getEditForm().isAttributeGroupVisible("ocs.default.attribute.group"));
+        assertTrue(layout.getEditForm().isAttributeGroupVisible("ocs.default.attribute.group"));
     }
 
     /**
@@ -156,20 +160,20 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 //		// "name" field)
 //		Component field = layout.getEditForm().getField("age");
 //		HasComponents hc = field.getParent();
-//		Assert.assertTrue(hc instanceof FormLayout);
+//		assertTrue(hc instanceof FormLayout);
 //		FormLayout fl = (FormLayout) hc;
-//		Assert.assertEquals(DynamoConstants.CSS_FIRST, fl.getStyleName());
+//		assertEquals(DynamoConstants.CSS_FIRST, fl.getStyleName());
 //		HasComponents horizontal = fl.getParent();
-//		Assert.assertTrue(horizontal instanceof HorizontalLayout);
+//		assertTrue(horizontal instanceof HorizontalLayout);
 //
 //		// check that the "name" field is properly nested
 //		field = layout.getEditForm().getField("name");
 //		hc = field.getParent();
-//		Assert.assertTrue(hc instanceof FormLayout);
+//		assertTrue(hc instanceof FormLayout);
 //		fl = (FormLayout) hc;
-//		Assert.assertEquals(DynamoConstants.CSS_ADDITIONAL, fl.getStyleName());
+//		assertEquals(DynamoConstants.CSS_ADDITIONAL, fl.getStyleName());
 //		horizontal = fl.getParent();
-//		Assert.assertTrue(horizontal instanceof HorizontalLayout);
+//		assertTrue(horizontal instanceof HorizontalLayout);
 //	}
 
     private SimpleEditLayout<Integer, TestEntity> createLayout(TestEntity entity, String reference, FormOptions fo) {

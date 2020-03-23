@@ -1,10 +1,12 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.service.TestEntityService;
@@ -26,7 +28,7 @@ public class TabLayoutTest extends FrontendIntegrationTest {
 
     private boolean reloaded;
 
-    @Before
+    @BeforeEach
     public void setup() {
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
@@ -82,24 +84,24 @@ public class TabLayoutTest extends FrontendIntegrationTest {
         };
         layout.build();
 
-        Assert.assertTrue(layout.getComponentAt(0) instanceof MyLayout);
+        assertTrue(layout.getComponentAt(0) instanceof MyLayout);
 
         // second tab has not been created yet
-        Assert.assertTrue(layout.getComponentAt(1) instanceof VerticalLayout);
+        assertTrue(layout.getComponentAt(1) instanceof VerticalLayout);
 
         // select the second tab, this will lazily create it
         layout.selectTab(1);
-        Assert.assertTrue(layout.getComponentAt(1) instanceof HorizontalLayout);
+        assertTrue(layout.getComponentAt(1) instanceof HorizontalLayout);
 
         // select first tab again and trigger a reload
         reloaded = false;
         layout.selectTab(0);
-        Assert.assertTrue(reloaded);
+        assertTrue(reloaded);
 
         // second tab is not reloadable
         reloaded = false;
         layout.selectTab(1);
-        Assert.assertFalse(reloaded);
+        assertFalse(reloaded);
 
     }
 }

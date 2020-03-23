@@ -13,9 +13,12 @@
  */
 package com.ocs.dynamo.dao.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.JoinType;
@@ -25,22 +28,22 @@ public class FetchJoinInformationTest {
     @Test
     public void testEquals() {
         FetchJoinInformation info = new FetchJoinInformation("property1");
-        Assert.assertEquals(JoinType.LEFT, info.getJoinType());
+        assertEquals(JoinType.LEFT, info.getJoinType());
 
-        Assert.assertFalse(info.equals(null));
-        Assert.assertFalse(info.equals(new Object()));
-        Assert.assertTrue(info.equals(info));
+        assertFalse(info.equals(null));
+        assertFalse(info.equals(new Object()));
+        assertTrue(info.equals(info));
 
         FetchJoinInformation info2 = new FetchJoinInformation("property1");
-        Assert.assertTrue(info.equals(info2));
+        assertTrue(info.equals(info2));
 
         FetchJoinInformation info3 = new FetchJoinInformation("property1", JoinType.RIGHT);
-        Assert.assertFalse(info.equals(info3));
+        assertFalse(info.equals(info3));
     }
 
     @Test
     public void testHashcode() {
         FetchJoinInformation info = new FetchJoinInformation("property1");
-        Assert.assertNotNull(info.hashCode());
+        assertNotNull(info.hashCode());
     }
 }

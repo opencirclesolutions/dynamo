@@ -13,14 +13,16 @@
  */
 package com.ocs.dynamo.mock;
 
+import static org.mockito.Mockito.lenient;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.camel.Exchange;
 import org.apache.camel.Message;
-import org.junit.Before;
+import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.ocs.dynamo.CamelConstants;
 import com.ocs.dynamo.service.MessageService;
@@ -33,7 +35,6 @@ import com.ocs.dynamo.test.MockUtil;
  * @author bas.rutten
  * 
  */
-
 public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
 
     @Mock
@@ -65,12 +66,12 @@ public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
     }
 
     public <T> void givenBody(Class<T> clazz, T body) {
-        Mockito.lenient().when(message.getBody(clazz)).thenReturn(body);
-        Mockito.lenient().when(message.getBody()).thenReturn(body);
+        lenient().when(message.getBody(clazz)).thenReturn(body);
+        lenient().when(message.getBody()).thenReturn(body);
     }
 
     public void givenHeader(String name, Object value) {
-        Mockito.when(getMessage().getHeader(name)).thenReturn(value);
+        when(getMessage().getHeader(name)).thenReturn(value);
     }
 
     public List<String> mockErrorList() {
@@ -95,10 +96,10 @@ public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
         this.outMessage = outMessage;
     }
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        Mockito.lenient().when(exchange.getIn()).thenReturn(message);
-        Mockito.lenient().when(exchange.getOut()).thenReturn(outMessage);
+        lenient().when(exchange.getIn()).thenReturn(message);
+        lenient().when(exchange.getOut()).thenReturn(outMessage);
         MockUtil.mockMessageService(messageService);
     }
 

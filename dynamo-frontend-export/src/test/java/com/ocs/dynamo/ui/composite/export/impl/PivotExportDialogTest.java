@@ -1,9 +1,10 @@
 package com.ocs.dynamo.ui.composite.export.impl;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
@@ -22,7 +23,7 @@ public class PivotExportDialogTest extends BaseMockitoTest {
 
     private EntityModelFactory emf = new EntityModelFactoryImpl();
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
     }
@@ -32,8 +33,8 @@ public class PivotExportDialogTest extends BaseMockitoTest {
         EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
         PivotParameters pars = new PivotParameters();
 
-        Mockito.when(exportService.exportCsvPivot(em, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
-        Mockito.when(exportService.exportExcelPivot(em, null, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
+        when(exportService.exportCsvPivot(em, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
+        when(exportService.exportExcelPivot(em, null, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
 
         PivotedExportDialog<Integer, TestEntity> dialog = new PivotedExportDialog<>(exportService, em, null, null, null,
                 new PivotParameters());

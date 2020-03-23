@@ -1,14 +1,15 @@
 package com.ocs.dynamo.ui.composite.grid;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
@@ -35,7 +36,7 @@ public class InMemoryTreeGridTest extends FrontendIntegrationTest {
 
     private TestEntity2 child2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
@@ -152,24 +153,24 @@ public class InMemoryTreeGridTest extends FrontendIntegrationTest {
         };
         grid.build();
 
-        Assert.assertEquals(5, grid.getColumns().size());
+        assertEquals(5, grid.getColumns().size());
 
         TreeDataProvider<TreeGridRow> provider = (TreeDataProvider<TreeGridRow>) grid.getDataProvider();
 
         List<TreeGridRow> parentRows = provider.getTreeData().getRootItems();
-        Assert.assertEquals(2, parentRows.size());
+        assertEquals(2, parentRows.size());
 
         TreeGridRow parent1 = parentRows.get(0);
-        Assert.assertEquals(9, parent1.getValueSum().intValue());
-        Assert.assertEquals(9, parent1.getValueSum().intValue());
-        Assert.assertEquals(4L, parent1.getLongValue().longValue());
+        assertEquals(9, parent1.getValueSum().intValue());
+        assertEquals(9, parent1.getValueSum().intValue());
+        assertEquals(4L, parent1.getLongValue().longValue());
 
         TreeGridRow parent2 = parentRows.get(1);
-        Assert.assertEquals(11, parent2.getValueSum().intValue());
-        Assert.assertEquals(4L, parent2.getLongValue().longValue());
+        assertEquals(11, parent2.getValueSum().intValue());
+        assertEquals(4L, parent2.getLongValue().longValue());
 
         List<TreeGridRow> childRows = provider.getTreeData().getChildren(parent1);
-        Assert.assertEquals(1, childRows.size());
+        assertEquals(1, childRows.size());
 
     }
 }

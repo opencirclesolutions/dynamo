@@ -13,12 +13,13 @@
  */
 package com.ocs.dynamo.ui.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -53,7 +54,7 @@ public class VaadinUtilsTest extends BaseMockitoTest {
     @Mock
     private WebBrowser browser;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
         System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
@@ -69,90 +70,90 @@ public class VaadinUtilsTest extends BaseMockitoTest {
         vert.add(hor);
         hor.add(button);
 
-        Assert.assertEquals(hor, VaadinUtils.getParentOfClass(button, HorizontalLayout.class));
-        Assert.assertEquals(vert, VaadinUtils.getParentOfClass(button, VerticalLayout.class));
+        assertEquals(hor, VaadinUtils.getParentOfClass(button, HorizontalLayout.class));
+        assertEquals(vert, VaadinUtils.getParentOfClass(button, VerticalLayout.class));
     }
 
     @Test
     public void testBigDecimalToString() {
-        Assert.assertEquals("1.234,56%", VaadinUtils.bigDecimalToString(false, true, true, SystemPropertyUtils.getDefaultDecimalPrecision(),
+        assertEquals("1.234,56%", VaadinUtils.bigDecimalToString(false, true, true, SystemPropertyUtils.getDefaultDecimalPrecision(),
                 BigDecimal.valueOf(1234.56), LOCALE));
-        Assert.assertEquals("1.234,56", VaadinUtils.bigDecimalToString(false, false, true, SystemPropertyUtils.getDefaultDecimalPrecision(),
+        assertEquals("1.234,56", VaadinUtils.bigDecimalToString(false, false, true, SystemPropertyUtils.getDefaultDecimalPrecision(),
                 BigDecimal.valueOf(1234.56), LOCALE));
-        Assert.assertEquals("1234,51", VaadinUtils.bigDecimalToString(false, false, false, SystemPropertyUtils.getDefaultDecimalPrecision(),
+        assertEquals("1234,51", VaadinUtils.bigDecimalToString(false, false, false, SystemPropertyUtils.getDefaultDecimalPrecision(),
                 BigDecimal.valueOf(1234.512), LOCALE));
-        Assert.assertEquals("1234,512", VaadinUtils.bigDecimalToString(false, false, false, 3, BigDecimal.valueOf(1234.512), LOCALE));
+        assertEquals("1234,512", VaadinUtils.bigDecimalToString(false, false, false, 3, BigDecimal.valueOf(1234.512), LOCALE));
 
-        Assert.assertEquals("1,234.56%", VaadinUtils.bigDecimalToString(false, true, true, SystemPropertyUtils.getDefaultDecimalPrecision(),
+        assertEquals("1,234.56%", VaadinUtils.bigDecimalToString(false, true, true, SystemPropertyUtils.getDefaultDecimalPrecision(),
                 BigDecimal.valueOf(1234.56), Locale.US));
     }
 
     @Test
     public void testIntegerToString() {
-        Assert.assertEquals("123.456", VaadinUtils.integerToString(true, false, 123456, LOCALE));
-        Assert.assertEquals("123456", VaadinUtils.integerToString(false, false, 123456, LOCALE));
-        Assert.assertEquals("123,456", VaadinUtils.integerToString(true, false, 123456, Locale.US));
-        Assert.assertEquals("123,456%", VaadinUtils.integerToString(true, true, 123456, Locale.US));
+        assertEquals("123.456", VaadinUtils.integerToString(true, false, 123456, LOCALE));
+        assertEquals("123456", VaadinUtils.integerToString(false, false, 123456, LOCALE));
+        assertEquals("123,456", VaadinUtils.integerToString(true, false, 123456, Locale.US));
+        assertEquals("123,456%", VaadinUtils.integerToString(true, true, 123456, Locale.US));
     }
 
     @Test
     public void testLongToString() {
-        Assert.assertEquals("123.456", VaadinUtils.longToString(true, false, 123456L, LOCALE));
-        Assert.assertEquals("123456", VaadinUtils.longToString(false, false, 123456L, LOCALE));
-        Assert.assertEquals("123,456", VaadinUtils.longToString(true, false, 123456L, Locale.US));
+        assertEquals("123.456", VaadinUtils.longToString(true, false, 123456L, LOCALE));
+        assertEquals("123456", VaadinUtils.longToString(false, false, 123456L, LOCALE));
+        assertEquals("123,456", VaadinUtils.longToString(true, false, 123456L, Locale.US));
     }
 
     @Test
     public void testDoubleToString() {
         // Dutch locale
-        Assert.assertEquals("123456,00", VaadinUtils.doubleToString(false, false, false, 2, 123456.00, LOCALE));
+        assertEquals("123456,00", VaadinUtils.doubleToString(false, false, false, 2, 123456.00, LOCALE));
         // grouping
-        Assert.assertEquals("123.456,00", VaadinUtils.doubleToString(false, false, true, 2, 123456.00, LOCALE));
+        assertEquals("123.456,00", VaadinUtils.doubleToString(false, false, true, 2, 123456.00, LOCALE));
         // percentage
-        Assert.assertEquals("123.456,00%", VaadinUtils.doubleToString(false, true, true, 2, 123456.00, LOCALE));
+        assertEquals("123.456,00%", VaadinUtils.doubleToString(false, true, true, 2, 123456.00, LOCALE));
 
         // US locale
-        Assert.assertEquals("123456.00", VaadinUtils.doubleToString(false, false, false, 2, 123456.00, Locale.US));
+        assertEquals("123456.00", VaadinUtils.doubleToString(false, false, false, 2, 123456.00, Locale.US));
         // grouping
-        Assert.assertEquals("123,456.00", VaadinUtils.doubleToString(false, false, true, 2, 123456.00, Locale.US));
+        assertEquals("123,456.00", VaadinUtils.doubleToString(false, false, true, 2, 123456.00, Locale.US));
         // percentage
-        Assert.assertEquals("123,456.00%", VaadinUtils.doubleToString(false, true, true, 2, 123456.00, Locale.US));
+        assertEquals("123,456.00%", VaadinUtils.doubleToString(false, true, true, 2, 123456.00, Locale.US));
     }
 
     @Test
     public void testStringToInteger() {
         // default locale (Central Europe)
-        Assert.assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234").intValue());
-        Assert.assertEquals(1234, VaadinUtils.stringToInteger(false, "1234", LOCALE).intValue());
-        Assert.assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234", LOCALE).intValue());
+        assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234").intValue());
+        assertEquals(1234, VaadinUtils.stringToInteger(false, "1234", LOCALE).intValue());
+        assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234", LOCALE).intValue());
     }
 
     @Test
     public void testStringToBigDecimal() {
         // test defaults (European locale and 2 decimals)
-        Assert.assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, "1234,341").doubleValue(), 0.001);
+        assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, "1234,341").doubleValue(), 0.001);
 
-        Assert.assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, 2, "1234,34", LOCALE).doubleValue(), 0.001);
-        Assert.assertEquals(1234.3415, VaadinUtils.stringToBigDecimal(false, false, false, 4, "1234,3415", LOCALE).doubleValue(), 0.001);
-        Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(false, true, false, 2, "1.234", LOCALE).doubleValue(), 0.001);
-        Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(true, true, false, 2, "1.234%", LOCALE).doubleValue(), 0.001);
-        Assert.assertEquals(1234, VaadinUtils.stringToBigDecimal(false, true, true, 2, "€ 1.234", LOCALE).doubleValue(), 0.001);
+        assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, 2, "1234,34", LOCALE).doubleValue(), 0.001);
+        assertEquals(1234.3415, VaadinUtils.stringToBigDecimal(false, false, false, 4, "1234,3415", LOCALE).doubleValue(), 0.001);
+        assertEquals(1234, VaadinUtils.stringToBigDecimal(false, true, false, 2, "1.234", LOCALE).doubleValue(), 0.001);
+        assertEquals(1234, VaadinUtils.stringToBigDecimal(true, true, false, 2, "1.234%", LOCALE).doubleValue(), 0.001);
+        assertEquals(1234, VaadinUtils.stringToBigDecimal(false, true, true, 2, "€ 1.234", LOCALE).doubleValue(), 0.001);
     }
 
     @Test
     public void testStringToLong() {
         // use default locale
-        Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234").longValue());
-        Assert.assertEquals(1234L, VaadinUtils.stringToLong(false, "1234", LOCALE).longValue());
-        Assert.assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234", LOCALE).longValue());
+        assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234").longValue());
+        assertEquals(1234L, VaadinUtils.stringToLong(false, "1234", LOCALE).longValue());
+        assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234", LOCALE).longValue());
     }
 
     @Test
     public void testStringToDouble() {
-        Assert.assertEquals(1234.34, VaadinUtils.stringToDouble(false, false, false, 2, "1234,34", LOCALE), 0.001);
-        Assert.assertEquals(1234.3415, VaadinUtils.stringToDouble(false, false, false, 4, "1234,3415", LOCALE), 0.001);
-        Assert.assertEquals(1234, VaadinUtils.stringToDouble(false, true, false, 2, "1.234", LOCALE), 0.001);
-        Assert.assertEquals(1234, VaadinUtils.stringToDouble(true, true, false, 2, "1.234%", LOCALE), 0.001);
-        Assert.assertEquals(1234, VaadinUtils.stringToDouble(false, true, true, 2, "€ 1.234", LOCALE), 0.001);
+        assertEquals(1234.34, VaadinUtils.stringToDouble(false, false, false, 2, "1234,34", LOCALE), 0.001);
+        assertEquals(1234.3415, VaadinUtils.stringToDouble(false, false, false, 4, "1234,3415", LOCALE), 0.001);
+        assertEquals(1234, VaadinUtils.stringToDouble(false, true, false, 2, "1.234", LOCALE), 0.001);
+        assertEquals(1234, VaadinUtils.stringToDouble(true, true, false, 2, "1.234%", LOCALE), 0.001);
+        assertEquals(1234, VaadinUtils.stringToDouble(false, true, true, 2, "€ 1.234", LOCALE), 0.001);
     }
 }

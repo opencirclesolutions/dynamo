@@ -5,8 +5,8 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.google.common.collect.Lists;
@@ -29,7 +29,7 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
 
     private TestEntity e2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);

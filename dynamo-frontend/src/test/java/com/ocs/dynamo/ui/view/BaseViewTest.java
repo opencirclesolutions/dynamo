@@ -1,14 +1,17 @@
 package com.ocs.dynamo.ui.view;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -32,7 +35,7 @@ public class BaseViewTest extends BaseMockitoTest {
     @Mock
     private UIHelper ui;
 
-    @Before
+    @BeforeEach
     public void setUp() {
 
         view = new BaseView() {
@@ -51,28 +54,28 @@ public class BaseViewTest extends BaseMockitoTest {
 
     @Test
     public void testGetScreenModeNull() {
-        Assert.assertNull(view.getScreenMode());
+        assertNull(view.getScreenMode());
     }
 
     @Test
     public void testGetViewMode() {
-        Mockito.when(ui.getScreenMode()).thenReturn(MODE);
-        Assert.assertEquals(MODE, view.getScreenMode());
+        when(ui.getScreenMode()).thenReturn(MODE);
+        assertEquals(MODE, view.getScreenMode());
 
         view.clearScreenMode();
-        Mockito.verify(ui).setScreenMode(null);
+        verify(ui).setScreenMode(null);
     }
 
     @Test
     public void testMessage() {
         view.message("key");
-        Mockito.verify(messageService).getMessage(Mockito.eq("key"), Mockito.any(Locale.class));
+        verify(messageService).getMessage(eq("key"), any(Locale.class));
     }
 
     @Test
     public void testMessageWithPars() {
         view.message("key", "bob");
-        Mockito.verify(messageService).getMessage(Mockito.eq("key"), Mockito.any(Locale.class), Mockito.eq("bob"));
+        verify(messageService).getMessage(eq("key"), any(Locale.class), eq("bob"));
     }
 
     @Test

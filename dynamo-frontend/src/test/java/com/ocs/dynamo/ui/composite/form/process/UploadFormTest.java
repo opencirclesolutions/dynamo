@@ -1,10 +1,11 @@
 package com.ocs.dynamo.ui.composite.form.process;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.io.IOException;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
@@ -22,7 +23,7 @@ public class UploadFormTest extends BaseMockitoTest {
     @Mock
     private VaadinSession session;
 
-    @Before
+    @BeforeEach
     public void test() {
         MockVaadin.setup();
     }
@@ -35,7 +36,7 @@ public class UploadFormTest extends BaseMockitoTest {
 
             @Override
             protected void process(byte[] t, int estimatedSize) {
-                Assert.assertEquals(3, t.length);
+                assertEquals(3, t.length);
             }
 
             @Override

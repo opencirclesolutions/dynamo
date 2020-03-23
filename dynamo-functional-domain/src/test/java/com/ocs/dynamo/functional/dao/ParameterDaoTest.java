@@ -1,7 +1,7 @@
 package com.ocs.dynamo.functional.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 import java.util.Set;
@@ -11,8 +11,8 @@ import javax.validation.ConstraintViolation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ocs.dynamo.BackendIntegrationTest;
@@ -38,7 +38,7 @@ public class ParameterDaoTest extends BackendIntegrationTest {
 	@Inject
 	private ValidatorFactory factory;
 
-	@Before
+	@BeforeEach
 	public void setup() {
 		maxPrograms = new Parameter();
 		maxPrograms.setName("maximumPrograms");

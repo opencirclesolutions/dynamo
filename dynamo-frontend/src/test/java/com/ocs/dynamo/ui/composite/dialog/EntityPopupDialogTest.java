@@ -1,12 +1,16 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.HashMap;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
@@ -27,7 +31,7 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 
     private TestEntity e2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
 
@@ -57,14 +61,14 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
         dialog.getLayout().build();
 
         // OK button is only for read-only mode
-        Assert.assertNull(dialog.getOkButton());
+        assertNull(dialog.getOkButton());
 
         TestEntity newEntity = dialog.getEntity();
-        Assert.assertEquals("Pete", newEntity.getName());
+        assertEquals("Pete", newEntity.getName());
 
         // save the new entity
         dialog.getSaveButtons().get(0).click();
-        Assert.assertEquals(3, testEntityService.count());
+        assertEquals(3, testEntityService.count());
     }
 
     @Test
@@ -83,10 +87,10 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 
         // save the existing entity
         dialog.getSaveButtons().get(0).click();
-        Assert.assertEquals(2, testEntityService.count());
+        assertEquals(2, testEntityService.count());
 
         TestEntity saved = testEntityService.findById(e1.getId());
-        Assert.assertEquals("BobChanged", saved.getName());
+        assertEquals("BobChanged", saved.getName());
     }
 
     @Test
@@ -102,7 +106,7 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
         dialog.getLayout().build();
 
         // no save buttons present
-        Assert.assertTrue(dialog.getSaveButtons().isEmpty());
-        Assert.assertNotNull(dialog.getOkButton());
+        assertTrue(dialog.getSaveButtons().isEmpty());
+        assertNotNull(dialog.getOkButton());
     }
 }

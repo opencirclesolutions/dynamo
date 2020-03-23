@@ -1,15 +1,16 @@
 package com.ocs.dynamo.ui.component;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.test.BaseMockitoTest;
@@ -20,7 +21,7 @@ public class DateTimePickerTest extends BaseMockitoTest {
 
     private Locale locale = new Locale("nl");
 
-    @Before
+    @BeforeEach
     public void before() {
         MockVaadin.setup();
     }

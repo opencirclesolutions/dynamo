@@ -1,9 +1,10 @@
 package com.ocs.dynamo.ui.composite.export.impl;
 
-import org.junit.Before;
-import org.junit.Test;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
@@ -22,7 +23,7 @@ public class ExportDialogTest extends BaseMockitoTest {
 
     private EntityModelFactory emf = new EntityModelFactoryImpl();
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
     }
@@ -31,8 +32,8 @@ public class ExportDialogTest extends BaseMockitoTest {
     public void test() {
         EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-        Mockito.when(exportService.exportCsv(em, ExportMode.FULL, null, null)).thenReturn(new byte[] { 1, 2, 3 });
-        Mockito.when(exportService.exportExcel(em, ExportMode.FULL, null, null, null)).thenReturn(new byte[] { 1, 2, 3 });
+        when(exportService.exportCsv(em, ExportMode.FULL, null, null)).thenReturn(new byte[] { 1, 2, 3 });
+        when(exportService.exportExcel(em, ExportMode.FULL, null, null, null)).thenReturn(new byte[] { 1, 2, 3 });
 
         ExportDialog<Integer, TestEntity> dialog = new ExportDialog<>(exportService, em, ExportMode.FULL, null, null, null);
         dialog.build();

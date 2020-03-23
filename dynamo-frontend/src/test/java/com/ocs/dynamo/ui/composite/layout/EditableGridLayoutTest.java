@@ -1,8 +1,11 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -38,7 +41,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
     private TestEntity2 child2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);
@@ -66,21 +69,21 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         parent.add(layout);
 
         // open in edit mode by default
-        Assert.assertFalse(layout.isViewmode());
-        Assert.assertFalse(layout.getEditButton().isVisible());
-        Assert.assertFalse(layout.getCancelButton().isVisible());
-        Assert.assertTrue(layout.getAddButton().isVisible());
-        Assert.assertTrue(layout.getSaveButton().isVisible());
+        assertFalse(layout.isViewmode());
+        assertFalse(layout.getEditButton().isVisible());
+        assertFalse(layout.getCancelButton().isVisible());
+        assertTrue(layout.getAddButton().isVisible());
+        assertTrue(layout.getSaveButton().isVisible());
 
         layout.getGridWrapper().getDataProvider().size(new Query<TestEntity, SerializablePredicate<TestEntity>>());
-        Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(2, layout.getGridWrapper().getDataProviderSize());
 
         // no remove button
-        Assert.assertTrue(layout.getGridWrapper().getGrid().getColumnByKey("remove") == null);
+        assertTrue(layout.getGridWrapper().getGrid().getColumnByKey("remove") == null);
 
         // try selecting an item
         layout.getGridWrapper().getGrid().select(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
     }
 
     @Test
@@ -95,21 +98,21 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         parent.add(layout);
 
         // open in edit mode by default
-        Assert.assertFalse(layout.isViewmode());
-        Assert.assertFalse(layout.getEditButton().isVisible());
-        Assert.assertFalse(layout.getCancelButton().isVisible());
-        Assert.assertTrue(layout.getAddButton().isVisible());
+        assertFalse(layout.isViewmode());
+        assertFalse(layout.getEditButton().isVisible());
+        assertFalse(layout.getCancelButton().isVisible());
+        assertTrue(layout.getAddButton().isVisible());
 
         // no save button in "row by row" mode
-        Assert.assertFalse(layout.getSaveButton().isVisible());
+        assertFalse(layout.getSaveButton().isVisible());
 
         layout.getGridWrapper().forceSearch();
-        Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
-        Assert.assertTrue(layout.getGridWrapper().getGrid().getColumnByKey("remove") == null);
+        assertEquals(2, layout.getGridWrapper().getDataProviderSize());
+        assertTrue(layout.getGridWrapper().getGrid().getColumnByKey("remove") == null);
 
         // try selecting an item
         layout.getGridWrapper().getGrid().select(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
 
     }
 
@@ -123,8 +126,8 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         layout.build();
         layout.getGridWrapper().forceSearch();
 
-        Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
-        Assert.assertEquals(e1, layout.getParentEntity());
+        assertEquals(2, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(e1, layout.getParentEntity());
     }
 
     /**
@@ -141,7 +144,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         layout.build();
         layout.getGridWrapper().forceSearch();
 
-        Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
     }
 
     @Test
@@ -153,29 +156,29 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         // open in view mode
-        Assert.assertTrue(layout.isViewmode());
-        Assert.assertTrue(layout.getEditButton().isVisible());
-        Assert.assertFalse(layout.getCancelButton().isVisible());
-        Assert.assertFalse(layout.getAddButton().isVisible());
-        Assert.assertFalse(layout.getSaveButton().isVisible());
+        assertTrue(layout.isViewmode());
+        assertTrue(layout.getEditButton().isVisible());
+        assertFalse(layout.getCancelButton().isVisible());
+        assertFalse(layout.getAddButton().isVisible());
+        assertFalse(layout.getSaveButton().isVisible());
 
         layout.getGridWrapper().getDataProvider().size(new Query<TestEntity, SerializablePredicate<TestEntity>>());
-        Assert.assertEquals(2, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(2, layout.getGridWrapper().getDataProviderSize());
 
         // switch to edit mode
         layout.getEditButton().click();
-        Assert.assertFalse(layout.isViewmode());
-        Assert.assertFalse(layout.getEditButton().isVisible());
-        Assert.assertTrue(layout.getCancelButton().isVisible());
-        Assert.assertTrue(layout.getAddButton().isVisible());
+        assertFalse(layout.isViewmode());
+        assertFalse(layout.getEditButton().isVisible());
+        assertTrue(layout.getCancelButton().isVisible());
+        assertTrue(layout.getAddButton().isVisible());
 
         // switch back
         layout.getCancelButton().click();
-        Assert.assertTrue(layout.isViewmode());
-        Assert.assertTrue(layout.getEditButton().isVisible());
-        Assert.assertFalse(layout.getCancelButton().isVisible());
-        Assert.assertFalse(layout.getAddButton().isVisible());
-        Assert.assertFalse(layout.getSaveButton().isVisible());
+        assertTrue(layout.isViewmode());
+        assertTrue(layout.getEditButton().isVisible());
+        assertFalse(layout.getCancelButton().isVisible());
+        assertFalse(layout.getAddButton().isVisible());
+        assertFalse(layout.getSaveButton().isVisible());
 
     }
 }

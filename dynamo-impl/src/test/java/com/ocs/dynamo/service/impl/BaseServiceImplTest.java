@@ -13,6 +13,15 @@
  */
 package com.ocs.dynamo.service.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -20,15 +29,15 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.BaseDao;
@@ -53,6 +62,7 @@ import com.ocs.dynamo.test.MockUtil;
  * 
  * @author bas.rutten
  */
+@ExtendWith(SpringExtension.class)
 public class BaseServiceImplTest extends BaseMockitoTest {
 
     private class Dependency {
@@ -102,31 +112,31 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Spy
     private ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
-    @Before
+    @BeforeEach
     public void setupBaseServiceImplTest() throws NoSuchFieldException {
-        Mockito.when(dao.getEntityClass()).thenReturn(TestEntity.class);
+        when(dao.getEntityClass()).thenReturn(TestEntity.class);
     }
 
     @Test
     public void testCount() {
         service.count();
-        Mockito.verify(dao).count();
+        verify(dao).count();
     }
 
     @Test
     public void testCountFilter() {
         Filter filter = new Compare.Equal("property1", 1);
         service.count(filter, false);
-        Mockito.verify(dao).count(filter, false);
+        verify(dao).count(filter, false);
 
         service.count(filter, true);
-        Mockito.verify(dao).count(filter, true);
+        verify(dao).count(filter, true);
     }
 
     @Test
     public void testCreateNewEntity() {
         TestEntity entity = service.createNewEntity();
-        Assert.assertNotNull(entity);
+        assertNotNull(entity);
     }
 
     /**
@@ -141,19 +151,19 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         service.fetch(filter, 2, 10, new SortOrders(order, order2));
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-        Mockito.verify(dao).fetch(Mockito.any(Filter.class), captor.capture());
+        verify(dao).fetch(any(Filter.class), captor.capture());
 
         Pageable p = captor.getValue();
 
         Direction dir = p.getSortOrders().getOrderFor("name").getDirection();
-        Assert.assertEquals(Direction.ASC, dir);
+        assertEquals(Direction.ASC, dir);
 
         Direction dir2 = p.getSortOrders().getOrderFor("age").getDirection();
-        Assert.assertEquals(Direction.DESC, dir2);
+        assertEquals(Direction.DESC, dir2);
 
-        Assert.assertEquals(2, p.getPageNumber());
-        Assert.assertEquals(20, p.getOffset());
-        Assert.assertEquals(10, p.getPageSize());
+        assertEquals(2, p.getPageNumber());
+        assertEquals(20, p.getOffset());
+        assertEquals(10, p.getPageSize());
     }
 
     /**
@@ -171,25 +181,25 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         service.fetchByIds(ids, new SortOrders(order, order2), new FetchJoinInformation("test"));
 
         ArgumentCaptor<SortOrders> captor = ArgumentCaptor.forClass(SortOrders.class);
-        Mockito.verify(dao).fetchByIds(Mockito.any(List.class), captor.capture(), Mockito.any());
+        verify(dao).fetchByIds(any(List.class), captor.capture(), any());
 
         SortOrders s = captor.getValue();
-        Assert.assertNotNull(s);
+        assertNotNull(s);
 
         Direction dir = s.getOrderFor("name").getDirection();
-        Assert.assertEquals(Direction.ASC, dir);
+        assertEquals(Direction.ASC, dir);
 
         dir = s.getOrderFor("age").getDirection();
-        Assert.assertEquals(Direction.DESC, dir);
+        assertEquals(Direction.DESC, dir);
 
-        Assert.assertNull(s.getOrderFor("notExists"));
+        assertNull(s.getOrderFor("notExists"));
     }
 
     @Test
     public void testDelete() {
         TestEntity obj = new TestEntity();
         service.delete(obj);
-        Mockito.verify(dao).delete(obj);
+        verify(dao).delete(obj);
     }
 
     @Test
@@ -198,37 +208,37 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         TestEntity obj2 = new TestEntity();
 
         service.delete(Lists.newArrayList(obj, obj2));
-        Mockito.verify(dao).delete(Lists.newArrayList(obj, obj2));
+        verify(dao).delete(Lists.newArrayList(obj, obj2));
     }
 
     @Test
     public void testFetchById() {
 
         service.fetchById(1);
-        Mockito.verify(dao).fetchById(1);
+        verify(dao).fetchById(1);
 
         service.fetchById(1, new FetchJoinInformation("property1"));
-        Mockito.verify(dao).fetchById(1, new FetchJoinInformation("property1"));
+        verify(dao).fetchById(1, new FetchJoinInformation("property1"));
     }
 
     @Test
     public void testFetchByIds() {
 
         service.fetchByIds(Lists.newArrayList(1, 2));
-        Mockito.verify(dao).fetchByIds(Lists.newArrayList(1, 2), null);
+        verify(dao).fetchByIds(Lists.newArrayList(1, 2), null);
 
         service.fetchByIds(Lists.newArrayList(1, 2), new FetchJoinInformation("property1"));
-        Mockito.verify(dao).fetchByIds(Lists.newArrayList(1, 2), null, new FetchJoinInformation("property1"));
+        verify(dao).fetchByIds(Lists.newArrayList(1, 2), null, new FetchJoinInformation("property1"));
     }
 
     @Test
     public void testFetchByUniqueProperty() {
 
         service.fetchByUniqueProperty("property1", "test", true);
-        Mockito.verify(dao).fetchByUniqueProperty("property1", "test", true);
+        verify(dao).fetchByUniqueProperty("property1", "test", true);
 
         service.fetchByUniqueProperty("property1", "test", false);
-        Mockito.verify(dao).fetchByUniqueProperty("property1", "test", false);
+        verify(dao).fetchByUniqueProperty("property1", "test", false);
     }
 
     @Test
@@ -236,10 +246,10 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         Filter filter = new Compare.Equal("property1", 1);
         service.fetch(filter, new FetchJoinInformation("testEntities"));
 
-        Mockito.verify(dao).fetch(filter, new FetchJoinInformation("testEntities"));
+        verify(dao).fetch(filter, new FetchJoinInformation("testEntities"));
 
         service.fetch(filter);
-        Mockito.verify(dao).fetch(filter);
+        verify(dao).fetch(filter);
     }
 
     @Test
@@ -248,12 +258,12 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         service.fetch(filter, 2, 10, new FetchJoinInformation("testEntities"));
 
         ArgumentCaptor<Pageable> captor = ArgumentCaptor.forClass(Pageable.class);
-        Mockito.verify(dao).fetch(Mockito.eq(filter), captor.capture(), Mockito.eq(new FetchJoinInformation("testEntities")));
+        verify(dao).fetch(eq(filter), captor.capture(), eq(new FetchJoinInformation("testEntities")));
 
         Pageable pb = captor.getValue();
-        Assert.assertEquals(20, pb.getOffset());
-        Assert.assertEquals(10, pb.getPageSize());
-        Assert.assertEquals(2, pb.getPageNumber());
+        assertEquals(20, pb.getOffset());
+        assertEquals(10, pb.getPageSize());
+        assertEquals(2, pb.getPageNumber());
     }
 
     @Test
@@ -263,36 +273,36 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         FetchJoinInformation[] joins = new FetchJoinInformation[] { new FetchJoinInformation("testEntities") };
 
         service.fetch(filter, orders, joins);
-        Mockito.verify(dao).fetch(filter, orders, joins);
+        verify(dao).fetch(filter, orders, joins);
     }
 
     @Test
     public void testFilter() {
         Filter filter = new Compare.Equal("property1", 1);
         service.find(filter);
-        Mockito.verify(dao).find(filter);
+        verify(dao).find(filter);
     }
 
     @Test
     public void testFindAll() {
         service.findAll();
-        Mockito.verify(dao).findAll();
+        verify(dao).findAll();
 
         service.findAll(new SortOrder("property1"));
-        Mockito.verify(dao).findAll(new SortOrder("property1", Direction.ASC));
+        verify(dao).findAll(new SortOrder("property1", Direction.ASC));
 
         service.findAll(new SortOrder("property1", Direction.DESC));
-        Mockito.verify(dao).findAll(new SortOrder("property1", Direction.DESC));
+        verify(dao).findAll(new SortOrder("property1", Direction.DESC));
     }
 
     @Test
     public void testFindById() {
 
         TestEntity obj = new TestEntity();
-        Mockito.when(dao.findById(ID)).thenReturn(obj);
+        when(dao.findById(ID)).thenReturn(obj);
 
         TestEntity result = service.findById(ID);
-        Assert.assertNotNull(result);
+        assertNotNull(result);
     }
 
     @Test
@@ -301,13 +311,13 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         SortOrder so = new SortOrder("property2");
 
         service.findDistinct(filter, "property1", String.class, so);
-        Mockito.verify(dao).findDistinct(filter, "property1", String.class, so);
+        verify(dao).findDistinct(filter, "property1", String.class, so);
     }
 
     @Test
     public void testFindIds() {
         service.findIds(new Compare.Equal("property1", 12), new SortOrder("property1"));
-        Mockito.verify(dao).findIds(new Compare.Equal("property1", 12), new SortOrder("property1", Direction.ASC));
+        verify(dao).findIds(new Compare.Equal("property1", 12), new SortOrder("property1", Direction.ASC));
     }
 
     @Test
@@ -315,7 +325,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         Filter filter = new Compare.Equal("property1", 1);
         SortOrders so = new SortOrders(new SortOrder("property1"));
         service.findSelect(filter, new String[] { "property1", "property2" }, so);
-        Mockito.verify(dao).findSelect(filter, new String[] { "property1", "property2" }, so);
+        verify(dao).findSelect(filter, new String[] { "property1", "property2" }, so);
     }
 
     @Test
@@ -323,8 +333,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         Filter filter = new Compare.Equal("property1", 1);
         SortOrders so = new SortOrders(new SortOrder("property1"));
         service.findSelect(filter, new String[] { "property1", "property2" }, 1, 10, so);
-        Mockito.verify(dao).findSelect(Mockito.eq(filter), Mockito.eq(new String[] { "property1", "property2" }),
-                Mockito.any(PageableImpl.class));
+        verify(dao).findSelect(eq(filter), eq(new String[] { "property1", "property2" }), any(PageableImpl.class));
     }
 
     /**
@@ -333,7 +342,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
     @Test
     public void testNoop() {
         service.noop();
-        Mockito.verify(dependency).noop();
+        verify(dependency).noop();
     }
 
     @Test
@@ -342,8 +351,8 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         MockUtil.mockSave(dao, TestEntity.class);
 
         TestEntity result = service.save(obj);
-        Assert.assertNotNull(result);
-        Mockito.verify(dao).save(obj);
+        assertNotNull(result);
+        verify(dao).save(obj);
     }
 
     @Test
@@ -352,7 +361,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         TestEntity obj2 = new TestEntity("name2", 15L);
 
         service.save(Lists.newArrayList(obj1, obj2));
-        Mockito.verify(dao).save(Lists.newArrayList(obj1, obj2));
+        verify(dao).save(Lists.newArrayList(obj1, obj2));
     }
 
     @Test
@@ -361,30 +370,30 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         service.validate(entity);
     }
 
-    @Test(expected = OCSValidationException.class)
+    @Test
     public void testValidate_AssertTrue() {
         TestEntity entity = new TestEntity("bogus", 15L);
-        service.validate(entity);
+        assertThrows(OCSValidationException.class, () -> service.validate(entity));
     }
 
-    @Test(expected = OCSValidationException.class)
+    @Test
     public void testValidate_Error() {
         TestEntity entity = new TestEntity(null, 15L);
-        service.validate(entity);
+        assertThrows(OCSValidationException.class, () -> service.validate(entity));
     }
 
     /**
      * That that a OCSNonUniqueException is thrown in case the validation process
      * results in a duplicate
      */
-    @Test(expected = OCSNonUniqueException.class)
+    @Test
     public void testValidate_Identical() {
         TestEntity entity = new TestEntity("kevin", 15L);
 
         TestEntity other = new TestEntity();
         other.setId(4);
-        Mockito.when(dao.findByUniqueProperty("name", "kevin", true)).thenReturn(other);
+        when(dao.findByUniqueProperty("name", "kevin", true)).thenReturn(other);
 
-        service.validate(entity);
+        assertThrows(OCSNonUniqueException.class, () -> service.validate(entity));
     };
 }

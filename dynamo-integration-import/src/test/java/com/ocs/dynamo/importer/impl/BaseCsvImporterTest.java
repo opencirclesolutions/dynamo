@@ -13,17 +13,23 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
-import com.ocs.dynamo.utils.DateUtils;
-import org.apache.commons.io.FileUtils;
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.fail;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
+import com.ocs.dynamo.utils.DateUtils;
+
+@Disabled
 public class BaseCsvImporterTest {
 
 	BaseCsvImporter importer = new BaseCsvImporter();
@@ -32,7 +38,7 @@ public class BaseCsvImporterTest {
 	public void testCountRows() throws IOException {
 		byte[] bytes = readFile("importertest.csv");
 		int rows = importer.countRows(bytes, 0);
-		Assert.assertEquals(7, rows);
+		assertEquals(7, rows);
 	}
 
 	/**
@@ -46,28 +52,28 @@ public class BaseCsvImporterTest {
 		List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
 
 		PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
-		Assert.assertNotNull(dto);
-		Assert.assertEquals("Bas", dto.getName());
-		Assert.assertEquals(1, dto.getNumber().intValue());
-		Assert.assertEquals(2.4, dto.getFactor().doubleValue(), 0.001);
-		Assert.assertEquals("abc", dto.getRandom());
-		Assert.assertEquals(Gender.M, dto.getGender());
-		Assert.assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
-		Assert.assertEquals(6.66, dto.getRating().doubleValue(), 0.001);
+		assertNotNull(dto);
+		assertEquals("Bas", dto.getName());
+		assertEquals(1, dto.getNumber().intValue());
+		assertEquals(2.4, dto.getFactor().doubleValue(), 0.001);
+		assertEquals("abc", dto.getRandom());
+		assertEquals(Gender.M, dto.getGender());
+		assertEquals(1.50, dto.getPercentage().doubleValue(), 0.001);
+		assertEquals(6.66, dto.getRating().doubleValue(), 0.001);
 
 		// check that default values are set
 		dto = importer.processRow(1, lines.get(1), PersonDTO.class);
-		Assert.assertNotNull(dto);
-		Assert.assertEquals("Unknown", dto.getName());
-		Assert.assertEquals(2, dto.getNumber().intValue());
-		Assert.assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
+		assertNotNull(dto);
+		assertEquals("Unknown", dto.getName());
+		assertEquals(2, dto.getNumber().intValue());
+		assertEquals(1.0, dto.getFactor().doubleValue(), 0.001);
 
 		// check negative values and default dates
 		dto = importer.processRow(1, lines.get(2), PersonDTO.class);
-		Assert.assertNotNull(dto);
-		Assert.assertEquals("Endy", dto.getName());
-		Assert.assertEquals(-3, dto.getNumber().intValue());
-		Assert.assertEquals(DateUtils.createLocalDate("01012015"), dto.getDate());
+		assertNotNull(dto);
+		assertEquals("Endy", dto.getName());
+		assertEquals(-3, dto.getNumber().intValue());
+		assertEquals(DateUtils.createLocalDate("01012015"), dto.getDate());
 	}
 
 	@Test
@@ -77,9 +83,9 @@ public class BaseCsvImporterTest {
 			List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
 
 			importer.processRow(0, lines.get(0), PersonDTO.class);
-			Assert.fail();
+			fail();
 		} catch (OCSImportException ex) {
-			Assert.assertEquals("abc cannot be converted to a number", ex.getMessage());
+			assertEquals("abc cannot be converted to a number", ex.getMessage());
 		}
 	}
 

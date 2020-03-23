@@ -13,8 +13,11 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
@@ -29,7 +32,7 @@ public class MenuServiceTest extends FrontendIntegrationTest {
     @Test
     public void testEmpty() {
         MenuBar bar = menuService.constructMenu("ocs.not.here");
-        Assert.assertTrue(bar.getItems().isEmpty());
+        assertTrue(bar.getItems().isEmpty());
     }
 
     /**
@@ -38,17 +41,17 @@ public class MenuServiceTest extends FrontendIntegrationTest {
     @Test
     public void testMenuStructure() {
         MenuBar bar = menuService.constructMenu("ocs.menu");
-        Assert.assertEquals(2, bar.getItems().size());
+        assertEquals(2, bar.getItems().size());
 
         MenuItem first = bar.getItems().get(0);
-        Assert.assertEquals("Menu 1", first.getText());
+        assertEquals("Menu 1", first.getText());
 
-        Assert.assertEquals(2, first.getSubMenu().getItems().size());
+        assertEquals(2, first.getSubMenu().getItems().size());
         MenuItem firstSub = first.getSubMenu().getItems().get(0);
-        Assert.assertEquals("Menu 1.1", firstSub.getText());
+        assertEquals("Menu 1.1", firstSub.getText());
 
         MenuItem second = bar.getItems().get(1);
-        Assert.assertEquals("Menu 2", second.getText());
+        assertEquals("Menu 2", second.getText());
 
     }
 
@@ -63,10 +66,10 @@ public class MenuServiceTest extends FrontendIntegrationTest {
 
         MenuItem first = bar.getItems().get(0);
         MenuItem firstSub = (MenuItem) first.getSubMenu().getChildren().findFirst().orElse(null);
-        Assert.assertFalse(firstSub.isVisible());
+        assertFalse(firstSub.isVisible());
 
         // the other items are unprotected and therefore shown
-        Assert.assertTrue(first.isVisible());
+        assertTrue(first.isVisible());
     }
 
     /**
@@ -78,8 +81,8 @@ public class MenuServiceTest extends FrontendIntegrationTest {
 
         MenuItem first = bar.getItems().get(0);
         MenuItem firstSub = (MenuItem) first.getSubMenu().getChildren().findFirst().orElse(null);
-        Assert.assertFalse(firstSub.isVisible());
-        Assert.assertFalse(first.isVisible());
+        assertFalse(firstSub.isVisible());
+        assertFalse(first.isVisible());
     }
 
     @Test
@@ -89,17 +92,17 @@ public class MenuServiceTest extends FrontendIntegrationTest {
 
         MenuItem first = bar.getItems().get(0);
         MenuItem firstSub = (MenuItem) first.getSubMenu().getChildren().findFirst().orElse(null);
-        Assert.assertTrue(first.isVisible());
-        Assert.assertFalse(firstSub.isVisible());
+        assertTrue(first.isVisible());
+        assertFalse(firstSub.isVisible());
 
         menuService.setVisible(bar, "Destination 1.1", true);
-        Assert.assertTrue(firstSub.isVisible());
+        assertTrue(firstSub.isVisible());
 
         // hide all children and verify that the parent is hidden as well
         menuService.setVisible(bar, "Destination 1.1", false);
         menuService.setVisible(bar, "Destination 1.2", false);
         menuService.setVisible(bar, "Destination 1.3", false);
-        Assert.assertFalse(firstSub.isVisible());
+        assertFalse(firstSub.isVisible());
     }
 
 }

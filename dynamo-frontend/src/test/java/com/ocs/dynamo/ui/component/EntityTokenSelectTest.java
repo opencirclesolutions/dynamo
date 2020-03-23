@@ -13,16 +13,17 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import org.junit.Assert;
-import org.junit.Test;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -33,58 +34,57 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 
 public class EntityTokenSelectTest extends BaseMockitoTest {
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	@Mock
-	private TestEntityService service;
+    @Mock
+    private TestEntityService service;
 
-	@Test
-	public void testAll() {
-		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
-				service);
-		Assert.assertEquals(EntityTokenSelect.SelectMode.ALL, select.getSelectMode());
-		verify(service).findAll((SortOrder[]) null);
-	}
+    @Test
+    public void testAll() {
+        EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null, service);
+        assertEquals(EntityTokenSelect.SelectMode.ALL, select.getSelectMode());
+        verify(service).findAll((SortOrder[]) null);
+    }
 
-	@Test
-	public void testFixed() {
-		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
-				Lists.newArrayList(new TestEntity()));
-		Assert.assertEquals(EntityTokenSelect.SelectMode.FIXED, select.getSelectMode());
-		verifyNoInteractions(service);
-	}
+    @Test
+    public void testFixed() {
+        EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
+                List.of(new TestEntity()));
+        assertEquals(EntityTokenSelect.SelectMode.FIXED, select.getSelectMode());
+        verifyNoInteractions(service);
+    }
 
-	@Test
-	public void testFilter() {
+    @Test
+    public void testFilter() {
 
-		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		Assert.assertEquals(EntityTokenSelect.SelectMode.FILTERED, select.getSelectMode());
+        EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null, service,
+                new EqualsPredicate<TestEntity>("name", "Bob"));
+        assertEquals(EntityTokenSelect.SelectMode.FILTERED, select.getSelectMode());
 
-		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
-	}
+        verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
+    }
 
-	@Test
-	public void testRefreshFiltered() {
+    @Test
+    public void testRefreshFiltered() {
 
-		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		Assert.assertEquals(EntityTokenSelect.SelectMode.FILTERED, select.getSelectMode());
+        EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null, service,
+                new EqualsPredicate<TestEntity>("name", "Bob"));
+        assertEquals(EntityTokenSelect.SelectMode.FILTERED, select.getSelectMode());
 
-		select.refresh();
+        select.refresh();
 
-		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
-	}
+        verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
+    }
 
-	@Test
-	public void testRefreshAll() {
+    @Test
+    public void testRefreshAll() {
 
-		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null,
-				service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		Assert.assertEquals(EntityTokenSelect.SelectMode.FILTERED, select.getSelectMode());
+        EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class), null, service,
+                new EqualsPredicate<TestEntity>("name", "Bob"));
+        assertEquals(EntityTokenSelect.SelectMode.FILTERED, select.getSelectMode());
 
-		select.refresh();
+        select.refresh();
 
-		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
-	}
+        verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
+    }
 }

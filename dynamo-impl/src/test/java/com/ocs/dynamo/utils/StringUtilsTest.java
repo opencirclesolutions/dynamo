@@ -13,57 +13,60 @@
  */
 package com.ocs.dynamo.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.utils.StringUtils;
 
 public class StringUtilsTest {
 
     @Test
     public void testCamelCaseToHumanFriendly() {
-        Assert.assertNull(StringUtils.camelCaseToHumanFriendly(null, true));
-        Assert.assertEquals("Slightly Complex", StringUtils.camelCaseToHumanFriendly("slightlyComplex", true));
-        Assert.assertEquals("Simple", StringUtils.camelCaseToHumanFriendly("simple", true));
-        Assert.assertEquals("Multiple Words Camel", StringUtils.camelCaseToHumanFriendly("multiple wordsCamel", true));
+        assertNull(StringUtils.camelCaseToHumanFriendly(null, true));
+        assertEquals("Slightly Complex", StringUtils.camelCaseToHumanFriendly("slightlyComplex", true));
+        assertEquals("Simple", StringUtils.camelCaseToHumanFriendly("simple", true));
+        assertEquals("Multiple Words Camel", StringUtils.camelCaseToHumanFriendly("multiple wordsCamel", true));
 
-        Assert.assertEquals("Slightly complex", StringUtils.camelCaseToHumanFriendly("slightlyComplex", false));
-        Assert.assertEquals("Simple", StringUtils.camelCaseToHumanFriendly("simple", false));
-        Assert.assertEquals("Multiple words camel", StringUtils.camelCaseToHumanFriendly("multiple wordsCamel", false));
+        assertEquals("Slightly complex", StringUtils.camelCaseToHumanFriendly("slightlyComplex", false));
+        assertEquals("Simple", StringUtils.camelCaseToHumanFriendly("simple", false));
+        assertEquals("Multiple words camel", StringUtils.camelCaseToHumanFriendly("multiple wordsCamel", false));
     }
 
     @Test
     public void testRestrictToMaxFieldLength() {
 
-        Assert.assertNull(StringUtils.restrictToMaxFieldLength(null, TestEntity.class, "name"));
+        assertNull(StringUtils.restrictToMaxFieldLength(null, TestEntity.class, "name"));
 
         // a value that is too long is truncated
         String result = StringUtils.restrictToMaxFieldLength("longlonglonglonglonglonglonglonglonglonglong", TestEntity.class, "name");
-        Assert.assertEquals(25, result.length());
+        assertEquals(25, result.length());
 
         // a short value is left alone
         result = StringUtils.restrictToMaxFieldLength("shortshort", TestEntity.class, "name");
-        Assert.assertEquals(10, result.length());
+        assertEquals(10, result.length());
 
         // no restriction on the field means no change
         result = StringUtils.restrictToMaxFieldLength("longlonglonglonglonglonglonglonglonglonglong", TestEntity.class, "somestring");
-        Assert.assertEquals(44, result.length());
+        assertEquals(44, result.length());
     }
 
     @Test
     public void testIsValidEmail() {
-        Assert.assertFalse(StringUtils.isValidEmail(" "));
-        Assert.assertFalse(StringUtils.isValidEmail(""));
-        Assert.assertFalse(StringUtils.isValidEmail("@"));
-        Assert.assertTrue(StringUtils.isValidEmail("a@b.com"));
-        Assert.assertFalse(StringUtils.isValidEmail("a@b"));
-        Assert.assertTrue(StringUtils.isValidEmail("kevin@opencirclesolutions.nl"));
+        assertFalse(StringUtils.isValidEmail(" "));
+        assertFalse(StringUtils.isValidEmail(""));
+        assertFalse(StringUtils.isValidEmail("@"));
+        assertTrue(StringUtils.isValidEmail("a@b.com"));
+        assertFalse(StringUtils.isValidEmail("a@b"));
+        assertTrue(StringUtils.isValidEmail("kevin@opencirclesolutions.nl"));
     }
 
     @Test
     public void testPrependProtocol() {
-        Assert.assertEquals("http://www.google.nl", StringUtils.prependProtocol("http://www.google.nl"));
-        Assert.assertEquals("http://www.google.nl", StringUtils.prependProtocol("www.google.nl"));
+        assertEquals("http://www.google.nl", StringUtils.prependProtocol("http://www.google.nl"));
+        assertEquals("http://www.google.nl", StringUtils.prependProtocol("www.google.nl"));
     }
 }

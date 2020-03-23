@@ -1,13 +1,17 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
@@ -30,7 +34,7 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
 
     private TestEntity e1;
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
         e1 = new TestEntity("Bob", 11L);
@@ -48,18 +52,18 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
         layout.build();
 
-        Assert.assertTrue(layout.getAddButton().isVisible());
-        Assert.assertTrue(layout.getEditButton().isVisible());
-        Assert.assertFalse(layout.getRemoveButton().isVisible());
+        assertTrue(layout.getAddButton().isVisible());
+        assertTrue(layout.getEditButton().isVisible());
+        assertFalse(layout.getRemoveButton().isVisible());
 
-        Assert.assertEquals("name", layout.getSortOrders().get(0).getSorted());
-        Assert.assertEquals(SortDirection.ASCENDING, layout.getSortOrders().get(0).getDirection());
+        assertEquals("name", layout.getSortOrders().get(0).getSorted());
+        assertEquals(SortDirection.ASCENDING, layout.getSortOrders().get(0).getDirection());
 
         TestEntity entity = layout.createEntity();
-        Assert.assertNotNull(entity);
+        assertNotNull(entity);
 
         layout.getGridWrapper().forceSearch();
-        Assert.assertEquals(3, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(3, layout.getGridWrapper().getDataProviderSize());
 
         layout.select(e1);
     }
@@ -71,7 +75,7 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
 
         // click the add button and verify that a new item is added
         layout.getAddButton().click();
-        Assert.assertNotNull(layout.getSelectedItem());
+        assertNotNull(layout.getSelectedItem());
     }
 
     @Test
@@ -81,12 +85,12 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(options);
         layout.build();
 
-        Assert.assertTrue(layout.getEditButton().isVisible());
+        assertTrue(layout.getEditButton().isVisible());
 
         // click the add button and verify that a new item is added
         layout.setSelectedItem(e1);
         layout.getEditButton().click();
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
     }
 
     /**
@@ -103,10 +107,10 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         layout.build();
         layout.getGridWrapper().forceSearch();
 
-        Assert.assertEquals("name", layout.getSortOrders().get(0).getSorted());
-        Assert.assertEquals(SortDirection.ASCENDING, layout.getSortOrders().get(0).getDirection());
+        assertEquals("name", layout.getSortOrders().get(0).getSorted());
+        assertEquals(SortDirection.ASCENDING, layout.getSortOrders().get(0).getDirection());
 
-        Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
     }
 
     /**
@@ -118,7 +122,7 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         layout.select(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
     }
 
     @Test
@@ -126,7 +130,7 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
         layout.build();
         layout.select(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
     }
 
     /**
@@ -142,8 +146,8 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         layout.getGridWrapper().forceSearch();
 
         // verify that this creates a filter
-        Assert.assertTrue(layout.getSearchForm().hasFilter(entityModelFactory.getModel(TestEntity.class).getAttributeModel("age")));
-        Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+        assertTrue(layout.getSearchForm().hasFilter(entityModelFactory.getModel(TestEntity.class).getAttributeModel("age")));
+        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
     }
 
     /**
@@ -154,9 +158,9 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         FlexibleSearchLayout<Integer, TestEntity> layout = createLayout("TestEntitySearchRequired", new FormOptions());
         layout.build();
 
-        Assert.assertFalse(layout.getSearchForm().isSearchAllowed());
+        assertFalse(layout.getSearchForm().isSearchAllowed());
         layout.setSearchValue("name", "abc");
-        Assert.assertTrue(layout.getSearchForm().isSearchAllowed());
+        assertTrue(layout.getSearchForm().isSearchAllowed());
     }
 
     private FlexibleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {

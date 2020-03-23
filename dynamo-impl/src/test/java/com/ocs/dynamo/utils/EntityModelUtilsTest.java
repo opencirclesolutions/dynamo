@@ -13,14 +13,14 @@
  */
 package com.ocs.dynamo.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNull;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 import java.math.BigDecimal;
 import java.util.Locale;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.google.common.collect.Lists;
@@ -41,7 +41,7 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
     @Mock
     private MessageService messageService = new MessageServiceImpl();
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockUtil.mockMessageService(messageService);
     }

@@ -1,10 +1,15 @@
 package com.ocs.dynamo.ui.component;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.when;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
@@ -32,19 +37,19 @@ public class QuickAddListSingleSelectTest extends BaseMockitoTest {
 
     private TestEntity t3;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         t1 = new TestEntity(1, "Kevin", 12L);
         t2 = new TestEntity(2, "Bob", 13L);
         t3 = new TestEntity(3, "Stewart", 14L);
 
-        Mockito.when(service.find(Mockito.isNull(), (SortOrder[]) Mockito.any())).thenReturn(Lists.newArrayList(t1, t2, t3));
-        Mockito.when(service.find(Mockito.isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
+        when(service.find(isNull(), (SortOrder[]) any())).thenReturn(Lists.newArrayList(t1, t2, t3));
+        when(service.find(isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
 
         Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
-        Mockito.when(service.find(Mockito.eq(f))).thenReturn(Lists.newArrayList(t1));
+        when(service.find(eq(f))).thenReturn(Lists.newArrayList(t1));
 
-        Mockito.when(service.createNewEntity()).thenReturn(new TestEntity());
+        when(service.createNewEntity()).thenReturn(new TestEntity());
         MockUtil.mockServiceSave(service, TestEntity.class);
     }
 
@@ -60,15 +65,15 @@ public class QuickAddListSingleSelectTest extends BaseMockitoTest {
         select.initContent();
 
         // list must contain 3 items
-        Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
+        assertEquals(3, select.getListSelect().getDataProviderSize());
 
         // test propagation of the value
         select.getListSelect().setValue(t1);
-        Assert.assertEquals(t1, select.getListSelect().getValue());
+        assertEquals(t1, select.getListSelect().getValue());
 
         // .. and the other way around
         select.getListSelect().setValue(t2);
-        Assert.assertEquals(t2, select.getListSelect().getValue());
+        assertEquals(t2, select.getListSelect().getValue());
 
     }
 
@@ -82,23 +87,23 @@ public class QuickAddListSingleSelectTest extends BaseMockitoTest {
         select.initContent();
 
         // list must contain 3 items
-        Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
+        assertEquals(3, select.getListSelect().getDataProviderSize());
 
         select.setAdditionalFilter(new EqualsPredicate<TestEntity>("name", "Kevin"));
 
         // after filter there must be 1 item left
-        Assert.assertEquals(1, select.getListSelect().getDataProviderSize());
+        assertEquals(1, select.getListSelect().getDataProviderSize());
 
         // clear filter again
         select.clearAdditionalFilter();
-        Assert.assertEquals(3, select.getListSelect().getDataProviderSize());
+        assertEquals(3, select.getListSelect().getDataProviderSize());
 
         select.setValue(t2);
-        Assert.assertEquals(t2, select.getValue());
+        assertEquals(t2, select.getValue());
 
         select.refresh();
 
         select.refresh(new EqualsPredicate<TestEntity>("name", "Bob"));
-        Assert.assertNotNull(select.getFilter());
+        assertNotNull(select.getFilter());
     }
 }

@@ -1,7 +1,9 @@
 package com.ocs.dynamo.functional.domain;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 public class DomainTest {
 
@@ -20,18 +22,18 @@ public class DomainTest {
         Region r1 = new Region(null, "Europe");
         r1.setId(1);
 
-        Assert.assertFalse(c1.equals(null));
-        Assert.assertFalse(c1.equals(new Object()));
+        assertFalse(c1.equals(null));
+        assertFalse(c1.equals(new Object()));
 
         // IDs match but class is different
-        Assert.assertFalse(c1.equals(r1));
+        assertFalse(c1.equals(r1));
 
         // IDs are the same
-        Assert.assertTrue(c1.equals(c2));
+        assertTrue(c1.equals(c2));
         // no IDs, check the code and type instead
-        Assert.assertTrue(c3.equals(c4));
+        assertTrue(c3.equals(c4));
 
         // partial IDs
-        Assert.assertTrue(c1.equals(c4));
+        assertTrue(c1.equals(c4));
     }
 }

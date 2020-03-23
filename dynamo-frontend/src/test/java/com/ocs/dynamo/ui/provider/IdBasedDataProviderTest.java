@@ -1,15 +1,25 @@
 package com.ocs.dynamo.ui.provider;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+import java.util.List;
 import java.util.Optional;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -36,22 +46,22 @@ public class IdBasedDataProviderTest extends BaseMockitoTest {
 
 	private EntityModelFactory emf = new EntityModelFactoryImpl();
 
-	@Before
+	@BeforeEach
 	public void setUp() {
-		Mockito.when(query.getLimit()).thenReturn(5);
+		when(query.getLimit()).thenReturn(5);
 	}
 
 	@Test
 	public void testSizeWithoutFilter() {
-		Mockito.when(service.findIds(Mockito.nullable(Filter.class), Mockito.isNull(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2, 3));
+		when(service.findIds(nullable(Filter.class), isNull(), any()))
+				.thenReturn(List.of(1, 2, 3));
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.size(query);
-		Assert.assertEquals(3, provider.getSize());
+		assertEquals(3, provider.getSize());
 
 		provider.fetch(query);
-		Mockito.verify(service).fetchByIds(Mockito.eq(Lists.newArrayList(1, 2, 3)), Mockito.nullable(SortOrders.class),
-				Mockito.any());
+		verify(service).fetchByIds(eq(List.of(1, 2, 3)), nullable(SortOrders.class),
+				any());
 	}
 
 	/**
@@ -59,44 +69,44 @@ public class IdBasedDataProviderTest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testSizeWithoutFilterMaxResults() {
-		Mockito.when(service.findIds(Mockito.nullable(Filter.class), Mockito.anyInt(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2));
-		Mockito.when(service.count(Mockito.nullable(Filter.class), Mockito.eq(false))).thenReturn(5L);
+		when(service.findIds(nullable(Filter.class), anyInt(), any()))
+				.thenReturn(List.of(1, 2));
+		when(service.count(nullable(Filter.class), eq(false))).thenReturn(5L);
 
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.setMaxResults(2);
 
 		provider.size(query);
-		Assert.assertEquals(2, provider.getSize());
+		assertEquals(2, provider.getSize());
 
 		provider.fetch(query);
-		Mockito.verify(service).fetchByIds(Mockito.eq(Lists.newArrayList(1, 2)), Mockito.nullable(SortOrders.class),
-				Mockito.any());
+		verify(service).fetchByIds(eq(List.of(1, 2)), nullable(SortOrders.class),
+				any());
 	}
 
 	@Test
 	public void testSizeWithoutOnlyReturnPart() {
-		Mockito.when(service.findIds(Mockito.nullable(Filter.class), Mockito.isNull(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2, 3, 4, 5, 6));
+		when(service.findIds(nullable(Filter.class), isNull(), any()))
+				.thenReturn(List.of(1, 2, 3, 4, 5, 6));
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.size(query);
-		Assert.assertEquals(6, provider.getSize());
+		assertEquals(6, provider.getSize());
 
 		// only fetch the first 5 items
 		provider.fetch(query);
-		Mockito.verify(service).fetchByIds(Mockito.eq(Lists.newArrayList(1, 2, 3, 4, 5)),
-				Mockito.nullable(SortOrders.class), Mockito.any());
+		verify(service).fetchByIds(eq(List.of(1, 2, 3, 4, 5)),
+				nullable(SortOrders.class), any());
 
 	}
 
 	@Test
 	public void testSizeWithFilter() {
-		Mockito.when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
-		Mockito.when(service.findIds(Mockito.eq(new Compare.Equal("name", "Bob")), Mockito.isNull(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2, 3));
+		when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
+		when(service.findIds(eq(new Compare.Equal("name", "Bob")), isNull(), any()))
+				.thenReturn(List.of(1, 2, 3));
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.size(query);
-		Assert.assertEquals(3, provider.getSize());
+		assertEquals(3, provider.getSize());
 	}
 
 	/**
@@ -105,68 +115,68 @@ public class IdBasedDataProviderTest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testFetchWithFilter() {
-		Mockito.when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
-		Mockito.when(service.findIds(Mockito.eq(new Compare.Equal("name", "Bob")), Mockito.isNull(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2, 3));
+		when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
+		when(service.findIds(eq(new Compare.Equal("name", "Bob")), isNull(), any()))
+				.thenReturn(List.of(1, 2, 3));
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.fetch(query);
-		Assert.assertEquals(3, provider.getSize());
+		assertEquals(3, provider.getSize());
 	}
 
 	@Test
 	public void testSizeWithFilterAndSortOrder() {
-		Mockito.when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
-		Mockito.when(query.getSortOrders())
-				.thenReturn(Lists.newArrayList(new QuerySortOrder("name", SortDirection.DESCENDING)));
+		when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
+		when(query.getSortOrders())
+				.thenReturn(List.of(new QuerySortOrder("name", SortDirection.DESCENDING)));
 
-		Mockito.when(service.findIds(Mockito.eq(new Compare.Equal("name", "Bob")), Mockito.isNull(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2, 3));
+		when(service.findIds(eq(new Compare.Equal("name", "Bob")), isNull(), any()))
+				.thenReturn(List.of(1, 2, 3));
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.size(query);
-		Assert.assertEquals(3, provider.getSize());
+		assertEquals(3, provider.getSize());
 
 		provider.fetch(query);
 		ArgumentCaptor<SortOrders> captor = ArgumentCaptor.forClass(SortOrders.class);
-		Mockito.verify(service).fetchByIds(Mockito.eq(Lists.newArrayList(1, 2, 3)), captor.capture(), Mockito.any());
+		verify(service).fetchByIds(eq(List.of(1, 2, 3)), captor.capture(), any());
 
 		SortOrders so = captor.getValue();
-		Assert.assertNotNull(so.getOrderFor("name"));
+		assertNotNull(so.getOrderFor("name"));
 	}
 
 	@Test
 	public void testNextItemId() {
 
-		Mockito.when(service.findIds(Mockito.isNull(), Mockito.isNull(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2, 3));
+		when(service.findIds(isNull(), isNull(), any()))
+				.thenReturn(List.of(1, 2, 3));
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.size(query);
 
 		provider.setCurrentlySelectedId(1);
-		Assert.assertTrue(provider.hasNextItemId());
+		assertTrue(provider.hasNextItemId());
 
 		Integer next = provider.getNextItemId();
-		Assert.assertEquals(2, next.intValue());
-		Assert.assertTrue(provider.hasNextItemId());
+		assertEquals(2, next.intValue());
+		assertTrue(provider.hasNextItemId());
 
 		next = provider.getNextItemId();
-		Assert.assertEquals(3, next.intValue());
-		Assert.assertFalse(provider.hasNextItemId());
+		assertEquals(3, next.intValue());
+		assertFalse(provider.hasNextItemId());
 	}
 
 	@Test
 	public void testPreviousItemId() {
 
-		Mockito.when(service.findIds(Mockito.isNull(), Mockito.isNull(), Mockito.any()))
-				.thenReturn(Lists.newArrayList(1, 2, 3));
+		when(service.findIds(isNull(), isNull(), any()))
+				.thenReturn(List.of(1, 2, 3));
 		provider = new IdBasedDataProvider<>(service, emf.getModel(TestEntity.class));
 		provider.size(query);
 
 		provider.setCurrentlySelectedId(2);
-		Assert.assertTrue(provider.hasPreviousItemId());
+		assertTrue(provider.hasPreviousItemId());
 
 		Integer next = provider.getPreviousItemId();
-		Assert.assertEquals(1, next.intValue());
-		Assert.assertFalse(provider.hasPreviousItemId());
+		assertEquals(1, next.intValue());
+		assertFalse(provider.hasPreviousItemId());
 	}
 
 }

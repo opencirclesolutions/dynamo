@@ -13,14 +13,14 @@
  */
 package com.ocs.dynamo.filter;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
@@ -41,7 +41,7 @@ public class FilterConverterTest extends BaseMockitoTest {
 
 	private EqualsPredicate<TestEntity> f2 = new EqualsPredicate<TestEntity>("test", "test");
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		modelConverter = new FilterConverter<TestEntity>(emf.getModel(TestEntity.class));
 	}

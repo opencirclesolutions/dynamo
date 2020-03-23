@@ -13,11 +13,12 @@
  */
 package com.ocs.dynamo.functional.service;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -52,7 +53,7 @@ public class DomainServiceTest extends BaseIntegrationTest {
 
     Region asia;
 
-    @Before
+    @BeforeEach
     public void setup() {
         europa = new Region("EU", "Europa");
         asia = new Region("AS", "Asia");
@@ -86,28 +87,28 @@ public class DomainServiceTest extends BaseIntegrationTest {
     @Test
     public void testAll() {
         List<Domain> all = domainService.findAll();
-        Assert.assertEquals(12, all.size());
+        assertEquals(12, all.size());
     }
 
     @Test
     public void testFindAllByType() {
         List<? extends Domain> all = domainService.findAllByType(Currency.class);
-        Assert.assertEquals(3, all.size());
+        assertEquals(3, all.size());
     }
 
     @Test
     public void testFindAllCurrencies() {
         List<Currency> all = currencyService.findAll((SortOrder) null);
-        Assert.assertEquals(3, all.size());
+        assertEquals(3, all.size());
     }
 
     @Test
     public void testFindChildren() {
         Region deu = regionService.findByTypeAndUniqueProperty(Region.class, "code", "EU", false);
-        Assert.assertEquals(4, deu.getChildren().size());
+        assertEquals(4, deu.getChildren().size());
         List<Country> countries = domainService.findChildren(deu);
-        Assert.assertEquals(4, countries.size());
+        assertEquals(4, countries.size());
         countries = regionService.findChildren(deu);
-        Assert.assertEquals(4, countries.size());
+        assertEquals(4, countries.size());
     }
 }

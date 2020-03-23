@@ -1,7 +1,10 @@
 package com.ocs.dynamo.ui.component;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -30,15 +33,15 @@ public class URLFieldTest extends BaseMockitoTest {
         URLField field = new URLField(tf, em.getAttributeModel("url"), true);
         field.initContent();
 
-        Assert.assertEquals(tf, field.getTextField());
+        assertEquals(tf, field.getTextField());
 
         field.setPresentationValue(URL);
-        Assert.assertNotNull(field.getLink());
+        assertNotNull(field.getLink());
 
         String href = field.getLink().getHref();
-        Assert.assertEquals(URL, href);
+        assertEquals(URL, href);
 
         field.setPresentationValue(null);
-        Assert.assertNull(field.getLink());
+        assertNull(field.getLink());
     }
 }

@@ -1,10 +1,14 @@
 package com.ocs.dynamo.functional.ui;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.google.common.collect.Lists;
@@ -16,7 +20,6 @@ import com.ocs.dynamo.ui.composite.layout.BaseSplitLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-
 
 /**
  * Test for the MultiDomainEditLayout
@@ -37,19 +40,19 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         // check that first domain class is selected by default
-        Assert.assertEquals(2, layout.getDomainClasses().size());
-        Assert.assertEquals(Country.class, layout.getSelectedDomain());
-        Assert.assertTrue(layout.isDeleteAllowed(Country.class));
+        assertEquals(2, layout.getDomainClasses().size());
+        assertEquals(Country.class, layout.getSelectedDomain());
+        assertTrue(layout.isDeleteAllowed(Country.class));
 
         layout.selectDomain(Region.class);
 
         BaseSplitLayout<?, ?> splitLayout = layout.getSplitLayout();
-        Assert.assertNotNull(splitLayout);
+        assertNotNull(splitLayout);
         splitLayout.build();
 
         // adding is possible
-        Assert.assertNotNull(splitLayout.getAddButton());
-        Assert.assertTrue(splitLayout.getAddButton().isVisible());
+        assertNotNull(splitLayout.getAddButton());
+        assertTrue(splitLayout.getAddButton().isVisible());
 
         // test reload
         splitLayout.reload();
@@ -81,8 +84,8 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
         splitLayout.build();
 
         // adding is not possible
-        Assert.assertNotNull(splitLayout.getAddButton());
-        Assert.assertFalse(splitLayout.getAddButton().isVisible());
+        assertNotNull(splitLayout.getAddButton());
+        assertFalse(splitLayout.getAddButton().isVisible());
 
         // test the reload method
         layout.reload();
@@ -91,7 +94,7 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
     /**
      * Test what happens if there is no service class defined
      */
-    //@Test(expected = MethodException.class)
+    // @Test(expected = MethodException.class)
     public void testCreateServiceMissing() {
         List<Class<? extends Domain>> list = new ArrayList<>();
         list.add(TestDomain.class);

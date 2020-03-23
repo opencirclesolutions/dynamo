@@ -1,11 +1,12 @@
 package com.ocs.dynamo.ui.component;
 
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
@@ -31,7 +32,7 @@ public class AddNewValueDialogTest extends BaseMockitoTest {
 
     private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    @Before
+    @BeforeEach
     public void setup() {
         MockVaadin.setup();
         MockUtil.mockMessageService(messageService);

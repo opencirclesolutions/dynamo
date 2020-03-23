@@ -1,9 +1,13 @@
 package com.ocs.dynamo.filter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
@@ -23,8 +27,8 @@ public class DynamoFilterUtilTest {
 		DynamoFilterUtil.replaceFilter(and, new Compare.Equal("c", 13), "b", false);
 
 		Filter f = and.getFilters().get(1);
-		Assert.assertTrue(f instanceof Compare.Equal);
-		Assert.assertEquals("c", ((Compare.Equal) f).getPropertyId());
+		assertTrue(f instanceof Compare.Equal);
+		assertEquals("c", ((Compare.Equal) f).getPropertyId());
 	}
 
 	/**
@@ -38,12 +42,12 @@ public class DynamoFilterUtilTest {
 		DynamoFilterUtil.replaceFilter(and, new Compare.Equal("c", 13), "a", false);
 
 		Filter f0 = and.getFilters().get(0);
-		Assert.assertTrue(f0 instanceof Compare.Equal);
-		Assert.assertEquals("c", ((Compare.Equal) f0).getPropertyId());
+		assertTrue(f0 instanceof Compare.Equal);
+		assertEquals("c", ((Compare.Equal) f0).getPropertyId());
 
 		Filter f1 = and.getFilters().get(1);
-		Assert.assertTrue(f1 instanceof Compare.Equal);
-		Assert.assertEquals("c", ((Compare.Equal) f1).getPropertyId());
+		assertTrue(f1 instanceof Compare.Equal);
+		assertEquals("c", ((Compare.Equal) f1).getPropertyId());
 	}
 
 	/**
@@ -57,12 +61,12 @@ public class DynamoFilterUtilTest {
 		DynamoFilterUtil.replaceFilter(and, new Compare.Equal("c", 13), "a", true);
 
 		Filter f0 = and.getFilters().get(0);
-		Assert.assertTrue(f0 instanceof Compare.Equal);
-		Assert.assertEquals("c", ((Compare.Equal) f0).getPropertyId());
+		assertTrue(f0 instanceof Compare.Equal);
+		assertEquals("c", ((Compare.Equal) f0).getPropertyId());
 
 		Filter f1 = and.getFilters().get(1);
-		Assert.assertTrue(f1 instanceof Compare.Equal);
-		Assert.assertEquals("a", ((Compare.Equal) f1).getPropertyId());
+		assertTrue(f1 instanceof Compare.Equal);
+		assertEquals("a", ((Compare.Equal) f1).getPropertyId());
 	}
 
 	@Test
@@ -73,8 +77,8 @@ public class DynamoFilterUtilTest {
 		DynamoFilterUtil.replaceFilter(not, new Compare.Equal("d", 13), "a", false);
 
 		Filter f = not.getFilter();
-		Assert.assertTrue(f instanceof Compare.Equal);
-		Assert.assertEquals("d", ((Compare.Equal) f).getPropertyId());
+		assertTrue(f instanceof Compare.Equal);
+		assertEquals("d", ((Compare.Equal) f).getPropertyId());
 	}
 
 	@Test
@@ -88,10 +92,10 @@ public class DynamoFilterUtilTest {
 
 		// get the AND filter
 		Filter f = or.getFilters().get(1);
-		Assert.assertTrue(f instanceof And);
+		assertTrue(f instanceof And);
 
 		And inner = (And) ((And) f).getFilters().get(0);
-		Assert.assertEquals("f", ((PropertyFilter) inner.getFilters().get(0)).getPropertyId());
+		assertEquals("f", ((PropertyFilter) inner.getFilters().get(0)).getPropertyId());
 	}
 
 	@Test
@@ -99,11 +103,11 @@ public class DynamoFilterUtilTest {
 
 		com.ocs.dynamo.filter.Like like = new com.ocs.dynamo.filter.Like("prop1", "someString");
 		com.ocs.dynamo.filter.Filter f1 = DynamoFilterUtil.extractFilter(like, "prop1");
-		Assert.assertNotNull(f1);
+		assertNotNull(f1);
 
 		// wrong property
 		com.ocs.dynamo.filter.Filter f2 = DynamoFilterUtil.extractFilter(like, "prop2");
-		Assert.assertNull(f2);
+		assertNull(f2);
 	}
 
 	@Test
@@ -111,11 +115,11 @@ public class DynamoFilterUtilTest {
 
 		Between between = new Between("prop1", 100, 200);
 		com.ocs.dynamo.filter.Filter f1 = DynamoFilterUtil.extractFilter(between, "prop1");
-		Assert.assertNotNull(f1);
+		assertNotNull(f1);
 
 		// wrong property
 		com.ocs.dynamo.filter.Filter f2 = DynamoFilterUtil.extractFilter(between, "prop2");
-		Assert.assertNull(f2);
+		assertNull(f2);
 	}
 
 	@Test
@@ -127,15 +131,15 @@ public class DynamoFilterUtilTest {
 
 		// first operand
 		com.ocs.dynamo.filter.Filter f1 = DynamoFilterUtil.extractFilter(and, "prop1");
-		Assert.assertNotNull(f1);
+		assertNotNull(f1);
 
 		// second operand
 		com.ocs.dynamo.filter.Filter f3 = DynamoFilterUtil.extractFilter(and, "prop3");
-		Assert.assertNotNull(f3);
+		assertNotNull(f3);
 
 		// wrong property
 		com.ocs.dynamo.filter.Filter f2 = DynamoFilterUtil.extractFilter(compare, "prop2");
-		Assert.assertNull(f2);
+		assertNull(f2);
 	}
 
 	@Test
@@ -147,7 +151,7 @@ public class DynamoFilterUtilTest {
 
 		// first operand
 		com.ocs.dynamo.filter.Filter f1 = DynamoFilterUtil.extractFilter(and, "prop1");
-		Assert.assertTrue(f1 instanceof In);
+		assertTrue(f1 instanceof In);
 	}
 
 	@Test
@@ -159,7 +163,7 @@ public class DynamoFilterUtilTest {
 
 		// first operand
 		com.ocs.dynamo.filter.Filter f1 = DynamoFilterUtil.extractFilter(and, "prop1");
-		Assert.assertTrue(f1 instanceof Contains);
+		assertTrue(f1 instanceof Contains);
 	}
 
 	@Test
@@ -167,11 +171,11 @@ public class DynamoFilterUtilTest {
 
 		com.ocs.dynamo.filter.Compare.Equal compare = new com.ocs.dynamo.filter.Compare.Equal("prop1", "someString");
 		com.ocs.dynamo.filter.Filter f1 = DynamoFilterUtil.extractFilter(compare, "prop1");
-		Assert.assertNotNull(f1);
+		assertNotNull(f1);
 
 		// wrong property
 		com.ocs.dynamo.filter.Filter f2 = DynamoFilterUtil.extractFilter(compare, "prop2");
-		Assert.assertNull(f2);
+		assertNull(f2);
 	}
 
 	@Test
@@ -184,13 +188,13 @@ public class DynamoFilterUtilTest {
 		com.ocs.dynamo.filter.And and2 = new com.ocs.dynamo.filter.And(and, compare2);
 
 		List<Filter> flattened2 = DynamoFilterUtil.flattenAnd(and);
-		Assert.assertEquals(2, flattened2.size());
-		Assert.assertEquals(compare, flattened2.get(0));
+		assertEquals(2, flattened2.size());
+		assertEquals(compare, flattened2.get(0));
 
 		List<Filter> flattened = DynamoFilterUtil.flattenAnd(and2);
-		Assert.assertEquals(3, flattened.size());
-		Assert.assertEquals(compare, flattened.get(0));
-		Assert.assertEquals(compare2, flattened.get(2));
+		assertEquals(3, flattened.size());
+		assertEquals(compare, flattened.get(0));
+		assertEquals(compare2, flattened.get(2));
 	}
 
 	@Test
@@ -204,26 +208,26 @@ public class DynamoFilterUtilTest {
 
 		// remove a filter and check there are still 2 left
 		DynamoFilterUtil.removeFilters(and, "prop1");
-		Assert.assertEquals(2, and.getFilters().size());
+		assertEquals(2, and.getFilters().size());
 
 		and = new And(compare1, compare2, compare3);
 		// remove a non-existing filter and check there are still 2 left
 		DynamoFilterUtil.removeFilters(and, "prop4");
-		Assert.assertEquals(3, and.getFilters().size());
+		assertEquals(3, and.getFilters().size());
 
 		// remove nested filters and check that the empty filter on the top level is
 		// removed
 		And nested = new And(compare1, new And(compare2, compare3));
 		DynamoFilterUtil.removeFilters(nested, "prop2", "prop3");
-		Assert.assertEquals(1, nested.getFilters().size());
+		assertEquals(1, nested.getFilters().size());
 
 		and = new And(compare1, new Not(compare2));
 		DynamoFilterUtil.removeFilters(and, "prop2");
-		Assert.assertEquals(1, and.getFilters().size());
+		assertEquals(1, and.getFilters().size());
 
 		and = new And(compare1, new Not(new And(compare2, compare3)));
 		DynamoFilterUtil.removeFilters(and, "prop2", "prop3");
-		Assert.assertEquals(1, and.getFilters().size());
+		assertEquals(1, and.getFilters().size());
 	}
 
 	/**
@@ -240,20 +244,20 @@ public class DynamoFilterUtilTest {
 		// clauses
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);
 		Filter replaced = and.getFilters().get(0);
-		Assert.assertTrue(replaced instanceof Or);
+		assertTrue(replaced instanceof Or);
 		Or or = (Or) replaced;
-		Assert.assertTrue(or.getFilters().get(0) instanceof Contains);
+		assertTrue(or.getFilters().get(0) instanceof Contains);
 		Contains ct = (Contains) or.getFilters().get(0);
-		Assert.assertEquals("abc", ct.getValue());
+		assertEquals("abc", ct.getValue());
 
 		// now once more but now without the intermediate OR filter
 		and = new And(new Compare.Equal("tags", "def"));
 
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);
 		replaced = and.getFilters().get(0);
-		Assert.assertTrue(replaced instanceof Contains);
+		assertTrue(replaced instanceof Contains);
 		ct = (Contains) replaced;
-		Assert.assertEquals("def", ct.getValue());
+		assertEquals("def", ct.getValue());
 
 	}
 
@@ -270,15 +274,15 @@ public class DynamoFilterUtilTest {
 		// check that the equals filter is replaced by an "in" filter
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);
 		Filter replaced = and.getFilters().get(0);
-		Assert.assertTrue(replaced instanceof In);
+		assertTrue(replaced instanceof In);
 		In in = (In) replaced;
-		Assert.assertEquals(2, in.getValues().size());
+		assertEquals(2, in.getValues().size());
 
 		// if there is just one value then no replacement is needed
 		and = new And(new Compare.Equal("testEntity", new TestEntity()));
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);
 		replaced = and.getFilters().get(0);
-		Assert.assertTrue(replaced instanceof Compare.Equal);
+		assertTrue(replaced instanceof Compare.Equal);
 	}
 
 	@Test
@@ -290,15 +294,15 @@ public class DynamoFilterUtilTest {
 		// check that the equals filter is replaced by an "in" filter
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);
 		Filter replaced = and.getFilters().get(0);
-		Assert.assertTrue(replaced instanceof In);
+		assertTrue(replaced instanceof In);
 		In in = (In) replaced;
-		Assert.assertEquals(2, in.getValues().size());
+		assertEquals(2, in.getValues().size());
 
 		// if there is just one value then no replacement is needed
 		and = new And(new Compare.Equal("testEntity", new TestEntity()));
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);
 		replaced = and.getFilters().get(0);
-		Assert.assertTrue(replaced instanceof Compare.Equal);
+		assertTrue(replaced instanceof Compare.Equal);
 	}
 
 }

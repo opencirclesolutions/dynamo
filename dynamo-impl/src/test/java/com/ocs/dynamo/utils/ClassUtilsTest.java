@@ -13,11 +13,12 @@
  */
 package com.ocs.dynamo.utils;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -27,13 +28,12 @@ import java.util.Map;
 import javax.persistence.Entity;
 import javax.validation.constraints.Size;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.utils.ClassUtils;
 
 public class ClassUtilsTest {
 
@@ -273,11 +273,11 @@ public class ClassUtilsTest {
         assertNull(ClassUtils.getFieldValueAsString(entity, "age"));
     }
 
-    @Test(expected = OCSRuntimeException.class)
+    @Test
     public void testGetFieldValueDoesntExists() {
         TestEntity entity = new TestEntity();
         entity.setAge(12L);
-        ClassUtils.getFieldValue(entity, "age2");
+        assertThrows(OCSRuntimeException.class, () -> ClassUtils.getFieldValue(entity, "age2"));
     }
 
     @Test
@@ -358,10 +358,10 @@ public class ClassUtilsTest {
         assertEquals(12L, entity.getAge().longValue());
     }
 
-    @Test(expected = OCSRuntimeException.class)
+    @Test
     public void testSetFieldValueDoenstExist() {
         TestEntity entity = new TestEntity();
-        ClassUtils.setFieldValue(entity, "age2", 12L);
+        assertThrows(OCSRuntimeException.class, () -> ClassUtils.setFieldValue(entity, "age2", 12L));
     }
 
     @Test

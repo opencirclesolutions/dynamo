@@ -1,13 +1,18 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.CascadeEntity;
@@ -50,7 +55,7 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
     private boolean detailsTabCreated = false;
 
-    @Before
+    @BeforeEach
     public void setup() {
         e1 = new TestEntity("Bob", 11L);
         e1 = testEntityService.save(e1);
@@ -69,33 +74,33 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions().setShowIterationButtons(true));
         layout.build();
 
-        Assert.assertTrue(layout.getAddButton().isVisible());
-        Assert.assertTrue(layout.getEditButton().isVisible());
-        Assert.assertFalse(layout.getRemoveButton().isVisible());
+        assertTrue(layout.getAddButton().isVisible());
+        assertTrue(layout.getEditButton().isVisible());
+        assertFalse(layout.getRemoveButton().isVisible());
 
-        Assert.assertEquals("name", layout.getSortOrders().get(0).getSorted());
+        assertEquals("name", layout.getSortOrders().get(0).getSorted());
 
         TestEntity entity = layout.createEntity();
-        Assert.assertNotNull(entity);
+        assertNotNull(entity);
 
         layout.getGridWrapper().forceSearch();
-        Assert.assertEquals(3, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(3, layout.getGridWrapper().getDataProviderSize());
 
         layout.select(e3);
         layout.detailsMode(e3);
 
         // click the next button
-        Assert.assertEquals(2, layout.getEditForm().getNextButtons().size());
+        assertEquals(2, layout.getEditForm().getNextButtons().size());
 
         layout.getEditForm().getNextButtons().iterator().next().click();
-        Assert.assertEquals(e2, layout.getEditForm().getEntity());
-        Assert.assertTrue(layout.hasPrevEntity());
-        Assert.assertTrue(layout.hasNextEntity());
+        assertEquals(e2, layout.getEditForm().getEntity());
+        assertTrue(layout.hasPrevEntity());
+        assertTrue(layout.hasNextEntity());
 
         // click the previous button
-        Assert.assertEquals(2, layout.getEditForm().getPreviousButtons().size());
+        assertEquals(2, layout.getEditForm().getPreviousButtons().size());
         layout.getEditForm().getPreviousButtons().iterator().next().click();
-        Assert.assertEquals(e3, layout.getEditForm().getEntity());
+        assertEquals(e3, layout.getEditForm().getEntity());
     }
 
     /**
@@ -126,12 +131,12 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         // click add button, verify that we just get a simple edit screen and not
         // the tab layout
         layout.getAddButton().click();
-        Assert.assertTrue(detailsTabCreated);
+        assertTrue(detailsTabCreated);
 
         // select the item and verify that the proper details tab is created
         layout.setSelectedItem(e1);
         layout.getEditButton().click();
-        Assert.assertTrue(detailsTabCreated);
+        assertTrue(detailsTabCreated);
 
         // select another item
         layout.searchMode();
@@ -147,13 +152,13 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
         // click the add button and verify that a new item is added
         layout.getAddButton().click();
-        Assert.assertNotNull(layout.getSelectedItem());
+        assertNotNull(layout.getSelectedItem());
 
-        Assert.assertFalse(layout.isInSearchMode());
-        Assert.assertFalse(layout.getEditForm().isViewMode());
+        assertFalse(layout.isInSearchMode());
+        assertFalse(layout.getEditForm().isViewMode());
 
         layout.getEditForm().getSaveButtons().get(0).click();
-        Assert.assertFalse(layout.isInSearchMode());
+        assertFalse(layout.isInSearchMode());
     }
 
     @Test
@@ -163,13 +168,13 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
         // click the add button and verify that a new item is added
         layout.getAddButton().click();
-        Assert.assertNotNull(layout.getSelectedItem());
+        assertNotNull(layout.getSelectedItem());
 
-        Assert.assertFalse(layout.isInSearchMode());
-        Assert.assertFalse(layout.getEditForm().isViewMode());
+        assertFalse(layout.isInSearchMode());
+        assertFalse(layout.getEditForm().isViewMode());
 
         layout.getEditForm().getSaveButtons().get(0).click();
-        Assert.assertFalse(layout.isInSearchMode());
+        assertFalse(layout.isInSearchMode());
     }
 
     @Test
@@ -180,17 +185,17 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(options);
         layout.build();
 
-        Assert.assertTrue(layout.getEditButton().isVisible());
+        assertTrue(layout.getEditButton().isVisible());
 
         // select an item and edit
         layout.setSelectedItem(e1);
         layout.getEditButton().click();
-        Assert.assertEquals(e1, layout.getSelectedItem());
-        Assert.assertFalse(layout.getEditForm().isViewMode());
+        assertEquals(e1, layout.getSelectedItem());
+        assertFalse(layout.getEditForm().isViewMode());
 
         // save changes and check that we go back to search mode
         layout.getEditForm().getSaveButtons().get(0).click();
-        Assert.assertTrue(layout.isInSearchMode());
+        assertTrue(layout.isInSearchMode());
     }
 
     @Test
@@ -201,20 +206,20 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(options);
         layout.build();
 
-        Assert.assertTrue(layout.getEditButton().isVisible());
+        assertTrue(layout.getEditButton().isVisible());
 
         // select an item and edit
         layout.setSelectedItem(e1);
         layout.getEditButton().click();
-        Assert.assertEquals(e1, layout.getSelectedItem());
-        Assert.assertTrue(layout.getEditForm().isViewMode());
+        assertEquals(e1, layout.getSelectedItem());
+        assertTrue(layout.getEditForm().isViewMode());
         layout.getEditForm().getEditButtons().get(0).click();
-        Assert.assertFalse(layout.getEditForm().isViewMode());
+        assertFalse(layout.getEditForm().isViewMode());
 
         // save changes and check that are back on the detail screen is view mode
         layout.getEditForm().getSaveButtons().get(0).click();
-        Assert.assertTrue(layout.getEditForm().isViewMode());
-        Assert.assertFalse(layout.isInSearchMode());
+        assertTrue(layout.getEditForm().isViewMode());
+        assertFalse(layout.isInSearchMode());
     }
 
     /**
@@ -231,9 +236,9 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         layout.build();
         layout.getGridWrapper().forceSearch();
 
-        Assert.assertEquals("name", layout.getSortOrders().get(0).getSorted());
-        Assert.assertEquals(SortDirection.ASCENDING, layout.getSortOrders().get(0).getDirection());
-        Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+        assertEquals("name", layout.getSortOrders().get(0).getSorted());
+        assertEquals(SortDirection.ASCENDING, layout.getSortOrders().get(0).getDirection());
+        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
     }
 
     /**
@@ -244,7 +249,7 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(new FormOptions());
         layout.build();
         layout.select(e1);
-        Assert.assertEquals(e1, layout.getSelectedItem());
+        assertEquals(e1, layout.getSelectedItem());
     }
 
     /**
@@ -258,7 +263,7 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         SimpleSearchLayout<Integer, TestEntity> layout = createLayout(options);
         layout.build();
 
-        Assert.assertTrue(layout.getRemoveButton().isVisible());
+        assertTrue(layout.getRemoveButton().isVisible());
 
         layout.setSelectedItem(e1);
         layout.checkComponentState(layout.getSelectedItem());
@@ -277,12 +282,12 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         layout.search();
         layout.getGridWrapper().forceSearch();
 
-        Assert.assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
 
         // clear all search results
         layout.getSearchForm().getClearButton().click();
         layout.getGridWrapper().forceSearch();
-        Assert.assertEquals(3, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(3, layout.getGridWrapper().getDataProviderSize());
     }
 
     @Test
@@ -292,7 +297,7 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
         layout.setSearchValue("someEnum", TestEnum.A);
         layout.search();
-        Assert.assertEquals(0, layout.getGridWrapper().getDataProviderSize());
+        assertEquals(0, layout.getGridWrapper().getDataProviderSize());
     }
 
     /**
@@ -302,11 +307,11 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
     @SuppressWarnings("unchecked")
     public void testSimpleSearchLayout_Cascade() {
 
-        Assert.assertEquals(3, testEntityService.findAll().size());
+        assertEquals(3, testEntityService.findAll().size());
 
         FormOptions fo = new FormOptions();
         EntityModel<CascadeEntity> model = entityModelFactory.getModel(CascadeEntity.class);
-        Assert.assertEquals(1, model.getAttributeModel("testEntity").getCascadeAttributes().size());
+        assertEquals(1, model.getAttributeModel("testEntity").getCascadeAttributes().size());
 
         SimpleSearchLayout<Integer, CascadeEntity> layout = new SimpleSearchLayout<Integer, CascadeEntity>(cascadeEntityService,
                 entityModelFactory.getModel(CascadeEntity.class), QueryType.ID_BASED, fo, null);
@@ -322,11 +327,11 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         QuickAddEntityComboBox<Integer, TestEntity2> box2 = (QuickAddEntityComboBox<Integer, TestEntity2>) (Object) layout.getSearchForm()
                 .getGroups().get("testEntity2").getField();
         EqualsPredicate<TestEntity2> equal = (EqualsPredicate<TestEntity2>) box2.getAdditionalFilter();
-        Assert.assertEquals("testEntity", equal.getProperty());
+        assertEquals("testEntity", equal.getProperty());
 
         // clear filter and verify cascaded filter is removed as well
         layout.setSearchValue("testEntity", null);
-        Assert.assertNull(box2.getAdditionalFilter());
+        assertNull(box2.getAdditionalFilter());
     }
 
     @Test
@@ -336,24 +341,24 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
         // no search results table yet
         Component label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Text.class);
-        Assert.assertNotNull(label);
+        assertNotNull(label);
 
         // perform a search, verify the label is removed and replaced by a search
         // results table
         layout.getSearchForm().getSearchButton().click();
         label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Text.class);
-        Assert.assertNull(label);
+        assertNull(label);
 
         ServiceBasedGridWrapper<?, ?> wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(),
                 ServiceBasedGridWrapper.class);
-        Assert.assertNotNull(wrapper);
+        assertNotNull(wrapper);
 
         // press the clear button and verify the layout is reset
         layout.getSearchForm().getClearButton().click();
         label = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), Text.class);
-        Assert.assertNotNull(label);
+        assertNotNull(label);
         wrapper = VaadinUtils.getFirstChildOfClass(layout.getSearchResultsLayout(), ServiceBasedGridWrapper.class);
-        Assert.assertNull(wrapper);
+        assertNull(wrapper);
     }
 
     private SimpleSearchLayout<Integer, TestEntity> createLayout(FormOptions fo) {

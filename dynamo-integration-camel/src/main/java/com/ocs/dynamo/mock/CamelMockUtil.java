@@ -13,9 +13,13 @@
  */
 package com.ocs.dynamo.mock;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+
 import org.apache.camel.Message;
 import org.mockito.ArgumentCaptor;
-import org.mockito.Mockito;
 
 /**
  * Utility class for mock functionality related to Apache Camel
@@ -38,7 +42,7 @@ public final class CamelMockUtil {
 	 */
 	public static <X> X captureBodySet(Class<X> clazz, Message message) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-		Mockito.verify(message).setBody(captor.capture());
+		verify(message).setBody(captor.capture());
 		return captor.getValue();
 	}
 
@@ -52,7 +56,7 @@ public final class CamelMockUtil {
 	 */
 	public static <X> X captureHeaderSet(Class<X> clazz, String name, Message message) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-		Mockito.verify(message).setHeader(Mockito.eq(name), captor.capture());
+		verify(message).setHeader(eq(name), captor.capture());
 		return captor.getValue();
 	}
 
@@ -63,6 +67,6 @@ public final class CamelMockUtil {
 	 * @param message the message
 	 */
 	public static void verifyHeaderNotSet(String name, Message message) {
-		Mockito.verify(message, Mockito.times(0)).setHeader(Mockito.eq(name), Mockito.any());
+		verify(message, times(0)).setHeader(eq(name), any());
 	}
 }

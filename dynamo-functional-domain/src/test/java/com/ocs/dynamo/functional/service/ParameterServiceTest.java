@@ -1,8 +1,10 @@
 package com.ocs.dynamo.functional.service;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -26,7 +28,7 @@ public class ParameterServiceTest extends BaseIntegrationTest {
 
     private Parameter insufficientFunds;
 
-    @Before
+    @BeforeEach
     public void setup() {
         maxPrograms = new Parameter();
         maxPrograms.setName("maximumPrograms");
@@ -49,23 +51,23 @@ public class ParameterServiceTest extends BaseIntegrationTest {
 
     @Test
     public void returnNullWhenIncorrectValue() {
-        Assert.assertNull(parameterService.getValueAsString("showMargins"));
-        Assert.assertNull(parameterService.getValueAsInteger("insufficientFunds"));
-        Assert.assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maximumPrograms"));
+        assertNull(parameterService.getValueAsString("showMargins"));
+        assertNull(parameterService.getValueAsInteger("insufficientFunds"));
+        assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maximumPrograms"));
     }
 
     @Test
     public void returnCorrectValueAndType() {
-        Assert.assertEquals(Integer.valueOf(12), parameterService.getValueAsInteger("maximumPrograms"));
-        Assert.assertEquals(Boolean.valueOf(true), parameterService.getValueAsBoolean("showMargins"));
-        Assert.assertEquals("Insufficient funds", parameterService.getValueAsString("insufficientFunds"));
+        assertEquals(Integer.valueOf(12), parameterService.getValueAsInteger("maximumPrograms"));
+        assertEquals(Boolean.valueOf(true), parameterService.getValueAsBoolean("showMargins"));
+        assertEquals("Insufficient funds", parameterService.getValueAsString("insufficientFunds"));
     }
 
     @Test
     public void returnNullWhenNoParameterFound() {
-        Assert.assertNull(parameterService.getValueAsString("maverick"));
-        Assert.assertNull(parameterService.getValueAsInteger("maverick"));
-        Assert.assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maverick"));
+        assertNull(parameterService.getValueAsString("maverick"));
+        assertNull(parameterService.getValueAsInteger("maverick"));
+        assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maverick"));
     }
 
 }

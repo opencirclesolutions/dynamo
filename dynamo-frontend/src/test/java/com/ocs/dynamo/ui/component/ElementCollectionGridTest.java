@@ -13,13 +13,13 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.util.List;
 import java.util.Set;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -38,7 +38,7 @@ public class ElementCollectionGridTest extends FrontendIntegrationTest {
     @Autowired
     private EntityModelFactory emf;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         TestEntity e1 = new TestEntity("Bob", 12L);
         testEntityService.save(e1);

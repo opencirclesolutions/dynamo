@@ -1,12 +1,15 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.Mockito.when;
+
 import java.util.Comparator;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.google.common.collect.Lists;
@@ -22,7 +25,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class DetailsEditLayoutTest extends BaseMockitoTest {
- 
+
     private EntityModelFactory factory = new EntityModelFactoryImpl();
 
     @Mock
@@ -39,12 +42,12 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 
     private boolean detailButtonBarPostconstruct = false;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockVaadin.setup();
         e1 = new TestEntity(1, "Kevin", 12L);
         e2 = new TestEntity(2, "Bob", 14L);
-        Mockito.when(service.getEntityClass()).thenReturn(TestEntity.class);
+        when(service.getEntityClass()).thenReturn(TestEntity.class);
     }
 
     /**
@@ -56,37 +59,37 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 
         DetailsEditLayout<Integer, TestEntity> layout = createLayout(em, em.getAttributeModel("testEntities"), false,
                 new FormOptions().setShowRemoveButton(true));
-        Assert.assertTrue(layout.getAddButton().isVisible());
-        Assert.assertTrue(buttonBarPostconstruct);
+        assertTrue(layout.getAddButton().isVisible());
+        assertTrue(buttonBarPostconstruct);
 
         layout.setValue(Lists.newArrayList(e1, e2));
-        Assert.assertTrue(detailButtonBarPostconstruct);
+        assertTrue(detailButtonBarPostconstruct);
 
-        Assert.assertEquals(2, layout.getFormCount().intValue());
+        assertEquals(2, layout.getFormCount().intValue());
 
         layout.getAddButton().click();
-        Assert.assertEquals(3, layout.getFormCount().intValue());
+        assertEquals(3, layout.getFormCount().intValue());
 
         //
         layout.setDeleteEnabled(0, false);
         @SuppressWarnings("rawtypes")
         FormContainer container = layout.getFormContainer(0);
-        Assert.assertFalse(container.getDeleteButton().isEnabled());
+        assertFalse(container.getDeleteButton().isEnabled());
 
         // out of bounds
         layout.setDeleteEnabled(4, false);
 
         layout.setDeleteVisible(0, false);
-        Assert.assertFalse(container.getDeleteButton().isVisible());
+        assertFalse(container.getDeleteButton().isVisible());
 
         // disable field
         layout.setFieldEnabled(0, "age", false);
 
         // get first entity (sorted by name, some "Bob" comes first)
         TestEntity t1 = layout.getEntity(0);
-        Assert.assertEquals(e2, t1);
+        assertEquals(e2, t1);
 
-        Assert.assertTrue(layout.validateAllFields());
+        assertTrue(layout.validateAllFields());
     }
 
     /**
@@ -100,7 +103,7 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
                 new FormOptions().setDetailsGridSearchMode(true));
 
         // adding is not possible
-        Assert.assertFalse(layout.getAddButton().isVisible());
+        assertFalse(layout.getAddButton().isVisible());
     }
 
     private DetailsEditLayout<Integer, TestEntity> createLayout(EntityModel<TestEntity> em, AttributeModel am, boolean viewMode,

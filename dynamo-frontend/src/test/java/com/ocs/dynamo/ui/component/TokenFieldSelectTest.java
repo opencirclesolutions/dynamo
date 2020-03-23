@@ -70,10 +70,10 @@
 //
 //        // verify that 3 items have been loaded
 //        Mockito.verify(service).find(null, new SortOrder("id"));
-//        Assert.assertEquals(3, select.getComboBox().getDataProviderSize());
+//        assertEquals(3, select.getComboBox().getDataProviderSize());
 //
 //        // quick add must be possible
-//        Assert.assertTrue(select.getAddButton().isVisible());
+//        assertTrue(select.getAddButton().isVisible());
 //
 //        // bring up the add dialog
 //        ArgumentCaptor<AddNewValueDialog> captor = ArgumentCaptor.forClass(AddNewValueDialog.class);
@@ -88,7 +88,7 @@
 //        dialog.getOkButton().click();
 //
 //        // verify that an extra item has been added
-//        Assert.assertEquals(4, select.getComboBox().getDataProviderSize());
+//        assertEquals(4, select.getComboBox().getDataProviderSize());
 //
 //    }
 //
@@ -105,7 +105,7 @@
 //        select.initContent();
 //        MockUtil.injectUI(select, ui);
 //
-//        Assert.assertNull(select.getAddButton());
+//        assertNull(select.getAddButton());
 //    }
 //
 //    @Test
@@ -122,7 +122,7 @@
 //        select.getComboBox().setValue(t1);
 //
 //        List<? extends Tokenizable> list = select.getTokenField().getValue();
-//        Assert.assertEquals(1, list.size());
-//        Assert.assertEquals(t1.getId().longValue(), list.get(0).getIdentifier());
+//        assertEquals(1, list.size());
+//        assertEquals(t1.getId().longValue(), list.get(0).getIdentifier());
 //    }
 //}

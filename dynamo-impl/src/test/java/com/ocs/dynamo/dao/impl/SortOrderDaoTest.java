@@ -13,11 +13,12 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
@@ -57,9 +58,9 @@ public class SortOrderDaoTest {
         assertEquals("property", order.getProperty());
     }
 
-    @Test(expected = OCSRuntimeException.class)
+    @Test()
     public void testPropertyAndDirectionFromString_Wrong() {
-        new SortOrder("property", Direction.fromString("AS"));
+        assertThrows(OCSRuntimeException.class, () -> new SortOrder("property", Direction.fromString("AS")));
     }
 
     @Test

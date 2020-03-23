@@ -13,21 +13,22 @@
  */
 package com.ocs.dynamo.test;
 
+import static org.junit.jupiter.api.Assertions.fail;
+
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import org.junit.Assert;
-import org.junit.BeforeClass;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.junit4.AbstractTransactionalJUnit4SpringContextTests;
-import org.springframework.test.context.junit4.SpringRunner;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.TransactionDefinition;
 import org.springframework.transaction.TransactionStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.DefaultTransactionDefinition;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -37,9 +38,10 @@ import com.ocs.dynamo.constants.DynamoConstants;
  * @author Bas Rutten
  *
  */
-@RunWith(SpringRunner.class)
+@ExtendWith(SpringExtension.class)
 @TestPropertySource(value = "classpath:application-it.properties")
-public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4SpringContextTests {
+@Transactional
+public abstract class BaseIntegrationTest {
 
     private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationTest.class);
 
@@ -49,7 +51,7 @@ public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4Spr
     @PersistenceContext
     protected EntityManager entityManager;
 
-    @BeforeClass
+    @BeforeAll
     public static void beforeClass() {
         // make sure the test service locator is loaded
         System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
@@ -71,7 +73,7 @@ public abstract class BaseIntegrationTest extends AbstractTransactionalJUnit4Spr
         try {
             Thread.sleep(miliSeconds);
         } catch (InterruptedException ex) {
-            Assert.fail("Waiting period was interrupted");
+            fail("Waiting period was interrupted");
         }
     }
 

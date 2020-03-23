@@ -1,10 +1,11 @@
 package com.ocs.dynamo.ui.utils;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -18,78 +19,74 @@ import com.ocs.dynamo.test.MockUtil;
 
 public class CompareUtilsTest extends BaseMockitoTest {
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	@Mock
-	private MessageService messageService = new MessageServiceImpl();
+    @Mock
+    private MessageService messageService = new MessageServiceImpl();
 
-	@Before
-	public void setUp() {
-		MockUtil.mockMessageService(messageService);
-	}
+    @BeforeEach
+    public void setUp() {
+        MockUtil.mockMessageService(messageService);
+    }
 
-	@Test
-	public void testCompare() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
+    @Test
+    public void testCompare() {
+        TestEntity e1 = new TestEntity();
+        TestEntity e2 = new TestEntity();
 
-		// there are no changes
-		List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
-		Assert.assertEquals(0, changes.size());
+        // there are no changes
+        List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
+        assertEquals(0, changes.size());
 
-		e1.setAge(12L);
-		changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.changed", changes.get(0));
+        e1.setAge(12L);
+        changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
+        assertEquals(1, changes.size());
+        assertEquals("ocs.value.changed", changes.get(0));
 
-		e1.setAge(null);
-		e2.setName("Kevin");
-		changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.changed", changes.get(0));
-	}
+        e1.setAge(null);
+        e2.setName("Kevin");
+        changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
+        assertEquals(1, changes.size());
+        assertEquals("ocs.value.changed", changes.get(0));
+    }
 
-	@Test
-	public void testCompare_Ignore() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
+    @Test
+    public void testCompare_Ignore() {
+        TestEntity e1 = new TestEntity();
+        TestEntity e2 = new TestEntity();
 
-		e1.setName("Bob");
+        e1.setName("Bob");
 
-		// name has changed
-		List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
-		Assert.assertEquals(1, changes.size());
+        // name has changed
+        List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
+        assertEquals(1, changes.size());
 
-		// ignore the name change
-		changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService, "name");
-		Assert.assertEquals(0, changes.size());
-	}
+        // ignore the name change
+        changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService, "name");
+        assertEquals(0, changes.size());
+    }
 
-	@Test
-	public void testCompare_CollectionRemove() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
+    @Test
+    public void testCompare_CollectionRemove() {
+        TestEntity e1 = new TestEntity();
+        TestEntity e2 = new TestEntity();
 
-		e1.addTestEntity2(new TestEntity2());
+        e1.addTestEntity2(new TestEntity2());
 
-		List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory,
-				messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.removed", changes.get(0));
-	}
+        List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
+        assertEquals(1, changes.size());
+        assertEquals("ocs.value.removed", changes.get(0));
+    }
 
-	@Test
-	public void testCompare_CollectionAdd() {
-		TestEntity e1 = new TestEntity();
-		TestEntity e2 = new TestEntity();
+    @Test
+    public void testCompare_CollectionAdd() {
+        TestEntity e1 = new TestEntity();
+        TestEntity e2 = new TestEntity();
 
-		e2.addTestEntity2(new TestEntity2());
+        e2.addTestEntity2(new TestEntity2());
 
-		List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, 
-				messageService);
-		Assert.assertEquals(1, changes.size());
-		Assert.assertEquals("ocs.value.added", changes.get(0));
-	}
+        List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);
+        assertEquals(1, changes.size());
+        assertEquals("ocs.value.added", changes.get(0));
+    }
 }

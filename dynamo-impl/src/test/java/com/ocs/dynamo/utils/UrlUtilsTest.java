@@ -1,14 +1,12 @@
 package com.ocs.dynamo.utils;
 
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.junit.Test;
-
-import com.ocs.dynamo.utils.UrlUtils;
+import org.junit.jupiter.api.Test;
 
 public class UrlUtilsTest {
 

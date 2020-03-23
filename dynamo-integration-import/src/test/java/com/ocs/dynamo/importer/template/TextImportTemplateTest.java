@@ -1,10 +1,11 @@
 package com.ocs.dynamo.importer.template;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.ocs.dynamo.importer.impl.BaseCsvImporter;
@@ -47,9 +48,9 @@ public class TextImportTemplateTest extends BaseMockitoTest {
             }
         };
         List<TestDTO> result = template.execute();
-        Assert.assertEquals(2, result.size());
+        assertEquals(2, result.size());
         // duplicate error reported
-        Assert.assertEquals(0, errors.size());
+        assertEquals(0, errors.size());
     }
 
     @Test
@@ -63,8 +64,7 @@ public class TextImportTemplateTest extends BaseMockitoTest {
 
         List<String> errors = new ArrayList<>();
 
-        TextImportTemplate<Integer, TestDTO> template = new TextImportTemplate<Integer, TestDTO>(messageService, lines,
-                errors, false) {
+        TextImportTemplate<Integer, TestDTO> template = new TextImportTemplate<Integer, TestDTO>(messageService, lines, errors, false) {
 
             @Override
             protected TestDTO process(int rowNum, String[] row) {
@@ -82,9 +82,9 @@ public class TextImportTemplateTest extends BaseMockitoTest {
             }
         };
         List<TestDTO> result = template.execute();
-        Assert.assertEquals(1, result.size());
+        assertEquals(1, result.size());
         // conversion error reported
-        Assert.assertEquals(1, errors.size());
+        assertEquals(1, errors.size());
     }
 
     @Test
@@ -96,8 +96,7 @@ public class TextImportTemplateTest extends BaseMockitoTest {
 
         List<String> errors = new ArrayList<>();
 
-        TextImportTemplate<Integer, TestDTO> template = new TextImportTemplate<Integer, TestDTO>(messageService, lines,
-                errors, true) {
+        TextImportTemplate<Integer, TestDTO> template = new TextImportTemplate<Integer, TestDTO>(messageService, lines, errors, true) {
 
             @Override
             protected TestDTO process(int rowNum, String[] row) {
@@ -115,10 +114,10 @@ public class TextImportTemplateTest extends BaseMockitoTest {
             }
         };
         List<TestDTO> result = template.execute();
-        Assert.assertEquals(1, result.size());
+        assertEquals(1, result.size());
 
         // duplicate error reported
-        Assert.assertEquals(1, errors.size());
+        assertEquals(1, errors.size());
     }
 
 }

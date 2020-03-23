@@ -13,8 +13,9 @@
  */
 package com.ocs.dynamo.domain.comparator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 
@@ -27,18 +28,18 @@ public class AttributeComparatorTest {
         TestEntity t2 = new TestEntity("chloe", 33L);
         TestEntity t3 = new TestEntity(null, 33L);
 
-        Assert.assertEquals(0, new AttributeComparator<TestEntity>("name").compare(t1, t1));
+        assertEquals(0, new AttributeComparator<TestEntity>("name").compare(t1, t1));
 
-        Assert.assertEquals(-1, new AttributeComparator<TestEntity>("name").compare(t1, t2));
-        Assert.assertEquals(1, new AttributeComparator<TestEntity>("name").compare(t2, t1));
+        assertEquals(-1, new AttributeComparator<TestEntity>("name").compare(t1, t2));
+        assertEquals(1, new AttributeComparator<TestEntity>("name").compare(t2, t1));
 
         // when comparing on age, the result is reversed
-        Assert.assertEquals(1, new AttributeComparator<TestEntity>("age").compare(t1, t2));
-        Assert.assertEquals(-1, new AttributeComparator<TestEntity>("age").compare(t2, t1));
+        assertEquals(1, new AttributeComparator<TestEntity>("age").compare(t1, t2));
+        assertEquals(-1, new AttributeComparator<TestEntity>("age").compare(t2, t1));
 
         // null value wins
-        Assert.assertEquals(1, new AttributeComparator<TestEntity>("name").compare(t1, t3));
-        Assert.assertEquals(-1, new AttributeComparator<TestEntity>("name").compare(t3, t1));
+        assertEquals(1, new AttributeComparator<TestEntity>("name").compare(t1, t3));
+        assertEquals(-1, new AttributeComparator<TestEntity>("name").compare(t3, t1));
     }
 
 }

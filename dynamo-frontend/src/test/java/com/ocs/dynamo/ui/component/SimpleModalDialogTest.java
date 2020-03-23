@@ -13,8 +13,11 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.dialog.SimpleModalDialog;
@@ -41,9 +44,9 @@ public class SimpleModalDialogTest extends FrontendIntegrationTest {
         };
         dialog.build();
 
-        Assert.assertNotNull(dialog.getOkButton());
-        Assert.assertNotNull(dialog.getCancelButton());
-        Assert.assertTrue(dialog.getCancelButton().isVisible());
+        assertNotNull(dialog.getOkButton());
+        assertNotNull(dialog.getCancelButton());
+        assertTrue(dialog.getCancelButton().isVisible());
 
         dialog.getOkButton().click();
         dialog.getCancelButton().click();
@@ -69,8 +72,8 @@ public class SimpleModalDialogTest extends FrontendIntegrationTest {
         };
         dialog.build();
 
-        Assert.assertNotNull(dialog.getOkButton());
-        Assert.assertNotNull(dialog.getCancelButton());
-        Assert.assertFalse(dialog.getCancelButton().isVisible());
+        assertNotNull(dialog.getOkButton());
+        assertNotNull(dialog.getCancelButton());
+        assertFalse(dialog.getCancelButton().isVisible());
     }
 }

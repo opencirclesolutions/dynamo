@@ -1,10 +1,13 @@
 package com.ocs.dynamo.envers.dao.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 
@@ -45,15 +48,15 @@ public class PersonRevisionDaoImplTest extends BackendIntegrationTest {
         commitTransaction(status);
 
         long count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
-        Assert.assertEquals(1L, count);
+        assertEquals(1L, count);
 
         List<PersonRevision> list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
-        Assert.assertEquals(1, list.size());
+        assertEquals(1, list.size());
 
-        Assert.assertEquals(2, list.get(0).getRevision());
-        Assert.assertEquals(person.getId(), list.get(0).getId().getId());
-        Assert.assertEquals("Bas", list.get(0).getEntity().getName());
-        Assert.assertEquals(RevisionType.ADD, list.get(0).getRevisionType());
+        assertEquals(2, list.get(0).getRevision());
+        assertEquals(person.getId(), list.get(0).getId().getId());
+        assertEquals("Bas", list.get(0).getEntity().getName());
+        assertEquals(RevisionType.ADD, list.get(0).getRevisionType());
 
         status = startTransaction();
 
@@ -63,14 +66,14 @@ public class PersonRevisionDaoImplTest extends BackendIntegrationTest {
         commitTransaction(status);
 
         count = personRevisionDao.count(new Compare.Equal("id", person.getId()), true);
-        Assert.assertEquals(2L, count);
+        assertEquals(2L, count);
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
-        Assert.assertEquals(2, list.size());
+        assertEquals(2, list.size());
 
-        Assert.assertEquals(3, list.get(1).getRevision());
-        Assert.assertEquals(person.getId(), list.get(1).getId().getId());
-        Assert.assertEquals("Jeroen", list.get(1).getEntity().getName());
-        Assert.assertEquals(RevisionType.MOD, list.get(1).getRevisionType());
+        assertEquals(3, list.get(1).getRevision());
+        assertEquals(person.getId(), list.get(1).getId().getId());
+        assertEquals("Jeroen", list.get(1).getEntity().getName());
+        assertEquals(RevisionType.MOD, list.get(1).getRevisionType());
 
         status = startTransaction();
 
@@ -79,45 +82,45 @@ public class PersonRevisionDaoImplTest extends BackendIntegrationTest {
         commitTransaction(status);
 
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), (Pageable) null);
-        Assert.assertEquals(3, list.size());
-        Assert.assertEquals(RevisionType.DEL, list.get(2).getRevisionType());
+        assertEquals(3, list.size());
+        assertEquals(RevisionType.DEL, list.get(2).getRevisionType());
 
         // try with sorting
         Pageable p = new PageableImpl(0, 10, new SortOrders(new SortOrder("name", Direction.ASC)));
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
-        Assert.assertEquals(3, list.size());
+        assertEquals(3, list.size());
 
         // sort on revision type
         p = new PageableImpl(0, 10, new SortOrders(new SortOrder("revisionType", Direction.ASC)));
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
-        Assert.assertEquals(3, list.size());
+        assertEquals(3, list.size());
 
         // sort on revision property
         p = new PageableImpl(0, 10, new SortOrders(new SortOrder("revision", Direction.ASC)));
         list = personRevisionDao.fetch(new Compare.Equal("id", person.getId()), p);
-        Assert.assertEquals(3, list.size());
+        assertEquals(3, list.size());
 
         // find by revision key
         RevisionKey<Integer> key = new RevisionKey<Integer>(person.getId(), 3);
         PersonRevision pr = personRevisionDao.fetchById(key);
-        Assert.assertNotNull(pr);
+        assertNotNull(pr);
 
         list = personRevisionDao.findRevisions(person.getId());
-        Assert.assertEquals(3, list.size());
+        assertEquals(3, list.size());
 
         // fetch non existing
         key = new RevisionKey<>(person.getId(), 5);
         pr = personRevisionDao.fetchById(key);
-        Assert.assertNull(pr);
+        assertNull(pr);
 
         // fetch non existing part 2
         key = new RevisionKey<>(-1, 1);
         pr = personRevisionDao.fetchById(key);
-        Assert.assertNull(pr);
+        assertNull(pr);
 
         // check last revision number
         Number revNumber = personRevisionDao.findRevisionNumber(LocalDateTime.now());
-        Assert.assertEquals(4, revNumber);
+        assertEquals(4, revNumber);
     }
 
     @Test

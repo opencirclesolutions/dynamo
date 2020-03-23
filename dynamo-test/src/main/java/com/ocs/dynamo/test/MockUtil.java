@@ -13,7 +13,15 @@
  */
 package com.ocs.dynamo.test;
 
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.spy;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -21,7 +29,6 @@ import java.util.Locale;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -51,7 +58,7 @@ public final class MockUtil {
 	 */
 	public static <ID, X extends AbstractEntity<ID>> X captureSave(BaseDao<ID, X> dao, Class<X> clazz) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-		Mockito.verify(dao).save(captor.capture());
+		verify(dao).save(captor.capture());
 		return captor.getValue();
 	}
 
@@ -65,7 +72,7 @@ public final class MockUtil {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaveList(BaseDao<ID, X> dao) {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-		Mockito.verify(dao).save(captor.capture());
+		verify(dao).save(captor.capture());
 		return (List<X>) captor.getValue();
 	}
 
@@ -78,7 +85,7 @@ public final class MockUtil {
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaves(BaseDao<ID, X> dao, Class<X> clazz,
 			int times) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-		Mockito.verify(dao, Mockito.times(times)).save(captor.capture());
+		verify(dao, times(times)).save(captor.capture());
 		return captor.getAllValues();
 	}
 
@@ -90,7 +97,7 @@ public final class MockUtil {
 	 */
 	public static <ID, X extends AbstractEntity<ID>> X captureServiceSave(BaseService<ID, X> service, Class<X> clazz) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-		Mockito.verify(service).save(captor.capture());
+		verify(service).save(captor.capture());
 		return captor.getValue();
 	}
 
@@ -102,7 +109,7 @@ public final class MockUtil {
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(BaseService<ID, X> service) {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
-		Mockito.verify(service).save(captor.capture());
+		verify(service).save(captor.capture());
 		return (List<X>) captor.getValue();
 	}
 
@@ -116,7 +123,7 @@ public final class MockUtil {
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaves(BaseService<ID, X> service,
 			Class<X> clazz, int times) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
-		Mockito.verify(service, Mockito.times(times)).save(captor.capture());
+		verify(service, times(times)).save(captor.capture());
 		return captor.getAllValues();
 	}
 
@@ -149,7 +156,7 @@ public final class MockUtil {
 	 * Mocks the "fetchById" method of a DAO by returning the provided entity
 	 */
 	public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id, X entity) {
-		Mockito.when(dao.fetchById(Mockito.eq(id), (FetchJoinInformation[]) Mockito.any())).thenReturn(entity);
+		when(dao.fetchById(eq(id), (FetchJoinInformation[]) any())).thenReturn(entity);
 	}
 
 	/**
@@ -161,17 +168,17 @@ public final class MockUtil {
 	 */
 	public static void mockMessageService(MessageService messageService) {
 		// method with varargs
-		Mockito.lenient()
-				.when(messageService.getMessage(Mockito.anyString(), Mockito.nullable(Locale.class), Mockito.any()))
+		lenient()
+				.when(messageService.getMessage(anyString(), nullable(Locale.class), any()))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
-		Mockito.lenient().when(messageService.getMessage(Mockito.anyString(), Mockito.nullable(Locale.class)))
+		lenient().when(messageService.getMessage(anyString(), nullable(Locale.class)))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
 		// method for retrieving enum message
-		Mockito.lenient()
-				.when(messageService.getEnumMessage(Mockito.any(), Mockito.any(Enum.class),
-						Mockito.nullable(Locale.class)))
+		lenient()
+				.when(messageService.getEnumMessage(any(), any(Enum.class),
+						nullable(Locale.class)))
 				.thenAnswer(invocation -> invocation.getArguments()[1].toString());
 	}
 
@@ -185,7 +192,7 @@ public final class MockUtil {
 	public static <ID, X extends AbstractEntity<ID>> void mockSave(BaseDao<ID, X> dao, Class<X> clazz) {
 		// mock the save behaviour - return the first argument being passed to the
 		// method
-		Mockito.when(dao.save(Mockito.any(clazz))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(dao.save(any(clazz))).thenAnswer(invocation -> invocation.getArgument(0));
 	}
 
 	/**
@@ -195,7 +202,7 @@ public final class MockUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSaveList(BaseDao<ID, X> dao) {
-		Mockito.when(dao.save(Mockito.any(List.class))).thenAnswer(invocation -> (List<X>) invocation.getArgument(0));
+		when(dao.save(any(List.class))).thenAnswer(invocation -> (List<X>) invocation.getArgument(0));
 	}
 
 	/**
@@ -205,7 +212,7 @@ public final class MockUtil {
 	 * @param service the service
 	 */
 	public static <ID, U extends AbstractEntity<ID>> void mockServiceSave(BaseService<ID, U> service, Class<U> clazz) {
-		Mockito.when(service.save(Mockito.any(clazz))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(service.save(any(clazz))).thenAnswer(invocation -> invocation.getArgument(0));
 	}
 
 	/**
@@ -215,7 +222,7 @@ public final class MockUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockServiceSaveList(BaseService<ID, X> service) {
-		Mockito.when(service.save(Mockito.any(List.class))).thenAnswer(invocation -> invocation.getArgument(0));
+		when(service.save(any(List.class))).thenAnswer(invocation -> invocation.getArgument(0));
 	}
 
 	/**

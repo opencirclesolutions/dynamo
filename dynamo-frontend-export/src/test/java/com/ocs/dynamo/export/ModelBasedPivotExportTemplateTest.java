@@ -1,5 +1,8 @@
 package com.ocs.dynamo.export;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -11,9 +14,8 @@ import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
@@ -43,7 +45,7 @@ public class ModelBasedPivotExportTemplateTest extends FrontendIntegrationTest {
 
     private TestEntity e2;
 
-    @Before
+    @BeforeEach
     public void setup() {
         System.setProperty("ocs.default.locale", "de");
         e1 = new TestEntity("Bob", 11L);
@@ -97,23 +99,23 @@ public class ModelBasedPivotExportTemplateTest extends FrontendIntegrationTest {
 
         try (Workbook wb = new XSSFWorkbook(new ByteArrayInputStream(bytes))) {
             Sheet sheet = wb.getSheetAt(0);
-            Assert.assertEquals("Sheet name", wb.getSheetName(0));
+            assertEquals("Sheet name", wb.getSheetName(0));
 
             // check the header row
             int i = 0;
-            Assert.assertEquals("name", sheet.getRow(0).getCell(i++).getStringCellValue());
-            Assert.assertEquals("A", sheet.getRow(0).getCell(i++).getStringCellValue());
-            Assert.assertEquals("B", sheet.getRow(0).getCell(i++).getStringCellValue());
-            Assert.assertEquals("C", sheet.getRow(0).getCell(i++).getStringCellValue());
+            assertEquals("name", sheet.getRow(0).getCell(i++).getStringCellValue());
+            assertEquals("A", sheet.getRow(0).getCell(i++).getStringCellValue());
+            assertEquals("B", sheet.getRow(0).getCell(i++).getStringCellValue());
+            assertEquals("C", sheet.getRow(0).getCell(i++).getStringCellValue());
 
             // check the data row
             Row row = sheet.getRow(1);
             i = 0;
-            Assert.assertEquals("Bob", row.getCell(i++).getStringCellValue());
-            Assert.assertEquals("A", row.getCell(i++).getStringCellValue());
-            Assert.assertEquals("B", row.getCell(i++).getStringCellValue());
+            assertEquals("Bob", row.getCell(i++).getStringCellValue());
+            assertEquals("A", row.getCell(i++).getStringCellValue());
+            assertEquals("B", row.getCell(i++).getStringCellValue());
             // no value for testEnum C, hence a
-            Assert.assertNull(row.getCell(i++));
+            assertNull(row.getCell(i++));
         }
 
     }
@@ -132,8 +134,8 @@ public class ModelBasedPivotExportTemplateTest extends FrontendIntegrationTest {
         String str = new String(bytes);
         String[] lines = str.split("\n");
 
-        Assert.assertEquals("\"name\";\"A\";\"B\";\"C\"", lines[0].trim());
-        Assert.assertEquals("\"Bob\";\"A\";\"B\";\"\"", lines[1].trim());
+        assertEquals("\"name\";\"A\";\"B\";\"C\"", lines[0].trim());
+        assertEquals("\"Bob\";\"A\";\"B\";\"\"", lines[1].trim());
     }
 
     private PivotParameters createPivotParameters() {

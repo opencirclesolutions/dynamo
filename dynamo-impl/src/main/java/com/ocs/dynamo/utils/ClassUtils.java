@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.utils;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -251,8 +253,6 @@ public final class ClassUtils {
      * @return
      */
     public static <T> Constructor<T> getConstructor(Class<T> clazz, Object... args) {
-        Assert.notNull(clazz, "[Assertion failed] - clazz argument is required; it must not be null");
-        Assert.noNullElements(args, "[Assertion failed] - the args must not contain any null elements");
         Constructor<T> constructor = null;
         List<Class<?>> types = new ArrayList<>();
         for (Object arg : args) {

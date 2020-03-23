@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -39,9 +45,8 @@ import javax.validation.constraints.AssertTrue;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -69,15 +74,15 @@ import com.ocs.dynamo.utils.DateUtils;
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
-    private final EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
+    private  EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
 
-    private final ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+    private  ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
-    private final MessageService messageService = new MessageServiceImpl();
+    private  MessageService messageService = new MessageServiceImpl();
 
-    private final Locale locale = new Locale("en");
+    private  Locale locale = new Locale("en");
 
-    @Before
+    @BeforeEach
     public void setupEntityModelFactoryTest() throws NoSuchFieldException {
 
         System.setProperty("ocs.use.default.prompt.value", "true");
@@ -93,114 +98,114 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
     @Test
     public void testDefaults() {
         EntityModel<Entity1> model = factory.getModel(Entity1.class);
-        Assert.assertNotNull(model);
+        assertNotNull(model);
 
-        Assert.assertEquals("Entity1", model.getDisplayName(locale));
-        Assert.assertEquals("Entity1s", model.getDisplayNamePlural(locale));
-        Assert.assertEquals("Entity1", model.getDescription(locale));
-        Assert.assertNull(model.getDisplayProperty());
+        assertEquals("Entity1", model.getDisplayName(locale));
+        assertEquals("Entity1s", model.getDisplayNamePlural(locale));
+        assertEquals("Entity1", model.getDescription(locale));
+        assertNull(model.getDisplayProperty());
 
         AttributeModel nameModel = model.getAttributeModel("name");
-        Assert.assertNotNull(nameModel);
+        assertNotNull(nameModel);
 
-        Assert.assertNull(nameModel.getDefaultValue());
-        Assert.assertEquals("Name", nameModel.getPrompt(locale));
-        Assert.assertEquals("Name", nameModel.getDisplayName(locale));
-        Assert.assertEquals(4, nameModel.getOrder().intValue());
-        Assert.assertEquals(String.class, nameModel.getType());
-        Assert.assertNull(nameModel.getDisplayFormat());
-        Assert.assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
-        Assert.assertFalse(nameModel.isRequired());
-        Assert.assertTrue(nameModel.isVisible());
-        Assert.assertEquals(55, nameModel.getMaxLength().intValue());
-        Assert.assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
+        assertNull(nameModel.getDefaultValue());
+        assertEquals("Name", nameModel.getPrompt(locale));
+        assertEquals("Name", nameModel.getDisplayName(locale));
+        assertEquals(4, nameModel.getOrder().intValue());
+        assertEquals(String.class, nameModel.getType());
+        assertNull(nameModel.getDisplayFormat());
+        assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
+        assertFalse(nameModel.isRequired());
+        assertTrue(nameModel.isVisible());
+        assertEquals(55, nameModel.getMaxLength().intValue());
+        assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
 
-        Assert.assertTrue(nameModel.isSortable());
-        Assert.assertTrue(nameModel.isMainAttribute());
-        Assert.assertEquals(EditableType.EDITABLE, nameModel.getEditableType());
+        assertTrue(nameModel.isSortable());
+        assertTrue(nameModel.isMainAttribute());
+        assertEquals(EditableType.EDITABLE, nameModel.getEditableType());
 
         AttributeModel ageModel = model.getAttributeModel("age");
-        Assert.assertNull(ageModel.getDefaultValue());
-        Assert.assertEquals("Age", ageModel.getDisplayName(locale));
-        Assert.assertEquals(0, ageModel.getOrder().intValue());
-        Assert.assertEquals(Integer.class, ageModel.getType());
-        Assert.assertNull(nameModel.getDisplayFormat());
-        Assert.assertEquals(AttributeType.BASIC, ageModel.getAttributeType());
-        Assert.assertTrue(ageModel.isRequired());
-        Assert.assertTrue(ageModel.isThousandsGrouping());
+        assertNull(ageModel.getDefaultValue());
+        assertEquals("Age", ageModel.getDisplayName(locale));
+        assertEquals(0, ageModel.getOrder().intValue());
+        assertEquals(Integer.class, ageModel.getType());
+        assertNull(nameModel.getDisplayFormat());
+        assertEquals(AttributeType.BASIC, ageModel.getAttributeType());
+        assertTrue(ageModel.isRequired());
+        assertTrue(ageModel.isThousandsGrouping());
 
         AttributeModel birthDateModel = model.getAttributeModel("birthDate");
-        Assert.assertNull(birthDateModel.getDefaultValue());
-        Assert.assertEquals("Birth Date", birthDateModel.getDisplayName(locale));
-        Assert.assertEquals(1, birthDateModel.getOrder().intValue());
-        Assert.assertEquals(LocalDate.class, birthDateModel.getType());
-        Assert.assertNotNull(birthDateModel.getDisplayFormat());
-        Assert.assertEquals(AttributeType.BASIC, birthDateModel.getAttributeType());
+        assertNull(birthDateModel.getDefaultValue());
+        assertEquals("Birth Date", birthDateModel.getDisplayName(locale));
+        assertEquals(1, birthDateModel.getOrder().intValue());
+        assertEquals(LocalDate.class, birthDateModel.getType());
+        assertNotNull(birthDateModel.getDisplayFormat());
+        assertEquals(AttributeType.BASIC, birthDateModel.getAttributeType());
 
-        Assert.assertTrue(model.usesDefaultGroupOnly());
+        assertTrue(model.usesDefaultGroupOnly());
 
         AttributeModel weightModel = model.getAttributeModel("weight");
-        Assert.assertEquals(2, weightModel.getPrecision());
+        assertEquals(2, weightModel.getPrecision());
 
         AttributeModel boolModel = model.getAttributeModel("bool");
-        Assert.assertEquals("Yes", boolModel.getTrueRepresentation(locale));
-        Assert.assertEquals("No", boolModel.getFalseRepresentation(locale));
+        assertEquals("Yes", boolModel.getTrueRepresentation(locale));
+        assertEquals("No", boolModel.getFalseRepresentation(locale));
 
         AttributeModel mailModel = model.getAttributeModel("email");
-        Assert.assertTrue(mailModel.isEmail());
+        assertTrue(mailModel.isEmail());
 
         AttributeModel urlModel = model.getAttributeModel("url");
-        Assert.assertTrue(urlModel.isUrl());
+        assertTrue(urlModel.isUrl());
 
         // test the total size
-        Assert.assertEquals(7, model.getAttributeModels().size());
+        assertEquals(7, model.getAttributeModels().size());
     }
 
     @Test
     public void testPropertyOrder() {
         EntityModel<Entity2> model = factory.getModel(Entity2.class);
-        Assert.assertNotNull(model);
+        assertNotNull(model);
 
         AttributeModel nameModel = model.getAttributeModel("name");
-        Assert.assertEquals(0, nameModel.getOrder().intValue());
+        assertEquals(0, nameModel.getOrder().intValue());
 
         AttributeModel birthDateModel = model.getAttributeModel("birthDate");
-        Assert.assertEquals(1, birthDateModel.getOrder().intValue());
+        assertEquals(1, birthDateModel.getOrder().intValue());
 
         AttributeModel age = model.getAttributeModel("age");
-        Assert.assertEquals(2, age.getOrder().intValue());
+        assertEquals(2, age.getOrder().intValue());
     }
 
     @Test
     public void testAttributeGroups() {
         EntityModel<Entity3> model = factory.getModel(Entity3.class);
-        Assert.assertNotNull(model);
+        assertNotNull(model);
 
-        Assert.assertEquals(3, model.getAttributeGroups().size());
+        assertEquals(3, model.getAttributeGroups().size());
         String group1 = model.getAttributeGroups().get(0);
-        Assert.assertEquals("group1.key", group1);
+        assertEquals("group1.key", group1);
 
         List<AttributeModel> models = model.getAttributeModelsForGroup(group1);
-        Assert.assertEquals("name", models.get(0).getName());
-        Assert.assertEquals(SearchMode.ALWAYS, models.get(0).getSearchMode());
+        assertEquals("name", models.get(0).getName());
+        assertEquals(SearchMode.ALWAYS, models.get(0).getSearchMode());
 
         String group2 = model.getAttributeGroups().get(1);
-        Assert.assertEquals("group2.key", group2);
+        assertEquals("group2.key", group2);
 
         List<AttributeModel> models2 = model.getAttributeModelsForGroup(group2);
-        Assert.assertEquals("age", models2.get(0).getName());
-        Assert.assertTrue(models2.get(0).isRequiredForSearching());
+        assertEquals("age", models2.get(0).getName());
+        assertTrue(models2.get(0).isRequiredForSearching());
 
-        Assert.assertEquals(1, model.getRequiredForSearchingAttributeModels().size());
+        assertEquals(1, model.getRequiredForSearchingAttributeModels().size());
 
         List<AttributeModel> models3 = model.getAttributeModelsForGroup(EntityModel.DEFAULT_GROUP);
-        Assert.assertEquals("advancedAge", models3.get(0).getName());
+        assertEquals("advancedAge", models3.get(0).getName());
 
-        Assert.assertTrue(model.isAttributeGroupVisible(EntityModel.DEFAULT_GROUP, true));
-        Assert.assertTrue(model.isAttributeGroupVisible(EntityModel.DEFAULT_GROUP, false));
+        assertTrue(model.isAttributeGroupVisible(EntityModel.DEFAULT_GROUP, true));
+        assertTrue(model.isAttributeGroupVisible(EntityModel.DEFAULT_GROUP, false));
 
         AttributeModel advancedAgeModel = model.getAttributeModel("advancedAge");
-        Assert.assertEquals(SearchMode.ADVANCED, advancedAgeModel.getSearchMode());
+        assertEquals(SearchMode.ADVANCED, advancedAgeModel.getSearchMode());
     }
 
     /**
@@ -209,114 +214,114 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
     @Test
     public void testAnnotationOverrides() {
         EntityModel<Entity3> model = factory.getModel(Entity3.class);
-        Assert.assertNotNull(model);
+        assertNotNull(model);
 
         // the following are overwritten using the annotation
-        Assert.assertEquals("dis", model.getDisplayName(locale));
-        Assert.assertEquals("diss", model.getDisplayNamePlural(locale));
-        Assert.assertEquals("desc", model.getDescription(locale));
-        Assert.assertEquals("prop", model.getDisplayProperty());
+        assertEquals("dis", model.getDisplayName(locale));
+        assertEquals("diss", model.getDisplayNamePlural(locale));
+        assertEquals("desc", model.getDescription(locale));
+        assertEquals("prop", model.getDisplayProperty());
 
         AttributeModel nameModel = model.getAttributeModel("name");
-        Assert.assertNotNull(nameModel);
+        assertNotNull(nameModel);
 
-        Assert.assertEquals("Bas", nameModel.getDefaultValue());
-        Assert.assertEquals("Naampje", nameModel.getDisplayName(locale));
-        Assert.assertEquals("Test", nameModel.getDescription(locale));
-        Assert.assertEquals("Prompt", nameModel.getPrompt(locale));
-        Assert.assertEquals("myStyle", nameModel.getStyles());
-        Assert.assertEquals(String.class, nameModel.getType());
-        Assert.assertNull(nameModel.getDisplayFormat());
-        Assert.assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
-        Assert.assertFalse(nameModel.isSearchCaseSensitive());
-        Assert.assertFalse(nameModel.isSearchPrefixOnly());
+        assertEquals("Bas", nameModel.getDefaultValue());
+        assertEquals("Naampje", nameModel.getDisplayName(locale));
+        assertEquals("Test", nameModel.getDescription(locale));
+        assertEquals("Prompt", nameModel.getPrompt(locale));
+        assertEquals("myStyle", nameModel.getStyles());
+        assertEquals(String.class, nameModel.getType());
+        assertNull(nameModel.getDisplayFormat());
+        assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
+        assertFalse(nameModel.isSearchCaseSensitive());
+        assertFalse(nameModel.isSearchPrefixOnly());
 
-        Assert.assertFalse(nameModel.isSortable());
-        Assert.assertTrue(nameModel.isSearchable());
-        Assert.assertTrue(nameModel.isMainAttribute());
-        Assert.assertEquals(EditableType.READ_ONLY, nameModel.getEditableType());
+        assertFalse(nameModel.isSortable());
+        assertTrue(nameModel.isSearchable());
+        assertTrue(nameModel.isMainAttribute());
+        assertEquals(EditableType.READ_ONLY, nameModel.getEditableType());
 
         AttributeModel ageModel = model.getAttributeModel("age");
-        Assert.assertNotNull(ageModel);
-        Assert.assertTrue(ageModel.isSearchCaseSensitive());
-        Assert.assertTrue(ageModel.isSearchPrefixOnly());
-        Assert.assertFalse(ageModel.isThousandsGrouping());
+        assertNotNull(ageModel);
+        assertTrue(ageModel.isSearchCaseSensitive());
+        assertTrue(ageModel.isSearchPrefixOnly());
+        assertFalse(ageModel.isThousandsGrouping());
 
         AttributeModel entityModel = model.getAttributeModel("entity2");
-        Assert.assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
-        Assert.assertTrue(entityModel.isComplexEditable());
-        Assert.assertTrue(entityModel.isNavigable());
+        assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
+        assertTrue(entityModel.isComplexEditable());
+        assertTrue(entityModel.isNavigable());
 
         AttributeModel entityListModel = model.getAttributeModel("entityList");
-        Assert.assertEquals(AttributeType.DETAIL, entityListModel.getAttributeType());
+        assertEquals(AttributeType.DETAIL, entityListModel.getAttributeType());
 
         AttributeModel birthDateModel = model.getAttributeModel("birthDate");
-        Assert.assertEquals("dd/MM/yyyy", birthDateModel.getDisplayFormat());
+        assertEquals("dd/MM/yyyy", birthDateModel.getDisplayFormat());
 
         // test that attribute annotations on getters are also picked up
         AttributeModel derivedModel = model.getAttributeModel("derived");
-        Assert.assertNotNull(derivedModel);
-        Assert.assertEquals("deri", derivedModel.getDisplayName(locale));
+        assertNotNull(derivedModel);
+        assertEquals("deri", derivedModel.getDisplayName(locale));
 
         AttributeModel weightModel = model.getAttributeModel("weight");
-        Assert.assertNotNull(weightModel);
-        Assert.assertEquals(4, weightModel.getPrecision());
-        Assert.assertTrue(weightModel.isCurrency());
+        assertNotNull(weightModel);
+        assertEquals(4, weightModel.getPrecision());
+        assertTrue(weightModel.isCurrency());
     }
 
     @Test
     public void testReference() {
         EntityModel<Entity6> model = factory.getModel("Special", Entity6.class);
-        Assert.assertEquals("Special", model.getDisplayName(locale));
-        Assert.assertEquals("SpecialPlural", model.getDisplayNamePlural(locale));
+        assertEquals("Special", model.getDisplayName(locale));
+        assertEquals("SpecialPlural", model.getDisplayNamePlural(locale));
     }
 
     @Test
     public void testMessageOverrides() {
-        final EntityModel<Entity6> model = factory.getModel(Entity6.class);
-        Assert.assertNotNull(model);
+         EntityModel<Entity6> model = factory.getModel(Entity6.class);
+        assertNotNull(model);
 
         // the following are overwritten using the message bundle
-        Assert.assertEquals("Override", model.getDisplayName(locale));
-        Assert.assertEquals("Overrides", model.getDisplayNamePlural(locale));
-        Assert.assertEquals("Description override", model.getDescription(locale));
-        Assert.assertEquals("Prop", model.getDisplayProperty());
+        assertEquals("Override", model.getDisplayName(locale));
+        assertEquals("Overrides", model.getDisplayNamePlural(locale));
+        assertEquals("Description override", model.getDescription(locale));
+        assertEquals("Prop", model.getDisplayProperty());
 
-        final AttributeModel nameModel = model.getAttributeModel("name");
-        Assert.assertNotNull(nameModel);
+         AttributeModel nameModel = model.getAttributeModel("name");
+        assertNotNull(nameModel);
 
-        Assert.assertTrue(nameModel.isSearchCaseSensitive());
-        Assert.assertTrue(nameModel.isSearchPrefixOnly());
+        assertTrue(nameModel.isSearchCaseSensitive());
+        assertTrue(nameModel.isSearchPrefixOnly());
 
-        Assert.assertEquals("Override", nameModel.getDisplayName(locale));
-        Assert.assertEquals("Prompt override", nameModel.getPrompt(locale));
-        Assert.assertEquals("Style override", nameModel.getStyles());
-        Assert.assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
-        Assert.assertEquals("Style override", nameModel.getStyles());
+        assertEquals("Override", nameModel.getDisplayName(locale));
+        assertEquals("Prompt override", nameModel.getPrompt(locale));
+        assertEquals("Style override", nameModel.getStyles());
+        assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
+        assertEquals("Style override", nameModel.getStyles());
 
-        Assert.assertFalse(model.usesDefaultGroupOnly());
+        assertFalse(model.usesDefaultGroupOnly());
 
-        final String group1 = model.getAttributeGroups().get(0);
-        Assert.assertEquals("group1", model.getAttributeGroups().get(0));
+         String group1 = model.getAttributeGroups().get(0);
+        assertEquals("group1", model.getAttributeGroups().get(0));
 
-        final String group2 = model.getAttributeGroups().get(1);
-        Assert.assertEquals("group2", group2);
+         String group2 = model.getAttributeGroups().get(1);
+        assertEquals("group2", group2);
 
-        Assert.assertEquals("age", model.getAttributeModelsForGroup(group2).get(0).getName());
-        Assert.assertEquals("birthDate", model.getAttributeModelsForGroup(group2).get(1).getName());
+        assertEquals("age", model.getAttributeModelsForGroup(group2).get(0).getName());
+        assertEquals("birthDate", model.getAttributeModelsForGroup(group2).get(1).getName());
 
-        final String group3 = model.getAttributeGroups().get(2);
-        Assert.assertEquals(EntityModel.DEFAULT_GROUP, group3);
+         String group3 = model.getAttributeGroups().get(2);
+        assertEquals(EntityModel.DEFAULT_GROUP, group3);
     }
 
     @Test
     public void testLob() {
-        final EntityModel<Entity5> model = factory.getModel(Entity5.class);
-        final AttributeModel attributeModel = model.getAttributeModel("logo");
-        Assert.assertEquals(AttributeType.LOB, attributeModel.getAttributeType());
-        Assert.assertTrue(attributeModel.isImage());
-        Assert.assertTrue(attributeModel.getAllowedExtensions().contains("gif"));
-        Assert.assertTrue(attributeModel.getAllowedExtensions().contains("bmp"));
+         EntityModel<Entity5> model = factory.getModel(Entity5.class);
+         AttributeModel attributeModel = model.getAttributeModel("logo");
+        assertEquals(AttributeType.LOB, attributeModel.getAttributeType());
+        assertTrue(attributeModel.isImage());
+        assertTrue(attributeModel.getAllowedExtensions().contains("gif"));
+        assertTrue(attributeModel.getAllowedExtensions().contains("bmp"));
     }
 
     /**
@@ -324,9 +329,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
      */
     @Test
     public void testAssertTrueIgnored() {
-        final EntityModel<Entity5> model = factory.getModel(Entity5.class);
-        final AttributeModel attributeModel = model.getAttributeModel("someValidation");
-        Assert.assertNull(attributeModel);
+         EntityModel<Entity5> model = factory.getModel(Entity5.class);
+         AttributeModel attributeModel = model.getAttributeModel("someValidation");
+        assertNull(attributeModel);
     }
 
     @SuppressWarnings("unchecked")
@@ -335,54 +340,54 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         // Check MASTER
         EntityModel<EntityChild> child = factory.getModel(EntityChild.class);
         AttributeModel attributeModel = child.getAttributeModel("parent");
-        Assert.assertNotNull(attributeModel);
+        assertNotNull(attributeModel);
         EntityModel<EntityParent> parent = (EntityModel<EntityParent>) attributeModel.getNestedEntityModel();
-        Assert.assertNotNull(parent);
-        Assert.assertEquals("EntityChild.parent", parent.getReference());
+        assertNotNull(parent);
+        assertEquals("EntityChild.parent", parent.getReference());
         // Check DETAIL
         parent = factory.getModel(EntityParent.class);
         attributeModel = parent.getAttributeModel("children");
-        Assert.assertNotNull(attributeModel);
+        assertNotNull(attributeModel);
         child = (EntityModel<EntityChild>) attributeModel.getNestedEntityModel();
-        Assert.assertNotNull(child);
-        Assert.assertEquals("EntityParent.children", child.getReference());
+        assertNotNull(child);
+        assertEquals("EntityParent.children", child.getReference());
 
         // check a detail property that does not map directly to a field
         attributeModel = parent.getAttributeModel("calculatedChildren");
-        Assert.assertNotNull(attributeModel);
-        final EntityModel<EntityGrandChild> grandChild = (EntityModel<EntityGrandChild>) attributeModel.getNestedEntityModel();
-        Assert.assertNotNull(grandChild);
-        Assert.assertEquals("EntityParent.calculatedChildren", grandChild.getReference());
-        Assert.assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
-        Assert.assertEquals("children", attributeModel.getReplacementSearchPath());
+        assertNotNull(attributeModel);
+         EntityModel<EntityGrandChild> grandChild = (EntityModel<EntityGrandChild>) attributeModel.getNestedEntityModel();
+        assertNotNull(grandChild);
+        assertEquals("EntityParent.calculatedChildren", grandChild.getReference());
+        assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
+        assertEquals("children", attributeModel.getReplacementSearchPath());
 
         // lazily constructed models are not there yet
-        Assert.assertFalse(factory.hasModel("EntityChild.parent.children"));
-        Assert.assertFalse(factory.hasModel("EntityParent.children.parent"));
+        assertFalse(factory.hasModel("EntityChild.parent.children"));
+        assertFalse(factory.hasModel("EntityParent.children.parent"));
 
         // check on demand constrution of model
-        final EntityModel<EntityChild> child2 = factory.getModel("EntityChild.parent.children", EntityChild.class);
-        Assert.assertNotNull(child2);
+         EntityModel<EntityChild> child2 = factory.getModel("EntityChild.parent.children", EntityChild.class);
+        assertNotNull(child2);
 
         // check that the nested model attribute is not searchable...
-        final EntityModel<EntityChild> childModel = factory.getModel("EntityChild.parent", EntityChild.class);
-        Assert.assertNotNull(childModel);
-        Assert.assertFalse(childModel.getAttributeModel("name").isSearchable());
+         EntityModel<EntityChild> childModel = factory.getModel("EntityChild.parent", EntityChild.class);
+        assertNotNull(childModel);
+        assertFalse(childModel.getAttributeModel("name").isSearchable());
 
         // .. but the parent is
-        final EntityModel<EntityParent> parentModel = factory.getModel(EntityParent.class);
-        Assert.assertTrue(parentModel.getAttributeModel("name").isSearchable());
+         EntityModel<EntityParent> parentModel = factory.getModel(EntityParent.class);
+        assertTrue(parentModel.getAttributeModel("name").isSearchable());
 
         // check that the search paths are set recursively
-        Assert.assertEquals("name", parentModel.getAttributeModel("name").getPath());
-        Assert.assertEquals("parent.name", childModel.getAttributeModel("name").getPath());
+        assertEquals("name", parentModel.getAttributeModel("name").getPath());
+        assertEquals("parent.name", childModel.getAttributeModel("name").getPath());
     }
 
     @Test
     public void testId() {
-        final EntityModel<EntityParent> model = factory.getModel(EntityParent.class);
-        final AttributeModel attributeModel = model.getIdAttributeModel();
-        Assert.assertNotNull(attributeModel);
+         EntityModel<EntityParent> model = factory.getModel(EntityParent.class);
+         AttributeModel attributeModel = model.getIdAttributeModel();
+        assertNotNull(attributeModel);
     }
 
     @Test
@@ -390,162 +395,162 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
         // Find by both
         EntityModel<EntityChild> model = factory.getModel(EntityChild.class);
         List<AttributeModel> models = model.getAttributeModelsForType(AttributeType.MASTER, EntityParent.class);
-        Assert.assertNotNull(models);
-        Assert.assertEquals(2, models.size());
-        Assert.assertEquals("parent", models.get(0).getName());
+        assertNotNull(models);
+        assertEquals(2, models.size());
+        assertEquals("parent", models.get(0).getName());
         // Find by attribute type
         model = factory.getModel(EntityChild.class);
         models = model.getAttributeModelsForType(AttributeType.MASTER, null);
-        Assert.assertNotNull(models);
-        Assert.assertEquals(2, models.size());
-        Assert.assertEquals("parent", models.get(0).getName());
+        assertNotNull(models);
+        assertEquals(2, models.size());
+        assertEquals("parent", models.get(0).getName());
         // Find by type
-        final EntityModel<EntityParent> pmodel = factory.getModel(EntityParent.class);
+         EntityModel<EntityParent> pmodel = factory.getModel(EntityParent.class);
         models = pmodel.getAttributeModelsForType(null, EntityChild.class);
-        Assert.assertNotNull(models);
-        Assert.assertEquals(1, models.size());
-        Assert.assertEquals("children", models.get(0).getName());
+        assertNotNull(models);
+        assertEquals(1, models.size());
+        assertEquals("children", models.get(0).getName());
     }
 
     @Test
     public void testNestedAttributes() {
 
-        final EntityModel<EntityParent> parentModel = factory.getModel(EntityParent.class);
-        final AttributeModel pm = parentModel.getAttributeModel("name");
-        Assert.assertNotNull(pm);
-        Assert.assertEquals("name", pm.getName());
-        Assert.assertTrue(pm.isVisibleInGrid());
+         EntityModel<EntityParent> parentModel = factory.getModel(EntityParent.class);
+         AttributeModel pm = parentModel.getAttributeModel("name");
+        assertNotNull(pm);
+        assertEquals("name", pm.getName());
+        assertTrue(pm.isVisibleInGrid());
 
-        final EntityModel<EntityChild> model = factory.getModel(EntityChild.class);
-        final AttributeModel am = model.getAttributeModel("parent.name");
-        Assert.assertNotNull(am);
-        Assert.assertEquals("name", am.getName());
-        Assert.assertEquals(EntityParent.class, am.getEntityModel().getEntityClass());
-        Assert.assertFalse(am.isVisibleInGrid());
+         EntityModel<EntityChild> model = factory.getModel(EntityChild.class);
+         AttributeModel am = model.getAttributeModel("parent.name");
+        assertNotNull(am);
+        assertEquals("name", am.getName());
+        assertEquals(EntityParent.class, am.getEntityModel().getEntityClass());
+        assertFalse(am.isVisibleInGrid());
 
     }
 
     @Test
     public void testSortOrder() {
         // Test success
-        final EntityModel<EntityParent> model = factory.getModel(EntityParent.class);
-        Assert.assertNotNull(model.getSortOrder());
-        Assert.assertEquals(2, model.getSortOrder().size());
+         EntityModel<EntityParent> model = factory.getModel(EntityParent.class);
+        assertNotNull(model.getSortOrder());
+        assertEquals(2, model.getSortOrder().size());
         AttributeModel amName = model.getAttributeModel("name");
-        final AttributeModel amId = model.getAttributeModel("id");
-        Assert.assertEquals(false, model.getSortOrder().get(amName));
-        Assert.assertEquals(true, model.getSortOrder().get(amId));
+         AttributeModel amId = model.getAttributeModel("id");
+        assertEquals(false, model.getSortOrder().get(amName));
+        assertEquals(true, model.getSortOrder().get(amId));
         // Test failure
-        final EntityModel<EntitySortError> semodel = factory.getModel(EntitySortError.class);
-        Assert.assertNotNull(semodel.getSortOrder());
-        Assert.assertEquals(1, semodel.getSortOrder().size());
+         EntityModel<EntitySortError> semodel = factory.getModel(EntitySortError.class);
+        assertNotNull(semodel.getSortOrder());
+        assertEquals(1, semodel.getSortOrder().size());
         amName = semodel.getAttributeModel("code");
-        Assert.assertEquals(true, semodel.getSortOrder().get(amName));
+        assertEquals(true, semodel.getSortOrder().get(amName));
     }
 
     @Test
     public void testEmbedded() {
-        final EntityModel<EmbeddedParent> model = factory.getModel(EmbeddedParent.class);
-        Assert.assertNotNull(model.getAttributeModel("name"));
-        Assert.assertEquals(AttributeType.BASIC, model.getAttributeModel("name").getAttributeType());
+         EntityModel<EmbeddedParent> model = factory.getModel(EmbeddedParent.class);
+        assertNotNull(model.getAttributeModel("name"));
+        assertEquals(AttributeType.BASIC, model.getAttributeModel("name").getAttributeType());
 
         // there must not be a separate model for the embedded object
-        Assert.assertNull(model.getAttributeModel("child"));
+        assertNull(model.getAttributeModel("child"));
 
-        final AttributeModel m = model.getAttributeModel("child.embedded2");
-        Assert.assertNotNull(m);
-        Assert.assertTrue(m.isSearchable());
+         AttributeModel m = model.getAttributeModel("child.embedded2");
+        assertNotNull(m);
+        assertTrue(m.isSearchable());
 
         // visible attribute is overridden using message bundle
-        Assert.assertFalse(m.isVisible());
+        assertFalse(m.isVisible());
 
         // nested embedding
-        Assert.assertNull(model.getAttributeModel("child.grandChild"));
+        assertNull(model.getAttributeModel("child.grandChild"));
 
-        final AttributeModel m2 = model.getAttributeModel("child.grandChild.sometAttribute");
-        Assert.assertNotNull(m2);
+         AttributeModel m2 = model.getAttributeModel("child.grandChild.sometAttribute");
+        assertNotNull(m2);
 
     }
 
     @Test
     public void testSelectMode() {
-        final EntityModel<Entity7> model = factory.getModel(Entity7.class);
+         EntityModel<Entity7> model = factory.getModel(Entity7.class);
 
         // default
-        final AttributeModel am = model.getAttributeModel("entity6");
-        Assert.assertEquals(AttributeSelectMode.LOOKUP, am.getSelectMode());
-        Assert.assertEquals(AttributeSelectMode.LOOKUP, am.getSearchSelectMode());
-        Assert.assertEquals(AttributeSelectMode.LOOKUP, am.getGridSelectMode());
+         AttributeModel am = model.getAttributeModel("entity6");
+        assertEquals(AttributeSelectMode.LOOKUP, am.getSelectMode());
+        assertEquals(AttributeSelectMode.LOOKUP, am.getSearchSelectMode());
+        assertEquals(AttributeSelectMode.LOOKUP, am.getGridSelectMode());
 
         // multiple search defaults to token
-        final AttributeModel am2 = model.getAttributeModel("entity5");
-        Assert.assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
-        Assert.assertEquals(AttributeSelectMode.LOOKUP, am2.getSearchSelectMode());
-        Assert.assertEquals(AttributeSelectMode.COMBO, am2.getGridSelectMode());
+         AttributeModel am2 = model.getAttributeModel("entity5");
+        assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
+        assertEquals(AttributeSelectMode.LOOKUP, am2.getSearchSelectMode());
+        assertEquals(AttributeSelectMode.COMBO, am2.getGridSelectMode());
 
         // overwritten attribute modes
-        final AttributeModel am3 = model.getAttributeModel("entity52");
-        Assert.assertEquals(AttributeSelectMode.COMBO, am3.getSelectMode());
-        Assert.assertEquals(AttributeSelectMode.TOKEN, am3.getSearchSelectMode());
-        Assert.assertEquals(AttributeSelectMode.LIST, am3.getGridSelectMode());
+         AttributeModel am3 = model.getAttributeModel("entity52");
+        assertEquals(AttributeSelectMode.COMBO, am3.getSelectMode());
+        assertEquals(AttributeSelectMode.TOKEN, am3.getSearchSelectMode());
+        assertEquals(AttributeSelectMode.LIST, am3.getGridSelectMode());
     }
 
     @Test
     public void testDateType() {
-        final EntityModel<Entity8> model = factory.getModel(Entity8.class);
+         EntityModel<Entity8> model = factory.getModel(Entity8.class);
 
         // default
         AttributeModel am = model.getAttributeModel("date1");
-        Assert.assertEquals(AttributeDateType.DATE, am.getDateType());
-        Assert.assertEquals("dd-MM-yyyy", am.getDisplayFormat());
+        assertEquals(AttributeDateType.DATE, am.getDateType());
+        assertEquals("dd-MM-yyyy", am.getDisplayFormat());
 
         // temporal annotation
         am = model.getAttributeModel("date2");
-        Assert.assertEquals(AttributeDateType.TIMESTAMP, am.getDateType());
-        Assert.assertEquals("dd-MM-yyyy HH:mm:ss", am.getDisplayFormat());
+        assertEquals(AttributeDateType.TIMESTAMP, am.getDateType());
+        assertEquals("dd-MM-yyyy HH:mm:ss", am.getDisplayFormat());
 
         am = model.getAttributeModel("date3");
-        Assert.assertEquals(AttributeDateType.TIME, am.getDateType());
-        Assert.assertEquals("HH:mm:ss", am.getDisplayFormat());
+        assertEquals(AttributeDateType.TIME, am.getDateType());
+        assertEquals("HH:mm:ss", am.getDisplayFormat());
 
         // overridden annotation
         am = model.getAttributeModel("date4");
-        Assert.assertEquals(AttributeDateType.TIME, am.getDateType());
-        Assert.assertEquals("ss:mm:HH", am.getDisplayFormat());
+        assertEquals(AttributeDateType.TIME, am.getDateType());
+        assertEquals("ss:mm:HH", am.getDisplayFormat());
 
         // overridden annotation
         am = model.getAttributeModel("date5");
-        Assert.assertEquals(AttributeDateType.DATE, am.getDateType());
-        Assert.assertEquals("yyyy-dd-MM ss:mm:HH", am.getDisplayFormat());
+        assertEquals(AttributeDateType.DATE, am.getDateType());
+        assertEquals("yyyy-dd-MM ss:mm:HH", am.getDisplayFormat());
 
         // defaults
         am = model.getAttributeModel("date6");
-        Assert.assertEquals(AttributeDateType.DATE, am.getDateType());
-        Assert.assertEquals("dd-MM-yyyy", am.getDisplayFormat());
+        assertEquals(AttributeDateType.DATE, am.getDateType());
+        assertEquals("dd-MM-yyyy", am.getDisplayFormat());
     }
 
     @Test
     public void testElementCollection() {
-        final EntityModel<Entity9> model = factory.getModel(Entity9.class);
+         EntityModel<Entity9> model = factory.getModel(Entity9.class);
 
-        final AttributeModel am = model.getAttributeModel("elements");
-        Assert.assertEquals(AttributeType.ELEMENT_COLLECTION, am.getAttributeType());
-        Assert.assertEquals("element_table", am.getCollectionTableName());
-        Assert.assertEquals("element", am.getCollectionTableFieldName());
+         AttributeModel am = model.getAttributeModel("elements");
+        assertEquals(AttributeType.ELEMENT_COLLECTION, am.getAttributeType());
+        assertEquals("element_table", am.getCollectionTableName());
+        assertEquals("element", am.getCollectionTableFieldName());
 
-        final AttributeModel am2 = model.getAttributeModel("longElements");
-        Assert.assertEquals(AttributeType.ELEMENT_COLLECTION, am2.getAttributeType());
-        Assert.assertEquals(100L, am2.getMinValue().longValue());
-        Assert.assertEquals(500L, am2.getMaxValue().longValue());
+         AttributeModel am2 = model.getAttributeModel("longElements");
+        assertEquals(AttributeType.ELEMENT_COLLECTION, am2.getAttributeType());
+        assertEquals(100L, am2.getMinValue().longValue());
+        assertEquals(500L, am2.getMaxValue().longValue());
     }
 
     @Test
     public void testGroupTogetherWith() {
-        final EntityModel<Entity10> model = factory.getModel(Entity10.class);
+         EntityModel<Entity10> model = factory.getModel(Entity10.class);
 
-        final AttributeModel am = model.getAttributeModel("attribute1");
-        Assert.assertEquals(1, am.getGroupTogetherWith().size());
-        Assert.assertEquals("attribute2", am.getGroupTogetherWith().get(0));
+         AttributeModel am = model.getAttributeModel("attribute1");
+        assertEquals(1, am.getGroupTogetherWith().size());
+        assertEquals("attribute2", am.getGroupTogetherWith().get(0));
     }
 
     /**
@@ -553,14 +558,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
      */
     @Test
     public void testGroupTogetherWithWrongOrder() {
-        final EntityModel<Entity11> model = factory.getModel(Entity11.class);
+         EntityModel<Entity11> model = factory.getModel(Entity11.class);
 
-        final AttributeModel am = model.getAttributeModel("attribute2");
-        Assert.assertEquals(1, am.getGroupTogetherWith().size());
-        Assert.assertEquals("attribute1", am.getGroupTogetherWith().get(0));
+         AttributeModel am = model.getAttributeModel("attribute2");
+        assertEquals(1, am.getGroupTogetherWith().size());
+        assertEquals("attribute1", am.getGroupTogetherWith().get(0));
 
-        final AttributeModel am1 = model.getAttributeModel("attribute1");
-        Assert.assertTrue(am1.isAlreadyGrouped());
+         AttributeModel am1 = model.getAttributeModel("attribute1");
+        assertTrue(am1.isAlreadyGrouped());
     }
 
     /**
@@ -568,14 +573,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
      */
     @Test
     public void testCascade() {
-        final EntityModel<Entity12> model = factory.getModel(Entity12.class);
-        final AttributeModel am = model.getAttributeModel("attribute1");
-        Assert.assertTrue(am.getCascadeAttributes().contains("attribute2"));
-        Assert.assertEquals("somePath", am.getCascadeFilterPath("attribute2"));
-        Assert.assertEquals(CascadeMode.BOTH, am.getCascadeMode("attribute2"));
+         EntityModel<Entity12> model = factory.getModel(Entity12.class);
+         AttributeModel am = model.getAttributeModel("attribute1");
+        assertTrue(am.getCascadeAttributes().contains("attribute2"));
+        assertEquals("somePath", am.getCascadeFilterPath("attribute2"));
+        assertEquals(CascadeMode.BOTH, am.getCascadeMode("attribute2"));
 
-        Assert.assertEquals(1, model.getCascadeAttributeModels().size());
-        Assert.assertEquals("attribute1", model.getCascadeAttributeModels().iterator().next().getPath());
+        assertEquals(1, model.getCascadeAttributeModels().size());
+        assertEquals("attribute1", model.getCascadeAttributeModels().iterator().next().getPath());
     }
 
     /**
@@ -583,39 +588,39 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
      */
     @Test
     public void testCascadeMessageBundle() {
-        final EntityModel<Entity13> model = factory.getModel(Entity13.class);
-        final AttributeModel am = model.getAttributeModel("attribute1");
-        Assert.assertTrue(am.getCascadeAttributes().contains("attribute2"));
-        Assert.assertEquals("somePath", am.getCascadeFilterPath("attribute2"));
-        Assert.assertEquals(CascadeMode.EDIT, am.getCascadeMode("attribute2"));
+         EntityModel<Entity13> model = factory.getModel(Entity13.class);
+         AttributeModel am = model.getAttributeModel("attribute1");
+        assertTrue(am.getCascadeAttributes().contains("attribute2"));
+        assertEquals("somePath", am.getCascadeFilterPath("attribute2"));
+        assertEquals(CascadeMode.EDIT, am.getCascadeMode("attribute2"));
     }
 
     @Test
     public void testJava8DateTypes() {
-        final EntityModel<Entity14> model = factory.getModel(Entity14.class);
-        final AttributeModel am1 = model.getAttributeModel("localDate");
-        Assert.assertNotNull(am1);
-        Assert.assertEquals("dd/MM/yyyy", am1.getDisplayFormat());
-        Assert.assertEquals(AttributeDateType.DATE, am1.getDateType());
-        Assert.assertEquals(DateUtils.createLocalDate("01011980"), am1.getDefaultValue());
+         EntityModel<Entity14> model = factory.getModel(Entity14.class);
+         AttributeModel am1 = model.getAttributeModel("localDate");
+        assertNotNull(am1);
+        assertEquals("dd/MM/yyyy", am1.getDisplayFormat());
+        assertEquals(AttributeDateType.DATE, am1.getDateType());
+        assertEquals(DateUtils.createLocalDate("01011980"), am1.getDefaultValue());
 
-        final AttributeModel am2 = model.getAttributeModel("localTime");
-        Assert.assertNotNull(am2);
-        Assert.assertEquals("HH-mm-ss", am2.getDisplayFormat());
-        Assert.assertEquals(AttributeDateType.TIME, am2.getDateType());
-        Assert.assertEquals(DateUtils.createLocalTime("121314"), am2.getDefaultValue());
+         AttributeModel am2 = model.getAttributeModel("localTime");
+        assertNotNull(am2);
+        assertEquals("HH-mm-ss", am2.getDisplayFormat());
+        assertEquals(AttributeDateType.TIME, am2.getDateType());
+        assertEquals(DateUtils.createLocalTime("121314"), am2.getDefaultValue());
 
-        final AttributeModel am3 = model.getAttributeModel("localDateTime");
-        Assert.assertNotNull(am3);
-        Assert.assertEquals("dd/MM/yyyy HH-mm-ss", am3.getDisplayFormat());
-        Assert.assertEquals(AttributeDateType.TIMESTAMP, am3.getDateType());
-        Assert.assertEquals(DateUtils.createLocalDateTime("01011980 121314"), am3.getDefaultValue());
+         AttributeModel am3 = model.getAttributeModel("localDateTime");
+        assertNotNull(am3);
+        assertEquals("dd/MM/yyyy HH-mm-ss", am3.getDisplayFormat());
+        assertEquals(AttributeDateType.TIMESTAMP, am3.getDateType());
+        assertEquals(DateUtils.createLocalDateTime("01011980 121314"), am3.getDefaultValue());
 
-        final AttributeModel am4 = model.getAttributeModel("zonedDateTime");
-        Assert.assertNotNull(am4);
-        Assert.assertEquals("dd-MM-yyyy HH:mm:ssZ", am4.getDisplayFormat());
-        Assert.assertEquals(AttributeDateType.TIMESTAMP, am4.getDateType());
-        Assert.assertEquals(DateUtils.createZonedDateTime("01-01-2017 12:00:00+0100"), am4.getDefaultValue());
+         AttributeModel am4 = model.getAttributeModel("zonedDateTime");
+        assertNotNull(am4);
+        assertEquals("dd-MM-yyyy HH:mm:ssZ", am4.getDisplayFormat());
+        assertEquals(AttributeDateType.TIMESTAMP, am4.getDateType());
+        assertEquals(DateUtils.createZonedDateTime("01-01-2017 12:00:00+0100"), am4.getDefaultValue());
     }
 
     public class Entity1 {
@@ -644,7 +649,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
 
@@ -652,7 +657,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return age;
         }
 
-        public void setAge(final Integer age) {
+        public void setAge( Integer age) {
             this.age = age;
         }
 
@@ -660,7 +665,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return birthDate;
         }
 
-        public void setBirthDate(final LocalDate birthDate) {
+        public void setBirthDate( LocalDate birthDate) {
             this.birthDate = birthDate;
         }
 
@@ -668,7 +673,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return weight;
         }
 
-        public void setWeight(final BigDecimal weight) {
+        public void setWeight( BigDecimal weight) {
             this.weight = weight;
         }
 
@@ -676,7 +681,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return bool;
         }
 
-        public void setBool(final Boolean bool) {
+        public void setBool( Boolean bool) {
             this.bool = bool;
         }
 
@@ -684,7 +689,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return email;
         }
 
-        public void setEmail(final String email) {
+        public void setEmail( String email) {
             this.email = email;
         }
 
@@ -692,7 +697,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return url;
         }
 
-        public void setUrl(final String url) {
+        public void setUrl( String url) {
             this.url = url;
         }
 
@@ -711,7 +716,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
 
@@ -719,7 +724,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return age;
         }
 
-        public void setAge(final Integer age) {
+        public void setAge( Integer age) {
             this.age = age;
         }
 
@@ -727,7 +732,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return birthDate;
         }
 
-        public void setBirthDate(final LocalDate birthDate) {
+        public void setBirthDate( LocalDate birthDate) {
             this.birthDate = birthDate;
         }
     }
@@ -763,7 +768,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
 
@@ -771,7 +776,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return age;
         }
 
-        public void setAge(final Integer age) {
+        public void setAge( Integer age) {
             this.age = age;
         }
 
@@ -779,7 +784,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return birthDate;
         }
 
-        public void setBirthDate(final LocalDate birthDate) {
+        public void setBirthDate( LocalDate birthDate) {
             this.birthDate = birthDate;
         }
 
@@ -787,7 +792,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return entity2;
         }
 
-        public void setEntity2(final Entity2 entity2) {
+        public void setEntity2( Entity2 entity2) {
             this.entity2 = entity2;
         }
 
@@ -795,7 +800,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return entityList;
         }
 
-        public void setEntityList(final List<Entity4> entityList) {
+        public void setEntityList( List<Entity4> entityList) {
             this.entityList = entityList;
         }
 
@@ -808,7 +813,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return weight;
         }
 
-        public void setWeight(final BigDecimal weight) {
+        public void setWeight( BigDecimal weight) {
             this.weight = weight;
         }
 
@@ -834,7 +839,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
 
@@ -842,7 +847,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return age;
         }
 
-        public void setAge(final Integer age) {
+        public void setAge( Integer age) {
             this.age = age;
         }
 
@@ -850,7 +855,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return birthDate;
         }
 
-        public void setBirthDate(final LocalDate birthDate) {
+        public void setBirthDate( LocalDate birthDate) {
             this.birthDate = birthDate;
         }
 
@@ -876,7 +881,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return entity6;
         }
 
-        public void setEntity6(final Entity6 entity6) {
+        public void setEntity6( Entity6 entity6) {
             this.entity6 = entity6;
         }
 
@@ -884,7 +889,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return entity5;
         }
 
-        public void setEntity5(final Entity5 entity5) {
+        public void setEntity5( Entity5 entity5) {
             this.entity5 = entity5;
         }
 
@@ -892,7 +897,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return entity52;
         }
 
-        public void setEntity52(final Entity5 entity52) {
+        public void setEntity52( Entity5 entity52) {
             this.entity52 = entity52;
         }
 
@@ -920,7 +925,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return date1;
         }
 
-        public void setDate1(final LocalDate date1) {
+        public void setDate1( LocalDate date1) {
             this.date1 = date1;
         }
 
@@ -928,7 +933,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return date2;
         }
 
-        public void setDate2(final LocalDateTime date2) {
+        public void setDate2( LocalDateTime date2) {
             this.date2 = date2;
         }
 
@@ -936,7 +941,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return date3;
         }
 
-        public void setDate3(final LocalTime date3) {
+        public void setDate3( LocalTime date3) {
             this.date3 = date3;
         }
 
@@ -944,7 +949,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return date4;
         }
 
-        public void setDate4(final LocalTime date4) {
+        public void setDate4( LocalTime date4) {
             this.date4 = date4;
         }
 
@@ -952,7 +957,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return date5;
         }
 
-        public void setDate5(final LocalDate date5) {
+        public void setDate5( LocalDate date5) {
             this.date5 = date5;
         }
 
@@ -960,7 +965,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return date6;
         }
 
-        public void setDate6(final LocalDate date6) {
+        public void setDate6( LocalDate date6) {
             this.date6 = date6;
         }
     }
@@ -982,7 +987,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return elements;
         }
 
-        public void setElements(final Set<String> elements) {
+        public void setElements( Set<String> elements) {
             this.elements = elements;
         }
 
@@ -990,7 +995,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return longElements;
         }
 
-        public void setLongElements(final Set<Long> longElements) {
+        public void setLongElements( Set<Long> longElements) {
             this.longElements = longElements;
         }
 
@@ -1008,7 +1013,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute1;
         }
 
-        public void setAttribute1(final String attribute1) {
+        public void setAttribute1( String attribute1) {
             this.attribute1 = attribute1;
         }
 
@@ -1016,7 +1021,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute2;
         }
 
-        public void setAttribute2(final String attribute2) {
+        public void setAttribute2( String attribute2) {
             this.attribute2 = attribute2;
         }
 
@@ -1034,7 +1039,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute1;
         }
 
-        public void setAttribute1(final String attribute1) {
+        public void setAttribute1( String attribute1) {
             this.attribute1 = attribute1;
         }
 
@@ -1042,7 +1047,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute2;
         }
 
-        public void setAttribute2(final String attribute2) {
+        public void setAttribute2( String attribute2) {
             this.attribute2 = attribute2;
         }
 
@@ -1059,7 +1064,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute1;
         }
 
-        public void setAttribute1(final String attribute1) {
+        public void setAttribute1( String attribute1) {
             this.attribute1 = attribute1;
         }
 
@@ -1067,7 +1072,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute2;
         }
 
-        public void setAttribute2(final String attribute2) {
+        public void setAttribute2( String attribute2) {
             this.attribute2 = attribute2;
         }
 
@@ -1089,7 +1094,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute1;
         }
 
-        public void setAttribute1(final String attribute1) {
+        public void setAttribute1( String attribute1) {
             this.attribute1 = attribute1;
         }
 
@@ -1097,7 +1102,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return attribute2;
         }
 
-        public void setAttribute2(final String attribute2) {
+        public void setAttribute2( String attribute2) {
             this.attribute2 = attribute2;
         }
 
@@ -1121,7 +1126,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return localDate;
         }
 
-        public void setLocalDate(final LocalDate localDate) {
+        public void setLocalDate( LocalDate localDate) {
             this.localDate = localDate;
         }
 
@@ -1129,7 +1134,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return localDateTime;
         }
 
-        public void setLocalDateTime(final LocalDateTime localDateTime) {
+        public void setLocalDateTime( LocalDateTime localDateTime) {
             this.localDateTime = localDateTime;
         }
 
@@ -1137,7 +1142,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return localTime;
         }
 
-        public void setLocalTime(final LocalTime localTime) {
+        public void setLocalTime( LocalTime localTime) {
             this.localTime = localTime;
         }
 
@@ -1145,7 +1150,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return zonedDateTime;
         }
 
-        public void setZonedDateTime(final ZonedDateTime zonedDateTime) {
+        public void setZonedDateTime( ZonedDateTime zonedDateTime) {
             this.zonedDateTime = zonedDateTime;
         }
 
@@ -1166,7 +1171,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return logo;
         }
 
-        public void setLogo(final byte[] logo) {
+        public void setLogo( byte[] logo) {
             this.logo = logo;
         }
 
@@ -1192,7 +1197,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return id;
         }
 
-        public void setId(final int id) {
+        public void setId( int id) {
             this.id = id;
         }
 
@@ -1200,7 +1205,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
 
@@ -1208,7 +1213,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return children;
         }
 
-        public void setChildren(final List<EntityChild> children) {
+        public void setChildren( List<EntityChild> children) {
             this.children = children;
         }
 
@@ -1217,7 +1222,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return null;
         }
 
-        public void setCalculatedChildren(final List<EntityGrandChild> children) {
+        public void setCalculatedChildren( List<EntityGrandChild> children) {
             // do nothing
         }
     }
@@ -1233,7 +1238,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return id;
         }
 
-        public void setId(final int id) {
+        public void setId( int id) {
             this.id = id;
         }
 
@@ -1241,7 +1246,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
 
@@ -1249,7 +1254,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return parent;
         }
 
-        public void setParent(final EntityParent parent) {
+        public void setParent( EntityParent parent) {
             this.parent = parent;
         }
 
@@ -1257,7 +1262,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return parent2;
         }
 
-        public void setParent2(final EntityParent parent2) {
+        public void setParent2( EntityParent parent2) {
             this.parent2 = parent2;
         }
     }
@@ -1275,7 +1280,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return code;
         }
 
-        public void setCode(final String code) {
+        public void setCode( String code) {
             this.code = code;
         }
 
@@ -1283,7 +1288,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
     }
@@ -1300,7 +1305,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return name;
         }
 
-        public void setName(final String name) {
+        public void setName( String name) {
             this.name = name;
         }
 
@@ -1308,7 +1313,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return child;
         }
 
-        public void setChild(final EmbeddedChild child) {
+        public void setChild( EmbeddedChild child) {
             this.child = child;
         }
 
@@ -1330,7 +1335,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return embedded1;
         }
 
-        public void setEmbedded1(final String embedded1) {
+        public void setEmbedded1( String embedded1) {
             this.embedded1 = embedded1;
         }
 
@@ -1338,7 +1343,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return embedded2;
         }
 
-        public void setEmbedded2(final String embedded2) {
+        public void setEmbedded2( String embedded2) {
             this.embedded2 = embedded2;
         }
 
@@ -1346,7 +1351,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return grandChild;
         }
 
-        public void setGrandChild(final EmbeddedGrandChild grandChild) {
+        public void setGrandChild( EmbeddedGrandChild grandChild) {
             this.grandChild = grandChild;
         }
     }
@@ -1360,7 +1365,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
             return sometAttribute;
         }
 
-        public void setSometAttribute(final String sometAttribute) {
+        public void setSometAttribute( String sometAttribute) {
             this.sometAttribute = sometAttribute;
         }
     }

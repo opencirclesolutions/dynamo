@@ -13,13 +13,16 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -48,7 +51,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
     @Mock
     private TestEntityService service;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
         MockVaadin.setup();
@@ -86,7 +89,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
         wrapper.build();
 
         Grid<TestEntity> grid = wrapper.getGrid();
-        Assert.assertNotNull(grid);
+        assertNotNull(grid);
     }
 
     @Test
@@ -100,13 +103,13 @@ public class ModelBasedGridTest extends BaseMockitoTest {
         ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false,
                 GridEditMode.SINGLE_ROW);
 
-        Assert.assertTrue(grid.getColumnByKey("name").isVisible());
+        assertTrue(grid.getColumnByKey("name").isVisible());
 
         grid.setColumnVisible("name", true);
-        Assert.assertTrue(grid.getColumnByKey("name").isVisible());
+        assertTrue(grid.getColumnByKey("name").isVisible());
 
         grid.setColumnVisible("name", false);
-        Assert.assertFalse(grid.getColumnByKey("name").isVisible());
+        assertFalse(grid.getColumnByKey("name").isVisible());
     }
 
 }

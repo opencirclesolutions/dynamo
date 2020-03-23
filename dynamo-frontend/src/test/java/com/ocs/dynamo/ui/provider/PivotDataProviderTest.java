@@ -1,22 +1,23 @@
 package com.ocs.dynamo.ui.provider;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
@@ -34,49 +35,44 @@ public class PivotDataProviderTest extends BaseMockitoTest {
     @Mock
     private Query<PivotedItem, SerializablePredicate<PivotedItem>> query;
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
-
     private PivotDataProvider<Integer, TestEntity> pivotProvider;
 
-    @Before
+    @BeforeEach
     public void setUp() {
-        Mockito.when(query.getOffset()).thenReturn(0);
-        Mockito.when(query.getLimit()).thenReturn(5);
+        when(query.getOffset()).thenReturn(0);
+        when(query.getLimit()).thenReturn(5);
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testSizeWithoutFilter() {
 
-        pivotProvider = new PivotDataProvider<>(provider, "name", "someEnum", Lists.newArrayList("name"), Lists.newArrayList("age"),
-                () -> 10);
+        pivotProvider = new PivotDataProvider<>(provider, "name", "someEnum", List.of("name"), List.of("age"), () -> 10);
         pivotProvider.size(query);
         assertEquals(10, pivotProvider.getSize());
 
-        Mockito.verify(provider).size(Mockito.any(Query.class));
+        verify(provider).size(any(Query.class));
     }
 
     @Test
     @SuppressWarnings({ "unchecked", "rawtypes" })
     public void testSizeWithFilter() {
 
-        Mockito.when(query.getFilter()).thenReturn(Optional.of(new EqualsPredicate<PivotedItem>("name", "Bob")));
+        when(query.getFilter()).thenReturn(Optional.of(new EqualsPredicate<PivotedItem>("name", "Bob")));
 
-        pivotProvider = new PivotDataProvider<>(provider, "name", "someEnum", Lists.newArrayList("name"), Lists.newArrayList("age"),
-                () -> 5);
+        pivotProvider = new PivotDataProvider<>(provider, "name", "someEnum", List.of("name"), List.of("age"), () -> 5);
         pivotProvider.size(query);
         assertEquals(5, pivotProvider.getSize());
 
         ArgumentCaptor<Query> captor = ArgumentCaptor.forClass(Query.class);
-        Mockito.verify(provider).size(captor.capture());
+        verify(provider).size(captor.capture());
         assertTrue(captor.getValue().getFilter().isPresent());
     }
 
     @Test
     @SuppressWarnings("unchecked")
     public void testFetch() {
-        pivotProvider = new PivotDataProvider<>(provider, "name", "someEnum", Lists.newArrayList("name"), Lists.newArrayList("age"),
-                () -> 1);
+        pivotProvider = new PivotDataProvider<>(provider, "name", "someEnum", List.of("name"), List.of("age"), () -> 1);
 
         TestEntity t1 = new TestEntity();
         t1.setName("Bob");
@@ -88,14 +84,14 @@ public class PivotDataProviderTest extends BaseMockitoTest {
         t2.setAge(45L);
         t2.setSomeEnum(TestEnum.B);
 
-        Mockito.when(query.getOffset()).thenReturn(0);
-        Mockito.when(query.getLimit()).thenReturn(1);
+        when(query.getOffset()).thenReturn(0);
+        when(query.getLimit()).thenReturn(1);
 
-        Mockito.when(provider.fetch(Mockito.any(Query.class))).thenReturn(Stream.of(t1, t2), Stream.empty());
+        when(provider.fetch(any(Query.class))).thenReturn(Stream.of(t1, t2), Stream.empty());
         Stream<PivotedItem> fetch = pivotProvider.fetch(query);
 
         ArgumentCaptor<Query<TestEntity, SerializablePredicate<TestEntity>>> captor = ArgumentCaptor.forClass(Query.class);
-        Mockito.verify(provider, Mockito.times(2)).fetch(captor.capture());
+        verify(provider, times(2)).fetch(captor.capture());
 
         Query<TestEntity, SerializablePredicate<TestEntity>> value = captor.getAllValues().get(0);
         assertEquals(0, value.getOffset());

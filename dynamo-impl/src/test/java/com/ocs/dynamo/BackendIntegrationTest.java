@@ -10,7 +10,7 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
  * @author Bas Rutten
  *
  */
-@SpringBootTest(classes = IntegrationTestConfig.class)
+@SpringBootTest
 public abstract class BackendIntegrationTest extends BaseIntegrationTest {
 
 }

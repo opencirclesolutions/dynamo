@@ -23,21 +23,21 @@ import com.ocs.dynamo.domain.AbstractEntity;
  * @author Bas Rutten
  *
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public interface DataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-	/**
-	 * Returns the next entity
-	 * 
-	 * @return
-	 */
-	public T next();
+    /**
+     * Returns the next entity
+     * 
+     * @return
+     */
+    T next();
 
-	/**
-	 * Returns the total number of entities
-	 * 
-	 * @return
-	 */
-	public int size();
+    /**
+     * Returns the total number of entities
+     * 
+     * @return
+     */
+    int size();
 }

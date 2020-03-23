@@ -13,8 +13,9 @@
  */
 package com.ocs.dynamo.domain.comparator;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 
@@ -31,12 +32,12 @@ public class IdComparatorTest {
         TestEntity t3 = new TestEntity("name", 12L);
         t3.setId(null);
 
-        Assert.assertEquals(0, new IdComparator().compare(t1, t1));
-        Assert.assertEquals(1, new IdComparator().compare(t1, t2));
-        Assert.assertEquals(-1, new IdComparator().compare(t2, t1));
+        assertEquals(0, new IdComparator().compare(t1, t1));
+        assertEquals(1, new IdComparator().compare(t1, t2));
+        assertEquals(-1, new IdComparator().compare(t2, t1));
 
-        Assert.assertEquals(-1, new IdComparator().compare(t3, t1));
-        Assert.assertEquals(1, new IdComparator().compare(t1, t3));
+        assertEquals(-1, new IdComparator().compare(t3, t1));
+        assertEquals(1, new IdComparator().compare(t1, t3));
 
     }
 

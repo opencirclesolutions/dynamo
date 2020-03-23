@@ -138,7 +138,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
         if (am.isVisibleInGrid()) {
             Column<T> column;
             if (am.isUrl()) {
-                // URL field
                 column = addComponentColumn(t -> {
                     URLField urlField = new URLField(new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")), am,
                             editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode));

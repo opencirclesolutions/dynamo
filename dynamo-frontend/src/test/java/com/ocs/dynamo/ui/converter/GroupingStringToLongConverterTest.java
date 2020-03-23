@@ -13,8 +13,9 @@
  */
 package com.ocs.dynamo.ui.converter;
 
-import org.junit.Assert;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.vaadin.flow.data.binder.Result;
@@ -26,7 +27,7 @@ public class GroupingStringToLongConverterTest extends BaseConverterTest {
 	@Test
 	public void testToModel() {
 		Result<Long> value = converter.convertToModel("3000", createContext());
-		Assert.assertEquals(3000L, value.getOrThrow(r -> new OCSRuntimeException()).longValue());
+		assertEquals(3000L, value.getOrThrow(r -> new OCSRuntimeException()).longValue());
 	}
 
 	/**
@@ -35,7 +36,7 @@ public class GroupingStringToLongConverterTest extends BaseConverterTest {
 	@Test
 	public void testToPresentation() {
 		String value = converter.convertToPresentation(3000L, createContext());
-		Assert.assertEquals("3000", value);
+		assertEquals("3000", value);
 	}
 
 	/**
@@ -44,7 +45,7 @@ public class GroupingStringToLongConverterTest extends BaseConverterTest {
 	@Test
 	public void testToPresentationWithGrouping_ToPresentation() {
 		String value = new GroupingStringToLongConverter("message", true).convertToPresentation(3000L, createContext());
-		Assert.assertEquals("3.000", value);
+		assertEquals("3.000", value);
 	}
 
 	/**
@@ -54,7 +55,7 @@ public class GroupingStringToLongConverterTest extends BaseConverterTest {
 	public void testToPresentationWithGrouping_ToModel() {
 		Result<Long> value = new GroupingStringToLongConverter("message", true).convertToModel("3.000",
 				createContext());
-		Assert.assertEquals(3000L, value.getOrThrow(r -> new OCSRuntimeException()).longValue());
+		assertEquals(3000L, value.getOrThrow(r -> new OCSRuntimeException()).longValue());
 	}
 
 }

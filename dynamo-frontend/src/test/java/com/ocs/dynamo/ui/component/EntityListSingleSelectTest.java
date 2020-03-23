@@ -13,16 +13,17 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
-import org.junit.Test;
+import java.util.List;
+
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -49,7 +50,7 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
     @Test
     public void testFixed() {
         EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(factory.getModel(TestEntity.class), null,
-                Lists.newArrayList(new TestEntity()));
+                List.of(new TestEntity()));
         assertEquals(EntityListSingleSelect.SelectMode.FIXED, select.getSelectMode());
         verifyNoInteractions(service);
     }

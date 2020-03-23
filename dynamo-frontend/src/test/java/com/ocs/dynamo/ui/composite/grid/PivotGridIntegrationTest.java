@@ -1,13 +1,13 @@
 package com.ocs.dynamo.ui.composite.grid;
 
-import static org.junit.Assert.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.function.Function;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
@@ -32,7 +32,7 @@ public class PivotGridIntegrationTest extends FrontendIntegrationTest {
 
     private TestEntity entity3;
 
-    @Before
+    @BeforeEach
     public void setup() {
         entity1 = new TestEntity("Bob", 45L);
         entity1.setSomeEnum(TestEnum.A);

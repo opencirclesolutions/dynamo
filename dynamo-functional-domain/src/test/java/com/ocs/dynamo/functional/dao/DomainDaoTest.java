@@ -13,19 +13,19 @@
  */
 package com.ocs.dynamo.functional.dao;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
 import javax.inject.Inject;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ocs.dynamo.BackendIntegrationTest;
-import com.ocs.dynamo.functional.FunctionalDomainIntegrationTestConfig;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;
@@ -35,7 +35,7 @@ import com.ocs.dynamo.functional.domain.Region;
  * @author Patrick Deenen (patrick@opencircle.solutions)
  *
  */
-@SpringBootTest(classes = FunctionalDomainIntegrationTestConfig.class)
+@SpringBootTest()
 public class DomainDaoTest extends BackendIntegrationTest {
 
     @Inject
@@ -45,7 +45,7 @@ public class DomainDaoTest extends BackendIntegrationTest {
 
     private Region asia;
 
-    @Before
+    @BeforeEach
     public void setup() {
         europa = new Region("EU", "Europa");
         asia = new Region("AS", "Asia");

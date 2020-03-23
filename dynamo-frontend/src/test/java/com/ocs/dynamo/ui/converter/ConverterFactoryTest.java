@@ -13,11 +13,13 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.math.BigDecimal;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -34,89 +36,89 @@ import com.vaadin.flow.data.converter.StringToLongConverter;
 
 public class ConverterFactoryTest extends BaseMockitoTest {
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	@Mock
-	private MessageService messageService;
+    @Mock
+    private MessageService messageService;
 
-	private EntityModel<TestEntity> em;
+    private EntityModel<TestEntity> em;
 
-	@Before
-	public void setupTableUtilsTest() throws NoSuchFieldException {
-		em = factory.getModel(TestEntity.class);
-		ReflectionTestUtils.setField(factory, "messageService", messageService);
-	}
+    @BeforeEach
+    public void setupTableUtilsTest() throws NoSuchFieldException {
+        em = factory.getModel(TestEntity.class);
+        ReflectionTestUtils.setField(factory, "messageService", messageService);
+    }
 
-	@Test
-	public void testGetConverterFor() {
-		Converter<?, ?> cv = ConverterFactory.createConverterFor(Integer.class, em.getAttributeModel("someInt"), true);
-		Assert.assertTrue(cv instanceof GroupingStringToIntegerConverter);
+    @Test
+    public void testGetConverterFor() {
+        Converter<?, ?> cv = ConverterFactory.createConverterFor(Integer.class, em.getAttributeModel("someInt"), true);
+        assertTrue(cv instanceof GroupingStringToIntegerConverter);
 
-		cv = ConverterFactory.createConverterFor(Long.class, em.getAttributeModel("age"), true);
-		Assert.assertTrue(cv instanceof GroupingStringToLongConverter);
+        cv = ConverterFactory.createConverterFor(Long.class, em.getAttributeModel("age"), true);
+        assertTrue(cv instanceof GroupingStringToLongConverter);
 
-		cv = ConverterFactory.createConverterFor(BigDecimal.class, em.getAttributeModel("rate"), true);
-		Assert.assertTrue(cv instanceof BigDecimalConverter);
-	}
+        cv = ConverterFactory.createConverterFor(BigDecimal.class, em.getAttributeModel("rate"), true);
+        assertTrue(cv instanceof BigDecimalConverter);
+    }
 
-	@Test
-	public void testCreateBigDecimalConverter() {
-		BigDecimalConverter cv = ConverterFactory.createBigDecimalConverter(false, false, false, 2, null);
-		Assert.assertFalse(cv instanceof PercentageBigDecimalConverter);
-	}
+    @Test
+    public void testCreateBigDecimalConverter() {
+        BigDecimalConverter cv = ConverterFactory.createBigDecimalConverter(false, false, false, 2, null);
+        assertFalse(cv instanceof PercentageBigDecimalConverter);
+    }
 
-	@Test
-	public void testCreateBigDecimalConverter2() {
-		BigDecimalConverter cv = ConverterFactory.createBigDecimalConverter(false, true, false, 2, null);
-		Assert.assertTrue(cv instanceof PercentageBigDecimalConverter);
-	}
+    @Test
+    public void testCreateBigDecimalConverter2() {
+        BigDecimalConverter cv = ConverterFactory.createBigDecimalConverter(false, true, false, 2, null);
+        assertTrue(cv instanceof PercentageBigDecimalConverter);
+    }
 
-	@Test
-	public void testCreateBigDecimalConverter3() {
-		BigDecimalConverter cv = ConverterFactory.createBigDecimalConverter(true, false, false, 2, "EUR");
-		Assert.assertTrue(cv instanceof CurrencyBigDecimalConverter);
-	}
+    @Test
+    public void testCreateBigDecimalConverter3() {
+        BigDecimalConverter cv = ConverterFactory.createBigDecimalConverter(true, false, false, 2, "EUR");
+        assertTrue(cv instanceof CurrencyBigDecimalConverter);
+    }
 
-	@Test
-	public void testCreateIntegerConverter1() {
-		StringToIntegerConverter cv = ConverterFactory.createIntegerConverter(true, false);
-		Assert.assertTrue(cv instanceof GroupingStringToIntegerConverter);
-	}
+    @Test
+    public void testCreateIntegerConverter1() {
+        StringToIntegerConverter cv = ConverterFactory.createIntegerConverter(true, false);
+        assertTrue(cv instanceof GroupingStringToIntegerConverter);
+    }
 
-	@Test
-	public void testCreateIntegerConverter2() {
-		StringToIntegerConverter cv = ConverterFactory.createIntegerConverter(true, true);
-		Assert.assertTrue(cv instanceof PercentageIntegerConverter);
-	}
+    @Test
+    public void testCreateIntegerConverter2() {
+        StringToIntegerConverter cv = ConverterFactory.createIntegerConverter(true, true);
+        assertTrue(cv instanceof PercentageIntegerConverter);
+    }
 
-	@Test
-	public void testCreateLongConverter1() {
-		StringToLongConverter cv = ConverterFactory.createLongConverter(true, false);
-		Assert.assertTrue(cv instanceof GroupingStringToLongConverter);
-	}
+    @Test
+    public void testCreateLongConverter1() {
+        StringToLongConverter cv = ConverterFactory.createLongConverter(true, false);
+        assertTrue(cv instanceof GroupingStringToLongConverter);
+    }
 
-	@Test
-	public void testCreateLongConverter() {
-		StringToLongConverter cv = ConverterFactory.createLongConverter(true, true);
-		Assert.assertTrue(cv instanceof PercentageLongConverter);
-	}
+    @Test
+    public void testCreateLongConverter() {
+        StringToLongConverter cv = ConverterFactory.createLongConverter(true, true);
+        assertTrue(cv instanceof PercentageLongConverter);
+    }
 
-	@Test
-	public void testCreateDoubleConverter1() {
-		GroupingStringToDoubleConverter cv = (GroupingStringToDoubleConverter) ConverterFactory
-				.createDoubleConverter(false, false, false, 2, null);
-		Assert.assertFalse(cv instanceof PercentageDoubleConverter);
-	}
+    @Test
+    public void testCreateDoubleConverter1() {
+        GroupingStringToDoubleConverter cv = (GroupingStringToDoubleConverter) ConverterFactory.createDoubleConverter(false, false, false,
+                2, null);
+        assertFalse(cv instanceof PercentageDoubleConverter);
+    }
 
-	@Test
-	public void testCreateDoubleConverter2() {
-		StringToDoubleConverter cv = ConverterFactory.createDoubleConverter(false, true, false, 2, null);
-		Assert.assertTrue(cv instanceof PercentageDoubleConverter);
-	}
+    @Test
+    public void testCreateDoubleConverter2() {
+        StringToDoubleConverter cv = ConverterFactory.createDoubleConverter(false, true, false, 2, null);
+        assertTrue(cv instanceof PercentageDoubleConverter);
+    }
 
-	@Test
-	public void testCreateDoubleConverter3() {
-		StringToDoubleConverter cv = ConverterFactory.createDoubleConverter(true, false, false, 2, null);
-		Assert.assertTrue(cv instanceof CurrencyDoubleConverter);
-	}
+    @Test
+    public void testCreateDoubleConverter3() {
+        StringToDoubleConverter cv = ConverterFactory.createDoubleConverter(true, false, false, 2, null);
+        assertTrue(cv instanceof CurrencyDoubleConverter);
+    }
 }

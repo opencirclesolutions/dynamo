@@ -1,8 +1,11 @@
 package com.ocs.dynamo.ui.component;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -33,7 +36,7 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
     @Mock
     private TestEntityService service;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         e1 = new TestEntity(1, "Kevin", 12L);
         e1.setId(1);
@@ -51,8 +54,8 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 
         ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, em.getAttributeModel("testEntities"),
                 false, false, new FormOptions().setShowRemoveButton(true));
-        Assert.assertTrue(grid.getAddButton().isVisible());
-        Assert.assertFalse(grid.getSearchDialogButton().isVisible());
+        assertTrue(grid.getAddButton().isVisible());
+        assertFalse(grid.getSearchDialogButton().isVisible());
 
         grid.setValue(parent);
 
@@ -71,12 +74,12 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
         grid.setService(service);
 
         IdBasedDataProvider<Integer, TestEntity> provider = (IdBasedDataProvider<Integer, TestEntity>) grid.getGrid().getDataProvider();
-        Assert.assertEquals(0, provider.getSize());
+        assertEquals(0, provider.getSize());
 
         // adding is not possible
-        Assert.assertFalse(grid.getAddButton().isVisible());
+        assertFalse(grid.getAddButton().isVisible());
         // but bringing up the search dialog is
-        Assert.assertTrue(grid.getSearchDialogButton().isVisible());
+        assertTrue(grid.getSearchDialogButton().isVisible());
     }
 
     @Test
@@ -85,8 +88,8 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 
         ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, em.getAttributeModel("testEntities"),
                 true, false, new FormOptions());
-        Assert.assertFalse(grid.getAddButton().isVisible());
-        Assert.assertFalse(grid.getSearchDialogButton().isVisible());
+        assertFalse(grid.getAddButton().isVisible());
+        assertFalse(grid.getSearchDialogButton().isVisible());
     }
 
     private ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> createGrid(EntityModel<TestEntity> em, AttributeModel am,
@@ -100,7 +103,6 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
                 service, em, am, viewMode, fo);
 
         table.setCreateEntitySupplier(() -> new TestEntity());
-        // MockUtil.injectUI(table, ui);
         table.initContent();
 
         return table;

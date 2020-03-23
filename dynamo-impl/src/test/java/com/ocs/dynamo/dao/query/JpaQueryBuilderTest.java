@@ -13,6 +13,9 @@
  */
 package com.ocs.dynamo.dao.query;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,9 +24,8 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.BackendIntegrationTest;
@@ -50,7 +52,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 	@PersistenceContext
 	private EntityManager entityManager;
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		save("Bob", 25);
 		save("Sally", 35);
@@ -83,7 +85,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class, null, false);
 		long count = tQuery.getSingleResult();
 
-		Assert.assertEquals(3, count);
+		assertEquals(3, count);
 	}
 
 	@Test
@@ -92,7 +94,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new Compare.Equal("name", "Bob"), false);
 		long count = tQuery.getSingleResult();
 
-		Assert.assertEquals(1, count);
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -101,7 +103,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new Compare.Greater("age", 25L), false);
 		long count = tQuery.getSingleResult();
 
-		Assert.assertEquals(2, count);
+		assertEquals(2, count);
 	}
 
 	@Test
@@ -109,7 +111,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Compare.GreaterOrEqual("age", 25L), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(3, count);
+		assertEquals(3, count);
 	}
 
 	@Test
@@ -117,7 +119,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Compare.Less("age", 25L), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(0, count);
+		assertEquals(0, count);
 	}
 
 	@Test
@@ -125,7 +127,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Compare.LessOrEqual("age", 25L), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(1, count);
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -133,7 +135,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Like("name", "s%", true), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(0, count);
+		assertEquals(0, count);
 	}
 
 	@Test
@@ -142,7 +144,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new Like("name", "s%", false), false);
 		long count = tQuery.getSingleResult();
 		// "Sally" should match
-		Assert.assertEquals(1, count);
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -151,7 +153,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new Like("name", "%a%", false), false);
 		long count = tQuery.getSingleResult();
 		// "Sally" should match
-		Assert.assertEquals(1, count);
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -159,7 +161,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new com.ocs.dynamo.filter.Between("age", 20L, 30L), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(1, count);
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -167,7 +169,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class, new IsNull("age"),
 				false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(0, count);
+		assertEquals(0, count);
 	}
 
 	@Test
@@ -175,7 +177,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new In("name", Lists.newArrayList("Bob", "Sally")), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(2, count);
+		assertEquals(2, count);
 	}
 
 	@Test
@@ -183,7 +185,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new In("id", new ArrayList<>()), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(0, count);
+		assertEquals(0, count);
 	}
 
 	@Test
@@ -191,7 +193,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Modulo("age", 4, 0), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(1, count);
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -199,7 +201,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Modulo("age", "age", 0), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(3, count);
+		assertEquals(3, count);
 	}
 
 	@Test
@@ -207,7 +209,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new And(new Compare.Equal("name", "Bob"), new Compare.Equal("age", 25L)), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(1, count);
+		assertEquals(1, count);
 	}
 
 	@Test
@@ -215,7 +217,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Not(new Compare.Equal("name", "Bob")), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(2, count);
+		assertEquals(2, count);
 	}
 
 	@Test
@@ -223,7 +225,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Or(new Compare.Equal("name", "Bob"), new Compare.Equal("age", 35L)), false);
 		long count = tQuery.getSingleResult();
-		Assert.assertEquals(2, count);
+		assertEquals(2, count);
 	}
 
 	@Test
@@ -235,7 +237,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				Lists.newArrayList(e1.getId()), null, null);
 		List<TestEntity> entity = tQuery.getResultList();
 
-		Assert.assertEquals(1, entity.size());
+		assertEquals(1, entity.size());
 	}
 
 	@Test
@@ -252,8 +254,8 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
 		List<TestEntity2> entity = tQuery.getResultList();
 
-		Assert.assertEquals(1, entity.size());
-		Assert.assertEquals(e1, entity.get(0).getTestEntity());
+		assertEquals(1, entity.size());
+		assertEquals(e1, entity.get(0).getTestEntity());
 	}
 
 	@Test
@@ -263,7 +265,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<TestEntity> tQuery = JpaQueryBuilder.createFetchSingleObjectQuery(entityManager, TestEntity.class,
 				e1.getId(), null);
 		TestEntity entity = tQuery.getSingleResult();
-		Assert.assertEquals(e1, entity);
+		assertEquals(e1, entity);
 	}
 
 	private void save(String name, long age) {
@@ -284,11 +286,11 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new String[] { "name", "age" }, new SortOrders(sortName));
 		List<Object[]> result = tQuery.getResultList();
 
-		Assert.assertEquals(2, result.size());
-		Assert.assertEquals(e1.getName(), result.get(0)[0]);
-		Assert.assertEquals(e1.getAge(), result.get(0)[1]);
-		Assert.assertEquals(e2.getName(), result.get(1)[0]);
-		Assert.assertEquals(e2.getAge(), result.get(1)[1]);
+		assertEquals(2, result.size());
+		assertEquals(e1.getName(), result.get(0)[0]);
+		assertEquals(e1.getAge(), result.get(0)[1]);
+		assertEquals(e2.getName(), result.get(1)[0]);
+		assertEquals(e2.getAge(), result.get(1)[1]);
 	}
 
 	@Test
@@ -302,11 +304,11 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				null);
 		List<Object[]> result = tQuery.getResultList();
 
-		Assert.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		Object[] br = (Object[]) base;
-		Assert.assertTrue(br[0].equals(result.get(0)[0]));
-		Assert.assertTrue(br[1].equals(result.get(0)[1]));
-		Assert.assertTrue(br[2].equals(result.get(0)[2]));
+		assertTrue(br[0].equals(result.get(0)[0]));
+		assertTrue(br[1].equals(result.get(0)[1]));
+		assertTrue(br[2].equals(result.get(0)[2]));
 	}
 
 	@Test
@@ -324,12 +326,12 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new SortOrders(new SortOrder("someEnum")));
 		List<Object[]> result = tQuery.getResultList();
 
-		Assert.assertEquals(3, result.size());
+		assertEquals(3, result.size());
 		Object[] br = base.get(0);
-		Assert.assertTrue(br[0].equals(result.get(0)[0]));
-		Assert.assertTrue(br[1].equals(result.get(0)[1]));
-		Assert.assertTrue(br[2].equals(result.get(0)[2]));
-		// Assert.assertTrue(br[3].equals(result.get(0)[3]));
+		assertTrue(br[0].equals(result.get(0)[0]));
+		assertTrue(br[1].equals(result.get(0)[1]));
+		assertTrue(br[2].equals(result.get(0)[2]));
+		// assertTrue(br[3].equals(result.get(0)[3]));
 	}
 
 	@Test
@@ -346,14 +348,14 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new SortOrders(new SortOrder("name")));
 		List<Object[]> result = tQuery.getResultList();
 
-		Assert.assertEquals(2, result.size());
+		assertEquals(2, result.size());
 		Object[] br = base.get(0);
-		Assert.assertTrue(br[0].equals(result.get(0)[0]));
-		Assert.assertTrue(br[1].equals(result.get(0)[1]));
+		assertTrue(br[0].equals(result.get(0)[0]));
+		assertTrue(br[1].equals(result.get(0)[1]));
 
 		Object[] br1 = base.get(1);
-		Assert.assertTrue(br1[0].equals(result.get(1)[0]));
-		Assert.assertTrue(br1[1].equals(result.get(1)[1]));
+		assertTrue(br1[0].equals(result.get(1)[0]));
+		assertTrue(br1[1].equals(result.get(1)[1]));
 	}
 
 	@Test
@@ -370,10 +372,10 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new SortOrders(new SortOrder("testEntities.value")));
 		List<Object[]> result = tQuery.getResultList();
 
-		Assert.assertEquals(2, result.size());
+		assertEquals(2, result.size());
 		Object[] br = base.get(0);
-		Assert.assertTrue(br[0].equals(result.get(0)[0]));
-		Assert.assertTrue(br[1].equals(result.get(0)[1]));
+		assertTrue(br[0].equals(result.get(0)[0]));
+		assertTrue(br[1].equals(result.get(0)[1]));
 	}
 
 	@Test
@@ -383,7 +385,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TypedQuery<Tuple> tQuery = JpaQueryBuilder.createDistinctQuery(new Like("testEntities.name", "Lik%", false),
 				entityManager, TestEntity.class, "testEntities.value");
 		List<Tuple> result = tQuery.getResultList();
-		Assert.assertEquals(2, result.size());
+		assertEquals(2, result.size());
 	}
 
 	@Test
@@ -395,10 +397,10 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				new String[] { QueryFunction.AF_COUNT_DISTINCT.with("age") }, null);
 		List<?> result = tQuery.getResultList();
 
-		Assert.assertEquals(1, result.size());
+		assertEquals(1, result.size());
 		Long b = base.get(0);
 		Long r = (Long) result.get(0);
-		Assert.assertTrue(b.equals(r));
+		assertTrue(b.equals(r));
 	}
 
 	private TestEntity createTestEntity(String name, long age, TestEnum te, TestEntity2... testEntities2) {

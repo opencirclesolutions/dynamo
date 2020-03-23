@@ -13,12 +13,14 @@
  */
 package com.ocs.dynamo.ui.converter;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormatSymbols;
 import java.util.Locale;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
@@ -26,7 +28,7 @@ public class CurrencyBigDecimalConverterTest extends BaseConverterTest {
 
     private DecimalFormatSymbols symbols = DecimalFormatSymbols.getInstance(new Locale("nl"));
 
-    @org.junit.Before
+    @BeforeEach
     public void setup() {
         Locale.setDefault(new Locale("nl"));
     }
@@ -36,32 +38,31 @@ public class CurrencyBigDecimalConverterTest extends BaseConverterTest {
         CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter("message", 2, true, "€");
 
         String result = cv.convertToPresentation(new BigDecimal(123456), createContext());
-        Assert.assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(new Locale("nl")).getPositivePrefix(),
+        assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(new Locale("nl")).getPositivePrefix(),
                 symbols.getGroupingSeparator(), symbols.getMonetaryDecimalSeparator()), result);
 
         cv = new CurrencyBigDecimalConverter("message", 2, true, "$");
         result = cv.convertToPresentation(new BigDecimal(123456), createContext());
-        Assert.assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(null).getPositivePrefix(), symbols.getGroupingSeparator(),
+        assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(null).getPositivePrefix(), symbols.getGroupingSeparator(),
                 symbols.getMonetaryDecimalSeparator()), result);
     }
 
     @Test
     public void testConvertToModel() {
         CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter("message", 2, true, "€");
-        Assert.assertEquals(123456, cv.convertToModel(cv.getDecimalFormat(new Locale("nl")).getPositivePrefix() + "123456", createContext())
+        assertEquals(123456, cv.convertToModel(cv.getDecimalFormat(new Locale("nl")).getPositivePrefix() + "123456", createContext())
                 .getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
 
-        Assert.assertEquals(123456, cv.convertToModel("123456", createContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(),
-                0.001);
+        assertEquals(123456, cv.convertToModel("123456", createContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
 
         // test that the currency symbol is stripped when needed
-        Assert.assertEquals(123456, cv.convertToModel("€ 123" + symbols.getGroupingSeparator() + "456", createContext())
+        assertEquals(123456, cv.convertToModel("€ 123" + symbols.getGroupingSeparator() + "456", createContext())
                 .getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
 
-        Assert.assertEquals(123456, cv.convertToModel("€ 123456", createContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(),
+        assertEquals(123456, cv.convertToModel("€ 123456", createContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(),
                 0.001);
 
-        Assert.assertEquals(123456.12, cv.convertToModel("€ 123456" + symbols.getDecimalSeparator() + "12", createContext())
+        assertEquals(123456.12, cv.convertToModel("€ 123456" + symbols.getDecimalSeparator() + "12", createContext())
                 .getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
     }
 
@@ -71,19 +72,19 @@ public class CurrencyBigDecimalConverterTest extends BaseConverterTest {
         DecimalFormatSymbols usa = DecimalFormatSymbols.getInstance(Locale.US);
 
         CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter("message", 2, true, "$");
-        Assert.assertEquals(123456, cv.convertToModel(cv.getDecimalFormat(Locale.US).getPositivePrefix() + "123456", createUsContext())
+        assertEquals(123456, cv.convertToModel(cv.getDecimalFormat(Locale.US).getPositivePrefix() + "123456", createUsContext())
                 .getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
 
         // test that the currency symbol is stripped when needed
-        Assert.assertEquals(123456,
-                cv.convertToModel("$123456", createUsContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
+        assertEquals(123456, cv.convertToModel("$123456", createUsContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(),
+                0.001);
 
         // simple value without separators
-        Assert.assertEquals(123456,
-                cv.convertToModel("$123456", createUsContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
+        assertEquals(123456, cv.convertToModel("$123456", createUsContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(),
+                0.001);
 
         // value with decimal separators
-        Assert.assertEquals(123456.12,
+        assertEquals(123456.12,
                 cv.convertToModel("$123" + usa.getGroupingSeparator() + "456" + usa.getDecimalSeparator() + "12", createUsContext())
                         .getOrThrow(r -> new OCSRuntimeException()).doubleValue(),
                 0.001);

@@ -1,15 +1,16 @@
 package com.ocs.dynamo.domain.model.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
@@ -52,7 +53,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
     private FieldFactory fieldFactory;
 
-    @Before
+    @BeforeEach
     public void setUp() {
         MockVaadin.setup();
         fieldFactory = FieldFactory.getInstance();
@@ -140,11 +141,11 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 //    @Test
 //    public void testIntegerSlider() {
 //        Component ac = constructField("someIntSlider", false);
-//        Assert.assertTrue(ac instanceof Slider);
+//        assertTrue(ac instanceof Slider);
 //
 //        Slider slider = (Slider) ac;
-//        Assert.assertEquals(99, slider.getMin(), 0.001);
-//        Assert.assertEquals(175, slider.getMax(), 0.001);
+//        assertEquals(99, slider.getMin(), 0.001);
+//        assertEquals(175, slider.getMax(), 0.001);
 //
 //        Binder<TestEntity> binder = new BeanValidationBinder<>(TestEntity.class);
 //        TestEntity t1 = new TestEntity();
@@ -157,7 +158,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 //    @Test
 //    public void testLongSlider() {
 //        Component ac = constructField("someLongSlider", false);
-//        Assert.assertTrue(ac instanceof Slider);
+//        assertTrue(ac instanceof Slider);
 //    }
 
     /**
@@ -361,11 +362,11 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
      * Test that in search mode a token field is selected if multiple search is
      * specified
      */
-    @Test(expected = OCSRuntimeException.class)
+    @Test
     public void testConstructEntityComboBoxMultipleSearch() {
         EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
         FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
-        fieldFactory.constructField(context);
+        assertThrows(OCSRuntimeException.class, () -> fieldFactory.constructField(context));
     }
 
     /**

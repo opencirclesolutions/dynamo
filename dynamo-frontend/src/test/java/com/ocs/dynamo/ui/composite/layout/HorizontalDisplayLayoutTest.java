@@ -1,10 +1,11 @@
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
+
 import javax.inject.Inject;
 
-import org.junit.Assert;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -23,7 +24,7 @@ public class HorizontalDisplayLayoutTest extends FrontendIntegrationTest {
     @Inject
     private TestEntityService service;
 
-    @Before
+    @BeforeEach
     public void setup() {
         e1 = new TestEntity("Bob", 11L);
         e1 = service.save(e1);
@@ -36,7 +37,7 @@ public class HorizontalDisplayLayoutTest extends FrontendIntegrationTest {
         layout.build();
 
         Component comp = layout.getChildren().iterator().next();
-        Assert.assertTrue(comp instanceof HorizontalLayout);
+        assertTrue(comp instanceof HorizontalLayout);
     }
 
 }
