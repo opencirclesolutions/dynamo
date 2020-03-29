@@ -44,7 +44,7 @@ public interface FieldFactory {
 	 * @param customConverter custom converter to be used for data conversion
 	 */
 	<U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
-			Converter<V, U> customConverter, Validator<V> customValidator);
+			Converter<V, U> customConverter, Validator<V> customValidator, Validator<V> customRequiredValidator);
 
 	/**
 	 * Constructs a field based on the provided attribute model (given the default

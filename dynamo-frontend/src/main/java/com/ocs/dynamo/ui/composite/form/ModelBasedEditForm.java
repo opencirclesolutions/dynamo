@@ -907,6 +907,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Callback method that can be used to add a custom required validator
+	 * 
+	 * @param <V>
+	 * @param am
+	 * @return
+	 */
+	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+		return null;
+	}
+
+	/**
 	 * Callback method that can be used to create a custom field
 	 *
 	 * @param entityModel    the entity model to base the field on
@@ -957,7 +968,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (!(field instanceof ServiceBasedDetailsEditGrid)) {
 				BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
 				fieldFactory.addConvertersAndValidators(builder, attributeModel,
-						constructCustomConverter(attributeModel), constructCustomValidator(attributeModel));
+						constructCustomConverter(attributeModel), constructCustomValidator(attributeModel),
+						constructCustomRequiredValidator(attributeModel));
 				builder.bind(attributeModel.getPath());
 			}
 

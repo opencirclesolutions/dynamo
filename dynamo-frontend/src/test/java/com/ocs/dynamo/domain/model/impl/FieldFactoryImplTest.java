@@ -48,95 +48,97 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
-    @Autowired
-    private EntityModelFactory factory;
+	@Autowired
+	private EntityModelFactory factory;
 
-    private FieldFactory fieldFactory;
+	private FieldFactory fieldFactory;
 
-    @BeforeEach
-    public void setUp() {
-        MockVaadin.setup();
-        fieldFactory = FieldFactory.getInstance();
-    }
+	@BeforeEach
+	public void setUp() {
+		MockVaadin.setup();
+		fieldFactory = FieldFactory.getInstance();
+	}
 
-    private Component constructField(String name, boolean search) {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-        FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name)).setSearch(search);
-        return fieldFactory.constructField(context);
-    }
+	private Component constructField(String name, boolean search) {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
+				.setSearch(search);
+		return fieldFactory.constructField(context);
+	}
 
-    private Component constructField(String name, String entityModelRef) {
-        EntityModel<TestEntity> em = factory.getModel(entityModelRef, TestEntity.class);
-        FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name)).setSearch(false);
-        return fieldFactory.constructField(context);
-    }
+	private Component constructField(String name, String entityModelRef) {
+		EntityModel<TestEntity> em = factory.getModel(entityModelRef, TestEntity.class);
+		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
+				.setSearch(false);
+		return fieldFactory.constructField(context);
+	}
 
-    private Component constructField2(String name, boolean search, boolean viewMode) {
-        return constructField2(name, search, viewMode, false);
-    }
+	private Component constructField2(String name, boolean search, boolean viewMode) {
+		return constructField2(name, search, viewMode, false);
+	}
 
-    private Component constructField2(String name, boolean search, boolean viewMode, boolean grid) {
-        EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-        FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name)).setSearch(search)
-                .setViewMode(viewMode).setEditableGrid(grid);
-        return fieldFactory.constructField(context);
-    }
+	private Component constructField2(String name, boolean search, boolean viewMode, boolean grid) {
+		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
+		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
+				.setSearch(search).setViewMode(viewMode).setEditableGrid(grid);
+		return fieldFactory.constructField(context);
+	}
 
-    private Component constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
-        EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-        FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-                .setFieldFilters(fieldFilters);
-        return fieldFactory.constructField(context);
-    }
+	private Component constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
+		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
+		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
+				.setFieldFilters(fieldFilters);
+		return fieldFactory.constructField(context);
+	}
 
-    /**
-     * Test a text field
-     */
-    @Test
-    public void testTextField() {
+	/**
+	 * Test a text field
+	 */
+	@Test
+	public void testTextField() {
 
-        Component ac = constructField("name", false);
-        assertTrue(ac instanceof TextField);
+		Component ac = constructField("name", false);
+		assertTrue(ac instanceof TextField);
 
-        TextField tf = (TextField) ac;
-        assertEquals("Name", tf.getLabel());
-    }
+		TextField tf = (TextField) ac;
+		assertEquals("Name", tf.getLabel());
+	}
 
-    /**
-     * Test a URL field
-     */
-    @Test
-    public void testURLField() {
-        Component ac = constructField("url", false);
-        assertTrue(ac instanceof URLField);
-    }
+	/**
+	 * Test a URL field
+	 */
+	@Test
+	public void testURLField() {
+		Component ac = constructField("url", false);
+		assertTrue(ac instanceof URLField);
+	}
 
-    /**
-     * Test a text area
-     */
-    @Test
-    public void testTextArea() {
-        Component ac = constructField("someTextArea", false);
-        assertTrue(ac instanceof TextArea);
-    }
+	/**
+	 * Test a text area
+	 */
+	@Test
+	public void testTextArea() {
+		Component ac = constructField("someTextArea", false);
+		assertTrue(ac instanceof TextArea);
+	}
 
-    /**
-     * Test a long field
-     */
-    @Test
-    public void testLongField() {
-        Component ac = constructField("age", false);
-        assertTrue(ac instanceof TextField);
-    }
+	/**
+	 * Test a long field
+	 */
+	@Test
+	public void testLongField() {
+		Component ac = constructField("age", false);
+		assertTrue(ac instanceof TextField);
+	}
 
-    /**
-     * Test an integer field
-     */
-    @Test
-    public void testIntegerField() {
-        Component ac = constructField("age", false);
-        assertTrue(ac instanceof TextField);
-    }
+	/**
+	 * Test an integer field
+	 */
+	@Test
+	public void testIntegerField() {
+		Component ac = constructField("age", false);
+		assertTrue(ac instanceof TextField);
+	}
 
 //    @Test
 //    public void testIntegerSlider() {
@@ -161,313 +163,314 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 //        assertTrue(ac instanceof Slider);
 //    }
 
-    /**
-     * Test an "element collection" field
-     */
-    @Test
-    public void testCollectionField() {
-        Component ac = constructField("tags", false);
-        assertTrue(ac instanceof ElementCollectionGrid);
+	/**
+	 * Test an "element collection" field
+	 */
+	@Test
+	public void testCollectionField() {
+		Component ac = constructField("tags", false);
+		assertTrue(ac instanceof ElementCollectionGrid);
 
-        ElementCollectionGrid<?, ?, ?> ct = (ElementCollectionGrid<?, ?, ?>) ac;
-        assertEquals(25, ct.getMaxLength().intValue());
-    }
+		ElementCollectionGrid<?, ?, ?> ct = (ElementCollectionGrid<?, ?, ?>) ac;
+		assertEquals(25, ct.getMaxLength().intValue());
+	}
 
-    /**
-     * Test a text field that displays a BigDecimal
-     */
-    @Test
-    public void testBigDecimalField() {
-        Component ac = constructField("discount", false);
-        assertTrue(ac instanceof TextField);
-    }
+	/**
+	 * Test a text field that displays a BigDecimal
+	 */
+	@Test
+	public void testBigDecimalField() {
+		Component ac = constructField("discount", false);
+		assertTrue(ac instanceof TextField);
+	}
 
-    /**
-     * Test that a text field with percentage support is generated
-     */
-    @Test
-    public void testBigDecimalPercentageField() {
-        Component ac = constructField("rate", false);
-        assertTrue(ac instanceof TextField);
-    }
+	/**
+	 * Test that a text field with percentage support is generated
+	 */
+	@Test
+	public void testBigDecimalPercentageField() {
+		Component ac = constructField("rate", false);
+		assertTrue(ac instanceof TextField);
+	}
 
-    @Test
-    public void testBigDecimalCurrencyField() {
-        Component ac = constructField2("currency", false, false);
-        assertTrue(ac instanceof TextField);
-    }
+	@Test
+	public void testBigDecimalCurrencyField() {
+		Component ac = constructField2("currency", false, false);
+		assertTrue(ac instanceof TextField);
+	}
 
-    /**
-     * Test the creation of a date field and verify the date format is correctly set
-     */
-    @Test
-    public void testDateField() {
-        Component ac = constructField("birthDate", false);
-        assertTrue(ac instanceof DatePicker);
-    }
+	/**
+	 * Test the creation of a date field and verify the date format is correctly set
+	 */
+	@Test
+	public void testDateField() {
+		Component ac = constructField("birthDate", false);
+		assertTrue(ac instanceof DatePicker);
+	}
 
-    /**
-     * Test the creation of a zoned date time field
-     */
-    @Test
-    public void testZonedDateTimeField() {
-        Component ac = constructField("zoned", false);
-        assertTrue(ac instanceof ZonedDateTimePicker);
-    }
+	/**
+	 * Test the creation of a zoned date time field
+	 */
+	@Test
+	public void testZonedDateTimeField() {
+		Component ac = constructField("zoned", false);
+		assertTrue(ac instanceof ZonedDateTimePicker);
+	}
 
-    /**
-     * Test the creation of date field for searching on date only
-     */
-    @Test
-    public void testSearchDateOnly() {
-        Component ac = constructField2("searchDateOnly", true, false);
-        assertTrue(ac instanceof DatePicker);
-    }
+	/**
+	 * Test the creation of date field for searching on date only
+	 */
+	@Test
+	public void testSearchDateOnly() {
+		Component ac = constructField2("searchDateOnly", true, false);
+		assertTrue(ac instanceof DatePicker);
+	}
 
-    /**
-     * Test the creation of a local date time field
-     */
-    @Test
-    public void testLocalTimeField() {
-        Component ac = constructField("registrationTime", false);
-        assertTrue(ac instanceof TimePicker);
-    }
+	/**
+	 * Test the creation of a local date time field
+	 */
+	@Test
+	public void testLocalTimeField() {
+		Component ac = constructField("registrationTime", false);
+		assertTrue(ac instanceof TimePicker);
+	}
 
-    /**
-     * Test the creation of a date field and verify the date format is correctly set
-     */
-    @Test
-    public void testWeekField() {
-        Component ac = constructField("birthWeek", false);
-        assertTrue(ac instanceof TextField);
-    }
+	/**
+	 * Test the creation of a date field and verify the date format is correctly set
+	 */
+	@Test
+	public void testWeekField() {
+		Component ac = constructField("birthWeek", false);
+		assertTrue(ac instanceof TextField);
+	}
 
-    /**
-     * Test the creation of an enum field
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testEnumField() {
-        Component ac = constructField("someEnum", false);
-        assertTrue(ac instanceof ComboBox);
+	/**
+	 * Test the creation of an enum field
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testEnumField() {
+		Component ac = constructField("someEnum", false);
+		assertTrue(ac instanceof ComboBox);
 
-        ComboBox<TestEnum> cb = (ComboBox<TestEnum>) ac;
-        ListDataProvider<TestEnum> ldp = (ListDataProvider<TestEnum>) cb.getDataProvider();
+		ComboBox<TestEnum> cb = (ComboBox<TestEnum>) ac;
+		ListDataProvider<TestEnum> ldp = (ListDataProvider<TestEnum>) cb.getDataProvider();
 
-        assertTrue(ldp.getItems().contains(TestEnum.A));
-        assertTrue(ldp.getItems().contains(TestEnum.B));
-        assertTrue(ldp.getItems().contains(TestEnum.C));
-    }
+		assertTrue(ldp.getItems().contains(TestEnum.A));
+		assertTrue(ldp.getItems().contains(TestEnum.B));
+		assertTrue(ldp.getItems().contains(TestEnum.C));
+	}
 
-    /**
-     * E-mail field
-     */
-    @Test
-    public void testEmail() {
-        Component ac = constructField2("email", false, false);
-        assertTrue(ac instanceof TextField);
+	/**
+	 * E-mail field
+	 */
+	@Test
+	public void testEmail() {
+		Component ac = constructField2("email", false, false);
+		assertTrue(ac instanceof TextField);
 
-        TextField tf = (TextField) ac;
+		TextField tf = (TextField) ac;
 
-        Binder<TestEntity2> binder = new BeanValidationBinder<>(TestEntity2.class);
-        TestEntity2 t2 = new TestEntity2();
-        binder.setBean(t2);
-        EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
+		Binder<TestEntity2> binder = new BeanValidationBinder<>(TestEntity2.class);
+		TestEntity2 t2 = new TestEntity2();
+		binder.setBean(t2);
+		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
 
-        fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"), null, null);
-    }
+		fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"), null, null, null);
+	}
 
-    /**
-     * Test that no field is generated in read-only mode
-     */
-    @Test
-    public void testReadOnlyNoField() {
-        Component ac = constructField2("readOnly", false, false);
-        assertNull(ac);
-    }
+	/**
+	 * Test that no field is generated in read-only mode
+	 */
+	@Test
+	public void testReadOnlyNoField() {
+		Component ac = constructField2("readOnly", false, false);
+		assertNull(ac);
+	}
 
-    /**
-     * Test that in search mode a field is generated even for a read-only property
-     */
-    @Test
-    public void testReadOnlySearch() {
-        Component ac = constructField2("readOnly", true, false);
-        assertTrue(ac instanceof TextField);
-    }
+	/**
+	 * Test that in search mode a field is generated even for a read-only property
+	 */
+	@Test
+	public void testReadOnlySearch() {
+		Component ac = constructField2("readOnly", true, false);
+		assertTrue(ac instanceof TextField);
+	}
 
-    /**
-     * Test that in read only mode, no field is created any more
-     */
-    @Test
-    public void testReadOnlyUrl() {
-        Component ac = constructField2("url", false, false);
-        assertNull(ac);
-    }
+	/**
+	 * Test that in read only mode, no field is created any more
+	 */
+	@Test
+	public void testReadOnlyUrl() {
+		Component ac = constructField2("url", false, false);
+		assertNull(ac);
+	}
 
-    /**
-     * Test that in a search screen, a CombobBox is created for a boolean field
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testSearchBooleanField() {
-        Component ac = constructField("someBoolean", true);
-        assertTrue(ac instanceof ComboBox);
+	/**
+	 * Test that in a search screen, a CombobBox is created for a boolean field
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testSearchBooleanField() {
+		Component ac = constructField("someBoolean", true);
+		assertTrue(ac instanceof ComboBox);
 
-        ComboBox<Boolean> cb = (ComboBox<Boolean>) ac;
-        ListDataProvider<Boolean> ldp = (ListDataProvider<Boolean>) cb.getDataProvider();
+		ComboBox<Boolean> cb = (ComboBox<Boolean>) ac;
+		ListDataProvider<Boolean> ldp = (ListDataProvider<Boolean>) cb.getDataProvider();
 
-        assertTrue(ldp.getItems().contains(Boolean.TRUE));
-        assertTrue(ldp.getItems().contains(Boolean.FALSE));
-    }
+		assertTrue(ldp.getItems().contains(Boolean.TRUE));
+		assertTrue(ldp.getItems().contains(Boolean.FALSE));
+	}
 
-    @Test
-    public void testNormalBooleanField() {
-        Component ac = constructField("someBoolean", false);
-        assertTrue(ac instanceof Checkbox);
-    }
+	@Test
+	public void testNormalBooleanField() {
+		Component ac = constructField("someBoolean", false);
+		assertTrue(ac instanceof Checkbox);
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testConstructEntityLookupField() {
-        Component ac = constructField2("testEntity", false, false);
-        assertTrue(ac instanceof EntityLookupField);
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructEntityLookupField() {
+		Component ac = constructField2("testEntity", false, false);
+		assertTrue(ac instanceof EntityLookupField);
 
-        EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
-        assertNull(lf.getFilter());
-    }
+		EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
+		assertNull(lf.getFilter());
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testConstructEntityLookupFieldWithFieldFilter() {
-        Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-        fieldFilters.put("testEntity", new EqualsPredicate<>("name", "Bob"));
-        Component ac = constructField2("testEntity", fieldFilters);
-        assertTrue(ac instanceof EntityLookupField);
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructEntityLookupFieldWithFieldFilter() {
+		Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+		fieldFilters.put("testEntity", new EqualsPredicate<>("name", "Bob"));
+		Component ac = constructField2("testEntity", fieldFilters);
+		assertTrue(ac instanceof EntityLookupField);
 
-        EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
-        assertNotNull(lf.getFilter());
-    }
+		EntityLookupField<Integer, TestEntity> lf = (EntityLookupField<Integer, TestEntity>) ac;
+		assertNotNull(lf.getFilter());
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testConstructEntityComboBox() {
-        Component ac = constructField2("testEntityAlt", false, false);
-        assertTrue(ac instanceof QuickAddEntityComboBox);
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructEntityComboBox() {
+		Component ac = constructField2("testEntityAlt", false, false);
+		assertTrue(ac instanceof QuickAddEntityComboBox);
 
-        QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
-        assertNull(cb.getFilter());
-    }
+		QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
+		assertNull(cb.getFilter());
+	}
 
-    /**
-     * Test that in search mode a token field is selected if multiple search is
-     * specified
-     */
-    @Test
-    public void testConstructEntityComboBoxMultipleSearch() {
-        EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
-        FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
-        assertThrows(OCSRuntimeException.class, () -> fieldFactory.constructField(context));
-    }
+	/**
+	 * Test that in search mode a token field is selected if multiple search is
+	 * specified
+	 */
+	@Test
+	public void testConstructEntityComboBoxMultipleSearch() {
+		EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
+		FieldFactoryContext context = FieldFactoryContext.create()
+				.setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
+		assertThrows(OCSRuntimeException.class, () -> fieldFactory.constructField(context));
+	}
 
-    /**
-     * Test list select (and number of rows)
-     */
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testConstructListSingleSelect() {
-        Component ac = constructField2("testEntityAlt2", false, false);
-        assertTrue(ac instanceof QuickAddListSingleSelect);
-        QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
-        assertNull(ls.getFilter());
-    }
+	/**
+	 * Test list select (and number of rows)
+	 */
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructListSingleSelect() {
+		Component ac = constructField2("testEntityAlt2", false, false);
+		assertTrue(ac instanceof QuickAddListSingleSelect);
+		QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
+		assertNull(ls.getFilter());
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testConstructListSingleSelectWithFilter() {
-        Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-        fieldFilters.put("testEntityAlt2", new EqualsPredicate<>("name", "Bob"));
-        Component ac = constructField2("testEntityAlt2", fieldFilters);
-        assertTrue(ac instanceof QuickAddListSingleSelect);
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructListSingleSelectWithFilter() {
+		Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+		fieldFilters.put("testEntityAlt2", new EqualsPredicate<>("name", "Bob"));
+		Component ac = constructField2("testEntityAlt2", fieldFilters);
+		assertTrue(ac instanceof QuickAddListSingleSelect);
 
-        QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
-        assertNotNull(ls.getFilter());
-    }
+		QuickAddListSingleSelect<Integer, TestEntity> ls = (QuickAddListSingleSelect<Integer, TestEntity>) ac;
+		assertNotNull(ls.getFilter());
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testConstructEntityComboBoxWithFieldFilter() {
+	@Test
+	@SuppressWarnings("unchecked")
+	public void testConstructEntityComboBoxWithFieldFilter() {
 
-        Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-        fieldFilters.put("testEntityAlt", new EqualsPredicate<>("name", "Bob"));
-        Component ac = constructField2("testEntityAlt", fieldFilters);
-        assertTrue(ac instanceof QuickAddEntityComboBox);
+		Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+		fieldFilters.put("testEntityAlt", new EqualsPredicate<>("name", "Bob"));
+		Component ac = constructField2("testEntityAlt", fieldFilters);
+		assertTrue(ac instanceof QuickAddEntityComboBox);
 
-        QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
-        assertNotNull(cb.getFilter());
-    }
+		QuickAddEntityComboBox<Integer, TestEntity> cb = (QuickAddEntityComboBox<Integer, TestEntity>) ac;
+		assertNotNull(cb.getFilter());
+	}
 
-    /**
-     * Test that in edit mode just a text field is constructed
-     */
-    @Test
-    public void testConstructSimpleTokenField2() {
-        Component ac = constructField2("basicToken", false, false);
-        assertTrue(ac instanceof TextField);
-    }
+	/**
+	 * Test that in edit mode just a text field is constructed
+	 */
+	@Test
+	public void testConstructSimpleTokenField2() {
+		Component ac = constructField2("basicToken", false, false);
+		assertTrue(ac instanceof TextField);
+	}
 
-    /**
-     * Token field select as default for detail relation
-     */
-    @Test
-    public void testDetailTokenFieldSelect() {
-        Component ac = constructField("testEntities", false);
-        assertTrue(ac instanceof QuickAddTokenSelect<?, ?>);
-        QuickAddTokenSelect<?, ?> tf = (QuickAddTokenSelect<?, ?>) ac;
-        assertNull(tf.getFilter());
-    }
+	/**
+	 * Token field select as default for detail relation
+	 */
+	@Test
+	public void testDetailTokenFieldSelect() {
+		Component ac = constructField("testEntities", false);
+		assertTrue(ac instanceof QuickAddTokenSelect<?, ?>);
+		QuickAddTokenSelect<?, ?> tf = (QuickAddTokenSelect<?, ?>) ac;
+		assertNull(tf.getFilter());
+	}
 
-    /**
-     * Lookup field for detail collection
-     */
-    @Test
-    public void testDetailLookup() {
-        Component ac = constructField("testEntities", "TestEntityLookup");
-        assertTrue(ac instanceof EntityLookupField);
+	/**
+	 * Lookup field for detail collection
+	 */
+	@Test
+	public void testDetailLookup() {
+		Component ac = constructField("testEntities", "TestEntityLookup");
+		assertTrue(ac instanceof EntityLookupField);
 
-        EntityLookupField<?, ?> fl = (EntityLookupField<?, ?>) ac;
-        assertNull(fl.getFilter());
-        assertEquals("Test Entities", fl.getLabel());
-        assertNull(fl.getAddButton());
-    }
+		EntityLookupField<?, ?> fl = (EntityLookupField<?, ?>) ac;
+		assertNull(fl.getFilter());
+		assertEquals("Test Entities", fl.getLabel());
+		assertNull(fl.getAddButton());
+	}
 
-    @SuppressWarnings("unused")
-    private class TestX extends AbstractEntity<Integer> {
+	@SuppressWarnings("unused")
+	private class TestX extends AbstractEntity<Integer> {
 
-        private static final long serialVersionUID = 2993052752064838180L;
+		private static final long serialVersionUID = 2993052752064838180L;
 
-        private Integer id;
+		private Integer id;
 
-        @Attribute(editable = EditableType.READ_ONLY)
-        private String readOnlyField;
+		@Attribute(editable = EditableType.READ_ONLY)
+		private String readOnlyField;
 
-        @Override
-        public Integer getId() {
-            return id;
-        }
+		@Override
+		public Integer getId() {
+			return id;
+		}
 
-        @Override
-        public void setId(Integer id) {
-            this.id = id;
-        }
+		@Override
+		public void setId(Integer id) {
+			this.id = id;
+		}
 
-        public String getReadOnlyField() {
-            return readOnlyField;
-        }
+		public String getReadOnlyField() {
+			return readOnlyField;
+		}
 
-        public void setReadOnlyField(String readOnlyField) {
-            this.readOnlyField = readOnlyField;
-        }
+		public void setReadOnlyField(String readOnlyField) {
+			this.readOnlyField = readOnlyField;
+		}
 
-    }
+	}
 
 }

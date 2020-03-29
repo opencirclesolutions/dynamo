@@ -87,13 +87,17 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	@SuppressWarnings("unchecked")
 	public <U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
-			Converter<V, U> customConverter, Validator<V> customValidator) {
+			Converter<V, U> customConverter, Validator<V> customValidator, Validator<V> customRequiredValidator) {
 
 		if (customValidator != null) {
 			builder.withValidator(customValidator);
 		}
 		if (customConverter != null) {
 			builder.withConverter(customConverter);
+		}
+
+		if (customRequiredValidator != null) {
+			builder.asRequired(customRequiredValidator);
 		}
 
 		if (am.isEmail()) {

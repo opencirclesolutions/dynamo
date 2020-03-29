@@ -267,6 +267,11 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 				return AbstractModelSearchLayout.this.constructCustomValidator(am);
 			}
+			
+			@Override
+			protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+				return AbstractModelSearchLayout.this.constructCustomRequiredValidator(am);
+			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,

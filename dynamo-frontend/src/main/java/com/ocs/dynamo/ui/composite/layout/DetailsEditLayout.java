@@ -307,14 +307,14 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			}
 
 			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-					boolean viewMode) {
-				return DetailsEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
+			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+				return DetailsEditLayout.this.constructCustomValidator(am, this);
 			}
 
 			@Override
-			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-				return DetailsEditLayout.this.constructCustomValidator(am, this);
+			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+					boolean viewMode) {
+				return DetailsEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
 			}
 
 			@Override

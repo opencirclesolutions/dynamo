@@ -196,6 +196,16 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 		return null;
 	}
+	
+	/**
+	 * 
+	 * @param <V>
+	 * @param am
+	 * @return
+	 */
+	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+		return null;
+	}
 
 	/**
 	 * Creates a custom field - override in subclass
