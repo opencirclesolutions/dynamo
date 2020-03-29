@@ -22,6 +22,7 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout.FormContainer;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class DetailsEditLayoutTest extends BaseMockitoTest {
@@ -115,7 +116,7 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
             private static final long serialVersionUID = -4333833542380882076L;
 
             @Override
-            protected void postProcessButtonBar(HorizontalLayout buttonBar) {
+            protected void postProcessButtonBar(FlexLayout buttonBar) {
                 buttonBarPostconstruct = true;
             }
 

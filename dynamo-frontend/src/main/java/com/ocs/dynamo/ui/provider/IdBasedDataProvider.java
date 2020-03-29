@@ -114,11 +114,13 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
     @Override
     public ID firstItemId() {
-        return ids.get(0);
+        return ids == null ? null : ids.get(0);
     }
 
     @Override
     public int indexOf(ID id) {
         return ids.indexOf(id);
     }
+    
+    
 }

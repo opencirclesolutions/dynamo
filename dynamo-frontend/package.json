@@ -16,5 +16,5 @@
     "webpack-merge": "4.2.2",
     "raw-loader": "3.0.0"
   },
-  "vaadinAppPackageHash": "Main dependencies updated, force install"
+  "vaadinAppPackageHash": "6ae1235d53fbbcea4153a04072ff439b0532407cea4cabeb3eb97e25e2629796"
 }

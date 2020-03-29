@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.utils;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import java.beans.PropertyDescriptor;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Constructor;
@@ -36,7 +34,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
-import org.springframework.util.Assert;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 

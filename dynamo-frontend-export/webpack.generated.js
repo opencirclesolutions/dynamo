@@ -133,6 +133,14 @@ module.exports = {
     // Transpile with babel, and produce different bundles per browser
     new BabelMultiTargetPlugin({
       babel: {
+        plugins: [
+          // workaround for Safari 10 scope issue (https://bugs.webkit.org/show_bug.cgi?id=159270)
+          "@babel/plugin-transform-block-scoping",
+
+          // Edge does not support spread '...' syntax in object literals (#7321)
+          "@babel/plugin-proposal-object-rest-spread"
+        ],
+
         presetOptions: {
           useBuiltIns: false // polyfills are provided from webcomponents-loader.js
         }

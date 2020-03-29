@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain.model;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
 
 /**
@@ -26,38 +27,39 @@ import com.vaadin.flow.data.converter.Converter;
  */
 public interface FieldFactory {
 
-    /**
-     * 
-     * @return the singleton instance of the field factory
-     */
-    public static FieldFactory getInstance() {
-        return ServiceLocatorFactory.getServiceLocator().getServiceByName("fieldFactory", FieldFactory.class);
-    }
+	/**
+	 * 
+	 * @return the singleton instance of the field factory
+	 */
+	static FieldFactory getInstance() {
+		return ServiceLocatorFactory.getServiceLocator().getServiceByName("fieldFactory", FieldFactory.class);
+	}
 
-    /**
-     * Adds converters and validators for a field
-     * 
-     * @param builder         the binding builder to which to add the converters and
-     *                        validators
-     * @param am              the attribute model for the field
-     * @param customConverter custom converter to be used for data conversion
-     */
-    <U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am, Converter<String, ?> customConverter);
+	/**
+	 * Adds converters and validators for a field
+	 * 
+	 * @param builder         the binding builder to which to add the converters and
+	 *                        validators
+	 * @param am              the attribute model for the field
+	 * @param customConverter custom converter to be used for data conversion
+	 */
+	<U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
+			Converter<V, U> customConverter, Validator<V> customValidator);
 
-    /**
-     * Constructs a field based on the provided attribute model (given the default
-     * context)
-     * 
-     * @param am the attribute model
-     * @return
-     */
-    public Component constructField(AttributeModel am);
+	/**
+	 * Constructs a field based on the provided attribute model (given the default
+	 * context)
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	Component constructField(AttributeModel am);
 
-    /**
-     * Constructs a field based on the provided context
-     * 
-     * @param context the context
-     * @return
-     */
-    Component constructField(FieldFactoryContext context);
+	/**
+	 * Constructs a field based on the provided context
+	 * 
+	 * @param context the context
+	 * @return
+	 */
+	Component constructField(FieldFactoryContext context);
 }

@@ -274,7 +274,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
         binder.setBean(t2);
         EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
 
-        fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"), null);
+        fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"), null, null);
     }
 
     /**
