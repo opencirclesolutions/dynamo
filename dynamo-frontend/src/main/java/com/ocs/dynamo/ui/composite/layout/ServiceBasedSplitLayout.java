@@ -40,193 +40,196 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
- * @param <T> type of the entity
+ * @param <T>  type of the entity
  */
 @SuppressWarnings("serial")
-public class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseSplitLayout<ID, T> {
+public class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends BaseSplitLayout<ID, T> {
 
-    private static final long serialVersionUID = 1068860513192819804L;
+	private static final long serialVersionUID = 1068860513192819804L;
 
-    /**
-     * The search filter to apply
-     */
-    protected SerializablePredicate<T> filter;
+	/**
+	 * The search filter to apply
+	 */
+	protected SerializablePredicate<T> filter;
 
-    /**
-     * Supplier for creating the filter when needed
-     */
-    private Supplier<SerializablePredicate<T>> filterSupplier;
+	/**
+	 * Supplier for creating the filter when needed
+	 */
+	private Supplier<SerializablePredicate<T>> filterSupplier;
 
-    /**
-     * The query type (ID based or paging) used to query the database
-     */
-    private QueryType queryType;
+	/**
+	 * The query type (ID based or paging) used to query the database
+	 */
+	private QueryType queryType;
 
-    /**
-     * Supplier for creating the quick search filter
-     */
-    private Function<String, SerializablePredicate<T>> quickSearchFilterSupplier;
+	/**
+	 * Supplier for creating the quick search filter
+	 */
+	private Function<String, SerializablePredicate<T>> quickSearchFilterSupplier;
 
-    /**
-     * Constructor
-     *
-     * @param service     the service for retrieving data from the database
-     * @param entityModel the entity model
-     * @param queryType   the desired query type
-     * @param formOptions the form options
-     * @param sortOrder   the sort order
-     * @param joins
-     */
-    public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions,
-            SortOrder<?> sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, formOptions, sortOrder, joins);
-        this.queryType = queryType;
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param service     the service for retrieving data from the database
+	 * @param entityModel the entity model
+	 * @param queryType   the desired query type
+	 * @param formOptions the form options
+	 * @param sortOrder   the sort order
+	 * @param joins
+	 */
+	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
+		super(service, entityModel, formOptions, sortOrder, joins);
+		this.queryType = queryType;
+	}
 
-    @Override
-    protected void buildFilter() {
-        filter = filterSupplier == null ? null : filterSupplier.get();
-    }
+	@Override
+	protected void buildFilter() {
+		filter = filterSupplier == null ? null : filterSupplier.get();
+	}
 
-    @Override
-    protected BaseGridWrapper<ID, T> constructGridWrapper() {
-        ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(), getQueryType(),
-                getFormOptions(), filter, getFieldFilters(), getSortOrders(), false, getJoins()) {
+	@Override
+	protected BaseGridWrapper<ID, T> constructGridWrapper() {
+		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
+				getQueryType(), getFormOptions(), filter, getFieldFilters(), getSortOrders(), false, getJoins()) {
 
-            @Override
-            protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-                ServiceBasedSplitLayout.this.postProcessDataProvider(provider);
-            }
+			@Override
+			protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+				ServiceBasedSplitLayout.this.postProcessDataProvider(provider);
+			}
 
-            @Override
-            protected void onSelect(Object selected) {
-                setSelectedItems(selected);
-                checkComponentState(getSelectedItem());
-                if (getSelectedItem() != null) {
-                    detailsMode(getSelectedItem());
-                }
-            }
-        };
-        postConfigureGridWrapper(wrapper);
-        wrapper.setMaxResults(getMaxResults());
-        wrapper.build();
-        return wrapper;
-    }
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkComponentState(getSelectedItem());
+				if (getSelectedItem() != null) {
+					detailsMode(getSelectedItem());
+				}
+			}
+		};
+		postConfigureGridWrapper(wrapper);
+		wrapper.setMaxResults(getMaxResults());
+		wrapper.build();
+		return wrapper;
+	}
 
-    /**
-     * Constructs a quick search field - this method will only be called if the
-     * "showQuickSearchField" form option is enabled. It will then look for a custom
-     * filter returned by the constructQuickSearchFilter method, and if that method
-     * returns null it will construct a filter based on the main attribute
-     */
-    @Override
-    protected final TextField constructSearchField() {
-        if (getFormOptions().isShowQuickSearchField()) {
-            TextField searchField = new TextField(message("ocs.search"));
+	/**
+	 * Constructs a quick search field - this method will only be called if the
+	 * "showQuickSearchField" form option is enabled. It will then look for a custom
+	 * filter returned by the constructQuickSearchFilter method, and if that method
+	 * returns null it will construct a filter based on the main attribute
+	 */
+	@Override
+	protected final TextField constructSearchField() {
+		if (getFormOptions().isShowQuickSearchField()) {
+			TextField searchField = new TextField(message("ocs.search"));
 
-            // respond to the user entering a search term
-            searchField.addValueChangeListener(event -> {
-                String text = event.getValue();
-                if (!StringUtils.isEmpty(text)) {
-                    SerializablePredicate<T> quickFilter = quickSearchFilterSupplier == null ? null : quickSearchFilterSupplier.apply(text);
+			// respond to the user entering a search term
+			searchField.addValueChangeListener(event -> {
+				String text = event.getValue();
+				if (!StringUtils.isEmpty(text)) {
+					SerializablePredicate<T> quickFilter = quickSearchFilterSupplier == null ? null
+							: quickSearchFilterSupplier.apply(text);
 
-                    // if no custom filter is defined, filter on main attribute
-                    if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-                        quickFilter = new LikePredicate<>(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%", false);
-                    }
+					// if no custom filter is defined, filter on main attribute
+					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+						quickFilter = new LikePredicate<>(getEntityModel().getMainAttributeModel().getPath(),
+								"%" + text + "%", false);
+					}
 
-                    SerializablePredicate<T> temp = quickFilter;
-                    if (getFilter() != null) {
-                        temp = new AndPredicate<>(quickFilter, getFilter());
-                    }
-                    getGridWrapper().search(temp);
-                } else {
-                    getGridWrapper().search(filter);
-                }
-            });
-            return searchField;
-        }
-        return null;
-    }
+					SerializablePredicate<T> temp = quickFilter;
+					if (getFilter() != null) {
+						temp = new AndPredicate<>(quickFilter, getFilter());
+					}
+					getGridWrapper().search(temp);
+				} else {
+					getGridWrapper().search(filter);
+				}
+			});
+			return searchField;
+		}
+		return null;
+	}
 
-    protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
-        return getGridWrapper().getDataProvider();
-    }
+	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
+		return getGridWrapper().getDataProvider();
+	}
 
-    public SerializablePredicate<T> getFilter() {
-        return filter;
-    }
+	public SerializablePredicate<T> getFilter() {
+		return filter;
+	}
 
-    public Supplier<SerializablePredicate<T>> getFilterSupplier() {
-        return filterSupplier;
-    }
+	public Supplier<SerializablePredicate<T>> getFilterSupplier() {
+		return filterSupplier;
+	}
 
-    @Override
-    public ServiceBasedGridWrapper<ID, T> getGridWrapper() {
-        return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
-    }
+	@Override
+	public ServiceBasedGridWrapper<ID, T> getGridWrapper() {
+		return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
+	}
 
-    public QueryType getQueryType() {
-        return queryType;
-    }
+	public QueryType getQueryType() {
+		return queryType;
+	}
 
-    public Function<String, SerializablePredicate<T>> getQuickSearchFilterSupplier() {
-        return quickSearchFilterSupplier;
-    }
+	public Function<String, SerializablePredicate<T>> getQuickSearchFilterSupplier() {
+		return quickSearchFilterSupplier;
+	}
 
-    /**
-     * Reloads the component - this will first rebuild the filter and then reload
-     * the container using that filter
-     */
-    @Override
-    public void reload() {
-        buildFilter();
-        super.reload();
-        refresh();
-        getGridWrapper().setFilter(filter);
-    }
+	/**
+	 * Reloads the component - this will first rebuild the filter and then reload
+	 * the container using that filter
+	 */
+	@Override
+	public void reload() {
+		buildFilter();
+		super.reload();
+		refresh();
+		getGridWrapper().setFilter(filter);
+	}
 
-    /**
-     * Sets the function (supplier) used for constructing the default filter
-     * 
-     * @param filterSupplier
-     */
-    public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
-        this.filterSupplier = filterSupplier;
-    }
+	/**
+	 * Sets the function (supplier) used for constructing the default filter
+	 * 
+	 * @param filterSupplier
+	 */
+	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
+		this.filterSupplier = filterSupplier;
+	}
 
-    /**
-     * Sets the function used for constructing the quick search filter. This will
-     * override the default quick search filter that searches on the main attribute
-     * 
-     * @param quickSearchFilterSupplier
-     */
-    public void setQuickSearchFilterSupplier(Function<String, SerializablePredicate<T>> quickSearchFilterSupplier) {
-        this.quickSearchFilterSupplier = quickSearchFilterSupplier;
-    }
+	/**
+	 * Sets the function used for constructing the quick search filter. This will
+	 * override the default quick search filter that searches on the main attribute
+	 * 
+	 * @param quickSearchFilterSupplier
+	 */
+	public void setQuickSearchFilterSupplier(Function<String, SerializablePredicate<T>> quickSearchFilterSupplier) {
+		this.quickSearchFilterSupplier = quickSearchFilterSupplier;
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setSelectedItems(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                Collection<?> col = (Collection<?>) selectedItems;
-                if (!col.isEmpty()) {
-                    T t = (T) col.iterator().next();
-                    setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
-                } else {
-                    setSelectedItem(null);
-                    emptyDetailView();
-                }
-            } else {
-                T t = (T) selectedItems;
-                setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
-            }
-        } else {
-            // nothing selected
-            setSelectedItem(null);
-            emptyDetailView();
-        }
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setSelectedItems(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection<?>) {
+				Collection<?> col = (Collection<?>) selectedItems;
+				if (!col.isEmpty()) {
+					T t = (T) col.iterator().next();
+					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
+				} else {
+					setSelectedItem(null);
+					emptyDetailView();
+				}
+			} else {
+				T t = (T) selectedItems;
+				setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
+			}
+		} else {
+			// nothing selected
+			setSelectedItem(null);
+			emptyDetailView();
+		}
+	}
 
 }

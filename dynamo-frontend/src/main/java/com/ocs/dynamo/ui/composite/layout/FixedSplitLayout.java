@@ -141,7 +141,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
                 if (col.iterator().hasNext()) {
                     T t = (T) col.iterator().next();
                     // fetch the item again so that any details are loaded
-                    setSelectedItem(getService().fetchById(t.getId()));
+                    setSelectedItem(t);
                 } else {
                     setSelectedItem(null);
                     emptyDetailView();

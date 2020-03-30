@@ -69,7 +69,6 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
     @Override
     public void forceSearch() {
-        // TODO: does this do anything useful?
     }
 
     @Override

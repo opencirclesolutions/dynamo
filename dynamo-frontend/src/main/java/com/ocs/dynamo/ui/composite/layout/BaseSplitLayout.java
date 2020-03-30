@@ -319,6 +319,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
+				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+					return BaseSplitLayout.this.constructCustomRequiredValidator(am);
+				}
+
+				@Override
 				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 						boolean viewMode) {
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
@@ -353,6 +358,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				protected void postProcessEditFields() {
 					BaseSplitLayout.this.postProcessEditFields(editForm);
 				}
+
 			};
 
 			editForm.setCustomSaveConsumer(getCustomSaveConsumer());
@@ -379,6 +385,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected void doRemove() {
 		getService().delete(getSelectedItem());
+	}
+
+	public void doSave() {
+		editForm.doSave();
 	}
 
 	/**
