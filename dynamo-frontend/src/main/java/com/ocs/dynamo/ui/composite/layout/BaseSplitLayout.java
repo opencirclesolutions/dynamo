@@ -60,6 +60,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * The standard detail layout
 	 */
 	private VerticalLayout detailLayout;
+	
+	private VerticalLayout splitterLayout;
 
 	private ModelBasedEditForm<ID, T> editForm;
 
@@ -114,7 +116,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			mainLayout.setSizeFull();
 
 			SplitLayout splitter = null;
-			VerticalLayout splitterLayout = null;
+			splitterLayout = null;
 
 			detailLayout = new DefaultVerticalLayout(false, false);
 			emptyDetailView();
@@ -458,12 +460,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		Component component = constructHeaderLayout();
 		if (component != null) {
 			if (headerLayout != null) {
-				mainLayout.replace(headerLayout, component);
+				splitterLayout.replace(headerLayout, component);
 			} else {
-				mainLayout.add(component);
+				splitterLayout.add(component);
 			}
 		} else if (headerLayout != null) {
-			mainLayout.remove(headerLayout);
+			splitterLayout.remove(headerLayout);
 		}
 		headerLayout = component;
 

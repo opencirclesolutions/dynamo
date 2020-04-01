@@ -20,10 +20,8 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
-import java.util.function.Supplier;
-
-import javax.annotation.PostConstruct;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -106,7 +104,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 				removeButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
 				removeButton.setIcon(VaadinIcon.TRASH.create());
 				removeButton.addClickListener(event -> {
-					removeEntityConsumer.accept(this.form.getEntity());
+					ModelBasedEditForm<?, ?> enc = DetailsEditLayout.this.getEnclosingForm();
+					removeEntityConsumer.accept(enc == null ? null : enc.getEntity(), this.form.getEntity());
 					items.remove(this.form.getEntity());
 					mainFormContainer.remove(this);
 					forms.remove(this);
@@ -191,7 +190,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Supplier for creating a new entity
 	 */
-	private Supplier<T> createEntitySupplier;
+	private Function<AbstractEntity<?>, T> createEntitySupplier;
 
 	/**
 	 * The entity model of the entity to display
@@ -231,7 +230,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Consumer for removing an entity
 	 */
-	private Consumer<T> removeEntityConsumer;
+	private BiConsumer<AbstractEntity<?>, T> removeEntityConsumer;
 
 	/**
 	 * Service for interacting with the database
@@ -243,6 +242,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * allowed and no buttons will be displayed
 	 */
 	private boolean viewMode;
+
+	private ModelBasedEditForm<?, ?> enclosingForm;
 
 	/**
 	 * Constructor
@@ -304,6 +305,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			@Override
 			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
 				return DetailsEditLayout.this.constructCustomConverter(am);
+			}
+
+			@Override
+			protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+				return DetailsEditLayout.this.constructCustomRequiredValidator(am, this);
 			}
 
 			@Override
@@ -371,7 +377,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(event -> {
-			T t = createEntitySupplier.get();
+			T t = createEntitySupplier.apply(getEnclosingForm() == null ? null : getEnclosingForm().getEntity());
 			items.add(t);
 			addDetailEditForm(t);
 		});
@@ -426,6 +432,10 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return null;
 	}
 
+	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am, ModelBasedEditForm<ID, T> editForm) {
+		return null;
+	}
+
 	@Override
 	protected Collection<T> generateModelValue() {
 		return ConvertUtils.convertCollection(items == null ? new ArrayList<>() : items, attributeModel);
@@ -437,10 +447,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	public Comparator<T> getComparator() {
 		return comparator;
-	}
-
-	public Supplier<T> getCreateEntitySupplier() {
-		return createEntitySupplier;
 	}
 
 	public T getEntity(int index) {
@@ -492,7 +498,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return formOptions;
 	}
 
-	public Consumer<T> getRemoveEntityConsumer() {
+	public BiConsumer<AbstractEntity<?>, T> getRemoveEntityConsumer() {
 		return removeEntityConsumer;
 	}
 
@@ -570,7 +576,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param createEntitySupplier the supplier
 	 */
-	public void setCreateEntitySupplier(Supplier<T> createEntitySupplier) {
+	public void setCreateEntitySupplier(Function<AbstractEntity<?>, T> createEntitySupplier) {
 		this.createEntitySupplier = createEntitySupplier;
 	}
 
@@ -684,7 +690,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param removeEntityConsumer
 	 */
-	public void setRemoveEntityConsumer(Consumer<T> removeEntityConsumer) {
+	public void setRemoveEntityConsumer(BiConsumer<AbstractEntity<?>, T> removeEntityConsumer) {
 		this.removeEntityConsumer = removeEntityConsumer;
 	}
 
@@ -702,4 +708,13 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		}
 		return error;
 	}
+
+	public ModelBasedEditForm<?, ?> getEnclosingForm() {
+		return enclosingForm;
+	}
+
+	public void setEnclosingForm(ModelBasedEditForm<?, ?> enclosingForm) {
+		this.enclosingForm = enclosingForm;
+	}
+
 }

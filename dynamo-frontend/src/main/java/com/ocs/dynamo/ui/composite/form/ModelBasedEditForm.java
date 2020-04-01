@@ -973,6 +973,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				builder.bind(attributeModel.getPath());
 			}
 
+			if (field instanceof DetailsEditLayout) {
+				DetailsEditLayout<?, ?> del = (DetailsEditLayout<?, ?>) field;
+				del.setEnclosingForm(this);
+			}
+
 			if (!attributeModel.getGroupTogetherWith().isEmpty()) {
 				// construct a separate layout for holding the fields that will be displayed
 				// together

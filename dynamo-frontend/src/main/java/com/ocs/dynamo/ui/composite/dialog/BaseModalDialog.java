@@ -42,114 +42,115 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  */
 public abstract class BaseModalDialog extends Dialog implements Buildable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BaseModalDialog.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BaseModalDialog.class);
 
-    private static final long serialVersionUID = -2265149201475495504L;
+	private static final long serialVersionUID = -2265149201475495504L;
 
-    private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-    @Override
-    public void build() {
-        setCloseOnOutsideClick(false);
-        constructLayout();
-    }
+	@Override
+	public void build() {
+		setCloseOnOutsideClick(false);
+		constructLayout();
+	}
 
-    public void buildAndOpen() {
-        build();
-        open();
-    }
+	public void buildAndOpen() {
+		build();
+		open();
+	}
 
-    /**
-     * Constructs the layout
-     */
-    private void constructLayout() {
-        VerticalLayout main = new DefaultVerticalLayout(true, true);
-        main.addClassName(getStyleName());
+	/**
+	 * Constructs the layout
+	 */
+	private void constructLayout() {
+		VerticalLayout main = new DefaultVerticalLayout(true, true);
+		main.addClassName(getStyleName());
 
-        // differently colored title layout
-        VerticalLayout titleLayout = new VerticalLayout();
-        titleLayout.add(new Text(getTitle()));
-        titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
-        main.add(titleLayout);
+		// differently colored title layout
+		VerticalLayout titleLayout = new VerticalLayout();
+		titleLayout.add(new Text(getTitle()));
+		titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
+		main.add(titleLayout);
 
-        add(main);
-        doBuild(main);
+		add(main);
 
-        DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
-        main.add(buttonBar);
+		doBuild(main);
 
-        doBuildButtonBar(buttonBar);
-    }
+		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
+		main.add(buttonBar);
 
-    /**
-     * Constructs the actual contents of the window
-     * 
-     * @param parent the parent layout to which to add the specific components
-     */
-    protected abstract void doBuild(VerticalLayout parent);
+		doBuildButtonBar(buttonBar);
+	}
 
-    /**
-     * Constructs the button bar
-     * 
-     * @param buttonBar the button bar
-     */
-    protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
+	/**
+	 * Constructs the actual contents of the window
+	 * 
+	 * @param parent the parent layout to which to add the specific components
+	 */
+	protected abstract void doBuild(VerticalLayout parent);
 
-    public MessageService getMessageService() {
-        return messageService;
-    }
+	/**
+	 * Constructs the button bar
+	 * 
+	 * @param buttonBar the button bar
+	 */
+	protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
 
-    /**
-     * Returns the CSS style name. Can be overridden in subclass to modify styling
-     * 
-     * @return
-     */
-    protected String getStyleName() {
-        return DynamoConstants.CSS_DIALOG;
-    }
+	public MessageService getMessageService() {
+		return messageService;
+	}
 
-    /**
-     * Returns the title of the dialog
-     * 
-     * @return
-     */
-    protected abstract String getTitle();
+	/**
+	 * Returns the CSS style name. Can be overridden in subclass to modify styling
+	 * 
+	 * @return
+	 */
+	protected String getStyleName() {
+		return DynamoConstants.CSS_DIALOG;
+	}
 
-    /**
-     * Retrieves a localized message
-     * 
-     * @param key the message key
-     * @return
-     */
-    protected String message(String key) {
-        return messageService.getMessage(key, VaadinUtils.getLocale());
-    }
+	/**
+	 * Returns the title of the dialog
+	 * 
+	 * @return
+	 */
+	protected abstract String getTitle();
 
-    /**
-     * Retrieves a message based on its key
-     * 
-     * @param key  the key of the message
-     * @param args any arguments to pass to the message
-     * @return
-     */
-    protected String message(String key, Object... args) {
-        return messageService.getMessage(key, VaadinUtils.getLocale(), args);
-    }
+	/**
+	 * Retrieves a localized message
+	 * 
+	 * @param key the message key
+	 * @return
+	 */
+	protected String message(String key) {
+		return messageService.getMessage(key, VaadinUtils.getLocale());
+	}
 
-    /**
-     * Shows a notification message - this method will check for the availability of
-     * a Vaadin Page object and if this is not present, write the notification to
-     * the log instead
-     * 
-     * @param message the message
-     * @param type    the type of the message
-     */
-    protected void showNotification(String message) {
-        if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
-            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        } else {
-            LOG.info(message);
-        }
-    }
+	/**
+	 * Retrieves a message based on its key
+	 * 
+	 * @param key  the key of the message
+	 * @param args any arguments to pass to the message
+	 * @return
+	 */
+	protected String message(String key, Object... args) {
+		return messageService.getMessage(key, VaadinUtils.getLocale(), args);
+	}
+
+	/**
+	 * Shows a notification message - this method will check for the availability of
+	 * a Vaadin Page object and if this is not present, write the notification to
+	 * the log instead
+	 * 
+	 * @param message the message
+	 * @param type    the type of the message
+	 */
+	protected void showNotification(String message) {
+		if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
+			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		} else {
+			LOG.info(message);
+		}
+	}
 }
