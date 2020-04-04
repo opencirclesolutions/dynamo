@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
@@ -27,47 +28,53 @@ import com.vaadin.flow.server.StreamResource;
  */
 public class DownloadButton extends HorizontalLayout {
 
-    private static final long serialVersionUID = -7163648327567831406L;
+	private static final long serialVersionUID = -7163648327567831406L;
 
-    /**
-     * The actual link
-     */
-    private Anchor anchor;
+	/**
+	 * The actual link
+	 */
+	private Anchor anchor;
 
-    /**
-     * Supplier for creating the file name
-     */
-    private Supplier<String> createFileName;
+	/**
+	 * Supplier for creating the file name
+	 */
+	private Supplier<String> createFileName;
 
-    /**
-     * Supplier for creating the file content
-     */
-    private Supplier<InputStream> createContent;
+	/**
+	 * Supplier for creating the file content
+	 */
+	private Supplier<InputStream> createContent;
 
-    /**
-     * Constructor
-     * 
-     * @param caption the caption of the button
-     */
-    public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
-        setMargin(true);
-        this.createFileName = createFileName;
-        this.createContent = createContent;
+	/**
+	 * Constructor
+	 * 
+	 * @param caption the caption of the button
+	 */
+	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
+		setMargin(true);
+		this.createFileName = createFileName;
+		this.createContent = createContent;
 
-        anchor = new Anchor(new StreamResource(createFileName.get(), () -> createContent.get()), caption);
-        anchor.getElement().setAttribute("download", true);
-        add(anchor);
-    }
+		anchor = new Anchor(new StreamResource(createFileName.get(), () -> {
+			InputStream inputStream = createContent.get();
+			if (inputStream == null) {
+				return new ByteArrayInputStream(new byte[0]);
+			}
+			return inputStream;
+		}), caption);
+		anchor.getElement().setAttribute("download", true);
+		add(anchor);
+	}
 
-    /**
-     * Updates the button after the content to download has been changed
-     */
-    public void update() {
-        anchor.setHref(new StreamResource(createFileName.get(), () -> createContent.get()));
-    }
+	/**
+	 * Updates the button after the content to download has been changed
+	 */
+	public void update() {
+		anchor.setHref(new StreamResource(createFileName.get(), () -> createContent.get()));
+	}
 
-    public Anchor getAnchor() {
-        return anchor;
-    }
+	public Anchor getAnchor() {
+		return anchor;
+	}
 
 }
