@@ -55,8 +55,8 @@
 	</scm>
 	<distributionManagement>
 		<snapshotRepository>
-			<id>ossrh</id>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
+			<id>ocs-maven-snapshot</id>
+			<url>https://maven.square.opencirclesolutions.nl/snapshots/</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
@@ -83,7 +83,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- Dependency versions. -->
-		<vaadin.version>14.1.22</vaadin.version>
+		<vaadin.version>14.1.23</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<commons.io.version>2.6</commons.io.version>
 		<commons.lang.version>3.8.1</commons.lang.version>
