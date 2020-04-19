@@ -63,6 +63,7 @@ public class DownloadButton extends HorizontalLayout {
 			return inputStream;
 		}), caption);
 		anchor.getElement().setAttribute("download", true);
+		anchor.addClassName("donwloadButton");
 		add(anchor);
 	}
 

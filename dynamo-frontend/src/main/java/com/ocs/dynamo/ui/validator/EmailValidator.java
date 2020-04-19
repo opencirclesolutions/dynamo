@@ -1,5 +1,7 @@
 package com.ocs.dynamo.ui.validator;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
@@ -30,7 +32,7 @@ public class EmailValidator implements Validator<String> {
 
 	@Override
 	public ValidationResult apply(String value, ValueContext context) {
-		if (value == null || "".equals(value)) {
+		if (StringUtils.isEmpty(value)) {
 			return ValidationResult.ok();
 		}
 

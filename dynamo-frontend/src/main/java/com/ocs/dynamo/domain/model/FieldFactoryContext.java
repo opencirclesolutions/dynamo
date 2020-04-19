@@ -26,7 +26,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author Bas Rutten
  *
  */
-public class FieldFactoryContext {
+public final class FieldFactoryContext {
 
     /**
      * Creates a blank context

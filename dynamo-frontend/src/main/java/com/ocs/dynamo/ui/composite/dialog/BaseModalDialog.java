@@ -64,6 +64,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 	 */
 	private void constructLayout() {
 		VerticalLayout main = new DefaultVerticalLayout(true, true);
+		main.setPadding(true);
 		main.addClassName(getStyleName());
 
 		// differently colored title layout
@@ -76,7 +77,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 
 		doBuild(main);
 
-		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
+		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, false);
 		main.add(buttonBar);
 
 		doBuildButtonBar(buttonBar);
