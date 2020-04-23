@@ -323,7 +323,8 @@ public class FieldFactoryImpl implements FieldFactory {
 				textField.setSizeFull();
 				field = new URLField(textField, am, false);
 			} else {
-				field = new TextField();
+				TextField textField = new TextField();
+				field = textField;
 			}
 		}
 		if (field != null) {

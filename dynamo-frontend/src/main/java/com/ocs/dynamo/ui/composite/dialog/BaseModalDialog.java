@@ -63,12 +63,12 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 	 * Constructs the layout
 	 */
 	private void constructLayout() {
-		VerticalLayout main = new DefaultVerticalLayout(true, true);
-		main.setPadding(true);
+		VerticalLayout main = new DefaultVerticalLayout(false, true);
 		main.addClassName(getStyleName());
 
 		// differently colored title layout
-		VerticalLayout titleLayout = new VerticalLayout();
+		VerticalLayout titleLayout = new DefaultVerticalLayout(false, false);
+		titleLayout.setPadding(true);
 		titleLayout.add(new Text(getTitle()));
 		titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
 		main.add(titleLayout);

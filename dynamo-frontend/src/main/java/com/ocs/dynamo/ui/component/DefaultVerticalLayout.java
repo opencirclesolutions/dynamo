@@ -25,6 +25,7 @@ public class DefaultVerticalLayout extends VerticalLayout {
     private static final long serialVersionUID = 979501638798053429L;
 
     public DefaultVerticalLayout(boolean margin, boolean spacing) {
+    	setPadding(false);
         setMargin(margin);
         setSpacing(spacing);
     }

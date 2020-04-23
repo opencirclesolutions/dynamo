@@ -45,116 +45,117 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  */
 public abstract class BaseCustomComponent extends VerticalLayout implements Buildable {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BaseCustomComponent.class);
+	private static final Logger LOG = LoggerFactory.getLogger(BaseCustomComponent.class);
 
-    private static final long serialVersionUID = -8982555842423738005L;
+	private static final long serialVersionUID = -8982555842423738005L;
 
-    private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-    private UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+	private UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 
-    /**
-     * Constructs a (formatted) label based on the attribute model
-     *
-     * @param entity         the entity that is being displayed
-     * @param attributeModel the attribute model
-     * @return
-     */
-    protected Text constructLabel(Object entity, AttributeModel attributeModel) {
-        Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
-        String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, ", ");
-        return new Text(formatted == null ? "" : formatted);
-    }
+	/**
+	 * Constructs a (formatted) label based on the attribute model
+	 *
+	 * @param entity         the entity that is being displayed
+	 * @param attributeModel the attribute model
+	 * @return
+	 */
+	protected Text constructLabel(Object entity, AttributeModel attributeModel) {
+		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
+		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, ", ");
+		return new Text(formatted == null ? "" : formatted);
+	}
 
-    protected EntityModelFactory getEntityModelFactory() {
-        return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
-    }
+	protected EntityModelFactory getEntityModelFactory() {
+		return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
+	}
 
-    protected MessageService getMessageService() {
-        return messageService;
-    }
+	protected MessageService getMessageService() {
+		return messageService;
+	}
 
-    protected <T> T getService(Class<T> clazz) {
-        return ServiceLocatorFactory.getServiceLocator().getService(clazz);
-    }
+	protected <T> T getService(Class<T> clazz) {
+		return ServiceLocatorFactory.getServiceLocator().getService(clazz);
+	}
 
-    /**
-     * Generic handling of error messages after a save operation
-     *
-     * @param ex the exception that occurred
-     */
-    protected void handleSaveException(RuntimeException ex) {
-        if (ex instanceof OCSValidationException) {
-            // validation exception
-            LOG.warn(ex.getMessage(), ex);
-            showErrorNotification(((OCSValidationException) ex).getErrors().get(0));
-        } else if (ex instanceof OCSRuntimeException) {
-            // any other OCS runtime exception
-            LOG.error(ex.getMessage(), ex);
-            showErrorNotification(ex.getMessage());
-        } else if (ex instanceof OptimisticLockException) {
-            // optimistic lock
-            LOG.error(ex.getMessage(), ex);
-            showErrorNotification(message("ocs.optimistic.lock"));
-        } else {
-            // any other save exception
-            LOG.error(ex.getMessage(), ex);
-            showErrorNotification(message("ocs.error.occurred"));
-        }
-    }
+	/**
+	 * Generic handling of error messages after a save operation
+	 *
+	 * @param ex the exception that occurred
+	 */
+	protected void handleSaveException(RuntimeException ex) {
+		if (ex instanceof OCSValidationException) {
+			// validation exception
+			LOG.warn(ex.getMessage(), ex);
+			showErrorNotification(((OCSValidationException) ex).getErrors().get(0));
+		} else if (ex instanceof OCSRuntimeException) {
+			// any other OCS runtime exception
+			LOG.error(ex.getMessage(), ex);
+			showErrorNotification(ex.getMessage());
+		} else if (ex instanceof OptimisticLockException) {
+			// optimistic lock
+			LOG.error(ex.getMessage(), ex);
+			showErrorNotification(message("ocs.optimistic.lock"));
+		} else {
+			// any other save exception
+			LOG.error(ex.getMessage(), ex);
+			showErrorNotification(message("ocs.error.occurred"));
+		}
+	}
 
-    /**
-     * Retrieves a message from the message bundle
-     *
-     * @param key the key of the message
-     * @return
-     */
-    protected String message(String key) {
-        return getMessageService().getMessage(key, VaadinUtils.getLocale());
-    }
+	/**
+	 * Retrieves a message from the message bundle
+	 *
+	 * @param key the key of the message
+	 * @return
+	 */
+	protected String message(String key) {
+		return getMessageService().getMessage(key, VaadinUtils.getLocale());
+	}
 
-    /**
-     * Retrieves a message from the message bundle
-     *
-     * @param key  the key of the message
-     * @param args any arguments that are used in the message
-     * @return
-     */
-    protected String message(String key, Object... args) {
-        return getMessageService().getMessage(key, VaadinUtils.getLocale(), args);
-    }
+	/**
+	 * Retrieves a message from the message bundle
+	 *
+	 * @param key  the key of the message
+	 * @param args any arguments that are used in the message
+	 * @return
+	 */
+	protected String message(String key, Object... args) {
+		return getMessageService().getMessage(key, VaadinUtils.getLocale(), args);
+	}
 
-    /**
-     * Navigates to the specified view
-     *
-     * @param view the ID of the view
-     */
-    protected void navigate(String viewName) {
-        helper.navigate(viewName);
-    }
+	/**
+	 * Navigates to the specified view
+	 *
+	 * @param view the ID of the view
+	 */
+	protected void navigate(String viewName) {
+		helper.navigate(viewName);
+	}
 
-    /**
-     * Shows a notification message - this method will check for the availability of
-     * a Vaadin Page object and if this is not present, write the notification to
-     * the log instead
-     *
-     * @param message the message
-     * @param type    the type of the message (error, warning, tray etc.)
-     */
-    protected void showNotifification(String message, Position position, NotificationVariant variant) {
-        if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
-            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position).addThemeVariants(variant);
-        } else {
-            LOG.info(message);
-        }
-    }
+	/**
+	 * Shows a notification message - this method will check for the availability of
+	 * a Vaadin Page object and if this is not present, write the notification to
+	 * the log instead
+	 *
+	 * @param message the message
+	 * @param type    the type of the message (error, warning, tray etc.)
+	 */
+	protected void showNotifification(String message, Position position, NotificationVariant variant) {
+		if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
+			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position)
+					.addThemeVariants(variant);
+		} else {
+			LOG.info(message);
+		}
+	}
 
-    protected void showErrorNotification(String message) {
-        showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
-    }
+	protected void showErrorNotification(String message) {
+		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
+	}
 
-    protected void showTrayNotification(String message) {
-        showNotifification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
-    }
+	protected void showTrayNotification(String message) {
+		showNotifification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
+	}
 
 }
