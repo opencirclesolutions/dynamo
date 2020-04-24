@@ -13,17 +13,19 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import com.vaadin.flow.component.button.Button;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
 import com.vaadin.flow.component.html.Anchor;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.server.StreamResource;
 
 /**
  * A button that starts a file download when clicked.
- * 
+ *
  * @author bas.rutten
  */
 public class DownloadButton extends HorizontalLayout {
@@ -34,6 +36,11 @@ public class DownloadButton extends HorizontalLayout {
 	 * The actual link
 	 */
 	private Anchor anchor;
+
+	/**
+	 * Button wrapped inside of link
+	 */
+	private Button button;
 
 	/**
 	 * Supplier for creating the file name
@@ -47,35 +54,59 @@ public class DownloadButton extends HorizontalLayout {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param caption the caption of the button
 	 */
 	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
-		setMargin(true);
+		setMargin(false);
 		this.createFileName = createFileName;
 		this.createContent = createContent;
 
-		anchor = new Anchor(new StreamResource(createFileName.get(), () -> {
-			InputStream inputStream = createContent.get();
-			if (inputStream == null) {
-				return new ByteArrayInputStream(new byte[0]);
-			}
-			return inputStream;
-		}), caption);
+		anchor = new Anchor();
+		update();
+
+		button = new Button(caption, VaadinIcon.DOWNLOAD.create());
+		button.addClassName("downloadButton");
 		anchor.getElement().setAttribute("download", true);
-		anchor.addClassName("donwloadButton");
+		anchor.addClassName("downloadButton");
+		anchor.add(button);
 		add(anchor);
 	}
 
 	/**
 	 * Updates the button after the content to download has been changed
 	 */
-	public void update() {
-		anchor.setHref(new StreamResource(createFileName.get(), () -> createContent.get()));
+	public final void update() {
+		anchor.setHref(new StreamResource(this.createFileName.get(), () -> {
+			InputStream inputStream = this.createContent.get();
+			if (inputStream == null) {
+				return new ByteArrayInputStream(new byte[0]);
+			}
+			return inputStream;
+		}));
 	}
 
 	public Anchor getAnchor() {
 		return anchor;
+	}
+
+	public Button getButton() {
+		return button;
+	}
+
+	@Override
+	public boolean isEnabled() {
+		return button.isEnabled();
+	}
+
+	@Override
+	public void setEnabled(boolean enabled) {
+		button.setEnabled(enabled);
+		if (enabled) {
+			update();
+		} else {
+			anchor.removeHref();
+		}
 	}
 
 }
