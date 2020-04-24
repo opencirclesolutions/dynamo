@@ -29,6 +29,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.component.CustomEntityField;
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.EntityComboBox;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
@@ -700,7 +701,7 @@ public final class VaadinUtils {
 	}
 
 	public static VerticalLayout createOverflowLayout(String height) {
-		VerticalLayout restricted = new VerticalLayout();
+		VerticalLayout restricted = new DefaultVerticalLayout(false, false);
 		restricted.getStyle().set("overflow", "auto");
 		restricted.setHeight(height);
 		return restricted;
