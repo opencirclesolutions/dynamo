@@ -24,8 +24,9 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
-import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.Buildable;
+import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -33,9 +34,8 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.notification.NotificationVariant;
 
 /**
  * Base class for custom components - contains convenience methods for getting
@@ -43,7 +43,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * 
  * @author bas.rutten
  */
-public abstract class BaseCustomComponent extends VerticalLayout implements Buildable {
+public abstract class BaseCustomComponent extends DefaultVerticalLayout implements Buildable {
 
 	private static final Logger LOG = LoggerFactory.getLogger(BaseCustomComponent.class);
 

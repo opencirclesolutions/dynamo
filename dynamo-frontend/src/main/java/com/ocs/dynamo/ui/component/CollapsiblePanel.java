@@ -28,72 +28,70 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  */
 public class CollapsiblePanel extends VerticalLayout {
 
-    private static final long serialVersionUID = -7979238391035057707L;
+	private static final long serialVersionUID = -7979238391035057707L;
 
-    private Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
+	private Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
 
-    private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
+	private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
 
-    /**
-     * The button that serves as the "header" for the panel
-     */
-    private Button toggle = new Button(openIcon);
+	/**
+	 * The button that serves as the "header" for the panel
+	 */
+	private Button toggle = new Button(openIcon);
 
-    private VerticalLayout contentWrapper = new VerticalLayout();
+	private VerticalLayout contentWrapper = new DefaultVerticalLayout();
 
-    public CollapsiblePanel() {
-        setMargin(false);
+	public CollapsiblePanel() {
 
-        toggle.setSizeFull();
-        toggle.addClassName(DynamoConstants.CSS_COLLAPSIBLE_PANEL_BUTTON);
+		toggle.setSizeFull();
+		toggle.addClassName(DynamoConstants.CSS_COLLAPSIBLE_PANEL_BUTTON);
 
-        contentWrapper.setMargin(false);
-        contentWrapper.setVisible(true);
-        add(toggle, contentWrapper);
-        toggle.addClickListener(event -> setOpen(!isOpen()));
-    }
+		contentWrapper.setVisible(true);
+		add(toggle, contentWrapper);
+		toggle.addClickListener(event -> setOpen(!isOpen()));
+	}
 
-    public CollapsiblePanel(String caption, Component content) {
-        this();
-        toggle.setText(caption);
-        contentWrapper.add(content);
-    }
+	public CollapsiblePanel(String caption, Component content) {
+		this();
+		toggle.setText(caption);
+		contentWrapper.add(content);
+	}
 
-    public boolean isOpen() {
-        return toggle.getIcon() == openIcon;
-    }
+	public boolean isOpen() {
+		return toggle.getIcon() == openIcon;
+	}
 
-    public CollapsiblePanel setOpen(boolean open) {
-        contentWrapper.setVisible(open);
-        contentWrapper.getChildren().forEach(c -> c.setVisible(open));
-        toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
-        return this;
-    }
+	public CollapsiblePanel setOpen(boolean open) {
+		contentWrapper.setVisible(open);
+		contentWrapper.getChildren().forEach(c -> c.setVisible(open));
+		toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
+		return this;
+	}
 
-    public CollapsiblePanel setContent(Component content) {
-        this.contentWrapper.removeAll();
-        this.contentWrapper.add(content);
-        return this;
-    }
+	public CollapsiblePanel setContent(Component content) {
+		this.contentWrapper.removeAll();
+		this.contentWrapper.add(content);
+		return this;
+	}
 
-    public VerticalLayout getContentWrapper() {
-        return contentWrapper;
-    }
+	public VerticalLayout getContentWrapper() {
+		return contentWrapper;
+	}
 
-    public Icon getClosedIcon() {
-        return closedIcon;
-    }
+	public Icon getClosedIcon() {
+		return closedIcon;
+	}
 
-    public void setClosedIcon(Icon closedIcon) {
-        this.closedIcon = closedIcon;
-    }
+	public void setClosedIcon(Icon closedIcon) {
+		this.closedIcon = closedIcon;
+	}
 
-    public Icon getOpenIcon() {
-        return openIcon;
-    }
+	public Icon getOpenIcon() {
+		return openIcon;
+	}
 
-    public void setOpenIcon(Icon openIcon) {
-        this.openIcon = openIcon;
-    }
+	public void setOpenIcon(Icon openIcon) {
+		this.openIcon = openIcon;
+	}
 
 }

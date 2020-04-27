@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
@@ -35,7 +36,7 @@ import com.vaadin.flow.shared.Registration;
  * @author Bas Rutten
  *
  */
-public class TabWrapper extends VerticalLayout {
+public class TabWrapper extends DefaultVerticalLayout {
 
 	private static final long serialVersionUID = -3247803933862947954L;
 
@@ -55,6 +56,7 @@ public class TabWrapper extends VerticalLayout {
 	private Map<Tab, Component> tabsToPages = new HashMap<>();
 
 	public TabWrapper() {
+		setMargin(false);
 		tabs = new Tabs();
 		tabs.addSelectedChangeListener(event -> {
 			Component selectedPage = tabsToPages.get(tabs.getSelectedTab());

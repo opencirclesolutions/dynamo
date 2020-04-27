@@ -105,6 +105,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         this.queryType = queryType;
     }
 
+    public void addManageDetailButtons() {
+        // overwrite in subclasses
+    }
+
     /**
      * Callback method that fires after all search filters have been cleared
      */
@@ -140,6 +144,99 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     protected SerializablePredicate<T> beforeSearchPerformed(SerializablePredicate<T> filter) {
         // overwrite in subclasses
         return null;
+    }
+
+    /**
+     * Lazily constructs the screen
+     */
+    @Override
+    public void build() {
+        if (mainSearchLayout == null) {
+            mainSearchLayout = new DefaultVerticalLayout(false, false);
+
+            // if search immediately, construct the search results grid
+            if (getFormOptions().isSearchImmediately()) {
+                constructSearchLayout();
+                searchLayoutConstructed = true;
+            }
+
+            // listen to a click on the clear button
+            mainSearchLayout.add(getSearchForm());
+            if (getSearchForm().getClearButton() != null) {
+                if (!getFormOptions().isSearchImmediately()) {
+
+                    // use a consumer since the action might have to be deferred until after the
+                    // user confirms the clear
+                    if (getFormOptions().isConfirmClear()) {
+                        getSearchForm().setAfterClearConsumer(e -> clearIfNotSearchingImmediately());
+                    } else {
+                        // clear right away
+                        getSearchForm().getClearButton().addClickListener(e -> clearIfNotSearchingImmediately());
+                    }
+                } else {
+                    // clear current selection and update buttons
+                    if (getFormOptions().isConfirmClear()) {
+                        getSearchForm().setAfterClearConsumer(e -> {
+                            setSelectedItem(null);
+                            checkComponentState(getSelectedItem());
+                            afterClear();
+                        });
+                    } else {
+                        getSearchForm().getClearButton().addClickListener(e -> {
+                            setSelectedItem(null);
+                            checkComponentState(getSelectedItem());
+                            afterClear();
+                        });
+                    }
+                }
+            }
+
+            searchResultsLayout = new DefaultVerticalLayout(false, false);
+            mainSearchLayout.add(searchResultsLayout);
+
+            if (getFormOptions().isSearchImmediately()) {
+                // immediately construct the search results grid
+                searchResultsLayout.add(getGridWrapper());
+            } else {
+                // do not construct the search results grid yet
+                Text noSearchYetLabel = new Text(message("ocs.no.search.yet"));
+                searchResultsLayout.add(noSearchYetLabel);
+
+                // click listener that will construct search results grid on demand
+                if (getSearchForm().getSearchButton() != null) {
+                    getSearchForm().getSearchButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
+                }
+                if (getSearchForm().getSearchAnyButton() != null) {
+                    getSearchForm().getSearchAnyButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
+                }
+            }
+            // clear currently selected item and update buttons
+            if (getSearchForm().getSearchButton() != null) {
+                getSearchForm().getSearchButton().addClickListener(e -> {
+                    setSelectedItem(null);
+                    checkComponentState(getSelectedItem());
+                });
+            }
+
+            addManageDetailButtons();
+
+            // callback for adding additional buttons
+            postProcessButtonBar(getButtonBar());
+            mainSearchLayout.add(getButtonBar());
+
+            checkComponentState(null);
+
+            // post process the layout
+            postProcessLayout(mainSearchLayout);
+
+            // there is a small chance that the user navigates directly
+            // to the detail screen without the search layout having been
+            // created before. This check is there to ensure that the
+            // search layout is not appended below the detail layout
+            if (getComponentCount() == 0) {
+                add(mainSearchLayout);
+            }
+        }
     }
 
     /**
@@ -550,103 +647,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * correctly set, throw an OCSValidationException to abort the search process
      */
     public void validateBeforeSearch() {
-        // overwrite in subclasses
-    }
-
-    /**
-     * Lazily constructs the screen
-     */
-    @Override
-    public void build() {
-        if (mainSearchLayout == null) {
-            mainSearchLayout = new DefaultVerticalLayout(false, true);
-
-            // if search immediately, construct the search results grid
-            if (getFormOptions().isSearchImmediately()) {
-                constructSearchLayout();
-                searchLayoutConstructed = true;
-            }
-
-            // listen to a click on the clear button
-            mainSearchLayout.add(getSearchForm());
-            if (getSearchForm().getClearButton() != null) {
-                if (!getFormOptions().isSearchImmediately()) {
-
-                    // use a consumer since the action might have to be deferred until after the
-                    // user confirms the clear
-                    if (getFormOptions().isConfirmClear()) {
-                        getSearchForm().setAfterClearConsumer(e -> clearIfNotSearchingImmediately());
-                    } else {
-                        // clear right away
-                        getSearchForm().getClearButton().addClickListener(e -> clearIfNotSearchingImmediately());
-                    }
-                } else {
-                    // clear current selection and update buttons
-                    if (getFormOptions().isConfirmClear()) {
-                        getSearchForm().setAfterClearConsumer(e -> {
-                            setSelectedItem(null);
-                            checkComponentState(getSelectedItem());
-                            afterClear();
-                        });
-                    } else {
-                        getSearchForm().getClearButton().addClickListener(e -> {
-                            setSelectedItem(null);
-                            checkComponentState(getSelectedItem());
-                            afterClear();
-                        });
-                    }
-                }
-            }
-
-            searchResultsLayout = new DefaultVerticalLayout(false, false);
-            mainSearchLayout.add(searchResultsLayout);
-
-            if (getFormOptions().isSearchImmediately()) {
-                // immediately construct the search results grid
-                searchResultsLayout.add(getGridWrapper());
-            } else {
-                // do not construct the search results grid yet
-                Text noSearchYetLabel = new Text(message("ocs.no.search.yet"));
-                searchResultsLayout.add(noSearchYetLabel);
-
-                // click listener that will construct search results grid on demand
-                if (getSearchForm().getSearchButton() != null) {
-                    getSearchForm().getSearchButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
-                }
-                if (getSearchForm().getSearchAnyButton() != null) {
-                    getSearchForm().getSearchAnyButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
-                }
-            }
-            // clear currently selected item and update buttons
-            if (getSearchForm().getSearchButton() != null) {
-                getSearchForm().getSearchButton().addClickListener(e -> {
-                    setSelectedItem(null);
-                    checkComponentState(getSelectedItem());
-                });
-            }
-
-            addManageDetailButtons();
-
-            // callback for adding additional buttons
-            postProcessButtonBar(getButtonBar());
-            mainSearchLayout.add(getButtonBar());
-
-            checkComponentState(null);
-
-            // post process the layout
-            postProcessLayout(mainSearchLayout);
-
-            // there is a small chance that the user navigates directly
-            // to the detail screen without the search layout having been
-            // created before. This check is there to ensure that the
-            // search layout is not appended below the detail layout
-            if (getComponentCount() == 0) {
-                add(mainSearchLayout);
-            }
-        }
-    }
-
-    public void addManageDetailButtons() {
         // overwrite in subclasses
     }
 }

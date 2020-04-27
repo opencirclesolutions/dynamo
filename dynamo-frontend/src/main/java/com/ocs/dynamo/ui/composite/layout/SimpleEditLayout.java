@@ -157,7 +157,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public void build() {
 		if (main == null) {
-			main = new DefaultVerticalLayout(true, true);
+			main = new DefaultVerticalLayout();
 
 			// create new entity if it does not exist yet
 			if (entity == null) {

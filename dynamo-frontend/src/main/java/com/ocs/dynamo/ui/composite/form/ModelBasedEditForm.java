@@ -367,6 +367,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public ModelBasedEditForm(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
+		addClassName("modelBasedEditForm");
 		this.service = service;
 		this.entity = entity;
 		afterEntitySet(entity);
@@ -412,7 +413,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (AttributeType.LOB.equals(type)) {
 					// image preview (or label if no preview is available)
 					Component c = constructImagePreview(attributeModel);
-					VerticalLayout container = new VerticalLayout();
+					VerticalLayout container = new DefaultVerticalLayout();
 					container.add(c);
 					parent.add(container);
 					previews.get(isViewMode()).put(attributeModel, c);
@@ -435,7 +436,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					UploadComponent uploadForm = constructUploadField(attributeModel);
 
 					// extra nesting needed to be able to replace component
-					VerticalLayout container = new VerticalLayout();
+					VerticalLayout container = new DefaultVerticalLayout();
 					parent.add(container);
 					container.add(uploadForm);
 					uploads.get(isViewMode()).put(attributeModel, uploadForm);
@@ -587,7 +588,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @return
 	 */
 	protected VerticalLayout buildMainLayout(EntityModel<T> entityModel) {
-		VerticalLayout layout = new DefaultVerticalLayout(false, true);
+		VerticalLayout layout = new DefaultVerticalLayout(false, false);
 
 		titleLabels.put(isViewMode(), constructTitleLabel());
 
@@ -613,7 +614,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			form = new FormLayout();
 			setResponsiveSteps(form);
 		} else {
-			form = new DefaultVerticalLayout(false, true);
+			form = new DefaultVerticalLayout(false, false);
 		}
 
 		if (!entityModel.usesDefaultGroupOnly()) {

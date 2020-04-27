@@ -114,7 +114,7 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 * @return
 	 */
 	protected VerticalLayout initLayout() {
-		VerticalLayout container = new DefaultVerticalLayout(false, true);
+		VerticalLayout container = new DefaultVerticalLayout(false, false);
 		add(container);
 		return container;
 	}

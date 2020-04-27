@@ -1,3 +1,16 @@
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
@@ -123,9 +136,9 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * @param entity the currently selected entity
 	 */
 	private final void buildDetailsTabLayout(T entity, FormOptions formOptions) {
-		tabContainerLayout = new DefaultVerticalLayout(false, true);
+		tabContainerLayout = new DefaultVerticalLayout(false, false);
 
-		HorizontalLayout buttonBar = new DefaultHorizontalLayout(false, true);
+		HorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
 		tabContainerLayout.add(buttonBar);
 
 		complexDetailModeBackButton = new Button(message("ocs.back"));
@@ -380,7 +393,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	protected void detailsMode(T entity) {
 
 		if (mainEditLayout == null) {
-			mainEditLayout = new DefaultVerticalLayout(false, true);
+			mainEditLayout = new DefaultVerticalLayout(false, false);
 		}
 
 		FormOptions copy = new FormOptions();

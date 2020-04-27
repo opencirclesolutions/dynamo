@@ -92,7 +92,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		 * @param form the model based edit form
 		 */
 		FormContainer(ModelBasedEditForm<ID, T> form) {
-			super(false, true);
+			super(false, false);
+			addClassName("detailsEditLayout");
 			this.form = form;
 
 			if (!viewMode && getFormOptions().isShowRemoveButton()) {
@@ -512,7 +513,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	protected void initContent() {
 
-		VerticalLayout layout = new DefaultVerticalLayout(false, true);
+		VerticalLayout layout = new DefaultVerticalLayout(false, false);
 
 		mainFormContainer = new DefaultVerticalLayout(false, false);
 		layout.add(mainFormContainer);
@@ -717,4 +718,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		this.enclosingForm = enclosingForm;
 	}
 
+	public void setClassName(String className) {
+		this.getElement().setAttribute("class", className);
+	}
 }

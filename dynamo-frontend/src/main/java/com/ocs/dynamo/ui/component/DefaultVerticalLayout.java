@@ -31,6 +31,6 @@ public class DefaultVerticalLayout extends VerticalLayout {
     }
 
     public DefaultVerticalLayout() {
-        this(true, true);
+        this(true, false);
     }
 }

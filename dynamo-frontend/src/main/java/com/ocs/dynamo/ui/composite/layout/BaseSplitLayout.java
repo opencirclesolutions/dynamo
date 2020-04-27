@@ -112,13 +112,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public void build() {
 		buildFilter();
 		if (mainLayout == null) {
-			mainLayout = new DefaultVerticalLayout(false, false);
+			mainLayout = new DefaultVerticalLayout();
 			mainLayout.setSizeFull();
 
 			SplitLayout splitter = null;
 			splitterLayout = null;
 
-			detailLayout = new DefaultVerticalLayout(false, false);
+			detailLayout = new DefaultVerticalLayout();
 			emptyDetailView();
 
 			// construct option quick search field

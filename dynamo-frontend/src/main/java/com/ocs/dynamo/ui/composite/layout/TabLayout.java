@@ -70,6 +70,7 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
      * @param entity the entity to display
      */
     public TabLayout(T entity) {
+    	setSpacing(false);
         this.entity = entity;
     }
 

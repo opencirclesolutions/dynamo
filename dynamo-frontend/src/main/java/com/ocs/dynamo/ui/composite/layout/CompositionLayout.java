@@ -48,6 +48,7 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 
 	public CompositionLayout(T entity) {
 		this.entity = entity;
+		setMargin(false);
 	}
 
 	@Override
@@ -59,7 +60,7 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 	@Override
 	public void build() {
 		if (main == null) {
-			main = new DefaultVerticalLayout();
+			main = new DefaultVerticalLayout(false, false);
 			doBuildLayout(main);
 			add(main);
 		}
