@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Objects;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -153,6 +154,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
     public void build() {
         if (mainSearchLayout == null) {
             mainSearchLayout = new DefaultVerticalLayout(false, false);
+            mainSearchLayout.addClassName(DynamoConstants.CSS_MAIN_SEARCH_LAYOUT);
 
             // if search immediately, construct the search results grid
             if (getFormOptions().isSearchImmediately()) {
@@ -192,6 +194,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
             }
 
             searchResultsLayout = new DefaultVerticalLayout(false, false);
+            searchResultsLayout.setClassName(DynamoConstants.CSS_SEARCH_RESULTS_LAYOUT);
             mainSearchLayout.add(searchResultsLayout);
 
             if (getFormOptions().isSearchImmediately()) {

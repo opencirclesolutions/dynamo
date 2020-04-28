@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -137,6 +138,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	public EditableGridLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
+		setMargin(false);
+		addClassName(DynamoConstants.CSS_EDITABLE_GRID_LAYOUT);
 	}
 
 	@Override
@@ -150,7 +153,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		buildFilter();
 		if (mainLayout == null) {
 			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
-			mainLayout = new DefaultVerticalLayout(true, true);
+			mainLayout = new DefaultVerticalLayout(false, true);
 
 			constructGrid();
 

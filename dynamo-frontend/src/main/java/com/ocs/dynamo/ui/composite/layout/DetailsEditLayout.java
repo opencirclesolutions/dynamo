@@ -92,7 +92,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		 * @param form the model based edit form
 		 */
 		FormContainer(ModelBasedEditForm<ID, T> form) {
-			super(false, false);
+			super(true, false);
 			addClassName("detailsEditLayout");
 			this.form = form;
 

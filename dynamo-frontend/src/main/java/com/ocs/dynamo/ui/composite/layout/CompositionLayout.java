@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
@@ -48,6 +49,7 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 
 	public CompositionLayout(T entity) {
 		this.entity = entity;
+		addClassName(DynamoConstants.CSS_COMPOSITION_LAYOUT);
 		setMargin(false);
 	}
 
@@ -60,7 +62,7 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 	@Override
 	public void build() {
 		if (main == null) {
-			main = new DefaultVerticalLayout(false, false);
+			main = new DefaultVerticalLayout(false, true);
 			doBuildLayout(main);
 			add(main);
 		}

@@ -37,6 +37,7 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -117,6 +118,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		this.fieldFilters = fieldFilters;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.fieldFactory = FieldFactory.getInstance();
+		addThemeVariants(GridVariant.LUMO_COMPACT);
 
 		setSizeFull();
 		setColumnReorderingAllowed(true);

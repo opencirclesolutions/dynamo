@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -80,6 +81,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
+		setMargin(false);
+		setClassName(DynamoConstants.CSS_SIMPLE_EDIT_LAYOUT);
 		this.entity = entity;
 		this.joins = joins;
 	}

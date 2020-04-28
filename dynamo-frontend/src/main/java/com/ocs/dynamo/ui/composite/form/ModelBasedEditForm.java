@@ -367,7 +367,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public ModelBasedEditForm(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
-		addClassName("modelBasedEditForm");
+		addClassName(DynamoConstants.CSS_MODEL_BASED_EDIT_FORM);
 		this.service = service;
 		this.entity = entity;
 		afterEntitySet(entity);

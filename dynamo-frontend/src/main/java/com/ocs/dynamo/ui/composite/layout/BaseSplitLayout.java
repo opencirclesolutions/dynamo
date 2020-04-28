@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -60,7 +61,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * The standard detail layout
 	 */
 	private VerticalLayout detailLayout;
-	
+
 	private VerticalLayout splitterLayout;
 
 	private ModelBasedEditForm<ID, T> editForm;
@@ -94,6 +95,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public BaseSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
+		setMargin(false);
+		setClassName(DynamoConstants.CSS_SPLIT_LAYOUT);
 	}
 
 	/**
@@ -112,7 +115,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	public void build() {
 		buildFilter();
 		if (mainLayout == null) {
-			mainLayout = new DefaultVerticalLayout();
+			mainLayout = new DefaultVerticalLayout(false, true);
 			mainLayout.setSizeFull();
 
 			SplitLayout splitter = null;

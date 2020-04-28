@@ -102,7 +102,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	public void build() {
-		layout = new DefaultVerticalLayout(true, true);
+		layout = new DefaultVerticalLayout(false, true);
 		layout.add(caption);
 
 		this.dataProvider = constructDataProvider();

@@ -289,6 +289,20 @@ public final class DynamoConstants {
      */
     public static final String USER_NAME = "userName";
 
+    public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
+    
+    public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
+    
+    public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
+    
+    public static final String CSS_SPLIT_LAYOUT = "splitLayout";
+    
+    public static final String CSS_MAIN_SEARCH_LAYOUT = "mainSearchLayout";
+    
+    public static final String CSS_SEARCH_RESULTS_LAYOUT = "searchResultsLayout";
+    
+    public static final String CSS_COMPOSITION_LAYOUT = "compositionLayout";
+    
     /**
      * Constructor for OCSConstants.
      */
