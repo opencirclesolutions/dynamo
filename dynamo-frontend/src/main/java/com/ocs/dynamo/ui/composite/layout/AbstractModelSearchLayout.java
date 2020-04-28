@@ -153,7 +153,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				T prev = getPreviousEntity();
 				if (prev != null) {
 					tabLayout.setEntity(prev, getFormOptions().isPreserveSelectedTab());
-					tabLayout.reload();
+					//tabLayout.reload();
 				} else {
 					prevButton.setEnabled(false);
 				}
@@ -172,7 +172,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				T next = getNextEntity();
 				if (next != null) {
 					tabLayout.setEntity(next, getFormOptions().isPreserveSelectedTab());
-					tabLayout.reload();
 				} else {
 					nextButton.setEnabled(false);
 				}
@@ -394,6 +393,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 
 		if (mainEditLayout == null) {
 			mainEditLayout = new DefaultVerticalLayout(false, false);
+			mainEditLayout.addClassName("mainEditLayout");
 		}
 
 		FormOptions copy = new FormOptions();
@@ -429,7 +429,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				buildDetailsTabLayout(entity, copy);
 			} else {
 				tabLayout.setEntity(entity, getFormOptions().isPreserveSelectedTab());
-				tabLayout.reload();
 			}
 			if (selectedDetailLayout == null) {
 				mainEditLayout.add(tabContainerLayout);

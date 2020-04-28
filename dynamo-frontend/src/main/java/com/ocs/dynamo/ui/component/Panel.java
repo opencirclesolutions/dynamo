@@ -24,7 +24,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * @author Bas Rutten
  *
  */
-public class Panel extends VerticalLayout {
+public class Panel extends DefaultVerticalLayout {
 
     private static final long serialVersionUID = -4620931565010614799L;
 

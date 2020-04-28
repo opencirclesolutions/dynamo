@@ -134,6 +134,16 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	}
 
 	/**
+	 * Navigates to the specified view with the specified mode
+	 * 
+	 * @param viewName
+	 * @param mode
+	 */
+	protected void navigate(String viewName, String mode) {
+		helper.navigate(viewName, mode);
+	}
+
+	/**
 	 * Shows a notification message - this method will check for the availability of
 	 * a Vaadin Page object and if this is not present, write the notification to
 	 * the log instead

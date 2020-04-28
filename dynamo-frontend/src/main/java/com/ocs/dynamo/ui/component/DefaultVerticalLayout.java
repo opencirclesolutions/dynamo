@@ -16,21 +16,22 @@ package com.ocs.dynamo.ui.component;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
- * Default vertical layout - provides convenience constructor for setting the margin and the spacing
+ * Default vertical layout - provides convenience constructor for setting the
+ * margin and the spacing
  * 
  * @author bas.rutten
  */
 public class DefaultVerticalLayout extends VerticalLayout {
 
-    private static final long serialVersionUID = 979501638798053429L;
+	private static final long serialVersionUID = 979501638798053429L;
 
-    public DefaultVerticalLayout(boolean margin, boolean spacing) {
-    	setPadding(false);
-        setMargin(margin);
-        setSpacing(spacing);
-    }
+	public DefaultVerticalLayout(boolean padding, boolean spacing) {
+		setMargin(false);
+		setPadding(padding);
+		setSpacing(spacing);
+	}
 
-    public DefaultVerticalLayout() {
-        this(true, false);
-    }
+	public DefaultVerticalLayout() {
+		this(false, false);
+	}
 }

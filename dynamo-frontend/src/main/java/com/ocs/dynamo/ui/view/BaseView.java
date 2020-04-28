@@ -86,13 +86,6 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 */
 	protected abstract void doInit(VerticalLayout main);
 
-	/**
-	 * Clears the current screen mode
-	 */
-	protected void clearScreenMode() {
-		uiHelper.setScreenMode(null);
-	}
-
 	public MessageService getMessageService() {
 		return messageService;
 	}
@@ -102,19 +95,12 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	}
 
 	/**
-	 * Returns the current screen mode
-	 */
-	protected String getScreenMode() {
-		return uiHelper.getScreenMode();
-	}
-
-	/**
 	 * Sets up the outermost layout
 	 * 
 	 * @return
 	 */
 	protected VerticalLayout initLayout() {
-		VerticalLayout container = new DefaultVerticalLayout(false, false);
+		VerticalLayout container = new DefaultVerticalLayout(true, false);
 		add(container);
 		return container;
 	}

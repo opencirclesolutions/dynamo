@@ -34,8 +34,9 @@ public class DefaultHorizontalLayout extends HorizontalLayout {
      * @param margin  whether to include a margin
      * @param spacing whether to include spacing
      */
-    public DefaultHorizontalLayout(boolean margin, boolean spacing) {
-        setMargin(margin);
+    public DefaultHorizontalLayout(boolean padding, boolean spacing) {
+    	setMargin(false);
+        setPadding(padding);
         setSpacing(spacing);
     }
 }

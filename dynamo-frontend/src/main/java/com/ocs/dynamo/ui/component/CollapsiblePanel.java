@@ -26,7 +26,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * @author Bas Rutten
  *
  */
-public class CollapsiblePanel extends VerticalLayout {
+public class CollapsiblePanel extends DefaultVerticalLayout {
 
 	private static final long serialVersionUID = -7979238391035057707L;
 
@@ -46,6 +46,7 @@ public class CollapsiblePanel extends VerticalLayout {
 		toggle.setSizeFull();
 		toggle.addClassName(DynamoConstants.CSS_COLLAPSIBLE_PANEL_BUTTON);
 
+		contentWrapper.setPadding(true);
 		contentWrapper.setVisible(true);
 		add(toggle, contentWrapper);
 		toggle.addClickListener(event -> setOpen(!isOpen()));
