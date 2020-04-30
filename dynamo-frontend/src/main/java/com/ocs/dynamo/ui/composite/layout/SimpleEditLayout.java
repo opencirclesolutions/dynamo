@@ -100,6 +100,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			// reset to view mode
 			if (getFormOptions().isOpenInViewMode()) {
 				editForm.setViewMode(true);
+				checkComponentState(getEntity());
 			}
 		} else {
 			// new entity
