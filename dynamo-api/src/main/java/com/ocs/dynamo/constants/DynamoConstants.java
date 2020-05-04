@@ -47,7 +47,7 @@ public final class DynamoConstants {
 	/**
 	 * CSS style for dialog title
 	 */
-	public static final String CSS_PANEL_TITLE = "panelTitle";
+	public static final String CSS_PANEL_TITLE = "dynamoPanelTitle";
 
 	/**
 	 * CSS style for panel
