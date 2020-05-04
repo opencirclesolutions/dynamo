@@ -17,6 +17,7 @@ import javax.persistence.OptimisticLockException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -92,7 +93,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 			// any other OCS runtime exception
 			LOG.error(ex.getMessage(), ex);
 			showErrorNotification(ex.getMessage());
-		} else if (ex instanceof OptimisticLockException) {
+		} else if (ex instanceof OptimisticLockException | ex instanceof ObjectOptimisticLockingFailureException) {
 			// optimistic lock
 			LOG.error(ex.getMessage(), ex);
 			showErrorNotification(message("ocs.optimistic.lock"));

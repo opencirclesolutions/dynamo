@@ -20,7 +20,19 @@ public class DefaultFlexLayout extends FlexLayout {
 	private static final long serialVersionUID = -22072475272826468L;
 
 	public DefaultFlexLayout() {
+		this(true);
+	}
+
+	public DefaultFlexLayout(boolean padding) {
 		setWrapMode(WrapMode.WRAP);
-		getElement().setProperty("theme", "padding");
+		setPadding(padding);
+	}
+
+	public void setPadding(boolean padding) {
+		if (padding) {
+			getElement().removeProperty("theme");
+		} else {
+			getElement().setProperty("theme", "padding");
+		}
 	}
 }

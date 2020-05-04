@@ -1326,13 +1326,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Returns the field with the given name, if it exists
+	 * Returns the field for the given property
 	 * 
 	 * @param path the path of the property
 	 * @return
 	 */
 	public Component getField(String path) {
 		return getField(isViewMode(), path);
+	}
+
+	/**
+	 * Returns the field for the given path and casts it to the provided type
+	 * 
+	 * @param <T>
+	 * @param path
+	 * @param clazz
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	public <C extends Component> C getField(String path, Class<C> clazz) {
+		return (C) getField(isViewMode(), path);
 	}
 
 	/**
