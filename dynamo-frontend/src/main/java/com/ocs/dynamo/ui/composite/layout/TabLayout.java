@@ -26,7 +26,7 @@ import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
@@ -49,7 +49,7 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * The caption to display above the tabs
 	 */
-	private Label caption;
+	private Span caption;
 
 	/**
 	 * The indices of the tabs that have already been constructed
@@ -97,7 +97,7 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 
 			String title = createTitle();
 			if (!StringUtils.isEmpty(title)) {
-				caption = new Label(createTitle());
+				caption = new Span(createTitle());
 				main.add(caption);
 			}
 

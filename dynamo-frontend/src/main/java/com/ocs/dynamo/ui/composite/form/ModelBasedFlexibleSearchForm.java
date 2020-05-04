@@ -65,7 +65,7 @@ import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.WrapMode;
@@ -149,7 +149,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
         /**
          * Label to display when no filter has been selected
          */
-        private Label noFilterLabel;
+        private Span noFilterLabel;
 
         /**
          * The button used to remove the filter
@@ -213,7 +213,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
             attributeFilterComboBox.addValueChangeListener(vcl);
             layout.add(attributeFilterComboBox);
 
-            noFilterLabel = new Label(message("ocs.select.filter"));
+            noFilterLabel = new Span(message("ocs.select.filter"));
             noFilterLabel.setText("");
             layout.add(noFilterLabel);
         }

@@ -66,7 +66,8 @@ public class TabWrapper extends DefaultVerticalLayout {
 			}
 		});
 		add(tabs);
-		displayedPage = new VerticalLayout();
+		displayedPage = new DefaultVerticalLayout(true, true);
+		displayedPage.setMargin(true);
 		add(displayedPage);
 	}
 

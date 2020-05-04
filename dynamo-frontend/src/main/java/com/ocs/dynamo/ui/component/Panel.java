@@ -44,7 +44,7 @@ public class Panel extends DefaultVerticalLayout {
         titleLayout.setPadding(true);
         captionText = new Text(caption);
         titleLayout.add(captionText);
-        titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
+        titleLayout.addClassName(DynamoConstants.CSS_PANEL_TITLE);
         add(titleLayout);
     }
 

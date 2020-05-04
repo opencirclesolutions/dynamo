@@ -132,9 +132,12 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 * @param viewId the ID of the desired view
 	 */
 	protected void navigate(String viewId) {
-		Map<String, List<String>> pars = new HashMap<>();
-		pars.put("id", List.of(UUID.randomUUID().toString()));
-		UI.getCurrent().navigate(viewId, new QueryParameters(pars));
+
+		UI.getCurrent().navigate(viewId);
+	}
+
+	protected void navigate(String viewId, String mode) {
+		UI.getCurrent().navigate(viewId + "/" + mode);
 	}
 
 	public UIHelper getUiHelper() {

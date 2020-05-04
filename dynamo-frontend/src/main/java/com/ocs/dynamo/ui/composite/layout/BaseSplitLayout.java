@@ -29,7 +29,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -121,7 +121,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			SplitLayout splitter = null;
 			splitterLayout = null;
 
-			detailLayout = new DefaultVerticalLayout();
+			detailLayout = new DefaultVerticalLayout(false, true);
 			emptyDetailView();
 
 			// construct option quick search field
@@ -167,7 +167,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			}
 
 			// create a panel to hold the edit form
-			VerticalLayout editPanel = new DefaultVerticalLayout(false, true);
+			VerticalLayout editPanel = new DefaultVerticalLayout(true, false);
 			editPanel.add(detailLayout);
 
 			if (isHorizontalMode()) {
@@ -401,7 +401,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	public void emptyDetailView() {
 		VerticalLayout vLayout = new VerticalLayout();
-		vLayout.add(new Label(message("ocs.select.item", getEntityModel().getDisplayName(VaadinUtils.getLocale()))));
+		vLayout.add(new Span(message("ocs.select.item", getEntityModel().getDisplayName(VaadinUtils.getLocale()))));
 		detailLayout.replace(selectedDetailLayout, vLayout);
 		selectedDetailLayout = vLayout;
 	}

@@ -21,5 +21,6 @@ public class DefaultFlexLayout extends FlexLayout {
 
 	public DefaultFlexLayout() {
 		setWrapMode(WrapMode.WRAP);
+		getElement().setProperty("theme", "padding");
 	}
 }

@@ -90,6 +90,7 @@ import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -346,7 +347,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Boolean, HorizontalLayout> titleBars = new HashMap<>();
 
-	private Map<Boolean, Text> titleLabels = new HashMap<>();
+	private Map<Boolean, Span> titleLabels = new HashMap<>();
 
 	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
@@ -589,9 +590,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	protected VerticalLayout buildMainLayout(EntityModel<T> entityModel) {
 		VerticalLayout layout = new DefaultVerticalLayout(false, false);
+		layout.addClassName(DynamoConstants.CSS_MODEL_BASED_EDIT_FORM_MAIN);
 
 		titleLabels.put(isViewMode(), constructTitleLabel());
-
 		titleBars.put(isViewMode(), new DefaultHorizontalLayout(true, true));
 		titleBars.get(isViewMode()).add(titleLabels.get(isViewMode()));
 
@@ -1184,9 +1185,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return saveButton;
 	}
 
-	private Text constructTitleLabel() {
+	private Span constructTitleLabel() {
 		String value = getTitleLabelValue();
-		return new Text(value);
+		return new Span(value);
 	}
 
 	private String getTitleLabelValue() {
@@ -1612,8 +1613,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Component comp = labels.get(isViewMode()).get(am);
 			Object value = ClassUtils.getFieldValue(entity, propertyName);
 			String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), am, value, ", ");
-			if (comp instanceof Text) {
-				((Text) comp).setText(formatted == null ? "" : formatted);
+			if (comp instanceof Span) {
+				((Span) comp).setText(formatted == null ? "" : formatted);
 			} else if (comp instanceof Anchor) {
 				Anchor a = (Anchor) comp;
 				formatted = StringUtils.prependProtocol(formatted);
@@ -1638,9 +1639,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		// also replace the title labels
-		Text titleLabel = titleLabels.get(isViewMode());
-		if (titleLabel != null) {
-			titleLabel.setText(getTitleLabelValue());
+		Span titleSpan = titleLabels.get(isViewMode());
+		if (titleSpan != null) {
+			titleSpan.setText(getTitleLabelValue());
 		}
 	}
 

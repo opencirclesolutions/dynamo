@@ -34,7 +34,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.html.Label;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -85,7 +85,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     /**
      * The label that displays the currently selected item
      */
-    private Label label;
+    private Span label;
 
     /**
      * Whether the component allows multiple select
@@ -223,7 +223,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         }
 
         // label for displaying selected values
-        label = new Label("");
+        label = new Span("");
         updateLabel(getValue());
         bar.add(label);
 

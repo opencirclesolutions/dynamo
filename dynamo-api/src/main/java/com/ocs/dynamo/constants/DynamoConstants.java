@@ -292,6 +292,8 @@ public final class DynamoConstants {
 
 	public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
 
+	public static final String CSS_MODEL_BASED_EDIT_FORM_MAIN = "modelBasedEditFormMain";
+	
 	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
 
 	public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
