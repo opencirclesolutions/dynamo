@@ -142,7 +142,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	public void assignEntity(T t) {
-		setEntity(t);
+		this.entity = t;
 		if (editForm != null) {
 			editForm.resetTabsheetIfNeeded();
 		}
@@ -214,7 +214,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 					return SimpleEditLayout.this.constructCustomValidator(am);
 				}
-				
+
 				@Override
 				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
 					return SimpleEditLayout.this.constructCustomRequiredValidator(am);

@@ -135,7 +135,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * 
 	 * @param entity the currently selected entity
 	 */
-	private final void buildDetailsTabLayout(T entity, FormOptions formOptions) {
+	private void buildDetailsTabLayout(T entity, FormOptions formOptions) {
 		tabContainerLayout = new DefaultVerticalLayout(false, false);
 
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
