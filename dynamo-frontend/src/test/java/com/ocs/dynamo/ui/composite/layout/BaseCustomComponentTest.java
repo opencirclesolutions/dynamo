@@ -40,109 +40,109 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
-import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.Span;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    private BaseCustomComponent component = new BaseCustomComponent() {
+	private BaseCustomComponent component = new BaseCustomComponent() {
 
-        private static final long serialVersionUID = -714656253533978108L;
+		private static final long serialVersionUID = -714656253533978108L;
 
-        @Override
-        public void build() {
-        }
-    };
+		@Override
+		public void build() {
+		}
+	};
 
-    @Mock
-    private MessageService messageService;
+	@Mock
+	private MessageService messageService;
 
-    @BeforeEach
-    public void setupBaseCustomComponentTest() throws NoSuchFieldException {
-        System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
-        MockUtil.mockMessageService(messageService);
-        ReflectionTestUtils.setField(component, "messageService", messageService);
-    }
+	@BeforeEach
+	public void setupBaseCustomComponentTest() throws NoSuchFieldException {
+		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+		MockUtil.mockMessageService(messageService);
+		ReflectionTestUtils.setField(component, "messageService", messageService);
+	}
 
-    @Test
-    public void test() {
-        EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
+	@Test
+	public void test() {
+		EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
 
-        DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("nl"));
+		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("nl"));
 
-        TestEntity e = new TestEntity("Kevin", 12L);
-        e.setDiscount(BigDecimal.valueOf(12.34));
-        e.setBirthDate(DateUtils.createLocalDate("04052016"));
-        e.setBirthWeek(DateUtils.createLocalDate("04052016"));
-        e.setSomeInt(1234);
+		TestEntity e = new TestEntity("Kevin", 12L);
+		e.setDiscount(BigDecimal.valueOf(12.34));
+		e.setBirthDate(DateUtils.createLocalDate("04052016"));
+		e.setBirthWeek(DateUtils.createLocalDate("04052016"));
+		e.setSomeInt(1234);
 
-        e.setSomeTime(LocalTime.of(14, 25, 37));
+		e.setSomeTime(LocalTime.of(14, 25, 37));
 
-        e.setSomeEnum(TestEnum.A);
-        e.setSomeBoolean(Boolean.TRUE);
-        e.setSomeBoolean2(Boolean.TRUE);
+		e.setSomeEnum(TestEnum.A);
+		e.setSomeBoolean(Boolean.TRUE);
+		e.setSomeBoolean2(Boolean.TRUE);
 
-        TestEntity2 te2 = new TestEntity2();
-        te2.setName("Bob");
-        te2.setId(2);
-        e.addTestEntity2(te2);
+		TestEntity2 te2 = new TestEntity2();
+		te2.setName("Bob");
+		te2.setId(2);
+		e.addTestEntity2(te2);
 
-        TestEntity2 te3 = new TestEntity2();
-        te3.setName("Stuart");
-        te3.setId(3);
-        e.addTestEntity2(te3);
+		TestEntity2 te3 = new TestEntity2();
+		te3.setName("Stuart");
+		te3.setId(3);
+		e.addTestEntity2(te3);
 
-        Text text = (Text) component.constructLabel(e, model.getAttributeModel("name"));
-        assertEquals("Kevin", text.getText());
+		Span text = (Span) component.constructLabel(e, model.getAttributeModel("name"));
+		assertEquals("Kevin", text.getText());
 
-        // integer
-        text = (Text) component.constructLabel(e, model.getAttributeModel("someInt"));
-        assertEquals("1" + sym.getGroupingSeparator() + "234", text.getText());
+		// integer
+		text = (Span) component.constructLabel(e, model.getAttributeModel("someInt"));
+		assertEquals("1" + sym.getGroupingSeparator() + "234", text.getText());
 
-        // long
-        text = (Text) component.constructLabel(e, model.getAttributeModel("age"));
-        assertEquals("12", text.getText());
+		// long
+		text = (Span) component.constructLabel(e, model.getAttributeModel("age"));
+		assertEquals("12", text.getText());
 
-        // BigDecimal
-        text = (Text) component.constructLabel(e, model.getAttributeModel("discount"));
-        assertEquals("12" + sym.getDecimalSeparator() + "34", text.getText());
+		// BigDecimal
+		text = (Span) component.constructLabel(e, model.getAttributeModel("discount"));
+		assertEquals("12" + sym.getDecimalSeparator() + "34", text.getText());
 
-        // date
-        text = (Text) component.constructLabel(e, model.getAttributeModel("birthDate"));
-        assertEquals("04/05/2016", text.getText());
+		// date
+		text = (Span) component.constructLabel(e, model.getAttributeModel("birthDate"));
+		assertEquals("04/05/2016", text.getText());
 
-        // week
-        text = (Text) component.constructLabel(e, model.getAttributeModel("birthWeek"));
-        assertEquals("2016-18", text.getText());
+		// week
+		text = (Span) component.constructLabel(e, model.getAttributeModel("birthWeek"));
+		assertEquals("2016-18", text.getText());
 
-        // time
-        text = (Text) component.constructLabel(e, model.getAttributeModel("someTime"));
-        assertEquals("14:25:37", text.getText());
+		// time
+		text = (Span) component.constructLabel(e, model.getAttributeModel("someTime"));
+		assertEquals("14:25:37", text.getText());
 
-        // enum
-        text = (Text) component.constructLabel(e, model.getAttributeModel("someEnum"));
-        assertEquals("Value A", text.getText());
+		// enum
+		text = (Span) component.constructLabel(e, model.getAttributeModel("someEnum"));
+		assertEquals("Value A", text.getText());
 
-        // entity collection
-        text = (Text) component.constructLabel(e, model.getAttributeModel("testEntities"));
-        assertEquals("Bob, Stuart", text.getText());
+		// entity collection
+		text = (Span) component.constructLabel(e, model.getAttributeModel("testEntities"));
+		assertEquals("Bob, Stuart", text.getText());
 
-        // boolean
-        text = (Text) component.constructLabel(e, model.getAttributeModel("someBoolean"));
-        assertEquals("true", text.getText());
+		// boolean
+		text = (Span) component.constructLabel(e, model.getAttributeModel("someBoolean"));
+		assertEquals("true", text.getText());
 
-        // boolean with overwritten value
-        text = (Text) component.constructLabel(e, model.getAttributeModel("someBoolean2"));
-        assertEquals("On", text.getText());
-    }
+		// boolean with overwritten value
+		text = (Span) component.constructLabel(e, model.getAttributeModel("someBoolean2"));
+		assertEquals("On", text.getText());
+	}
 
-    @Test
-    public void testHandleSaveException() {
-        component.handleSaveException(new OCSValidationException("Some error"));
-        component.handleSaveException(new OCSRuntimeException("Some error"));
-        component.handleSaveException(new OptimisticLockException());
-        component.handleSaveException(new RuntimeException());
-    }
+	@Test
+	public void testHandleSaveException() {
+		component.handleSaveException(new OCSValidationException("Some error"));
+		component.handleSaveException(new OCSRuntimeException("Some error"));
+		component.handleSaveException(new OptimisticLockException());
+		component.handleSaveException(new RuntimeException());
+	}
 
 }

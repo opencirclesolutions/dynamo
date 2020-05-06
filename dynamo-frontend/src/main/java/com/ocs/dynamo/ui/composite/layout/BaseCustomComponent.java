@@ -32,8 +32,8 @@ import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.UI;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
@@ -61,10 +61,10 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * @param attributeModel the attribute model
 	 * @return
 	 */
-	protected Text constructLabel(Object entity, AttributeModel attributeModel) {
+	protected Span constructLabel(Object entity, AttributeModel attributeModel) {
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
 		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, ", ");
-		return new Text(formatted == null ? "" : formatted);
+		return new Span(formatted == null ? "" : formatted);
 	}
 
 	protected EntityModelFactory getEntityModelFactory() {

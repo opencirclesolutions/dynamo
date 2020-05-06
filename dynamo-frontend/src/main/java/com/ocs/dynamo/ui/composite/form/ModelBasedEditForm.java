@@ -80,7 +80,6 @@ import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
-import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.customfield.CustomField;
@@ -163,7 +162,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 				main.add(image);
 			} else {
-				Text text = new Text(message("ocs.no.preview.available"));
+				Span text = new Span(message("ocs.no.preview.available"));
 				main.add(text);
 			}
 
@@ -1043,7 +1042,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
 			return image;
 		} else {
-			return new Text(message("ocs.no.preview.available"));
+			return new Span(message("ocs.no.preview.available"));
 		}
 	}
 
@@ -1088,7 +1087,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			labels.get(isViewMode()).put(attributeModel, linkButton);
 			comp = linkButton;
 		} else {
-			Text label = constructLabel(entity, attributeModel);
+			Span label = constructLabel(entity, attributeModel);
 			labels.get(isViewMode()).put(attributeModel, label);
 			comp = label;
 		}
@@ -1855,8 +1854,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		AttributeModel am = getEntityModel().getAttributeModel(propertyName);
 		if (am != null) {
 			Component comp = labels.get(isViewMode()).get(am);
-			if (comp instanceof Text) {
-				((Text) comp).setText(value == null ? "" : value);
+			if (comp instanceof Span) {
+				((Span) comp).setText(value == null ? "" : value);
 			}
 		}
 	}
