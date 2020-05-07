@@ -153,6 +153,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
         // be ignored
         String fieldName = descriptor.getName();
         Class<?> pClass = parentClass != null ? parentClass : entityModel.getEntityClass();
+
+
         AssertTrue assertTrue = ClassUtils.getAnnotation(pClass, fieldName, AssertTrue.class);
         AssertFalse assertFalse = ClassUtils.getAnnotation(pClass, fieldName, AssertFalse.class);
 

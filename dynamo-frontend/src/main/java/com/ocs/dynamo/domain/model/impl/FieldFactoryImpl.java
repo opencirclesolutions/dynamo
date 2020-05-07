@@ -78,7 +78,7 @@ import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * 
+ *
  * @author Bas Rutten
  *
  */
@@ -100,7 +100,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	@SuppressWarnings("unchecked")
 	public <U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
-			Converter<V, U> customConverter, Validator<V> customValidator, Validator<V> customRequiredValidator) {
+												  Converter<V, U> customConverter, Validator<V> customValidator, Validator<V> customRequiredValidator) {
 
 		if (customValidator != null) {
 			builder.withValidator(customValidator);
@@ -150,7 +150,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs a field for selecting multiple values from a collection
-	 * 
+	 *
 	 * @param am               the attribute model
 	 * @param fieldEntityModel the entity model
 	 * @param fieldFilter      the field filter to apply
@@ -183,7 +183,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs a field for selecting multiple values from a collection
-	 * 
+	 *
 	 * @param am               the attribute model
 	 * @param fieldEntityModel the entity model
 	 * @param fieldFilter      the field filter to apply
@@ -193,8 +193,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructListSelect(AttributeModel am,
-			EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider,
-			boolean search) {
+																								  EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider,
+																								  boolean search) {
 		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
 		SortOrder<?>[] sos = constructSortOrder(em);
@@ -234,7 +234,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs a field
-	 * 
+	 *
 	 * @param am the attribute model to base the field on
 	 * @return
 	 */
@@ -245,7 +245,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs a field - this is the main method
-	 * 
+	 *
 	 * @param context the context that governs how the field must be created
 	 */
 	public Component constructField(FieldFactoryContext context) {
@@ -335,14 +335,14 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs a component for managing a (simple) element collection
-	 * 
+	 *
 	 * @param context          the context for creating the component
 	 * @param am               the attribute model
 	 * @param fieldEntityModel the field entity model
 	 * @return
 	 */
 	private Component constructForElementCollection(FieldFactoryContext context, AttributeModel am,
-			EntityModel<?> fieldEntityModel) {
+													EntityModel<?> fieldEntityModel) {
 		Component field = null;
 		if (!context.isSearch()) {
 			// use a "collection grid" for an element collection
@@ -373,7 +373,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs an internal link field
-	 * 
+	 *
 	 * @param am          the attribute model
 	 * @param entityModel the entity model of the entity to display in the field
 	 * @return
@@ -408,7 +408,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	/**
 	 * Constructs a combo box for filtering on a boolean property - this includes
 	 * options for "true" and "false" but also allows searches on "no value"
-	 * 
+	 *
 	 * @param am the attribute model
 	 * @return
 	 */
@@ -424,7 +424,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Constructs a component for selecting a single value from a collection
-	 * 
+	 *
 	 * @param am               the attribute model
 	 * @param fieldEntityModel the field entity model
 	 * @param fieldFilter      the field filter to apply
@@ -434,7 +434,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @return
 	 */
 	private Component constructSelect(AttributeModel am, EntityModel<?> fieldEntityModel,
-			SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
+									  SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
 		Component field = null;
 		AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
 		if (grid) {
@@ -465,7 +465,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	/**
 	 * Constructs a token field for looking up simple values (Strings, ints) from a
 	 * property or element collection
-	 * 
+	 *
 	 * @param entityModel       the entity model
 	 * @param am                the attribute model
 	 * @param distinctField     the database field from which to collect the
@@ -535,7 +535,7 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Looks up the entity model to use for a certain field
-	 * 
+	 *
 	 * @param entityModel the base entity model
 	 * @param am          the attribute model to use for the file
 	 * @param search      whether the screen is in search mode

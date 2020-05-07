@@ -31,6 +31,7 @@ import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
+import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -248,7 +249,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * Generates the columns of the grid based on the entity model
 	 *
-	 * @param container the container
 	 * @param model     the entity model
 	 */
 	protected void generateColumns(EntityModel<T> model) {

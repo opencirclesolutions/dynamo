@@ -202,7 +202,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param attributeModel
 	 * @param viewMode
 	 * @param formOptions
-	 * @param joins
 	 */
 	public BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean serviceBasedEditMode, FormOptions formOptions) {
@@ -426,14 +425,14 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Constructs the actual component
 	 */
-	protected void initContent() {
+	protected Component initContent() {
 		grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(),
 				GridEditMode.SIMULTANEOUS) {
 
 			private static final long serialVersionUID = 6143503902550597524L;
 
 			@Override
-			protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
+			protected Converter<String, ?> constructCustomConverter(AttributeModel am) {
 				return BaseDetailsEditGrid.this.constructCustomConverter(am);
 			}
 
@@ -442,15 +441,15 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 				return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
 			}
 
-			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				if (!binders.containsKey(t)) {
-					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
-					binders.get(t).setBean(t);
-				}
-				Binder<T> binder = binders.get(t);
-				return binder.forField((HasValue<?, ?>) field);
-			}
+//			@Override
+//			protected BindingBuilder<T, ?> doBind(T t, Component field) {
+//				if (!binders.containsKey(t)) {
+//					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
+//					binders.get(t).setBean(t);
+//				}
+//				Binder<T> binder = binders.get(t);
+//				return binder.forField((HasValue<?>) field);
+//			}
 
 			@Override
 			protected void postProcessComponent(AttributeModel am, Component comp) {
@@ -517,8 +516,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		constructButtonBar(layout);
 
 		postConstruct();
-		add(layout);
-
+		return layout;
 	}
 
 	/**
@@ -543,7 +541,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Method that is called in order to enable/disable a button after selecting an
 	 * item in the grid
 	 *
-	 * @param button
 	 * @return
 	 */
 	protected boolean mustEnableComponent(Component component, T selectedItem) {
@@ -589,8 +586,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Registers a button that must be enabled/disabled after an item is selected.
 	 * use the "mustEnableButton" callback method to impose additional constraints
 	 * on when the button must be enabled
-	 *
-	 * @param button the button to register
 	 */
 	public void registerComponent(Component component) {
 		if (component != null) {

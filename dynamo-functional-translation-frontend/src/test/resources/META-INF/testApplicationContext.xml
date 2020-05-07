@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xmlns:jpa="http://www.springframework.org/schema/data/jpa"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:util="http://www.springframework.org/schema/util"
+	xsi:schemaLocation="http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+		http://www.springframework.org/schema/data/jpa http://www.springframework.org/schema/data/jpa/spring-jpa-1.3.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+	<!-- Embedded database to support unit tests -->
+	<jdbc:embedded-database id="datasource" type="H2"></jdbc:embedded-database>
+	<util:map id="jpaPropertyMap">
+		<entry key="hibernate.hbm2ddl.auto" value="create-drop" />
+		<entry key="hibernate.dialect" value="org.hibernate.dialect.H2Dialect" />
+	</util:map>
+
+	<!-- Entity Manager, the use of packagesToScan, jpaPropertyMap and jpaVendorAdapter 
+		prevent the need for an persistence.xml -->
+	<bean id="jpaVendorAdapter"
+		class="org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter">
+		<property name="showSql" value="true" />
+	</bean>
+	<bean id="entityManagerFactory"
+		class="org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean">
+		<property name="dataSource" ref="datasource" />
+		<property name="packagesToScan" value="com.ocs.dynamo.functional.domain" />
+		<property name="jpaPropertyMap" ref="jpaPropertyMap" />
+		<property name="jpaVendorAdapter" ref="jpaVendorAdapter" />
+	</bean>
+
+	<!-- Transaction Manager -->
+	<bean id="transactionManager" class="org.springframework.orm.jpa.JpaTransactionManager">
+		<property name="entityManagerFactory" ref="entityManagerFactory" />
+	</bean>
+
+	<!-- Scan all classes for JSR330 and Spring annotations -->
+	<context:component-scan base-package="com.ocs.dynamo.functional.domain,com.ocs.dynamo.functional.dao,com.ocs.dynamo.functional.service" />
+
+	<!-- Initialize JSR303 validation factory -->
+	<bean id="validatorFactory"
+		class="org.springframework.validation.beanvalidation.LocalValidatorFactoryBean" />
+
+	<!-- The entity model factory -->
+	<bean id="entityModelFactory" class="com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl" />
+
+	<!-- The entity model factory -->
+	<bean id="messageService" class="com.ocs.dynamo.service.impl.MessageServiceImpl" />
+
+	<bean id="messageSource"
+		class="org.springframework.context.support.ReloadableResourceBundleMessageSource">
+		<property name="basenames">
+			<list>
+				<value>classpath:/entitymodel</value>
+				<value>classpath:/ocscommon</value>
+				<value>classpath:/menu</value>
+				<value>classpath:/ValidationMessages</value>
+			</list>
+		</property>
+		<property name="fallbackToSystemLocale" value="false" />
+	</bean>
+
+	<bean id="menuService" class="com.ocs.dynamo.ui.menu.MenuService" />
+
+	<bean id="permissionChecker" class="com.ocs.dynamo.ui.auth.impl.DefaultPermissionCheckerImpl">
+		<constructor-arg value="com.ocs.dynamo" />
+	</bean>
+
+	<bean id="userDetailsService" class="com.ocs.dynamo.service.impl.UserDetailsServiceMockImpl"></bean>
+
+    <!--  Default service and DAO for region -->
+	<bean id="regionDao" class="com.ocs.dynamo.functional.dao.DomainDaoImpl">
+		<constructor-arg name="dslRoot">
+			<bean class="com.ocs.dynamo.functional.domain.QRegion">
+				<constructor-arg value="Region"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="entityClass" value="com.ocs.dynamo.functional.domain.Region"/>
+	</bean>
+	
+	<bean id="regionService" class="com.ocs.dynamo.functional.service.DomainServiceImpl">
+		<constructor-arg ref="regionDao"/>
+	</bean>
+
+    <!--  Default service and DAO for currency -->
+	<bean id="currencyDao" class="com.ocs.dynamo.dao.impl.DefaultDaoImpl">
+		<constructor-arg name="dslRoot">
+			<bean class="com.ocs.dynamo.functional.domain.QCurrency">
+				<constructor-arg value="Currency"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="entityClass" value="com.ocs.dynamo.functional.domain.Currency"/>
+	</bean>
+	
+	<bean id="currencyService" class="com.ocs.dynamo.service.impl.DefaultServiceImpl">
+		<constructor-arg ref="currencyDao"/>
+	</bean>
+	
+    <bean id="countryDao" class="com.ocs.dynamo.functional.dao.DomainDaoImpl">
+		<constructor-arg name="dslRoot">
+			<bean class="com.ocs.dynamo.functional.domain.QCountry">
+				<constructor-arg value="Country"/>
+			</bean>
+		</constructor-arg>
+		<constructor-arg name="entityClass" value="com.ocs.dynamo.functional.domain.Country"/>
+	</bean>
+	
+	<bean id="countryService" class="com.ocs.dynamo.service.impl.DefaultServiceImpl">
+		<constructor-arg ref="countryDao"/>
+		<constructor-arg value="name,code" />
+	</bean>
+</beans>

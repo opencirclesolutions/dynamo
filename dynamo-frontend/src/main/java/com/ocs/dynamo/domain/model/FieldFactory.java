@@ -18,26 +18,29 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.function.SerializablePredicate;
+
+import java.util.Map;
 
 /**
  * Interface for model based component factories
- * 
+ *
  * @author patrickdeenen
  *
  */
 public interface FieldFactory {
 
 	/**
-	 * 
+	 *
 	 * @return the singleton instance of the field factory
 	 */
-	static FieldFactory getInstance() {
+	public static FieldFactory getInstance() {
 		return ServiceLocatorFactory.getServiceLocator().getServiceByName("fieldFactory", FieldFactory.class);
 	}
 
 	/**
 	 * Adds converters and validators for a field
-	 * 
+	 *
 	 * @param builder         the binding builder to which to add the converters and
 	 *                        validators
 	 * @param am              the attribute model for the field
@@ -49,15 +52,15 @@ public interface FieldFactory {
 	/**
 	 * Constructs a field based on the provided attribute model (given the default
 	 * context)
-	 * 
+	 *
 	 * @param am the attribute model
 	 * @return
 	 */
-	Component constructField(AttributeModel am);
+	public Component constructField(AttributeModel am);
 
 	/**
 	 * Constructs a field based on the provided context
-	 * 
+	 *
 	 * @param context the context
 	 * @return
 	 */

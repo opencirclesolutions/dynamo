@@ -103,6 +103,8 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean image;
 
+    private boolean localesRestricted;
+
     private boolean mainAttribute;
 
     private Integer maxLength;
@@ -467,6 +469,10 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public boolean isImage() {
         return image;
+    }
+
+    public boolean isLocalesRestricted() {
+        return localesRestricted;
     }
 
     @Override

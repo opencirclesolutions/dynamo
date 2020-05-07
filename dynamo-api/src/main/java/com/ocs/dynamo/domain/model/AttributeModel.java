@@ -362,6 +362,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
     boolean isImage();
 
     /**
+     *
+     * @return Whether adding translations for new locales is allowed
+     */
+    boolean isLocalesRestricted();
+
+    /**
      * @return Whether this is the "main" attribute
      */
     boolean isMainAttribute();
