@@ -475,6 +475,10 @@ public class AttributeModelImpl implements AttributeModel {
         return localesRestricted;
     }
 
+    public void setLocalesRestricted(boolean localesRestricted) {
+        this.localesRestricted = localesRestricted;
+    }
+
     @Override
     public boolean isMainAttribute() {
         return mainAttribute;
