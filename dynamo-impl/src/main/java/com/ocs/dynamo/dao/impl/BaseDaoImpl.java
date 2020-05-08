@@ -378,4 +378,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
         return t;
     }
 
+    public void addQueryHint(String s, boolean b) {
+    }
 }
