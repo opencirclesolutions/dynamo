@@ -471,6 +471,7 @@ public class AttributeModelImpl implements AttributeModel {
         return image;
     }
 
+    @Override
     public boolean isLocalesRestricted() {
         return localesRestricted;
     }
@@ -579,7 +580,6 @@ public class AttributeModelImpl implements AttributeModel {
      * @param source         the translation cache
      * @param locale         the locale
      * @param key            the message key
-     * @param fallBack       the first fallback value
      * @param secondFallBack the second fallback value
      * @return
      */

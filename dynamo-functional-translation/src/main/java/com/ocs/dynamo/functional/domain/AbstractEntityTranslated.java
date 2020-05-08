@@ -125,6 +125,33 @@ public abstract class AbstractEntityTranslated<ID, T extends Translation> extend
     }
 
     /**
+     * Gets all translations for a certain field for the provided locale
+     *
+     * @param field
+     *            the field
+     * @param locale
+     *            the (code of) the locale
+     * @return
+     */
+    public T getTranslations(final String field, final String locale) {
+        T translation = null;
+        Set<T> translations = getTranslations(field);
+        if (translations != null && !translations.isEmpty()) {
+            if (locale == null || "".equals(locale)) {
+                translation = translations.iterator().next();
+            } else {
+                for (T t : translations) {
+                    if (t.getLocale() != null && locale.equalsIgnoreCase(t.getLocale().getCode())) {
+                        translation = t;
+                        break;
+                    }
+                }
+            }
+        }
+        return translation;
+    }
+
+    /**
      * 
      * @return check that the translation set for a field does not contain
      *         duplicates

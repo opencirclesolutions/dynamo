@@ -52,7 +52,17 @@ public class TranslationServiceImpl extends BaseServiceImpl<Integer, Translation
 				new Like("locale.code", locale, false), //
 				new In("key", ids));
 		SortOrders so = new SortOrders(new SortOrder("translation"));
-		return findSelect(filter, new String[] { "key", "translation" }, so);
+		List<Object[]> unsortedTranslations = (List<Object[]>) findSelect(filter, new String[]{"key", "translation"}, so);
+		List<Object[]> sortedTranslations = new ArrayList<>();
+		for (Integer id : ids) {
+			for (Object[] translation : unsortedTranslations) {
+				Integer translationId = (Integer)translation[0];
+				if (translationId.equals(id)) {
+					sortedTranslations.add(translation);
+				}
+			}
+		}
+		return sortedTranslations;
 	}
 
 	@Override
