@@ -984,7 +984,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// together
 				FormLayout rowLayout = new FormLayout();
 
-				// TODO: remove
 				rowLayout.setResponsiveSteps(Lists.newArrayList(new ResponsiveStep("0px", 1),
 						new ResponsiveStep("200px", 2), new ResponsiveStep("400px", 3)));
 
