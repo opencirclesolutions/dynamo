@@ -13,14 +13,10 @@
  */
 package com.ocs.dynamo.ui.view;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
@@ -34,7 +30,6 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
-import com.vaadin.flow.router.QueryParameters;
 
 /**
  * A base class for Views. Provides easy access to the entity model factory and
@@ -42,7 +37,7 @@ import com.vaadin.flow.router.QueryParameters;
  * 
  * @author bas.rutten
  */
-@org.springframework.stereotype.Component
+@Component
 public abstract class BaseView extends VerticalLayout implements BeforeLeaveObserver {
 
 	public static final String SELECTED_ID = "selectedId";
@@ -101,6 +96,7 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 */
 	protected VerticalLayout initLayout() {
 		VerticalLayout container = new DefaultVerticalLayout(true, false);
+		container.addClassName("baseViewParent");
 		add(container);
 		return container;
 	}

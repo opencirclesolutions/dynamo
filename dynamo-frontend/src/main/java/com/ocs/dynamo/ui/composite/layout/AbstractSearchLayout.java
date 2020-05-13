@@ -297,7 +297,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
      * @param noSearchYetLabel the label used to indicate that there are no search
      *                         results yet
      */
-    private final void constructLayoutIfNeeded(Text noSearchYetLabel) {
+    private void constructLayoutIfNeeded(Text noSearchYetLabel) {
         if (!searchLayoutConstructed) {
             // construct search screen if it is not there yet
             try {

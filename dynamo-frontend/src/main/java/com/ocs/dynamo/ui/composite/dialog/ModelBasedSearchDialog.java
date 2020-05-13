@@ -112,7 +112,9 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
                 .setSearchImmediately(searchImmediately);
 
         searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
+        searchLayout.setPadding(true);
         searchLayout.setDefaultFilters(filters);
+
         searchLayout.setGridHeight(SystemPropertyUtils.getDefaultSearchDialogGridHeight());
         for (SortOrder<?> order : sortOrders) {
             searchLayout.addSortOrder(order);
