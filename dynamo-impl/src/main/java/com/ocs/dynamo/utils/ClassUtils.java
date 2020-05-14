@@ -283,7 +283,6 @@ public final class ClassUtils {
                 if (clazz.getSuperclass() != null) {
                     return getField(clazz.getSuperclass(), fieldName);
                 }
-                LOG.debug(e.getMessage());
             }
         }
         return field;
