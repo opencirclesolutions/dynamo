@@ -158,7 +158,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	@SafeVarargs
 	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SortOrder<T>... sortOrder) {
+			SortOrder<?>... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
 	}
 

@@ -25,6 +25,9 @@ import java.util.function.Function;
  */
 public class PivotParameters {
 
+	/**
+	 * The property that uniquely identifies a row in the pivoted data set
+	 */
     private String rowKeyProperty;
 
     private String columnKeyProperty;
