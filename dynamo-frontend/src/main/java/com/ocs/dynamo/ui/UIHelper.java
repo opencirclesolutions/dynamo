@@ -55,6 +55,10 @@ public class UIHelper {
 		entityOnViewMapping.put(entityClass, navigateAction);
 	}
 
+	public void clearScreenMode() {
+		this.screenMode = null;
+	}
+
 	/**
 	 * Clears the session state
 	 */

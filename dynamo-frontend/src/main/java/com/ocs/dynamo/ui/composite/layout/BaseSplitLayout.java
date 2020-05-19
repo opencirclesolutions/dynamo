@@ -295,6 +295,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 						afterReload(entity);
 					} else {
 						reload();
+						reloadDetails();
 					}
 				}
 

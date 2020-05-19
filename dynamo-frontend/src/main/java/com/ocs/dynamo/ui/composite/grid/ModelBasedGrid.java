@@ -35,6 +35,7 @@ import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
@@ -168,6 +169,10 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 						// store shared date provider so it can be used by multiple components
 						if (comp instanceof SharedProvider) {
 							sharedProviders.put(am.getPath(), ((SharedProvider<?>) comp).getSharedProvider());
+						}
+
+						if (comp instanceof HasSize) {
+							((HasSize) comp).setSizeFull();
 						}
 
 						// delegate the binding to the enveloping component

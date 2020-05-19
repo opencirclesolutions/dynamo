@@ -23,6 +23,7 @@ import org.apache.camel.Exchange;
 import org.apache.camel.Message;
 import org.junit.jupiter.api.BeforeEach;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import com.ocs.dynamo.CamelConstants;
 import com.ocs.dynamo.service.MessageService;

@@ -68,6 +68,7 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 
 	public BaseView() {
 		this(false);
+		setSpacing(false);
 	}
 
 	@PostConstruct
