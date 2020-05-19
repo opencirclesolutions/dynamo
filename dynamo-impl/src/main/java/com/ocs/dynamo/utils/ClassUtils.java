@@ -280,7 +280,6 @@ public final class ClassUtils {
             try {
                 field = clazz.getDeclaredField(fieldName);
             } catch (NoSuchFieldException e) {
-                LOG.debug(e.getMessage(), e);
                 if (clazz.getSuperclass() != null) {
                     return getField(clazz.getSuperclass(), fieldName);
                 }
