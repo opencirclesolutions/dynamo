@@ -24,7 +24,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<camel.version>2.25.0</camel.version>
+		<camel.version>2.25.1</camel.version>
 	</properties>
 	<dependencies>
 		<dependency>
