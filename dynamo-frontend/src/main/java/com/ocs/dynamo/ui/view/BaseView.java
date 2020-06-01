@@ -148,7 +148,7 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 			String lastVisited = menuBar == null ? null : menuService.getLastVisited();
 
 			ContinueNavigationAction postpone = event.postpone();
-			VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.navigate"),
+			VaadinUtils.showConfirmDialog(message("ocs.confirm.navigate"),
 					() -> postpone.proceed(), () -> {
 						if (lastVisited != null) {
 							menuService.setLastVisited(menuBar, lastVisited);

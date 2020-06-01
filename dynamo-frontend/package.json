@@ -5,11 +5,11 @@
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
     "@fullcalendar/interaction": "^4.4.0",
-    "@vaadin/vaadin-grid": "5.5.2",
+    "@vaadin/vaadin-grid": "5.5.3",
     "@vaadin/vaadin-icons": "4.3.1",
     "@vaadin/vaadin-split-layout": "4.1.1",
     "@vaadin/vaadin-combo-box": "5.0.11",
-    "@vaadin/vaadin-core-shrinkwrap": "14.2.0-rc1",
+    "@vaadin/vaadin-core-shrinkwrap": "14.2.0",
     "@vaadin/vaadin-upload": "4.2.2",
     "@vaadin/vaadin-dialog": "2.3.0",
     "@fullcalendar/timegrid": "^4.4.0",
@@ -22,7 +22,7 @@
     "@fullcalendar/daygrid": "^4.4.0",
     "@vaadin/vaadin-notification": "1.4.0",
     "@vaadin/vaadin-progress-bar": "1.1.2",
-    "@vaadin/vaadin-date-time-picker": "1.0.0-beta1",
+    "@vaadin/vaadin-date-time-picker": "1.0.0",
     "@vaadin/vaadin-ordered-layout": "1.2.0",
     "@vaadin/vaadin-login": "1.0.1",
     "@vaadin/vaadin-button": "2.2.2",
@@ -65,11 +65,11 @@
       "@polymer/polymer": "3.2.0",
       "@webcomponents/webcomponentsjs": "^2.2.10",
       "@fullcalendar/interaction": "^4.4.0",
-      "@vaadin/vaadin-grid": "5.5.2",
+      "@vaadin/vaadin-grid": "5.5.3",
       "@vaadin/vaadin-icons": "4.3.1",
       "@vaadin/vaadin-split-layout": "4.1.1",
       "@vaadin/vaadin-combo-box": "5.0.11",
-      "@vaadin/vaadin-core-shrinkwrap": "14.2.0-rc1",
+      "@vaadin/vaadin-core-shrinkwrap": "14.2.0",
       "@vaadin/vaadin-upload": "4.2.2",
       "@vaadin/vaadin-dialog": "2.3.0",
       "@fullcalendar/timegrid": "^4.4.0",
@@ -82,7 +82,7 @@
       "@fullcalendar/daygrid": "^4.4.0",
       "@vaadin/vaadin-notification": "1.4.0",
       "@vaadin/vaadin-progress-bar": "1.1.2",
-      "@vaadin/vaadin-date-time-picker": "1.0.0-beta1",
+      "@vaadin/vaadin-date-time-picker": "1.0.0",
       "@vaadin/vaadin-ordered-layout": "1.2.0",
       "@vaadin/vaadin-login": "1.0.1",
       "@vaadin/vaadin-button": "2.2.2",
@@ -120,6 +120,6 @@
       "webpack-merge": "4.2.2",
       "webpack-dev-server": "3.10.3"
     },
-    "hash": "85470315a9f7e03b7ce322a8548010f5c9a8399a7586241ce2613254ca538fbc"
+    "hash": "c6457d86ab65c2ab0b1e3798823c60e94143b2bf9e5bf014e3d373986639362e"
   }
 }

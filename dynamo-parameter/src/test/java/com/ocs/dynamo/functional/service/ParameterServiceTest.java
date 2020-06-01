@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.ocs.dynamo.functional.FunctionalDomainIntegrationTestConfig;
+import com.ocs.dynamo.functional.ParameterIntegrationTestConfig;
 import com.ocs.dynamo.functional.domain.Parameter;
 import com.ocs.dynamo.functional.domain.ParameterType;
 import com.ocs.dynamo.test.BaseIntegrationTest;
@@ -16,7 +16,7 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
 /**
  * Created by R.E.M. Claassen on 10-4-2017.
  */
-@SpringBootTest(classes = FunctionalDomainIntegrationTestConfig.class)
+@SpringBootTest(classes = ParameterIntegrationTestConfig.class)
 public class ParameterServiceTest extends BaseIntegrationTest {
 
     @Autowired

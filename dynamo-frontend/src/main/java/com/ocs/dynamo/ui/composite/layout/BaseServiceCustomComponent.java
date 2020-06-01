@@ -64,7 +64,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 						showErrorNotification(ex.getMessage());
 					}
 				};
-				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.delete.confirm", getItemToDelete()), r);
+				VaadinUtils.showConfirmDialog(message("ocs.delete.confirm", getItemToDelete()), r);
 			});
 		}
 
@@ -196,7 +196,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 		return null;
 	}
-	
+
 	/**
 	 * 
 	 * @param <V>

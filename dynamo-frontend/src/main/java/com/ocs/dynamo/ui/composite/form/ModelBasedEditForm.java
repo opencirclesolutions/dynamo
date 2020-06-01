@@ -1120,8 +1120,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Shows a confirm dialog that asks the user to confirm before saving changes
 	 */
 	private void showSaveConfirmDialog() {
-		VaadinUtils.showConfirmDialog(getMessageService(), getMessageService().getMessage("ocs.confirm.save",
-				VaadinUtils.getLocale(), getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
+		VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(),
+				getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
 					try {
 						if (customSaveConsumer != null) {
 							customSaveConsumer.accept(entity);

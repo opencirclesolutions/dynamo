@@ -17,6 +17,8 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import javax.annotation.PostConstruct;
+
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -46,6 +48,11 @@ public class UIHelper {
 	private Integer selectedTab;
 
 	/**
+	 * The UI that is tied to this UIHelper
+	 */
+	private Object currentUI;
+
+	/**
 	 * Adds a mapping for carrying out navigation within the application
 	 * 
 	 * @param entityClass    the type of the entity
@@ -66,6 +73,15 @@ public class UIHelper {
 		this.screenMode = null;
 		setSelectedEntity(null);
 		setSelectedTab(null);
+	}
+
+	public Object getCurrentUI() {
+		return currentUI;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getCurrentUI(Class<T> clazz) {
+		return (T) currentUI;
 	}
 
 	public MenuBar getMenuBar() {
@@ -134,6 +150,10 @@ public class UIHelper {
 	public void selectAndNavigate(Object selectedEntity, String viewName) {
 		setSelectedEntity(selectedEntity);
 		navigate(viewName);
+	}
+
+	public void setCurrentUI(Object currentUI) {
+		this.currentUI = currentUI;
 	}
 
 	public void setMenuBar(MenuBar menuBar) {

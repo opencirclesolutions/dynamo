@@ -21,13 +21,9 @@ import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
 
-import org.claspina.confirmdialog.ButtonOption;
-import org.claspina.confirmdialog.ConfirmDialog;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.EntityComboBox;
@@ -44,8 +40,8 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
-import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -496,42 +492,26 @@ public final class VaadinUtils {
 	/**
 	 * Displays a confirmation dialog that runs code when confirmed
 	 *
-	 * @param messageService
-	 * @param question       the question to be displayed in the dialog
-	 * @param whenConfirmed  the code to execute when the user confirms the dialog
+	 * @param question      the question to be displayed in the dialog
+	 * @param whenConfirmed the code to execute when the user confirms the dialog
 	 */
-	public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed) {
-		if (UI.getCurrent() != null) {
-			String caption = messageService.getMessage("ocs.confirm", getLocale());
-			String yes = messageService.getMessage("ocs.yes", getLocale());
-			String no = messageService.getMessage("ocs.no", getLocale());
-
-			ConfirmDialog.createQuestion().withCaption(caption).withMessage(question)
-					.withOkButton(whenConfirmed, ButtonOption.caption(yes)).withCancelButton(ButtonOption.caption(no))
-					.open();
-		} else {
-			whenConfirmed.run();
-		}
+	public static void showConfirmDialog(String question, Runnable whenConfirmed) {
+		VaadinUtils.showConfirmDialog(question, whenConfirmed, null);
 	}
 
 	/**
 	 * Displays a confirmation dialog that runs code both when confirmed and
 	 * canceled
 	 *
-	 * @param messageService
-	 * @param question       the question to be displayed in the dialog
-	 * @param whenConfirmed  the code to execute when the user confirms the dialog
-	 * @param whenCanceled   the code to execute when the user cancels the dialog
+	 * @param question      the question to be displayed in the dialog
+	 * @param whenConfirmed the code to execute when the user confirms the dialog
+	 * @param whenCanceled  the code to execute when the user cancels the dialog
 	 */
-	public static void showConfirmDialog(MessageService messageService, String question, final Runnable whenConfirmed,
-			final Runnable whenCanceled) {
+	public static void showConfirmDialog(String question, Runnable whenConfirmed, Runnable whenCanceled) {
 		if (UI.getCurrent() != null) {
-			String caption = messageService.getMessage("ocs.confirm", getLocale());
-			String yes = messageService.getMessage("ocs.yes", getLocale());
-			String no = messageService.getMessage("ocs.no", getLocale());
-			ConfirmDialog.createQuestion().withCaption(caption).withMessage(question)
-					.withOkButton(whenConfirmed, ButtonOption.caption(yes))
-					.withCancelButton(whenCanceled, ButtonOption.caption(no)).open();
+			com.ocs.dynamo.ui.composite.dialog.ConfirmDialog dialog = new com.ocs.dynamo.ui.composite.dialog.ConfirmDialog(
+					question, whenConfirmed, null);
+			dialog.buildAndOpen();
 		} else {
 			whenConfirmed.run();
 		}

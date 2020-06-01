@@ -452,7 +452,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			searchAny();
 		} else if (event.getSource() == clearButton) {
 			if (getFormOptions().isConfirmClear()) {
-				VaadinUtils.showConfirmDialog(getMessageService(), message("ocs.confirm.clear"), () -> {
+				VaadinUtils.showConfirmDialog(message("ocs.confirm.clear"), () -> {
 					clear();
 
 					if (afterClearConsumer != null) {

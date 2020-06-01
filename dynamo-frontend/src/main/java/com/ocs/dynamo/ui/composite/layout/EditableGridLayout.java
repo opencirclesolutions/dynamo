@@ -213,7 +213,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				if (valid) {
 					if (getFormOptions().isConfirmSave()) {
 						// ask for confirmation before saving
-						VaadinUtils.showConfirmDialog(getMessageService(),
+						VaadinUtils.showConfirmDialog(
 								getMessageService().getMessage("ocs.confirm.save.all", VaadinUtils.getLocale(),
 										getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale())),
 								() -> {
@@ -343,7 +343,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 							showErrorNotification(ex.getMessage());
 						}
 					};
-					VaadinUtils.showConfirmDialog(getMessageService(),
+					VaadinUtils.showConfirmDialog(
 							message("ocs.delete.confirm", FormatUtils.formatEntity(getEntityModel(), t)), r);
 				});
 				return button;

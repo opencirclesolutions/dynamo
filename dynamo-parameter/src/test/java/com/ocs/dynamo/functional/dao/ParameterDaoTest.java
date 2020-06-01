@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ocs.dynamo.BackendIntegrationTest;
-import com.ocs.dynamo.functional.FunctionalDomainIntegrationTestConfig;
+import com.ocs.dynamo.functional.ParameterIntegrationTestConfig;
 import com.ocs.dynamo.functional.domain.Parameter;
 import com.ocs.dynamo.functional.domain.ParameterType;
 
@@ -25,7 +25,7 @@ import com.ocs.dynamo.functional.domain.ParameterType;
  * @author Bas Rutten
  *
  */
-@SpringBootTest(classes = FunctionalDomainIntegrationTestConfig.class)
+@SpringBootTest(classes = ParameterIntegrationTestConfig.class)
 public class ParameterDaoTest extends BackendIntegrationTest {
 
 	@Inject

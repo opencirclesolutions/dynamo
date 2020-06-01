@@ -125,7 +125,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("ross", nameModel.getCustomSetting("bob"));
 		assertEquals(4, nameModel.getCustomSetting("bobInt"));
 		assertEquals(true, nameModel.getCustomSetting("bobBool"));
-		
+
 		assertTrue(nameModel.isSortable());
 		assertTrue(nameModel.isMainAttribute());
 		assertEquals(EditableType.EDITABLE, nameModel.getEditableType());
@@ -301,8 +301,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		assertEquals("customValue", nameModel.getCustomSetting("custom"));
 		assertEquals(4, nameModel.getCustomSetting("custom2"));
-		assertEquals(true, nameModel.getCustomSetting("custom3"));		
-		
+		assertEquals(true, nameModel.getCustomSetting("custom3"));
+
 		assertEquals("Override", nameModel.getDisplayName(locale));
 		assertEquals("Prompt override", nameModel.getPrompt(locale));
 		assertEquals("Style override", nameModel.getStyles());

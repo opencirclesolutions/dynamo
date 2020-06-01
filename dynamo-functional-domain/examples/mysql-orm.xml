@@ -10,11 +10,13 @@
 			</id>
 		</attributes>
 	</entity>
+	<!--
 	<entity class="com.ocs.dynamo.functional.domain.Parameter">
 		<attributes>
 			<id name="id">
 				<generated-value strategy="IDENTITY" />
 			</id>
 		</attributes>
-	</entity>	
+	</entity>
+	-->	
 </entity-mappings>
