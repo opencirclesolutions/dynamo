@@ -15,6 +15,8 @@ package com.ocs.dynamo.ui.composite.export.impl;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 import org.apache.poi.ss.usermodel.BorderStyle;
@@ -162,7 +164,7 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	public CellStyle getCellStyle(int index, T entity, Object value, AttributeModel attributeModel) {
 		if (value instanceof Integer || value instanceof Long) {
 			return thousandsGrouping ? numberStyle : numberSimpleStyle;
-		} else if (value instanceof Date) {
+		} else if (value instanceof Date || value instanceof LocalDate || value instanceof LocalDateTime) {
 			if (attributeModel == null || !attributeModel.isWeek()) {
 				if (attributeModel == null || AttributeDateType.DATE.equals(attributeModel.getDateType())) {
 					// date style is the default

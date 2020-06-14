@@ -34,107 +34,123 @@ import com.vaadin.flow.data.provider.SortOrder;
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key of the entity to search for
- * @param <T> type of the entity to search for
+ * @param <T>  type of the entity to search for
  */
-public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends AbstractModelSearchLayout<ID, T> {
+public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends AbstractModelSearchLayout<ID, T> {
 
-    private static final long serialVersionUID = 4606800218149558500L;
+	private static final long serialVersionUID = 4606800218149558500L;
 
-    /**
-     * Constructor - only the most important attributes
-     * 
-     * @param service     the service that is used to query the database
-     * @param entityModel the entity model of the entities to search for
-     * @param queryType   the type of the query
-     * @param formOptions form options that governs which buttons and options to
-     *                    show
-     * @param sortOrder   the default sort order
-     * @param joins       the joins to include in the query
-     */
-    public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions,
-            SortOrder<?> sortOrder, FetchJoinInformation... joins) {
-        super(service, entityModel, queryType, formOptions, sortOrder, joins);
-    }
+	/**
+	 * Column width thresholds
+	 */
+	private List<String> columnThresholds = new ArrayList<>();
 
-    /**
-     * Method that is used to construct any extra search fields. These will be added
-     * at the front of the search form
-     */
-    protected List<Component> constructExtraSearchFields() {
-        // overwrite in subclasses
-        return new ArrayList<>();
-    }
+	/**
+	 * Constructor - only the most important attributes
+	 * 
+	 * @param service     the service that is used to query the database
+	 * @param entityModel the entity model of the entities to search for
+	 * @param queryType   the type of the query
+	 * @param formOptions form options that governs which buttons and options to
+	 *                    show
+	 * @param sortOrder   the default sort order
+	 * @param joins       the joins to include in the query
+	 */
+	public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
+		super(service, entityModel, queryType, formOptions, sortOrder, joins);
+	}
 
-    /**
-     * Constructs the search form
-     * 
-     * @return the search form
-     */
-    @Override
-    protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-        // by default, do not pass a searchable object, in order to prevent an
-        // unnecessary and
-        // potentially unfiltered search
-        ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-                this.getDefaultFilters(), this.getFieldFilters()) {
+	/**
+	 * Method that is used to construct any extra search fields. These will be added
+	 * at the front of the search form
+	 */
+	protected List<Component> constructExtraSearchFields() {
+		// overwrite in subclasses
+		return new ArrayList<>();
+	}
 
-            private static final long serialVersionUID = 8929442625027442714L;
+	/**
+	 * Constructs the search form
+	 * 
+	 * @return the search form
+	 */
+	@Override
+	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
+		// by default, do not pass a searchable object, in order to prevent an
+		// unnecessary and
+		// potentially unfiltered search
+		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
+				this.getDefaultFilters(), this.getFieldFilters()) {
 
-            @Override
-            protected void afterSearchFieldToggle(boolean visible) {
-                SimpleSearchLayout.this.afterSearchFieldToggle(visible);
-            }
+			private static final long serialVersionUID = 8929442625027442714L;
 
-            @Override
-            protected void afterSearchPerformed() {
-                SimpleSearchLayout.this.afterSearchPerformed();
-            }
+			@Override
+			protected void afterSearchFieldToggle(boolean visible) {
+				SimpleSearchLayout.this.afterSearchFieldToggle(visible);
+			}
 
-            @Override
-            protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-                return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-            }
+			@Override
+			protected void afterSearchPerformed() {
+				SimpleSearchLayout.this.afterSearchPerformed();
+			}
 
-            @Override
-            protected void postProcessButtonBar(FlexLayout buttonBar) {
-                SimpleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
-            }
+			@Override
+			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
+			}
 
-            @Override
-            protected void validateBeforeSearch() {
-                SimpleSearchLayout.this.validateBeforeSearch();
-            }
-        };
-        result.setFieldEntityModels(getFieldEntityModels());
-        result.build();
-        return result;
-    }
+			@Override
+			protected void postProcessButtonBar(FlexLayout buttonBar) {
+				SimpleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
+			}
 
-    @Override
-    public ModelBasedSearchForm<ID, T> getSearchForm() {
-        return (ModelBasedSearchForm<ID, T>) super.getSearchForm();
-    }
+			@Override
+			protected void validateBeforeSearch() {
+				SimpleSearchLayout.this.validateBeforeSearch();
+			}
+		};
+		result.setFieldEntityModels(getFieldEntityModels());
+		result.setColumnThresholds(getColumnThresholds());
+		result.build();
+		return result;
+	}
 
-    /**
-     * Sets a certain search value (for a property with a single value to search on)
-     * 
-     * @param propertyId the property to search for
-     * @param value      the desired value
-     */
-    @Override
-    public void setSearchValue(String propertyId, Object value) {
-        getSearchForm().setSearchValue(propertyId, value);
-    }
+	public List<String> getColumnThresholds() {
+		return this.columnThresholds;
+	}
 
-    /**
-     * Sets a certain search value (for a property with an upper and a lower bound)
-     * 
-     * @param propertyId the property to search for
-     * @param value      the value of the lower bound
-     * @param auxValue   the value of the upper bound
-     */
-    @Override
-    public void setSearchValue(String propertyId, Object value, Object auxValue) {
-        getSearchForm().setSearchValue(propertyId, value, auxValue);
-    }
+	@Override
+	public ModelBasedSearchForm<ID, T> getSearchForm() {
+		return (ModelBasedSearchForm<ID, T>) super.getSearchForm();
+	}
+
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
+	}
+
+	/**
+	 * Sets a certain search value (for a property with a single value to search on)
+	 * 
+	 * @param propertyId the property to search for
+	 * @param value      the desired value
+	 */
+	@Override
+	public void setSearchValue(String propertyId, Object value) {
+		getSearchForm().setSearchValue(propertyId, value);
+	}
+
+	/**
+	 * Sets a certain search value (for a property with an upper and a lower bound)
+	 * 
+	 * @param propertyId the property to search for
+	 * @param value      the value of the lower bound
+	 * @param auxValue   the value of the upper bound
+	 */
+	@Override
+	public void setSearchValue(String propertyId, Object value, Object auxValue) {
+		getSearchForm().setSearchValue(propertyId, value, auxValue);
+	}
+
 }

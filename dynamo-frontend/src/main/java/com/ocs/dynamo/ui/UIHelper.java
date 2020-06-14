@@ -17,8 +17,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
-import javax.annotation.PostConstruct;
-
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.menubar.MenuBar;
