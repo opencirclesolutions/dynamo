@@ -58,7 +58,8 @@
     "compression-webpack-plugin": "3.1.0",
     "webpack-merge": "4.2.2",
     "raw-loader": "3.1.0",
-    "terser": "4.6.7"
+    "terser": "4.6.7",
+    "chokidar": "^3.4.0"
   },
   "vaadin": {
     "dependencies": {
@@ -118,7 +119,8 @@
       "webpack": "4.42.0",
       "terser": "4.6.7",
       "webpack-merge": "4.2.2",
-      "webpack-dev-server": "3.10.3"
+      "webpack-dev-server": "3.10.3",
+      "chokidar": "^3.4.0"
     },
     "hash": "c6457d86ab65c2ab0b1e3798823c60e94143b2bf9e5bf014e3d373986639362e"
   }
