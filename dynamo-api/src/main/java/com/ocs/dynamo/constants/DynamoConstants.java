@@ -306,7 +306,15 @@ public final class DynamoConstants {
 
 	public static final String CSS_COMPOSITION_LAYOUT = "compositionLayout";
 
+	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
+
 	public static final String CSS_TAB_LAYOUT = "tabLayout";
+	
+	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
+	
+	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
+	
+	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
 	/**
 	 * Constructor for OCSConstants.

@@ -1119,10 +1119,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (model.getType().isEnum()) {
 			Class<? extends Enum> enumType = model.getType().asSubclass(Enum.class);
 			model.setDefaultValue(Enum.valueOf(enumType, defaultValue));
-		}
-		if (DateUtils.isJava8DateType(model.getType())) {
+		} else if (DateUtils.isJava8DateType(model.getType())) {
 			Object o = DateUtils.createJava8Date(model.getType(), defaultValue, model.getDisplayFormat());
 			model.setDefaultValue(o);
+		} else if (Boolean.class.equals(model.getType()) || boolean.class.equals(model.getType())) {
+			model.setDefaultValue(Boolean.valueOf(defaultValue));
 		} else {
 			model.setDefaultValue(ClassUtils.instantiateClass(model.getType(), defaultValue));
 		}
@@ -1161,7 +1162,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	}
 
 	/**
-	 * Adds custom setting overrides. These take the form of "custom.1", "customValue.1" and "customType.1"
+	 * Adds custom setting overrides. These take the form of "custom.1",
+	 * "customValue.1" and "customType.1"
 	 * 
 	 * @param entityModel
 	 * @param model

@@ -354,7 +354,7 @@ public final class DateUtils {
 
 	/**
 	 * Checks if a class represents a supported Date time. This includes the Java 8
-	 * date types and the legacy java.util.Date
+	 * date types and the legacy java.time.LocalTime
 	 *
 	 * @param clazz the class to check
 	 * @return
@@ -388,7 +388,7 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Converts a LocalDate to a legacy java.util.Date
+	 * Converts a LocalDate to a legacy java.time.LocalTime
 	 * 
 	 * @param d the LocalDate to convert
 	 * @return
@@ -401,7 +401,7 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Converts a java.time.LocalDateTime to a java.util.Date
+	 * Converts a java.time.LocalDateTime to a java.time.LocalTime
 	 * 
 	 * @param d the LocalDatetime to convert
 	 * @return

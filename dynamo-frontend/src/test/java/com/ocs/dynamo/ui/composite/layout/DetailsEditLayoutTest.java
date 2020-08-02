@@ -111,7 +111,7 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 			boolean viewMode, FormOptions fo) {
 
 		DetailsEditLayout<Integer, TestEntity> layout = new DetailsEditLayout<Integer, TestEntity>(service, em, am,
-				viewMode, fo, Comparator.comparing(TestEntity::getName)) {
+				viewMode, false, fo, Comparator.comparing(TestEntity::getName)) {
 
 			private static final long serialVersionUID = -4333833542380882076L;
 

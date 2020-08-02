@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -93,14 +94,26 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		 */
 		FormContainer(ModelBasedEditForm<ID, T> form) {
 			super(true, false);
-			addClassName("detailsEditLayout");
+			addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT);
 			this.form = form;
 
 			if (!viewMode && getFormOptions().isShowRemoveButton()) {
 				buttonBar = new DefaultHorizontalLayout(false, true);
 
-				add(form);
-				add(buttonBar);
+				if (sameRow) {
+					HorizontalLayout rowLayout = new DefaultHorizontalLayout();
+					rowLayout.setWidth("100%");
+					add(rowLayout);
+					rowLayout.add(form);
+					rowLayout.setFlexGrow(4, form);
+					rowLayout.add(buttonBar);
+					rowLayout.setFlexGrow(1, buttonBar);
+					buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME);
+				} else {
+					add(form);
+					add(buttonBar);
+					buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR);
+				}
 
 				removeButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
 				removeButton.setIcon(VaadinIcon.TRASH.create());
@@ -111,6 +124,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 					mainFormContainer.remove(this);
 					forms.remove(this);
 				});
+
 				buttonBar.add(removeButton);
 				postProcessButtonBar(buttonBar);
 			} else {
@@ -247,6 +261,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	private ModelBasedEditForm<?, ?> enclosingForm;
 
 	/**
+	 * Indicates whether to put buttons on same row
+	 */
+	private boolean sameRow;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param service        the service
@@ -257,7 +276,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * @param comparator     the comparator for sorting the items
 	 */
 	public DetailsEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode, FormOptions formOptions, Comparator<T> comparator) {
+			boolean viewMode, boolean sameRow, FormOptions formOptions, Comparator<T> comparator) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
@@ -266,6 +285,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		this.items = new ArrayList<>();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
+		this.sameRow = sameRow;
 		initContent();
 	}
 

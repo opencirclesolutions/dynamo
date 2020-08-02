@@ -368,6 +368,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
 		addClassName(DynamoConstants.CSS_MODEL_BASED_EDIT_FORM);
+
 		this.service = service;
 		this.entity = entity;
 		afterEntitySet(entity);
@@ -578,6 +579,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 			removeAll();
 			add(mainEditLayout);
+		}
+		
+		if (nestedMode) {
+			setWidth("80%");
 		}
 	}
 
@@ -983,9 +988,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				// construct a separate layout for holding the fields that will be displayed
 				// together
 				FormLayout rowLayout = new FormLayout();
+				rowLayout.setWidth("100%");
+				rowLayout.addClassName(DynamoConstants.CSS_GROUPTOGETHER_LAYOUT);
 
-				rowLayout.setResponsiveSteps(Lists.newArrayList(new ResponsiveStep("0px", 1),
-						new ResponsiveStep("200px", 2), new ResponsiveStep("400px", 3)));
+				List<ResponsiveStep> steps = new ArrayList<>();
+				for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
+					steps.add(new ResponsiveStep(i * 200 + "px", i + 1));
+				}
+				rowLayout.setResponsiveSteps(steps);
+
+				// when in nested mode (DetailsEditLayout) stretch over entire width
+				if (nestedMode) {
+					rowLayout.getElement().setAttribute("colspan", "2");
+				}
 
 				parent.add(rowLayout);
 				rowLayout.add(field);
@@ -1093,15 +1108,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		if (!attributeModel.getGroupTogetherWith().isEmpty()) {
 			// group multiple labels on the same line
-			FormLayout form = new FormLayout();
-			parent.add(form);
-			FormItem formItem = form.addFormItem(comp, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+			FormLayout rowLayout = new FormLayout();
+			
+			List<ResponsiveStep> steps = new ArrayList<>();
+			for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
+				steps.add(new ResponsiveStep(i * 200 + "px", i + 1));
+			}
+			rowLayout.setResponsiveSteps(steps);
+			
+			parent.add(rowLayout);
+			FormItem formItem = rowLayout.addFormItem(comp, attributeModel.getDisplayName(VaadinUtils.getLocale()));
 			formItems.get(isViewMode()).put(attributeModel, formItem);
 
 			for (String path : attributeModel.getGroupTogetherWith()) {
 				AttributeModel am = entityModel.getAttributeModel(path);
 				if (am != null) {
-					addField(form, getEntityModel(), am, tabIndex);
+					addField(rowLayout, getEntityModel(), am, tabIndex);
 				}
 			}
 		} else {
