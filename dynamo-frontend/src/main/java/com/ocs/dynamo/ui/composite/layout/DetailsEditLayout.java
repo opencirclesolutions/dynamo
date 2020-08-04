@@ -93,7 +93,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		 * @param form the model based edit form
 		 */
 		FormContainer(ModelBasedEditForm<ID, T> form) {
-			super(true, false);
+			super(false, false);
 			addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT);
 			this.form = form;
 
