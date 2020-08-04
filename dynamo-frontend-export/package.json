@@ -4,7 +4,8 @@
   "dependencies": {
     "@polymer/polymer": "3.2.0",
     "@webcomponents/webcomponentsjs": "^2.2.10",
-    "@vaadin/flow-deps": "./target/frontend"
+    "@vaadin/flow-deps": "./target/frontend",
+    "lit-element": "^2.2.1"
   },
   "devDependencies": {
     "webpack": "4.42.0",
@@ -22,7 +23,8 @@
   "vaadin": {
     "dependencies": {
       "@polymer/polymer": "3.2.0",
-      "@webcomponents/webcomponentsjs": "^2.2.10"
+      "@webcomponents/webcomponentsjs": "^2.2.10",
+      "lit-element": "^2.2.1"
     },
     "devDependencies": {
       "webpack-babel-multi-target-plugin": "2.3.3",
