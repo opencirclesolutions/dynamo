@@ -113,13 +113,15 @@ public class FieldFactoryImpl implements FieldFactory {
 			builder.asRequired(customRequiredValidator);
 		}
 
-		if (am.isEmail()) {
+		if (am.isEmail() && customConverter == null) {
 			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
 			sBuilder.withNullRepresentation("").withValidator(
 					new EmailValidator(messageService.getMessage("ocs.no.valid.email", VaadinUtils.getLocale())));
 		} else if (am.isWeek()) {
-			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-			sBuilder.withConverter(new LocalDateWeekCodeConverter());
+			if (customConverter == null) {
+				BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
+				sBuilder.withConverter(new LocalDateWeekCodeConverter());
+			}
 		} else if (builder.getField() instanceof TextField) {
 			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
 			sBuilder.withNullRepresentation("");
