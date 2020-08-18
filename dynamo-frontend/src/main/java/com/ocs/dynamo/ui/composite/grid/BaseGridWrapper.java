@@ -19,6 +19,7 @@ import java.util.Map;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -137,6 +138,12 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
 				return BaseGridWrapper.this.doBind(t, field, attributeName);
 			}
+
+			@Override
+			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+				BaseGridWrapper.this.postProcessComponent(id, am, comp);
+			}
+
 		};
 	}
 
@@ -233,6 +240,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected void updateCaption(int size) {
 		caption.setText(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + " "
 				+ getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
+	}
+
+	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+
 	}
 
 }

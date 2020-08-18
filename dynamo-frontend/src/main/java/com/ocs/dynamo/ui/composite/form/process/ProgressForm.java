@@ -365,4 +365,8 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
         }
     }
 
+	public UI getUi() {
+		return ui;
+	}
+
 }

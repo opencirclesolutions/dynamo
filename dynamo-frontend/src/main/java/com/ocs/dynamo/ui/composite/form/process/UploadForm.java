@@ -29,80 +29,91 @@ import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
  */
 public abstract class UploadForm extends ProgressForm<byte[]> {
 
-    private static final long serialVersionUID = -4717815709838453902L;
+	private static final long serialVersionUID = -4717815709838453902L;
 
-    /**
-     * Whether to display a cancel button
-     */
-    private boolean showCancelButton;
+	/**
+	 * Whether to display a cancel button
+	 */
+	private boolean showCancelButton;
 
-    /**
-     * The upload component
-     */
-    private Upload upload;
+	/**
+	 * The upload component
+	 */
+	private Upload upload;
 
-    /**
-     * Constructor
-     * 
-     * @param progressMode     the desired progress mode
-     * @param showCancelButton whether to include a cancel button
-     */
-    public UploadForm(UI ui, ProgressMode progressMode, boolean showCancelButton) {
-        super(ui, progressMode);
-        this.showCancelButton = showCancelButton;
-    }
+	/**
+	 * The name of the uploaded file
+	 */
+	private String fileName;
 
-    /**
-     * The method that is executed after the cancel button is clicked
-     */
-    protected void cancel() {
-        // override in subclass if needed
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param progressMode     the desired progress mode
+	 * @param showCancelButton whether to include a cancel button
+	 */
+	public UploadForm(UI ui, ProgressMode progressMode, boolean showCancelButton) {
+		super(ui, progressMode);
+		this.showCancelButton = showCancelButton;
+	}
 
-    /**
-     * Constructs the screen-specific form content
-     * 
-     * @param layout
-     */
-    protected void doBuildForm(FormLayout layout) {
-        // override in subclass
-    }
+	/**
+	 * The method that is executed after the cancel button is clicked
+	 */
+	protected void cancel() {
+		// override in subclass if needed
+	}
 
-    @Override
-    protected void doBuildLayout(VerticalLayout main) {
-        FormLayout form = new FormLayout();
-        main.add(form);
+	/**
+	 * Constructs the screen-specific form content
+	 * 
+	 * @param layout
+	 */
+	protected void doBuildForm(FormLayout layout) {
+		// override in subclass
+	}
 
-        // add custom components
-        doBuildForm(form);
+	@Override
+	protected void doBuildLayout(VerticalLayout main) {
+		FormLayout form = new FormLayout();
+		main.add(form);
 
-        // add file upload field
-        MemoryBuffer buffer = new MemoryBuffer();
-        upload = new Upload(buffer);
-        upload.addFinishedListener(event -> {
-            if (event.getContentLength() > 0L) {
-                byte[] content = new byte[(int) event.getContentLength()];
-                try {
-                    buffer.getInputStream().read(content);
-                    startWork(content);
-                } catch (IOException e) {
-                    // do nothing
-                }
-            } else {
-                showNotification(message("ocs.no.file.selected"));
-            }
-        });
-        form.add(upload);
+		// add custom components
+		doBuildForm(form);
 
-        if (showCancelButton) {
-            Button cancelButton = new Button(message("ocs.cancel"));
-            cancelButton.addClickListener(event -> cancel());
-            main.add(cancelButton);
-        }
-    }
+		// add file upload field
+		MemoryBuffer buffer = new MemoryBuffer();
+		upload = new Upload(buffer);
+		upload.addFinishedListener(event -> {
+			this.fileName = event.getFileName();
+			if (event.getContentLength() > 0L) {
+				byte[] content = new byte[(int) event.getContentLength()];
+				try {
+					buffer.getInputStream().read(content);
+					startWork(content);
+				} catch (IOException e) {
+					// do nothing
+				}
 
-    public Upload getUpload() {
-        return upload;
-    }
+			} else {
+				showNotification(message("ocs.no.file.selected"));
+			}
+		});
+		form.add(upload);
+
+		if (showCancelButton) {
+			Button cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.addClickListener(event -> cancel());
+			main.add(cancelButton);
+		}
+	}
+
+	public Upload getUpload() {
+		return upload;
+	}
+
+	public String getFileName() {
+		return fileName;
+	}
 
 }

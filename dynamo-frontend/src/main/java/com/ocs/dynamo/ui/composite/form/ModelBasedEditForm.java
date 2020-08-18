@@ -15,12 +15,14 @@ package com.ocs.dynamo.ui.composite.form;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
@@ -69,6 +71,7 @@ import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
@@ -580,7 +583,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			removeAll();
 			add(mainEditLayout);
 		}
-		
+
 		if (nestedMode) {
 			setWidth("80%");
 		}
@@ -1109,13 +1112,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (!attributeModel.getGroupTogetherWith().isEmpty()) {
 			// group multiple labels on the same line
 			FormLayout rowLayout = new FormLayout();
-			
+
 			List<ResponsiveStep> steps = new ArrayList<>();
 			for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
 				steps.add(new ResponsiveStep(i * 200 + "px", i + 1));
 			}
 			rowLayout.setResponsiveSteps(steps);
-			
+
 			parent.add(rowLayout);
 			FormItem formItem = rowLayout.addFormItem(comp, attributeModel.getDisplayName(VaadinUtils.getLocale()));
 			formItems.get(isViewMode()).put(attributeModel, formItem);
@@ -1798,7 +1801,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				Component field = getField(isViewMode(), am.getPath());
 				if (field != null && am.getDefaultValue() != null) {
 					// set the default value for new objects
-					setDefaultValue((HasValue<?, Object>) field, am.getDefaultValue().toString());
+					String defaultValue = am.getDefaultValue().toString();
+
+					// adapt decimal value to selected locale
+					if (NumberUtils.isNumeric(am.getType())) {
+						Locale loc = VaadinUtils.getLocale();
+						DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(loc);
+						char sep = nf.getDecimalFormatSymbols().getDecimalSeparator();
+						defaultValue = defaultValue.replace('.', sep);
+					}
+					setDefaultValue((HasValue<?, Object>) field, defaultValue);
 				}
 			}
 		}
@@ -2020,6 +2032,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		boolean error = false;
 
 		BinderValidationStatus<T> status = groups.get(isViewMode()).validate();
+
 		error = !status.isOk();
 
 		// validate nested form and components

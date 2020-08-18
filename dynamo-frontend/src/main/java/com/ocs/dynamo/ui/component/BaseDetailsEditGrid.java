@@ -453,8 +453,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			}
 
 			@Override
-			protected void postProcessComponent(AttributeModel am, Component comp) {
-				BaseDetailsEditGrid.this.postProcessComponent(am, comp);
+			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+				BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
 			}
 		};
 
@@ -581,7 +581,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param am   the attribute model for the component
 	 * @param comp the component
 	 */
-	protected void postProcessComponent(AttributeModel am, Component comp) {
+	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		// overwrite in subclass if needed
 	}
 

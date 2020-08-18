@@ -24,6 +24,7 @@ import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
@@ -126,6 +127,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	private BaseGridWrapper<ID, T> currentWrapper;
 
+	private Map<String, Component> compMap = new HashMap<>();
+
 	/**
 	 * Constructor
 	 * 
@@ -140,12 +143,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		super(service, entityModel, formOptions, sortOrder, joins);
 		setMargin(false);
 		addClassName(DynamoConstants.CSS_EDITABLE_GRID_LAYOUT);
-	}
-
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		super.onAttach(attachEvent);
-		build();
 	}
 
 	@Override
@@ -280,6 +277,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		wrapper.getGrid().getEditor().setBuffered(false);
 		wrapper.getGrid().setHeight(getGridHeight());
 		wrapper.getGrid().addSelectionListener(event -> setSelectedItems(event.getAllSelectedItems()));
+		disableGridSorting();
 
 		if (currentWrapper == null) {
 			mainLayout.add(wrapper);
@@ -378,6 +376,11 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 			@Override
+			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+				EditableGridLayout.this.postProcessComponent(id, am, comp);
+			}
+
+			@Override
 			protected void postProcessDataProvider(final DataProvider<T, SerializablePredicate<T>> provider) {
 				EditableGridLayout.this.postProcessDataProvider(provider);
 			}
@@ -410,6 +413,18 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		return cancelButton;
 	}
 
+	/**
+	 * Gets a component for the entity identified by ID and for the specified
+	 * attribute model
+	 * 
+	 * @param id the ID
+	 * @param am the attribute model
+	 * @return
+	 */
+	protected Component getComponent(ID id, AttributeModel am) {
+		return compMap.get(id + "_" + am.getPath());
+	}
+
 	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return getGridWrapper().getDataProvider();
 	}
@@ -437,6 +452,22 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 	public boolean isViewmode() {
 		return viewmode;
+	}
+
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		build();
+	}
+
+	/**
+	 * Callback method that is used to post-process an input component
+	 * 
+	 * @param am   the attribute model for the component
+	 * @param comp the component
+	 */
+	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+		compMap.put(id + "_" + am.getPath(), comp);
 	}
 
 	@Override

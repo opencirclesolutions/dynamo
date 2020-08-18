@@ -180,7 +180,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 						fieldFactory.addConvertersAndValidators(builder, am, constructCustomConverter(am),
 								constructCustomValidator(am), null);
 						builder.bind(am.getPath());
-						postProcessComponent(am, comp);
+						postProcessComponent(t.getId(), am, comp);
+						
 						return comp;
 					});
 				} else {
@@ -299,7 +300,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param am
 	 * @param comp
 	 */
-	protected void postProcessComponent(AttributeModel am, Component comp) {
+	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		// override in subclass
 	}
 
