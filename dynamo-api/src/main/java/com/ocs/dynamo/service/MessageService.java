@@ -60,6 +60,7 @@ public interface MessageService {
 	 * message can be found
 	 * 
 	 * @param key  the key of the message
+	 * @param local the locale
 	 * @param args the arguments. These are referred to using {0}, {1} etc
 	 * @return
 	 */

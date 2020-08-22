@@ -293,7 +293,7 @@ public final class DynamoConstants {
 	public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
 
 	public static final String CSS_MODEL_BASED_EDIT_FORM_MAIN = "modelBasedEditFormMain";
-	
+
 	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
 
 	public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
@@ -309,12 +309,14 @@ public final class DynamoConstants {
 	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
 
 	public static final String CSS_TAB_LAYOUT = "tabLayout";
-	
+
 	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
-	
+
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
-	
+
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
+
+	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
 
 	/**
 	 * Constructor for OCSConstants.

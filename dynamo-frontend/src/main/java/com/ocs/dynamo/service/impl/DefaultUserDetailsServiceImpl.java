@@ -28,27 +28,27 @@ import com.ocs.dynamo.service.UserDetailsService;
  */
 public class DefaultUserDetailsServiceImpl implements UserDetailsService {
 
-    private static final String SYSTEM = "system";
+	private static final String SYSTEM = "system";
 
-    @Override
-    public String getCurrentUserName() {
-        try {
-            SecurityContext ctx = SecurityContextHolder.getContext();
-            return ctx.getAuthentication().getName();
-        } catch (Exception ex) {
-            // ignore - no request available during integration test
-            return SYSTEM;
-        }
-    }
+	@Override
+	public String getCurrentUserName() {
+		try {
+			SecurityContext ctx = SecurityContextHolder.getContext();
+			return ctx.getAuthentication().getName();
+		} catch (Exception ex) {
+			// ignore - no request available during integration test
+			return SYSTEM;
+		}
+	}
 
-    @Override
-    public boolean isUserInRole(String... roles) {
-        try {
-            SecurityContext ctx = SecurityContextHolder.getContext();
-            return ctx.getAuthentication().getAuthorities().stream()
-                    .anyMatch(c -> Stream.of(roles).anyMatch(r -> c.getAuthority().equals(r)));
-        } catch (Exception ex) {
-            return false;
-        }
-    }
+	@Override
+	public boolean isUserInRole(String... roles) {
+		try {
+			SecurityContext ctx = SecurityContextHolder.getContext();
+			return ctx.getAuthentication().getAuthorities().stream().anyMatch(c -> Stream.of(roles)
+					.anyMatch(r -> c.getAuthority().equals(r) || c.getAuthority().equals("ROLE_" + r)));
+		} catch (Exception ex) {
+			return false;
+		}
+	}
 }

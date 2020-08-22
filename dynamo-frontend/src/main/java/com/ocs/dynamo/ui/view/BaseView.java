@@ -18,6 +18,7 @@ import javax.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.UIHelper;
@@ -97,7 +98,7 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 */
 	protected VerticalLayout initLayout() {
 		VerticalLayout container = new DefaultVerticalLayout(true, false);
-		container.addClassName("baseViewParent");
+		container.addClassName(DynamoConstants.CSS_BASE_VIEW_PARENT);
 		add(container);
 		return container;
 	}

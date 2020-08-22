@@ -177,11 +177,13 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 						// delegate the binding to the enveloping component
 						BindingBuilder<T, ?> builder = doBind(t, comp, am.getPath());
-						fieldFactory.addConvertersAndValidators(builder, am, constructCustomConverter(am),
-								constructCustomValidator(am), null);
-						builder.bind(am.getPath());
+						if (builder != null) {
+							fieldFactory.addConvertersAndValidators(builder, am, constructCustomConverter(am),
+									constructCustomValidator(am), null);
+							builder.bind(am.getPath());
+						}
 						postProcessComponent(t.getId(), am, comp);
-						
+
 						return comp;
 					});
 				} else {
