@@ -27,28 +27,28 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
  */
 public final class ServiceLocatorFactory {
 
-    private static volatile ServiceLocator serviceLocator;
+	private static volatile ServiceLocator serviceLocator;
 
-    private static final Logger LOGGER = LoggerFactory.getLogger(ServiceLocatorFactory.class);
+	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceLocatorFactory.class);
 
-    private ServiceLocatorFactory() {
-    }
+	private ServiceLocatorFactory() {
+	}
 
-    public static ServiceLocator getServiceLocator() {
-        if (serviceLocator == null) {
-            synchronized (ServiceLocatorFactory.class) {
-                if (serviceLocator == null) {
-                    String serviceLocatorClassName = SystemPropertyUtils.getServiceLocatorClassName();
-                    LOGGER.info("Using service locator class {} ", serviceLocatorClassName);
-                    try {
-                        serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                        throw new OCSRuntimeException(e.getMessage());
-                    }
-                }
-            }
-        }
-        return serviceLocator;
-    }
+	public static ServiceLocator getServiceLocator() {
+		if (serviceLocator == null) {
+			synchronized (ServiceLocatorFactory.class) {
+				if (serviceLocator == null) {
+					String serviceLocatorClassName = SystemPropertyUtils.getServiceLocatorClassName();
+					LOGGER.info("Using service locator class {} ", serviceLocatorClassName);
+					try {
+						serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();
+					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+						throw new OCSRuntimeException(e.getMessage());
+					}
+				}
+			}
+		}
+		return serviceLocator;
+	}
 
 }
