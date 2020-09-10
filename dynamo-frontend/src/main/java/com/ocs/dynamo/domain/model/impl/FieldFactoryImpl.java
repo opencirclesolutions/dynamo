@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.google.common.collect.Lists;
@@ -514,7 +515,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			TextField atf = (TextField) field;
 			atf.addBlurListener(event -> {
 				String value = atf.getValue();
-				if (value != null && value.indexOf('%') < 0) {
+				if (!StringUtils.isEmpty(value) && value.indexOf('%') < 0) {
 					value = value.trim() + "%";
 					atf.setValue(value);
 				}

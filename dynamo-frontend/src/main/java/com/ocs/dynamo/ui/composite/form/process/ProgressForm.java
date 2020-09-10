@@ -315,7 +315,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
      * 
      * @param t the (optional) object that is being processed
      */
-    protected final void startWork(final T t) {
+    protected final void startWork(T t) {
         if (isFormValid(t)) {
             if (ProgressMode.SIMPLE.equals(progressMode)) {
                 // simply execute the process (without displaying any feedback)

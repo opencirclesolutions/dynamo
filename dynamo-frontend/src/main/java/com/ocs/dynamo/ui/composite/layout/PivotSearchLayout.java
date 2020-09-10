@@ -14,11 +14,13 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -266,4 +268,15 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		this.fixedHeaderMapper = fixedHeaderMapper;
 	}
 
+	   /**
+     * Select one or more items
+     * 
+     * @param selectedItems the item or items to select
+     */
+    @SuppressWarnings("unchecked")
+    public void select(Object selectedItems) {
+        // do nothing (not supported)
+    }
+
+	
 }

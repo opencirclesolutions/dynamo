@@ -95,7 +95,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	private PivotedItem pivotedItem;
 
 	/**
-	 * 
+	 * The list of pivoted properties
 	 */
 	private List<String> pivotedProperties;
 
@@ -105,7 +105,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	private BaseDataProvider<ID, T> provider;
 
 	/**
-	 * The property that is checked to see if a new row has been reaced
+	 * The property that is checked to see if a new row has been reached
 	 */
 	private String rowKeyProperty;
 

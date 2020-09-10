@@ -43,138 +43,139 @@ import com.ocs.dynamo.utils.ClassUtils;
  * @param <T>  the type of the base level entity to export
  */
 public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends BaseExcelExportTemplate<ID, T> {
+		extends BaseExcelExportTemplate<ID, T> {
 
-    private PivotParameters pivotParameters;
+	private PivotParameters pivotParameters;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     * @param exportMode
-     * @param sortOrders
-     * @param filter
-     * @param title
-     * @param customGenerator
-     * @param pivotParameters
-     * @param joins
-     */
-    public ModelBasedExcelPivotExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, SortOrder[] sortOrders, Filter filter,
-            String title, CustomXlsStyleGenerator<ID, T> customGenerator, PivotParameters pivotParameters, FetchJoinInformation... joins) {
-        super(service, entityModel, ExportMode.ONLY_VISIBLE_IN_GRID, sortOrders, filter, title, customGenerator, joins);
-        this.pivotParameters = pivotParameters;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param entityModel
+	 * @param exportMode
+	 * @param sortOrders
+	 * @param filter
+	 * @param title
+	 * @param customGenerator
+	 * @param pivotParameters
+	 * @param joins
+	 */
+	public ModelBasedExcelPivotExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel,
+			SortOrder[] sortOrders, Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
+			PivotParameters pivotParameters, FetchJoinInformation... joins) {
+		super(service, entityModel, ExportMode.ONLY_VISIBLE_IN_GRID, sortOrders, filter, title, customGenerator, joins);
+		this.pivotParameters = pivotParameters;
+	}
 
-    @Override
-    protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
-        setWorkbook(createWorkbook(iterator.size()));
-        Sheet sheet = getWorkbook().createSheet(getTitle());
-        setGenerator(createGenerator(getWorkbook()));
+	@Override
+	protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
+		setWorkbook(createWorkbook(iterator.size()));
+		Sheet sheet = getWorkbook().createSheet(getTitle());
+		setGenerator(createGenerator(getWorkbook()));
 
-        boolean resize = canResize();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		boolean resize = canResize();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        // add header row
-        Row titleRow = sheet.createRow(0);
-        titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
+		// add header row
+		Row titleRow = sheet.createRow(0);
+		titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
-        // add fixed columns
-        int i = 0;
-        for (String fc : pivotParameters.getFixedColumnKeys()) {
-            Cell cell = titleRow.createCell(i);
-            if (!resize) {
-                sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
-            }
+		// add fixed columns
+		int i = 0;
+		for (String fc : pivotParameters.getFixedColumnKeys()) {
+			Cell cell = titleRow.createCell(i);
+			if (!resize) {
+				sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+			}
 
-            cell.setCellStyle(getGenerator().getHeaderStyle(i));
-            cell.setCellValue(pivotParameters.getFixedHeaderMapper().apply(fc));
-            i++;
-        }
+			cell.setCellStyle(getGenerator().getHeaderStyle(i));
+			cell.setCellValue(pivotParameters.getFixedHeaderMapper().apply(fc));
+			i++;
+		}
 
-        // add variable columns
-        for (Object fc : pivotParameters.getPossibleColumnKeys()) {
-            for (String property : pivotParameters.getPivotedProperties()) {
-                Cell cell = titleRow.createCell(i);
-                if (!resize) {
-                    sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
-                }
+		// add variable columns
+		for (Object fc : pivotParameters.getPossibleColumnKeys()) {
+			for (String property : pivotParameters.getPivotedProperties()) {
+				Cell cell = titleRow.createCell(i);
+				if (!resize) {
+					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+				}
 
-                cell.setCellStyle(getGenerator().getHeaderStyle(i));
-                String value = pivotParameters.getHeaderMapper().apply(fc, property);
-                if (value != null) {
-                    cell.setCellValue(value);
-                }
-                i++;
-            }
-        }
+				cell.setCellStyle(getGenerator().getHeaderStyle(i));
+				String value = pivotParameters.getHeaderMapper().apply(fc, property);
+				if (value != null) {
+					cell.setCellValue(value);
+				}
+				i++;
+			}
+		}
 
-        String prevRowKey = null;
-        Row row = null;
-        int colIndex = 0;
-        int propIndex = 0;
+		String prevRowKey = null;
+		Row row = null;
+		int colIndex = 0;
+		int propIndex = 0;
 
-        // iterate over the rows
-        T entity = iterator.next();
-        while (entity != null) {
+		// iterate over the rows
+		T entity = iterator.next();
+		while (entity != null) {
 
-            String rowKey = ClassUtils.getFieldValueAsString(entity, pivotParameters.getRowKeyProperty());
-            if (!Objects.equals(prevRowKey, rowKey)) {
-                row = sheet.createRow(sheet.getLastRowNum() + 1);
+			String rowKey = ClassUtils.getFieldValueAsString(entity, pivotParameters.getRowKeyProperty());
+			if (!Objects.equals(prevRowKey, rowKey)) {
+				row = sheet.createRow(sheet.getLastRowNum() + 1);
 
-                int j = 0;
-                for (String fc : pivotParameters.getFixedColumnKeys()) {
-                    Cell cell = row.createCell(j);
-                    Object value = ClassUtils.getFieldValueAsString(entity, fc);
-                    cell.setCellStyle(getGenerator().getCellStyle(j, entity, value, null));
-                    writeCellValue(cell, value, getEntityModel(), null);
-                    j++;
-                }
+				int j = 0;
+				for (String fc : pivotParameters.getFixedColumnKeys()) {
+					Cell cell = row.createCell(j);
+					Object value = ClassUtils.getFieldValueAsString(entity, fc);
+					cell.setCellStyle(getGenerator().getCellStyle(j, entity, value, null));
+					writeCellValue(cell, value, getEntityModel(), null);
+					j++;
+				}
 
-                colIndex = 0;
-                propIndex = 0;
-            }
+				colIndex = 0;
+				propIndex = 0;
+			}
 
-            Object object = pivotParameters.getPossibleColumnKeys().get(colIndex);
-            if (!columnValueMatches(entity, object)) {
-                // appropriate value is missing, write empty cell
-                createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, "", null);
-            } else {
-                // get cell value
+			Object object = pivotParameters.getPossibleColumnKeys().get(colIndex);
+			if (!columnValueMatches(entity, object)) {
+				// appropriate value is missing, write empty cell
+				createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, "", null);
+			} else {
+				// get cell value
 
-                String prop = pivotParameters.getPivotedProperties().get(propIndex);
-                Object value = ClassUtils.getFieldValue(entity, prop);
-                Cell cell = createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, value, null);
-                writeCellValue(cell, value, getEntityModel(), null);
-            }
+				String prop = pivotParameters.getPivotedProperties().get(propIndex);
+				Object value = ClassUtils.getFieldValue(entity, prop);
+				Cell cell = createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, value,
+						null);
+				writeCellValue(cell, value, getEntityModel(), null);
+			}
 
-            if (propIndex == pivotParameters.getPivotedProperties().size() - 1) {
-                propIndex = 0;
-                colIndex = colIndex + 1;
-            } else {
-                propIndex++;
-            }
+			if (propIndex == pivotParameters.getPivotedProperties().size() - 1) {
+				propIndex = 0;
+				colIndex = colIndex + 1;
+			} else {
+				propIndex++;
+			}
 
-            // rowIndex++;
-            entity = iterator.next();
-            prevRowKey = rowKey;
-        }
-        resizeColumns(sheet);
+			entity = iterator.next();
+			prevRowKey = rowKey;
+		}
+		resizeColumns(sheet);
 
-        getWorkbook().write(stream);
-        return stream.toByteArray();
-    }
+		getWorkbook().write(stream);
+		return stream.toByteArray();
+	}
 
-    /**
-     * Checks whether the value of the column key matches the expected value
-     * 
-     * @param entity   the entity to check for the actual value
-     * @param expected the expected value
-     * @return
-     */
-    private boolean columnValueMatches(T entity, Object expected) {
-        Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
-        return Objects.equals(actual, expected);
-    }
+	/**
+	 * Checks whether the value of the column key matches the expected value
+	 * 
+	 * @param entity   the entity to check for the actual value
+	 * @param expected the expected value
+	 * @return
+	 */
+	private boolean columnValueMatches(T entity, Object expected) {
+		Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
+		return Objects.equals(actual, expected);
+	}
 
 }
