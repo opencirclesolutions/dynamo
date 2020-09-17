@@ -13,42 +13,66 @@
  */
 package com.ocs.dynamo.ui.provider;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+
+/**
+ * A data container class that represents a single row in a pivoted grid
+ * 
+ * @author Bas Rutten
+ *
+ */
 public class PivotedItem {
 
-    private final Object rowKeyValue;
+	private final Object rowKeyValue;
 
-    private Map<Object, Map<String, Object>> values = new HashMap<>();
+	private Map<Object, Map<String, Object>> values = new HashMap<>();
 
-    private Map<Object, Object> fixedValues = new HashMap<>();
+	private Map<Object, Object> fixedValues = new HashMap<>();
 
-    public PivotedItem(Object rowKeyValue) {
-        this.rowKeyValue = rowKeyValue;
-    }
+	public PivotedItem(Object rowKeyValue) {
+		this.rowKeyValue = rowKeyValue;
+	}
 
-    public Object getRowKeyValue() {
-        return rowKeyValue;
-    }
+	public Object getRowKeyValue() {
+		return rowKeyValue;
+	}
 
-    public void setValue(Object columnKey, String propertyValue, Object value) {
-        values.putIfAbsent(columnKey, new HashMap<>());
-        values.get(columnKey).put(propertyValue, value);
-    }
+	public void setValue(Object columnKey, String propertyValue, Object value) {
+		values.putIfAbsent(columnKey, new HashMap<>());
+		values.get(columnKey).put(propertyValue, value);
+	}
 
-    public Object getValue(Object columnKey, String propertyValue) {
-        if (!values.containsKey(columnKey)) {
-            return null;
-        }
-        return values.get(columnKey).get(propertyValue);
-    }
+	public Object getValue(Object columnKey, String propertyValue) {
+		if (!values.containsKey(columnKey)) {
+			return null;
+		}
+		return values.get(columnKey).get(propertyValue);
+	}
 
-    public void setFixedValue(Object key, Object value) {
-        fixedValues.put(key, value);
-    }
+	public String getFormattedValue(Object columnKey, String propertyValue) {
+		if (!values.containsKey(columnKey)) {
+			return null;
+		}
+		Object obj = values.get(columnKey).get(propertyValue);
+		if (obj instanceof BigDecimal) {
+			return VaadinUtils.bigDecimalToString(false, true, (BigDecimal) obj);
+		} else if (obj instanceof Long) {
+			return VaadinUtils.longToString(true, false, (Long) obj);
+		} else if (obj instanceof Integer) {
+			return VaadinUtils.integerToString(true, false, (Integer) obj);
+		}
+		return obj == null ? "" : obj.toString();
+	}
 
-    public Object getFixedValue(Object key) {
-        return fixedValues.get(key);
-    }
+	public void setFixedValue(Object key, Object value) {
+		fixedValues.put(key, value);
+	}
+
+	public Object getFixedValue(Object key) {
+		return fixedValues.get(key);
+	}
 }

@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.GridSortOrderBuilder;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -170,8 +171,10 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	protected List<SortOrder<?>> initSortingAndFiltering() {
 
 		List<SortOrder<?>> fallBackOrders = new ArrayList<>();
+		GridSortOrderBuilder<U> builder = new GridSortOrderBuilder<>();
+		boolean missing = false;
+
 		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-			GridSortOrderBuilder<U> builder = new GridSortOrderBuilder<>();
 			for (SortOrder<?> o : getSortOrders()) {
 				if (getGrid().getColumnByKey((String) o.getSorted()) != null) {
 					// only include column in sort order if it is present in the grid
@@ -181,14 +184,13 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 						builder.thenDesc(getGrid().getColumnByKey(o.getSorted().toString()));
 					}
 				} else {
-					// not present in grid, add to backup
-					fallBackOrders.add(o);
+					missing = true;
 				}
+				fallBackOrders.add(o);
 			}
-			getGrid().sort(builder.build());
 		} else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
 			// sort based on the entity model
-			GridSortOrderBuilder<U> builder = new GridSortOrderBuilder<>();
+
 			for (AttributeModel am : entityModel.getSortOrder().keySet()) {
 				boolean asc = entityModel.getSortOrder().get(am);
 				if (getGrid().getColumnByKey(am.getPath()) != null) {
@@ -198,12 +200,18 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 						builder.thenDesc(getGrid().getColumnByKey(am.getPath()));
 					}
 				} else {
-					fallBackOrders.add(new SortOrder<String>(am.getActualSortPath(),
-							asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
+					missing = true;
 				}
+				fallBackOrders.add(new SortOrder<String>(am.getActualSortPath(),
+						asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
 			}
+		}
+
+		// use grid sorting only if all columns are present. otherwise use fallback
+		if (!missing) {
 			getGrid().sort(builder.build());
 		}
+
 		return fallBackOrders;
 
 	}

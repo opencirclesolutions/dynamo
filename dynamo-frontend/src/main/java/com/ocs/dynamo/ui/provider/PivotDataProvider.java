@@ -100,6 +100,11 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	private List<String> pivotedProperties;
 
 	/**
+	 * The list of hidden pivoted properties
+	 */
+	private List<String> hiddenPivotedProperties;
+
+	/**
 	 * The data provider that is being wrapped
 	 */
 	private BaseDataProvider<ID, T> provider;
@@ -126,12 +131,14 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	 * @param sizeSupplier
 	 */
 	public PivotDataProvider(BaseDataProvider<ID, T> provider, String rowKeyProperty, String columnKeyProperty,
-			List<String> fixedColumnKeys, List<String> pivotedProperties, Supplier<Integer> sizeSupplier) {
+			List<String> fixedColumnKeys, List<String> pivotedProperties, List<String> hiddenPivotedProperties,
+			Supplier<Integer> sizeSupplier) {
 		this.provider = provider;
 		this.columnKeyProperty = columnKeyProperty;
 		this.rowKeyProperty = rowKeyProperty;
 		this.fixedColumnKeys = fixedColumnKeys;
 		this.pivotedProperties = pivotedProperties;
+		this.hiddenPivotedProperties = hiddenPivotedProperties;
 		this.sizeSupplier = sizeSupplier;
 	}
 
@@ -195,6 +202,12 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 				Object colKeyValue = ClassUtils.getFieldValue(t, columnKeyProperty);
 				for (int i = 0; i < pivotedProperties.size(); i++) {
 					String key = pivotedProperties.get(i);
+					Object value = ClassUtils.getFieldValue(t, key);
+					pivotedItem.setValue(colKeyValue, key, value);
+				}
+				
+				for (int i = 0; i < hiddenPivotedProperties.size(); i++) {
+					String key = hiddenPivotedProperties.get(i);
 					Object value = ClassUtils.getFieldValue(t, key);
 					pivotedItem.setValue(colKeyValue, key, value);
 				}

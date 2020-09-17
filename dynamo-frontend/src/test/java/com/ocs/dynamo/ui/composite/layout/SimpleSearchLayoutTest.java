@@ -86,21 +86,20 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
         layout.getGridWrapper().forceSearch();
         assertEquals(3, layout.getGridWrapper().getDataProviderSize());
 
-        layout.select(e3);
-        layout.detailsMode(e3);
+        layout.select(e2);
+        layout.detailsMode(e2);
 
         // click the next button
         assertEquals(2, layout.getEditForm().getNextButtons().size());
-
         layout.getEditForm().getNextButtons().iterator().next().click();
-        assertEquals(e2, layout.getEditForm().getEntity());
+        assertEquals(e3, layout.getEditForm().getEntity());
         assertTrue(layout.hasPrevEntity());
-        assertTrue(layout.hasNextEntity());
+        assertFalse(layout.hasNextEntity());
 
         // click the previous button
         assertEquals(2, layout.getEditForm().getPreviousButtons().size());
         layout.getEditForm().getPreviousButtons().iterator().next().click();
-        assertEquals(e3, layout.getEditForm().getEntity());
+        assertEquals(e2, layout.getEditForm().getEntity());
     }
 
     /**

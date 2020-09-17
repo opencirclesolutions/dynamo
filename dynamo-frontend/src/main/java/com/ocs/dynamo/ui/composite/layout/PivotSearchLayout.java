@@ -14,13 +14,11 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.Collection;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -60,7 +58,11 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	private Function<String, String> fixedHeaderMapper = Function.identity();
 
+	private BiFunction<String, Object, String> customFormatter;
+
 	private List<String> pivotedProperties;
+
+	private List<String> hiddenPivotedProperties;
 
 	private List<Object> possibleColumnKeys;
 
@@ -102,8 +104,10 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setRowKeyProperty(getRowKeyProperty());
 		wrapper.setColumnKeyProperty(getColumnKeyProperty());
 		wrapper.setPivotedProperties(getPivotedProperties());
+		wrapper.setHiddenPivotedProperties(getHiddenPivotedProperties());
 		wrapper.setHeaderMapper(getHeaderMapper());
 		wrapper.setFixedHeaderMapper(getFixedHeaderMapper());
+		wrapper.setCustomFormatter(getCustomFormatter());
 		wrapper.setSizeSupplier(getSizeSupplier());
 		wrapper.setPossibleColumnKeys(getPossibleColumnKeys());
 		wrapper.setFixedColumnKeys(getFixedColumnKeys());
@@ -172,8 +176,16 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		return columnKeyProperty;
 	}
 
+	public BiFunction<String, Object, String> getCustomFormatter() {
+		return customFormatter;
+	}
+
 	public List<String> getFixedColumnKeys() {
 		return fixedColumnKeys;
+	}
+
+	public Function<String, String> getFixedHeaderMapper() {
+		return fixedHeaderMapper;
 	}
 
 	@Override
@@ -209,12 +221,30 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		return sizeSupplier;
 	}
 
+	/**
+	 * Select one or more items
+	 * 
+	 * @param selectedItems the item or items to select
+	 */
+	@Override
+	public void select(Object selectedItems) {
+		// do nothing (not supported)
+	}
+
 	public void setColumnKeyProperty(String columnKeyProperty) {
 		this.columnKeyProperty = columnKeyProperty;
 	}
 
+	public void setCustomFormatter(BiFunction<String, Object, String> customFormatter) {
+		this.customFormatter = customFormatter;
+	}
+
 	public void setFixedColumnKeys(List<String> fixedColumnKeys) {
 		this.fixedColumnKeys = fixedColumnKeys;
+	}
+
+	public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
+		this.fixedHeaderMapper = fixedHeaderMapper;
 	}
 
 	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
@@ -260,23 +290,12 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		this.sizeSupplier = sizeSupplier;
 	}
 
-	public Function<String, String> getFixedHeaderMapper() {
-		return fixedHeaderMapper;
+	public List<String> getHiddenPivotedProperties() {
+		return hiddenPivotedProperties;
 	}
 
-	public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
-		this.fixedHeaderMapper = fixedHeaderMapper;
+	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
+		this.hiddenPivotedProperties = hiddenPivotedProperties;
 	}
 
-	   /**
-     * Select one or more items
-     * 
-     * @param selectedItems the item or items to select
-     */
-    @SuppressWarnings("unchecked")
-    public void select(Object selectedItems) {
-        // do nothing (not supported)
-    }
-
-	
 }

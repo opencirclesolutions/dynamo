@@ -30,7 +30,7 @@ import com.ocs.dynamo.domain.model.validator.Email;
 
 @Entity
 @Table(name = "test_entity2")
-@Model(displayProperty = "name")
+@Model(displayProperty = "name", sortOrder = "name")
 public class TestEntity2 extends AbstractEntity<Integer> {
 
     private static final long serialVersionUID = 3481759712992449747L;

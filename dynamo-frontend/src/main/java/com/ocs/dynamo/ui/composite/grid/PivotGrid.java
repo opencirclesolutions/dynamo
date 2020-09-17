@@ -18,10 +18,13 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.function.SerializableFunction;
 
 /**
  * 
@@ -40,35 +43,49 @@ import com.vaadin.flow.component.grid.Grid;
  */
 public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<PivotedItem> {
 
-    private static final long serialVersionUID = -1302975905471267532L;
+	private static final long serialVersionUID = -1302975905471267532L;
 
-    /**
-     * 
-     * @param provider           the pivot data provider
-     * @param possibleColumnKeys the possible column key data
-     * @param fixedHeaderMapper  function used to map from fixed column property to
-     *                           grid header
-     * @param headerMapper       function used to map from variable column property
-     *                           to grid header
-     */
-    public PivotGrid(PivotDataProvider<ID, T> provider, List<Object> possibleColumnKeys, Function<String, String> fixedHeaderMapper,
-            BiFunction<Object, Object, String> headerMapper) {
+	private List<Object> possibleColumnKeys;
 
-        setDataProvider(provider);
+	/**
+	 * 
+	 * @param provider           the pivot data provider
+	 * @param possibleColumnKeys the possible column key data
+	 * @param fixedHeaderMapper  function used to map from fixed column property to
+	 *                           grid header
+	 * @param headerMapper       function used to map from variable column property
+	 *                           to grid header
+	 */
+	public PivotGrid(PivotDataProvider<ID, T> provider, List<Object> possibleColumnKeys,
+			Function<String, String> fixedHeaderMapper, BiFunction<Object, Object, String> headerMapper,
+			BiFunction<String, Object, String> customFormatter) {
+		this.possibleColumnKeys = possibleColumnKeys;
 
-        for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {
-            String fk = provider.getFixedColumnKeys().get(i);
-            addColumn(t -> t.getFixedValue(fk)).setHeader(fixedHeaderMapper.apply(fk)).setFrozen(true).setAutoWidth(true).setKey(fk)
-                    .setId(fk);
-        }
+		setDataProvider(provider);
 
-        for (int i = 0; i < possibleColumnKeys.size(); i++) {
-            Object pk = possibleColumnKeys.get(i);
-            for (String property : provider.getPivotedProperties()) {
-                addColumn(t -> t.getValue(pk, property)).setHeader(headerMapper.apply(pk, property)).setAutoWidth(true)
-                        .setKey(pk + "_" + property).setId(pk + "_" + property);
-            }
-        }
-    }
+		for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {
+			String fk = provider.getFixedColumnKeys().get(i);
+			addColumn(t -> t.getFixedValue(fk)).setHeader(fixedHeaderMapper.apply(fk)).setFrozen(true)
+					.setAutoWidth(true).setKey(fk).setId(fk);
+		}
+
+		for (int i = 0; i < possibleColumnKeys.size(); i++) {
+			Object pk = possibleColumnKeys.get(i);
+			for (String property : provider.getPivotedProperties()) {
+				addColumn(t -> {
+					// first check for a custom formatter. Otherwise fall back to default formatting
+					String value = null;
+					if (customFormatter != null) {
+						value = customFormatter.apply(property, t.getValue(pk, property));
+					}
+					if (StringUtils.isEmpty(value)) {
+						value = t.getFormattedValue(pk, property);
+					}
+					return value;
+				}).setHeader(headerMapper.apply(pk, property)).setAutoWidth(true).setKey(pk + "_" + property)
+						.setId(pk + "_" + property);
+			}
+		}
+	}
 
 }

@@ -93,6 +93,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 */
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
+	private BiFunction<String, Object, String> customFormatter = null;
+
 	/**
 	 * The layout that contains the grid
 	 */
@@ -102,6 +104,11 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * The properties to display in the pivoted columns
 	 */
 	private List<String> pivotedProperties;
+
+	/**
+	 * The properties to display in the pivoted columns
+	 */
+	private List<String> hiddenPivotedProperties;
 
 	/**
 	 * The possible values of the columnPropertyKey property.
@@ -163,7 +170,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 		}
 
 		PivotDataProvider<ID, T> pivotDataProvider = new PivotDataProvider<>(wrappedProvider, rowKeyProperty,
-				columnKeyProperty, fixedColumnKeys, pivotedProperties, sizeSupplier);
+				columnKeyProperty, fixedColumnKeys, pivotedProperties, hiddenPivotedProperties, sizeSupplier);
 		pivotDataProvider.setAfterCountCompleted(x -> updateCaption(x));
 		postProcessDataProvider(pivotDataProvider);
 		return pivotDataProvider;
@@ -176,11 +183,15 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @return
 	 */
 	protected PivotGrid<ID, T> constructGrid() {
-		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper);
+		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper, customFormatter);
 	}
 
 	public String getColumnKeyProperty() {
 		return columnKeyProperty;
+	}
+
+	public BiFunction<String, Object, String> getCustomFormatter() {
+		return customFormatter;
 	}
 
 	public DataProvider<PivotedItem, SerializablePredicate<PivotedItem>> getDataProvider() {
@@ -214,6 +225,10 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	public BiFunction<Object, Object, String> getHeaderMapper() {
 		return headerMapper;
+	}
+
+	public List<String> getHiddenPivotedProperties() {
+		return hiddenPivotedProperties;
 	}
 
 	public List<String> getPivotedProperties() {
@@ -279,6 +294,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				pars.setPivotedProperties(pivotedProperties);
 				pars.setPossibleColumnKeys(possibleColumnKeys);
 				pars.setRowKeyProperty(rowKeyProperty);
+				
 
 				// use the fallback sort orders here
 				getExportDelegate().exportPivoted(
@@ -317,6 +333,10 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 		this.columnKeyProperty = columnKeyProperty;
 	}
 
+	public void setCustomFormatter(BiFunction<String, Object, String> customFormatter) {
+		this.customFormatter = customFormatter;
+	}
+
 	public void setFixedColumnKeys(List<String> fixedColumnKeys) {
 		this.fixedColumnKeys = fixedColumnKeys;
 	}
@@ -327,6 +347,10 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
 		this.headerMapper = headerMapper;
+	}
+
+	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
+		this.hiddenPivotedProperties = hiddenPivotedProperties;
 	}
 
 	public void setPivotedProperties(List<String> pivotedProperties) {

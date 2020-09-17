@@ -33,7 +33,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <ID> the type of the ID of the entity
  * @param <T> the type of the entity
  * @param <ID2> the type of the ID of the parent entity
- * @param <Q> the type of the paren entity
+ * @param <Q> the type of the parent entity
  */
 public class EditableGridDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
         extends EditableGridLayout<ID, T> implements CanAssignEntity<ID2, Q> {
