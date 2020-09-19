@@ -14,7 +14,9 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -27,6 +29,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.grid.GridWrapper;
 import com.ocs.dynamo.ui.composite.grid.PivotGridWrapper;
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -54,6 +57,9 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	private PivotGridWrapper<ID, T> gridWrapper;
 
+	/**
+	 * Header mapping function. Excepts the column key and the property
+	 */
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
 	private Function<String, String> fixedHeaderMapper = Function.identity();
@@ -69,6 +75,8 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	private String rowKeyProperty;
 
 	private Supplier<Integer> sizeSupplier;
+
+	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
 	/**
 	 * 
@@ -111,6 +119,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setSizeSupplier(getSizeSupplier());
 		wrapper.setPossibleColumnKeys(getPossibleColumnKeys());
 		wrapper.setFixedColumnKeys(getFixedColumnKeys());
+		wrapper.setAggregationMap(aggregationMap);
 
 		postConfigureGridWrapper(wrapper);
 		wrapper.build();
@@ -296,6 +305,10 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
 		this.hiddenPivotedProperties = hiddenPivotedProperties;
+	}
+
+	public void addAggregation(String property, PivotAggregationType type) {
+		aggregationMap.put(property, type);
 	}
 
 }

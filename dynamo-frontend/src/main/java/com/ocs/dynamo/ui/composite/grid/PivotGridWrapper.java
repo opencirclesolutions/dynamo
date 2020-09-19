@@ -15,7 +15,9 @@ package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,6 +31,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -125,6 +128,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 */
 	private Supplier<Integer> sizeSupplier;
 
+	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
+
 	/**
 	 * The wrapped data provider
 	 */
@@ -171,6 +176,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 		PivotDataProvider<ID, T> pivotDataProvider = new PivotDataProvider<>(wrappedProvider, rowKeyProperty,
 				columnKeyProperty, fixedColumnKeys, pivotedProperties, hiddenPivotedProperties, sizeSupplier);
+		pivotDataProvider.setAggregationMap(aggregationMap);
 		pivotDataProvider.setAfterCountCompleted(x -> updateCaption(x));
 		postProcessDataProvider(pivotDataProvider);
 		return pivotDataProvider;
@@ -294,7 +300,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				pars.setPivotedProperties(pivotedProperties);
 				pars.setPossibleColumnKeys(possibleColumnKeys);
 				pars.setRowKeyProperty(rowKeyProperty);
-				
+				pars.setHiddenPivotedProperties(hiddenPivotedProperties);
+				pars.setAggregationMap(aggregationMap);
 
 				// use the fallback sort orders here
 				getExportDelegate().exportPivoted(
@@ -379,4 +386,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				+ getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
 	}
 
+	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
+		this.aggregationMap = aggregationMap;
+	}
 }

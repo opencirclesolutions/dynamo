@@ -14,8 +14,11 @@
 package com.ocs.dynamo.ui.composite.export;
 
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
 
 /**
  * Parameter object that contains data about how to export pivoted data
@@ -28,74 +31,94 @@ public class PivotParameters {
 	/**
 	 * The property that uniquely identifies a row in the pivoted data set
 	 */
-    private String rowKeyProperty;
+	private String rowKeyProperty;
 
-    private String columnKeyProperty;
+	private String columnKeyProperty;
 
-    private List<String> fixedColumnKeys;
+	private List<String> fixedColumnKeys;
 
-    private List<String> pivotedProperties;
+	private List<String> pivotedProperties;
 
-    private List<Object> possibleColumnKeys;
+	private List<String> hiddenPivotedProperties;
 
-    private Function<String, String> fixedHeaderMapper = Function.identity();
+	private Map<String, PivotAggregationType> aggregationMap;
 
-    private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
+	private List<Object> possibleColumnKeys;
 
-    public String getRowKeyProperty() {
-        return rowKeyProperty;
-    }
+	private Function<String, String> fixedHeaderMapper = Function.identity();
 
-    public void setRowKeyProperty(String rowKeyProperty) {
-        this.rowKeyProperty = rowKeyProperty;
-    }
+	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
-    public String getColumnKeyProperty() {
-        return columnKeyProperty;
-    }
+	public String getRowKeyProperty() {
+		return rowKeyProperty;
+	}
 
-    public void setColumnKeyProperty(String columnKeyProperty) {
-        this.columnKeyProperty = columnKeyProperty;
-    }
+	public void setRowKeyProperty(String rowKeyProperty) {
+		this.rowKeyProperty = rowKeyProperty;
+	}
 
-    public List<String> getFixedColumnKeys() {
-        return fixedColumnKeys;
-    }
+	public String getColumnKeyProperty() {
+		return columnKeyProperty;
+	}
 
-    public void setFixedColumnKeys(List<String> fixedColumnKeys) {
-        this.fixedColumnKeys = fixedColumnKeys;
-    }
+	public void setColumnKeyProperty(String columnKeyProperty) {
+		this.columnKeyProperty = columnKeyProperty;
+	}
 
-    public List<String> getPivotedProperties() {
-        return pivotedProperties;
-    }
+	public List<String> getFixedColumnKeys() {
+		return fixedColumnKeys;
+	}
 
-    public void setPivotedProperties(List<String> pivotedProperties) {
-        this.pivotedProperties = pivotedProperties;
-    }
+	public void setFixedColumnKeys(List<String> fixedColumnKeys) {
+		this.fixedColumnKeys = fixedColumnKeys;
+	}
 
-    public Function<String, String> getFixedHeaderMapper() {
-        return fixedHeaderMapper;
-    }
+	public List<String> getPivotedProperties() {
+		return pivotedProperties;
+	}
 
-    public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
-        this.fixedHeaderMapper = fixedHeaderMapper;
-    }
+	public void setPivotedProperties(List<String> pivotedProperties) {
+		this.pivotedProperties = pivotedProperties;
+	}
 
-    public BiFunction<Object, Object, String> getHeaderMapper() {
-        return headerMapper;
-    }
+	public Function<String, String> getFixedHeaderMapper() {
+		return fixedHeaderMapper;
+	}
 
-    public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
-        this.headerMapper = headerMapper;
-    }
+	public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
+		this.fixedHeaderMapper = fixedHeaderMapper;
+	}
 
-    public List<Object> getPossibleColumnKeys() {
-        return possibleColumnKeys;
-    }
+	public BiFunction<Object, Object, String> getHeaderMapper() {
+		return headerMapper;
+	}
 
-    public void setPossibleColumnKeys(List<Object> possibleColumnKeys) {
-        this.possibleColumnKeys = possibleColumnKeys;
-    }
+	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
+		this.headerMapper = headerMapper;
+	}
+
+	public List<Object> getPossibleColumnKeys() {
+		return possibleColumnKeys;
+	}
+
+	public void setPossibleColumnKeys(List<Object> possibleColumnKeys) {
+		this.possibleColumnKeys = possibleColumnKeys;
+	}
+
+	public List<String> getHiddenPivotedProperties() {
+		return hiddenPivotedProperties;
+	}
+
+	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
+		this.hiddenPivotedProperties = hiddenPivotedProperties;
+	}
+
+	public Map<String, PivotAggregationType> getAggregationMap() {
+		return aggregationMap;
+	}
+
+	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
+		this.aggregationMap = aggregationMap;
+	}
 
 }

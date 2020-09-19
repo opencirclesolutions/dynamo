@@ -121,6 +121,8 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	 */
 	private Supplier<Integer> sizeSupplier;
 
+	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
+
 	/**
 	 * 
 	 * @param provider          the wrapped data provider
@@ -205,11 +207,14 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 					Object value = ClassUtils.getFieldValue(t, key);
 					pivotedItem.setValue(colKeyValue, key, value);
 				}
-				
-				for (int i = 0; i < hiddenPivotedProperties.size(); i++) {
-					String key = hiddenPivotedProperties.get(i);
-					Object value = ClassUtils.getFieldValue(t, key);
-					pivotedItem.setValue(colKeyValue, key, value);
+
+				// extract additional useful (but not visible) values
+				if (hiddenPivotedProperties != null) {
+					for (int i = 0; i < hiddenPivotedProperties.size(); i++) {
+						String key = hiddenPivotedProperties.get(i);
+						Object value = ClassUtils.getFieldValue(t, key);
+						pivotedItem.setValue(colKeyValue, key, value);
+					}
 				}
 
 			}
@@ -277,5 +282,17 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 			getAfterCountCompleted().accept(size);
 		}
 		return size;
+	}
+
+	public void addAggregation(String pivotProperty, PivotAggregationType type) {
+		aggregationMap.put(pivotProperty, type);
+	}
+
+	public PivotAggregationType getAggregation(String pivotProperty) {
+		return aggregationMap.get(pivotProperty);
+	}
+
+	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
+		this.aggregationMap = aggregationMap;
 	}
 }

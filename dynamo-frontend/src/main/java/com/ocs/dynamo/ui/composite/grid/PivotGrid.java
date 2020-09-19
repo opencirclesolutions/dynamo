@@ -21,10 +21,13 @@ import java.util.function.Function;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.grid.Grid;
-import com.vaadin.flow.function.SerializableFunction;
 
 /**
  * 
@@ -45,7 +48,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 
 	private static final long serialVersionUID = -1302975905471267532L;
 
-	private List<Object> possibleColumnKeys;
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * 
@@ -59,8 +62,6 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 	public PivotGrid(PivotDataProvider<ID, T> provider, List<Object> possibleColumnKeys,
 			Function<String, String> fixedHeaderMapper, BiFunction<Object, Object, String> headerMapper,
 			BiFunction<String, Object, String> customFormatter) {
-		this.possibleColumnKeys = possibleColumnKeys;
-
 		setDataProvider(provider);
 
 		for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {
@@ -86,6 +87,37 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 						.setId(pk + "_" + property);
 			}
 		}
+
+		for (String property : provider.getPivotedProperties()) {
+			// add aggregate column
+			PivotAggregationType type = provider.getAggregation(property);
+			if (type != null) {
+				String header = getAggregateHeader(type);
+				String colId = "aggregate_" + type.toString().toLowerCase();
+
+				addColumn(t -> {
+					if (PivotAggregationType.SUM.equals(type)) {
+						return t.getSumValue(property);
+					} else if (PivotAggregationType.AVERAGE.equals(type)) {
+						return t.getAverageValue(property);
+					} else {
+						return t.getCountValue(property);
+					}
+				}).setHeader(header).setKey(colId).setId(colId);
+			}
+		}
+	}
+
+	private String getAggregateHeader(PivotAggregationType type) {
+		switch (type) {
+		case SUM:
+			return messageService.getMessage("ocs.sum", VaadinUtils.getLocale());
+		case AVERAGE:
+			return messageService.getMessage("ocs.average", VaadinUtils.getLocale());
+		case COUNT:
+			return messageService.getMessage("ocs.count", VaadinUtils.getLocale());
+		}
+		return null;
 	}
 
 }

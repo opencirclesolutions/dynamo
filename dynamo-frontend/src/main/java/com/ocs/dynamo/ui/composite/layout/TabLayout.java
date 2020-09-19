@@ -192,7 +192,9 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 	 * @param index
 	 */
 	public void selectTab(int index) {
-		tabs.setSelectedIndex(index);
+		if (tabs != null) {
+			tabs.setSelectedIndex(index);
+		}
 	}
 
 	/**

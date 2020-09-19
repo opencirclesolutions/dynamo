@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.provider;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -33,24 +34,38 @@ public class PivotedItem {
 
 	private Map<Object, Object> fixedValues = new HashMap<>();
 
+	private Map<String, BigDecimal> sumValues = new HashMap<>();
+
+	private Map<String, Integer> countValues = new HashMap<>();
+
 	public PivotedItem(Object rowKeyValue) {
 		this.rowKeyValue = rowKeyValue;
 	}
 
-	public Object getRowKeyValue() {
-		return rowKeyValue;
-	}
-
-	public void setValue(Object columnKey, String propertyValue, Object value) {
-		values.putIfAbsent(columnKey, new HashMap<>());
-		values.get(columnKey).put(propertyValue, value);
-	}
-
-	public Object getValue(Object columnKey, String propertyValue) {
-		if (!values.containsKey(columnKey)) {
-			return null;
+	/**
+	 * Returns the average value for a property
+	 * 
+	 * @param property the property name
+	 * @return
+	 */
+	public BigDecimal getAverageValue(String property) {
+		BigDecimal bv = sumValues.get(property);
+		if (bv != null) {
+			int cv = countValues.get(property);
+			if (cv > 0) {
+				return bv.divide(BigDecimal.valueOf(cv), 2, RoundingMode.HALF_UP);
+			}
+			return BigDecimal.ZERO;
 		}
-		return values.get(columnKey).get(propertyValue);
+		return null;
+	}
+
+	public Integer getCountValue(String property) {
+		return countValues.get(property);
+	}
+
+	public Object getFixedValue(Object key) {
+		return fixedValues.get(key);
 	}
 
 	public String getFormattedValue(Object columnKey, String propertyValue) {
@@ -68,11 +83,40 @@ public class PivotedItem {
 		return obj == null ? "" : obj.toString();
 	}
 
+	public Object getRowKeyValue() {
+		return rowKeyValue;
+	}
+
+	public BigDecimal getSumValue(String property) {
+		return sumValues.get(property);
+	}
+
+	public Object getValue(Object columnKey, String propertyValue) {
+		if (!values.containsKey(columnKey)) {
+			return null;
+		}
+		return values.get(columnKey).get(propertyValue);
+	}
+
 	public void setFixedValue(Object key, Object value) {
 		fixedValues.put(key, value);
 	}
 
-	public Object getFixedValue(Object key) {
-		return fixedValues.get(key);
+	public void setValue(Object columnKey, String propertyValue, Object value) {
+		values.putIfAbsent(columnKey, new HashMap<>());
+		values.get(columnKey).put(propertyValue, value);
+
+		// also update running sum
+		if (value != null && value instanceof Number) {
+			Number n = (Number) value;
+			sumValues.putIfAbsent(propertyValue, BigDecimal.ZERO);
+			BigDecimal cv = sumValues.get(propertyValue);
+			cv = cv.add(BigDecimal.valueOf(n.doubleValue()));
+			sumValues.put(propertyValue, cv);
+
+			// increase count
+			countValues.putIfAbsent(propertyValue, 0);
+			countValues.put(propertyValue, countValues.get(propertyValue) + 1);
+		}
 	}
 }
