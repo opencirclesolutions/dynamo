@@ -13,7 +13,6 @@
     "@vaadin/vaadin-dialog": "2.4.2",
     "@vaadin/vaadin-select": "2.2.0",
     "@vaadin/vaadin-app-layout": "2.1.0",
-    "jquery": "2.1.4",
     "@vaadin/vaadin-item": "2.2.0",
     "multiselect-combo-box": "2.3.1",
     "@vaadin/vaadin-notification": "1.5.0",
@@ -115,6 +114,6 @@
       "webpack-dev-server": "3.10.3",
       "chokidar": "^3.4.0"
     },
-    "hash": "e5170b72118b5e37feceb5d2b7378347a85ee59c4c6b6c3c5369d57798df830f"
+    "hash": "6ca1086d6d1fbcdbe12facca9aeb2b60e26b0665cc1654cf4c132e047a10f954"
   }
 }
