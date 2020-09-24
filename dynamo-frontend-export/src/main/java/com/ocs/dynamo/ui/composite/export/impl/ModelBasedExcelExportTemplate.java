@@ -42,73 +42,74 @@ import com.ocs.dynamo.utils.ClassUtils;
  * @param <ID> the type of the primary key
  * @param <T>  the type of the entity
  */
-public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseExcelExportTemplate<ID, T> {
+public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends BaseExcelExportTemplate<ID, T> {
 
-    /**
-     * Constructor
-     *
-     * @param service         the service used to retrieve the data
-     * @param entityModel     the entity model
-     * @param sortOrders      any sort orders to apply to the data
-     * @param filter          the filter that is used to retrieve the appropriate
-     *                        data
-     * @param title           the title of the sheet
-     * @param customGenerator custom style generator
-     * @param joins
-     */
-    public ModelBasedExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode mode, SortOrder[] sortOrders,
-            Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
-        super(service, entityModel, mode, sortOrders, filter, title, customGenerator, joins);
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param service         the service used to retrieve the data
+	 * @param entityModel     the entity model
+	 * @param sortOrders      any sort orders to apply to the data
+	 * @param filter          the filter that is used to retrieve the appropriate
+	 *                        data
+	 * @param title           the title of the sheet
+	 * @param customGenerator custom style generator
+	 * @param joins
+	 */
+	public ModelBasedExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode mode,
+			SortOrder[] sortOrders, Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
+			FetchJoinInformation... joins) {
+		super(service, entityModel, mode, sortOrders, filter, title, customGenerator, joins);
+	}
 
-    @Override
-    protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
-        setWorkbook(createWorkbook(iterator.size()));
-        Sheet sheet = getWorkbook().createSheet(getTitle());
-        setGenerator(createGenerator(getWorkbook()));
+	@Override
+	protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
+		setWorkbook(createWorkbook(iterator.size()));
+		Sheet sheet = getWorkbook().createSheet(getTitle());
+		setGenerator(createGenerator(getWorkbook()));
 
-        boolean resize = canResize();
-        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+		boolean resize = canResize();
+		ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
-        // add header row
-        Row titleRow = sheet.createRow(0);
-        titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
+		// add header row
+		Row titleRow = sheet.createRow(0);
+		titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
-        int i = 0;
-        for (AttributeModel am : getEntityModel().getAttributeModels()) {
-            if (show(am)) {
-                if (!resize) {
-                    sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
-                }
-                Cell cell = titleRow.createCell(i);
-                cell.setCellStyle(getGenerator().getHeaderStyle(i));
-                cell.setCellValue(am.getDisplayName(VaadinUtils.getLocale()));
-                i++;
-            }
-        }
+		int i = 0;
+		for (AttributeModel am : getEntityModel().getAttributeModels()) {
+			if (show(am)) {
+				if (!resize) {
+					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+				}
+				Cell cell = titleRow.createCell(i);
+				cell.setCellStyle(getGenerator().getHeaderStyle(i));
+				cell.setCellValue(am.getDisplayName(VaadinUtils.getLocale()));
+				i++;
+			}
+		}
 
-        // iterate over the rows
-        int rowIndex = 1;
-        T entity = iterator.next();
-        while (entity != null) {
-            Row row = sheet.createRow(rowIndex);
-            int colIndex = 0;
-            for (AttributeModel am : getEntityModel().getAttributeModels()) {
-                if (am != null && show(am)) {
-                    Object value = ClassUtils.getFieldValue(entity, am.getPath());
-                    Cell cell = createCell(row, colIndex, entity, value, am);
-                    writeCellValue(cell, value, getEntityModel(), am);
-                    colIndex++;
-                }
-            }
-            rowIndex++;
-            entity = iterator.next();
-        }
-        resizeColumns(sheet);
+		// iterate over the rows
+		int rowIndex = 1;
+		T entity = iterator.next();
+		while (entity != null) {
+			Row row = sheet.createRow(rowIndex);
+			int colIndex = 0;
+			for (AttributeModel am : getEntityModel().getAttributeModels()) {
+				if (am != null && show(am)) {
+					Object value = ClassUtils.getFieldValue(entity, am.getPath());
+					Cell cell = createCell(row, colIndex, entity, value, am, null);
+					writeCellValue(cell, value, getEntityModel(), am);
+					colIndex++;
+				}
+			}
+			rowIndex++;
+			entity = iterator.next();
+		}
+		resizeColumns(sheet);
 
-        getWorkbook().write(stream);
-        return stream.toByteArray();
-    }
-
+		getWorkbook().write(stream);
+		return stream.toByteArray();
+	}
 
 }

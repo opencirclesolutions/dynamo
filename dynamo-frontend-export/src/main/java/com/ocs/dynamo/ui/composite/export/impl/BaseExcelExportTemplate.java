@@ -102,12 +102,14 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	 * @param attributeModel the attribute model used to determine the style
 	 * @return
 	 */
-	protected Cell createCell(Row row, int colIndex, T entity, Object value, AttributeModel attributeModel) {
+	protected Cell createCell(Row row, int colIndex, T entity, Object value, AttributeModel attributeModel,
+			Object pivotColumnKey) {
 		Cell cell = row.createCell(colIndex);
 		cell.setCellStyle(getGenerator().getCellStyle(colIndex, entity, value, attributeModel));
 		if (customGenerator != null) {
 			// override default style with custom style
-			CellStyle custom = customGenerator.getCustomCellStyle(workbook, entity, value, attributeModel);
+			CellStyle custom = customGenerator.getCustomCellStyle(workbook, entity, value, attributeModel,
+					pivotColumnKey);
 			if (custom != null) {
 				cell.setCellStyle(custom);
 			}

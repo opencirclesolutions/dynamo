@@ -16,6 +16,8 @@ package com.ocs.dynamo.ui.composite.export.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 import org.apache.poi.ss.usermodel.Cell;
@@ -136,17 +138,25 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 				propIndex = 0;
 			}
 
-			Object object = pivotParameters.getPossibleColumnKeys().get(colIndex);
-			if (!columnValueMatches(entity, object)) {
+			Object pivotColumnKey = pivotParameters.getPossibleColumnKeys().get(colIndex);
+			if (!columnValueMatches(entity, pivotColumnKey)) {
 				// appropriate value is missing, write empty cell
-				createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, "", null);
+				createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, "", null, null);
 			} else {
 				// get cell value
 
 				String prop = pivotParameters.getPivotedProperties().get(propIndex);
 				Object value = ClassUtils.getFieldValue(entity, prop);
-				Cell cell = createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, value,
-						null);
+				Cell cell = createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, value, null,
+						pivotColumnKey);
+
+				// correct for percentage values
+				if (cell.getCellStyle() != null && cell.getCellStyle().getDataFormatString().contains("%")) {
+					if (value instanceof BigDecimal) {
+						value = ((BigDecimal) value).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+					}
+				}
+
 				writeCellValue(cell, value, getEntityModel(), null);
 			}
 
