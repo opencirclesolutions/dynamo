@@ -21,8 +21,10 @@ import java.math.RoundingMode;
 import java.util.Objects;
 
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellReference;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
@@ -31,10 +33,15 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.query.DataSetIterator;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.export.PivotParameters;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.MathUtils;
 
 /**
  * Template for exporting a pivoted data set to Excel
@@ -48,6 +55,8 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		extends BaseExcelExportTemplate<ID, T> {
 
 	private PivotParameters pivotParameters;
+
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * Constructor
@@ -82,6 +91,9 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		Row titleRow = sheet.createRow(0);
 		titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
+		int nrOfPivotProps = pivotParameters.getPivotedProperties().size();
+		int nrOfFixedCols = pivotParameters.getFixedColumnKeys().size();
+
 		// add fixed columns
 		int i = 0;
 		for (String fc : pivotParameters.getFixedColumnKeys()) {
@@ -112,10 +124,30 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			}
 		}
 
+		// add aggregate column headers
+		if (nrOfPivotProps == 1) {
+			String prop = pivotParameters.getPivotedProperties().get(0);
+			PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
+
+			if (type != null) {
+				Cell cell = titleRow.createCell(i);
+				if (!resize) {
+					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+				}
+				cell.setCellStyle(getGenerator().getHeaderStyle(i));
+				String value = getAggregateHeader(type);
+				if (value != null) {
+					cell.setCellValue(value);
+				}
+				i++;
+			}
+		}
+
 		String prevRowKey = null;
 		Row row = null;
 		int colIndex = 0;
 		int propIndex = 0;
+		int colsAdded = 0;
 
 		// iterate over the rows
 		T entity = iterator.next();
@@ -123,6 +155,20 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 			String rowKey = ClassUtils.getFieldValueAsString(entity, pivotParameters.getRowKeyProperty());
 			if (!Objects.equals(prevRowKey, rowKey)) {
+
+				// add aggregate columns
+				if (row != null) {
+					int lastColAdded = nrOfFixedCols + colsAdded - 1;
+					if (nrOfPivotProps == 1) {
+						String prop = pivotParameters.getPivotedProperties().get(0);
+						PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
+						if (type != null) {
+							writeRowAggregate(entity, row, type, lastColAdded, nrOfFixedCols, colsAdded);
+							colsAdded++;
+						}
+					}
+				}
+
 				row = sheet.createRow(sheet.getLastRowNum() + 1);
 
 				int j = 0;
@@ -136,24 +182,24 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 				colIndex = 0;
 				propIndex = 0;
+				colsAdded = 0;
 			}
 
 			Object pivotColumnKey = pivotParameters.getPossibleColumnKeys().get(colIndex);
 			if (!columnValueMatches(entity, pivotColumnKey)) {
 				// appropriate value is missing, write empty cell
-				createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, "", null, null);
+				createCell(row, nrOfFixedCols + colsAdded, entity, "", null, null);
 			} else {
 				// get cell value
 
 				String prop = pivotParameters.getPivotedProperties().get(propIndex);
 				Object value = ClassUtils.getFieldValue(entity, prop);
-				Cell cell = createCell(row, pivotParameters.getFixedColumnKeys().size() + colIndex, entity, value, null,
-						pivotColumnKey);
+				Cell cell = createCell(row, nrOfFixedCols + colsAdded, entity, value, null, pivotColumnKey);
 
 				// correct for percentage values
 				if (cell.getCellStyle() != null && cell.getCellStyle().getDataFormatString().contains("%")) {
 					if (value instanceof BigDecimal) {
-						value = ((BigDecimal) value).divide(BigDecimal.valueOf(100), 2, RoundingMode.HALF_UP);
+						value = ((BigDecimal) value).divide(MathUtils.HUNDRED, 2, RoundingMode.HALF_UP);
 					}
 				}
 
@@ -166,14 +212,42 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			} else {
 				propIndex++;
 			}
+			colsAdded++;
 
 			entity = iterator.next();
 			prevRowKey = rowKey;
 		}
+
+		// 
+		if (nrOfPivotProps == 1) {
+			int lastColAdded = nrOfFixedCols + colsAdded - 1;
+			String prop = pivotParameters.getPivotedProperties().get(0);
+			PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
+			if (type != null) {
+				writeRowAggregate(entity, row, type, lastColAdded, nrOfFixedCols, colsAdded);
+				colsAdded++;
+			}
+		}
+
 		resizeColumns(sheet);
 
 		getWorkbook().write(stream);
 		return stream.toByteArray();
+	}
+
+	private void writeRowAggregate(T entity, Row row, PivotAggregationType type, int lastColAdded, int nrOfFixedCols,
+			int colsAdded) {
+		int ci = nrOfFixedCols + colsAdded;
+		Cell totalsCell = row.createCell(ci);
+
+		String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
+		String lastCol = CellReference.convertNumToColString(lastColAdded);
+
+		totalsCell.setCellStyle(getGenerator().getCellStyle(ci, entity, null, null));
+		totalsCell.setCellType(CellType.FORMULA);
+
+		int rn = row.getRowNum() + 1;
+		totalsCell.setCellFormula(toExcelFunction(type) + "(" + firstCol + rn + ":" + lastCol + rn + ")");
 	}
 
 	/**
@@ -188,4 +262,31 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		return Objects.equals(actual, expected);
 	}
 
+	/**
+	 * Converts an aggregation type to an Excel function
+	 * 
+	 * @param type
+	 * @return
+	 */
+	private String toExcelFunction(PivotAggregationType type) {
+		switch (type) {
+		case AVERAGE:
+			return "AVG";
+		case SUM:
+			return "SUM";
+		default:
+			return "COUNT";
+		}
+	}
+
+	private String getAggregateHeader(PivotAggregationType type) {
+		switch (type) {
+		case SUM:
+			return messageService.getMessage("ocs.sum", VaadinUtils.getLocale());
+		case AVERAGE:
+			return messageService.getMessage("ocs.average", VaadinUtils.getLocale());
+		default:
+			return messageService.getMessage("ocs.count", VaadinUtils.getLocale());
+		}
+	}
 }

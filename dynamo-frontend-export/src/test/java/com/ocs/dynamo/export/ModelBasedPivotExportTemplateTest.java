@@ -83,7 +83,6 @@ public class ModelBasedPivotExportTemplateTest extends FrontendIntegrationTest {
         e2.setZoned(ZonedDateTime.of(DateUtils.createLocalDateTime("14082015 111213"), ZoneId.of("CET")));
         e2.setSomeDouble(44.44);
         e2 = testEntityService.save(e2);
-
     }
 
     @Test

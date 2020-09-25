@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.export;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -41,7 +42,7 @@ public class PivotParameters {
 
 	private List<String> hiddenPivotedProperties;
 
-	private Map<String, PivotAggregationType> aggregationMap;
+	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
 	private List<Object> possibleColumnKeys;
 
