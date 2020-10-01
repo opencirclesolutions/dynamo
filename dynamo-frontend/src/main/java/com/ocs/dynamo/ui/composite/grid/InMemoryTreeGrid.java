@@ -143,6 +143,8 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 			this.lastClickedRow = event.getItem();
 		});
 
+		setEnabled(isEditAllowed());
+
 	}
 
 	public void updateSums() {
@@ -363,4 +365,5 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 		this.lastClickedRow = lastClickedRow;
 	}
 
+	protected abstract boolean isEditAllowed();
 }
