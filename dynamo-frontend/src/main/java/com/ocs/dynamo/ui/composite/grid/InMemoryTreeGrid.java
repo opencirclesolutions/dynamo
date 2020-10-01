@@ -169,7 +169,6 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 				int j = index;
 				BigDecimal sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
 						.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
-
 				BigDecimal ts = totalSumMap.get(column);
 				totalSumMap.put(column, ts.add(sum));
 				setSumCellValue(pRow, index, column, sum);
@@ -354,7 +353,6 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 
 	public void setLastClickedColumnKey(String lastClickedColumnKey) {
 		this.lastClickedColumnKey = lastClickedColumnKey;
-
 	}
 
 	public T getLastClickedRow() {

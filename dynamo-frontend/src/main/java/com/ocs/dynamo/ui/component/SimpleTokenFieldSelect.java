@@ -148,6 +148,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	protected void initContent() {
 		retrieveValues(this.elementCollection);
 		multiComboBox.addValueChangeListener(event -> setValue(event.getValue()));
+		multiComboBox.setSizeFull();
 		add(multiComboBox);
 	}
 

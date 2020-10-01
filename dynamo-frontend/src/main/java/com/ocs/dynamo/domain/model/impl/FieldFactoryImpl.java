@@ -304,7 +304,7 @@ public class FieldFactoryImpl implements FieldFactory {
 				&& AttributeType.BASIC.equals(am.getAttributeType())) {
 			// token field for searching distinct values
 			field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
-					am.getPath().substring(am.getPath().lastIndexOf('.') + 1), false, null);
+					am.getPath().substring(am.getPath().lastIndexOf('.') + 1), false, fieldFilter);
 		} else if (LocalDate.class.equals(am.getType()) || (search && am.isSearchDateOnly())) {
 			// date field
 			DatePicker df = new DatePicker();
@@ -480,11 +480,12 @@ public class FieldFactoryImpl implements FieldFactory {
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>, O extends Comparable<O>> SimpleTokenFieldSelect<ID, S, O> constructSimpleTokenField(
 			EntityModel<?> entityModel, AttributeModel am, String distinctField, boolean elementCollection,
-			SerializablePredicate<S> fieldFilter) {
+			SerializablePredicate<?> fieldFilter) {
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
-		return new SimpleTokenFieldSelect<>(service, (EntityModel<S>) entityModel, am, fieldFilter, distinctField,
-				(Class<O>) am.getNormalizedType(), elementCollection);
+		return new SimpleTokenFieldSelect<>(service, (EntityModel<S>) entityModel, am,
+				(SerializablePredicate<S>) fieldFilter, distinctField, (Class<O>) am.getNormalizedType(),
+				elementCollection);
 	}
 
 	@SuppressWarnings("unchecked")
