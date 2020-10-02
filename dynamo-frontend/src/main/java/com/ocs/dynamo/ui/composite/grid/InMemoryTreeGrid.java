@@ -198,6 +198,43 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	}
 
 	/**
+	 * Updates a single sum value
+	 * 
+	 * @param column the column for which to update the sum
+	 */
+	public void updateSum(String column) {
+
+		TreeDataProvider<T> provider = (TreeDataProvider<T>) getDataProvider();
+		TreeData<T> data = provider.getTreeData();
+		BigDecimal sum = null;
+
+		// update the sum columns on the parent level
+		int index = 0;
+		for (T pRow : data.getRootItems()) {
+			List<T> cRows = data.getChildren(pRow);
+			int j = index;
+			sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
+					.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+			setSumCellValue(pRow, index, column, sum);
+			provider.refreshItem(pRow);
+		}
+		index++;
+
+		FooterRow footerRow = null;
+		if (getFooterRows().isEmpty()) {
+			footerRow = appendFooterRow();
+		} else {
+			footerRow = getFooterRows().get(0);
+		}
+
+		Column<?> columnByKey = getColumnByKey(column);
+		if (columnByKey != null) {
+			footerRow.getCell(columnByKey).setText(convertToString(sum, column));
+		}
+
+	}
+
+	/**
 	 * Converts a numeric value from its BigDecimal representation to its native
 	 * form
 	 * 

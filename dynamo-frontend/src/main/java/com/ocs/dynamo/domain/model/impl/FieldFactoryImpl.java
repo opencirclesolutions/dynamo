@@ -222,7 +222,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		ComboBox cb = new ComboBox<>();
 
 		// sort on the description
-		List<E> list = Arrays.asList(enumClass.getEnumConstants());
+		List<E> list = Lists.newArrayList(enumClass.getEnumConstants());
 		list.sort((a, b) -> {
 			String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
 			String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());

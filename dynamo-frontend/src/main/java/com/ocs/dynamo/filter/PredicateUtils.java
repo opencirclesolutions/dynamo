@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.filter;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Set;
 
+import com.google.common.collect.Lists;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -43,7 +43,7 @@ public final class PredicateUtils {
 	public static <T> SerializablePredicate<T> extractPredicate(SerializablePredicate<T> predicate, String propertyId,
 			Class<?>... typesToFind) {
 		List<Class<?>> types = typesToFind == null || typesToFind.length == 0
-				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : Arrays.asList(typesToFind);
+				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : Lists.newArrayList(typesToFind);
 		if (predicate instanceof CompositePredicate) {
 			CompositePredicate<T> comp = (CompositePredicate<T>) predicate;
 			for (SerializablePredicate<T> child : comp.getOperands()) {

@@ -52,6 +52,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import com.google.common.collect.Lists;
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
@@ -583,14 +584,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		// read ordering from the annotation (if present)
 		AttributeOrder orderAnnot = entityClass.getAnnotation(AttributeOrder.class);
 		if (orderAnnot != null) {
-			explicitAttributeNames = Arrays.asList(orderAnnot.attributeNames());
+			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
 		}
 
 		// overwrite by message bundle (if present)
 		String msg = messageService == null ? null
 				: messageService.getEntityMessage(reference, EntityModel.ATTRIBUTE_ORDER, getLocale());
 		if (msg != null) {
-			explicitAttributeNames = Arrays.asList(msg.replaceAll("\\s+", "").split(","));
+			explicitAttributeNames = Lists.newArrayList(msg.replaceAll("\\s+", "").split(","));
 		}
 
 		for (AttributeModel am : attributeModels) {

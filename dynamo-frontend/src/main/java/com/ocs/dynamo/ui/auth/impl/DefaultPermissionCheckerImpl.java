@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.auth.impl;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -31,6 +30,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.UserDetailsService;
 import com.ocs.dynamo.ui.auth.Authorized;
@@ -136,10 +136,10 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
                 if (auth != null && auth.roles().length > 0) {
                     if (beanClassName != null) {
                         int p = beanClassName.lastIndexOf('.');
-                        permissions.put(beanClassName.substring(p + 1), Arrays.asList(auth.roles()));
+                        permissions.put(beanClassName.substring(p + 1), Lists.newArrayList(auth.roles()));
                         editOnly.put(beanClassName.substring(p + 1), auth.editOnly());
                     }
-                    permissions.put(route.value(), Arrays.asList(auth.roles()));
+                    permissions.put(route.value(), Lists.newArrayList(auth.roles()));
                     editOnly.put(route.value(), auth.editOnly());
                 }
             } catch (ClassNotFoundException e) {

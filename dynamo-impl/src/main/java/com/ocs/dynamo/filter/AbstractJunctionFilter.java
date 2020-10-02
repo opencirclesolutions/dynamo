@@ -18,6 +18,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import com.google.common.collect.Lists;
+
 /**
  * Abstract class for composite filters
  * 
@@ -33,7 +35,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	 * @param filters
 	 */
 	public AbstractJunctionFilter(Filter... filters) {
-		this.filters.addAll(Arrays.asList(filters));
+		this.filters.addAll(Lists.newArrayList(filters));
 	}
 
 	/**
