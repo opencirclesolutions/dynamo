@@ -77,6 +77,8 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	private Supplier<Integer> sizeSupplier;
 
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
+	
+	private boolean includeAggregateRow;
 
 	/**
 	 * 
@@ -89,6 +91,10 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	public PivotSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, QueryType.ID_BASED, formOptions, sortOrder, joins);
+	}
+
+	public void addAggregation(String property, PivotAggregationType type) {
+		aggregationMap.put(property, type);
 	}
 
 	public PivotGridWrapper<ID, T> constructGridWrapper() {
@@ -120,6 +126,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setPossibleColumnKeys(getPossibleColumnKeys());
 		wrapper.setFixedColumnKeys(getFixedColumnKeys());
 		wrapper.setAggregationMap(aggregationMap);
+		wrapper.setIncludeAggregateRow(includeAggregateRow);
 
 		postConfigureGridWrapper(wrapper);
 		wrapper.build();
@@ -209,6 +216,10 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		return headerMapper;
 	}
 
+	public List<String> getHiddenPivotedProperties() {
+		return hiddenPivotedProperties;
+	}
+
 	public List<String> getPivotedProperties() {
 		return pivotedProperties;
 	}
@@ -228,6 +239,10 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	public Supplier<Integer> getSizeSupplier() {
 		return sizeSupplier;
+	}
+
+	public boolean isIncludeAggregateRow() {
+		return includeAggregateRow;
 	}
 
 	/**
@@ -258,6 +273,14 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
 		this.headerMapper = headerMapper;
+	}
+
+	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
+		this.hiddenPivotedProperties = hiddenPivotedProperties;
+	}
+
+	public void setIncludeAggregateRow(boolean includeAggregateRow) {
+		this.includeAggregateRow = includeAggregateRow;
 	}
 
 	public void setPivotedProperties(List<String> pivotedProperties) {
@@ -297,18 +320,6 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	public void setSizeSupplier(Supplier<Integer> sizeSupplier) {
 		this.sizeSupplier = sizeSupplier;
-	}
-
-	public List<String> getHiddenPivotedProperties() {
-		return hiddenPivotedProperties;
-	}
-
-	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
-		this.hiddenPivotedProperties = hiddenPivotedProperties;
-	}
-
-	public void addAggregation(String property, PivotAggregationType type) {
-		aggregationMap.put(property, type);
 	}
 
 }

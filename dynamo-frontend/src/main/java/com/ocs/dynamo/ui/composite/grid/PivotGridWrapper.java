@@ -136,6 +136,11 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	private BaseDataProvider<ID, T> wrappedProvider;
 
 	/**
+	 * Whether to include an aggregate row at the bottom
+	 */
+	private boolean includeAggregateRow;
+
+	/**
 	 * @param service     the service that is used for retrieving data
 	 * @param entityModel the entity model
 	 * @param queryType   the query type to use
@@ -302,6 +307,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				pars.setRowKeyProperty(rowKeyProperty);
 				pars.setHiddenPivotedProperties(hiddenPivotedProperties);
 				pars.setAggregationMap(aggregationMap);
+				pars.setIncludeAggregateRow(includeAggregateRow);
 
 				// use the fallback sort orders here
 				getExportDelegate().exportPivoted(
@@ -388,5 +394,13 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
 		this.aggregationMap = aggregationMap;
+	}
+
+	public boolean isIncludeAggregateRow() {
+		return includeAggregateRow;
+	}
+
+	public void setIncludeAggregateRow(boolean includeAggregateRow) {
+		this.includeAggregateRow = includeAggregateRow;
 	}
 }

@@ -46,7 +46,7 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The custom style generator
 	 */
-	private CustomXlsStyleGenerator<ID, T> customGenerator;
+	private Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator;
 
 	/**
 	 * Constructor
@@ -58,7 +58,7 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 	 * @param itemsSupplier
 	 */
 	public FixedExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode,
-			CustomXlsStyleGenerator<ID, T> customGenerator, Supplier<List<T>> itemsSupplier) {
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, Supplier<List<T>> itemsSupplier) {
 		super(exportService, entityModel, exportMode);
 		this.itemsSupplier = itemsSupplier;
 		this.customGenerator = customGenerator;

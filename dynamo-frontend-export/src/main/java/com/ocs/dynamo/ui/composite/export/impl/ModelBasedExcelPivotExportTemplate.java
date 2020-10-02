@@ -19,11 +19,14 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
+import java.util.function.Supplier;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -72,10 +75,23 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	 * @param joins
 	 */
 	public ModelBasedExcelPivotExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel,
-			SortOrder[] sortOrders, Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
-			PivotParameters pivotParameters, FetchJoinInformation... joins) {
+			SortOrder[] sortOrders, Filter filter, String title,
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, PivotParameters pivotParameters,
+			FetchJoinInformation... joins) {
 		super(service, entityModel, ExportMode.ONLY_VISIBLE_IN_GRID, sortOrders, filter, title, customGenerator, joins);
 		this.pivotParameters = pivotParameters;
+	}
+
+	/**
+	 * Checks whether the value of the column key matches the expected value
+	 * 
+	 * @param entity   the entity to check for the actual value
+	 * @param expected the expected value
+	 * @return
+	 */
+	private boolean columnValueMatches(T entity, Object expected) {
+		Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
+		return Objects.equals(actual, expected);
 	}
 
 	@Override
@@ -163,7 +179,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 						String prop = pivotParameters.getPivotedProperties().get(0);
 						PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
 						if (type != null) {
-							writeRowAggregate(entity, row, type, lastColAdded, nrOfFixedCols, colsAdded);
+							writeRowAggregate(row, type, lastColAdded, nrOfFixedCols, colsAdded);
 							colsAdded++;
 						}
 					}
@@ -218,15 +234,19 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			prevRowKey = rowKey;
 		}
 
-		// 
 		if (nrOfPivotProps == 1) {
 			int lastColAdded = nrOfFixedCols + colsAdded - 1;
 			String prop = pivotParameters.getPivotedProperties().get(0);
 			PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
 			if (type != null) {
-				writeRowAggregate(entity, row, type, lastColAdded, nrOfFixedCols, colsAdded);
+				writeRowAggregate(row, type, lastColAdded, nrOfFixedCols, colsAdded);
 				colsAdded++;
 			}
+		}
+
+		// add an aggregation row at the bottom
+		if (pivotParameters.isIncludeAggregateRow()) {
+			writeColumnsAggregate(nrOfFixedCols, sheet);
 		}
 
 		resizeColumns(sheet);
@@ -235,31 +255,15 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		return stream.toByteArray();
 	}
 
-	private void writeRowAggregate(T entity, Row row, PivotAggregationType type, int lastColAdded, int nrOfFixedCols,
-			int colsAdded) {
-		int ci = nrOfFixedCols + colsAdded;
-		Cell totalsCell = row.createCell(ci);
-
-		String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
-		String lastCol = CellReference.convertNumToColString(lastColAdded);
-
-		totalsCell.setCellStyle(getGenerator().getCellStyle(ci, entity, null, null));
-		totalsCell.setCellType(CellType.FORMULA);
-
-		int rn = row.getRowNum() + 1;
-		totalsCell.setCellFormula(toExcelFunction(type) + "(" + firstCol + rn + ":" + lastCol + rn + ")");
-	}
-
-	/**
-	 * Checks whether the value of the column key matches the expected value
-	 * 
-	 * @param entity   the entity to check for the actual value
-	 * @param expected the expected value
-	 * @return
-	 */
-	private boolean columnValueMatches(T entity, Object expected) {
-		Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
-		return Objects.equals(actual, expected);
+	private String getAggregateHeader(PivotAggregationType type) {
+		switch (type) {
+		case SUM:
+			return messageService.getMessage("ocs.sum", VaadinUtils.getLocale());
+		case AVERAGE:
+			return messageService.getMessage("ocs.average", VaadinUtils.getLocale());
+		default:
+			return messageService.getMessage("ocs.count", VaadinUtils.getLocale());
+		}
 	}
 
 	/**
@@ -279,14 +283,89 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		}
 	}
 
-	private String getAggregateHeader(PivotAggregationType type) {
-		switch (type) {
-		case SUM:
-			return messageService.getMessage("ocs.sum", VaadinUtils.getLocale());
-		case AVERAGE:
-			return messageService.getMessage("ocs.average", VaadinUtils.getLocale());
-		default:
-			return messageService.getMessage("ocs.count", VaadinUtils.getLocale());
+	private void writeColumnsAggregate(int nrOfFixedCols, Sheet sheet) {
+		PivotAggregationType type = null;
+		// add an aggregation row at the bottom
+		Row totalsRow = null;
+		for (int s = 0; s < pivotParameters.getPossibleColumnKeys().size(); s++) {
+			if (pivotParameters.getPivotedProperties().size() == 1) {
+				String prop = pivotParameters.getPivotedProperties().get(0);
+				type = pivotParameters.getAggregationMap().get(prop);
+				if (type != null) {
+
+					int ci = nrOfFixedCols + s;
+
+					if (totalsRow == null) {
+						totalsRow = sheet.createRow(sheet.getLastRowNum() + 1);
+					}
+
+					// add a "totals" cell at the front of the row
+					if (ci == nrOfFixedCols) {
+
+						for (int t = 0; t < nrOfFixedCols; t++) {
+							Cell joinedCell = totalsRow.createCell(t);
+							joinedCell.setCellStyle(getGenerator().getCellStyle(ci, null, null, null));
+							if (t == 0) {
+								joinedCell.setCellValue(getAggregateHeader(type));
+							}
+						}
+						sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(), 0,
+								nrOfFixedCols - 1));
+					}
+
+					Cell totalsCell = totalsRow.createCell(ci);
+
+					String col = CellReference.convertNumToColString(ci);
+					totalsCell.setCellStyle(getGenerator().getCellStyle(ci, null, null, null));
+					totalsCell.setCellType(CellType.FORMULA);
+					totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+
+					int firstRow = 1;
+					int lastRow = sheet.getLastRowNum();
+					totalsCell.setCellFormula(toExcelFunction(type) + "(" + col + firstRow + ":" + col + lastRow + ")");
+				}
+			}
 		}
+
+		// add a grand total at bottom right
+		if (totalsRow != null) {
+			int ci = nrOfFixedCols + pivotParameters.getPossibleColumnKeys().size();
+
+			Cell totalsCell = totalsRow.createCell(ci);
+			totalsCell.setCellStyle(getGenerator().getCellStyle(ci, null, null, null));
+			totalsCell.setCellType(CellType.FORMULA);
+			totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+			String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
+			String lastCol = CellReference.convertNumToColString(ci - 1);
+			int rowNum = sheet.getLastRowNum() + 1;
+
+			totalsCell.setCellFormula(toExcelFunction(type) + "(" + firstCol + rowNum + ":" + lastCol + rowNum + ")");
+		}
+	}
+
+	/**
+	 * Writes a cell containing an aggregation total at the end of a rwow
+	 * 
+	 * @param entity        the entity that is being processed
+	 * @param row           the current row
+	 * @param type          the aggregation type
+	 * @param lastColAdded  the index of the last column that was added
+	 * @param nrOfFixedCols the number of fixed columns
+	 * @param colsAdded     the number of (variable) columns added so far
+	 */
+	private void writeRowAggregate(Row row, PivotAggregationType type, int lastColAdded, int nrOfFixedCols,
+			int colsAdded) {
+		int ci = nrOfFixedCols + colsAdded;
+		Cell totalsCell = row.createCell(ci);
+
+		String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
+		String lastCol = CellReference.convertNumToColString(lastColAdded);
+
+		totalsCell.setCellStyle(getGenerator().getCellStyle(ci, null, null, null));
+		totalsCell.setCellType(CellType.FORMULA);
+		totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
+
+		int rn = row.getRowNum() + 1;
+		totalsCell.setCellFormula(toExcelFunction(type) + "(" + firstCol + rn + ":" + lastCol + rn + ")");
 	}
 }

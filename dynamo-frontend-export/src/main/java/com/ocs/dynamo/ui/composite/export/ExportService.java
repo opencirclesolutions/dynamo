@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.export;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -31,86 +32,88 @@ import com.vaadin.flow.function.SerializablePredicate;
  */
 public interface ExportService {
 
-    /**
-     * Exports to CSV
-     * 
-     * @param entityModel the entity model of the entity to export
-     * @param predicate   the predicate
-     * @param sortOrders  the list of sort orders
-     * @param joins       the joins to use when fetching data
-     * @return
-     */
-    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel, ExportMode mode,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins);
+	/**
+	 * Exports to CSV
+	 * 
+	 * @param entityModel the entity model of the entity to export
+	 * @param predicate   the predicate
+	 * @param sortOrders  the list of sort orders
+	 * @param joins       the joins to use when fetching data
+	 * @return
+	 */
+	<ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins);
 
-    /**
-     * Exports a fixed set to CSV
-     * 
-     * @param entityModel the entity model
-     * @param mode        the export mode
-     * @param items       the set of items to export
-     * @return
-     */
-    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel, ExportMode mode,
-            List<T> items);
+	/**
+	 * Exports a fixed set to CSV
+	 * 
+	 * @param entityModel the entity model
+	 * @param mode        the export mode
+	 * @param items       the set of items to export
+	 * @return
+	 */
+	<ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
+			ExportMode mode, List<T> items);
 
-    /**
-     * Exports pivoted data to CSV
-     * 
-     * @param <ID>
-     * @param <T>
-     * @param entityModel
-     * @param mode
-     * @param predicate
-     * @param sortOrders
-     * @param pivotParameters
-     * @param joins
-     * @return
-     */
-    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvPivot(EntityModel<T> entityModel,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivotParameters,
-            FetchJoinInformation... joins);
+	/**
+	 * Exports pivoted data to CSV
+	 * 
+	 * @param <ID>
+	 * @param <T>
+	 * @param entityModel
+	 * @param mode
+	 * @param predicate
+	 * @param sortOrders
+	 * @param pivotParameters
+	 * @param joins
+	 * @return
+	 */
+	<ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvPivot(EntityModel<T> entityModel,
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivotParameters,
+			FetchJoinInformation... joins);
 
-    /**
-     * Exports to Excel
-     * 
-     * @param entityModel     the entity model of the entity to export
-     * @param predicate       the predicate
-     * @param mode            the desired export mode
-     * @param sortOrders      the list of sort orders
-     * @param customGenerator the custom style generator *
-     * @param joins           the joins to use when fetching data
-     * @return
-     */
-    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel, ExportMode mode,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
-            FetchJoinInformation... joins);
+	/**
+	 * Exports to Excel
+	 * 
+	 * @param entityModel     the entity model of the entity to export
+	 * @param predicate       the predicate
+	 * @param mode            the desired export mode
+	 * @param sortOrders      the list of sort orders
+	 * @param customGenerator the custom style generator *
+	 * @param joins           the joins to use when fetching data
+	 * @return
+	 */
+	<ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, FetchJoinInformation... joins);
 
-    /**
-     * Exports a fixed set to Excel
-     * 
-     * @param entityModel the entity model
-     * @param mode        the export mode
-     * @param items       the set of items to export
-     * @return
-     */
-    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel, ExportMode mode,
-            CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items);
+	/**
+	 * Exports a fixed set to Excel
+	 * 
+	 * @param entityModel the entity model
+	 * @param mode        the export mode
+	 * @param items       the set of items to export
+	 * @return
+	 */
+	<ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
+			ExportMode mode, Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, List<T> items);
 
-    /**
-     * 
-     * @param <ID>
-     * @param <T>
-     * @param entityModel
-     * @param mode
-     * @param predicate
-     * @param sortOrders
-     * @param customGenerator
-     * @param pivotParameters
-     * @param joins
-     * @return
-     */
-    <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelPivot(EntityModel<T> entityModel,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
-            PivotParameters pivotParameters, FetchJoinInformation... joins);
+	/**
+	 * 
+	 * @param <ID>
+	 * @param <T>
+	 * @param entityModel
+	 * @param mode
+	 * @param predicate
+	 * @param sortOrders
+	 * @param customGenerator
+	 * @param pivotParameters
+	 * @param joins
+	 * @return
+	 */
+	<ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelPivot(EntityModel<T> entityModel,
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, PivotParameters pivotParameters,
+			FetchJoinInformation... joins);
 }

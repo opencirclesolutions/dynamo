@@ -19,6 +19,7 @@ import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Date;
+import java.util.function.Supplier;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellStyle;
@@ -58,10 +59,10 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	private Workbook workbook;
 
 	public BaseExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
-			SortOrder[] sortOrders, Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
-			FetchJoinInformation... joins) {
+			SortOrder[] sortOrders, Filter filter, String title,
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, FetchJoinInformation... joins) {
 		super(service, entityModel, exportMode, sortOrders, filter, title, joins);
-		this.customGenerator = customGenerator;
+		this.customGenerator = customGenerator == null ? null : customGenerator.get();
 	}
 
 	protected Workbook getWorkbook() {

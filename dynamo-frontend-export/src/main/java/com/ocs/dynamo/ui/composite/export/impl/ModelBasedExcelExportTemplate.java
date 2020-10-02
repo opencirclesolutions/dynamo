@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.export.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
@@ -58,8 +59,8 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 	 * @param joins
 	 */
 	public ModelBasedExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode mode,
-			SortOrder[] sortOrders, Filter filter, String title, CustomXlsStyleGenerator<ID, T> customGenerator,
-			FetchJoinInformation... joins) {
+			SortOrder[] sortOrders, Filter filter, String title,
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, FetchJoinInformation... joins) {
 		super(service, entityModel, mode, sortOrders, filter, title, customGenerator, joins);
 	}
 

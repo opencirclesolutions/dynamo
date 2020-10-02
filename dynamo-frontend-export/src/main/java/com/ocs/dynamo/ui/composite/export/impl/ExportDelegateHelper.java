@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.export.impl;
 
+import java.util.function.Supplier;
+
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
@@ -36,7 +38,7 @@ public final class ExportDelegateHelper {
      * @param entityModel the entity model for which to add the generator
      * @param generator   the generator
      */
-    public static void addCustomStyleGenerator(EntityModel<?> entityModel, CustomXlsStyleGenerator<?, ?> generator) {
+    public static void addCustomStyleGenerator(EntityModel<?> entityModel, Supplier<CustomXlsStyleGenerator<?, ?>> generator) {
         ExportDelegateImpl delegate = (ExportDelegateImpl) ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);
         delegate.addCustomStyleGenerator(entityModel, generator);
     }

@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -46,7 +47,7 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
 
     private final FetchJoinInformation[] joins;
 
-    private CustomXlsStyleGenerator<ID, T> customGenerator;
+    private Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator;
 
     /**
      * Constructor
@@ -60,7 +61,7 @@ public class ExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
      * @param joins
      */
     public ExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode, SerializablePredicate<T> predicate,
-            List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
+            List<SortOrder<?>> sortOrders, Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, FetchJoinInformation... joins) {
         super(exportService, entityModel, exportMode);
         this.predicate = predicate;
         this.sortOrders = sortOrders;
