@@ -215,6 +215,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				VaadinUtils.setLabel(auxField, attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + to);
 				auxField.setVisible(true);
 				FlexLayout layout = new FlexLayout();
+				layout.setSizeFull();
 				layout.addClassName(DynamoConstants.CSS_DYNAMO_FLEX_ROW);
 				layout.add(field);
 				layout.add(auxField);

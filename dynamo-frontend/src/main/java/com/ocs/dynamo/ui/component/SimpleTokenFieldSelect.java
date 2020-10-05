@@ -114,6 +114,12 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 
 		multiComboBox = new MultiselectComboBox<>();
+		if (attributeModel != null) {
+			String prompt = attributeModel.getPrompt(VaadinUtils.getLocale());
+			if (prompt != null) {
+				multiComboBox.setPlaceholder(prompt);
+			}
+		}
 		initContent();
 	}
 
@@ -137,6 +143,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		items = items.stream().filter(i -> i != null).collect(Collectors.toList());
 		items.sort(Comparator.naturalOrder());
 		ListDataProvider<T> provider = new ListDataProvider<>(items);
+
 		multiComboBox.setDataProvider(provider);
 	}
 
