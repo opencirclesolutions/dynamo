@@ -123,6 +123,8 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
+	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
+
 	/**
 	 * 
 	 * @param provider          the wrapped data provider
@@ -284,15 +286,24 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 		return size;
 	}
 
-	public void addAggregation(String pivotProperty, PivotAggregationType type) {
+	public void addAggregation(String pivotProperty, PivotAggregationType type, Class<?> clazz) {
 		aggregationMap.put(pivotProperty, type);
+		aggregationClassMap.put(pivotProperty, clazz);
 	}
 
 	public PivotAggregationType getAggregation(String pivotProperty) {
 		return aggregationMap.get(pivotProperty);
 	}
 
+	public Class<?> getAggregationClass(String pivotProperty) {
+		return aggregationClassMap.get(pivotProperty);
+	}
+
 	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
 		this.aggregationMap = aggregationMap;
+	}
+	
+	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
+		this.aggregationClassMap = aggregationClassMap;
 	}
 }

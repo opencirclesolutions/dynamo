@@ -130,6 +130,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
+	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
+
 	/**
 	 * The wrapped data provider
 	 */
@@ -182,6 +184,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 		PivotDataProvider<ID, T> pivotDataProvider = new PivotDataProvider<>(wrappedProvider, rowKeyProperty,
 				columnKeyProperty, fixedColumnKeys, pivotedProperties, hiddenPivotedProperties, sizeSupplier);
 		pivotDataProvider.setAggregationMap(aggregationMap);
+		pivotDataProvider.setAggregationClassMap(aggregationClassMap);
 		pivotDataProvider.setAfterCountCompleted(x -> updateCaption(x));
 		postProcessDataProvider(pivotDataProvider);
 		return pivotDataProvider;
@@ -403,4 +406,17 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	public void setIncludeAggregateRow(boolean includeAggregateRow) {
 		this.includeAggregateRow = includeAggregateRow;
 	}
+
+	public Map<String, Class<?>> getAggregationClassMap() {
+		return aggregationClassMap;
+	}
+
+	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
+		this.aggregationClassMap = aggregationClassMap;
+	}
+
+	public Map<String, PivotAggregationType> getAggregationMap() {
+		return aggregationMap;
+	}
+
 }

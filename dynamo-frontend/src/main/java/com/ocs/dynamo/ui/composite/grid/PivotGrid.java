@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
@@ -96,18 +97,26 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 				String colId = "aggregate_" + type.toString().toLowerCase();
 
 				addColumn(t -> {
+					BigDecimal bd = null;
 					if (PivotAggregationType.SUM.equals(type)) {
-						return t.getSumValue(property);
+						bd = t.getSumValue(property);
 					} else if (PivotAggregationType.AVERAGE.equals(type)) {
-						return t.getAverageValue(property);
+						bd = t.getAverageValue(property);
 					} else {
-						return t.getCountValue(property);
+						bd = BigDecimal.valueOf(t.getCountValue(property));
 					}
+					return getFormattedAggregateValue(bd, provider.getAggregationClass(property));
+
 				}).setHeader(header).setKey(colId).setId(colId);
 			}
 		}
 	}
 
+	/**
+	 * 
+	 * @param type
+	 * @return
+	 */
 	private String getAggregateHeader(PivotAggregationType type) {
 		switch (type) {
 		case SUM:
@@ -118,6 +127,21 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 			return messageService.getMessage("ocs.count", VaadinUtils.getLocale());
 		}
 		return null;
+	}
+
+	public String getFormattedAggregateValue(BigDecimal bd, Class<?> clazz) {
+		if (bd == null) {
+			return "";
+		}
+
+		if (BigDecimal.class.equals(clazz)) {
+			return VaadinUtils.bigDecimalToString(false, true, bd);
+		} else if (Long.class.equals(clazz)) {
+			return VaadinUtils.longToString(true, false, bd.longValue());
+		} else if (Integer.class.equals(clazz)) {
+			return VaadinUtils.integerToString(true, false, bd.intValue());
+		}
+		return bd.toString();
 	}
 
 }

@@ -77,7 +77,9 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	private Supplier<Integer> sizeSupplier;
 
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
-	
+
+	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
+
 	private boolean includeAggregateRow;
 
 	/**
@@ -93,8 +95,9 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		super(service, entityModel, QueryType.ID_BASED, formOptions, sortOrder, joins);
 	}
 
-	public void addAggregation(String property, PivotAggregationType type) {
+	public void addAggregation(String property, PivotAggregationType type, Class<?> clazz) {
 		aggregationMap.put(property, type);
+		aggregationClassMap.put(property, clazz);
 	}
 
 	public PivotGridWrapper<ID, T> constructGridWrapper() {
@@ -126,6 +129,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setPossibleColumnKeys(getPossibleColumnKeys());
 		wrapper.setFixedColumnKeys(getFixedColumnKeys());
 		wrapper.setAggregationMap(aggregationMap);
+		wrapper.setAggregationClassMap(aggregationClassMap);
 		wrapper.setIncludeAggregateRow(includeAggregateRow);
 
 		postConfigureGridWrapper(wrapper);
