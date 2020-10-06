@@ -1794,21 +1794,28 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		field.setValue(value);
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void setDefaultValues() {
 		if (!isViewMode() && entity.getId() == null) {
 			for (AttributeModel am : getEntityModel().getAttributeModels()) {
 				Component field = getField(isViewMode(), am.getPath());
 				if (field != null && am.getDefaultValue() != null) {
 					// set the default value for new objects
-					String defaultValue = am.getDefaultValue().toString();
+					Object defaultValue = am.getDefaultValue();
 
 					// adapt decimal value to selected locale
 					if (NumberUtils.isNumeric(am.getType())) {
 						Locale loc = VaadinUtils.getLocale();
 						DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(loc);
 						char sep = nf.getDecimalFormatSymbols().getDecimalSeparator();
-						defaultValue = defaultValue.replace('.', sep);
+						defaultValue = defaultValue.toString().replace('.', sep);
+						if (am.isPercentage()) {
+							defaultValue = defaultValue.toString() + "%";
+						}
+					} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
+						defaultValue = Boolean.valueOf(defaultValue.toString());
+					} else if (am.getType().isEnum()) {
+						defaultValue = Enum.valueOf((Class<Enum>)am.getType(), defaultValue.toString());
 					}
 					setDefaultValue((HasValue<?, Object>) field, defaultValue);
 				}
