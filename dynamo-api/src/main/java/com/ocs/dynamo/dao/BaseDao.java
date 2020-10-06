@@ -23,7 +23,7 @@ import com.ocs.dynamo.filter.Filter;
  * 
  * @author bas.rutten
  * @param <ID> The type of the primary key of the entity managed by this DAO
- * @param <T> The type of the entity managed by this DAO
+ * @param <T>  The type of the entity managed by this DAO
  */
 public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 
@@ -86,15 +86,12 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 */
 	List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
 
-    /**
+	/**
 	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param selectProperties
-	 *            the properties to use in the selection
-	 * @param orders
-	 *            the sort info
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param orders           the sort info
 	 * @return
 	 */
 	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders);
@@ -102,12 +99,9 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
 	 * 
-	 * @param filter
-	 *            the filter
-	 * @param selectProperties
-	 *            the properties to use in the selection
-	 * @param pageable
-	 *            object containing the paging data
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param pageable         object containing the paging data
 	 * @return
 	 */
 	List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable);
@@ -120,16 +114,26 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	T fetchById(ID id, FetchJoinInformation... joins);
+	
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 * 
+	 * @param ids        the IDs of the entities to fetch
+	 * @param sortOrders the sort orders to apply
+	 * @param joins      the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
 	 * Fetches the entities identified by the provided IDs
 	 * 
-	 * @param ids   the IDs of the entities to fetch
-	 * @param sort  the sort order
-	 * @param joins the desired relations to fetch
+	 * @param ids        the IDs of the entities to fetch
+	 * @param sortOrders the sort orders to apply
+	 * @param joins      the desired relations to fetch
 	 * @return
 	 */
-	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
+	List<T> fetchByIds(List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
 	 * Fetches an entity based on a unique property

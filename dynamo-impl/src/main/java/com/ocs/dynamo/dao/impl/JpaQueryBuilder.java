@@ -293,7 +293,7 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <ID, T> TypedQuery<T> createFetchQuery(EntityManager entityManager, Class<T> entityClass,
-			List<ID> ids, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
+			List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -307,10 +307,23 @@ public final class JpaQueryBuilder {
 		cq.where(exp.in(p));
 		cq.distinct(distinct);
 
+		Map<String, Object> pars = createParameterMap();
+		if (additionalFilter != null) {
+			Predicate pr = createPredicate(additionalFilter, builder, root, pars);
+			if (pr != null) {
+				cq.where(pr, exp.in(p));
+			}
+		}
+
 		addSortInformation(builder, cq, root, sortOrders == null ? null : sortOrders.toArray());
 		TypedQuery<T> query = entityManager.createQuery(cq);
 
 		query.setParameter(DynamoConstants.IDS, ids);
+
+		if (additionalFilter != null) {
+			setParameters(query, pars);
+		}
+
 		return query;
 	}
 
@@ -697,7 +710,7 @@ public final class JpaQueryBuilder {
 			equals = builder.equal(root.get(propertyName), value);
 		}
 		cq.where(equals);
-		
+
 		return cq;
 	}
 

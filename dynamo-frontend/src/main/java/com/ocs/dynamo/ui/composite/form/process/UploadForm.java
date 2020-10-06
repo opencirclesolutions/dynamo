@@ -15,12 +15,15 @@ package com.ocs.dynamo.ui.composite.form.process;
 
 import java.io.IOException;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
+
+import elemental.json.Json;
 
 /**
  * A form that contains a file upload component and a progress bar
@@ -114,6 +117,15 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 
 	public String getFileName() {
 		return fileName;
+	}
+
+	/**
+	 * 
+	 * @param message
+	 */
+	protected void showErrorAndClear(String message) {
+		VaadinUtils.showErrorNotification(message);
+		getUpload().getElement().setPropertyJson("files", Json.createArray());
 	}
 
 }

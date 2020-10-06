@@ -234,7 +234,19 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				.getSingleResult();
 
 		TypedQuery<TestEntity> tQuery = JpaQueryBuilder.createFetchQuery(entityManager, TestEntity.class,
-				Lists.newArrayList(e1.getId()), null, null);
+				Lists.newArrayList(e1.getId()), null, null, null);
+		List<TestEntity> entity = tQuery.getResultList();
+
+		assertEquals(1, entity.size());
+	}
+	
+	@Test
+	public void testCreateFetchQueryAdditionalFilter() {
+		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
+				.getSingleResult();
+
+		TypedQuery<TestEntity> tQuery = JpaQueryBuilder.createFetchQuery(entityManager, TestEntity.class,
+				Lists.newArrayList(e1.getId()), new Compare.Equal("name", "Bob"), null, null);
 		List<TestEntity> entity = tQuery.getResultList();
 
 		assertEquals(1, entity.size());
@@ -250,7 +262,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 
 		// fetch join the testEntity
 		TypedQuery<TestEntity2> tQuery = JpaQueryBuilder.createFetchQuery(entityManager, TestEntity2.class,
-				Lists.newArrayList(e2.getId()), null,
+				Lists.newArrayList(e2.getId()), null, null,
 				new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
 		List<TestEntity2> entity = tQuery.getResultList();
 

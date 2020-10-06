@@ -25,7 +25,7 @@ import com.ocs.dynamo.filter.Filter;
  * The interface for a service that manages an entity
  * 
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
@@ -135,6 +135,16 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 * 
+	 * @param ids        the IDs of the entities to fetch
+	 * @param sortOrders the sort orders to apply
+	 * @param joins      the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetchByIds(List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
 	 * Fetches an entity based on a unique property
