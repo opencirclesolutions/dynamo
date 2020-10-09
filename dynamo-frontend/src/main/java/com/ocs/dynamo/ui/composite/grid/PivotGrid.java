@@ -29,6 +29,7 @@ import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.grid.Grid;
+import com.vaadin.flow.component.grid.GridVariant;
 
 /**
  * 
@@ -64,6 +65,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 			Function<String, String> fixedHeaderMapper, BiFunction<Object, Object, String> headerMapper,
 			BiFunction<String, Object, String> customFormatter) {
 		setDataProvider(provider);
+		addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_COMPACT);
 
 		for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {
 			String fk = provider.getFixedColumnKeys().get(i);

@@ -32,67 +32,70 @@ import com.vaadin.flow.component.grid.Grid;
  */
 public abstract class PasteTemplate<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PasteTemplate.class);
+	private static final Logger LOG = LoggerFactory.getLogger(PasteTemplate.class);
 
-    private ValueChangeEvent<String> event;
+	private ValueChangeEvent<String> event;
 
-    private Locale locale;
+	private Locale locale;
 
-    private Grid<T> grid;
+	private Grid<T> grid;
 
-    /**
-     * @param locale
-     * @param event
-     */
-    public PasteTemplate(Locale locale, Grid<T> grid, ValueChangeEvent<String> event) {
-        this.locale = locale;
-        this.event = event;
-        this.grid = grid;
-    }
+	private String value;
 
-    public void execute() {
-        String text = event.getValue();
-        if (text != null) {
-            // replace tabs and other whitespace
-            String[] values = PasteUtils.split(text);
-            if (values.length > 1) {
-                // clear the source field
-                clearSourceField(event);
+	/**
+	 * @param locale
+	 * @param event
+	 */
+	public PasteTemplate(Locale locale, Grid<T> grid, ValueChangeEvent<String> event, String value) {
+		this.locale = locale;
+		this.event = event;
+		this.grid = grid;
+		this.value = value;
+	}
 
-                for (int i = 0; i < values.length; i++) {
-                    try {
-                        String temp = values[i];
-                        temp = PasteUtils.translateSeparators(temp, locale);
-                        // strip off any percent signs
-                        String s = temp.replaceAll("%", "");
-                        process(i, s);
+	public void execute() {
+		String text = value;
+		if (text != null) {
+			// replace tabs and other whitespace
+			String[] values = PasteUtils.split(text);
+			if (values.length > 1) {
+				// clear the source field
+				clearSourceField(event);
 
-                    } catch (Exception ex) {
-                        LOG.error(ex.getMessage(), ex);
-                    }
-                }
-            }
-        }
-    }
+				for (int i = 0; i < values.length; i++) {
+					try {
+						String temp = values[i];
+						temp = PasteUtils.translateSeparators(temp, locale);
+						// strip off any percent signs
+						String s = temp.replaceAll("%", "");
+						process(i, s);
 
-    /**
-     * Processes a single value
-     * 
-     * @param index the index of the value in the list
-     * @param value
-     */
-    protected abstract void process(int index, String value);
+					} catch (Exception ex) {
+						LOG.error(ex.getMessage(), ex);
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * Clears the source field. This can be used if the values are pasted in a cell
-     * that should be emptied after the paste action
-     * 
-     * @param event
-     */
-    protected abstract void clearSourceField(ValueChangeEvent<String> event);
+	/**
+	 * Processes a single value
+	 * 
+	 * @param index the index of the value in the list
+	 * @param value
+	 */
+	protected abstract void process(int index, String value);
 
-    public Grid<T> getGrid() {
-        return grid;
-    }
+	/**
+	 * Clears the source field. This can be used if the values are pasted in a cell
+	 * that should be emptied after the paste action
+	 * 
+	 * @param event
+	 */
+	protected abstract void clearSourceField(ValueChangeEvent<String> event);
+
+	public Grid<T> getGrid() {
+		return grid;
+	}
 
 }

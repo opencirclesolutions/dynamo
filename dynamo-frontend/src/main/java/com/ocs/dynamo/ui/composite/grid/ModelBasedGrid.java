@@ -119,7 +119,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		this.fieldFilters = fieldFilters;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.fieldFactory = FieldFactory.getInstance();
-		addThemeVariants(GridVariant.LUMO_COMPACT);
+		addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
 
 		setSizeFull();
 		setColumnReorderingAllowed(true);

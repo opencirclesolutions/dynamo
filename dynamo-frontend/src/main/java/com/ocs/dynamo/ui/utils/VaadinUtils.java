@@ -650,8 +650,7 @@ public final class VaadinUtils {
 	 */
 	public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
 		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
-		return converter.convertToModel(value, new ValueContext(getLocale()))
-				.getOrThrow(r -> new OCSRuntimeException());
+		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
 	}
 
 	/**
@@ -662,9 +661,7 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static Long stringToLong(boolean grouping, String value) {
-		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
-		return converter.convertToModel(value, new ValueContext(getLocale()))
-				.getOrThrow(r -> new OCSRuntimeException());
+		return stringToLong(grouping, value, getLocale());
 	}
 
 	/**

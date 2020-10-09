@@ -47,7 +47,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		when(event.getValue()).thenReturn("3");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate<TestEntity>(locale, grid, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event, "3") {
 
 			@Override
 			protected void process(int index, String value) {
@@ -69,7 +69,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		when(event.getValue()).thenReturn("3 4 5");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate<TestEntity>(locale, grid, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event, "3 4 5") {
 
 			@Override
 			protected void process(int index, String value) {
@@ -94,7 +94,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		when(event.getValue()).thenReturn("3\t4\t5");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate<TestEntity>(locale, grid, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event, "3\t4\t5") {
 
 			@Override
 			protected void process(int index, String value) {
@@ -123,7 +123,7 @@ public class PasteTemplateTest extends BaseMockitoTest {
 		when(event.getValue()).thenReturn("4.2 5.2");
 		final List<String> values = new ArrayList<>();
 
-		template = new PasteTemplate<TestEntity>(locale, grid, event) {
+		template = new PasteTemplate<TestEntity>(locale, grid, event, "4.2 5.2") {
 
 			@Override
 			protected void process(int index, String value) {
