@@ -28,10 +28,10 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.FormatUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
@@ -63,7 +63,8 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 */
 	protected Span constructLabel(Object entity, AttributeModel attributeModel) {
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
-		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, ", ");
+		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), getMessageService(), attributeModel,
+				value, ", ", VaadinUtils.getLocale());
 		return new Span(formatted == null ? "" : formatted);
 	}
 

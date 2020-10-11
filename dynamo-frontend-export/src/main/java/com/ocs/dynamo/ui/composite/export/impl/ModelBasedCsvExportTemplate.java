@@ -26,14 +26,12 @@ import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.query.DataSetIterator;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
-import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.GridFormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -45,61 +43,64 @@ import com.opencsv.CSVWriter;
  * @author Bas Rutten
  *
  * @param <ID> the type of the primary key of the entity to export
- * @param <T> the type of the entity to export
+ * @param <T>  the type of the entity to export
  */
-public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCsvExportTemplate<ID, T> {
+public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends BaseCsvExportTemplate<ID, T> {
 
-    /**
-     * Constructor
-     * 
-     * @param service     service used for retrieving data from the database
-     * @param entityModel the entity model of the entities to export
-     * @param exportMode  the export mode
-     * @param sortOrders  the sort orders used to order the data
-     * @param filter      filter to apply to limit the results
-     * @param joins
-     */
-    public ModelBasedCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
-            SortOrder[] sortOrders, Filter filter, CustomXlsStyleGenerator<ID, T> customGenerator, FetchJoinInformation... joins) {
-        super(service, entityModel, exportMode, sortOrders, filter, "", joins);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service     service used for retrieving data from the database
+	 * @param entityModel the entity model of the entities to export
+	 * @param exportMode  the export mode
+	 * @param sortOrders  the sort orders used to order the data
+	 * @param filter      filter to apply to limit the results
+	 * @param joins
+	 */
+	public ModelBasedCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+			SortOrder[] sortOrders, Filter filter, CustomXlsStyleGenerator<ID, T> customGenerator,
+			FetchJoinInformation... joins) {
+		super(service, entityModel, exportMode, sortOrders, filter, "", joins);
+	}
 
-    @Override
-    protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-                CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8),
-                        SystemPropertyUtils.getCsvSeparator().charAt(0), SystemPropertyUtils.getCsvQuoteChar().charAt(0),
-                        SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
+	@Override
+	protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8),
+						SystemPropertyUtils.getCsvSeparator().charAt(0),
+						SystemPropertyUtils.getCsvQuoteChar().charAt(0),
+						SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
 
-            // add header row
-            List<String> headers = new ArrayList<>();
-            for (AttributeModel am : getEntityModel().getAttributeModels()) {
-                if (show(am)) {
-                    headers.add(am.getDisplayName(VaadinUtils.getLocale()));
-                }
-            }
-            writer.writeNext(headers.toArray(new String[0]));
+			// add header row
+			List<String> headers = new ArrayList<>();
+			for (AttributeModel am : getEntityModel().getAttributeModels()) {
+				if (show(am)) {
+					headers.add(am.getDisplayName(VaadinUtils.getLocale()));
+				}
+			}
+			writer.writeNext(headers.toArray(new String[0]));
 
-            // iterate over the rows
-            T entity = iterator.next();
-            while (entity != null) {
-                List<String> row = new ArrayList<>();
-                for (AttributeModel am : getEntityModel().getAttributeModels()) {
-                    if (show(am)) {
-                        Object value = ClassUtils.getFieldValue(entity, am.getPath());
-                        EntityModelFactory emf = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
-                        String str = FormatUtils.formatPropertyValue(emf, am, value, ", ");
-                        row.add(str);
-                    }
-                }
-                if (!row.isEmpty()) {
-                    writer.writeNext(row.toArray(new String[0]));
-                }
-                entity = iterator.next();
-            }
-            writer.flush();
-            return out.toByteArray();
-        }
-    }
+			// iterate over the rows
+			T entity = iterator.next();
+			while (entity != null) {
+				List<String> row = new ArrayList<>();
+				for (AttributeModel am : getEntityModel().getAttributeModels()) {
+					if (show(am)) {
+						Object value = ClassUtils.getFieldValue(entity, am.getPath());
+						String str = GridFormatUtils.formatPropertyValue(am, value, ", ", VaadinUtils.getLocale(),
+								VaadinUtils.getCurrencySymbol());
+						row.add(str);
+					}
+				}
+				if (!row.isEmpty()) {
+					writer.writeNext(row.toArray(new String[0]));
+				}
+				entity = iterator.next();
+			}
+			writer.flush();
+			return out.toByteArray();
+		}
+	}
 
 }

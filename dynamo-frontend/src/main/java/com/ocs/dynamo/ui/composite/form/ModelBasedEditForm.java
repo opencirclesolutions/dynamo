@@ -67,10 +67,10 @@ import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.TabWrapper;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
-import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.ocs.dynamo.utils.FormatUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.StringUtils;
 import com.vaadin.flow.component.Component;
@@ -1648,7 +1648,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (am != null && labels.get(isViewMode()) != null) {
 			Component comp = labels.get(isViewMode()).get(am);
 			Object value = ClassUtils.getFieldValue(entity, propertyName);
-			String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), am, value, ", ");
+			String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), getMessageService(), am, value,
+					", ", VaadinUtils.getLocale());
 			if (comp instanceof Span) {
 				((Span) comp).setText(formatted == null ? "" : formatted);
 			} else if (comp instanceof Anchor) {
@@ -1815,7 +1816,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
 						defaultValue = Boolean.valueOf(defaultValue.toString());
 					} else if (am.getType().isEnum()) {
-						defaultValue = Enum.valueOf((Class<Enum>)am.getType(), defaultValue.toString());
+						defaultValue = Enum.valueOf((Class<Enum>) am.getType(), defaultValue.toString());
 					}
 					setDefaultValue((HasValue<?, Object>) field, defaultValue);
 				}

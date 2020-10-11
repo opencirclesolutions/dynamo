@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Set;
 
@@ -29,6 +30,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.ocs.dynamo.utils.FormatUtils;
 
 public final class CompareUtils {
 
@@ -57,7 +59,8 @@ public final class CompareUtils {
 		}
 		toIgnore.addAll(EntityModelUtils.ALWAYS_IGNORE);
 
-		String noValue = messageService.getMessage("ocs.no.value", VaadinUtils.getLocale());
+		Locale locale = VaadinUtils.getLocale();
+		String noValue = messageService.getMessage("ocs.no.value", locale);
 
 		for (AttributeModel am : model.getAttributeModels()) {
 			if ((AttributeType.BASIC.equals(am.getAttributeType())
@@ -67,8 +70,10 @@ public final class CompareUtils {
 				Object newValue = ClassUtils.getFieldValue(newEntity, am.getName());
 
 				if (!Objects.equals(oldValue, newValue)) {
-					String oldValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, oldValue, ", ");
-					String newValueStr = FormatUtils.formatPropertyValue(entityModelFactory, am, newValue, ", ");
+					String oldValueStr = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am,
+							oldValue, ", ", locale);
+					String newValueStr = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am,
+							newValue, ", ", locale);
 					results.add(messageService.getMessage("ocs.value.changed", VaadinUtils.getLocale(),
 							am.getDisplayName(VaadinUtils.getLocale()), oldValue == null ? noValue : oldValueStr,
 							newValue == null ? noValue : newValueStr));

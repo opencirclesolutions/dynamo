@@ -14,6 +14,12 @@
 package com.ocs.dynamo.utils;
 
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Locale;
+
+import com.ocs.dynamo.domain.model.AttributeModel;
 
 /**
  * Utility methods for dealing with numbers
@@ -22,6 +28,36 @@ import java.math.BigDecimal;
  *
  */
 public final class NumberUtils {
+
+	/**
+	 * Appends a percentage sing to the provided string if needed
+	 * 
+	 * @param s          the string
+	 * @param percentage whether to append the sign
+	 * @return
+	 */
+	private static String appendPercentage(String s, boolean percentage) {
+		if (s == null) {
+			return null;
+		}
+		return percentage ? s + "%" : s;
+	}
+
+	/**
+	 * * Converts a BigDecimal value to a String
+	 *
+	 * @param currency       whether the value represents a currency
+	 * @param percentage     whether the value represents a percentage
+	 * @param useGrouping    whether to use a thousand grouping
+	 * @param value          the value
+	 * @param currencySymbol the currency symbol
+	 * @param locale         the locale to use
+	 * @return
+	 */
+	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
+			BigDecimal value, Locale locale, String currencySymbol) {
+		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
+	}
 
 	/**
 	 * Formats a value
@@ -43,6 +79,77 @@ public final class NumberUtils {
 		}
 
 		return value.toString();
+	}
+
+	/**
+	 * Converts a double to a String
+	 * 
+	 * @param currency       whether to include a currency symbol
+	 * @param percentage     whether to include a percentage sign
+	 * @param useGrouping    whether to use a thousands grouping separator
+	 * @param precision      the desired precision
+	 * @param value          the value to convert
+	 * @param currencySymbol the currency symbol to use
+	 * @param locale         the locale to use
+	 * @return
+	 */
+	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
+			Double value, Locale locale, String currencySymbol) {
+		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
+	}
+
+	/**
+	 * Converts a fractional value to a String
+	 * 
+	 * @param currency       whether to include a currency symbol
+	 * @param percentage     whether to include a percentage sign
+	 * @param useGrouping    whether to use a thousands grouping separator
+	 * @param precision      the desired precision
+	 * @param value          the value to convert
+	 * @param currencySymbol the currency symbol to use
+	 * @param locale         the locale to use
+	 * 
+	 * @return
+	 */
+	public static String fractionalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
+			Number value, Locale locale, String currencySymbol) {
+		if (value == null) {
+			return null;
+		}
+
+		DecimalFormat df = null;
+		if (currency) {
+			df = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+			DecimalFormatSymbols s = df.getDecimalFormatSymbols();
+			s.setCurrencySymbol(currencySymbol);
+			df.setDecimalFormatSymbols(s);
+		} else {
+			df = (DecimalFormat) DecimalFormat.getInstance(locale);
+		}
+		df.setGroupingUsed(useGrouping);
+		df.setMaximumFractionDigits(precision);
+		df.setMinimumFractionDigits(precision);
+
+		String s = df.format(value);
+		return appendPercentage(s, percentage);
+	}
+
+	/**
+	 * Converts an Integer to a String, using the Vaadin converters
+	 *
+	 * @param grouping indicates whether grouping separators must be used
+	 * @param value    the value to convert
+	 * @param locale   the locale
+	 * @return
+	 */
+	public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
+		if (value == null) {
+			return null;
+		}
+		NumberFormat format = NumberFormat.getInstance(locale);
+		format.setGroupingUsed(grouping);
+		String s = format.format(value);
+		return appendPercentage(s, percentage);
 	}
 
 	/**
@@ -137,8 +244,49 @@ public final class NumberUtils {
 				|| byte.class.isAssignableFrom(clazz) || short.class.isAssignableFrom(clazz);
 	}
 
+	/**
+	 * Converts an Long to a String, using the Vaadin converters
+	 *
+	 * @param grouping indicates whether grouping separators must be used
+	 * @param value    the value to convert
+	 * @param locale   the locale
+	 * @return
+	 */
+	public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
+		if (value == null) {
+			return null;
+		}
+
+		NumberFormat format = NumberFormat.getInstance(locale);
+		format.setGroupingUsed(grouping);
+		String s = format.format(value);
+		return appendPercentage(s, percentage);
+	}
+
+	/**
+	 * Converts a number to a String
+	 * 
+	 * @param am             the attribute model of the attribute to convert
+	 * @param value          the value to convert
+	 * @param grouping
+	 * @param locale
+	 * @param currencySymbol
+	 * @return
+	 */
+	public static <T> String numberToString(AttributeModel am, T value, boolean grouping, Locale locale,
+			String currencySymbol) {
+		if (NumberUtils.isInteger(am.getNormalizedType())) {
+			return integerToString(grouping, am.isPercentage(), (Integer) value, locale);
+		} else if (NumberUtils.isLong(am.getNormalizedType())) {
+			return longToString(grouping, am.isPercentage(), (Long) value, locale);
+		} else if (NumberUtils.isDouble(am.getNormalizedType()) || BigDecimal.class.equals(am.getNormalizedType())) {
+			return fractionalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(), (Number) value,
+					locale, currencySymbol);
+		}
+		return null;
+	}
+
 	private NumberUtils() {
 		// default constructor
 	}
-
 }

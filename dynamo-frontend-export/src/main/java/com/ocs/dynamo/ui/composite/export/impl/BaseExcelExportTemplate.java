@@ -40,7 +40,8 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.export.XlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
-import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.GridFormatUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.MathUtils;
@@ -186,7 +187,8 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 			}
 		} else if (am != null) {
 			// use the attribute model
-			String str = FormatUtils.formatPropertyValue(getEntityModelFactory(), am, value, ", ");
+			String str = GridFormatUtils.formatPropertyValue(am, value, ", ", VaadinUtils.getLocale(),
+					VaadinUtils.getCurrencySymbol());
 			cell.setCellValue(str);
 		} else if (value != null) {
 			// fall back - just call toSTring

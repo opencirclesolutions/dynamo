@@ -29,7 +29,7 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.grid.GridWrapper;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.utils.FormatUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;

@@ -122,7 +122,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 		// enum
 		text = (Span) component.constructLabel(e, model.getAttributeModel("someEnum"));
-		assertEquals("Value A", text.getText());
+		assertEquals("A", text.getText());
 
 		// entity collection
 		text = (Span) component.constructLabel(e, model.getAttributeModel("testEntities"));

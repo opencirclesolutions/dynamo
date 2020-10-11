@@ -31,7 +31,7 @@ import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
-import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.ui.utils.GridFormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.component.Component;
@@ -187,7 +187,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 						return comp;
 					});
 				} else {
-					column = addColumn(t -> FormatUtils.extractAndFormat(this, am, t));
+					column = addColumn(t -> GridFormatUtils.extractAndFormat(am, t, VaadinUtils.getLocale(),
+							VaadinUtils.getCurrencySymbol()));
 				}
 			}
 
