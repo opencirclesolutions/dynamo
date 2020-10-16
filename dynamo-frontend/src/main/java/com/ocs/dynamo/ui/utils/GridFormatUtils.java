@@ -22,7 +22,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.FormatUtils;
 
-public class GridFormatUtils {
+public final class GridFormatUtils {
 
 	private static EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
 			.getEntityModelFactory();

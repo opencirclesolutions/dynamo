@@ -41,6 +41,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
+import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
@@ -439,18 +440,19 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	@SuppressWarnings("unchecked")
 	public <R> void setSearchValue(String propertyId, R value, R auxValue) {
 		FilterGroup<T> group = groups.get(propertyId);
-
-		if (value != null) {
-			((HasValue<?, R>) group.getField()).setValue(value);
-		} else {
-			((HasValue<?, R>) group.getField()).clear();
-		}
-
-		if (group.getAuxField() != null) {
-			if (auxValue != null) {
-				((HasValue<?, R>) group.getAuxField()).setValue(auxValue);
+		if (group != null) {
+			if (value != null) {
+				((HasValue<?, R>) group.getField()).setValue(value);
 			} else {
-				((HasValue<?, R>) group.getAuxField()).clear();
+				((HasValue<?, R>) group.getField()).clear();
+			}
+
+			if (group.getAuxField() != null) {
+				if (auxValue != null) {
+					((HasValue<?, R>) group.getAuxField()).setValue(auxValue);
+				} else {
+					((HasValue<?, R>) group.getAuxField()).clear();
+				}
 			}
 		}
 	}
@@ -496,6 +498,16 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			FilterGroup<T> filterGroup = groups.get(entry.getKey());
 			if (filterGroup != null) {
 				setSearchValue(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	public void setSearchFieldEnabled(String property, boolean enabled) {
+		FilterGroup<T> filterGroup = getGroups().get(property);
+		if (filterGroup != null) {
+			((HasEnabled) filterGroup.getField()).setEnabled(enabled);
+			if (filterGroup.getAuxField() != null) {
+				((HasEnabled) filterGroup.getAuxField()).setEnabled(enabled);
 			}
 		}
 	}

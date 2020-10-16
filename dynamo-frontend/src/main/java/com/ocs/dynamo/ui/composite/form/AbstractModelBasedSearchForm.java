@@ -169,6 +169,14 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * Callback method that is called when the user switches to or from advanced
+	 * search mode
+	 */
+	protected void afterAdvancedModeToggled() {
+		// override in subclasses
+	}
+
+	/**
 	 * Callback method that is called after a successful search has been performed
 	 */
 	protected void afterSearchPerformed() {
@@ -473,6 +481,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			toggle(!wrapperPanel.isVisible());
 		} else if (event.getSource() == toggleAdvancedModeButton) {
 			toggleAdvancedMode();
+			afterAdvancedModeToggled();
 		}
 	}
 

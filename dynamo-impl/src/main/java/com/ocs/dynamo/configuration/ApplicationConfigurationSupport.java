@@ -31,22 +31,22 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 @EnableTransactionManagement
 public abstract class ApplicationConfigurationSupport {
 
-    protected abstract String[] getBaseNames();
+	protected abstract String[] getBaseNames();
 
-    @Bean
-    public ReloadableResourceBundleMessageSource messageSource() {
-        ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
-        source.setBasenames(getBaseNames());
-        source.setDefaultEncoding("UTF-8");
-        source.setFallbackToSystemLocale(false);
-        return source;
-    }
+	@Bean
+	public ReloadableResourceBundleMessageSource messageSource() {
+		ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
+		source.setBasenames(getBaseNames());
+		source.setDefaultEncoding("UTF-8");
+		source.setFallbackToSystemLocale(false);
+		return source;
+	}
 
-    @Bean
-    public ValidatorFactory validatorFactory() {
-        LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
-        validator.setValidationMessageSource(messageSource());
-        return validator;
-    }
+	@Bean
+	public ValidatorFactory validatorFactory() {
+		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();
+		validator.setValidationMessageSource(messageSource());
+		return validator;
+	}
 
 }
