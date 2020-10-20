@@ -205,7 +205,7 @@ public final class DateUtils {
 	 * 
 	 * @param clazz  the class of the object to format
 	 * @param value  the value
-	 * @param format the desired foratm
+	 * @param format the desired format
 	 * @return
 	 */
 	public static String formatJava8Date(Class<?> clazz, Object value, String format) {

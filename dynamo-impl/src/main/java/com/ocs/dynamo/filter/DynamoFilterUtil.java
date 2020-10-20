@@ -289,7 +289,7 @@ public final class DynamoFilterUtil {
 	 * @param original   the original filter
 	 * @param newFilter  the new filter
 	 * @param propertyId the property id of the filter that must be replaced
-	 * @param firstOnly whether to only replace the first occurrence
+	 * @param firstOnly  whether to only replace the first occurrence
 	 */
 	private static void replaceFilter(Filter parent, Filter original, Filter newFilter, String propertyId,
 			boolean firstOnly) {
