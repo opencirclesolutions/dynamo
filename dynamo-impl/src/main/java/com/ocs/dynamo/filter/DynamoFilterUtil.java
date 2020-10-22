@@ -242,12 +242,18 @@ public final class DynamoFilterUtil {
 						|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
 					if (bf.getValue() instanceof Collection) {
 						// multiple values supplied - construct an OR filter
+
 						Collection<?> col = (Collection<?>) bf.getValue();
-						Or or = new Or();
-						for (Object o : col) {
-							or.or(new Contains(prop, o));
+						if (!col.isEmpty()) {
+							Or or = new Or();
+							for (Object o : col) {
+								or.or(new Contains(prop, o));
+							}
+							replaceFilter(filter, or, am.getPath(), false);
+						} else {
+							// filtering on an empty collection is a bad idea
+							removeFilters(filter, am.getPath());
 						}
-						replaceFilter(filter, or, am.getPath(), false);
 					} else {
 						// just a single value - construct a single contains filter
 						replaceFilter(filter, new Contains(prop, bf.getValue()), am.getPath(), false);
@@ -257,8 +263,13 @@ public final class DynamoFilterUtil {
 					if (bf.getValue() instanceof Collection) {
 						// multiple values supplied - construct an OR filter
 						Collection<?> col = (Collection<?>) bf.getValue();
-						In in = new In(prop, col);
-						replaceFilter(null, filter, in, am.getPath(), false);
+						if (!col.isEmpty()) {
+							In in = new In(prop, col);
+							replaceFilter(null, filter, in, am.getPath(), false);
+						} else {
+							// filtering on an empty collection is a bad idea
+							removeFilters(filter, am.getPath());
+						}
 					}
 				}
 			}

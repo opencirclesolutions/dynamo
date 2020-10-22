@@ -543,6 +543,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 			if (groupName != null) {
 				result.clear();
+				model.getAttributeGroups().clear();
 			}
 
 			while (groupName != null) {

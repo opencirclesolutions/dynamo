@@ -34,6 +34,7 @@ public final class ServiceLocatorFactory {
 	private ServiceLocatorFactory() {
 	}
 
+	@SuppressWarnings("deprecation")
 	public static ServiceLocator getServiceLocator() {
 		if (serviceLocator == null) {
 			synchronized (ServiceLocatorFactory.class) {
