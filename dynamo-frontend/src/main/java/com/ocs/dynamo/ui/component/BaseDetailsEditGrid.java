@@ -53,6 +53,7 @@ import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
+import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -278,6 +279,16 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
+	 * Callback method for creating a custom validator
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+		return null;
+	}
+
+	/**
 	 * Method that is called to create a custom field. Override in subclasses if
 	 * needed
 	 *
@@ -443,6 +454,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			}
 
 			@Override
+			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+				return BaseDetailsEditGrid.this.constructCustomValidator(am);
+			}
+
+			@Override
 			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
 				if (!binders.containsKey(t)) {
 					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
@@ -492,6 +508,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		grid.setHeight(gridHeight);
 		grid.setSelectionMode(SelectionMode.SINGLE);
 
+		// disables sorting (intentional?)
 		for (Column<?> c : grid.getColumns()) {
 			c.setSortable(false);
 		}

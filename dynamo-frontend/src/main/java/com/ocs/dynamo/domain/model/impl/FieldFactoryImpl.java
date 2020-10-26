@@ -106,6 +106,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			builder.withValidator(customValidator);
 		}
 		if (customConverter != null) {
+			builder.withNullRepresentation((V) "");
 			builder.withConverter(customConverter);
 		}
 
@@ -124,9 +125,9 @@ public class FieldFactoryImpl implements FieldFactory {
 			}
 		} else if (builder.getField() instanceof TextField) {
 			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-			sBuilder.withNullRepresentation("");
 
 			if (customConverter == null) {
+				sBuilder.withNullRepresentation("");
 				if (am.getType().equals(BigDecimal.class)) {
 					sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(),
 							am.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
@@ -444,10 +445,6 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 
 		if (search && am.isMultipleSearch()) {
-			if (!AttributeSelectMode.LOOKUP.equals(selectMode)) {
-				throw new OCSRuntimeException("Only LOOKUP mode is allowed for multiple search field " + am.getPath());
-			}
-
 			// in case of multiple search, defer to the
 			// "constructCollectionSelect" method
 			field = this.constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);

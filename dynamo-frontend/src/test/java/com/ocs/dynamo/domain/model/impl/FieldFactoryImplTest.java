@@ -1,9 +1,9 @@
 package com.ocs.dynamo.domain.model.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
@@ -24,7 +24,6 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
@@ -369,7 +368,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 		EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
 		FieldFactoryContext context = FieldFactoryContext.create()
 				.setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
-		assertThrows(OCSRuntimeException.class, () -> fieldFactory.constructField(context));
+		assertDoesNotThrow(() -> fieldFactory.constructField(context));
 	}
 
 	/**

@@ -227,6 +227,13 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		return null;
 	}
 
+	/**
+	 * Callback method for inserting a custom validator
+	 * 
+	 * @param <V>
+	 * @param am
+	 * @return
+	 */
 	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 		return null;
 	}

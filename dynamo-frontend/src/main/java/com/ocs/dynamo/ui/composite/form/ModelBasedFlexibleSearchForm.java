@@ -197,6 +197,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			removeButton.setClassName("flexRemoveButton");
 
 			attributeFilterComboBox = new ComboBox<>(message("ocs.filter"));
+			attributeFilterComboBox.setWidth("250px");
 
 			// find out which attributes can be searched on and sort them in
 			// alphabetical order
@@ -335,6 +336,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			this.am = attributeModel;
 			if (am != null) {
 				ComboBox<FlexibleFilterType> newTypeFilterCombo = new ComboBox<>(message("ocs.type"));
+				newTypeFilterCombo.setWidth("250px");
 				ValueChangeListener<ValueChangeEvent<FlexibleFilterType>> ccl = event -> handleFilterTypeChange(
 						(FlexibleFilterType) event.getValue());
 				newTypeFilterCombo.addValueChangeListener(ccl);
@@ -479,6 +481,14 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		 */
 		private void handleFilterAttributeChange(HasValue.ValueChangeEvent<?> event, boolean restoring) {
 			AttributeModel temp = (AttributeModel) event.getValue();
+
+			if (mainValueComponent != null) {
+				mainValueComponent.clear();
+			}
+			if (auxValueComponent != null) {
+				auxValueComponent.clear();
+			}
+
 			filterAttributeChange(temp, restoring);
 		}
 
@@ -532,6 +542,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				ValueChangeListener<ValueChangeEvent<?>> auxListener = event -> handleValueChange(
 						(HasValue<?, ?>) newAuxComponent, event.getValue());
 				((HasValue<?, ?>) newAuxComponent).addValueChangeListener(auxListener);
+
+				// modify the labels
+				VaadinUtils.setLabel(newComponent,
+						am.getDisplayName(VaadinUtils.getLocale()) + " " + message("ocs.from"));
+				VaadinUtils.setLabel(newAuxComponent,
+						am.getDisplayName(VaadinUtils.getLocale()) + " " + message("ocs.to"));
 
 				if (auxValueComponent == null) {
 					layout.add(newAuxComponent);

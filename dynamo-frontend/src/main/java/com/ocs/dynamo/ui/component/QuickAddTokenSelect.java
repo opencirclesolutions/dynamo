@@ -180,7 +180,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	public void setErrorMessage(String errorMessage) {
-		super.setErrorMessage(errorMessage);
+		//super.setErrorMessage(errorMessage);
 		if (tokenSelect != null) {
 			tokenSelect.setErrorMessage(errorMessage);
 		}

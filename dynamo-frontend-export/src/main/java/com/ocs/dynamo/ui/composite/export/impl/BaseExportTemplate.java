@@ -66,7 +66,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
     /**
      * The page size
      */
-    protected static final int PAGE_SIZE = 200;
+    protected static final int PAGE_SIZE = 1000;
 
     /**
      * Entity model factory
