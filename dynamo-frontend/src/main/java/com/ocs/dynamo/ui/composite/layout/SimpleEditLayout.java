@@ -14,7 +14,9 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -59,6 +61,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	private T entity;
 
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+
+	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
 	 * Specifies which relations to fetch. When specified this overrides the default
@@ -211,8 +215,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				}
 
 				@Override
-				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-					return SimpleEditLayout.this.constructCustomValidator(am);
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+						boolean viewMode) {
+					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
 				@Override
@@ -221,9 +226,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				}
 
 				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode) {
-					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+					return SimpleEditLayout.this.constructCustomValidator(am);
 				}
 
 				@Override
@@ -255,6 +259,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			editForm.setCustomSaveConsumer(customSaveConsumer);
 			editForm.setDetailJoins(getJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
+			editForm.setColumnThresholds(getColumnThresholds());
+			editForm.setMaxFormWidth(getMaxFormWidth());
 			editForm.build();
 
 			main.add(editForm);
@@ -277,6 +283,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void doSave() {
 		this.editForm.doSave();
+	}
+
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
 	}
 
 	public Consumer<T> getCustomSaveConsumer() {
@@ -398,6 +408,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void selectTab(int index) {
 		editForm.selectTab(index);
+	}
+
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
 	}
 
 	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {

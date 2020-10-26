@@ -44,7 +44,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Column width thresholds
 	 */
-	private List<String> columnThresholds = new ArrayList<>();
+	private List<String> searchColumnThresholds = new ArrayList<>();
 
 	/**
 	 * Constructor - only the most important attributes
@@ -112,22 +112,14 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			}
 		};
 		result.setFieldEntityModels(getFieldEntityModels());
-		result.setColumnThresholds(getColumnThresholds());
+		result.setColumnThresholds(getSearchColumnThresholds());
 		result.build();
 		return result;
-	}
-
-	public List<String> getColumnThresholds() {
-		return this.columnThresholds;
 	}
 
 	@Override
 	public ModelBasedSearchForm<ID, T> getSearchForm() {
 		return (ModelBasedSearchForm<ID, T>) super.getSearchForm();
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
 	}
 
 	/**
@@ -151,6 +143,14 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		getSearchForm().setSearchValue(propertyId, value, auxValue);
+	}
+
+	public List<String> getSearchColumnThresholds() {
+		return searchColumnThresholds;
+	}
+
+	public void setSearchColumnThresholds(List<String> searchColumnThresholds) {
+		this.searchColumnThresholds = searchColumnThresholds;
 	}
 
 }

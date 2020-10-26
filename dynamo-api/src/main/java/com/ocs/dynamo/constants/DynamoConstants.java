@@ -196,6 +196,12 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_LOCALE = "ocs.default.locale";
 
 	/**
+	 * Name of the system property that is used to determine the default maximum
+	 * form width
+	 */
+	public static final String SP_DEFAULT_MAX_FORM_WIDTH = "ocs.default.max.form.width";
+
+	/**
 	 * Name of the system property that determines how long a message will remain
 	 * visible (in milliseconds)
 	 */

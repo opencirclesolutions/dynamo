@@ -27,6 +27,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.button.Button;
@@ -113,6 +114,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	private BaseService<ID, T> service;
 
+	private String maxFormWidth = SystemPropertyUtils.getDefaultMaxFormWidth();
+
 	/**
 	 * Constructor
 	 *
@@ -188,12 +191,17 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * 
-	 * @param <V>
-	 * @param am
+	 * Creates a custom field - override in subclass
+	 *
+	 * @param entityModel    the entity model of the entity to display
+	 * @param attributeModel the attribute model of the entity to display
+	 * @param viewMode       indicates whether the screen is in read only mode
+	 * @param searchMode     indicates whether the screen is in search mode
 	 * @return
 	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+			boolean viewMode, boolean searchMode) {
+		// overwrite in subclass
 		return null;
 	}
 
@@ -208,17 +216,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Creates a custom field - override in subclass
-	 *
-	 * @param entityModel    the entity model of the entity to display
-	 * @param attributeModel the attribute model of the entity to display
-	 * @param viewMode       indicates whether the screen is in read only mode
-	 * @param searchMode     indicates whether the screen is in search mode
+	 * 
+	 * @param <V>
+	 * @param am
 	 * @return
 	 */
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode, boolean searchMode) {
-		// overwrite in subclass
+	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 		return null;
 	}
 
@@ -236,6 +239,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	public FormOptions getFormOptions() {
 		return formOptions;
+	}
+
+	public String getMaxFormWidth() {
+		return maxFormWidth;
 	}
 
 	public BaseService<ID, T> getService() {
@@ -306,8 +313,23 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		fieldEntityModels.remove(path);
 	}
 
+	public void setMaxFormWidth(String maxFormWidth) {
+		this.maxFormWidth = maxFormWidth;
+	}
+
 	public void setService(BaseService<ID, T> service) {
 		this.service = service;
+	}
+
+	/**
+	 * Stores and registers a custom comonent
+	 * 
+	 * @param key       the key under which to store the component
+	 * @param component the component
+	 */
+	public void storeAndRegisterCustomComponent(String key, Component component) {
+		registerComponent(component);
+		storeCustomComponent(key, component);
 	}
 
 	/**
@@ -320,16 +342,5 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public void storeCustomComponent(String key, Component component) {
 		customButtonMap.putIfAbsent(key, new ArrayList<>());
 		customButtonMap.get(key).add(component);
-	}
-
-	/**
-	 * Stores and registers a custom comonent
-	 * 
-	 * @param key       the key under which to store the component
-	 * @param component the component
-	 */
-	public void storeAndRegisterCustomComponent(String key, Component component) {
-		registerComponent(component);
-		storeCustomComponent(key, component);
 	}
 }

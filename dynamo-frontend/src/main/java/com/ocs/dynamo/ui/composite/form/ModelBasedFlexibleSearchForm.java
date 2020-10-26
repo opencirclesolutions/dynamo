@@ -921,7 +921,10 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			}
 			region.restoring = false;
 			regions.add(region);
+			region.handleValueChange(region.mainValueComponent, value);
+
 			getFilterLayout().add(region.getLayout());
+
 		}
 	}
 

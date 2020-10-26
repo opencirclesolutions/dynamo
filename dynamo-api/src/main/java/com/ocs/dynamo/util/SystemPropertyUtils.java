@@ -31,329 +31,341 @@ import com.ocs.dynamo.constants.DynamoConstants;
  */
 public final class SystemPropertyUtils {
 
-    private static final int DEFAULT_DECIMAL_PRECISION = 2;
+	private static final int DEFAULT_DECIMAL_PRECISION = 2;
 
-    private static final String DEFAULT_FALSE_REPRESENTATION = "false";
+	private static final String DEFAULT_FALSE_REPRESENTATION = "false";
 
-    private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
+	private static final int DEFAULT_LOOKUP_FIELD_MAX_ITEMS = 3;
 
-    private static final int DEFAULT_MESSAGE_DISPLAY_TIME = 2000;
+	private static final int DEFAULT_MESSAGE_DISPLAY_TIME = 2000;
 
-    private static final String DEFAULT_TRUE_REPRESENTATION = "true";
+	private static final String DEFAULT_TRUE_REPRESENTATION = "true";
 
-    private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
+	private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
 
-    private static Properties properties = new Properties();
+	private static Properties properties = new Properties();
 
-    /**
-     * Load properties from file
-     */
-    static {
-        try {
-            InputStream resourceAsStream = SystemPropertyUtils.class.getClassLoader().getResourceAsStream("application.properties");
-            if (resourceAsStream != null) {
-                properties.load(resourceAsStream);
-            }
-        } catch (IOException ex) {
-            LOG.error(ex.getMessage(), ex);
-        }
-    }
+	/**
+	 * Load properties from file
+	 */
+	static {
+		try {
+			InputStream resourceAsStream = SystemPropertyUtils.class.getClassLoader()
+					.getResourceAsStream("application.properties");
+			if (resourceAsStream != null) {
+				properties.load(resourceAsStream);
+			}
+		} catch (IOException ex) {
+			LOG.error(ex.getMessage(), ex);
+		}
+	}
 
-    /**
-     * Returns whether export of grid contents to Excel/CSV is allowed. This system
-     * property can be used to either enable or disable this on the application
-     * level.
-     * 
-     * @return
-     */
-    public static boolean allowListExport() {
-        return getBooleanProperty(DynamoConstants.SP_ALLOW_LIST_EXPORT, null);
-    }
+	/**
+	 * Returns whether export of grid contents to Excel/CSV is allowed. This system
+	 * property can be used to either enable or disable this on the application
+	 * level.
+	 * 
+	 * @return
+	 */
+	public static boolean allowListExport() {
+		return getBooleanProperty(DynamoConstants.SP_ALLOW_LIST_EXPORT, null);
+	}
 
-    /**
-     * Looks up the value of a boolean property by scanning the system properties
-     * first and falling back to application.properties
-     * 
-     * @param propertyName the name of the property
-     * @param defaultValue the default value
-     * @return
-     */
-    private static Boolean getBooleanProperty(String propertyName, Boolean defaultValue) {
-        String sys = System.getProperty(propertyName);
-        if (sys == null) {
-            sys = properties.getProperty(propertyName, defaultValue == null ? null : defaultValue.toString());
-        }
-        return Boolean.valueOf(sys);
-    }
+	/**
+	 * Looks up the value of a boolean property by scanning the system properties
+	 * first and falling back to application.properties
+	 * 
+	 * @param propertyName the name of the property
+	 * @param defaultValue the default value
+	 * @return
+	 */
+	private static Boolean getBooleanProperty(String propertyName, Boolean defaultValue) {
+		String sys = System.getProperty(propertyName);
+		if (sys == null) {
+			sys = properties.getProperty(propertyName, defaultValue == null ? null : defaultValue.toString());
+		}
+		return Boolean.valueOf(sys);
+	}
 
-    /**
-     *
-     * @return the CSV escape character
-     */
-    public static String getCsvEscapeChar() {
-        return getStringProperty(DynamoConstants.SP_EXPORT_CSV_ESCAPE, "\"\"");
-    }
+	/**
+	 *
+	 * @return the CSV escape character
+	 */
+	public static String getCsvEscapeChar() {
+		return getStringProperty(DynamoConstants.SP_EXPORT_CSV_ESCAPE, "\"\"");
+	}
 
-    /**
-     *
-     * @return the CSV quote character
-     */
-    public static String getCsvQuoteChar() {
-        return getStringProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
-    }
+	/**
+	 *
+	 * @return the CSV quote character
+	 */
+	public static String getCsvQuoteChar() {
+		return getStringProperty(DynamoConstants.SP_EXPORT_CSV_QUOTE, "\"");
+	}
 
-    /**
-     * 
-     * @return the CSV separator character
-     */
-    public static String getCsvSeparator() {
-        return getStringProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
-    }
+	/**
+	 * 
+	 * @return the CSV separator character
+	 */
+	public static String getCsvSeparator() {
+		return getStringProperty(DynamoConstants.SP_EXPORT_CSV_SEPARATOR, ";");
+	}
 
-    /**
-     *
-     *
-     * @return the default currency symbol to use for decimal fields that display a
-     *         currency
-     */
-    public static String getDefaultCurrencySymbol() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_CURRENCY_SYMBOL, "€");
-    }
+	/**
+	 *
+	 *
+	 * @return the default currency symbol to use for decimal fields that display a
+	 *         currency
+	 */
+	public static String getDefaultCurrencySymbol() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_CURRENCY_SYMBOL, "€");
+	}
 
-    /**
-     * 
-     * @return return the default format for formatting dates
-     */
-    public static String getDefaultDateFormat() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_DATE_FORMAT, "dd-MM-yyyy");
-    }
+	/**
+	 *
+	 *
+	 * @return the default currency symbol to use for decimal fields that display a
+	 *         currency
+	 */
+	public static String getDefaultMaxFormWidth() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_FORM_WIDTH, "100%");
+	}
 
-    /**
-     * 
-     * @return the locale used for the month names inside date picker components
-     */
-    public static String getDefaultDateLocale() {
-        return getStringProperty(DynamoConstants.SP_DATE_LOCALE, getDefaultLocale());
-    }
+	/**
+	 * 
+	 * @return return the default format for formatting dates
+	 */
+	public static String getDefaultDateFormat() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_DATE_FORMAT, "dd-MM-yyyy");
+	}
 
-    /**
-     * 
-     * @return the default date/time format (dd-MM-yyyy HH:mm:ss)
-     */
-    public static String getDefaultDateTimeFormat() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_DATETIME_FORMAT, "dd-MM-yyyy HH:mm:ss");
-    }
+	/**
+	 * 
+	 * @return the locale used for the month names inside date picker components
+	 */
+	public static String getDefaultDateLocale() {
+		return getStringProperty(DynamoConstants.SP_DATE_LOCALE, getDefaultLocale());
+	}
 
-    /**
-     * 
-     * @return the default date/time format with time zone (dd-MM-yyyy HH:mm:ssZ)
-     */
-    public static String getDefaultDateTimeWithTimezoneFormat() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_DATETIME_ZONE_FORMAT, "dd-MM-yyyy HH:mm:ssZ");
-    }
+	/**
+	 * 
+	 * @return the default date/time format (dd-MM-yyyy HH:mm:ss)
+	 */
+	public static String getDefaultDateTimeFormat() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_DATETIME_FORMAT, "dd-MM-yyyy HH:mm:ss");
+	}
 
-    /**
-     * 
-     * @return the default decimal precision
-     */
-    public static int getDefaultDecimalPrecision() {
-        return getIntProperty(DynamoConstants.SP_DECIMAL_PRECISION, DEFAULT_DECIMAL_PRECISION);
-    }
+	/**
+	 * 
+	 * @return the default date/time format with time zone (dd-MM-yyyy HH:mm:ssZ)
+	 */
+	public static String getDefaultDateTimeWithTimezoneFormat() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_DATETIME_ZONE_FORMAT, "dd-MM-yyyy HH:mm:ssZ");
+	}
 
-    /**
-     * @return the default false representation
-     */
-    public static String getDefaultFalseRepresentation() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION, DEFAULT_FALSE_REPRESENTATION);
-    }
+	/**
+	 * 
+	 * @return the default decimal precision
+	 */
+	public static int getDefaultDecimalPrecision() {
+		return getIntProperty(DynamoConstants.SP_DECIMAL_PRECISION, DEFAULT_DECIMAL_PRECISION);
+	}
 
-    /**
-     * Looks up the default false representation for the provided locale. This will
-     * look for a system property names ocs.default.false.representation.<lan> where
-     * <lan> is the language code of the locale, e.g. "en", "nl"
-     * 
-     * @param locale the locale
-     * @return
-     */
-    public static String getDefaultFalseRepresentation(Locale locale) {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION + "." + locale.getLanguage(), null);
-    }
+	/**
+	 * @return the default false representation
+	 */
+	public static String getDefaultFalseRepresentation() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION, DEFAULT_FALSE_REPRESENTATION);
+	}
 
-    /**
-     * 
-     * @return the default grid height in pixels
-     */
-    public static String getDefaultGridHeight() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_GRID_HEIGHT, "400px");
-    }
+	/**
+	 * Looks up the default false representation for the provided locale. This will
+	 * look for a system property names ocs.default.false.representation.<lan> where
+	 * <lan> is the language code of the locale, e.g. "en", "nl"
+	 * 
+	 * @param locale the locale
+	 * @return
+	 */
+	public static String getDefaultFalseRepresentation(Locale locale) {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION + "." + locale.getLanguage(), null);
+	}
 
-    /**
-     * 
-     * @return the default edit grid height in pixels
-     */
-    public static String getDefaultEditGridHeight() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_GRID_HEIGHT, "200px");
-    }
+	/**
+	 * 
+	 * @return the default grid height in pixels
+	 */
+	public static String getDefaultGridHeight() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_GRID_HEIGHT, "400px");
+	}
 
-    /**
-     *
-     * @return the default locale used for e.g. the decimal and thousands separators
-     */
-    public static String getDefaultLocale() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
-    }
+	/**
+	 * 
+	 * @return the default edit grid height in pixels
+	 */
+	public static String getDefaultEditGridHeight() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_GRID_HEIGHT, "200px");
+	}
 
-    /**
-     * 
-     * @return the amount of time (in milliseconds) that an error or information
-     *         message will be displayed
-     */
-    public static Integer getDefaultMessageDisplayTime() {
-        return getIntProperty(DynamoConstants.SP_DEFAULT_MESSAGE_DISPLAY_TIME, DEFAULT_MESSAGE_DISPLAY_TIME);
-    }
+	/**
+	 *
+	 * @return the default locale used for e.g. the decimal and thousands separators
+	 */
+	public static String getDefaultLocale() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
+	}
 
-    /**
-     * @return whether searches on text fields will be default be case insensitive
-     */
-    public static boolean getDefaultSearchCaseSensitive() {
-        return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE, null);
-    }
+	/**
+	 * 
+	 * @return the amount of time (in milliseconds) that an error or information
+	 *         message will be displayed
+	 */
+	public static Integer getDefaultMessageDisplayTime() {
+		return getIntProperty(DynamoConstants.SP_DEFAULT_MESSAGE_DISPLAY_TIME, DEFAULT_MESSAGE_DISPLAY_TIME);
+	}
 
-    /**
-     * 
-     * @return the default grid height in pixels
-     */
-    public static String getDefaultSearchDialogGridHeight() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT, "300px");
-    }
+	/**
+	 * @return whether searches on text fields will be default be case insensitive
+	 */
+	public static boolean getDefaultSearchCaseSensitive() {
+		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE, null);
+	}
 
-    /**
-     * @return default search prefix only. False if not specified
-     */
-    public static boolean getDefaultSearchPrefixOnly() {
-        return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_PREFIX_ONLY, null);
-    }
+	/**
+	 * 
+	 * @return the default grid height in pixels
+	 */
+	public static String getDefaultSearchDialogGridHeight() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT, "300px");
+	}
 
-    /**
-     * @return the default height of a text area (e.g. "150px")
-     */
-    public static String getDefaultTextAreaHeight() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_TEXT_AREA_HEIGHT, "200px");
-    }
+	/**
+	 * @return default search prefix only. False if not specified
+	 */
+	public static boolean getDefaultSearchPrefixOnly() {
+		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_PREFIX_ONLY, null);
+	}
 
-    /**
-     * @return the default format for formatting attributes of type LocalTime or
-     *         Java 8 dates that only consist of a time stamp
-     */
-    public static String getDefaultTimeFormat() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");
-    }
+	/**
+	 * @return the default height of a text area (e.g. "150px")
+	 */
+	public static String getDefaultTextAreaHeight() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_TEXT_AREA_HEIGHT, "200px");
+	}
 
-    /**
-     * 
-     * @return the default true representation (if no further locale is specified)
-     */
-    public static String getDefaultTrueRepresentation() {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
-    }
+	/**
+	 * @return the default format for formatting attributes of type LocalTime or
+	 *         Java 8 dates that only consist of a time stamp
+	 */
+	public static String getDefaultTimeFormat() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_TIME_FORMAT, "HH:mm:ss");
+	}
 
-    /**
-     * Looks up the default true representation for the provided locale. This will
-     * look for a system property names ocs.default.true.representation.<lan> where
-     * <lan> is the language code of the locale, e.g. "en", "nl"
-     * 
-     * @param locale
-     * @return
-     */
-    public static String getDefaultTrueRepresentation(Locale locale) {
-        return getStringProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION + "." + locale.getLanguage(), null);
-    }
+	/**
+	 * 
+	 * @return the default true representation (if no further locale is specified)
+	 */
+	public static String getDefaultTrueRepresentation() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION, DEFAULT_TRUE_REPRESENTATION);
+	}
 
-    /**
-     * Looks up the value for an integer property
-     * 
-     * @param propertyName the name of the property
-     * @param defaultValue the default value
-     * @return
-     */
-    private static Integer getIntProperty(String propertyName, Integer defaultValue) {
-        Integer sys = Integer.getInteger(propertyName);
-        if (sys == null) {
-            String s = properties.getProperty(propertyName, defaultValue == null ? null : defaultValue.toString());
-            sys = s == null ? null : Integer.parseInt(s);
-        }
-        return sys;
-    }
+	/**
+	 * Looks up the default true representation for the provided locale. This will
+	 * look for a system property names ocs.default.true.representation.<lan> where
+	 * <lan> is the language code of the locale, e.g. "en", "nl"
+	 * 
+	 * @param locale
+	 * @return
+	 */
+	public static String getDefaultTrueRepresentation(Locale locale) {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION + "." + locale.getLanguage(), null);
+	}
 
-    /**
-     * @return the maximum number of selected items to display in a lookup field
-     *         description
-     */
-    public static int getLookupFieldMaxItems() {
-        return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
-    }
+	/**
+	 * Looks up the value for an integer property
+	 * 
+	 * @param propertyName the name of the property
+	 * @param defaultValue the default value
+	 * @return
+	 */
+	private static Integer getIntProperty(String propertyName, Integer defaultValue) {
+		Integer sys = Integer.getInteger(propertyName);
+		if (sys == null) {
+			String s = properties.getProperty(propertyName, defaultValue == null ? null : defaultValue.toString());
+			sys = s == null ? null : Integer.parseInt(s);
+		}
+		return sys;
+	}
 
-    /**
-     * 
-     * @return the minimum width that must be available before two results columns
-     *         will be displayed
-     */
-    public static String getMinimumTwoColumnWidth() {
-        return getStringProperty(DynamoConstants.SP_MINIMUM_TWO_COLUMN_WIDTH, "1200px");
-    }
+	/**
+	 * @return the maximum number of selected items to display in a lookup field
+	 *         description
+	 */
+	public static int getLookupFieldMaxItems() {
+		return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
+	}
 
-    /**
-     *
-     * @return the name of the service locator to use. Used internally by the
-     *         framework, highly unlikely this needs to be modified directly
-     */
-    public static String getServiceLocatorClassName() {
-        return getStringProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringWebServiceLocator");
-    }
+	/**
+	 * 
+	 * @return the minimum width that must be available before two results columns
+	 *         will be displayed
+	 */
+	public static String getMinimumTwoColumnWidth() {
+		return getStringProperty(DynamoConstants.SP_MINIMUM_TWO_COLUMN_WIDTH, "1200px");
+	}
 
-    /**
-     * Looks up the value of a String property by scanning the system properties
-     * first and falling back to application.properties
-     * 
-     * @param propertyName the name of the property
-     * @param defaultValue the default value
-     * @return
-     */
-    private static String getStringProperty(String propertyName, String defaultValue) {
-        String sys = System.getProperty(propertyName);
-        if (sys == null) {
-            sys = properties.getProperty(propertyName, defaultValue);
-        }
-        return sys;
-    }
+	/**
+	 *
+	 * @return the name of the service locator to use. Used internally by the
+	 *         framework, highly unlikely this needs to be modified directly
+	 */
+	public static String getServiceLocatorClassName() {
+		return getStringProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME,
+				"com.ocs.dynamo.ui.SpringWebServiceLocator");
+	}
 
-    /**
-     * Whether to capitalize every word in a property name
-     * 
-     * @return
-     */
-    public static boolean isCapitalizeWords() {
-        return getBooleanProperty(DynamoConstants.SP_CAPITALIZE_WORDS, true);
-    }
+	/**
+	 * Looks up the value of a String property by scanning the system properties
+	 * first and falling back to application.properties
+	 * 
+	 * @param propertyName the name of the property
+	 * @param defaultValue the default value
+	 * @return
+	 */
+	private static String getStringProperty(String propertyName, String defaultValue) {
+		String sys = System.getProperty(propertyName);
+		if (sys == null) {
+			sys = properties.getProperty(propertyName, defaultValue);
+		}
+		return sys;
+	}
 
-    /**
-     *
-     *
-     * @return whether to use the display name of an attribute as the "prompt" value
-     *         (hint/placeholder) inside the component
-     */
-    public static boolean useDefaultPromptValue() {
-        return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, true);
-    }
+	/**
+	 * Whether to capitalize every word in a property name
+	 * 
+	 * @return
+	 */
+	public static boolean isCapitalizeWords() {
+		return getBooleanProperty(DynamoConstants.SP_CAPITALIZE_WORDS, true);
+	}
 
-    /**
-     * @return whether to include thousands grouping separators in edit mode
-     */
-    public static boolean useThousandsGroupingInEditMode() {
-        return getBooleanProperty(DynamoConstants.SP_THOUSAND_GROUPING, null);
-    }
+	/**
+	 *
+	 *
+	 * @return whether to use the display name of an attribute as the "prompt" value
+	 *         (hint/placeholder) inside the component
+	 */
+	public static boolean useDefaultPromptValue() {
+		return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, true);
+	}
 
-    private SystemPropertyUtils() {
-        // default constructor
-    }
+	/**
+	 * @return whether to include thousands grouping separators in edit mode
+	 */
+	public static boolean useThousandsGroupingInEditMode() {
+		return getBooleanProperty(DynamoConstants.SP_THOUSAND_GROUPING, null);
+	}
+
+	private SystemPropertyUtils() {
+		// default constructor
+	}
 }

@@ -354,9 +354,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
 	/**
+	 * Column width thresholds
+	 */
+	private List<String> columnThresholds = new ArrayList<>();
+
+	/**
 	 * Whether to display the component in view mode
 	 */
 	private boolean viewMode;
+
+	private String maxFormWidth;
 
 	/**
 	 * Constructor
@@ -1929,9 +1936,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private void setResponsiveSteps(HasComponents comp) {
 		if (comp instanceof FormLayout) {
-			FormLayout fl = (FormLayout) comp;
-			String min = getFormOptions().getMinimumTwoColumnWidth();
-			fl.setResponsiveSteps(Lists.newArrayList(new ResponsiveStep("0px", 1), new ResponsiveStep(min, 2)));
+			FormLayout form = (FormLayout) comp;
+			if (getMaxFormWidth() != null) {
+				form.setMaxWidth(getMaxFormWidth());
+			}
+
+			if (columnThresholds != null && !columnThresholds.isEmpty()) {
+				// custom responsive steps
+				List<ResponsiveStep> list = new ArrayList<>();
+				int i = 0;
+				for (String t : columnThresholds) {
+					list.add(new ResponsiveStep(t, i + 1));
+					i++;
+				}
+				form.setResponsiveSteps(list);
+			} else {
+				String min = getFormOptions().getMinimumTwoColumnWidth();
+				form.setResponsiveSteps(Lists.newArrayList(new ResponsiveStep("0px", 1), new ResponsiveStep(min, 2)));
+			}
 		}
 	}
 
@@ -2051,6 +2073,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			return false;
 		});
 		return error;
+	}
+
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
+	}
+
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
+	}
+
+	public String getMaxFormWidth() {
+		return maxFormWidth;
+	}
+
+	public void setMaxFormWidth(String maxFormWidth) {
+		this.maxFormWidth = maxFormWidth;
 	}
 
 }

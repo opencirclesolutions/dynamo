@@ -14,6 +14,8 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -106,6 +108,11 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * Tab layout for complex detail mode
 	 */
 	private TabLayout<ID, T> tabLayout;
+
+	/**
+	 * Edit column width thresholds
+	 */
+	private List<String> editColumnThresholds = new ArrayList<>();
 
 	public AbstractModelSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation[] joins) {
@@ -347,6 +354,8 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		editForm.setSupportsIteration(true);
 		editForm.setDetailJoins(getDetailJoins());
 		editForm.setFieldEntityModels(getFieldEntityModels());
+		editForm.setColumnThresholds(getEditColumnThresholds());
+		editForm.setMaxFormWidth(getMaxFormWidth());
 		editForm.build();
 	}
 
@@ -636,4 +645,11 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		}
 	}
 
+	public List<String> getEditColumnThresholds() {
+		return editColumnThresholds;
+	}
+
+	public void setEditColumnThresholds(List<String> editColumnThresholds) {
+		this.editColumnThresholds = editColumnThresholds;
+	}
 }

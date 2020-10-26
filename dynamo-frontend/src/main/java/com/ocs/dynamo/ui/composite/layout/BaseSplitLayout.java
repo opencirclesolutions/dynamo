@@ -14,6 +14,8 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -82,6 +84,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * component
 	 */
 	private Component selectedDetailLayout;
+
+	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -370,7 +374,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setCustomSaveConsumer(getCustomSaveConsumer());
 			editForm.setDetailJoins(getDetailJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
+			editForm.setMaxFormWidth(getMaxFormWidth());
+			editForm.setColumnThresholds(getColumnThresholds());
 			editForm.build();
+
 			detailFormLayout.add(editForm);
 		} else {
 			// reset the form's view mode if needed
@@ -547,6 +554,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		if (getSelectedItem() != null) {
 			editForm.setViewMode(viewMode);
 		}
+	}
+
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
+	}
+
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
 	}
 
 }

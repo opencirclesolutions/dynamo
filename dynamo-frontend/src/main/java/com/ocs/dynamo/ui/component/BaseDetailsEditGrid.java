@@ -123,6 +123,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	/**
+	 * Custom button mapping
+	 */
+	private Map<String, List<Component>> customButtonMap = new HashMap<>();
+
+	/**
 	 * Form options that determine which buttons and functionalities are available
 	 */
 	private FormOptions formOptions;
@@ -220,6 +225,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		this.fieldFilters.put(property, filter);
 	}
 
+	protected void afterValueSet(U value) {
+		// overwrite in subclasses
+	}
+
 	/**
 	 * Applies a filter to restrict the values to be displayed
 	 */
@@ -279,16 +288,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Callback method for creating a custom validator
-	 * 
-	 * @param am the attribute model
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-		return null;
-	}
-
-	/**
 	 * Method that is called to create a custom field. Override in subclasses if
 	 * needed
 	 *
@@ -302,6 +301,16 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode) {
 		// overwrite in subclasses
+		return null;
+	}
+
+	/**
+	 * Callback method for creating a custom validator
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 		return null;
 	}
 
@@ -539,6 +548,18 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
+	 * Check whether the provided component is a custom component stored under the
+	 * provided key
+	 * 
+	 * @param key     the key
+	 * @param toCheck the component to check
+	 * @return
+	 */
+	public boolean isCustomComponent(String key, Component toCheck) {
+		return customButtonMap.get(key) != null && customButtonMap.get(key).contains(toCheck);
+	}
+
+	/**
 	 * Indicates whether it is possible to add/modify items directly via the grid
 	 *
 	 * @return
@@ -663,6 +684,34 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	@Override
+	public void setValue(U value) {
+		super.setValue(value);
+		afterValueSet(value);
+	}
+
+	/**
+	 * Registers a component and stores it under the provided key
+	 * @param key the key
+	 * @param component the component
+	 */
+	public void storeAndRegisterCustomComponent(String key, Component component) {
+		registerComponent(component);
+		storeCustomComponent(key, component);
+	}
+
+	/**
+	 * Stores a custom component. This can e.g. be used for checking whether extra
+	 * components you added to the button bar must be enabled
+	 * 
+	 * @param key       the key under which to store the custom component
+	 * @param component the component to store
+	 */
+	public void storeCustomComponent(String key, Component component) {
+		customButtonMap.putIfAbsent(key, new ArrayList<>());
+		customButtonMap.get(key).add(component);
+	}
+
+	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
 		for (Entry<T, Binder<T>> entry : binders.entrySet()) {
@@ -671,15 +720,5 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			error |= !status.isOk();
 		}
 		return error;
-	}
-
-	@Override
-	public void setValue(U value) {
-		super.setValue(value);
-		afterValueSet(value);
-	}
-
-	protected void afterValueSet(U value) {
-		// overwrite in subclasses
 	}
 }
