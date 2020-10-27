@@ -720,8 +720,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				list.add(value);
 			}
 			match.mainValueComponent.setValue(list);
-			// somehow need explicit value change event for multi select component
-			match.handleValueChange(match.mainValueComponent, value);
 		} else {
 			// singular value, simply set the value
 			match.typeFilterCombo.setValue(filterType);
@@ -921,7 +919,6 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			}
 			region.restoring = false;
 			regions.add(region);
-			region.handleValueChange(region.mainValueComponent, value);
 
 			getFilterLayout().add(region.getLayout());
 

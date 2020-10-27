@@ -219,6 +219,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 			}
 			tokenSelect.setValue(Sets.newHashSet(value));
 		}
+		super.setValue(value);
 	}
 
 }

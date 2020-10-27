@@ -133,6 +133,18 @@ public final class VaadinUtils {
 	}
 
 	/**
+	 * Creates an overflow layout of a certain height
+	 * @param height
+	 * @return
+	 */
+	public static VerticalLayout createOverflowLayout(String height) {
+		VerticalLayout restricted = new DefaultVerticalLayout(false, false);
+		restricted.getStyle().set("overflow", "auto");
+		restricted.setHeight(height);
+		return restricted;
+	}
+
+	/**
 	 * Converts a double to a String
 	 * 
 	 * @param currency    whether to include a currency symbol
@@ -602,13 +614,6 @@ public final class VaadinUtils {
 	public static Long stringToLong(boolean grouping, String value, Locale locale) {
 		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
 		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
-	}
-
-	public static VerticalLayout createOverflowLayout(String height) {
-		VerticalLayout restricted = new DefaultVerticalLayout(false, false);
-		restricted.getStyle().set("overflow", "auto");
-		restricted.setHeight(height);
-		return restricted;
 	}
 
 	private VaadinUtils() {

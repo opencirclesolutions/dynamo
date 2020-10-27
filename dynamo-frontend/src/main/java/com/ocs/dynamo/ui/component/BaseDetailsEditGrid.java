@@ -333,7 +333,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			dialog = new ModelBasedSearchDialog<ID, T>(service,
 					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
-					searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true) {
+					searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true,
+					false) {
 
 				private static final long serialVersionUID = 1512969437992973122L;
 
@@ -691,7 +692,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	/**
 	 * Registers a component and stores it under the provided key
-	 * @param key the key
+	 * 
+	 * @param key       the key
 	 * @param component the component
 	 */
 	public void storeAndRegisterCustomComponent(String key, Component component) {
