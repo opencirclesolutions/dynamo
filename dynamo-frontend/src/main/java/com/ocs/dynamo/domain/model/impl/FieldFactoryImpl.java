@@ -106,7 +106,9 @@ public class FieldFactoryImpl implements FieldFactory {
 			builder.withValidator(customValidator);
 		}
 		if (customConverter != null) {
-			builder.withNullRepresentation((V) "");
+			if (am.getType().equals(String.class) || NumberUtils.isNumeric(am.getType())) {
+				builder.withNullRepresentation((V) "");
+			}
 			builder.withConverter(customConverter);
 		}
 
