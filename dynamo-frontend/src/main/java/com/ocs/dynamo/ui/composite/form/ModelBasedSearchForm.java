@@ -83,6 +83,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 */
 	private List<String> columnThresholds = new ArrayList<>();
 
+	private String maxFormWidth;
+
 	/**
 	 * Constructor
 	 * 
@@ -236,6 +238,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	@Override
 	protected HasComponents constructFilterLayout() {
 		form = new FormLayout();
+		form.setWidth(maxFormWidth);
 
 		if (!columnThresholds.isEmpty()) {
 			// custom responsive steps
@@ -297,6 +300,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 */
 	public Map<String, FilterGroup<T>> getGroups() {
 		return groups;
+	}
+
+	public String getMaxFormWidth() {
+		return maxFormWidth;
 	}
 
 	/**
@@ -419,6 +426,20 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		this.columnThresholds = columnThresholds;
 	}
 
+	public void setMaxFormWidth(String maxFormWidth) {
+		this.maxFormWidth = maxFormWidth;
+	}
+
+	public void setSearchFieldEnabled(String property, boolean enabled) {
+		FilterGroup<T> filterGroup = getGroups().get(property);
+		if (filterGroup != null) {
+			((HasEnabled) filterGroup.getField()).setEnabled(enabled);
+			if (filterGroup.getAuxField() != null) {
+				((HasEnabled) filterGroup.getAuxField()).setEnabled(enabled);
+			}
+		}
+	}
+
 	/**
 	 * Manually set the value for a certain search field (and clear the value of the
 	 * auxiliary search field if present)
@@ -498,16 +519,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			FilterGroup<T> filterGroup = groups.get(entry.getKey());
 			if (filterGroup != null) {
 				setSearchValue(entry.getKey(), entry.getValue());
-			}
-		}
-	}
-
-	public void setSearchFieldEnabled(String property, boolean enabled) {
-		FilterGroup<T> filterGroup = getGroups().get(property);
-		if (filterGroup != null) {
-			((HasEnabled) filterGroup.getField()).setEnabled(enabled);
-			if (filterGroup.getAuxField() != null) {
-				((HasEnabled) filterGroup.getAuxField()).setEnabled(enabled);
 			}
 		}
 	}

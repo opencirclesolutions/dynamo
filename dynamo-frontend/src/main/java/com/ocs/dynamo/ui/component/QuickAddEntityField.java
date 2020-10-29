@@ -27,6 +27,7 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -38,131 +39,134 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
- * @param <U> the type of the value of the component (can be an entity, or a
- *        collection of entities)
+ * @param <T>  the type of the entity
+ * @param <U>  the type of the value of the component (can be an entity, or a
+ *             collection of entities)
  */
-public abstract class QuickAddEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends CustomEntityField<ID, T, U> {
+public abstract class QuickAddEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U>
+		extends CustomEntityField<ID, T, U> implements HasStyle {
 
-    private static final long serialVersionUID = 7118578276952170818L;
+	private static final long serialVersionUID = 7118578276952170818L;
 
-    /**
-     * The button that brings up the dialog for adding a new entity
-     */
-    private Button addButton;
+	/**
+	 * The button that brings up the dialog for adding a new entity
+	 */
+	private Button addButton;
 
-    /**
-     * The button that navigates directly to detail screen of the selected entity
-     */
-    private Button directNavigationButton;
+	/**
+	 * The button that navigates directly to detail screen of the selected entity
+	 */
+	private Button directNavigationButton;
 
-    /**
-     * Additional filter for cascading
-     */
-    private SerializablePredicate<T> additionalFilter;
+	/**
+	 * Additional filter for cascading
+	 */
+	private SerializablePredicate<T> additionalFilter;
 
-    /**
-     * Constructor
-     * 
-     * @param service        the service used to interact with the storage
-     * @param entityModel    the entity model of the entity that is being displayed
-     * @param attributeModel the attribute model
-     * @param filter         the search filter
-     */
-    public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-            SerializablePredicate<T> filter) {
-        super(service, entityModel, attributeModel, filter);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service        the service used to interact with the storage
+	 * @param entityModel    the entity model of the entity that is being displayed
+	 * @param attributeModel the attribute model
+	 * @param filter         the search filter
+	 */
+	public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			SerializablePredicate<T> filter) {
+		super(service, entityModel, attributeModel, filter);
+	}
 
-    /**
-     * Method that is called after a new entity has been successfully created. Use
-     * this to add the new entity to the component and select it
-     * 
-     * @param entity
-     */
-    protected abstract void afterNewEntityAdded(T entity);
+	/**
+	 * Method that is called after a new entity has been successfully created. Use
+	 * this to add the new entity to the component and select it
+	 * 
+	 * @param entity
+	 */
+	protected abstract void afterNewEntityAdded(T entity);
 
-    @Override
-    public void clearAdditionalFilter() {
-        this.additionalFilter = null;
-    }
+	@Override
+	public void clearAdditionalFilter() {
+		this.additionalFilter = null;
+	}
 
-    /**
-     * Constructs the button that brings up the dialog that allows the user to add a
-     * new item
-     * 
-     * @return
-     */
-    protected Button constructAddButton() {
-        addButton = new Button("");
-        addButton.setIcon(VaadinIcon.PLUS.create());
-        addButton.addClickListener(event -> {
-            AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(), getService(),
-                    getMessageService()) {
+	/**
+	 * Constructs the button that brings up the dialog that allows the user to add a
+	 * new item
+	 * 
+	 * @return
+	 */
+	protected Button constructAddButton() {
+		addButton = new Button("");
+		addButton.setIcon(VaadinIcon.PLUS.create());
+		addButton.addClickListener(event -> {
+			AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
+					getService(), getMessageService()) {
 
-                private static final long serialVersionUID = 2040216794358094524L;
+				private static final long serialVersionUID = 2040216794358094524L;
 
-                @Override
-                protected void afterNewEntityAdded(T entity) {
-                    QuickAddEntityField.this.afterNewEntityAdded(entity);
-                }
+				@Override
+				protected void afterNewEntityAdded(T entity) {
+					QuickAddEntityField.this.afterNewEntityAdded(entity);
+				}
 
-            };
-            dialog.build();
-            dialog.open();
-        });
-        return addButton;
-    }
+			};
+			dialog.build();
+			dialog.open();
+		});
+		return addButton;
+	}
 
-    /**
-     * Constructs the button that navigates directly to a detail screen for an entity
-     *
-     * @return
-     */
-    protected Button constructDirectNavigationButton() {
-        directNavigationButton = new Button(getMessageService().getMessage("ocs.direct.navigate", VaadinUtils.getLocale()));
-        UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
-        directNavigationButton.addClickListener(event -> helper.navigateToEntityScreen(getValue()));
-        return directNavigationButton;
-    }
+	/**
+	 * Constructs the button that navigates directly to a detail screen for an
+	 * entity
+	 *
+	 * @return
+	 */
+	protected Button constructDirectNavigationButton() {
+		directNavigationButton = new Button(
+				getMessageService().getMessage("ocs.direct.navigate", VaadinUtils.getLocale()));
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		directNavigationButton.addClickListener(event -> helper.navigateToEntityScreen(getValue()));
+		return directNavigationButton;
+	}
 
-    public Button getAddButton() {
-        return addButton;
-    }
+	public Button getAddButton() {
+		return addButton;
+	}
 
-    @Override
-    public SerializablePredicate<T> getAdditionalFilter() {
-        return additionalFilter;
-    }
+	@Override
+	public SerializablePredicate<T> getAdditionalFilter() {
+		return additionalFilter;
+	}
 
-    public Button getDirectNavigationButton() {
-        return directNavigationButton;
-    }
+	public Button getDirectNavigationButton() {
+		return directNavigationButton;
+	}
 
-    @Override
-    public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
-        this.additionalFilter = additionalFilter;
-    }
+	@Override
+	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
+		this.additionalFilter = additionalFilter;
+	}
 
-    /**
-     * Converts a value (can be a collection but in some cases also a single value)
-     * 
-     * @param value
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    protected Object convertToCorrectCollection(Object value) {
-        if (value == null) {
-            return null;
-        } else if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
-            Collection<T> col = (Collection<T>) value;
-            return Sets.newHashSet(col);
-        } else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
-            Collection<T> col = (Collection<T>) value;
-            return Lists.newArrayList(col);
-        } else {
-            return value;
-        }
-    }
+	/**
+	 * Converts a value (can be a collection but in some cases also a single value)
+	 * 
+	 * @param value
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	protected Object convertToCorrectCollection(Object value) {
+		if (value == null) {
+			return null;
+		} else if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
+			Collection<T> col = (Collection<T>) value;
+			return Sets.newHashSet(col);
+		} else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
+			Collection<T> col = (Collection<T>) value;
+			return Lists.newArrayList(col);
+		} else {
+			return value;
+		}
+	}
 
 }

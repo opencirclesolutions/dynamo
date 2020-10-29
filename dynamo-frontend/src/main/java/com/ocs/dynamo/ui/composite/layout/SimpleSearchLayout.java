@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -41,10 +42,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
-	/**
-	 * Column width thresholds
-	 */
 	private List<String> searchColumnThresholds = new ArrayList<>();
+
+	private String maxSearchFormWidth = SystemPropertyUtils.getDefaultMaxFormWidth();
 
 	/**
 	 * Constructor - only the most important attributes
@@ -113,6 +113,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		};
 		result.setFieldEntityModels(getFieldEntityModels());
 		result.setColumnThresholds(getSearchColumnThresholds());
+		result.setMaxFormWidth(getMaxSearchFormWidth());
 		result.build();
 		return result;
 	}
@@ -151,6 +152,14 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
 	public void setSearchColumnThresholds(List<String> searchColumnThresholds) {
 		this.searchColumnThresholds = searchColumnThresholds;
+	}
+
+	public String getMaxSearchFormWidth() {
+		return maxSearchFormWidth;
+	}
+
+	public void setMaxSearchFormWidth(String maxSearchFormWidth) {
+		this.maxSearchFormWidth = maxSearchFormWidth;
 	}
 
 }
