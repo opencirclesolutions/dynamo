@@ -65,7 +65,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	/**
 	 * Creates a paging request
 	 * 
-	 * @param pageNumber the zero-based number of the first apge
+	 * @param pageNumber the zero-based number of the first page
 	 * @param pageSize   the page size
 	 * @param orders     the sort orders
 	 * @return

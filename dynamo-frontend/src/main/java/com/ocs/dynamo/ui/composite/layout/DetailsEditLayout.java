@@ -706,6 +706,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		setItems(value);
 	}
 
+	@Override
+	public void setValue(Collection<T> value) {
+		setItems(value);
+	}
+
 	/**
 	 * Sets the Consumer to be carried out for decoupling/removing an entity
 	 * 
