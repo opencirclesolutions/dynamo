@@ -260,7 +260,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			editForm.setDetailJoins(getJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.setColumnThresholds(getColumnThresholds());
-			editForm.setMaxFormWidth(getMaxFormWidth());
+			editForm.setMaxFormWidth(getMaxEditFormWidth());
 			editForm.build();
 
 			main.add(editForm);

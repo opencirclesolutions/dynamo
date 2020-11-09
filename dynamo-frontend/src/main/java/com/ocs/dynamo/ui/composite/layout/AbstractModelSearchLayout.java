@@ -355,7 +355,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		editForm.setDetailJoins(getDetailJoins());
 		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setColumnThresholds(getEditColumnThresholds());
-		editForm.setMaxFormWidth(getMaxFormWidth());
+		editForm.setMaxFormWidth(getMaxEditFormWidth());
 		editForm.build();
 	}
 

@@ -122,18 +122,24 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 *
-	 *
-	 * @return the default currency symbol to use for decimal fields that display a
-	 *         currency
+	 * 
+	 * @return the default maximum edit form width
 	 */
-	public static String getDefaultMaxFormWidth() {
-		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_FORM_WIDTH, "100%");
+	public static String getDefaultMaxEditFormWidth() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_EDIT_FORM_WIDTH, "100%");
 	}
 
 	/**
 	 * 
-	 * @return return the default format for formatting dates
+	 * @return the default maximum search form width
+	 */
+	public static String getDefaultMaxSearchFormWidth() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_SEARCH_FORM_WIDTH, "100%");
+	}
+
+	/**
+	 * 
+	 * @return the default format for formatting dates
 	 */
 	public static String getDefaultDateFormat() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_DATE_FORMAT, "dd-MM-yyyy");

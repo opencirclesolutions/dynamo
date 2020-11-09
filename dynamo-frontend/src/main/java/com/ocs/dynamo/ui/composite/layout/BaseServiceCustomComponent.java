@@ -114,7 +114,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	private BaseService<ID, T> service;
 
-	private String maxFormWidth = SystemPropertyUtils.getDefaultMaxFormWidth();
+	private String maxEditFormWidth = SystemPropertyUtils.getDefaultMaxEditFormWidth();
 
 	/**
 	 * Constructor
@@ -241,8 +241,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return formOptions;
 	}
 
-	public String getMaxFormWidth() {
-		return maxFormWidth;
+	public String getMaxEditFormWidth() {
+		return maxEditFormWidth;
 	}
 
 	public BaseService<ID, T> getService() {
@@ -313,8 +313,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		fieldEntityModels.remove(path);
 	}
 
-	public void setMaxFormWidth(String maxFormWidth) {
-		this.maxFormWidth = maxFormWidth;
+	public void setMaxEditFormWidth(String maxEditFormWidth) {
+		this.maxEditFormWidth = maxEditFormWidth;
 	}
 
 	public void setService(BaseService<ID, T> service) {
@@ -322,7 +322,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Stores and registers a custom comonent
+	 * Stores and registers a custom component
 	 * 
 	 * @param key       the key under which to store the component
 	 * @param component the component

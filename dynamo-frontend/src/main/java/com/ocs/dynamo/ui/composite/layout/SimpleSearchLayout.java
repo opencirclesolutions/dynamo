@@ -42,9 +42,16 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
+	/**
+	 * Threshold values that determine when to show additional columns with search
+	 * fields
+	 */
 	private List<String> searchColumnThresholds = new ArrayList<>();
 
-	private String maxSearchFormWidth = SystemPropertyUtils.getDefaultMaxFormWidth();
+	/**
+	 * The maximum search form width
+	 */
+	private String maxSearchFormWidth = SystemPropertyUtils.getDefaultMaxSearchFormWidth();
 
 	/**
 	 * Constructor - only the most important attributes

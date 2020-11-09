@@ -374,7 +374,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setCustomSaveConsumer(getCustomSaveConsumer());
 			editForm.setDetailJoins(getDetailJoins());
 			editForm.setFieldEntityModels(getFieldEntityModels());
-			editForm.setMaxFormWidth(getMaxFormWidth());
+			editForm.setMaxFormWidth(getMaxEditFormWidth());
 			editForm.setColumnThresholds(getColumnThresholds());
 			editForm.build();
 

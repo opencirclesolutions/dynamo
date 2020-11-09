@@ -197,9 +197,15 @@ public final class DynamoConstants {
 
 	/**
 	 * Name of the system property that is used to determine the default maximum
+	 * edit form width
+	 */
+	public static final String SP_DEFAULT_MAX_EDIT_FORM_WIDTH = "ocs.default.max.edit.form.width";
+
+	/**
+	 * Name of the system property that is used to determine the default maximum
 	 * form width
 	 */
-	public static final String SP_DEFAULT_MAX_FORM_WIDTH = "ocs.default.max.form.width";
+	public static final String SP_DEFAULT_MAX_SEARCH_FORM_WIDTH = "ocs.default.max.search.form.width";
 
 	/**
 	 * Name of the system property that determines how long a message will remain
