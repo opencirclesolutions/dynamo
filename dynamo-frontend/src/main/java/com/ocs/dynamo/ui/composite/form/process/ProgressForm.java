@@ -271,7 +271,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
             progressLayout = new DefaultVerticalLayout(true, true);
 
             progressBar = new ProgressBar();
-            progressBar.setHeight("100px");
+            progressBar.setHeight("20px");
             progressLayout.add(progressBar);
 
             status = new Text("");

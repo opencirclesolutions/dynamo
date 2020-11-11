@@ -230,8 +230,8 @@ public final class DynamoFilterUtil {
 	private static void replaceMasterDetailFilter(Filter filter, AttributeModel am) {
 		if (AttributeType.DETAIL.equals(am.getAttributeType())
 				|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())
-				|| ((AttributeType.MASTER.equals(am.getAttributeType())
-						|| AttributeType.BASIC.equals(am.getAttributeType())) && am.isMultipleSearch())) {
+				|| AttributeType.MASTER.equals(am.getAttributeType())
+				|| (AttributeType.BASIC.equals(am.getAttributeType()) && am.isMultipleSearch())) {
 			Filter detailFilter = extractFilter(filter, am.getPath());
 			if (detailFilter instanceof Compare.Equal) {
 				// check which property to use in the query
@@ -270,6 +270,11 @@ public final class DynamoFilterUtil {
 							// filtering on an empty collection is a bad idea
 							removeFilters(filter, am.getPath());
 						}
+					} else if (am.getReplacementSearchPath() != null) {
+						// single value property implemented by means of a collection
+						Object o = bf.getValue();
+						Contains contains = new Contains(prop, o);
+						replaceFilter(null, filter, contains, am.getPath(), false);
 					}
 				}
 			}
