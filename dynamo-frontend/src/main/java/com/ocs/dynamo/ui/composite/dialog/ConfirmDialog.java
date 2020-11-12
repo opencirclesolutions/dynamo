@@ -54,6 +54,14 @@ public class ConfirmDialog extends BaseModalDialog {
 
 	@Override
 	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+		yesButton = new Button(message("ocs.yes"));
+		yesButton.setIcon(VaadinIcon.CHECK.create());
+		yesButton.addClickListener(event -> {
+			whenConfirmed.run();
+			this.close();
+		});
+		buttonBar.add(yesButton);
+
 		noButton = new Button(message("ocs.no"));
 		noButton.setIcon(VaadinIcon.BAN.create());
 		noButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
@@ -64,14 +72,6 @@ public class ConfirmDialog extends BaseModalDialog {
 			this.close();
 		});
 		buttonBar.add(noButton);
-
-		yesButton = new Button(message("ocs.yes"));
-		yesButton.setIcon(VaadinIcon.CHECK.create());
-		yesButton.addClickListener(event -> {
-			whenConfirmed.run();
-			this.close();
-		});
-		buttonBar.add(yesButton);
 	}
 
 	@Override
