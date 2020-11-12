@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
@@ -48,6 +49,7 @@ public abstract class SimpleModalDialog extends BaseModalDialog {
             doCancel();
             SimpleModalDialog.this.close();
         });
+        cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
         cancelButton.setVisible(showCancelButton);
         buttonBar.add(cancelButton);
 
