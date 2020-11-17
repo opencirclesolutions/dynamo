@@ -1241,6 +1241,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		}
 	}
 
+	@Model(nestingDepth = 1)
 	public class EntityChild {
 		@Id
 		private int id;

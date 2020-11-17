@@ -75,12 +75,12 @@ public interface EntityModel<T> {
 	 * Whether an amount represents a currency
 	 */
 	String CURRENCY = "currency";
-	
+
 	/**
 	 * Custom attribute
 	 */
 	String CUSTOM = "custom";
-	
+
 	/**
 	 * Custom attribute value
 	 */
@@ -90,7 +90,7 @@ public interface EntityModel<T> {
 	 * Custom attribute type
 	 */
 	String CUSTOM_TYPE = "customType";
-	
+
 	/**
 	 * The date type (date, time, or time stamp) of a value from java.time.*
 	 */
@@ -215,6 +215,11 @@ public interface EntityModel<T> {
 	 * will be rendered)
 	 */
 	String NAVIGABLE = "navigable";
+
+	/**
+	 * The default nesting depth for nested entity models
+	 */
+	String NESTING_DEPTH = "nestingDepth";
 
 	/**
 	 * Whether to include a percentage sign to a numerical field (cosmetic only)
@@ -463,6 +468,12 @@ public interface EntityModel<T> {
 	 * @return
 	 */
 	AttributeModel getMainAttributeModel();
+
+	/**
+	 * 
+	 * @return the nesting depth
+	 */
+	int getNestingDepth();
 
 	/**
 	 * @return the full reference of this attribute model

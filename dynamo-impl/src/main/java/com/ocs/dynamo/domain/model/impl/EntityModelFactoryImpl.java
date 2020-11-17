@@ -96,8 +96,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 
 	private static final String VERSION = "version";
 
-	private static final int RECURSIVE_MODEL_DEPTH = 3;
-
 	private static final Logger LOG = LoggerFactory.getLogger(EntityModelFactoryImpl.class);
 
 	@Autowired(required = false)
@@ -229,7 +227,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setMinLength(size.min());
 			}
 
-			setNestedEntityModel(model);
+			setNestedEntityModel(entityModel, model);
 
 			// only basic attributes are shown in the table by default
 			model.setVisibleInGrid(
@@ -326,6 +324,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		String displayNamePlural = displayName + PLURAL_POSTFIX;
 		String description = displayName;
 		String displayProperty = null;
+		int nestingDepth = SystemPropertyUtils.getDefaultNestingDepth();
 
 		Model annot = entityClass.getAnnotation(Model.class);
 		if (annot != null) {
@@ -343,6 +342,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			}
 			if (!StringUtils.isEmpty(annot.displayProperty())) {
 				displayProperty = annot.displayProperty();
+			}
+
+			if (annot.nestingDepth() > -1) {
+				nestingDepth = annot.nestingDepth();
 			}
 		}
 
@@ -367,8 +370,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			displayProperty = displayPropertyMsg;
 		}
 
+		String nestingDepthMsg = getEntityMessage(reference, EntityModel.NESTING_DEPTH);
+		if (!StringUtils.isEmpty(nestingDepthMsg)) {
+			nestingDepth = Integer.parseInt(nestingDepthMsg);
+		}
+
 		entityModel.setEntityClass(entityClass);
 		entityModel.setReference(reference);
+		entityModel.setNestingDepth(nestingDepth);
 
 		entityModel.setDefaultDisplayName(displayName);
 		entityModel.setDefaultDisplayNamePlural(displayNamePlural);
@@ -810,6 +819,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (!StringUtils.isEmpty(reference) && entityClass != null) {
 			model = (EntityModel<T>) cache.get(reference);
 			if (model == null) {
+				System.out.println("Creating entity model for " + reference + " (class " + entityClass + ")");
 				model = constructModel(reference, entityClass);
 			}
 		}
@@ -1475,9 +1485,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 *
 	 * @param model the attribute model
 	 */
-	protected void setNestedEntityModel(AttributeModelImpl model) {
+	protected void setNestedEntityModel(EntityModel<?> parentEntityModel, AttributeModelImpl model) {
 		EntityModel<?> em = model.getEntityModel();
-		if (StringUtils.countMatches(em.getReference(), ".") < RECURSIVE_MODEL_DEPTH) {
+		if (StringUtils.countMatches(em.getReference(), ".") < parentEntityModel.getNestingDepth()) {
 			Class<?> type = null;
 
 			// only needed for master and detail attributes

@@ -123,22 +123,6 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return the default maximum edit form width
-	 */
-	public static String getDefaultMaxEditFormWidth() {
-		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_EDIT_FORM_WIDTH, "100%");
-	}
-
-	/**
-	 * 
-	 * @return the default maximum search form width
-	 */
-	public static String getDefaultMaxSearchFormWidth() {
-		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_SEARCH_FORM_WIDTH, "100%");
-	}
-
-	/**
-	 * 
 	 * @return the default format for formatting dates
 	 */
 	public static String getDefaultDateFormat() {
@@ -178,6 +162,14 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * 
+	 * @return the default edit grid height in pixels
+	 */
+	public static String getDefaultEditGridHeight() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_GRID_HEIGHT, "200px");
+	}
+
+	/**
 	 * @return the default false representation
 	 */
 	public static String getDefaultFalseRepresentation() {
@@ -205,14 +197,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
-	 * @return the default edit grid height in pixels
-	 */
-	public static String getDefaultEditGridHeight() {
-		return getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_GRID_HEIGHT, "200px");
-	}
-
-	/**
 	 *
 	 * @return the default locale used for e.g. the decimal and thousands separators
 	 */
@@ -222,11 +206,35 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
+	 * @return the default maximum edit form width
+	 */
+	public static String getDefaultMaxEditFormWidth() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_EDIT_FORM_WIDTH, "100%");
+	}
+
+	/**
+	 * 
+	 * @return the default maximum search form width
+	 */
+	public static String getDefaultMaxSearchFormWidth() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_MAX_SEARCH_FORM_WIDTH, "100%");
+	}
+
+	/**
+	 * 
 	 * @return the amount of time (in milliseconds) that an error or information
 	 *         message will be displayed
 	 */
 	public static Integer getDefaultMessageDisplayTime() {
 		return getIntProperty(DynamoConstants.SP_DEFAULT_MESSAGE_DISPLAY_TIME, DEFAULT_MESSAGE_DISPLAY_TIME);
+	}
+
+	/**
+	 * 
+	 * @return the default nesting depth for entity models
+	 */
+	public static int getDefaultNestingDepth() {
+		return getIntProperty(DynamoConstants.SP_DEFAULT_NESTING_DEPTH, 2);
 	}
 
 	/**

@@ -58,4 +58,9 @@ public @interface Model {
      *         separate)
      */
     String sortOrder() default "";
+    
+    /**
+     * @return the default entity model nesting depth
+     */
+    int nestingDepth() default -1;
 }

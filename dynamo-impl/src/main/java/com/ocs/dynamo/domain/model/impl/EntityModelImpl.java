@@ -45,281 +45,294 @@ import com.ocs.dynamo.utils.ClassUtils;
  */
 public class EntityModelImpl<T> implements EntityModel<T> {
 
-    // use a linked hash map to guarantee the ordering
-    private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
+	// use a linked hash map to guarantee the ordering
+	private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
 
-    private String defaultDescription;
+	private String defaultDescription;
 
-    private String defaultDisplayName;
+	private String defaultDisplayName;
 
-    private String defaultDisplayNamePlural;
+	private String defaultDisplayNamePlural;
 
-    private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
+	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
 
-    private Map<String, Optional<String>> displayNamesPlural = new ConcurrentHashMap<>();
+	private Map<String, Optional<String>> displayNamesPlural = new ConcurrentHashMap<>();
 
-    private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
+	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
 
-    private String displayProperty;
+	private String displayProperty;
 
-    private Class<T> entityClass;
+	private Class<T> entityClass;
 
-    private AttributeModel idAttributeModel;
+	private AttributeModel idAttributeModel;
 
-    private String reference;
+	private String reference;
 
-    private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
+	private int nestingDepth;
 
-    @Override
-    public void addAttributeGroup(String attributeGroup) {
-        if (!attributeModels.containsKey(attributeGroup)) {
-            attributeModels.put(attributeGroup, new ArrayList<>());
-        }
-    }
+	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
-    public void addAttributeModel(String attributeGroup, AttributeModel model) {
-        attributeModels.get(attributeGroup).add(model);
-    }
+	@Override
+	public void addAttributeGroup(String attributeGroup) {
+		if (!attributeModels.containsKey(attributeGroup)) {
+			attributeModels.put(attributeGroup, new ArrayList<>());
+		}
+	}
 
-    @Override
-    public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
-        List<AttributeModel> group = attributeModels.get(attributeGroup);
-        if (group.contains(existingModel)) {
-            group.add(group.indexOf(existingModel), model);
-        } else {
-            group.add(model);
-        }
-    }
+	public void addAttributeModel(String attributeGroup, AttributeModel model) {
+		attributeModels.get(attributeGroup).add(model);
+	}
 
-    /**
-     * Constructs a stream of all attribute models
-     * 
-     * @return
-     */
-    private Stream<AttributeModel> constructAttributeModelStream() {
-        return attributeModels.values().stream().flatMap(List::stream).sorted(Comparator.comparing(AttributeModel::getOrder));
-    }
+	@Override
+	public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
+		List<AttributeModel> group = attributeModels.get(attributeGroup);
+		if (group.contains(existingModel)) {
+			group.add(group.indexOf(existingModel), model);
+		} else {
+			group.add(model);
+		}
+	}
 
-    private List<AttributeModel> filterAttributeModels(Predicate<AttributeModel> p) {
-        return Collections.unmodifiableList(constructAttributeModelStream().filter(p).collect(Collectors.toList()));
-    }
+	/**
+	 * Constructs a stream of all attribute models
+	 * 
+	 * @return
+	 */
+	private Stream<AttributeModel> constructAttributeModelStream() {
+		return attributeModels.values().stream().flatMap(List::stream)
+				.sorted(Comparator.comparing(AttributeModel::getOrder));
+	}
 
-    private AttributeModel findAttributeModel(Predicate<AttributeModel> p) {
-        return constructAttributeModelStream().filter(p).findFirst().orElse(null);
-    }
+	private List<AttributeModel> filterAttributeModels(Predicate<AttributeModel> p) {
+		return Collections.unmodifiableList(constructAttributeModelStream().filter(p).collect(Collectors.toList()));
+	}
 
-    @Override
-    public List<String> getAttributeGroups() {
-        return new ArrayList<>(attributeModels.keySet());
-    }
+	private AttributeModel findAttributeModel(Predicate<AttributeModel> p) {
+		return constructAttributeModelStream().filter(p).findFirst().orElse(null);
+	}
 
-    @Override
-    public AttributeModel getAttributeModel(String attributeName) {
-        if (!StringUtils.isEmpty(attributeName)) {
+	@Override
+	public List<String> getAttributeGroups() {
+		return new ArrayList<>(attributeModels.keySet());
+	}
 
-            AttributeModel model = findAttributeModel(m -> m.getName().equals(attributeName));
-            if (model != null) {
-                return model;
-            }
+	@Override
+	public AttributeModel getAttributeModel(String attributeName) {
+		if (!StringUtils.isEmpty(attributeName)) {
 
-            // check for nested property
-            String[] names = attributeName.split("\\.");
-            if (names.length > 1) {
-                // Find Attribute model
-                AttributeModel am = getAttributeModel(names[0]);
-                if (am != null) {
-                    // Find nested entity model
-                    EntityModel<?> nem = am.getNestedEntityModel();
-                    if (nem != null) {
-                        return nem.getAttributeModel(attributeName.substring(names[0].length() + 1));
-                    }
-                }
-            }
-        }
-        return null;
-    }
+			AttributeModel model = findAttributeModel(m -> m.getName().equals(attributeName));
+			if (model != null) {
+				return model;
+			}
 
-    @Override
-    public List<AttributeModel> getAttributeModels() {
-        List<AttributeModel> list = constructAttributeModelStream().collect(Collectors.toList());
-        return Collections.unmodifiableList(list);
-    }
+			// check for nested property
+			String[] names = attributeName.split("\\.");
+			if (names.length > 1) {
+				// Find Attribute model
+				AttributeModel am = getAttributeModel(names[0]);
+				if (am != null) {
+					// Find nested entity model
+					EntityModel<?> nem = am.getNestedEntityModel();
+					if (nem != null) {
+						return nem.getAttributeModel(attributeName.substring(names[0].length() + 1));
+					}
+				}
+			}
+		}
+		return null;
+	}
 
-    @Override
-    public List<AttributeModel> getAttributeModelsForGroup(String group) {
-        return Collections.unmodifiableList(attributeModels.get(group));
-    }
+	@Override
+	public List<AttributeModel> getAttributeModels() {
+		List<AttributeModel> list = constructAttributeModelStream().collect(Collectors.toList());
+		return Collections.unmodifiableList(list);
+	}
 
-    @Override
-    public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type) {
-        return filterAttributeModels(model -> {
-            Class<?> rt = ClassUtils.getResolvedType(getEntityClass(), model.getName(), 0);
-            return (attributeType == null || attributeType.equals(model.getAttributeType()))
-                    && (type == null || type.isAssignableFrom(model.getType()) || (rt != null && type.isAssignableFrom(rt)));
-        });
-    }
+	@Override
+	public List<AttributeModel> getAttributeModelsForGroup(String group) {
+		return Collections.unmodifiableList(attributeModels.get(group));
+	}
 
-    @Override
-    public List<AttributeModel> getCascadeAttributeModels() {
-        List<AttributeModel> result = new ArrayList<>();
-        for (AttributeModel model : getAttributeModels()) {
-            if (!model.getCascadeAttributes().isEmpty()) {
-                result.add(model);
-            }
+	@Override
+	public List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type) {
+		return filterAttributeModels(model -> {
+			Class<?> rt = ClassUtils.getResolvedType(getEntityClass(), model.getName(), 0);
+			return (attributeType == null || attributeType.equals(model.getAttributeType())) && (type == null
+					|| type.isAssignableFrom(model.getType()) || (rt != null && type.isAssignableFrom(rt)));
+		});
+	}
 
-            // add nested models
-            if (model.getNestedEntityModel() != null) {
-                List<AttributeModel> nested = model.getNestedEntityModel().getCascadeAttributeModels();
-                result.addAll(nested);
-            }
-        }
-        return Collections.unmodifiableList(result);
-    }
+	@Override
+	public List<AttributeModel> getCascadeAttributeModels() {
+		List<AttributeModel> result = new ArrayList<>();
+		for (AttributeModel model : getAttributeModels()) {
+			if (!model.getCascadeAttributes().isEmpty()) {
+				result.add(model);
+			}
 
-    public String getDefaultDisplayName() {
-        return defaultDisplayName;
-    }
+			// add nested models
+			if (model.getNestedEntityModel() != null) {
+				List<AttributeModel> nested = model.getNestedEntityModel().getCascadeAttributeModels();
+				result.addAll(nested);
+			}
+		}
+		return Collections.unmodifiableList(result);
+	}
 
-    public String getDefaultDisplayNamePlural() {
-        return defaultDisplayNamePlural;
-    }
+	public String getDefaultDisplayName() {
+		return defaultDisplayName;
+	}
 
-    @Override
-    public String getDescription(Locale locale) {
-        return lookup(descriptions, locale, EntityModel.DESCRIPTION, defaultDescription);
-    }
+	public String getDefaultDisplayNamePlural() {
+		return defaultDisplayNamePlural;
+	}
 
-    @Override
-    public String getDisplayName(Locale locale) {
-        return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);
-    }
+	@Override
+	public String getDescription(Locale locale) {
+		return lookup(descriptions, locale, EntityModel.DESCRIPTION, defaultDescription);
+	}
 
-    @Override
-    public String getDisplayNamePlural(Locale locale) {
-        return lookup(displayNamesPlural, locale, EntityModel.DISPLAY_NAME_PLURAL, defaultDisplayNamePlural);
-    }
+	@Override
+	public String getDisplayName(Locale locale) {
+		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);
+	}
 
-    @Override
-    public String getDisplayProperty() {
-        return displayProperty;
-    }
+	@Override
+	public String getDisplayNamePlural(Locale locale) {
+		return lookup(displayNamesPlural, locale, EntityModel.DISPLAY_NAME_PLURAL, defaultDisplayNamePlural);
+	}
 
-    @Override
-    public Class<T> getEntityClass() {
-        return entityClass;
-    }
+	@Override
+	public String getDisplayProperty() {
+		return displayProperty;
+	}
 
-    @Override
-    public AttributeModel getIdAttributeModel() {
-        return idAttributeModel;
-    }
+	@Override
+	public Class<T> getEntityClass() {
+		return entityClass;
+	}
 
-    @Override
-    public AttributeModel getMainAttributeModel() {
-        return findAttributeModel(AttributeModel::isMainAttribute);
-    }
+	@Override
+	public AttributeModel getIdAttributeModel() {
+		return idAttributeModel;
+	}
 
-    @Override
-    public String getReference() {
-        return reference;
-    }
+	@Override
+	public AttributeModel getMainAttributeModel() {
+		return findAttributeModel(AttributeModel::isMainAttribute);
+	}
 
-    @Override
-    public List<AttributeModel> getRequiredForSearchingAttributeModels() {
-        List<AttributeModel> result = constructAttributeModelStream().map(m -> {
-            List<AttributeModel> list = new ArrayList<>();
-            if (m.isSearchable() && m.isRequiredForSearching()) {
-                list.add(m);
-            }
-            // add nested models
-            if (m.getNestedEntityModel() != null) {
-                List<AttributeModel> nested = m.getNestedEntityModel().getRequiredForSearchingAttributeModels();
-                list.addAll(nested);
-            }
-            return list;
-        }).flatMap(List::stream).collect(Collectors.toList());
-        return Collections.unmodifiableList(result);
-    }
+	@Override
+	public String getReference() {
+		return reference;
+	}
 
-    @Override
-    public Map<AttributeModel, Boolean> getSortOrder() {
-        return sortOrder;
-    }
+	@Override
+	public List<AttributeModel> getRequiredForSearchingAttributeModels() {
+		List<AttributeModel> result = constructAttributeModelStream().map(m -> {
+			List<AttributeModel> list = new ArrayList<>();
+			if (m.isSearchable() && m.isRequiredForSearching()) {
+				list.add(m);
+			}
+			// add nested models
+			if (m.getNestedEntityModel() != null) {
+				List<AttributeModel> nested = m.getNestedEntityModel().getRequiredForSearchingAttributeModels();
+				list.addAll(nested);
+			}
+			return list;
+		}).flatMap(List::stream).collect(Collectors.toList());
+		return Collections.unmodifiableList(result);
+	}
 
-    @Override
-    public boolean isAttributeGroupVisible(String group, boolean readOnly) {
-        return attributeModels.get(group).stream()
-                .filter(m -> AttributeType.BASIC.equals(m.getAttributeType()) || AttributeType.LOB.equals(m.getAttributeType())
-                        || m.isComplexEditable())
-                .anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
-    }
+	@Override
+	public Map<AttributeModel, Boolean> getSortOrder() {
+		return sortOrder;
+	}
 
-    /**
-     * Looks up a text message from a resource bundle
-     * 
-     * @param source   the message cache
-     * @param locale   the desired locale
-     * @param key      the message key
-     * @param fallBack value to fall back to if no match is found
-     * @return
-     */
-    private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack) {
-        // look up in message bundle and add to cache
-        if (!source.containsKey(locale.toString())) {
-            try {
-                ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
-                String str = rb.getString(reference + "." + key);
-                source.put(locale.toString(), Optional.ofNullable(str));
-            } catch (MissingResourceException ex) {
-                source.put(locale.toString(), Optional.empty());
-            }
-        }
+	@Override
+	public boolean isAttributeGroupVisible(String group, boolean readOnly) {
+		return attributeModels.get(group).stream()
+				.filter(m -> AttributeType.BASIC.equals(m.getAttributeType())
+						|| AttributeType.LOB.equals(m.getAttributeType()) || m.isComplexEditable())
+				.anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
+	}
 
-        // look up or return fallback value
-        Optional<String> optional = source.get(locale.toString());
-        return optional.orElse(fallBack);
-    }
+	/**
+	 * Looks up a text message from a resource bundle
+	 * 
+	 * @param source   the message cache
+	 * @param locale   the desired locale
+	 * @param key      the message key
+	 * @param fallBack value to fall back to if no match is found
+	 * @return
+	 */
+	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack) {
+		// look up in message bundle and add to cache
+		if (!source.containsKey(locale.toString())) {
+			try {
+				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+				String str = rb.getString(reference + "." + key);
+				source.put(locale.toString(), Optional.ofNullable(str));
+			} catch (MissingResourceException ex) {
+				source.put(locale.toString(), Optional.empty());
+			}
+		}
 
-    public void setDefaultDescription(String defaultDescription) {
-        this.defaultDescription = defaultDescription;
-    }
+		// look up or return fallback value
+		Optional<String> optional = source.get(locale.toString());
+		return optional.orElse(fallBack);
+	}
 
-    public void setDefaultDisplayName(String defaultDisplayName) {
-        this.defaultDisplayName = defaultDisplayName;
-    }
+	public void setDefaultDescription(String defaultDescription) {
+		this.defaultDescription = defaultDescription;
+	}
 
-    public void setDefaultDisplayNamePlural(String defaultDisplayNamePlural) {
-        this.defaultDisplayNamePlural = defaultDisplayNamePlural;
-    }
+	public void setDefaultDisplayName(String defaultDisplayName) {
+		this.defaultDisplayName = defaultDisplayName;
+	}
 
-    public void setDisplayProperty(String displayProperty) {
-        this.displayProperty = displayProperty;
-    }
+	public void setDefaultDisplayNamePlural(String defaultDisplayNamePlural) {
+		this.defaultDisplayNamePlural = defaultDisplayNamePlural;
+	}
 
-    public void setEntityClass(Class<T> entityClass) {
-        this.entityClass = entityClass;
-    }
+	public void setDisplayProperty(String displayProperty) {
+		this.displayProperty = displayProperty;
+	}
 
-    void setIdAttributeModel(AttributeModel idAttributeModel) {
-        this.idAttributeModel = idAttributeModel;
-    }
+	public void setEntityClass(Class<T> entityClass) {
+		this.entityClass = entityClass;
+	}
 
-    public void setReference(String reference) {
-        this.reference = reference;
-    }
+	void setIdAttributeModel(AttributeModel idAttributeModel) {
+		this.idAttributeModel = idAttributeModel;
+	}
 
-    public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
-        this.sortOrder = sortOrder;
-    }
+	public void setReference(String reference) {
+		this.reference = reference;
+	}
 
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, "attributeModels");
-    }
+	public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
+		this.sortOrder = sortOrder;
+	}
 
-    @Override
-    public boolean usesDefaultGroupOnly() {
-        return attributeModels.keySet().size() == 1 && attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
-    }
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toStringExclude(this, "attributeModels");
+	}
+
+	@Override
+	public boolean usesDefaultGroupOnly() {
+		return attributeModels.keySet().size() == 1
+				&& attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
+	}
+
+	@Override
+	public int getNestingDepth() {
+		return nestingDepth;
+	}
+
+	public void setNestingDepth(int nestingDepth) {
+		this.nestingDepth = nestingDepth;
+	}
 
 }

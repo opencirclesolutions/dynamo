@@ -174,4 +174,9 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 		return getDelegate().getDisplayNamePlural(locale);
 	}
 
+	@Override
+	public int getNestingDepth() {
+		return getDelegate().getNestingDepth();
+	}
+
 }

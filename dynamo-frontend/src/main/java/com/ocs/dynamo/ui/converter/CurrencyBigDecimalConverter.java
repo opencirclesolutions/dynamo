@@ -57,7 +57,7 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 			return Result.ok(null);
 		}
 
-		value = value.replace(" ", "");
+		value = value.replace(" ", "").trim();
 		if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
 			value = currencySymbol + value;
 		}

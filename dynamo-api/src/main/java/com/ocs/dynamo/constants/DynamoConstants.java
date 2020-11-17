@@ -150,6 +150,12 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_EDIT_GRID_HEIGHT = "ocs.default.edit.grid.height";
 
 	/**
+	 * Name of the system property that is used to determine the default nesting
+	 * depth
+	 */
+	public static final String SP_DEFAULT_NESTING_DEPTH = "ocs.default.entity.nesting.depth";
+
+	/**
 	 * Name of the system property that is used to determined the default grid
 	 * height in a search dialog
 	 */
