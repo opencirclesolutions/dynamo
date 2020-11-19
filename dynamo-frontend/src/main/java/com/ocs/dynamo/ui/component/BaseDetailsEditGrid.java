@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -199,6 +200,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * allowed and no buttons will be displayed
 	 */
 	private boolean viewMode;
+
+	private FetchJoinInformation[] detailJoins;
 
 	/**
 	 * Constructor
@@ -489,7 +492,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
 				Button edit = new Button();
 				edit.setIcon(VaadinIcon.PENCIL.create());
-				edit.addClickListener(event -> doEdit(getService().fetchById(t.getId())));
+				edit.addClickListener(event -> doEdit(getService().fetchById(t.getId(), getDetailJoins())));
 				return edit;
 			});
 		}
@@ -723,4 +726,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		}
 		return error;
 	}
+
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public void setDetailJoins(FetchJoinInformation... detailJoins) {
+		this.detailJoins = detailJoins;
+	}
+
 }

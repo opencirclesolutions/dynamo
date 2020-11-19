@@ -76,7 +76,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 
 		VerticalLayout parent = new DefaultVerticalLayout(true, true);
 		main.add(parent);
-		
+
 		doBuild(parent);
 
 		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, false);

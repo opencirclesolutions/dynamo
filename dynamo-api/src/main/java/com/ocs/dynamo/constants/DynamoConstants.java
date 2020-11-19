@@ -297,6 +297,11 @@ public final class DynamoConstants {
 	 * Indicates whether to use the display name as the input prompt by default
 	 */
 	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
+	
+	/**
+	 * System property that indicates whether to indent grids in input forms
+	 */
+	public static final String SP_INDENT_GRIDS_IN_FORM = "ocs.indent.grids";
 
 	/**
 	 * The name of the variable that is used to store the user
@@ -335,6 +340,8 @@ public final class DynamoConstants {
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
 	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
+	
+
 
 	/**
 	 * Constructor for OCSConstants.

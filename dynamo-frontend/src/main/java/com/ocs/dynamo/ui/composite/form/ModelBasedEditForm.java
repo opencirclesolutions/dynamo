@@ -68,6 +68,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.TabWrapper;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.ocs.dynamo.utils.FormatUtils;
@@ -1027,10 +1028,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (parent instanceof FormLayout && colspan) {
 
 					FormLayout form = (FormLayout) parent;
-					FormItem fi = form.addFormItem(field,
-							new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
-					// extra column span for bigger grid-like components
-					fi.getElement().setAttribute("colspan", "2");
+
+					if (SystemPropertyUtils.mustIndentGrids()) {
+						FormItem fi = form.addFormItem(field,
+								new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
+						fi.getElement().setAttribute("colspan", "2");
+					} else {
+						// do not indent grids (probably better)
+						VerticalLayout wrapper = new VerticalLayout();
+						wrapper.setPadding(false);
+						wrapper.add(new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
+						wrapper.add(field);
+						field.getElement().setAttribute("colspan", "2");
+						form.add(wrapper);
+					}
 				} else {
 					parent.add((Component) field);
 				}

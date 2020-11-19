@@ -295,6 +295,14 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * 
+	 * @return
+	 */
+	public static Boolean mustIndentGrids() {
+		return getBooleanProperty(DynamoConstants.SP_INDENT_GRIDS_IN_FORM, true);
+	}
+
+	/**
 	 * Looks up the value for an integer property
 	 * 
 	 * @param propertyName the name of the property

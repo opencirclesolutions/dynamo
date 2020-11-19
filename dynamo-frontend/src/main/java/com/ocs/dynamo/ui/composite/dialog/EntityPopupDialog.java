@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -63,7 +64,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	private SimpleEditLayout<ID, T> layout;
 
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-	
+
 	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
@@ -76,6 +77,8 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	 */
 	private BaseService<ID, T> service;
 
+	private FetchJoinInformation[] joins;
+
 	/**
 	 * Constructor
 	 * 
@@ -85,12 +88,14 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	 * @param formOptions
 	 */
 	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
-			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions) {
+			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
+			FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.formOptions = formOptions;
 		this.entity = entity;
 		this.fieldFilters = fieldFilters;
+		this.joins = joins;
 	}
 
 	/**
@@ -126,8 +131,8 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 			@Override
 			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
 				super.afterEditDone(cancel, newEntity, entity);
-				EntityPopupDialog.this.close();
 				EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
+				EntityPopupDialog.this.close();
 			}
 
 			@Override
@@ -154,6 +159,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		};
 		layout.setFieldFilters(fieldFilters);
 		layout.setColumnThresholds(columnThresholds);
+		layout.setJoins(joins);
 		parent.add(layout);
 	}
 
