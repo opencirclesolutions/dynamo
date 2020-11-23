@@ -1030,14 +1030,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					FormLayout form = (FormLayout) parent;
 
 					if (SystemPropertyUtils.mustIndentGrids()) {
+						// ident grids (default)
 						FormItem fi = form.addFormItem(field,
 								new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
 						fi.getElement().setAttribute("colspan", "2");
+						formItems.get(isViewMode()).put(attributeModel, fi);
 					} else {
 						// do not indent grids (probably better)
 						VerticalLayout wrapper = new VerticalLayout();
 						wrapper.setPadding(false);
-						wrapper.add(new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
+						Label label = new Label(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+						label.addClassName("fullWidthLabel");
+						wrapper.add(label);
 						wrapper.add(field);
 						field.getElement().setAttribute("colspan", "2");
 						form.add(wrapper);
