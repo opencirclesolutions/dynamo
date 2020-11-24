@@ -10,7 +10,6 @@ import java.util.List;
 
 import org.apache.commons.io.FileUtils;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -19,7 +18,6 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
 
-@Disabled
 public class XlsRowImportTemplateTest extends BaseMockitoTest {
 
 	@Mock

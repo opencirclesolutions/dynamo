@@ -87,6 +87,7 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 		// add file upload field
 		MemoryBuffer buffer = new MemoryBuffer();
 		upload = new Upload(buffer);
+		upload.setClassName("dynamoUpload");
 		upload.addFinishedListener(event -> {
 			this.fileName = event.getFileName();
 			if (event.getContentLength() > 0L) {

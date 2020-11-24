@@ -26,14 +26,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
 import com.ocs.dynamo.utils.DateUtils;
 
-@Disabled
 public class BaseXlsImporterTest {
 
 	private BaseXlsImporter importer = new BaseXlsImporter();

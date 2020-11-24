@@ -68,6 +68,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Validator;
@@ -507,6 +508,12 @@ public class FieldFactoryImpl implements FieldFactory {
 		if (field instanceof AbstractField) {
 			AbstractField<?, ?> af = (AbstractField<?, ?>) field;
 			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
+		}
+		
+		// right alignment for text field
+		if (NumberUtils.isNumeric(am.getType()) && editableGrid) {
+			TextField atf = (TextField) field;
+			atf.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
 		}
 
 		// add percentage sign

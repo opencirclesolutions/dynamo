@@ -493,7 +493,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	@Override
 	public boolean isNumerical() {
-		return Number.class.isAssignableFrom(type);
+		return com.ocs.dynamo.utils.NumberUtils.isNumeric(type);
 	}
 
 	@Override

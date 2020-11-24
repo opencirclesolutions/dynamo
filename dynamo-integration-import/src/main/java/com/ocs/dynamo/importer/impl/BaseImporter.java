@@ -20,8 +20,8 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.ImportField;

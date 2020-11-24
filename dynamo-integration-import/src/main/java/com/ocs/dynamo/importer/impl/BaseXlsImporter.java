@@ -21,6 +21,7 @@ import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.Iterator;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
 import org.apache.poi.ss.usermodel.Cell;
@@ -30,7 +31,6 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.StringUtils;
 
 import com.monitorjbl.xlsx.StreamingReader;
 import com.ocs.dynamo.exception.OCSImportException;
@@ -144,6 +144,8 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			return cell.getBooleanCellValue();
 		} else if (cell != null && CellType.STRING == cell.getCellType()) {
 			return Boolean.valueOf(cell.getStringCellValue());
+		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
+			return cell.getBooleanCellValue();
 		}
 		return Boolean.FALSE;
 	}
@@ -168,6 +170,13 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 */
 	protected LocalDate getDateValue(Cell cell) {
 		if (cell != null && (CellType.NUMERIC == cell.getCellType() || CellType.BLANK == cell.getCellType())) {
+			try {
+				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));
+			} catch (NullPointerException nex) {
+				// horrible code throws NPE in case of empty cell
+				return null;
+			}
+		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
 			try {
 				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));
 			} catch (NullPointerException nex) {
@@ -216,6 +225,14 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			if (!StringUtils.isEmpty(cell.getStringCellValue().trim())) {
 				throw new OCSImportException("Found an invalid numeric value: " + cell.getStringCellValue());
 			}
+		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
+			try {
+				return cell.getNumericCellValue();
+			} catch (NullPointerException nex) {
+				return null;
+			} catch (NumberFormatException ex) {
+				throw new OCSImportException("Found an invalid numeric value: " + cell.getStringCellValue(), ex);
+			}
 		}
 		return null;
 	}
@@ -253,6 +270,12 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			// string, Excel goes insane. We have to compensate for this
 			Double d = cell.getNumericCellValue();
 			return d == null ? null : Long.toString(d.longValue());
+		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
+			try {
+				return cell.getStringCellValue();
+			} catch (Exception ex) {
+				throw new OCSImportException("Found an invalid String value", ex);
+			}
 		}
 		return null;
 	}

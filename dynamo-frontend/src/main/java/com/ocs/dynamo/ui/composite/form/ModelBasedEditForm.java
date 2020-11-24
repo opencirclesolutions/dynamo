@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.form;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -425,8 +426,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (AttributeType.LOB.equals(type)) {
 					// image preview (or label if no preview is available)
 					Component c = constructImagePreview(attributeModel);
-					VerticalLayout container = new DefaultVerticalLayout();
-					container.add(c);
+					FormLayout container = new FormLayout();
+					FormItem fi = container.addFormItem(c, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+					formItems.get(isViewMode()).put(attributeModel, fi);
 					parent.add(container);
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else {
@@ -1075,11 +1077,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Component constructImagePreview(AttributeModel attributeModel) {
 		if (attributeModel.isImage()) {
 			byte[] bytes = ClassUtils.getBytes(getEntity(), attributeModel.getName());
-			StreamResource sr = new StreamResource(attributeModel.getDisplayName(VaadinUtils.getLocale()),
-					() -> bytes == null ? new ByteArrayInputStream(new byte[0]) : new ByteArrayInputStream(bytes));
-			Image image = new Image(sr, attributeModel.getDisplayName(VaadinUtils.getLocale()));
-			image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
-			return image;
+			if (bytes == null || bytes.length == 0) {
+				return new Span(message("ocs.no.preview.available"));
+			} else {
+				StreamResource sr = new StreamResource(attributeModel.getDisplayName(VaadinUtils.getLocale()),
+						() -> bytes == null ? new ByteArrayInputStream(new byte[0]) : new ByteArrayInputStream(bytes));
+				Image image = new Image(sr, attributeModel.getDisplayName(VaadinUtils.getLocale()));
+				image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
+				return image;
+			}
 		} else {
 			return new Span(message("ocs.no.preview.available"));
 		}
@@ -1831,6 +1837,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						Locale loc = VaadinUtils.getLocale();
 						DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(loc);
 						char sep = nf.getDecimalFormatSymbols().getDecimalSeparator();
+
+						// set correct precision for non-integers
+						if (NumberUtils.isDouble(am.getType()) || NumberUtils.isFloat(am.getType())
+								|| BigDecimal.class.equals(am.getType())) {
+							nf.setMaximumFractionDigits(am.getPrecision());
+							nf.setMinimumFractionDigits(am.getPrecision());
+							nf.setGroupingUsed(false);
+							defaultValue = nf.format(defaultValue);
+						}
 						defaultValue = defaultValue.toString().replace('.', sep);
 						if (am.isPercentage()) {
 							defaultValue = defaultValue.toString() + "%";

@@ -819,7 +819,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (!StringUtils.isEmpty(reference) && entityClass != null) {
 			model = (EntityModel<T>) cache.get(reference);
 			if (model == null) {
-				System.out.println("Creating entity model for " + reference + " (class " + entityClass + ")");
+				LOG.debug("Creating entity model for {}, ({})", reference, entityClass);
 				model = constructModel(reference, entityClass);
 			}
 		}
