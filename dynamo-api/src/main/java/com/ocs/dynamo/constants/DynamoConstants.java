@@ -341,6 +341,8 @@ public final class DynamoConstants {
 
 	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
 	
+	public static final String CSS_HORIZONTAL_DISPLAY_LAYOUT = "horizontalDisplayLayout";
+	
 
 
 	/**

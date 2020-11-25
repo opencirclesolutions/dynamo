@@ -14,8 +14,10 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -42,6 +44,8 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 
 	private T entity;
 
+	private List<String> columnThresholds = new ArrayList<>();
+
 	/**
 	 * Constructor
 	 * 
@@ -52,6 +56,7 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 	 */
 	public HorizontalDisplayLayout(BaseService<ID, T> service, EntityModel<T> entityModel, T entity) {
 		super(service, entityModel, new FormOptions());
+		addClassName(DynamoConstants.CSS_HORIZONTAL_DISPLAY_LAYOUT);
 		this.entity = entity;
 	}
 
@@ -64,8 +69,17 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 	@Override
 	public void build() {
 		FormLayout layout = new FormLayout();
-		layout.setResponsiveSteps(List.of(new ResponsiveStep("0px", 1), new ResponsiveStep("200px", 2),
-				new ResponsiveStep("400px", 3), new ResponsiveStep("600px", 4)));
+
+		if (columnThresholds == null || columnThresholds.isEmpty()) {
+			layout.setResponsiveSteps(List.of(new ResponsiveStep("0px", 1), new ResponsiveStep("300px", 2),
+					new ResponsiveStep("600px", 3)));
+		} else {
+			List<ResponsiveStep> steps = new ArrayList<>();
+			for (int i = 0; i < columnThresholds.size(); i++) {
+				steps.add(new ResponsiveStep(columnThresholds.get(i), i + 1));
+			}
+			layout.setResponsiveSteps(steps);
+		}
 
 		for (AttributeModel attributeModel : getEntityModel().getAttributeModels()) {
 			if (attributeModel.isVisible() && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
@@ -74,5 +88,9 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 			}
 		}
 		add(layout);
+	}
+
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
 	}
 }

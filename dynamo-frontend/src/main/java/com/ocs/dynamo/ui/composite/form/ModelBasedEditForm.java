@@ -959,7 +959,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param attributeModel the attribute model
 	 * @param viewMode       whether the screen is in view mode
 	 */
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void constructField(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, int tabIndex) {
 
@@ -1039,14 +1039,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						formItems.get(isViewMode()).put(attributeModel, fi);
 					} else {
 						// do not indent grids (probably better)
-						VerticalLayout wrapper = new VerticalLayout();
-						wrapper.setPadding(false);
-						Label label = new Label(attributeModel.getDisplayName(VaadinUtils.getLocale()));
-						label.addClassName("fullWidthLabel");
-						wrapper.add(label);
-						wrapper.add(field);
+						//VerticalLayout wrapper = new VerticalLayout();
+						//wrapper.setPadding(false);
+						// Label label = new
+						// Label(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+						// label.addClassName("fullWidthLabel");
+						// wrapper.add(label);
+						//wrapper.add(field);
+
+						if (field instanceof BaseDetailsEditGrid) {
+							((BaseDetailsEditGrid) field)
+									.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+						} else if (field instanceof DetailsEditLayout) {
+							((DetailsEditLayout) field)
+									.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+						} else if (field instanceof ElementCollectionGrid) {
+							((ElementCollectionGrid) field)
+									.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+						}
+
 						field.getElement().setAttribute("colspan", "2");
-						form.add(wrapper);
+						form.add(field);
 					}
 				} else {
 					parent.add((Component) field);
