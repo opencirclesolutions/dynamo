@@ -78,13 +78,15 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
 		} else {
 			helper.setSelectedTab(null);
 		}
+		String lastVisited = "";
 		if (StringUtils.isEmpty(mode)) {
 			helper.navigate(destination);
+			lastVisited = destination;
 		} else {
 			helper.navigate(destination, mode);
+			lastVisited = destination + "#" + mode;
 		}
-
-		menuService.setLastVisited(menuBar, destination);
+		menuService.setLastVisited(menuBar, lastVisited);
 	}
 
 }
