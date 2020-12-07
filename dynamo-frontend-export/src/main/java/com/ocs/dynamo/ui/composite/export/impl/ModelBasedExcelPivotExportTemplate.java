@@ -185,8 +185,10 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 					}
 				}
 
+				// move to next row
 				row = sheet.createRow(sheet.getLastRowNum() + 1);
 
+				// add fixed columns
 				int j = 0;
 				for (String fc : pivotParameters.getFixedColumnKeys()) {
 					Cell cell = row.createCell(j);

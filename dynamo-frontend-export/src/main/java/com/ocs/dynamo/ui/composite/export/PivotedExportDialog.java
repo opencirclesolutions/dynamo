@@ -77,20 +77,26 @@ public class PivotedExportDialog<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	protected DownloadButton createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"),
-				() -> new ByteArrayInputStream(getExportService().exportCsvPivot(getEntityModel(), predicate,
-						sortOrders, pivotParameters, joins)),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_CSV);
+		return new DownloadButton(message("ocs.export.csv"), () -> {
+			ByteArrayInputStream stream = new ByteArrayInputStream(
+					getExportService().exportCsvPivot(getEntityModel(), predicate, sortOrders, pivotParameters, joins));
+			getProgressBar().setVisible(false);
+			this.close();
+			return stream;
+		}, () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+				+ EXTENSION_CSV);
 	}
 
 	@Override
 	protected DownloadButton createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"),
-				() -> new ByteArrayInputStream(getExportService().exportExcelPivot(getEntityModel(), predicate,
-						sortOrders, customGenerator, pivotParameters, joins)),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_XLS);
+		return new DownloadButton(message("ocs.export.excel"), () -> {
+			ByteArrayInputStream stream = new ByteArrayInputStream(getExportService().exportExcelPivot(getEntityModel(),
+					predicate, sortOrders, customGenerator, pivotParameters, joins));
+			getProgressBar().setVisible(false);
+			this.close();
+			return stream;
+		}, () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+				+ EXTENSION_XLS);
 	}
 
 }

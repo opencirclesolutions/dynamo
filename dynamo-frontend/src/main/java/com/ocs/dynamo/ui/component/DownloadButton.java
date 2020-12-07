@@ -13,14 +13,15 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.vaadin.flow.component.button.Button;
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.server.StreamResource;
 
 /**
@@ -52,12 +53,17 @@ public class DownloadButton extends HorizontalLayout {
 	 */
 	private Supplier<InputStream> createContent;
 
+	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
+		this(caption, null, createContent, createFileName);
+	}
+
 	/**
 	 * Constructor
 	 *
 	 * @param caption the caption of the button
 	 */
-	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
+	public DownloadButton(String caption, ProgressBar progressBar, Supplier<InputStream> createContent,
+			Supplier<String> createFileName) {
 		setMargin(false);
 		this.createFileName = createFileName;
 		this.createContent = createContent;
@@ -67,6 +73,12 @@ public class DownloadButton extends HorizontalLayout {
 
 		button = new Button(caption, VaadinIcon.DOWNLOAD.create());
 		button.addClassName("downloadButton");
+		if (progressBar != null) {
+			button.addClickListener(event -> {
+				progressBar.setVisible(true);
+			});
+		}
+
 		anchor.getElement().setAttribute("download", true);
 		anchor.addClassName("downloadButton");
 		anchor.add(button);
@@ -78,6 +90,7 @@ public class DownloadButton extends HorizontalLayout {
 	 */
 	public final void update() {
 		anchor.setHref(new StreamResource(this.createFileName.get(), () -> {
+
 			InputStream inputStream = this.createContent.get();
 			if (inputStream == null) {
 				return new ByteArrayInputStream(new byte[0]);

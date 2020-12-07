@@ -20,10 +20,12 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
 
 /**
  * Base class for export dialogs
@@ -51,6 +53,8 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
 	private DownloadButton exportExcelButton;
 
+	private ProgressBar progressBar;
+
 	/**
 	 * Constructor
 	 * 
@@ -70,11 +74,19 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
 	@Override
 	protected void doBuild(VerticalLayout parent) {
+
+		progressBar = new ProgressBar();
+		progressBar.setIndeterminate(true);
+		progressBar.setVisible(false);
+
 		exportExcelButton = createDownloadExcelButton();
 		parent.add(exportExcelButton);
 
 		exportCsvButton = createDownloadCSVButton();
 		parent.add(exportCsvButton);
+
+		UI.getCurrent().setPollInterval(100);
+		parent.add(progressBar);
 	}
 
 	@Override
@@ -113,6 +125,10 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
 	public DownloadButton getExportExcelButton() {
 		return exportExcelButton;
+	}
+
+	public ProgressBar getProgressBar() {
+		return progressBar;
 	}
 
 }

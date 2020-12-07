@@ -296,7 +296,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 						// update the selected item so master and detail are in sync
 						// again
 						reload();
-						detailsMode(entity);
+						getGridWrapper().getGrid().select(entity);
+						//detailsMode(entity);
 						afterReload(entity);
 					} else {
 						reload();
