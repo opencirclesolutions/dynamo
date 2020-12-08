@@ -302,6 +302,11 @@ public final class DynamoConstants {
 	 * System property that indicates whether to indent grids in input forms
 	 */
 	public static final String SP_INDENT_GRIDS_IN_FORM = "ocs.indent.grids";
+	
+	/**
+	 * Whether to use thousands grouping in XLS files
+	 */
+	public static final String SP_XLS_THOUSANDS_GROUPING = "ocs.xls.thousands.grouping";
 
 	/**
 	 * The name of the variable that is used to store the user

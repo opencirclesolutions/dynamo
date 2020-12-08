@@ -386,6 +386,14 @@ public final class SystemPropertyUtils {
 	public static boolean useThousandsGroupingInEditMode() {
 		return getBooleanProperty(DynamoConstants.SP_THOUSAND_GROUPING, null);
 	}
+	
+	/**
+	 * 
+	 * @return
+	 */
+	public static boolean useXlsThousandsGrouping() {
+		return getBooleanProperty(DynamoConstants.SP_XLS_THOUSANDS_GROUPING, false);
+	}
 
 	private SystemPropertyUtils() {
 		// default constructor
