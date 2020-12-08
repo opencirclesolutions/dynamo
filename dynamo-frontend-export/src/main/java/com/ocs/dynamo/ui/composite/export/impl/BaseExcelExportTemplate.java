@@ -156,7 +156,8 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 		}
 	}
 
-	protected void writeCellValue(Cell cell, Object value, EntityModel<T> em, AttributeModel am) {
+	protected void writeCellValue(Cell cell, Object value, EntityModel<T> em, AttributeModel am,
+			boolean forcePercentage) {
 		if (NumberUtils.isInteger(value) || NumberUtils.isLong(value)) {
 			// integer or long numbers
 			cell.setCellValue(((Number) value).doubleValue());
@@ -170,15 +171,17 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 			if (value instanceof Double) {
 				value = BigDecimal.valueOf((Double) value);
 			}
-			boolean isPercentage = am != null && am.isPercentage();
+			boolean isPercentage = (am != null && am.isPercentage()) || forcePercentage;
+
 			int defaultPrecision = SystemPropertyUtils.getDefaultDecimalPrecision();
+			int precision = (am == null ? defaultPrecision : am.getPrecision()) + 2;
 			if (isPercentage) {
 				// percentages in the application are just numbers,
 				// but in Excel they are fractions that
 				// are displayed as percentages -> so, divide by 100
 				double temp = ((BigDecimal) value)
 						.divide(MathUtils.HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-						.setScale(am.getPrecision() + defaultPrecision, RoundingMode.HALF_UP).doubleValue();
+						.setScale(precision, RoundingMode.HALF_UP).doubleValue();
 				cell.setCellValue(temp);
 			} else {
 				cell.setCellValue(((BigDecimal) value)

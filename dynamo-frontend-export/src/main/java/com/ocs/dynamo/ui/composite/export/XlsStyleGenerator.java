@@ -50,4 +50,12 @@ public interface XlsStyleGenerator<ID extends Serializable, T extends AbstractEn
      */
     CellStyle getCellStyle(int index, T entity, Object value, AttributeModel am);
 
+    /**
+     * 
+     * @param type
+     * @param am
+     * @return
+     */
+    CellStyle getTotalsStyle(Class<?> type, AttributeModel am);
+
 }

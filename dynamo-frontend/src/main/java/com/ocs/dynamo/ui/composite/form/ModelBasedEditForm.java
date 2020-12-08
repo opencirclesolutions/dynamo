@@ -1039,13 +1039,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						formItems.get(isViewMode()).put(attributeModel, fi);
 					} else {
 						// do not indent grids (probably better)
-						//VerticalLayout wrapper = new VerticalLayout();
-						//wrapper.setPadding(false);
-						// Label label = new
-						// Label(attributeModel.getDisplayName(VaadinUtils.getLocale()));
-						// label.addClassName("fullWidthLabel");
-						// wrapper.add(label);
-						//wrapper.add(field);
 
 						if (field instanceof BaseDetailsEditGrid) {
 							((BaseDetailsEditGrid) field)
@@ -1690,7 +1683,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Component comp = labels.get(isViewMode()).get(am);
 			Object value = ClassUtils.getFieldValue(entity, propertyName);
 			String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), getMessageService(), am, value,
-					", ", VaadinUtils.getLocale());
+					", ", VaadinUtils.getLocale(), SystemPropertyUtils.getDefaultCurrencySymbol());
 			if (comp instanceof Span) {
 				((Span) comp).setText(formatted == null ? "" : formatted);
 			} else if (comp instanceof Anchor) {

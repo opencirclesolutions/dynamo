@@ -100,7 +100,7 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 				if (am != null && show(am)) {
 					Object value = ClassUtils.getFieldValue(entity, am.getPath());
 					Cell cell = createCell(row, colIndex, entity, value, am, null);
-					writeCellValue(cell, value, getEntityModel(), am);
+					writeCellValue(cell, value, getEntityModel(), am, false);
 					colIndex++;
 				}
 			}

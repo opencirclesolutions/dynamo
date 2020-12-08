@@ -29,6 +29,7 @@ import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -43,6 +44,7 @@ import com.ocs.dynamo.ui.composite.export.PivotParameters;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.MathUtils;
 
@@ -194,7 +196,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 					Cell cell = row.createCell(j);
 					Object value = ClassUtils.getFieldValueAsString(entity, fc);
 					cell.setCellStyle(getGenerator().getCellStyle(j, entity, value, null));
-					writeCellValue(cell, value, getEntityModel(), null);
+					writeCellValue(cell, value, getEntityModel(), null, false);
 					j++;
 				}
 
@@ -215,13 +217,11 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 				Cell cell = createCell(row, nrOfFixedCols + colsAdded, entity, value, null, pivotColumnKey);
 
 				// correct for percentage values
+				boolean forcePercentage = false;
 				if (cell.getCellStyle() != null && cell.getCellStyle().getDataFormatString().contains("%")) {
-					if (value instanceof BigDecimal) {
-						value = ((BigDecimal) value).divide(MathUtils.HUNDRED, 2, RoundingMode.HALF_UP);
-					}
+					forcePercentage = true;
 				}
-
-				writeCellValue(cell, value, getEntityModel(), null);
+				writeCellValue(cell, value, getEntityModel(), null, forcePercentage);
 			}
 
 			if (propIndex == pivotParameters.getPivotedProperties().size() - 1) {
@@ -240,7 +240,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			int lastColAdded = nrOfFixedCols + colsAdded - 1;
 			String prop = pivotParameters.getPivotedProperties().get(0);
 			PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
-			if (type != null) {
+			if (type != null && row != null) {
 				writeRowAggregate(row, type, lastColAdded, nrOfFixedCols, colsAdded);
 				colsAdded++;
 			}
@@ -318,7 +318,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 					Cell totalsCell = totalsRow.createCell(ci);
 
 					String col = CellReference.convertNumToColString(ci);
-					totalsCell.setCellStyle(getGenerator().getCellStyle(ci, null, null, null));
+					totalsCell.setCellStyle(getGenerator().getTotalsStyle(Integer.class, null));
 					totalsCell.setCellType(CellType.FORMULA);
 					totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
 
@@ -334,7 +334,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			int ci = nrOfFixedCols + pivotParameters.getPossibleColumnKeys().size();
 
 			Cell totalsCell = totalsRow.createCell(ci);
-			totalsCell.setCellStyle(getGenerator().getCellStyle(ci, null, null, null));
+			totalsCell.setCellStyle(getGenerator().getTotalsStyle(Integer.class, null));
 			totalsCell.setCellType(CellType.FORMULA);
 			totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
 			String firstCol = CellReference.convertNumToColString(nrOfFixedCols);

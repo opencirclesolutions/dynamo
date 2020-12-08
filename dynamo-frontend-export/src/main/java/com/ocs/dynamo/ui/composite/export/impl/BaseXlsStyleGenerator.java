@@ -42,7 +42,7 @@ import com.ocs.dynamo.utils.NumberUtils;
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEntity<ID>>
 		implements XlsStyleGenerator<ID, T> {
@@ -87,6 +87,8 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 	public BaseXlsStyleGenerator(Workbook workbook) {
 		this.workbook = workbook;
 		DataFormat format = workbook.createDataFormat();
+
+		thousandsGrouping = SystemPropertyUtils.useXlsThousandsGrouping();
 
 		// create the cell styles only once- this is a huge performance
 		// gain!
@@ -184,6 +186,20 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 			return fractionalStyle;
 		}
 		return normal;
+	}
+
+	@Override
+	public CellStyle getTotalsStyle(Class<?> type, AttributeModel attributeModel) {
+		if (NumberUtils.isInteger(type) || NumberUtils.isLong(type)) {
+			return thousandsGrouping ? numberStyle : numberSimpleStyle;
+		} else {
+			if (attributeModel != null && attributeModel.isPercentage()) {
+				return percentageStyle;
+			} else if (attributeModel != null && attributeModel.isCurrency()) {
+				return currencyStyle;
+			}
+			return fractionalStyle;
+		}
 	}
 
 	/**
