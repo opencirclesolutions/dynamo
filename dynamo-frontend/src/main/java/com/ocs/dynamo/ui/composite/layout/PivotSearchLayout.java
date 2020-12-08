@@ -55,7 +55,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	private List<String> fixedColumnKeys;
 
-	private PivotGridWrapper<ID, T> gridWrapper;
+	private PivotGridWrapper<ID, T> pivotGridWrapper;
 
 	/**
 	 * Header mapping function. Excepts the column key and the property
@@ -98,6 +98,12 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	public void addAggregation(String property, PivotAggregationType type, Class<?> clazz) {
 		aggregationMap.put(property, type);
 		aggregationClassMap.put(property, clazz);
+	}
+
+	@Override
+	public void clearGridWrapper() {
+		super.clearGridWrapper();
+		this.pivotGridWrapper = null;
 	}
 
 	public PivotGridWrapper<ID, T> constructGridWrapper() {
@@ -210,10 +216,10 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public GridWrapper<ID, T, PivotedItem> getGridWrapper() {
-		if (gridWrapper == null) {
-			gridWrapper = constructGridWrapper();
+		if (pivotGridWrapper == null) {
+			pivotGridWrapper = constructGridWrapper();
 		}
-		return gridWrapper;
+		return pivotGridWrapper;
 	}
 
 	public BiFunction<Object, Object, String> getHeaderMapper() {

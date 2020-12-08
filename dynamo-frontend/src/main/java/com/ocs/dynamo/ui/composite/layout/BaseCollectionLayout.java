@@ -187,7 +187,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
      * Throws away the grid wrapper, making sure it is reconstructed the next time
      * the layout is displayed
      */
-    public final void clearGridWrapper() {
+    public void clearGridWrapper() {
         this.gridWrapper = null;
     }
 
