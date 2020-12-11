@@ -17,6 +17,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,8 +32,10 @@ import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.export.PivotParameters;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.NumberUtils;
 import com.opencsv.CSVWriter;
 
 /**
@@ -43,130 +46,146 @@ import com.opencsv.CSVWriter;
  * @param <ID> the type of the primary key of the entity to export
  * @param <T>  the type of the entity to export
  */
-public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCsvExportTemplate<ID, T> {
+public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends BaseCsvExportTemplate<ID, T> {
 
-    private PivotParameters pivotParameters;
+	private PivotParameters pivotParameters;
 
-    /**
-     * Constructor
-     * 
-     * @param service         the service
-     * @param entityModel     the entity model
-     * @param exportMode      the export mode
-     * @param sortOrders      the sort orders to apply to the data
-     * @param filter
-     * @param title
-     * @param pivotParameters
-     * @param joins
-     */
-    public ModelBasedCsvPivotExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, SortOrder[] sortOrders, Filter filter,
-            String title, PivotParameters pivotParameters, FetchJoinInformation... joins) {
-        super(service, entityModel, ExportMode.ONLY_VISIBLE_IN_GRID, sortOrders, filter, title, joins);
-        this.pivotParameters = pivotParameters;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service         the service
+	 * @param entityModel     the entity model
+	 * @param exportMode      the export mode
+	 * @param sortOrders      the sort orders to apply to the data
+	 * @param filter
+	 * @param title
+	 * @param pivotParameters
+	 * @param joins
+	 */
+	public ModelBasedCsvPivotExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel,
+			SortOrder[] sortOrders, Filter filter, String title, PivotParameters pivotParameters,
+			FetchJoinInformation... joins) {
+		super(service, entityModel, ExportMode.ONLY_VISIBLE_IN_GRID, sortOrders, filter, title, joins);
+		this.pivotParameters = pivotParameters;
+	}
 
-    @Override
-    protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
-        try (ByteArrayOutputStream out = new ByteArrayOutputStream();
-                CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8),
-                        SystemPropertyUtils.getCsvSeparator().charAt(0), SystemPropertyUtils.getCsvQuoteChar().charAt(0),
-                        SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
+	@Override
+	protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
+		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
+				CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8),
+						SystemPropertyUtils.getCsvSeparator().charAt(0),
+						SystemPropertyUtils.getCsvQuoteChar().charAt(0),
+						SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
 
-            // add header row
+			// add header row
 
-            // add fixed columns
-            List<String> headers = new ArrayList<>();
-            for (String fc : pivotParameters.getFixedColumnKeys()) {
-                headers.add(pivotParameters.getFixedHeaderMapper().apply(fc));
-            }
+			// add fixed columns
+			List<String> headers = new ArrayList<>();
+			for (String fc : pivotParameters.getFixedColumnKeys()) {
+				headers.add(pivotParameters.getFixedHeaderMapper().apply(fc));
+			}
 
-            // add variable columns
-            for (Object fc : pivotParameters.getPossibleColumnKeys()) {
-                for (String property : pivotParameters.getPivotedProperties()) {
-                    String value = pivotParameters.getHeaderMapper().apply(fc, property);
-                    headers.add(value);
-                }
-            }
-            writer.writeNext(headers.toArray(new String[0]));
+			// add variable columns
+			for (Object fc : pivotParameters.getPossibleColumnKeys()) {
+				for (String property : pivotParameters.getPivotedProperties()) {
+					String value = pivotParameters.getHeaderMapper().apply(fc, property);
+					headers.add(value);
+				}
+			}
+			writer.writeNext(headers.toArray(new String[0]));
 
-            String prevRowKey = null;
-            List<String> row = null;
-            int colIndex = 0;
-            int propIndex = 0;
+			String prevRowKey = null;
+			List<String> row = null;
+			int colIndex = 0;
+			int propIndex = 0;
+			boolean match = true;
 
-            // iterate over the rows
-            T entity = iterator.next();
-            while (entity != null) {
+			// iterate over the rows
+			T entity = iterator.next();
+			while (entity != null) {
 
-                String rowKey = ClassUtils.getFieldValueAsString(entity, pivotParameters.getRowKeyProperty());
-                if (!Objects.equals(prevRowKey, rowKey)) {
+				String rowKey = ClassUtils.getFieldValueAsString(entity, pivotParameters.getRowKeyProperty());
+				if (!Objects.equals(prevRowKey, rowKey)) {
 
-                    if (row != null) {
-                        addEmtpyColumnValues(row);
-                        writer.writeNext(row.toArray(new String[0]));
-                    }
+					if (row != null) {
+						addEmtpyColumnValues(row);
+						writer.writeNext(row.toArray(new String[0]));
+					}
 
-                    row = new ArrayList<>();
+					row = new ArrayList<>();
 
-                    for (String fc : pivotParameters.getFixedColumnKeys()) {
-                        Object value = ClassUtils.getFieldValueAsString(entity, fc);
-                        row.add(value.toString());
-                    }
+					for (String fc : pivotParameters.getFixedColumnKeys()) {
+						Object value = ClassUtils.getFieldValueAsString(entity, fc);
 
-                    colIndex = 0;
-                    propIndex = 0;
-                }
+						row.add(value == null ? "" : value.toString());
+					}
 
-                Object object = pivotParameters.getPossibleColumnKeys().get(colIndex);
-                if (!columnValueMatches(entity, object)) {
-                    // appropriate value is missing, write empty cell
-                    row.add("");
-                } else {
-                    // get cell value
+					colIndex = 0;
+					propIndex = 0;
+				}
 
-                    String prop = pivotParameters.getPivotedProperties().get(propIndex);
-                    Object value = ClassUtils.getFieldValue(entity, prop);
-                    row.add(value == null ? "" : value.toString());
-                }
+				Object object = pivotParameters.getPossibleColumnKeys().get(colIndex);
+				if (!columnValueMatches(entity, object)) {
+					// appropriate value is missing, write empty cell
+					row.add("");
+					match = false;
+				} else {
+					// get cell value
 
-                if (propIndex == pivotParameters.getPivotedProperties().size() - 1) {
-                    propIndex = 0;
-                    colIndex = colIndex + 1;
-                } else {
-                    propIndex++;
-                }
+					String prop = pivotParameters.getPivotedProperties().get(propIndex);
+					Object value = ClassUtils.getFieldValue(entity, prop);
 
-                entity = iterator.next();
-                prevRowKey = rowKey;
-            }
+					if (value instanceof BigDecimal) {
+						String format = NumberUtils.bigDecimalToString(false, false, false, 2, (BigDecimal) value,
+								VaadinUtils.getLocale(), "");
+						row.add(format);
+					} else {
+						row.add(value == null ? "" : value.toString());
+					}
+					match = true;
+				}
 
-            // add last row
-            if (row != null) {
-                addEmtpyColumnValues(row);
-                writer.writeNext(row.toArray(new String[0]));
-            }
+				if (propIndex == pivotParameters.getPivotedProperties().size() - 1) {
+					propIndex = 0;
+					colIndex = colIndex + 1;
+				} else {
+					propIndex++;
+				}
 
-            writer.flush();
-            return out.toByteArray();
-        }
-    }
+				if (match) {
+					entity = iterator.next();
+				}
+				prevRowKey = rowKey;
+			}
 
-    /**
-     * Checks whether the value of the column key matches the expected value
-     * 
-     * @param entity   the entity to check for the actual value
-     * @param expected the expected value
-     * @return
-     */
-    private boolean columnValueMatches(T entity, Object expected) {
-        Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
-        return Objects.equals(actual, expected);
-    }
+			// add last row
+			if (row != null) {
+				addEmtpyColumnValues(row);
+				writer.writeNext(row.toArray(new String[0]));
+			}
 
-    private void addEmtpyColumnValues(List<String> row) {
-        while (row.size() < pivotParameters.getFixedColumnKeys().size()
-                + pivotParameters.getPivotedProperties().size() * pivotParameters.getPossibleColumnKeys().size()) {
-            row.add("");
-        }
-    }
+			writer.flush();
+			return out.toByteArray();
+		}
+	}
+
+	/**
+	 * Checks whether the value of the column key matches the expected value
+	 * 
+	 * @param entity   the entity to check for the actual value
+	 * @param expected the expected value
+	 * @return
+	 */
+	private boolean columnValueMatches(T entity, Object expected) {
+		Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
+		return Objects.equals(actual, expected);
+	}
+
+	private void addEmtpyColumnValues(List<String> row) {
+		while (row.size() < pivotParameters.getFixedColumnKeys().size()
+				+ pivotParameters.getPivotedProperties().size() * pivotParameters.getPossibleColumnKeys().size()) {
+			row.add("");
+		}
+	}
 }

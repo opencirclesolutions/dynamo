@@ -19,7 +19,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
