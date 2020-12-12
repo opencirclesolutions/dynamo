@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.WrapMode;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -38,61 +39,65 @@ import com.vaadin.flow.data.provider.ListDataProvider;
  */
 public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 
-    private static final long serialVersionUID = 8711426577974057547L;
+	private static final long serialVersionUID = 8711426577974057547L;
 
-    private DatePicker datePicker;
+	private DatePicker datePicker;
 
-    private TimePicker timePicker;
+	private TimePicker timePicker;
 
-    private ComboBox<String> timeZone;
+	private ComboBox<String> timeZone;
 
-    public ZonedDateTimePicker(Locale locale) {
-        datePicker = new DatePicker();
-        datePicker.setLocale(locale);
-        timePicker = new TimePicker();
-        timePicker.setLocale(locale);
+	public ZonedDateTimePicker(Locale locale) {
+		datePicker = new DatePicker();
+		datePicker.setLocale(locale);
+		timePicker = new TimePicker();
+		timePicker.setLocale(locale);
 
-        timeZone = new ComboBox<>();
-        ListDataProvider<String> provider = new ListDataProvider<>(Lists.newArrayList(TimeZone.getAvailableIDs()));
-        timeZone.setDataProvider(provider);
+		timeZone = new ComboBox<>();
+		ListDataProvider<String> provider = new ListDataProvider<>(Lists.newArrayList(TimeZone.getAvailableIDs()));
+		timeZone.setDataProvider(provider);
 
-        FlexLayout hor = new FlexLayout();
-        hor.setWrapMode(WrapMode.WRAP);
-        hor.add(datePicker);
-        hor.add(timePicker);
-        hor.add(timeZone);
-        add(hor);
-    }
+		FlexLayout hor = new FlexLayout();
+		hor.setWrapMode(WrapMode.WRAP);
+		hor.add(datePicker);
+		hor.add(timePicker);
+		hor.add(timeZone);
+		add(hor);
+	}
 
-    @Override
-    protected ZonedDateTime generateModelValue() {
-        if (datePicker.getValue() == null) {
-            return null;
-        } else {
-            LocalTime time = timePicker.getValue() == null ? LocalTime.of(0, 0) : timePicker.getValue();
-            ZoneId zone = timeZone.getValue() == null ? ZoneId.systemDefault() : ZoneId.of(timeZone.getValue());
-            return ZonedDateTime.of(datePicker.getValue(), time, zone);
-        }
-    }
+	@Override
+	public void clear() {
+		datePicker.clear();
+		timePicker.clear();
+		timeZone.setValue(ZoneId.systemDefault().toString());
+	}
 
-    @Override
-    protected void setPresentationValue(ZonedDateTime value) {
-        if (value == null) {
-            datePicker.setValue(null);
-            timePicker.setValue(null);
-            timeZone.setValue(ZoneId.systemDefault().toString());
-        } else {
-            datePicker.setValue(value.toLocalDate());
-            timePicker.setValue(value.toLocalTime());
-            timeZone.setValue(value.getZone().toString());
-        }
-    }
+	@Override
+	protected ZonedDateTime generateModelValue() {
+		if (datePicker.getValue() == null) {
+			return null;
+		} else {
+			LocalTime time = timePicker.getValue() == null ? LocalTime.of(0, 0) : timePicker.getValue();
+			ZoneId zone = timeZone.getValue() == null ? ZoneId.systemDefault() : ZoneId.of(timeZone.getValue());
+			return ZonedDateTime.of(datePicker.getValue(), time, zone);
+		}
+	}
 
-    @Override
-    public void clear() {
-        datePicker.clear();
-        timePicker.clear();
-        timeZone.setValue(ZoneId.systemDefault().toString());
-    }
+	public void setI18n(DatePickerI18n i18n) {
+		datePicker.setI18n(i18n);
+	}
+
+	@Override
+	protected void setPresentationValue(ZonedDateTime value) {
+		if (value == null) {
+			datePicker.setValue(null);
+			timePicker.setValue(null);
+			timeZone.setValue(ZoneId.systemDefault().toString());
+		} else {
+			datePicker.setValue(value.toLocalDate());
+			timePicker.setValue(value.toLocalTime());
+			timeZone.setValue(value.getZone().toString());
+		}
+	}
 
 }

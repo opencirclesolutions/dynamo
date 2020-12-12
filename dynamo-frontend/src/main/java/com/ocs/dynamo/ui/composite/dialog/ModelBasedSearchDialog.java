@@ -16,7 +16,9 @@ package com.ocs.dynamo.ui.composite.dialog;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -82,7 +84,15 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
+	/**
+	 * Indicates whether advanced search mode is enabled
+	 */
 	private boolean advancedSearchMode;
+
+	/**
+	 * The search filters to apply to the individual fields
+	 */
+	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -124,6 +134,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 			searchLayout.addSortOrder(order);
 		}
 		searchLayout.setMultiSelect(multiSelect);
+		this.fieldFilters.entrySet().forEach(c -> searchLayout.addFieldFilter(c.getKey(), c.getValue()));
 
 		// add double click listener for quickly selecting item and closing the
 		// dialog
@@ -187,6 +198,16 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		if (searchLayout != null) {
 			searchLayout.setDefaultFilters(filters);
 		}
+	}
+
+	/**
+	 * Adds a field filter
+	 * 
+	 * @param property the property for which to add a field filter
+	 * @param filter   the field filter
+	 */
+	public void addFieldFilter(String property, SerializablePredicate<?> filter) {
+		this.fieldFilters.put(property, filter);
 	}
 
 }

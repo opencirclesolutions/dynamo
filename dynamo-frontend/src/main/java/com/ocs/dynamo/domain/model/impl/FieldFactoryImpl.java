@@ -66,6 +66,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.textfield.TextFieldVariant;
@@ -312,12 +313,15 @@ public class FieldFactoryImpl implements FieldFactory {
 			// date field
 			DatePicker df = new DatePicker();
 			df.setLocale(dateLoc);
+			df.setI18n(getDatePickerLocalization(dateLoc));
 			field = df;
 		} else if (LocalDateTime.class.equals(am.getType())) {
 			DateTimePicker df = new DateTimePicker(dateLoc);
+			df.setI18n(getDatePickerLocalization(dateLoc));
 			field = df;
 		} else if (ZonedDateTime.class.equals(am.getType())) {
 			ZonedDateTimePicker df = new ZonedDateTimePicker(dateLoc);
+			df.setI18n(getDatePickerLocalization(dateLoc));
 			field = df;
 		} else if (LocalTime.class.equals(am.getType())) {
 			TimePicker tf = new TimePicker();
@@ -337,6 +341,34 @@ public class FieldFactoryImpl implements FieldFactory {
 			postProcessField(field, am, search, grid);
 		}
 		return field;
+	}
+
+	private DatePickerI18n getDatePickerLocalization(Locale dateLoc) {
+		DatePickerI18n dpi = new DatePickerI18n();
+		dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLoc));
+
+		String weekdays = messageService.getMessage("ocs.calendar.days", dateLoc);
+		if (weekdays != null) {
+			dpi.setWeekdays(Lists.newArrayList(weekdays.split(",")));
+		}
+
+		String weekdaysShort = messageService.getMessage("ocs.calendar.days.short", dateLoc);
+		if (weekdaysShort != null) {
+			dpi.setWeekdaysShort(Lists.newArrayList(weekdaysShort.split(",")));
+		}
+
+		String months = messageService.getMessage("ocs.calendar.months", dateLoc);
+		if (months != null) {
+			dpi.setMonthNames(Lists.newArrayList(months.split(",")));
+		}
+
+		dpi.setCancel(messageService.getMessage("ocs.calendar.cancel", dateLoc));
+		dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLoc));
+		dpi.setFirstDayOfWeek(Integer.parseInt(messageService.getMessage("ocs.calendar.first", dateLoc)));
+		dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLoc));
+		dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLoc));
+
+		return dpi;
 	}
 
 	/**
@@ -509,7 +541,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			AbstractField<?, ?> af = (AbstractField<?, ?>) field;
 			af.setRequiredIndicatorVisible(search ? am.isRequiredForSearching() : am.isRequired());
 		}
-		
+
 		// right alignment for text field
 		if (NumberUtils.isNumeric(am.getType()) && editableGrid) {
 			TextField atf = (TextField) field;
@@ -561,4 +593,5 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 		return entityModel;
 	}
+
 }
