@@ -413,10 +413,19 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			if (group.getField() instanceof Refreshable) {
 				if (getFieldFilters().containsKey(group.getPropertyId())
 						&& group.getField() instanceof CustomEntityField) {
+					CustomEntityField cef = (CustomEntityField) group.getField();
+					Object oldValue = cef.getValue();
 					SerializablePredicate<?> ff = getFieldFilters().get(group.getPropertyId());
-					((CustomEntityField) group.getField()).refresh(ff);
+					cef.refresh(ff);
+					if (oldValue != null) {
+						cef.setValue(oldValue);
+					}
 				} else {
+					Object value = ((HasValue) group.getField()).getValue();
 					((Refreshable) group.getField()).refresh();
+					if (value != null) {
+						((HasValue) group.getField()).setValue(value);
+					}
 				}
 			}
 		}
