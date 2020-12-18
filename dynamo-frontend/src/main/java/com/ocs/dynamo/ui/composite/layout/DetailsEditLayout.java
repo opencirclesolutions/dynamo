@@ -97,24 +97,24 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT);
 			this.form = form;
 
+			buttonBar = new DefaultHorizontalLayout(false, true);
+
+			if (sameRow) {
+				HorizontalLayout rowLayout = new DefaultHorizontalLayout();
+				rowLayout.setWidth("100%");
+				add(rowLayout);
+				rowLayout.add(form);
+				rowLayout.setFlexGrow(4, form);
+				rowLayout.add(buttonBar);
+				rowLayout.setFlexGrow(1, buttonBar);
+				buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME);
+			} else {
+				add(form);
+				add(buttonBar);
+				buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR);
+			}
+
 			if (!viewMode && getFormOptions().isShowRemoveButton()) {
-				buttonBar = new DefaultHorizontalLayout(false, true);
-
-				if (sameRow) {
-					HorizontalLayout rowLayout = new DefaultHorizontalLayout();
-					rowLayout.setWidth("100%");
-					add(rowLayout);
-					rowLayout.add(form);
-					rowLayout.setFlexGrow(4, form);
-					rowLayout.add(buttonBar);
-					rowLayout.setFlexGrow(1, buttonBar);
-					buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME);
-				} else {
-					add(form);
-					add(buttonBar);
-					buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR);
-				}
-
 				removeButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
 				removeButton.setIcon(VaadinIcon.TRASH.create());
 				removeButton.addClickListener(event -> {
@@ -124,13 +124,10 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 					mainFormContainer.remove(this);
 					forms.remove(this);
 				});
-
 				buttonBar.add(removeButton);
-				postProcessButtonBar(buttonBar);
-			} else {
-				// read only mode
-				add(form);
 			}
+
+			postProcessButtonBar(buttonBar);
 		}
 
 		public Button getDeleteButton() {
