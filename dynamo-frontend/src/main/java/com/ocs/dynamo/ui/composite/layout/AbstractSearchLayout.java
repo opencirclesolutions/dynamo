@@ -554,8 +554,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
         doRemove();
         // refresh the results so that the deleted item is no longer
         // there
+        searchForm.search(true);
+        getGridWrapper().getGrid().deselectAll();
         setSelectedItem(null);
-        search();
     }
 
     /**

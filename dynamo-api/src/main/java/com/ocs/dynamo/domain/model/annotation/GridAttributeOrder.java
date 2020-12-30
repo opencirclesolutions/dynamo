@@ -11,28 +11,25 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.component;
+package com.ocs.dynamo.domain.model.annotation;
 
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-public class DefaultFlexLayout extends FlexLayout {
+/**
+ * An annotation that can be used to override the attribute order in a grid
+ * 
+ * @author bas.rutten
+ */
+@Retention(RetentionPolicy.RUNTIME)
+@Target(ElementType.TYPE)
+public @interface GridAttributeOrder {
 
-	private static final long serialVersionUID = -22072475272826468L;
-
-	public DefaultFlexLayout() {
-		this(true);
-	}
-
-	public DefaultFlexLayout(boolean padding) {
-		setFlexWrap(FlexWrap.WRAP);
-		setPadding(padding);
-	}
-
-	public void setPadding(boolean padding) {
-		if (padding) {
-			getElement().removeProperty("theme");
-		} else {
-			getElement().setProperty("theme", "padding");
-		}
-	}
+	/**
+	 * 
+	 * @return the attributes names in the order in which they must be displayed
+	 */
+	String[] attributeNames() default {};
 }

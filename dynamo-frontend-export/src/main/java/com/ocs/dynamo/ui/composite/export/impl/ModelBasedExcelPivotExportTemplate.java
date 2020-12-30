@@ -16,20 +16,16 @@ package com.ocs.dynamo.ui.composite.export.impl;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.Serializable;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.HorizontalAlignment;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.ss.util.CellReference;
 
-import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -44,9 +40,7 @@ import com.ocs.dynamo.ui.composite.export.PivotParameters;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.MathUtils;
 
 /**
  * Template for exporting a pivoted data set to Excel
@@ -166,6 +160,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		int colIndex = 0;
 		int propIndex = 0;
 		int colsAdded = 0;
+		boolean match = true;
 
 		// iterate over the rows
 		T entity = iterator.next();
@@ -176,12 +171,14 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 				// add aggregate columns
 				if (row != null) {
-					int lastColAdded = nrOfFixedCols + colsAdded - 1;
+
 					if (nrOfPivotProps == 1) {
 						String prop = pivotParameters.getPivotedProperties().get(0);
 						PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
+						Class<?> clazz = pivotParameters.getAggregationClassMap().get(prop);
 						if (type != null) {
-							writeRowAggregate(row, type, lastColAdded, nrOfFixedCols, colsAdded);
+							writeRowAggregate(row, type, clazz, pivotParameters.getPossibleColumnKeys().size(),
+									nrOfFixedCols);
 							colsAdded++;
 						}
 					}
@@ -209,8 +206,10 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			if (!columnValueMatches(entity, pivotColumnKey)) {
 				// appropriate value is missing, write empty cell
 				createCell(row, nrOfFixedCols + colsAdded, entity, "", null, null);
+				match = false;
 			} else {
 				// get cell value
+				match = true;
 
 				String prop = pivotParameters.getPivotedProperties().get(propIndex);
 				Object value = ClassUtils.getFieldValue(entity, prop);
@@ -232,16 +231,19 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			}
 			colsAdded++;
 
-			entity = iterator.next();
+			if (match) {
+				entity = iterator.next();
+			}
 			prevRowKey = rowKey;
 		}
 
 		if (nrOfPivotProps == 1) {
-			int lastColAdded = nrOfFixedCols + colsAdded - 1;
 			String prop = pivotParameters.getPivotedProperties().get(0);
 			PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
+			Class<?> clazz = pivotParameters.getAggregationClassMap().get(prop);
+
 			if (type != null && row != null) {
-				writeRowAggregate(row, type, lastColAdded, nrOfFixedCols, colsAdded);
+				writeRowAggregate(row, type, clazz, pivotParameters.getPossibleColumnKeys().size(), nrOfFixedCols);
 				colsAdded++;
 			}
 		}
@@ -287,12 +289,22 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 	private void writeColumnsAggregate(int nrOfFixedCols, Sheet sheet) {
 		PivotAggregationType type = null;
+		Class<?> clazz = null;
+		boolean defaultType = false;
+
 		// add an aggregation row at the bottom
 		Row totalsRow = null;
 		for (int s = 0; s < pivotParameters.getPossibleColumnKeys().size(); s++) {
 			if (pivotParameters.getPivotedProperties().size() == 1) {
 				String prop = pivotParameters.getPivotedProperties().get(0);
 				type = pivotParameters.getAggregationMap().get(prop);
+				clazz = pivotParameters.getAggregationClassMap().get(prop);
+
+				if (type == null) {
+					type = PivotAggregationType.SUM;
+					defaultType = true;
+				}
+
 				if (type != null) {
 
 					int ci = nrOfFixedCols + s;
@@ -318,9 +330,8 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 					Cell totalsCell = totalsRow.createCell(ci);
 
 					String col = CellReference.convertNumToColString(ci);
-					totalsCell.setCellStyle(getGenerator().getTotalsStyle(Integer.class, null));
+					totalsCell.setCellStyle(getGenerator().getTotalsStyle(clazz, null));
 					totalsCell.setCellType(CellType.FORMULA);
-					totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
 
 					int firstRow = 1;
 					int lastRow = sheet.getLastRowNum();
@@ -330,13 +341,12 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		}
 
 		// add a grand total at bottom right
-		if (totalsRow != null) {
+		if (totalsRow != null && !defaultType) {
 			int ci = nrOfFixedCols + pivotParameters.getPossibleColumnKeys().size();
 
 			Cell totalsCell = totalsRow.createCell(ci);
-			totalsCell.setCellStyle(getGenerator().getTotalsStyle(Integer.class, null));
+			totalsCell.setCellStyle(getGenerator().getTotalsStyle(clazz, null));
 			totalsCell.setCellType(CellType.FORMULA);
-			totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
 			String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
 			String lastCol = CellReference.convertNumToColString(ci - 1);
 			int rowNum = sheet.getLastRowNum() + 1;
@@ -355,17 +365,16 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	 * @param nrOfFixedCols the number of fixed columns
 	 * @param colsAdded     the number of (variable) columns added so far
 	 */
-	private void writeRowAggregate(Row row, PivotAggregationType type, int lastColAdded, int nrOfFixedCols,
-			int colsAdded) {
-		int ci = nrOfFixedCols + colsAdded;
+	private void writeRowAggregate(Row row, PivotAggregationType type, Class<?> aggregateClass, int nrOfVariableCols,
+			int nrOfFixedCols) {
+		int ci = nrOfFixedCols + nrOfVariableCols;
 		Cell totalsCell = row.createCell(ci);
 
 		String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
-		String lastCol = CellReference.convertNumToColString(lastColAdded);
+		String lastCol = CellReference.convertNumToColString(nrOfFixedCols + nrOfVariableCols - 1);
 
-		totalsCell.setCellStyle(getGenerator().getCellStyle(ci, null, null, null));
+		totalsCell.setCellStyle(getGenerator().getTotalsStyle(aggregateClass, null));
 		totalsCell.setCellType(CellType.FORMULA);
-		totalsCell.getCellStyle().setAlignment(HorizontalAlignment.RIGHT);
 
 		int rn = row.getRowNum() + 1;
 		totalsCell.setCellFormula(toExcelFunction(type) + "(" + firstCol + rn + ":" + lastCol + rn + ")");

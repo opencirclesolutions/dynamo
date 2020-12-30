@@ -30,8 +30,10 @@ import com.ocs.dynamo.filter.PredicateUtils;
 import com.ocs.dynamo.filter.PropertyPredicate;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -159,20 +161,20 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * Callback method that is called when the user switches to or from advanced
+	 * search mode
+	 */
+	protected void afterAdvancedModeToggled() {
+		// override in subclasses
+	}
+
+	/**
 	 * Callback method that is called when the user toggles the visibility of the
 	 * search form
 	 *
 	 * @param visible indicates if the search fields are visible now
 	 */
 	protected void afterSearchFieldToggle(boolean visible) {
-		// override in subclasses
-	}
-
-	/**
-	 * Callback method that is called when the user switches to or from advanced
-	 * search mode
-	 */
-	protected void afterAdvancedModeToggled() {
 		// override in subclasses
 	}
 
@@ -212,6 +214,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			// add any custom functionality
 			postProcessLayout(main);
 			add(main);
+
+			if (getFormOptions().isPreserveSearchTerms() && !getFormOptions().isPopup()) {
+				restoreSearchValues();
+			}
 		}
 	}
 
@@ -219,6 +225,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Clears any search filters (and re-applies the default filters afterwards)
 	 */
 	public void clear() {
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			helper.clearSearchTerms();
+		}
 		currentFilters.clear();
 		currentFilters.addAll(getDefaultFilters());
 	}
@@ -336,6 +346,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			SerializablePredicate<T> currentFilter = matchAny
 					? new OrPredicate<>(currentFilters.toArray(new SerializablePredicate[0]))
 					: new AndPredicate<>(currentFilters.toArray(new SerializablePredicate[0]));
+
 			if (defaultFilter != null) {
 				return new AndPredicate<>(defaultFilter, currentFilter);
 			}
@@ -531,6 +542,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
+	 * Restores any previously cached search values
+	 */
+	protected abstract void restoreSearchValues();
+
+	/**
 	 * Performs a search that matches all of the search criteria
 	 * 
 	 * @return
@@ -546,7 +562,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 *
 	 * @return
 	 */
-	private boolean search(boolean skipValidation) {
+	public boolean search(boolean skipValidation) {
 		return search(skipValidation, false);
 	}
 
@@ -562,7 +578,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @return
 	 */
 	private boolean search(boolean skipValidation, boolean matchAny) {
-		if (!isSearchAllowed()) {
+		if (!skipValidation && !isSearchAllowed()) {
 			return false;
 		}
 
@@ -577,6 +593,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			}
 
 			searchable.search(extractFilter(matchAny));
+
+			// store search filters for later user
+			storeSearchFilters();
+
 			if (!skipValidation) {
 				afterSearchPerformed();
 			}
@@ -595,10 +615,20 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return search(false, true);
 	}
 
+	/**
+	 * Sets whether to enable advanced search mode
+	 * 
+	 * @param advancedSearchMode whether to enable advanced search mode
+	 */
 	public void setAdvancedSearchMode(boolean advancedSearchMode) {
 		this.advancedSearchMode = advancedSearchMode;
 	}
 
+	/**
+	 * Sets the code to be carrried out after the search filters are cleared
+	 * 
+	 * @param afterClearConsumer
+	 */
 	public void setAfterClearConsumer(Consumer<ClickEvent<Button>> afterClearConsumer) {
 		this.afterClearConsumer = afterClearConsumer;
 	}
@@ -620,6 +650,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	public void setSearchable(Searchable<T> searchable) {
 		this.searchable = searchable;
 	}
+
+	/**
+	 * Stores any selected search filters for later use when the screen is reopened
+	 */
+	protected abstract void storeSearchFilters();
 
 	/**
 	 * 

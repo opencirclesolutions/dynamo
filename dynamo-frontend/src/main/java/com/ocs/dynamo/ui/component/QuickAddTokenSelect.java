@@ -25,10 +25,12 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * 
@@ -78,6 +80,18 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
 		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
 		initContent();
+	}
+
+	@Override
+	public Registration addValueChangeListener(
+			ValueChangeListener<? super ComponentValueChangeEvent<CustomField<Collection<T>>, Collection<T>>> listener) {
+		if (tokenSelect != null) {
+			return tokenSelect
+					.addValueChangeListener(event -> listener.valueChanged(new ComponentValueChangeEvent<>(this, this,
+							event.getOldValue() == null ? null : Sets.newHashSet(event.getOldValue()),
+							event.isFromClient())));
+		}
+		return null;
 	}
 
 	@Override
@@ -180,7 +194,6 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	public void setErrorMessage(String errorMessage) {
-		//super.setErrorMessage(errorMessage);
 		if (tokenSelect != null) {
 			tokenSelect.setErrorMessage(errorMessage);
 		}

@@ -50,8 +50,10 @@ import com.ocs.dynamo.filter.NotPredicate;
 import com.ocs.dynamo.filter.SimpleStringPredicate;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -68,7 +70,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.FlexLayout.WrapMode;
+import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -175,7 +177,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		FilterRegion(FilterListener<T> listener) {
 			this.listener = listener;
 			layout = new FlexLayout();
-			layout.setWrapMode(WrapMode.WRAP);
+			layout.setFlexWrap(FlexWrap.NOWRAP);
 			layout.addClassName("dynamoFlexRow");
 
 			removeButton = new Button("");
@@ -926,6 +928,18 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	}
 
 	/**
+	 * Restores previously cached search filters
+	 */
+	@Override
+	protected void restoreSearchValues() {
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			List<FlexibleFilterDefinition> filters = helper.retrieveSearchFilterDefinitions();
+			restoreFilterDefinitions(filters);
+		}
+	}
+
+	/**
 	 * Sets the properties (of type String) for which to only allow simple search
 	 * options ("contains" and "starts with") (
 	 * 
@@ -933,6 +947,17 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 */
 	public void setBasicStringFilterProperties(Set<String> basicStringFilterProperties) {
 		this.basicStringFilterProperties = basicStringFilterProperties;
+	}
+
+	/**
+	 * Stores search filters
+	 */
+	@Override
+	protected void storeSearchFilters() {
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			helper.storeSearchFilterDefinitions(extractFilterDefinitions());
+		}
 	}
 
 	@Override
@@ -944,5 +969,4 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	public void toggleAdvancedMode() {
 		// not needed
 	}
-
 }

@@ -166,6 +166,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	String getFileNameProperty();
 
+	Integer getGridOrder();
+
 	/**
 	 * @return the select mode (determines which component to render in editable
 	 *         grids)
@@ -288,6 +290,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return the search mode
 	 */
 	SearchMode getSearchMode();
+
+	Integer getSearchOrder();
 
 	/**
 	 * @return The search select mode (determines which component to render in
@@ -494,8 +498,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	void removeCascades();
 
-
 	void setCustomSetting(String name, Object value);
-	
+
 	void setMainAttribute(boolean main);
 }

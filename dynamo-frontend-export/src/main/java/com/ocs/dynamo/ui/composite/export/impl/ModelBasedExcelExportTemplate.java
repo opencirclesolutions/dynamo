@@ -78,7 +78,7 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 		titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
 		int i = 0;
-		for (AttributeModel am : getEntityModel().getAttributeModels()) {
+		for (AttributeModel am : getEntityModel().getAttributeModelsSortedForGrid()) {
 			if (show(am)) {
 				if (!resize) {
 					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);

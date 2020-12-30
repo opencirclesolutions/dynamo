@@ -21,7 +21,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -31,14 +30,22 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.filter.BetweenPredicate;
+import com.ocs.dynamo.filter.CompositePredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.InPredicate;
+import com.ocs.dynamo.filter.LessOrEqualPredicate;
+import com.ocs.dynamo.filter.PropertyPredicate;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
@@ -240,6 +247,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		form = new FormLayout();
 		form.setWidth(maxFormWidth);
 
+		if (columnThresholds == null || columnThresholds.isEmpty()) {
+			columnThresholds = SystemPropertyUtils.getDefaultSearchColumnThresholds();
+		}
+
 		if (!columnThresholds.isEmpty()) {
 			// custom responsive steps
 			List<ResponsiveStep> list = new ArrayList<>();
@@ -249,13 +260,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				i++;
 			}
 			form.setResponsiveSteps(list);
-		} else {
-			form.setResponsiveSteps(Lists.newArrayList(new ResponsiveStep("0px", 1), new ResponsiveStep("650px", 2),
-					new ResponsiveStep("1300px", 3)));
 		}
 
 		// iterate over the searchable attributes and add a field for each
-		iterate(getEntityModel().getAttributeModels());
+		iterate(getEntityModel().getAttributeModelsSortedForSearch());
 		constructCascadeListeners();
 
 		// hide the search form if there are no search criteria (and no extra search
@@ -359,7 +367,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			// also support search on nested attributes
 			if (attributeModel.getNestedEntityModel() != null) {
 				EntityModel<?> nested = attributeModel.getNestedEntityModel();
-				iterate(nested.getAttributeModels());
+				iterate(nested.getAttributeModelsSortedForSearch());
 			}
 		}
 	}
@@ -413,10 +421,19 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			if (group.getField() instanceof Refreshable) {
 				if (getFieldFilters().containsKey(group.getPropertyId())
 						&& group.getField() instanceof CustomEntityField) {
+					CustomEntityField cef = (CustomEntityField) group.getField();
+					Object oldValue = cef.getValue();
 					SerializablePredicate<?> ff = getFieldFilters().get(group.getPropertyId());
-					((CustomEntityField) group.getField()).refresh(ff);
+					cef.refresh(ff);
+					if (oldValue != null) {
+						cef.setValue(oldValue);
+					}
 				} else {
+					Object value = ((HasValue) group.getField()).getValue();
 					((Refreshable) group.getField()).refresh();
+					if (value != null) {
+						((HasValue) group.getField()).setValue(value);
+					}
 				}
 			}
 		}
@@ -478,6 +495,20 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	public <R> void setSearchAuxValue(String propertyId, R auxValue) {
+		FilterGroup<T> group = groups.get(propertyId);
+		if (group != null) {
+			if (group.getAuxField() != null) {
+				if (auxValue != null) {
+					((HasValue<?, R>) group.getAuxField()).setValue(auxValue);
+				} else {
+					((HasValue<?, R>) group.getAuxField()).clear();
+				}
+			}
+		}
+	}
+
 	@Override
 	protected boolean supportsAdvancedSearchMode() {
 		return true;
@@ -512,7 +543,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		// empty the search form and rebuild it
 		form.removeAll();
 		groups.clear();
-		iterate(getEntityModel().getAttributeModels());
+		iterate(getEntityModel().getAttributeModelsSortedForSearch());
 
 		// restore search values (note that maybe not all fields are there)
 		for (Entry<String, Object> entry : oldValues.entrySet()) {
@@ -520,6 +551,59 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			if (filterGroup != null) {
 				setSearchValue(entry.getKey(), entry.getValue());
 			}
+		}
+	}
+
+	/**
+	 * Restores a single search value based on a predicate
+	 * 
+	 * @param predicate
+	 */
+	protected void restoreSearchValue(SerializablePredicate<T> predicate) {
+		if (predicate instanceof BetweenPredicate) {
+			BetweenPredicate<T> bp = (BetweenPredicate<T>) predicate;
+			AttributeModel am = getEntityModel().getAttributeModel(bp.getProperty());
+			Object fromValue = ConvertUtils.convertToPresentationValue(am, bp.getFromValue());
+			Object toValue = ConvertUtils.convertToPresentationValue(am, bp.getToValue());
+			setSearchValue(bp.getProperty(), fromValue, toValue);
+		} else if (predicate instanceof LessOrEqualPredicate) {
+			LessOrEqualPredicate<T> bp = (LessOrEqualPredicate<T>) predicate;
+			AttributeModel am = getEntityModel().getAttributeModel(bp.getProperty());
+			Object auxValue = ConvertUtils.convertToPresentationValue(am, bp.getValue());
+			setSearchAuxValue(bp.getProperty(), auxValue);
+		} else if (predicate instanceof PropertyPredicate) {
+			PropertyPredicate<T> c = (PropertyPredicate<T>) predicate;
+			AttributeModel am = getEntityModel().getAttributeModel(c.getProperty());
+			Object value = ConvertUtils.convertToPresentationValue(am, c.getValue());
+			setSearchValue(c.getProperty(), value);
+		}
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	protected void restoreSearchValues() {
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			List<SerializablePredicate<?>> searchTerms = helper.retrieveSearchTerms();
+			searchTerms.forEach(s -> {
+				SerializablePredicate<T> predicate = (SerializablePredicate<T>) s;
+				if (s instanceof CompositePredicate) {
+					CompositePredicate<T> cp = (CompositePredicate<T>) s;
+					cp.getOperands().stream().forEach(ap -> restoreSearchValue(ap));
+				} else {
+					restoreSearchValue(predicate);
+				}
+			});
+		}
+	}
+
+	@Override
+	protected void storeSearchFilters() {
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			List<SerializablePredicate<?>> list = new ArrayList<>();
+			list.addAll(getCurrentFilters());
+			helper.storeSearchTerms(list);
 		}
 	}
 

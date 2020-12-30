@@ -15,13 +15,16 @@ package com.ocs.dynamo.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.model.GroupTogetherMode;
 
 /**
  * Utility methods for retrieving system property values
@@ -163,6 +166,15 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
+	 * @return
+	 */
+	public static List<String> getDefaultEditColumnThresholds() {
+		String temp = getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_FORM_COLUMN_THRESHOLDS, "0px");
+		return Lists.newArrayList(temp.split(","));
+	}
+
+	/**
+	 * 
 	 * @return the default edit grid height in pixels
 	 */
 	public static String getDefaultEditGridHeight() {
@@ -194,6 +206,25 @@ public final class SystemPropertyUtils {
 	 */
 	public static String getDefaultGridHeight() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_GRID_HEIGHT, "400px");
+	}
+
+	/**
+	 * 
+	 * @return the default "group together" mode. This determines how the grouped
+	 *         together fields behave
+	 */
+	public static GroupTogetherMode getDefaultGroupTogetherMode() {
+		String s = getStringProperty(DynamoConstants.SP_DEFAULT_GROUP_TOGETHER_MODE, "pixel");
+		return GroupTogetherMode.valueOf(s.toUpperCase());
+	}
+
+	/**
+	 * 
+	 * @return the default threshold width for group together columns (when mode =
+	 *         pixel)
+	 */
+	public static Integer getDefaultGroupTogetherWidth() {
+		return getIntProperty(DynamoConstants.SP_DEFAULT_GROUP_TOGETHER_WIDTH, 300);
 	}
 
 	/**
@@ -246,7 +277,16 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return the default grid height in pixels
+	 * @return the default thresholds for columns in a search form
+	 */
+	public static List<String> getDefaultSearchColumnThresholds() {
+		String temp = getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_FORM_COLUMN_THRESHOLDS, "0px,650px,1300px");
+		return Lists.newArrayList(temp.split(","));
+	}
+
+	/**
+	 * 
+	 * @return the default height of the results grid in a search dialog
 	 */
 	public static String getDefaultSearchDialogGridHeight() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT, "300px");
@@ -295,14 +335,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
-	 * @return
-	 */
-	public static Boolean mustIndentGrids() {
-		return getBooleanProperty(DynamoConstants.SP_INDENT_GRIDS_IN_FORM, true);
-	}
-
-	/**
 	 * Looks up the value for an integer property
 	 * 
 	 * @param propertyName the name of the property
@@ -324,15 +356,6 @@ public final class SystemPropertyUtils {
 	 */
 	public static int getLookupFieldMaxItems() {
 		return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
-	}
-
-	/**
-	 * 
-	 * @return the minimum width that must be available before two results columns
-	 *         will be displayed
-	 */
-	public static String getMinimumTwoColumnWidth() {
-		return getStringProperty(DynamoConstants.SP_MINIMUM_TWO_COLUMN_WIDTH, "1200px");
 	}
 
 	/**
@@ -362,17 +385,22 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * Whether to capitalize every word in a property name
 	 * 
-	 * @return
+	 * @return whether to capitalize every word in a property name
 	 */
 	public static boolean isCapitalizeWords() {
 		return getBooleanProperty(DynamoConstants.SP_CAPITALIZE_WORDS, true);
 	}
 
 	/**
-	 *
-	 *
+	 * 
+	 * @return whether to indent grid and detail form components
+	 */
+	public static Boolean mustIndentGrids() {
+		return getBooleanProperty(DynamoConstants.SP_INDENT_GRIDS_IN_FORM, true);
+	}
+
+	/**
 	 * @return whether to use the display name of an attribute as the "prompt" value
 	 *         (hint/placeholder) inside the component
 	 */
@@ -386,10 +414,10 @@ public final class SystemPropertyUtils {
 	public static boolean useThousandsGroupingInEditMode() {
 		return getBooleanProperty(DynamoConstants.SP_THOUSAND_GROUPING, null);
 	}
-	
+
 	/**
 	 * 
-	 * @return
+	 * @return whether to use thousands grouping in XLS export
 	 */
 	public static boolean useXlsThousandsGrouping() {
 		return getBooleanProperty(DynamoConstants.SP_XLS_THOUSANDS_GROUPING, false);

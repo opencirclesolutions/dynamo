@@ -74,7 +74,7 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 
 			// add header row
 			List<String> headers = new ArrayList<>();
-			for (AttributeModel am : getEntityModel().getAttributeModels()) {
+			for (AttributeModel am : getEntityModel().getAttributeModelsSortedForGrid()) {
 				if (show(am)) {
 					headers.add(am.getDisplayName(VaadinUtils.getLocale()));
 				}
@@ -85,7 +85,7 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 			T entity = iterator.next();
 			while (entity != null) {
 				List<String> row = new ArrayList<>();
-				for (AttributeModel am : getEntityModel().getAttributeModels()) {
+				for (AttributeModel am : getEntityModel().getAttributeModelsSortedForGrid()) {
 					if (show(am)) {
 						Object value = ClassUtils.getFieldValue(entity, am.getPath());
 						String str = GridFormatUtils.formatPropertyValue(am, value, ", ", VaadinUtils.getLocale(),

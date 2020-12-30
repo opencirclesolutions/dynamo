@@ -49,8 +49,10 @@ public class PivotParameters {
 	private Function<String, String> fixedHeaderMapper = Function.identity();
 
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
-	
+
 	private boolean includeAggregateRow;
+
+	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
 
 	public String getRowKeyProperty() {
 		return rowKeyProperty;
@@ -130,6 +132,14 @@ public class PivotParameters {
 
 	public void setIncludeAggregateRow(boolean includeAggregateRow) {
 		this.includeAggregateRow = includeAggregateRow;
+	}
+
+	public Map<String, Class<?>> getAggregationClassMap() {
+		return aggregationClassMap;
+	}
+
+	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
+		this.aggregationClassMap = aggregationClassMap;
 	}
 
 }

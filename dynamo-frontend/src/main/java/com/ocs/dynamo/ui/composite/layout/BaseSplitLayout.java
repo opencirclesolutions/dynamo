@@ -22,6 +22,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -85,7 +86,20 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	private Component selectedDetailLayout;
 
+	/**
+	 * Threshold widths for columns
+	 */
 	private List<String> columnThresholds = new ArrayList<>();
+
+	/**
+	 * The "group together" mode
+	 */
+	private GroupTogetherMode groupTogetherMode;
+
+	/**
+	 * Threshold width (pixels) for every group together column
+	 */
+	private Integer groupTogetherWidth;
 
 	/**
 	 * Constructor
@@ -329,8 +343,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
-				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-					return BaseSplitLayout.this.constructCustomValidator(am);
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+						boolean viewMode) {
+					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
 				@Override
@@ -339,9 +354,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode) {
-					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+					return BaseSplitLayout.this.constructCustomValidator(am);
 				}
 
 				@Override
@@ -373,7 +387,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				protected void postProcessEditFields() {
 					BaseSplitLayout.this.postProcessEditFields(editForm);
 				}
-
 			};
 
 			editForm.setCustomSaveConsumer(getCustomSaveConsumer());
@@ -381,6 +394,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.setMaxFormWidth(getMaxEditFormWidth());
 			editForm.setColumnThresholds(getColumnThresholds());
+			editForm.setGroupTogetherMode(getGroupTogetherMode());
+			editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 			editForm.build();
 
 			detailFormLayout.add(editForm);
@@ -423,12 +438,24 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		return addButton;
 	}
 
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
+	}
+
 	public VerticalLayout getDetailLayout() {
 		return detailLayout;
 	}
 
 	public ModelBasedEditForm<ID, T> getEditForm() {
 		return editForm;
+	}
+
+	public GroupTogetherMode getGroupTogetherMode() {
+		return groupTogetherMode;
+	}
+
+	public Integer getGroupTogetherWidth() {
+		return groupTogetherWidth;
 	}
 
 	public TextField getQuickSearchField() {
@@ -531,6 +558,18 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		}
 	}
 
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
+	}
+
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		this.groupTogetherMode = groupTogetherMode;
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		this.groupTogetherWidth = groupTogetherWidth;
+	}
+
 	/**
 	 * Replaces the contents of a label by the specified value
 	 *
@@ -559,14 +598,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		if (getSelectedItem() != null) {
 			editForm.setViewMode(viewMode);
 		}
-	}
-
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
 	}
 
 }

@@ -25,7 +25,7 @@ import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.FlexLayout.WrapMode;
+import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
@@ -57,12 +57,12 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 		ListDataProvider<String> provider = new ListDataProvider<>(Lists.newArrayList(TimeZone.getAvailableIDs()));
 		timeZone.setDataProvider(provider);
 
-		FlexLayout hor = new FlexLayout();
-		hor.setWrapMode(WrapMode.WRAP);
-		hor.add(datePicker);
-		hor.add(timePicker);
-		hor.add(timeZone);
-		add(hor);
+		FlexLayout flexLayout = new FlexLayout();
+		flexLayout.setFlexWrap(FlexWrap.WRAP);
+		flexLayout.add(datePicker);
+		flexLayout.add(timePicker);
+		flexLayout.add(timeZone);
+		add(flexLayout);
 	}
 
 	@Override

@@ -11,28 +11,9 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.ui.component;
+package com.ocs.dynamo.domain.model;
 
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
+public enum GroupTogetherMode {
 
-public class DefaultFlexLayout extends FlexLayout {
-
-	private static final long serialVersionUID = -22072475272826468L;
-
-	public DefaultFlexLayout() {
-		this(true);
-	}
-
-	public DefaultFlexLayout(boolean padding) {
-		setFlexWrap(FlexWrap.WRAP);
-		setPadding(padding);
-	}
-
-	public void setPadding(boolean padding) {
-		if (padding) {
-			getElement().removeProperty("theme");
-		} else {
-			getElement().setProperty("theme", "padding");
-		}
-	}
+	PERCENTAGE, PIXEL;
 }

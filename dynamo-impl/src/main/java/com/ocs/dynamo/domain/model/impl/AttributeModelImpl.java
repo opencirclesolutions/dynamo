@@ -129,6 +129,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Integer order;
 
+	private Integer searchOrder;
+
+	private Integer gridOrder;
+
 	private boolean percentage;
 
 	private int precision;
@@ -303,6 +307,11 @@ public class AttributeModelImpl implements AttributeModel {
 		return fileNameProperty;
 	}
 
+	@Override
+	public Integer getGridOrder() {
+		return gridOrder;
+	}
+
 	public AttributeSelectMode getGridSelectMode() {
 		return gridSelectMode;
 	}
@@ -406,6 +415,11 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public SearchMode getSearchMode() {
 		return searchMode;
+	}
+
+	@Override
+	public Integer getSearchOrder() {
+		return searchOrder;
 	}
 
 	@Override
@@ -709,6 +723,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.fileNameProperty = fileNameProperty;
 	}
 
+	public void setGridOrder(Integer gridOrder) {
+		this.gridOrder = gridOrder;
+	}
+
 	public void setGridSelectMode(AttributeSelectMode gridSelectMode) {
 		this.gridSelectMode = gridSelectMode;
 	}
@@ -816,6 +834,10 @@ public class AttributeModelImpl implements AttributeModel {
 
 	public void setSearchMode(SearchMode searchMode) {
 		this.searchMode = searchMode;
+	}
+
+	public void setSearchOrder(Integer searchOrder) {
+		this.searchOrder = searchOrder;
 	}
 
 	public void setSearchPrefixOnly(boolean searchPrefixOnly) {

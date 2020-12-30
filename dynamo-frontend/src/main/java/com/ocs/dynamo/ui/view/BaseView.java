@@ -28,6 +28,8 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.router.BeforeEnterEvent;
+import com.vaadin.flow.router.BeforeEnterObserver;
 import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
@@ -39,7 +41,7 @@ import com.vaadin.flow.router.BeforeLeaveObserver;
  * @author bas.rutten
  */
 @Component
-public abstract class BaseView extends VerticalLayout implements BeforeLeaveObserver {
+public abstract class BaseView extends VerticalLayout implements BeforeLeaveObserver, BeforeEnterObserver {
 
 	public static final String SELECTED_ID = "selectedId";
 
@@ -63,19 +65,37 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 */
 	private boolean confirmBeforeLeave;
 
-	public BaseView(boolean confirmBeforeLeave) {
-		this.confirmBeforeLeave = confirmBeforeLeave;
-	}
-
 	public BaseView() {
 		this(false);
 		setSpacing(false);
 	}
 
-	@PostConstruct
-	public final void init() {
-		VerticalLayout main = initLayout();
-		doInit(main);
+	public BaseView(boolean confirmBeforeLeave) {
+		this.confirmBeforeLeave = confirmBeforeLeave;
+	}
+
+	@Override
+	public void beforeEnter(BeforeEnterEvent event) {
+		uiHelper.setSelectedView(event.getNavigationTarget());
+		MenuBar menuBar = uiHelper.getMenuBar();
+		if (menuBar != null) {
+			menuService.setLastVisited(menuBar, event.getLocation().getPath());
+		}
+	}
+
+	@Override
+	public void beforeLeave(BeforeLeaveEvent event) {
+		if (confirmBeforeLeave && isEditing()) {
+			MenuBar menuBar = uiHelper.getMenuBar();
+			String lastVisited = menuBar == null ? null : menuService.getLastVisited();
+
+			ContinueNavigationAction postpone = event.postpone();
+			VaadinUtils.showConfirmDialog(message("ocs.confirm.navigate"), () -> postpone.proceed(), () -> {
+				if (lastVisited != null) {
+					menuService.setLastVisited(menuBar, lastVisited);
+				}
+			});
+		}
 	}
 
 	/**
@@ -91,6 +111,16 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 		return modelFactory;
 	}
 
+	public UIHelper getUiHelper() {
+		return uiHelper;
+	}
+
+	@PostConstruct
+	public final void init() {
+		VerticalLayout main = initLayout();
+		doInit(main);
+	}
+
 	/**
 	 * Sets up the outermost layout
 	 * 
@@ -101,6 +131,16 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 		container.addClassName(DynamoConstants.CSS_BASE_VIEW_PARENT);
 		add(container);
 		return container;
+	}
+
+	/**
+	 * Callback method that is called when the user wants to navigate away from a
+	 * page that is being edited
+	 * 
+	 * @return
+	 */
+	protected boolean isEditing() {
+		return false;
 	}
 
 	/**
@@ -130,42 +170,17 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 * @param viewId the ID of the desired view
 	 */
 	protected void navigate(String viewId) {
-
 		UI.getCurrent().navigate(viewId);
 	}
 
+	/**
+	 * Navigates to the specified view
+	 * 
+	 * @param viewId the ID of the view
+	 * @param mode
+	 */
 	protected void navigate(String viewId, String mode) {
 		UI.getCurrent().navigate(viewId + "/" + mode);
-	}
-
-	public UIHelper getUiHelper() {
-		return uiHelper;
-	}
-
-	@Override
-	public void beforeLeave(BeforeLeaveEvent event) {
-		if (confirmBeforeLeave && isEditing()) {
-			MenuBar menuBar = uiHelper.getMenuBar();
-			String lastVisited = menuBar == null ? null : menuService.getLastVisited();
-
-			ContinueNavigationAction postpone = event.postpone();
-			VaadinUtils.showConfirmDialog(message("ocs.confirm.navigate"),
-					() -> postpone.proceed(), () -> {
-						if (lastVisited != null) {
-							menuService.setLastVisited(menuBar, lastVisited);
-						}
-					});
-		}
-	}
-
-	/**
-	 * Callback method that is called when the user wants to navigate away from a
-	 * page that is being edited
-	 * 
-	 * @return
-	 */
-	protected boolean isEditing() {
-		return false;
 	}
 
 }

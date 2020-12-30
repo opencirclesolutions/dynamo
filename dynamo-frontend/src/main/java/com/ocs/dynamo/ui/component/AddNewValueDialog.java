@@ -15,7 +15,7 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;

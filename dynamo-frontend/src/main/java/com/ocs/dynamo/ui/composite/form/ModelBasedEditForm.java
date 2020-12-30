@@ -34,7 +34,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -45,6 +44,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.InPredicate;
@@ -261,8 +261,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private static final long serialVersionUID = 2201140375797069148L;
 
+	/**
+	 * The code to be carried out after a file has been successfully uploaded
+	 */
 	private BiConsumer<String, byte[]> afterUploadConsumer;
 
+	/**
+	 * Map for keeping track of which attributes have already been bound to a
+	 * component
+	 */
 	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
 	/**
@@ -280,6 +287,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Buttons per viewmode and functions (save, edit, etc)
 	 */
 	private Map<Boolean, Map<String, List<Button>>> buttons = new HashMap<>();
+
+	/**
+	 * Column width thresholds
+	 */
+	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
 	 * Custom consumer that is to be called instead of the regular save behavior
@@ -316,12 +328,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Map<Integer, Focusable<?>> firstFields = new HashMap<>();
 
+	/**
+	 * Map for keeping track of which attributes have been added to the form by
+	 * means of a form item (typically, labels)
+	 */
 	private Map<Boolean, Map<AttributeModel, FormItem>> formItems = new HashMap<>();
 
 	/**
 	 * Groups for data binding (one for each view mode)
 	 */
 	private Map<Boolean, Binder<T>> groups = new HashMap<>();
+
+	/**
+	 * The "group together" mode
+	 */
+	private GroupTogetherMode groupTogetherMode;
+
+	/**
+	 * Threshold width (pixels) for every group together column
+	 */
+	private Integer groupTogetherWidth;
 
 	/**
 	 * A map containing all the labels that were added - used to replace the label
@@ -332,6 +358,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private VerticalLayout mainEditLayout;
 
 	private VerticalLayout mainViewLayout;
+
+	/**
+	 * The maximum form width
+	 */
+	private String maxFormWidth;
 
 	/**
 	 * Whether the form is in nested mode
@@ -356,16 +387,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
 
 	/**
-	 * Column width thresholds
-	 */
-	private List<String> columnThresholds = new ArrayList<>();
-
-	/**
 	 * Whether to display the component in view mode
 	 */
 	private boolean viewMode;
-
-	private String maxFormWidth;
 
 	/**
 	 * Constructor
@@ -407,6 +431,39 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		buttons.put(Boolean.TRUE, new HashMap<>());
 		buttons.put(Boolean.FALSE, new HashMap<>());
+	}
+
+	/**
+	 * Adds a cascade listener to the input field for an attribute
+	 * 
+	 * @param am    the attribute
+	 * @param event the value change event for the input field
+	 */
+	@SuppressWarnings("unchecked")
+	private <S> void addCascadeListener(AttributeModel am, ValueChangeEvent<S> event) {
+		for (String cascadePath : am.getCascadeAttributes()) {
+			CascadeMode cm = am.getCascadeMode(cascadePath);
+			if (CascadeMode.BOTH.equals(cm) || CascadeMode.EDIT.equals(cm)) {
+				Component cascadeField = getField(isViewMode(), cascadePath);
+				if (cascadeField instanceof Cascadable) {
+					Cascadable<S> ca = (Cascadable<S>) cascadeField;
+					if (event.getValue() == null) {
+						ca.clearAdditionalFilter();
+					} else {
+						if (event.getValue() instanceof Collection) {
+							ca.setAdditionalFilter(new InPredicate<S>(am.getCascadeFilterPath(cascadePath),
+									(Collection<S>) event.getValue()));
+						} else {
+							ca.setAdditionalFilter(
+									new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+						}
+					}
+				} else {
+					// field not found or does not support cascading
+					throw new OCSRuntimeException("Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
+				}
+			}
+		}
 	}
 
 	/**
@@ -870,39 +927,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Adds a cascade listener to the input field for an attribute
-	 * 
-	 * @param am    the attribute
-	 * @param event the value change event for the input field
-	 */
-	@SuppressWarnings("unchecked")
-	private <S> void addCascadeListener(AttributeModel am, ValueChangeEvent<S> event) {
-		for (String cascadePath : am.getCascadeAttributes()) {
-			CascadeMode cm = am.getCascadeMode(cascadePath);
-			if (CascadeMode.BOTH.equals(cm) || CascadeMode.EDIT.equals(cm)) {
-				Component cascadeField = getField(isViewMode(), cascadePath);
-				if (cascadeField instanceof Cascadable) {
-					Cascadable<S> ca = (Cascadable<S>) cascadeField;
-					if (event.getValue() == null) {
-						ca.clearAdditionalFilter();
-					} else {
-						if (event.getValue() instanceof Collection) {
-							ca.setAdditionalFilter(new InPredicate<S>(am.getCascadeFilterPath(cascadePath),
-									(Collection<S>) event.getValue()));
-						} else {
-							ca.setAdditionalFilter(
-									new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
-						}
-					}
-				} else {
-					// field not found or does not support cascading
-					throw new OCSRuntimeException("Cannot setup cascading from " + am.getPath() + " to " + cascadePath);
-				}
-			}
-		}
-	}
-
-	/**
 	 * Callback method that can be used to construct a custom converter for a
 	 * certain field
 	 * 
@@ -911,28 +935,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @return
 	 */
 	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-		return null;
-	}
-
-	/**
-	 * Callback method that can be used to create a custom validator for a field
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-		return null;
-	}
-
-	/**
-	 * Callback method that can be used to add a custom required validator
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
 		return null;
 	}
 
@@ -948,6 +950,28 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			boolean viewMode) {
 		// by default, return null. override in subclasses in order to create
 		// specific fields
+		return null;
+	}
+
+	/**
+	 * Callback method that can be used to add a custom required validator
+	 * 
+	 * @param <V>
+	 * @param am
+	 * @return
+	 */
+	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+		return null;
+	}
+
+	/**
+	 * Callback method that can be used to create a custom validator for a field
+	 * 
+	 * @param <V>
+	 * @param am
+	 * @return
+	 */
+	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 		return null;
 	}
 
@@ -1005,12 +1029,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				rowLayout.addClassName(DynamoConstants.CSS_GROUPTOGETHER_LAYOUT);
 
 				List<ResponsiveStep> steps = new ArrayList<>();
-				for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
-					steps.add(new ResponsiveStep(i * 200 + "px", i + 1));
-				}
-				rowLayout.setResponsiveSteps(steps);
 
-				// when in nested mode (DetailsEditLayout) stretch over entire width
+				GroupTogetherMode gtm = groupTogetherMode != null ? groupTogetherMode
+						: SystemPropertyUtils.getDefaultGroupTogetherMode();
+				Integer gtw = groupTogetherWidth != null ? groupTogetherWidth
+						: SystemPropertyUtils.getDefaultGroupTogetherWidth();
+
+				if (GroupTogetherMode.PERCENTAGE.equals(gtm)) {
+					int percentage = 100 / attributeModel.getGroupTogetherWith().size();
+					for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
+						steps.add(new ResponsiveStep(percentage + "%", i + 1));
+					}
+					rowLayout.setResponsiveSteps(steps);
+				} else {
+					for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
+						steps.add(new ResponsiveStep((i * gtw) + "px", i + 1));
+					}
+					rowLayout.setResponsiveSteps(steps);
+				}
+
+				// when in nested mode (e.g. DetailsEditLayout) stretch over entire width
 				if (nestedMode) {
 					rowLayout.getElement().setAttribute("colspan", "2");
 				}
@@ -1176,26 +1214,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Shows a confirm dialog that asks the user to confirm before saving changes
-	 */
-	private void showSaveConfirmDialog() {
-		VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(),
-				getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
-					try {
-						if (customSaveConsumer != null) {
-							customSaveConsumer.accept(entity);
-						} else {
-							doSave();
-						}
-					} catch (RuntimeException ex) {
-						if (!handleCustomException(ex)) {
-							handleSaveException(ex);
-						}
-					}
-				});
-	}
-
-	/**
 	 * Constructs the save button
 	 *
 	 * @param bottom indicates whether this is the button at the bottom of the
@@ -1245,24 +1263,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Span constructTitleLabel() {
 		String value = getTitleLabelValue();
 		return new Span(value);
-	}
-
-	private String getTitleLabelValue() {
-		String mainValue = EntityModelUtils.getDisplayPropertyValue(entity, getEntityModel());
-		if (isViewMode()) {
-			return message("ocs.modelbasededitform.title.view",
-					getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue);
-		} else {
-			if (entity.getId() == null) {
-				// create a new entity
-				return message("ocs.modelbasededitform.title.create",
-						getEntityModel().getDisplayName(VaadinUtils.getLocale()));
-			} else {
-				// update an existing entity
-				return message("ocs.modelbasededitform.title.update",
-						getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue);
-			}
-		}
 	}
 
 	/**
@@ -1349,6 +1349,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public List<Button> getCancelButtons() {
 		return filterButtons(CANCEL_BUTTON_DATA);
+	}
+
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
 	}
 
 	public Consumer<T> getCustomSaveConsumer() {
@@ -1440,6 +1444,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return groups.get(viewMode).getFields().collect(Collectors.toList());
 	}
 
+	public GroupTogetherMode getGroupTogetherMode() {
+		return groupTogetherMode;
+	}
+
+	public Integer getGroupTogetherWidth() {
+		return groupTogetherWidth;
+	}
+
 	/**
 	 * Returns a label for a property
 	 * 
@@ -1452,6 +1464,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			return labels.get(isViewMode()).get(am);
 		}
 		return null;
+	}
+
+	public String getMaxFormWidth() {
+		return maxFormWidth;
 	}
 
 	public List<Button> getNextButtons() {
@@ -1512,6 +1528,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public int getSelectedTabIndex() {
 		return tabs.get(isViewMode()).getSelectedIndex();
+	}
+
+	private String getTitleLabelValue() {
+		String mainValue = EntityModelUtils.getDisplayPropertyValue(entity, getEntityModel());
+		if (isViewMode()) {
+			return message("ocs.modelbasededitform.title.view",
+					getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue);
+		} else {
+			if (entity.getId() == null) {
+				// create a new entity
+				return message("ocs.modelbasededitform.title.create",
+						getEntityModel().getDisplayName(VaadinUtils.getLocale()));
+			} else {
+				// update an existing entity
+				return message("ocs.modelbasededitform.title.update",
+						getEntityModel().getDisplayName(VaadinUtils.getLocale()), mainValue);
+			}
+		}
 	}
 
 	/**
@@ -1794,6 +1828,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setGroupVisible(c, visible);
 	}
 
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
+	}
+
 	/**
 	 * Shows or hides the component for a certain property - this will work*
 	 * regardless of the view
@@ -1912,6 +1950,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		afterEntitySelected(entity);
 	}
 
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		this.groupTogetherMode = groupTogetherMode;
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		this.groupTogetherWidth = groupTogetherWidth;
+	}
+
 	/**
 	 * Hides/shows a group of components
 	 *
@@ -1960,6 +2006,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	public void setMaxFormWidth(String maxFormWidth) {
+		this.maxFormWidth = maxFormWidth;
+	}
+
 	public void setNestedMode(boolean nestedMode) {
 		this.nestedMode = nestedMode;
 	}
@@ -1977,6 +2027,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				form.setMaxWidth(getMaxFormWidth());
 			}
 
+			if (columnThresholds == null || columnThresholds.isEmpty()) {
+				columnThresholds = SystemPropertyUtils.getDefaultEditColumnThresholds();
+			}
+
 			if (columnThresholds != null && !columnThresholds.isEmpty()) {
 				// custom responsive steps
 				List<ResponsiveStep> list = new ArrayList<>();
@@ -1986,9 +2040,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					i++;
 				}
 				form.setResponsiveSteps(list);
-			} else {
-				String min = getFormOptions().getMinimumTwoColumnWidth();
-				form.setResponsiveSteps(Lists.newArrayList(new ResponsiveStep("0px", 1), new ResponsiveStep(min, 2)));
 			}
 		}
 	}
@@ -2063,6 +2114,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Shows a confirm dialog that asks the user to confirm before saving changes
+	 */
+	private void showSaveConfirmDialog() {
+		VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(),
+				getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
+					try {
+						if (customSaveConsumer != null) {
+							customSaveConsumer.accept(entity);
+						} else {
+							doSave();
+						}
+					} catch (RuntimeException ex) {
+						if (!handleCustomException(ex)) {
+							handleSaveException(ex);
+						}
+					}
+				});
+	}
+
+	/**
 	 * Stores a button in the data to button map
 	 * 
 	 * @param data   the data key
@@ -2109,22 +2180,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			return false;
 		});
 		return error;
-	}
-
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
-	}
-
-	public String getMaxFormWidth() {
-		return maxFormWidth;
-	}
-
-	public void setMaxFormWidth(String maxFormWidth) {
-		this.maxFormWidth = maxFormWidth;
 	}
 
 }

@@ -93,6 +93,11 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * The search filters to apply to the individual fields
 	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+	
+	/**
+	 * Column threshold
+	 */
+	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -120,6 +125,16 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		this.advancedSearchMode = advancedSearchMode;
 	}
 
+	/**
+	 * Adds a field filter
+	 * 
+	 * @param property the property for which to add a field filter
+	 * @param filter   the field filter
+	 */
+	public void addFieldFilter(String property, SerializablePredicate<?> filter) {
+		this.fieldFilters.put(property, filter);
+	}
+
 	@Override
 	protected void doBuild(VerticalLayout parent) {
 		FormOptions formOptions = new FormOptions().setReadOnly(true).setPopup(true).setDetailsModeEnabled(false)
@@ -134,6 +149,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 			searchLayout.addSortOrder(order);
 		}
 		searchLayout.setMultiSelect(multiSelect);
+		searchLayout.setSearchColumnThresholds(getColumnThresholds());
 		this.fieldFilters.entrySet().forEach(c -> searchLayout.addFieldFilter(c.getKey(), c.getValue()));
 
 		// add double click listener for quickly selecting item and closing the
@@ -145,6 +161,10 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		parent.add(searchLayout);
 
 		postProcessDialog();
+	}
+
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
 	}
 
 	public List<SerializablePredicate<T>> getFilters() {
@@ -193,21 +213,15 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		}
 	}
 
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
+	}
+
 	public void setFilters(List<SerializablePredicate<T>> filters) {
 		this.filters = filters;
 		if (searchLayout != null) {
 			searchLayout.setDefaultFilters(filters);
 		}
-	}
-
-	/**
-	 * Adds a field filter
-	 * 
-	 * @param property the property for which to add a field filter
-	 * @param filter   the field filter
-	 */
-	public void addFieldFilter(String property, SerializablePredicate<?> filter) {
-		this.fieldFilters.put(property, filter);
 	}
 
 }

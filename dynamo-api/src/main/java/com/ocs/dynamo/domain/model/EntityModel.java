@@ -46,6 +46,16 @@ public interface EntityModel<T> {
 	String ATTRIBUTE_ORDER = "attributeOrder";
 
 	/**
+	 * Attribute order in search form
+	 */
+	String SEARCH_ATTRIBUTE_ORDER = "searchAttributeOrder";
+
+	/**
+	 * Attribute order in grid
+	 */
+	String GRID_ATTRIBUTE_ORDER = "gridAttributeOrder";
+
+	/**
 	 * Cascade attribute
 	 */
 	String CASCADE = "cascade";
@@ -391,6 +401,20 @@ public interface EntityModel<T> {
 	 * @return
 	 */
 	List<AttributeModel> getAttributeModels();
+
+	/**
+	 * Returns an ordered list of all attribute models for display in the grid
+	 * 
+	 * @return
+	 */
+	List<AttributeModel> getAttributeModelsSortedForGrid();
+
+	/**
+	 * Returns an ordered list of all attribute models for search form
+	 * 
+	 * @return
+	 */
+	List<AttributeModel> getAttributeModelsSortedForSearch();
 
 	/**
 	 * Returns the attribute models for a certain group

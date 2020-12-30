@@ -212,7 +212,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 			column.setHeader(am.getDisplayName(VaadinUtils.getLocale())).setSortProperty(am.getActualSortPath())
 					.setSortable(am.isSortable()).setClassNameGenerator(item -> am.isNumerical() ? "v-align-right" : "")
-					.setKey(am.getPath()).setAutoWidth(true).setId(am.getPath());
+					.setKey(am.getPath()).setAutoWidth(true).setResizable(true).setId(am.getPath());
 		}
 
 	}
@@ -268,7 +268,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param model     the entity model
 	 */
 	protected void generateColumns(EntityModel<T> model) {
-		generateColumnsRecursive(model.getAttributeModels());
+		generateColumnsRecursive(model.getAttributeModelsSortedForGrid());
 	}
 
 	/**
@@ -280,7 +280,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		for (AttributeModel am : ams) {
 			addColumn(am);
 			if (am.getNestedEntityModel() != null) {
-				generateColumnsRecursive(am.getNestedEntityModel().getAttributeModels());
+				generateColumnsRecursive(am.getNestedEntityModel().getAttributeModelsSortedForGrid());
 			}
 		}
 	}

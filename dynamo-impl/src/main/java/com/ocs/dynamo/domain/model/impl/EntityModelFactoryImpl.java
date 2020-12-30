@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -31,6 +32,7 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
 import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
@@ -72,7 +74,9 @@ import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.CustomSetting;
 import com.ocs.dynamo.domain.model.annotation.CustomType;
+import com.ocs.dynamo.domain.model.annotation.GridAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
@@ -423,11 +427,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			}
 		}
 
-		// assign ordering and sort
+		// assign ordering and sort by name
+		Collections.sort(tempModelList, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
 		determineAttributeOrder(entityClass, reference, tempModelList);
-		Collections.sort(tempModelList);
+
+		boolean gridOrder = determineGridAttributeOrder(entityClass, reference, tempModelList);
+		boolean searchOrder = determineSearchAttributeOrder(entityClass, reference, tempModelList);
+
+		((EntityModelImpl<T>) entityModel).setGridOrderSet(gridOrder);
+		((EntityModelImpl<T>) entityModel).setSearchOrderSet(searchOrder);
 
 		// add the attributes to the model
+		Collections.sort(tempModelList, Comparator.comparing(AttributeModel::getOrder));
 		for (AttributeModel attributeModel : tempModelList) {
 			// determine the attribute group name
 			String group = attributeGroupMap.get(attributeModel.getName());
@@ -574,6 +585,41 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		return result;
 	}
 
+	protected <T> void determineAttributeOrder(Class<T> entityClass, String reference,
+			List<AttributeModel> attributeModels) {
+		List<String> explicitAttributeNames = new ArrayList<>();
+		AttributeOrder orderAnnot = entityClass.getAnnotation(AttributeOrder.class);
+		if (orderAnnot != null) {
+			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
+		}
+
+		// set all orders
+		determineAttributeOrderInner(entityClass, reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames,
+				attributeModels, (am, order) -> am.setOrder(order));
+	}
+
+	protected <T> boolean determineSearchAttributeOrder(Class<T> entityClass, String reference,
+			List<AttributeModel> attributeModels) {
+		List<String> explicitAttributeNames = new ArrayList<>();
+		SearchAttributeOrder orderAnnot = entityClass.getAnnotation(SearchAttributeOrder.class);
+		if (orderAnnot != null) {
+			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
+		}
+		return determineAttributeOrderInner(entityClass, reference, EntityModel.SEARCH_ATTRIBUTE_ORDER,
+				explicitAttributeNames, attributeModels, (am, order) -> am.setSearchOrder(order));
+	}
+
+	protected <T> boolean determineGridAttributeOrder(Class<T> entityClass, String reference,
+			List<AttributeModel> attributeModels) {
+		List<String> explicitAttributeNames = new ArrayList<>();
+		GridAttributeOrder orderAnnot = entityClass.getAnnotation(GridAttributeOrder.class);
+		if (orderAnnot != null) {
+			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
+		}
+		return determineAttributeOrderInner(entityClass, reference, EntityModel.GRID_ATTRIBUTE_ORDER,
+				explicitAttributeNames, attributeModels, (am, order) -> am.setGridOrder(order));
+	}
+
 	/**
 	 * Determines the order of the attributes - this will first pick up any
 	 * attributes that are mentioned in the @AttributeOrder annotation (in the order
@@ -585,55 +631,46 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 * @param attributeModels
 	 * @return
 	 */
-	protected <T> void determineAttributeOrder(Class<T> entityClass, String reference,
-			List<AttributeModel> attributeModels) {
-
-		List<String> explicitAttributeNames = new ArrayList<>();
+	protected <T> boolean determineAttributeOrderInner(Class<T> entityClass, String reference, String messageBundleKey,
+			List<String> explicitAttributeNames, List<AttributeModel> attributeModels,
+			BiConsumer<AttributeModelImpl, Integer> consumer) {
+		boolean explicit = false;
 		List<String> additionalNames = new ArrayList<>();
-
-		// read ordering from the annotation (if present)
-		AttributeOrder orderAnnot = entityClass.getAnnotation(AttributeOrder.class);
-		if (orderAnnot != null) {
-			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
-		}
 
 		// overwrite by message bundle (if present)
 		String msg = messageService == null ? null
-				: messageService.getEntityMessage(reference, EntityModel.ATTRIBUTE_ORDER, getLocale());
+				: messageService.getEntityMessage(reference, messageBundleKey, getLocale());
 		if (msg != null) {
 			explicitAttributeNames = Lists.newArrayList(msg.replaceAll("\\s+", "").split(","));
 		}
 
+		explicit = !explicitAttributeNames.isEmpty();
+		List<String> result = new ArrayList<>(explicitAttributeNames);
+
+		// add missing attribute at the end (alphabetically)
 		for (AttributeModel am : attributeModels) {
 			String name = am.getName();
 			if (!skipAttribute(name) && !explicitAttributeNames.contains(name)) {
 				additionalNames.add(name);
 			}
 		}
-
-		// add the explicitly named attributes
-		List<String> result = new ArrayList<>(explicitAttributeNames);
 		// add the additional unmentioned attributes
 		result.addAll(additionalNames);
 
 		// loop over the attributes and set the orders
 		int i = 0;
 		for (String attributeName : result) {
-			AttributeModel am = null;
-			for (AttributeModel m : attributeModels) {
-				if (m.getName().equals(attributeName)) {
-					am = m;
-					break;
-				}
-			}
+			AttributeModel am = attributeModels.stream().filter(m -> m.getName().equals(attributeName)).findFirst()
+					.orElse(null);
 			if (am != null) {
-				((AttributeModelImpl) am).setOrder(i);
+				consumer.accept((AttributeModelImpl) am, i);
 				i++;
 			} else {
 				throw new OCSRuntimeException("Attribute " + attributeName + " is not known");
 			}
 		}
 
+		return explicit;
 	}
 
 	/**

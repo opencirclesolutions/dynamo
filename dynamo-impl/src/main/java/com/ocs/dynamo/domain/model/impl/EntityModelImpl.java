@@ -72,6 +72,10 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
+	private boolean gridOrderSet;
+
+	private boolean searchOrderSet;
+
 	@Override
 	public void addAttributeGroup(String attributeGroup) {
 		if (!attributeModels.containsKey(attributeGroup)) {
@@ -94,21 +98,23 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	}
 
 	/**
-	 * Constructs a stream of all attribute models
+	 * Constructs a stream of all attribute models sorted by order
 	 * 
 	 * @return
 	 */
-	private Stream<AttributeModel> constructAttributeModelStream() {
-		return attributeModels.values().stream().flatMap(List::stream)
-				.sorted(Comparator.comparing(AttributeModel::getOrder));
+	private Stream<AttributeModel> constructAttributeModelStream(Comparator<AttributeModel> comp) {
+		return attributeModels.values().stream().flatMap(List::stream).sorted(comp);
 	}
 
 	private List<AttributeModel> filterAttributeModels(Predicate<AttributeModel> p) {
-		return Collections.unmodifiableList(constructAttributeModelStream().filter(p).collect(Collectors.toList()));
+		return Collections
+				.unmodifiableList(constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
+						.filter(p).collect(Collectors.toList()));
 	}
 
 	private AttributeModel findAttributeModel(Predicate<AttributeModel> p) {
-		return constructAttributeModelStream().filter(p).findFirst().orElse(null);
+		return constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder)).filter(p).findFirst()
+				.orElse(null);
 	}
 
 	@Override
@@ -144,7 +150,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Override
 	public List<AttributeModel> getAttributeModels() {
-		List<AttributeModel> list = constructAttributeModelStream().collect(Collectors.toList());
+		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
+				.collect(Collectors.toList());
 		return Collections.unmodifiableList(list);
 	}
 
@@ -160,6 +167,26 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 			return (attributeType == null || attributeType.equals(model.getAttributeType())) && (type == null
 					|| type.isAssignableFrom(model.getType()) || (rt != null && type.isAssignableFrom(rt)));
 		});
+	}
+
+	@Override
+	public List<AttributeModel> getAttributeModelsSortedForGrid() {
+		if (!gridOrderSet) {
+			return getAttributeModels();
+		}
+		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getGridOrder))
+				.collect(Collectors.toList());
+		return Collections.unmodifiableList(list);
+	}
+
+	@Override
+	public List<AttributeModel> getAttributeModelsSortedForSearch() {
+		if (!searchOrderSet) {
+			return getAttributeModels();
+		}
+		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getSearchOrder))
+				.collect(Collectors.toList());
+		return Collections.unmodifiableList(list);
 	}
 
 	@Override
@@ -223,24 +250,30 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	}
 
 	@Override
+	public int getNestingDepth() {
+		return nestingDepth;
+	}
+
+	@Override
 	public String getReference() {
 		return reference;
 	}
 
 	@Override
 	public List<AttributeModel> getRequiredForSearchingAttributeModels() {
-		List<AttributeModel> result = constructAttributeModelStream().map(m -> {
-			List<AttributeModel> list = new ArrayList<>();
-			if (m.isSearchable() && m.isRequiredForSearching()) {
-				list.add(m);
-			}
-			// add nested models
-			if (m.getNestedEntityModel() != null) {
-				List<AttributeModel> nested = m.getNestedEntityModel().getRequiredForSearchingAttributeModels();
-				list.addAll(nested);
-			}
-			return list;
-		}).flatMap(List::stream).collect(Collectors.toList());
+		List<AttributeModel> result = constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
+				.map(m -> {
+					List<AttributeModel> list = new ArrayList<>();
+					if (m.isSearchable() && m.isRequiredForSearching()) {
+						list.add(m);
+					}
+					// add nested models
+					if (m.getNestedEntityModel() != null) {
+						List<AttributeModel> nested = m.getNestedEntityModel().getRequiredForSearchingAttributeModels();
+						list.addAll(nested);
+					}
+					return list;
+				}).flatMap(List::stream).collect(Collectors.toList());
 		return Collections.unmodifiableList(result);
 	}
 
@@ -255,6 +288,14 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 				.filter(m -> AttributeType.BASIC.equals(m.getAttributeType())
 						|| AttributeType.LOB.equals(m.getAttributeType()) || m.isComplexEditable())
 				.anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
+	}
+
+	public boolean isGridOrderSet() {
+		return gridOrderSet;
+	}
+
+	public boolean isSearchOrderSet() {
+		return searchOrderSet;
 	}
 
 	/**
@@ -303,12 +344,24 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		this.entityClass = entityClass;
 	}
 
+	public void setGridOrderSet(boolean gridOrderSet) {
+		this.gridOrderSet = gridOrderSet;
+	}
+
 	void setIdAttributeModel(AttributeModel idAttributeModel) {
 		this.idAttributeModel = idAttributeModel;
 	}
 
+	public void setNestingDepth(int nestingDepth) {
+		this.nestingDepth = nestingDepth;
+	}
+
 	public void setReference(String reference) {
 		this.reference = reference;
+	}
+
+	public void setSearchOrderSet(boolean searchOrderSet) {
+		this.searchOrderSet = searchOrderSet;
 	}
 
 	public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
@@ -324,15 +377,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	public boolean usesDefaultGroupOnly() {
 		return attributeModels.keySet().size() == 1
 				&& attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
-	}
-
-	@Override
-	public int getNestingDepth() {
-		return nestingDepth;
-	}
-
-	public void setNestingDepth(int nestingDepth) {
-		this.nestingDepth = nestingDepth;
 	}
 
 }

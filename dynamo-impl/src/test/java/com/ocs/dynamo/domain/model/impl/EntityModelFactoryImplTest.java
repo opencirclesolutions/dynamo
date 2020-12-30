@@ -65,7 +65,9 @@ import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.CustomSetting;
 import com.ocs.dynamo.domain.model.annotation.CustomType;
+import com.ocs.dynamo.domain.model.annotation.GridAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.service.MessageService;
@@ -632,6 +634,52 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("dd-MM-yyyy HH:mm:ssZ", am4.getDisplayFormat());
 		assertEquals(AttributeDateType.TIMESTAMP, am4.getDateType());
 		assertEquals(DateUtils.createZonedDateTime("01-01-2017 12:00:00+0100"), am4.getDefaultValue());
+	}
+
+	@Test
+	public void testAttributeOrders() {
+		EntityModel<SearchOrderEntity> model = factory.getModel(SearchOrderEntity.class);
+		assertNotNull(model);
+
+		assertEquals(3, model.getAttributeModels().size());
+
+		List<AttributeModel> attributeModels = model.getAttributeModels();
+		assertEquals("field1", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field3", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForGrid();
+		assertEquals("field2", attributeModels.get(0).getName());
+		assertEquals("field1", attributeModels.get(1).getName());
+		assertEquals("field3", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForSearch();
+		assertEquals("field3", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field1", attributeModels.get(2).getName());
+	}
+
+	@Test
+	public void testAttributeOrdersMessageBundle() {
+		EntityModel<SearchOrderEntityMessage> model = factory.getModel(SearchOrderEntityMessage.class);
+		assertNotNull(model);
+
+		assertEquals(3, model.getAttributeModels().size());
+
+		List<AttributeModel> attributeModels = model.getAttributeModels();
+		assertEquals("field1", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field3", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForGrid();
+		assertEquals("field3", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field1", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForSearch();
+		assertEquals("field2", attributeModels.get(0).getName());
+		assertEquals("field3", attributeModels.get(1).getName());
+		assertEquals("field1", attributeModels.get(2).getName());
 	}
 
 	public class Entity1 {
@@ -1383,6 +1431,78 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		public void setSometAttribute(String sometAttribute) {
 			this.sometAttribute = sometAttribute;
 		}
+	}
+
+	@AttributeOrder(attributeNames = { "field1", "field2", "field3" })
+	@GridAttributeOrder(attributeNames = { "field2", "field1", "field3" })
+	@SearchAttributeOrder(attributeNames = { "field3", "field2", "field1" })
+	public class SearchOrderEntity {
+
+		private String field1;
+
+		private String field2;
+
+		private String field3;
+
+		public String getField1() {
+			return field1;
+		}
+
+		public void setField1(String field1) {
+			this.field1 = field1;
+		}
+
+		public String getField2() {
+			return field2;
+		}
+
+		public void setField2(String field2) {
+			this.field2 = field2;
+		}
+
+		public String getField3() {
+			return field3;
+		}
+
+		public void setField3(String field3) {
+			this.field3 = field3;
+		}
+
+	}
+
+	@AttributeOrder(attributeNames = { "field1", "field2", "field3" })
+	public class SearchOrderEntityMessage {
+
+		private String field1;
+
+		private String field2;
+
+		private String field3;
+
+		public String getField1() {
+			return field1;
+		}
+
+		public void setField1(String field1) {
+			this.field1 = field1;
+		}
+
+		public String getField2() {
+			return field2;
+		}
+
+		public void setField2(String field2) {
+			this.field2 = field2;
+		}
+
+		public String getField3() {
+			return field3;
+		}
+
+		public void setField3(String field3) {
+			this.field3 = field3;
+		}
+
 	}
 
 }

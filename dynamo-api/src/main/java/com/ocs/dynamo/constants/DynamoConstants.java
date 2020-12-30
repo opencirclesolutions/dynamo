@@ -27,12 +27,17 @@ public final class DynamoConstants {
 	 */
 	public static final int CACHE_SIZE = 10000;
 
+	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
+
 	public static final String CSS_COLLAPSIBLE_PANEL_BUTTON = "collapsiblePanelButton";
 
-	/**
-	 * CSS style for flex layouts
-	 */
-	public static final String CSS_DYNAMO_FLEX_ROW = "dynamoFlexRow";
+	public static final String CSS_COMPOSITION_LAYOUT = "compositionLayout";
+
+	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
+
+	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
+
+	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
 	/**
 	 * CSS style for dialog
@@ -45,14 +50,15 @@ public final class DynamoConstants {
 	public static final String CSS_DIALOG_TITLE = "dynamoDialogTitle";
 
 	/**
-	 * CSS style for dialog title
+	 * CSS style for flex layouts
 	 */
-	public static final String CSS_PANEL_TITLE = "dynamoPanelTitle";
+	public static final String CSS_DYNAMO_FLEX_ROW = "dynamoFlexRow";
 
-	/**
-	 * CSS style for panel
-	 */
-	public static final String CSS_PANEL = "dynamoPanel";
+	public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
+
+	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
+
+	public static final String CSS_HORIZONTAL_DISPLAY_LAYOUT = "horizontalDisplayLayout";
 
 	/**
 	 * CSS style for image previews
@@ -64,10 +70,34 @@ public final class DynamoConstants {
 	 */
 	public static final String CSS_LAST_VISITED = "lastVisited";
 
+	public static final String CSS_MAIN_SEARCH_LAYOUT = "mainSearchLayout";
+
+	public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
+
+	public static final String CSS_MODEL_BASED_EDIT_FORM_MAIN = "modelBasedEditFormMain";
+
+	/**
+	 * CSS style for panel
+	 */
+	public static final String CSS_PANEL = "dynamoPanel";
+
+	/**
+	 * CSS style for dialog title
+	 */
+	public static final String CSS_PANEL_TITLE = "dynamoPanelTitle";
+
 	/**
 	 * 
 	 */
 	public static final String CSS_PARENT_ROW = "dynamoParentRow";
+
+	public static final String CSS_SEARCH_RESULTS_LAYOUT = "searchResultsLayout";
+
+	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
+
+	public static final String CSS_SPLIT_LAYOUT = "splitLayout";
+
+	public static final String CSS_TAB_LAYOUT = "tabLayout";
 
 	/**
 	 * Currency symbol
@@ -138,30 +168,6 @@ public final class DynamoConstants {
 	public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
 
 	/**
-	 * Name of the system property that is used to determined the default grid
-	 * height
-	 */
-	public static final String SP_DEFAULT_GRID_HEIGHT = "ocs.default.grid.height";
-
-	/**
-	 * Name of the system property that is used to determine the default edit grid
-	 * height
-	 */
-	public static final String SP_DEFAULT_EDIT_GRID_HEIGHT = "ocs.default.edit.grid.height";
-
-	/**
-	 * Name of the system property that is used to determine the default nesting
-	 * depth
-	 */
-	public static final String SP_DEFAULT_NESTING_DEPTH = "ocs.default.entity.nesting.depth";
-
-	/**
-	 * Name of the system property that is used to determined the default grid
-	 * height in a search dialog
-	 */
-	public static final String SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT = "ocs.default.search.dialog.grid.height";
-
-	/**
 	 * Name of the system property that is used to determine the default currency
 	 * symbol
 	 */
@@ -185,16 +191,44 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_DATETIME_ZONE_FORMAT = "ocs.default.datetime.zone.format";
 
 	/**
+	 * Name of the system property that is used to determine the group together mode
+	 */
+	public static final String SP_DEFAULT_GROUP_TOGETHER_MODE = "ocs.default.group.together.mode";
+
+	/**
+	 * Name of the system property that is used to determine the column width from
+	 * grouping together
+	 */
+	public static final String SP_DEFAULT_GROUP_TOGETHER_WIDTH = "ocs.default.group.together.width";
+
+	/**
 	 * Name of the system property that is used to determine the default decimal
 	 * precision
 	 */
 	public static final String SP_DEFAULT_DECIMAL_PRECISION = "ocs.default.decimal.precision";
 
 	/**
+	 * The default responsive step thresholds for edit forms
+	 */
+	public static final String SP_DEFAULT_EDIT_FORM_COLUMN_THRESHOLDS = "ocs.default.edit.form.column.thresholds";
+
+	/**
+	 * Name of the system property that is used to determine the default edit grid
+	 * height
+	 */
+	public static final String SP_DEFAULT_EDIT_GRID_HEIGHT = "ocs.default.edit.grid.height";
+
+	/**
 	 * Name of the system property that is used to determine the representation of
 	 * the value false
 	 */
 	public static final String SP_DEFAULT_FALSE_REPRESENTATION = "ocs.default.false.representation";
+
+	/**
+	 * Name of the system property that is used to determined the default grid
+	 * height
+	 */
+	public static final String SP_DEFAULT_GRID_HEIGHT = "ocs.default.grid.height";
 
 	/**
 	 * Name of the system property that is used to set the default locale
@@ -220,10 +254,27 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_MESSAGE_DISPLAY_TIME = "ocs.default.message.display.time";
 
 	/**
+	 * Name of the system property that is used to determine the default nesting
+	 * depth
+	 */
+	public static final String SP_DEFAULT_NESTING_DEPTH = "ocs.default.entity.nesting.depth";
+
+	/**
 	 * Name of the system property that is used to determine the default case
 	 * sensitiveness for search
 	 */
 	public static final String SP_DEFAULT_SEARCH_CASE_SENSITIVE = "ocs.default.search.case.sensitive";
+
+	/**
+	 * Name of the system property that is used to determined the default grid
+	 * height in a search dialog
+	 */
+	public static final String SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT = "ocs.default.search.dialog.grid.height";
+
+	/**
+	 * The default responsive step thresholds for search forms
+	 */
+	public static final String SP_DEFAULT_SEARCH_FORM_COLUMN_THRESHOLDS = "ocs.default.search.form.column.thresholds";
 
 	/**
 	 * Name of the system property that is used to determine whether search is
@@ -232,21 +283,26 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_SEARCH_PREFIX_ONLY = "ocs.default.search.prefix.only";
 
 	/**
-	 * Name of the system property that is used to determine the default time format
-	 */
-	public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
-
-	/**
 	 * Name of the system property that is used to determine the default text area
 	 * height
 	 */
 	public static final String SP_DEFAULT_TEXT_AREA_HEIGHT = "ocs.default.text.area.height";
 
 	/**
+	 * Name of the system property that is used to determine the default time format
+	 */
+	public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
+
+	/**
 	 * Name of the system property that is used to determine the representation of
 	 * the value true
 	 */
 	public static final String SP_DEFAULT_TRUE_REPRESENTATION = "ocs.default.true.representation";
+
+	/**
+	 * Name of the property that is used to enable view authorization
+	 */
+	public static final String SP_ENABLE_VIEW_AUTHORIZATION = "ocs.enable.view.authorization";
 
 	/**
 	 * Name of the system property that is used as the CSV escape character when
@@ -265,15 +321,9 @@ public final class DynamoConstants {
 	public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
 
 	/**
-	 * Name of the property that is used to enable view authorization
+	 * System property that indicates whether to indent grids in input forms
 	 */
-	public static final String SP_ENABLE_VIEW_AUTHORIZATION = "ocs.enable.view.authorization";
-
-	/**
-	 * The minimum screen width (e.g. in pixels) that there must be for two columns
-	 * to be displayed in forms
-	 */
-	public static final String SP_MINIMUM_TWO_COLUMN_WIDTH = "ocs.minimum.two.column.width";
+	public static final String SP_INDENT_GRIDS_IN_FORM = "ocs.indent.grids";
 
 	/**
 	 * Name of the system property that indicates the maximum number of items to
@@ -297,12 +347,7 @@ public final class DynamoConstants {
 	 * Indicates whether to use the display name as the input prompt by default
 	 */
 	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
-	
-	/**
-	 * System property that indicates whether to indent grids in input forms
-	 */
-	public static final String SP_INDENT_GRIDS_IN_FORM = "ocs.indent.grids";
-	
+
 	/**
 	 * Whether to use thousands grouping in XLS files
 	 */
@@ -317,38 +362,6 @@ public final class DynamoConstants {
 	 * The name of the variable that is used to store the user name in the session
 	 */
 	public static final String USER_NAME = "userName";
-
-	public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
-
-	public static final String CSS_MODEL_BASED_EDIT_FORM_MAIN = "modelBasedEditFormMain";
-
-	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
-
-	public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
-
-	public static final String CSS_SPLIT_LAYOUT = "splitLayout";
-
-	public static final String CSS_MAIN_SEARCH_LAYOUT = "mainSearchLayout";
-
-	public static final String CSS_SEARCH_RESULTS_LAYOUT = "searchResultsLayout";
-
-	public static final String CSS_COMPOSITION_LAYOUT = "compositionLayout";
-
-	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
-
-	public static final String CSS_TAB_LAYOUT = "tabLayout";
-
-	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
-
-	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
-
-	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
-
-	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
-	
-	public static final String CSS_HORIZONTAL_DISPLAY_LAYOUT = "horizontalDisplayLayout";
-	
-
 
 	/**
 	 * Constructor for OCSConstants.

@@ -66,7 +66,7 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	protected DownloadButton createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"), () -> {
+		return new DownloadButton(message("ocs.export.csv"), getProgressBar(), () -> {
 			ByteArrayInputStream stream = new ByteArrayInputStream(
 					getExportService().exportCsvFixed(getEntityModel(), getExportMode(), itemsSupplier.get()));
 			getProgressBar().setVisible(false);
@@ -78,7 +78,7 @@ public class FixedExportDialog<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	protected DownloadButton createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"), () -> {
+		return new DownloadButton(message("ocs.export.excel"), getProgressBar(), () -> {
 			ByteArrayInputStream stream = new ByteArrayInputStream(getExportService().exportExcelFixed(getEntityModel(),
 					getExportMode(), customGenerator, itemsSupplier.get()));
 			getProgressBar().setVisible(false);

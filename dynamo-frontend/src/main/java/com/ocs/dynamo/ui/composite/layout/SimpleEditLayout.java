@@ -25,6 +25,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
@@ -71,6 +72,16 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	private FetchJoinInformation[] joins;
 
 	private VerticalLayout main;
+
+	/**
+	 * The "group together" mode
+	 */
+	private GroupTogetherMode groupTogetherMode;
+
+	/**
+	 * Threshold width (pixels) for every group together column
+	 */
+	private Integer groupTogetherWidth;
 
 	/**
 	 * Constructor
@@ -261,6 +272,8 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			editForm.setFieldEntityModels(getFieldEntityModels());
 			editForm.setColumnThresholds(getColumnThresholds());
 			editForm.setMaxFormWidth(getMaxEditFormWidth());
+			editForm.setGroupTogetherMode(getGroupTogetherMode());
+			editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 			editForm.build();
 
 			main.add(editForm);
@@ -303,6 +316,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public Map<String, SerializablePredicate<?>> getFieldFilters() {
 		return fieldFilters;
+	}
+
+	public GroupTogetherMode getGroupTogetherMode() {
+		return groupTogetherMode;
+	}
+
+	public Integer getGroupTogetherWidth() {
+		return groupTogetherWidth;
 	}
 
 	public FetchJoinInformation[] getJoins() {
@@ -435,6 +456,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
 		this.fieldFilters = fieldFilters;
+	}
+
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		this.groupTogetherMode = groupTogetherMode;
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		this.groupTogetherWidth = groupTogetherWidth;
 	}
 
 	public void setJoins(FetchJoinInformation[] joins) {

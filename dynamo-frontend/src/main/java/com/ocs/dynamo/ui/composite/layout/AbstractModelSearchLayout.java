@@ -21,6 +21,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -64,6 +65,11 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	private Button editButton;
 
 	/**
+	 * Edit column width thresholds
+	 */
+	private List<String> editColumnThresholds = new ArrayList<>();
+
+	/**
 	 * The edit form for editing a single object
 	 */
 	private ModelBasedEditForm<ID, T> editForm;
@@ -72,6 +78,16 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * The grid wrapper
 	 */
 	private ServiceBasedGridWrapper<ID, T> gridWrapper;
+
+	/**
+	 * The "group together" mode
+	 */
+	private GroupTogetherMode groupTogetherMode;
+
+	/**
+	 * Threshold width (pixels) for every group together column
+	 */
+	private Integer groupTogetherWidth;
 
 	/**
 	 * The main layout (in edit mode)
@@ -108,11 +124,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * Tab layout for complex detail mode
 	 */
 	private TabLayout<ID, T> tabLayout;
-
-	/**
-	 * Edit column width thresholds
-	 */
-	private List<String> editColumnThresholds = new ArrayList<>();
 
 	public AbstractModelSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation[] joins) {
@@ -283,8 +294,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			}
 
 			@Override
-			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-				return AbstractModelSearchLayout.this.constructCustomValidator(am);
+			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+					boolean viewMode) {
+				return AbstractModelSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode,
+						false);
 			}
 
 			@Override
@@ -293,10 +306,8 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			}
 
 			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-					boolean viewMode) {
-				return AbstractModelSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode,
-						false);
+			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+				return AbstractModelSearchLayout.this.constructCustomValidator(am);
 			}
 
 			@Override
@@ -356,6 +367,8 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setColumnThresholds(getEditColumnThresholds());
 		editForm.setMaxFormWidth(getMaxEditFormWidth());
+		editForm.setGroupTogetherMode(getGroupTogetherMode());
+		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 		editForm.build();
 	}
 
@@ -520,6 +533,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		return editButton;
 	}
 
+	public List<String> getEditColumnThresholds() {
+		return editColumnThresholds;
+	}
+
 	public ModelBasedEditForm<ID, T> getEditForm() {
 		return editForm;
 	}
@@ -530,6 +547,14 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			gridWrapper = constructGridWrapper();
 		}
 		return gridWrapper;
+	}
+
+	public GroupTogetherMode getGroupTogetherMode() {
+		return groupTogetherMode;
+	}
+
+	public Integer getGroupTogetherWidth() {
+		return groupTogetherWidth;
 	}
 
 	/**
@@ -619,6 +644,18 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		}
 	}
 
+	public void setEditColumnThresholds(List<String> editColumnThresholds) {
+		this.editColumnThresholds = editColumnThresholds;
+	}
+
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		this.groupTogetherMode = groupTogetherMode;
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		this.groupTogetherWidth = groupTogetherWidth;
+	}
+
 	/**
 	 * Refreshes the contents of a label inside the edit form
 	 * 
@@ -645,11 +682,4 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		}
 	}
 
-	public List<String> getEditColumnThresholds() {
-		return editColumnThresholds;
-	}
-
-	public void setEditColumnThresholds(List<String> editColumnThresholds) {
-		this.editColumnThresholds = editColumnThresholds;
-	}
 }

@@ -179,4 +179,14 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 		return getDelegate().getNestingDepth();
 	}
 
+	@Override
+	public List<AttributeModel> getAttributeModelsSortedForGrid() {
+		return getDelegate().getAttributeModelsSortedForGrid();
+	}
+
+	@Override
+	public List<AttributeModel> getAttributeModelsSortedForSearch() {
+		return getDelegate().getAttributeModelsSortedForSearch();
+	}
+
 }

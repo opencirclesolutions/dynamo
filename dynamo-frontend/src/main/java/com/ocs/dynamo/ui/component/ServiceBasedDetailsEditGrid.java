@@ -162,9 +162,10 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			protected T createEntity() {
 				return getCreateEntitySupplier().get();
 			}
+		
 
 		};
-
+		dialog.setColumnThresholds(getColumnThresholds());
 		dialog.buildAndOpen();
 	}
 

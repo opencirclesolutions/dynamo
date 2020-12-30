@@ -121,7 +121,6 @@ public class URLField extends CustomField<String> {
     public void setErrorMessage(String errorMessage) {
         if (textField != null) {
             textField.setErrorMessage(errorMessage);
-            textField.addClassName("dynamoError");
         }
     }
 
@@ -185,5 +184,13 @@ public class URLField extends CustomField<String> {
             textField.setPlaceholder(placeHolder);
         }
     }
+    
+	@Override
+	public void setInvalid(boolean invalid) {
+		super.setInvalid(invalid);
+		if (textField != null) {
+			textField.setInvalid(invalid);
+		}
+	}
 
 }

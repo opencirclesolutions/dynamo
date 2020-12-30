@@ -77,7 +77,7 @@ public class PivotedExportDialog<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	protected DownloadButton createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"), () -> {
+		return new DownloadButton(message("ocs.export.csv"), getProgressBar(), () -> {
 			ByteArrayInputStream stream = new ByteArrayInputStream(
 					getExportService().exportCsvPivot(getEntityModel(), predicate, sortOrders, pivotParameters, joins));
 			getProgressBar().setVisible(false);
@@ -89,7 +89,7 @@ public class PivotedExportDialog<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	protected DownloadButton createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"), () -> {
+		return new DownloadButton(message("ocs.export.excel"), getProgressBar(), () -> {
 			ByteArrayInputStream stream = new ByteArrayInputStream(getExportService().exportExcelPivot(getEntityModel(),
 					predicate, sortOrders, customGenerator, pivotParameters, joins));
 			getProgressBar().setVisible(false);

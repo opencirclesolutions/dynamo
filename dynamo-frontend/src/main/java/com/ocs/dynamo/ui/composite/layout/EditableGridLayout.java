@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -129,6 +130,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 	private Map<String, Component> compMap = new HashMap<>();
 
+	private List<String> columnThresholds = new ArrayList<>();
+
 	/**
 	 * Constructor
 	 * 
@@ -175,6 +178,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 					}
 
 				};
+				dialog.setColumnThresholds(columnThresholds);
 				dialog.buildAndOpen();
 			});
 			getButtonBar().add(addButton);
@@ -413,6 +417,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		return cancelButton;
 	}
 
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
+	}
+
 	/**
 	 * Gets a component for the entity identified by ID and for the specified
 	 * attribute model
@@ -481,6 +489,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		getGridWrapper().setFilter(filter);
 	}
 
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
+	}
+
 	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
 		this.filterSupplier = filterSupplier;
 	}
@@ -536,4 +548,5 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		cancelButton.setVisible(!isViewmode() && isEditAllowed() && getFormOptions().isOpenInViewMode());
 		addButton.setVisible(!isViewmode() && !getFormOptions().isHideAddButton() && isEditAllowed());
 	}
+
 }

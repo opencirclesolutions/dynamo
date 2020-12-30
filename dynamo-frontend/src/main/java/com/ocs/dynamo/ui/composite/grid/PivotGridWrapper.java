@@ -96,6 +96,11 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 */
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
+	/**
+	 * Bifunction used to map pivot column headers for export only
+	 */
+	private BiFunction<Object, Object, String> exportHeaderMapper;
+
 	private BiFunction<String, Object, String> customFormatter = null;
 
 	/**
@@ -303,7 +308,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				PivotParameters pars = new PivotParameters();
 				pars.setColumnKeyProperty(columnKeyProperty);
 				pars.setFixedColumnKeys(fixedColumnKeys);
-				pars.setHeaderMapper(headerMapper);
+				pars.setHeaderMapper(exportHeaderMapper != null ? exportHeaderMapper : headerMapper);
 				pars.setFixedHeaderMapper(fixedHeaderMapper);
 				pars.setPivotedProperties(pivotedProperties);
 				pars.setPossibleColumnKeys(possibleColumnKeys);
@@ -311,6 +316,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				pars.setHiddenPivotedProperties(hiddenPivotedProperties);
 				pars.setAggregationMap(aggregationMap);
 				pars.setIncludeAggregateRow(includeAggregateRow);
+				pars.setAggregationClassMap(aggregationClassMap);
 
 				// use the fallback sort orders here
 				getExportDelegate().exportPivoted(
@@ -417,6 +423,14 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	public Map<String, PivotAggregationType> getAggregationMap() {
 		return aggregationMap;
+	}
+
+	public BiFunction<Object, Object, String> getExportHeaderMapper() {
+		return exportHeaderMapper;
+	}
+
+	public void setExportHeaderMapper(BiFunction<Object, Object, String> exportHeaderMapper) {
+		this.exportHeaderMapper = exportHeaderMapper;
 	}
 
 }
