@@ -17,8 +17,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
@@ -89,7 +92,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private Button editButton;
 
 	/**
-	 * Button for saving changes (in "edit all at once" mode)
+	 * Button for saving changes that appears below the grid (in "edit all at once"
+	 * mode)
 	 */
 	private Button saveButton;
 
@@ -128,9 +132,20 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	private BaseGridWrapper<ID, T> currentWrapper;
 
+	/**
+	 * Map from entity ID + attribute to component
+	 */
 	private Map<String, Component> compMap = new HashMap<>();
 
+	/**
+	 * Columns threshold for edit form
+	 */
 	private List<String> columnThresholds = new ArrayList<>();
+
+	/**
+	 * 
+	 */
+	private Set<ID> changedEntityIds = new HashSet<>();
 
 	/**
 	 * Constructor
@@ -195,11 +210,20 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			cancelButton = new Button(message("ocs.cancel"));
 			cancelButton.setIcon(VaadinIcon.BAN.create());
 			cancelButton.addClickListener(event -> {
-				// cancel the editor if it is open
-				if (getGridWrapper().getGrid().getEditor().isOpen()) {
-					getGridWrapper().getGrid().getEditor().cancel();
+
+				Runnable r = () -> {
+					if (getGridWrapper().getGrid().getEditor().isOpen()) {
+						getGridWrapper().getGrid().getEditor().cancel();
+					}
+					toggleViewMode(true);
+				};
+
+				// check for pending changes before cancelling
+				if (!changedEntityIds.isEmpty()) {
+					VaadinUtils.showConfirmDialog(message("ocs.pending.changes"), r);
+				} else {
+					r.run();
 				}
-				toggleViewMode(true);
 			});
 			cancelButton.setVisible(isEditAllowed() && !isViewmode() && getFormOptions().isOpenInViewMode());
 			getButtonBar().add(cancelButton);
@@ -221,8 +245,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 									try {
 										getService().save(toSave);
 										// save and recreate grid to avoid optimistic locks
-										binders.clear();
-										clearGridWrapper();
+										clearAll();
 										constructGrid();
 									} catch (RuntimeException ex) {
 										handleSaveException(ex);
@@ -233,8 +256,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 						try {
 							getService().save(toSave);
 							// save and reassign to avoid optimistic locks
-							binders.clear();
-							clearGridWrapper();
+							clearAll();
 							constructGrid();
 						} catch (RuntimeException ex) {
 							handleSaveException(ex);
@@ -257,6 +279,12 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	protected void buildFilter() {
 		this.filter = filterSupplier == null ? null : filterSupplier.get();
+	}
+
+	private void clearAll() {
+		changedEntityIds.clear();
+		binders.clear();
+		clearGridWrapper();
 	}
 
 	/**
@@ -306,24 +334,37 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			});
 			editColumn.setHeader(message("ocs.edit")).setKey("edit");
 
+			// button for saving currently edited row
 			Column<T> saveColumn = getGridWrapper().getGrid().addComponentColumn(t -> {
-				Button sb = new Button("");
-				sb.setIcon(VaadinIcon.SAFE.create());
-				sb.addClickListener(event -> {
-					if (editor.isOpen()) {
-						// save changes then rebuild grid
-						try {
-							getService().save(editor.getItem());
-							// save and recreate grid to avoid optimistic locks
-							binders.clear();
-							clearGridWrapper();
-							constructGrid();
-						} catch (RuntimeException ex) {
-							handleSaveException(ex);
+				if (Objects.equals(t, editor.getItem())) {
+					Button sb = new Button("");
+					sb.setIcon(VaadinIcon.SAFE.create());
+					sb.addClickListener(event -> {
+						if (editor.isOpen()) {
+							// save changes then rebuild grid
+							try {
+								getService().save(editor.getItem());
+								// save and recreate grid to avoid optimistic locks
+								binders.clear();
+								clearGridWrapper();
+								constructGrid();
+							} catch (RuntimeException ex) {
+								handleSaveException(ex);
+							}
 						}
-					}
-				});
-				return saveButton;
+					});
+					return sb;
+				} else {
+					// cancel editing and go back to normal
+					Button cb = new Button("");
+					cb.setIcon(VaadinIcon.BAN.create());
+					cb.addClickListener(event -> {
+						binders.clear();
+						clearGridWrapper();
+						constructGrid();
+					});
+					return cb;
+				}
 			});
 
 			saveColumn.setHeader(message("ocs.save")).setKey("save");
@@ -476,6 +517,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		compMap.put(id + "_" + am.getPath(), comp);
+		if (comp instanceof HasValue) {
+			HasValue<?, ?> hv = (HasValue<?, ?>) comp;
+			hv.addValueChangeListener(event -> changedEntityIds.add(id));
+		}
 	}
 
 	@Override
@@ -539,6 +584,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		// replace the current grid
 		clearGridWrapper();
 		binders.clear();
+		changedEntityIds.clear();
 		constructGrid();
 
 		// check the button statuses

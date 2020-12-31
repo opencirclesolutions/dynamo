@@ -43,10 +43,19 @@ public class UIHelper {
 
 	private MenuBar menuBar;
 
+	/**
+	 * The screen mmode as specified in menu.properties
+	 */
 	private String screenMode;
 
+	/**
+	 * The selected entity
+	 */
 	private Object selectedEntity;
 
+	/**
+	 * The selected tab
+	 */
 	private Integer selectedTab;
 
 	/**
@@ -54,13 +63,20 @@ public class UIHelper {
 	 */
 	private Object currentUI;
 
+	/**
+	 * The selected view. This is automatically stored by the framework and used to
+	 * store/restore search terms
+	 */
 	private Class<?> selectedView;
 
 	/**
-	 * 
+	 * Search value cache
 	 */
 	private Map<Class<?>, List<SerializablePredicate<?>>> searchValueCache = new HashMap<>();
 
+	/**
+	 * Search filter cache for flexible search layouts
+	 */
 	private Map<Class<?>, List<FlexibleFilterDefinition>> searchFilterDefinitionCache = new HashMap<>();
 
 	/**
@@ -171,6 +187,7 @@ public class UIHelper {
 
 	/**
 	 * Retrieves previously stored search terms
+	 * 
 	 * @return
 	 */
 	public List<SerializablePredicate<?>> retrieveSearchTerms() {
@@ -180,7 +197,7 @@ public class UIHelper {
 		}
 		return new ArrayList<>();
 	}
-	
+
 	public List<FlexibleFilterDefinition> retrieveSearchFilterDefinitions() {
 		if (this.selectedView != null) {
 			List<FlexibleFilterDefinition> list = searchFilterDefinitionCache.get(this.selectedView);
@@ -188,7 +205,6 @@ public class UIHelper {
 		}
 		return new ArrayList<>();
 	}
-
 
 	public void selectAndNavigate(Object selectedEntity, String viewName) {
 		setSelectedEntity(selectedEntity);

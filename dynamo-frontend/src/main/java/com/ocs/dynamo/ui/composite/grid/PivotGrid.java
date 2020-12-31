@@ -87,7 +87,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 					}
 					return value;
 				}).setHeader(headerMapper.apply(pk, property)).setAutoWidth(true).setKey(pk + "_" + property)
-						.setId(pk + "_" + property);
+						.setResizable(true).setId(pk + "_" + property);
 			}
 		}
 
@@ -109,7 +109,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 					}
 					return getFormattedAggregateValue(bd, provider.getAggregationClass(property));
 
-				}).setHeader(header).setKey(colId).setId(colId);
+				}).setHeader(header).setKey(colId).setResizable(true).setId(colId);
 			}
 		}
 	}
