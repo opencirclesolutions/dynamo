@@ -191,7 +191,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 		} else if (am != null) {
 			// use the attribute model
 			String str = GridFormatUtils.formatPropertyValue(am, value, ", ", VaadinUtils.getLocale(),
-					VaadinUtils.getCurrencySymbol());
+					VaadinUtils.getTimeZoneId(), VaadinUtils.getCurrencySymbol());
 			cell.setCellValue(str);
 		} else if (value != null) {
 			// fall back - just call toSTring

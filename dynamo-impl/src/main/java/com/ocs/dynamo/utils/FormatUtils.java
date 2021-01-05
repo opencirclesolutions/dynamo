@@ -14,6 +14,7 @@
 package com.ocs.dynamo.utils;
 
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
@@ -48,9 +49,9 @@ public final class FormatUtils {
 	 * @return
 	 */
 	public static <T> String extractAndFormat(EntityModelFactory entityModelFactory, MessageService messageService,
-			AttributeModel am, Object obj, Locale locale, String currencySymbol) {
+			AttributeModel am, Object obj, Locale locale, ZoneId zoneId, String currencySymbol) {
 		Object value = ClassUtils.getFieldValue(obj, am.getPath());
-		return formatPropertyValue(entityModelFactory, messageService, am, value, ", ", locale, currencySymbol);
+		return formatPropertyValue(entityModelFactory, messageService, am, value, ", ", locale, zoneId, currencySymbol);
 	}
 
 	/**
@@ -114,8 +115,8 @@ public final class FormatUtils {
 	 * @return
 	 */
 	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
-			AttributeModel model, Object value, String separator, Locale locale) {
-		return formatPropertyValue(entityModelFactory, messageService, model, value, separator, locale,
+			AttributeModel model, Object value, String separator, Locale locale, ZoneId zoneId) {
+		return formatPropertyValue(entityModelFactory, messageService, model, value, separator, locale, zoneId,
 				SystemPropertyUtils.getDefaultCurrencySymbol());
 	}
 
@@ -131,7 +132,7 @@ public final class FormatUtils {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
-			AttributeModel model, Object value, String separator, Locale locale, String currencySymbol) {
+			AttributeModel model, Object value, String separator, Locale locale, ZoneId zoneId, String currencySymbol) {
 		if (model != null && value != null) {
 			if (model.isWeek()) {
 				if (value instanceof LocalDate) {
@@ -147,7 +148,7 @@ public final class FormatUtils {
 				return Boolean.toString(Boolean.TRUE.equals(value));
 			} else if (DateUtils.isJava8DateType(model.getType())) {
 				// other Java 8 dates
-				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat());
+				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat(), zoneId);
 			} else if (NumberUtils.isNumeric(model.getType())) {
 				return NumberUtils.numberToString(model, value, model.isThousandsGrouping(), locale, currencySymbol);
 			} else if (model.getType().isEnum()) {
@@ -172,7 +173,7 @@ public final class FormatUtils {
 				}
 				AttributeModel detailModel = detailEntityModel.getAttributeModel(displayProperty);
 				return formatPropertyValue(entityModelFactory, messageService, detailModel,
-						ClassUtils.getFieldValue(value, displayProperty), separator, locale, currencySymbol);
+						ClassUtils.getFieldValue(value, displayProperty), separator, locale, zoneId, currencySymbol);
 			} else if (value instanceof AbstractEntity) {
 				// single entity
 				Object result = ClassUtils.getFieldValue(value, model.getPath());

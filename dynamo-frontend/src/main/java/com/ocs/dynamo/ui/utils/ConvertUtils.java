@@ -15,6 +15,8 @@ package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -77,6 +79,15 @@ public final class ConvertUtils {
 		} else if (BigDecimal.class.equals(am.getType())) {
 			return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(),
 					(BigDecimal) input, locale);
+		} else if (am.isSearchDateOnly()) {
+			// special case, in case of "search date only" we need to convert to a local date
+			if (input instanceof ZonedDateTime) {
+				ZonedDateTime zdt = (ZonedDateTime) input;
+				return zdt.toLocalDate();
+			} else if (input instanceof LocalDateTime) {
+				LocalDateTime ldt = (LocalDateTime) input;
+				return ldt.toLocalDate();
+			}
 		}
 		return input;
 	}
@@ -119,7 +130,6 @@ public final class ConvertUtils {
 			return converter.convertToModel((String) value, new ValueContext(locale));
 
 		} else if (BigDecimal.class.equals(am.getType())) {
-
 			BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(am.isCurrency(),
 					am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
 			return converter.convertToModel((String) value, new ValueContext(locale));

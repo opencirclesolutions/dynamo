@@ -44,118 +44,124 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
-public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseDetailsEditGrid<Collection<T>, ID, T> {
+public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends BaseDetailsEditGrid<Collection<T>, ID, T> {
 
-    private static final long serialVersionUID = -1203245694503350276L;
+	private static final long serialVersionUID = -1203245694503350276L;
 
-    /**
-     * The comparator (will be used to sort the items)
-     */
-    private Comparator<T> comparator;
+	/**
+	 * The comparator (will be used to sort the items)
+	 */
+	private Comparator<T> comparator;
 
-    /**
-     * The data provider
-     */
-    private ListDataProvider<T> provider;
+	/**
+	 * The data provider
+	 */
+	private ListDataProvider<T> provider;
 
-    /**
-     * Constructor
-     *
-     * @param entityModel    the entity model of the entities to display
-     * @param attributeModel the attribute model of the attribute to display
-     * @param viewMode       the view mode
-     * @param formOptions    the form options that determine how the grid behaves
-     */
-    public DetailsEditGrid(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode, FormOptions formOptions) {
-        super(null, entityModel, attributeModel, viewMode, false, formOptions);
-        this.provider = new ListDataProvider<>(new ArrayList<>());
-        initContent();
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param entityModel    the entity model of the entities to display
+	 * @param attributeModel the attribute model of the attribute to display
+	 * @param viewMode       the view mode
+	 * @param formOptions    the form options that determine how the grid behaves
+	 */
+	public DetailsEditGrid(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
+			FormOptions formOptions) {
+		super(null, entityModel, attributeModel, viewMode, false, formOptions);
+		this.provider = new ListDataProvider<>(new ArrayList<>());
+		initContent();
+	}
 
-    @Override
-    protected void applyFilter() {
-        // not needed
-    }
+	@Override
+	protected void applyFilter() {
+		// not needed
+	}
 
-    @Override
-    protected void doAdd() {
-        T t = getCreateEntitySupplier().get();
-        provider.getItems().add(t);
-        provider.refreshAll();
-    }
+	@Override
+	protected void doAdd() {
+		T t = getCreateEntitySupplier().get();
+		provider.getItems().add(t);
+		provider.refreshAll();
+	}
 
-    @Override
-    protected Collection<T> generateModelValue() {
-        return ConvertUtils.convertCollection(provider == null ? new ArrayList<>() : provider.getItems(), getAttributeModel());
-    }
+	@Override
+	protected Collection<T> generateModelValue() {
+		return ConvertUtils.convertCollection(provider == null ? new ArrayList<>() : provider.getItems(),
+				getAttributeModel());
+	}
 
-    public Comparator<T> getComparator() {
-        return comparator;
-    }
+	public Comparator<T> getComparator() {
+		return comparator;
+	}
 
-    @Override
-    protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
-        return provider;
-    }
+	@Override
+	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
+		return provider;
+	}
 
-    public int getItemCount() {
-        return provider.getItems().size();
-    }
+	public int getItemCount() {
+		return provider.getItems().size();
+	}
 
-    @Override
-    public Collection<T> getValue() {
-        return ConvertUtils.convertCollection(provider == null ? new ArrayList<>() : provider.getItems(), getAttributeModel());
-    }
+	@Override
+	public Collection<T> getValue() {
+		return ConvertUtils.convertCollection(provider == null ? new ArrayList<>() : provider.getItems(),
+				getAttributeModel());
+	}
 
-    @Override
-    protected void handleDialogSelection(Collection<T> selected) {
-        if (getLinkEntityConsumer() == null) {
-            throw new OCSRuntimeException("No linkEntityConsumer specified!");
-        }
+	@Override
+	protected void handleDialogSelection(Collection<T> selected) {
+		if (getLinkEntityConsumer() == null) {
+			throw new OCSRuntimeException("No linkEntityConsumer specified!");
+		}
 
-        // add to data provider
-        for (T t : selected) {
-            if (!provider.getItems().contains(t)) {
-                provider.getItems().add(t);
-            }
-        }
+		// add to data provider
+		for (T t : selected) {
+			if (!provider.getItems().contains(t)) {
+				provider.getItems().add(t);
+			}
+		}
 
-        // link to parent entity
-        for (T t : selected) {
-            getLinkEntityConsumer().accept(t);
-        }
-    }
+		// link to parent entity
+		for (T t : selected) {
+			getLinkEntityConsumer().accept(t);
+		}
+	}
 
-    /**
-     * Respond to a selection of an item in the grid
-     */
-    @Override
-    protected void onSelect(Object selected) {
-        // overwrite when needed
-    }
+	/**
+	 * Respond to a selection of an item in the grid
+	 */
+	@Override
+	protected void onSelect(Object selected) {
+		// overwrite when needed
+	}
 
-    public void setComparator(Comparator<T> comparator) {
-        this.comparator = comparator;
-    }
+	public void setComparator(Comparator<T> comparator) {
+		this.comparator = comparator;
+	}
 
-    @Override
-    protected void setPresentationValue(Collection<T> value) {
-        List<T> list = new ArrayList<>();
-        list.addAll(value);
-        if (comparator != null) {
-            list.sort(comparator);
-        }
+	@Override
+	protected void setPresentationValue(Collection<T> value) {
+		List<T> list = new ArrayList<>();
+		list.addAll(value);
+		if (comparator != null) {
+			list.sort(comparator);
+		}
 
-        getBinders().clear();
-        if (provider != null) {
-            provider.getItems().clear();
-            provider.getItems().addAll(list);
-            provider.refreshAll();
-        }
+		getBinders().clear();
+		if (provider != null) {
+			provider.getItems().clear();
+			provider.getItems().addAll(list);
+			provider.refreshAll();
+		}
 
-        // clear the selection
-        setSelectedItem(null);
-    }
+		updateCaption(value == null ? 0 : value.size());
+
+		// clear the selection
+		setSelectedItem(null);
+	}
 }

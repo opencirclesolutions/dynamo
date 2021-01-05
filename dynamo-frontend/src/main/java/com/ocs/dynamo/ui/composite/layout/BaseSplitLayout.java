@@ -293,7 +293,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	@Override
 	public void detailsMode(T entity) {
-
 		if (detailFormLayout == null) {
 			detailFormLayout = new DefaultVerticalLayout(false, false);
 
@@ -315,7 +314,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 						} else {
 							detailsMode(entity);
 						}
-						afterReload(entity);
 					} else {
 						reload();
 						reloadDetails();

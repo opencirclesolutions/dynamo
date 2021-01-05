@@ -347,6 +347,16 @@ public final class DynamoConstants {
 	 * Indicates whether to use the display name as the input prompt by default
 	 */
 	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
+	
+	/**
+	 * Indicates whether to use the browser time zone for formatting zoned date times
+	 */
+	public static final String SP_USE_BROWSER_TIME_ZONE = "ocs.use.browser.time.zone";
+
+	/**
+	 * Indicates whether to use selection check boxes for multiple selection in grid
+	 */
+	public static final String SP_USE_GRID_SELECTION_CHECK_BOXES = "ocs.use.grid.selection.checkboxes";
 
 	/**
 	 * Whether to use thousands grouping in XLS files

@@ -356,8 +356,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 					return true;
 				}
 			};
-			dialog.build();
-			dialog.open();
+			dialog.buildAndOpen();
 		});
 		searchDialogButton.setVisible(!viewMode && formOptions.isDetailsGridSearchMode());
 		buttonBar.add(searchDialogButton);
@@ -386,6 +385,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		return binders;
 	}
 
+	public List<String> getColumnThresholds() {
+		return columnThresholds;
+	}
+
 	public Supplier<T> getCreateEntitySupplier() {
 		return createEntitySupplier;
 	}
@@ -394,6 +397,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Returns the data provider
 	 */
 	protected abstract DataProvider<T, SerializablePredicate<T>> getDataProvider();
+
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
 
 	public EntityModel<T> getEntityModel() {
 		return entityModel;
@@ -417,6 +424,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	public Consumer<T> getLinkEntityConsumer() {
 		return linkEntityConsumer;
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
 	}
 
 	public Button getSearchDialogButton() {
@@ -539,15 +550,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			}
 		});
 
-		// apply filter
 		applyFilter();
-
-		// add the buttons
 		constructButtonBar(layout);
-
 		postConstruct();
 		add(layout);
-
 	}
 
 	/**
@@ -642,8 +648,16 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		}
 	}
 
+	public void setColumnThresholds(List<String> columnThresholds) {
+		this.columnThresholds = columnThresholds;
+	}
+
 	public void setCreateEntitySupplier(Supplier<T> createEntitySupplier) {
 		this.createEntitySupplier = createEntitySupplier;
+	}
+
+	public void setDetailJoins(FetchJoinInformation... detailJoins) {
+		this.detailJoins = detailJoins;
 	}
 
 	public void setFormOptions(FormOptions formOptions) {
@@ -715,6 +729,16 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		customButtonMap.get(key).add(component);
 	}
 
+	/**
+	 * Updates the caption
+	 * 
+	 * @param size
+	 */
+	protected void updateCaption(int size) {
+		this.setLabel(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + " "
+				+ getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
+	}
+
 	@Override
 	public boolean validateAllFields() {
 		boolean error = false;
@@ -725,21 +749,4 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		}
 		return error;
 	}
-
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
-	public void setDetailJoins(FetchJoinInformation... detailJoins) {
-		this.detailJoins = detailJoins;
-	}
-
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
-	}
-
 }

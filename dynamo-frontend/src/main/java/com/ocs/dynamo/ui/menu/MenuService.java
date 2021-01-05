@@ -240,14 +240,8 @@ public class MenuService {
 		this.lastVisited = destination;
 		for (MenuItem item : menuBar.getItems()) {
 			item.getElement().getClassList().remove(DynamoConstants.CSS_LAST_VISITED);
-//            if (item.getElement().getParent() != null) {
-//                item.getElement().getParent().getClassList().remove(DynamoConstants.CSS_LAST_VISITED);
-//            }
 			if (hasChildWithDestination(item, destination)) {
 				item.getElement().getClassList().add(DynamoConstants.CSS_LAST_VISITED);
-//                if (item.getElement().getParent() != null) {
-//                    item.getElement().getParent().getClassList().add(DynamoConstants.CSS_LAST_VISITED);
-//                }
 			}
 		}
 	}

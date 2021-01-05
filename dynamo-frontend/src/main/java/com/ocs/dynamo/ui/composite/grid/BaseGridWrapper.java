@@ -27,7 +27,9 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -72,7 +74,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * The wrapped grid component
 	 */
-	private ModelBasedGrid<ID, T> grid;
+	private Grid<T> grid;
 
 	/**
 	 * The layout that contains the grid
@@ -128,23 +130,45 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * 
 	 * @return
 	 */
-	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(dataProvider, getEntityModel(), fieldFilters, editable,
-				getFormOptions().getGridEditMode()) {
+	protected Grid<T> constructGrid() {
+		boolean checkBoxes = SystemPropertyUtils.useGridSelectionCheckBoxes();
+		if (checkBoxes) {
+			return new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
+					getFormOptions().getGridEditMode()) {
 
-			private static final long serialVersionUID = -4559181057050230055L;
+				private static final long serialVersionUID = -4559181057050230055L;
 
-			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				return BaseGridWrapper.this.doBind(t, field, attributeName);
-			}
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					return BaseGridWrapper.this.doBind(t, field, attributeName);
+				}
 
-			@Override
-			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				BaseGridWrapper.this.postProcessComponent(id, am, comp);
-			}
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					BaseGridWrapper.this.postProcessComponent(id, am, comp);
+				}
 
-		};
+			};
+
+		} else {
+			return new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
+					getFormOptions().getGridEditMode()) {
+
+				private static final long serialVersionUID = -4559181057050230055L;
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					return BaseGridWrapper.this.doBind(t, field, attributeName);
+				}
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					BaseGridWrapper.this.postProcessComponent(id, am, comp);
+				}
+
+			};
+		}
+
 	}
 
 	protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
@@ -165,7 +189,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * 
 	 * @return
 	 */
-	public ModelBasedGrid<ID, T> getGrid() {
+	public Grid<T> getGrid() {
 		if (grid == null) {
 			grid = constructGrid();
 		}
@@ -243,7 +267,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	}
 
 	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-
+		// overwrite in subclasses
 	}
 
 }

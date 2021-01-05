@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -1717,7 +1718,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Component comp = labels.get(isViewMode()).get(am);
 			Object value = ClassUtils.getFieldValue(entity, propertyName);
 			String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), getMessageService(), am, value,
-					", ", VaadinUtils.getLocale(), SystemPropertyUtils.getDefaultCurrencySymbol());
+					", ", VaadinUtils.getLocale(), ZoneId.systemDefault(), SystemPropertyUtils.getDefaultCurrencySymbol());
 			if (comp instanceof Span) {
 				((Span) comp).setText(formatted == null ? "" : formatted);
 			} else if (comp instanceof Anchor) {

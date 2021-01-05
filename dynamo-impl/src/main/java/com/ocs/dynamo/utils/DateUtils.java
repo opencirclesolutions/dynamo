@@ -208,7 +208,7 @@ public final class DateUtils {
 	 * @param format the desired format
 	 * @return
 	 */
-	public static String formatJava8Date(Class<?> clazz, Object value, String format) {
+	public static String formatJava8Date(Class<?> clazz, Object value, String format, ZoneId zoneId) {
 		if (LocalDate.class.equals(clazz)) {
 			return formatDate((LocalDate) value, format);
 		} else if (LocalDateTime.class.equals(clazz)) {
@@ -216,7 +216,7 @@ public final class DateUtils {
 		} else if (LocalTime.class.equals(clazz)) {
 			return formatTime((LocalTime) value, format);
 		} else if (ZonedDateTime.class.equals(clazz)) {
-			return formatZonedDateTime((ZonedDateTime) value, format);
+			return formatZonedDateTime((ZonedDateTime) value, format, zoneId);
 		}
 		return null;
 	}
@@ -243,11 +243,11 @@ public final class DateUtils {
 	 * @param format   the desired format
 	 * @return
 	 */
-	public static String formatZonedDateTime(ZonedDateTime dateTime, String format) {
+	public static String formatZonedDateTime(ZonedDateTime dateTime, String format, ZoneId zoneId) {
 		if (dateTime == null || format == null) {
 			return null;
 		}
-		DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format);
+		DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format).withZone(zoneId);
 		return dateTime.format(fmt);
 	}
 

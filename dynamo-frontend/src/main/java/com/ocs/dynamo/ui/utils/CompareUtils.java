@@ -13,6 +13,7 @@
 */
 package com.ocs.dynamo.ui.utils;
 
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -60,6 +61,7 @@ public final class CompareUtils {
 		toIgnore.addAll(EntityModelUtils.ALWAYS_IGNORE);
 
 		Locale locale = VaadinUtils.getLocale();
+		ZoneId zoneId = VaadinUtils.getTimeZoneId();
 		String noValue = messageService.getMessage("ocs.no.value", locale);
 
 		for (AttributeModel am : model.getAttributeModels()) {
@@ -71,9 +73,9 @@ public final class CompareUtils {
 
 				if (!Objects.equals(oldValue, newValue)) {
 					String oldValueStr = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am,
-							oldValue, ", ", locale);
+							oldValue, ", ", locale, zoneId);
 					String newValueStr = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am,
-							newValue, ", ", locale);
+							newValue, ", ", locale, zoneId);
 					results.add(messageService.getMessage("ocs.value.changed", VaadinUtils.getLocale(),
 							am.getDisplayName(VaadinUtils.getLocale()), oldValue == null ? noValue : oldValueStr,
 							newValue == null ? noValue : newValueStr));

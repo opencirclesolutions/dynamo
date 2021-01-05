@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.HashSet;
 import java.util.Locale;
 import java.util.Set;
@@ -52,51 +53,54 @@ public class FormatUtilsTest {
 
 		// simple string
 		assertEquals("Bob", FormatUtils.formatPropertyValue(factory, messageService, model.getAttributeModel("name"),
-				"Bob", ", ", LOCALE));
+				"Bob", ", ", LOCALE, ZoneId.systemDefault()));
 
 		// boolean (without overrides)
 		assertEquals("true", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("someBoolean"), true, ", ", LOCALE));
+				model.getAttributeModel("someBoolean"), true, ", ", LOCALE, ZoneId.systemDefault()));
 		assertEquals("false", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("someBoolean"), false, ", ", LOCALE));
+				model.getAttributeModel("someBoolean"), false, ", ", LOCALE, ZoneId.systemDefault()));
 
 		// boolean (with overrides)
 		assertEquals("On", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("someBoolean2"), true, ", ", LOCALE));
+				model.getAttributeModel("someBoolean2"), true, ", ", LOCALE, ZoneId.systemDefault()));
 		assertEquals("Off", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("someBoolean2"), false, ", ", LOCALE));
+				model.getAttributeModel("someBoolean2"), false, ", ", LOCALE, ZoneId.systemDefault()));
 
 		// enumeration
 		assertEquals("A", FormatUtils.formatPropertyValue(factory, messageService, model.getAttributeModel("someEnum"),
-				TestEnum.A, ", ", LOCALE));
+				TestEnum.A, ", ", LOCALE, ZoneId.systemDefault()));
 
 		// BigDecimal
 		assertEquals("12,40", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("discount"), BigDecimal.valueOf(12.4), ", ", LOCALE));
+				model.getAttributeModel("discount"), BigDecimal.valueOf(12.4), ", ", LOCALE, ZoneId.systemDefault()));
 		assertEquals("1.042,40", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("discount"), BigDecimal.valueOf(1042.4), ", ", LOCALE));
+				model.getAttributeModel("discount"), BigDecimal.valueOf(1042.4), ", ", LOCALE, ZoneId.systemDefault()));
 		assertEquals("1.042,40%", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("rate"), BigDecimal.valueOf(1042.4), ", ", LOCALE));
+				model.getAttributeModel("rate"), BigDecimal.valueOf(1042.4), ", ", LOCALE, ZoneId.systemDefault()));
 
 		// US formatting (reverse separators)
-		assertEquals("1,000.40", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("discount"), BigDecimal.valueOf(1000.4), ", ", Locale.US));
+		assertEquals("1,000.40",
+				FormatUtils.formatPropertyValue(factory, messageService, model.getAttributeModel("discount"),
+						BigDecimal.valueOf(1000.4), ", ", Locale.US, ZoneId.systemDefault()));
 
 		// date
-		assertEquals("12/10/2015", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("birthDate"), DateUtils.createLocalDate("12102015"), ", ", LOCALE));
+		assertEquals("12/10/2015",
+				FormatUtils.formatPropertyValue(factory, messageService, model.getAttributeModel("birthDate"),
+						DateUtils.createLocalDate("12102015"), ", ", LOCALE, ZoneId.systemDefault()));
 
 		// date (as week)
-		assertEquals("2015-42", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("birthWeek"), DateUtils.createLocalDate("12102015"), ", ", LOCALE));
+		assertEquals("2015-42",
+				FormatUtils.formatPropertyValue(factory, messageService, model.getAttributeModel("birthWeek"),
+						DateUtils.createLocalDate("12102015"), ", ", LOCALE, ZoneId.systemDefault()));
 
 		// integer (with grouping)
 		assertEquals("1.234", FormatUtils.formatPropertyValue(factory, messageService,
-				model.getAttributeModel("someInt"), 1234, ", ", LOCALE));
+				model.getAttributeModel("someInt"), 1234, ", ", LOCALE, ZoneId.systemDefault()));
 
 		// long
 		assertEquals("1.234", FormatUtils.formatPropertyValue(factory, messageService, model.getAttributeModel("age"),
-				1234L, ", ", LOCALE));
+				1234L, ", ", LOCALE, ZoneId.systemDefault()));
 	}
 
 	@Test
@@ -114,7 +118,7 @@ public class FormatUtilsTest {
 		e2.setEntity1(e1);
 
 		String result = FormatUtils.formatPropertyValue(factory, messageService, model.getAttributeModel("entity1"), e1,
-				", ", LOCALE);
+				", ", LOCALE, ZoneId.systemDefault());
 		assertEquals("some name", result);
 	}
 

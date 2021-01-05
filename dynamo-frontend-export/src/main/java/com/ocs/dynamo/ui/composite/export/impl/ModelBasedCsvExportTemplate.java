@@ -18,6 +18,7 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Serializable;
 import java.nio.charset.StandardCharsets;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -89,7 +90,7 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 					if (show(am)) {
 						Object value = ClassUtils.getFieldValue(entity, am.getPath());
 						String str = GridFormatUtils.formatPropertyValue(am, value, ", ", VaadinUtils.getLocale(),
-								VaadinUtils.getCurrencySymbol());
+								VaadinUtils.getTimeZoneId(), VaadinUtils.getCurrencySymbol());
 						row.add(str);
 					}
 				}

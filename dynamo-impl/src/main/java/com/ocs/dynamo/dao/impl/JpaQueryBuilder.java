@@ -46,6 +46,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.QueryFunction;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
+import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Between;
@@ -102,11 +103,13 @@ public final class JpaQueryBuilder {
 	 * @param cq          the criteria query
 	 * @param root        the query root
 	 * @param multiSelect optional properties, when supplied applied as multi select
+	 * @param distinct    whether a "distinct"is applied to the query. This
+	 *                    influences how the sort part is built
 	 * @param sortOrders  the sort orders
 	 * @return
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
-			Root<T> root, List<Selection<?>> multiSelect, SortOrder... sortOrders) {
+			Root<T> root, List<Selection<?>> multiSelect, boolean distinct, SortOrder... sortOrders) {
 		List<Selection<?>> ms = new ArrayList<>();
 		if (multiSelect != null && !multiSelect.isEmpty()) {
 			ms.addAll(multiSelect);
@@ -114,7 +117,8 @@ public final class JpaQueryBuilder {
 		if (sortOrders != null && sortOrders.length > 0) {
 			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
-				Expression<?> property = getPropertyPath(root, sortOrder.getProperty(), true);
+				Expression<?> property = distinct ? getPropertyPath(root, sortOrder.getProperty(), true)
+						: getPropertyPathForSort(root, sortOrder.getProperty());
 				ms.add(property);
 				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
 			}
@@ -132,12 +136,13 @@ public final class JpaQueryBuilder {
 	 * @param builder    the criteria builder
 	 * @param cq         the criteria query
 	 * @param root       the query root
+	 * @param distinct   whether a "distinct" is applied to the query
 	 * @param sortOrders the sort orders
 	 * @return
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
-			Root<T> root, SortOrder... sortOrders) {
-		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, sortOrders);
+			Root<T> root, boolean distinct, SortOrder... sortOrders) {
+		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, distinct, sortOrders);
 	}
 
 	/**
@@ -248,12 +253,13 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Creates a distinct query
+	 * Creates a query for retrieving all distinct values for a certain field
 	 * 
-	 * @param filter
-	 * @param entityManager
-	 * @param entityClass
-	 * @param distinctField
+	 * @param filter        the search filter
+	 * @param entityManager the entity manager
+	 * @param entityClass   the class of the entity to query
+	 * @param distinctField the name of the field for which to retrieve the distinct
+	 *                      values
 	 * @param sortOrders
 	 * @return
 	 */
@@ -273,7 +279,7 @@ public final class JpaQueryBuilder {
 			cq.where(p);
 		}
 		cq.distinct(true);
-		cq = addSortInformation(builder, cq, root, sortOrders);
+		cq = addSortInformation(builder, cq, root, true, sortOrders);
 
 		TypedQuery<Tuple> query = entityManager.createQuery(cq);
 		setParameters(query, pars);
@@ -293,14 +299,14 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <ID, T> TypedQuery<T> createFetchQuery(EntityManager entityManager, Class<T> entityClass,
-			List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation[] fetchJoins) {
+			List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... fetchJoins) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
 
 		boolean distinct = addFetchJoinInformation(root, fetchJoins);
 
-		// use parameter to prevent Hibernate from creating different query plan
+		// use parameters to prevent Hibernate from creating different query plan
 		// every time
 		Expression<String> exp = root.get(DynamoConstants.ID);
 		ParameterExpression<List> p = builder.parameter(List.class, DynamoConstants.IDS);
@@ -315,7 +321,7 @@ public final class JpaQueryBuilder {
 			}
 		}
 
-		addSortInformation(builder, cq, root, sortOrders == null ? null : sortOrders.toArray());
+		addSortInformation(builder, cq, root, distinct, sortOrders == null ? null : sortOrders.toArray());
 		TypedQuery<T> query = entityManager.createQuery(cq);
 
 		query.setParameter(DynamoConstants.IDS, ids);
@@ -403,7 +409,8 @@ public final class JpaQueryBuilder {
 
 		// add order clause - this is also important in case of an ID query
 		// since we do need to return the correct IDs!
-		cq = addSortInformation(builder, cq, root, selection, sortOrders);
+		// note: "distinct" must be false here
+		cq = addSortInformation(builder, cq, root, selection, false, sortOrders);
 		TypedQuery<Tuple> query = entityManager.createQuery(cq);
 		setParameters(query, pars);
 		return query;
@@ -544,7 +551,7 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Creates a query that simply selects some objects based on some filter
+	 * Creates a query that selects objects based on the specified filter
 	 * 
 	 * @param filter        the filter
 	 * @param entityManager the entity manager
@@ -567,7 +574,7 @@ public final class JpaQueryBuilder {
 		if (p != null) {
 			cq.where(p);
 		}
-		cq = addSortInformation(builder, cq, root, sortOrders);
+		cq = addSortInformation(builder, cq, root, distinct, sortOrders);
 		TypedQuery<T> query = entityManager.createQuery(cq);
 		setParameters(query, pars);
 		return query;
@@ -649,7 +656,7 @@ public final class JpaQueryBuilder {
 		if (aggregated) {
 			cq.groupBy(grouping);
 		}
-		cq = addSortInformation(builder, cq, root, sortOrders == null ? null : sortOrders.toArray());
+		cq = addSortInformation(builder, cq, root, true, sortOrders == null ? null : sortOrders.toArray());
 		TypedQuery<Object[]> query = entityManager.createQuery(cq);
 		setParameters(query, pars);
 		return query;
@@ -712,6 +719,57 @@ public final class JpaQueryBuilder {
 		cq.where(equals);
 
 		return cq;
+	}
+
+	/**
+	 * Adds a property path specifically for sorting
+	 * 
+	 * @param root
+	 * @param propertyId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private static Expression<?> getPropertyPathForSort(Root<?> root, Object propertyId) {
+		String[] propertyIdParts = ((String) propertyId).split("\\.");
+
+		Path<?> path = null;
+		Join<?, ?> curJoin = null;
+		for (int i = 0; i < propertyIdParts.length; i++) {
+			String part = propertyIdParts[i];
+			if (path == null) {
+				path = root.get(part);
+			} else {
+				path = path.get(part);
+			}
+
+			if (AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
+					|| Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				// Reuse existing join
+				Join<?, ?> detailJoin = null;
+				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
+						: curJoin.getJoins());
+				if (joins != null) {
+					for (Join<?, ?> j : (Set<Join<?, ?>>) joins) {
+						if (propertyIdParts[i].equals(j.getAttribute().getName())) {
+							path = j;
+							detailJoin = j;
+							break;
+						}
+					}
+				}
+				// when no existing join then add new
+				if (detailJoin == null) {
+					if (curJoin == null) {
+						curJoin = root.join(propertyIdParts[i], JoinType.LEFT);
+					} else {
+						curJoin = curJoin.join(propertyIdParts[i], JoinType.LEFT);
+					}
+					path = curJoin;
+				}
+			}
+
+		}
+		return path;
 	}
 
 	/**

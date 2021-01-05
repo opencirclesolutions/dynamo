@@ -407,6 +407,14 @@ public final class SystemPropertyUtils {
 	public static boolean useDefaultPromptValue() {
 		return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, true);
 	}
+	
+	/**
+	 * 
+	 * @return whether to use the browser time zone for formatting zoned date times
+	 */
+	public static boolean useBrowserTimezone() {
+		return getBooleanProperty(DynamoConstants.SP_USE_BROWSER_TIME_ZONE, false);
+	}
 
 	/**
 	 * @return whether to include thousands grouping separators in edit mode
@@ -421,6 +429,14 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean useXlsThousandsGrouping() {
 		return getBooleanProperty(DynamoConstants.SP_XLS_THOUSANDS_GROUPING, false);
+	}
+
+	/**
+	 * 
+	 * @return whether to use check boxes for multiple selection in grids
+	 */
+	public static boolean useGridSelectionCheckBoxes() {
+		return getBooleanProperty(DynamoConstants.SP_USE_GRID_SELECTION_CHECK_BOXES, true);
 	}
 
 	private SystemPropertyUtils() {

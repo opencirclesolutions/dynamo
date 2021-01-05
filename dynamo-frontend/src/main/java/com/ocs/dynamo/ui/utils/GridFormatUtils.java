@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.utils;
 
+import java.time.ZoneId;
 import java.util.Locale;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -22,6 +23,11 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.FormatUtils;
 
+/**
+ * Utilities for formatting values inside a grid. Mostly delegates to FormatUtils
+ * @author Bas Rutten
+ *
+ */
 public final class GridFormatUtils {
 
 	private static EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
@@ -35,13 +41,15 @@ public final class GridFormatUtils {
 	 * @param am             the attribute model
 	 * @param obj            the object from which to extract the value
 	 * @param local          the locale
+	 * @param zoneId         the time zone ID
 	 * @param currencySymbol the currency symbol
 	 * @return
 	 */
-	public static <T> String extractAndFormat(AttributeModel am, Object obj, Locale locale, String currencySymbol) {
+	public static <T> String extractAndFormat(AttributeModel am, Object obj, Locale locale, ZoneId zoneId,
+			String currencySymbol) {
 		Object value = ClassUtils.getFieldValue(obj, am.getPath());
 		String result = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am, value, ", ", locale,
-				currencySymbol);
+				zoneId, currencySymbol);
 		return restrictToMaxLength(result, am);
 	}
 
@@ -56,14 +64,10 @@ public final class GridFormatUtils {
 	 * @return
 	 */
 	public static <T> String formatPropertyValue(AttributeModel am, Object value, String separator, Locale locale,
-			String currencySymbol) {
+			ZoneId zoneId, String currencySymbol) {
 		String result = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am, value, separator,
-				locale);
+				locale, zoneId);
 		return restrictToMaxLength(result, am);
-	}
-
-	private GridFormatUtils() {
-		// hidden constructor
 	}
 
 	/**
@@ -78,5 +82,9 @@ public final class GridFormatUtils {
 			return input.substring(0, am.getMaxLengthInGrid()) + "...";
 		}
 		return input;
+	}
+
+	private GridFormatUtils() {
+		// hidden constructor
 	}
 }

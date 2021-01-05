@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.functional.domain;
 
+import javax.annotation.Nullable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 
@@ -60,6 +61,7 @@ public class Country extends DomainChild<Country, Region> {
     /**
      * Overridden so we can modify the attribute model
      */
+    @Nullable
     @Override
     @Attribute(complexEditable = true, displayName = "Region", visibleInGrid = VisibilityType.SHOW, replacementSearchPath = "parent")
     public Region getParent() {

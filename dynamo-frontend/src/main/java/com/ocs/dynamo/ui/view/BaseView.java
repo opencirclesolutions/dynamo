@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.view;
 
+import java.time.ZoneId;
+
 import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,6 +27,7 @@ import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.menu.MenuService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -76,6 +79,14 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 
 	@Override
 	public void beforeEnter(BeforeEnterEvent event) {
+		// store browser time zone in session
+		if (SystemPropertyUtils.useBrowserTimezone()) {
+			UI.getCurrent().getPage().retrieveExtendedClientDetails(extendedClientDetails -> {
+				String timeZoneId = extendedClientDetails.getTimeZoneId();
+				VaadinUtils.storeTimeZone(ZoneId.of(timeZoneId));
+			});
+		}
+
 		uiHelper.setSelectedView(event.getNavigationTarget());
 		MenuBar menuBar = uiHelper.getMenuBar();
 		if (menuBar != null) {

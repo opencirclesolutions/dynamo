@@ -22,8 +22,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
+import com.vaadin.componentfactory.selectiongrid.SelectionGrid;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
@@ -33,14 +33,7 @@ import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
-/**
- * A Grid that bases its columns on the meta model of an entity
- * 
- * @author bas.rutten
- * @param <ID> type of the primary key
- * @param <T>  type of the entity
- */
-public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
+public class ModelBasedSelectionGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends SelectionGrid<T> {
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
@@ -73,7 +66,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param editable     whether the grid is editable
 	 * @param gridEditMode
 	 */
-	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
+	public ModelBasedSelectionGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
 			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, GridEditMode gridEditMode) {
 		setDataProvider(dataProvider);
 		this.gridEditMode = gridEditMode;
@@ -95,27 +88,27 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 			@Override
 			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-				return ModelBasedGrid.this.constructCustomConverter(am);
+				return ModelBasedSelectionGrid.this.constructCustomConverter(am);
 			}
 
 			@Override
 			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-				return ModelBasedGrid.this.constructCustomValidator(am);
+				return ModelBasedSelectionGrid.this.constructCustomValidator(am);
 			}
 
 			@Override
 			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				ModelBasedGrid.this.postProcessComponent(id, am, comp);
+				ModelBasedSelectionGrid.this.postProcessComponent(id, am, comp);
 			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return ModelBasedGrid.this.constructCustomField(entityModel, attributeModel);
+				return ModelBasedSelectionGrid.this.constructCustomField(entityModel, attributeModel);
 			}
 
 			@Override
 			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				return ModelBasedGrid.this.doBind(t, field, attributeName);
+				return ModelBasedSelectionGrid.this.doBind(t, field, attributeName);
 			}
 
 		};
@@ -203,5 +196,4 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
 	}
-
 }

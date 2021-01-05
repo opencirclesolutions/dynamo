@@ -64,7 +64,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	protected Span constructLabel(Object entity, AttributeModel attributeModel) {
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
 		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), getMessageService(), attributeModel,
-				value, ", ", VaadinUtils.getLocale());
+				value, ", ", VaadinUtils.getLocale(), VaadinUtils.getTimeZoneId());
 		return new Span(formatted == null ? "" : formatted);
 	}
 

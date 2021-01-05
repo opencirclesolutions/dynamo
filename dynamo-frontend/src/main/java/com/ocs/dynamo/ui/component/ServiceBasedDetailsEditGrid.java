@@ -27,6 +27,7 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -76,6 +77,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
 		super(service, entityModel, attributeModel, viewMode, true, formOptions);
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
+		provider.setAfterCountCompleted(count -> updateCaption(count));
 		initContent();
 	}
 
@@ -162,7 +164,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			protected T createEntity() {
 				return getCreateEntitySupplier().get();
 			}
-		
 
 		};
 		dialog.setColumnThresholds(getColumnThresholds());

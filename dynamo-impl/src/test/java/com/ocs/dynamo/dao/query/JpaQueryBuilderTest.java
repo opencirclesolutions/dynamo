@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.dao.query;
 
+import static com.ocs.dynamo.dao.impl.JpaQueryBuilder.createFetchQuery;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -233,20 +234,20 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
 				.getSingleResult();
 
-		TypedQuery<TestEntity> tQuery = JpaQueryBuilder.createFetchQuery(entityManager, TestEntity.class,
-				Lists.newArrayList(e1.getId()), null, null, null);
+		TypedQuery<TestEntity> tQuery = createFetchQuery(entityManager, TestEntity.class,
+				Lists.newArrayList(e1.getId()), null, null);
 		List<TestEntity> entity = tQuery.getResultList();
 
 		assertEquals(1, entity.size());
 	}
-	
+
 	@Test
 	public void testCreateFetchQueryAdditionalFilter() {
 		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
 				.getSingleResult();
 
-		TypedQuery<TestEntity> tQuery = JpaQueryBuilder.createFetchQuery(entityManager, TestEntity.class,
-				Lists.newArrayList(e1.getId()), new Compare.Equal("name", "Bob"), null, null);
+		TypedQuery<TestEntity> tQuery = createFetchQuery(entityManager, TestEntity.class,
+				Lists.newArrayList(e1.getId()), new Compare.Equal("name", "Bob"), null);
 		List<TestEntity> entity = tQuery.getResultList();
 
 		assertEquals(1, entity.size());
@@ -261,9 +262,8 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		entityManager.persist(e2);
 
 		// fetch join the testEntity
-		TypedQuery<TestEntity2> tQuery = JpaQueryBuilder.createFetchQuery(entityManager, TestEntity2.class,
-				Lists.newArrayList(e2.getId()), null, null,
-				new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
+		TypedQuery<TestEntity2> tQuery = createFetchQuery(entityManager, TestEntity2.class, Lists.newArrayList(e2.getId()),
+				null, null, new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
 		List<TestEntity2> entity = tQuery.getResultList();
 
 		assertEquals(1, entity.size());

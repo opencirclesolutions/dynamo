@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -134,6 +135,7 @@ public final class VaadinUtils {
 
 	/**
 	 * Creates an overflow layout of a certain height
+	 * 
 	 * @param height
 	 * @return
 	 */
@@ -289,6 +291,13 @@ public final class VaadinUtils {
 		Map<String, Object> map = (Map<String, Object>) VaadinSession.getCurrent().getSession()
 				.getAttribute(attributeName);
 		return getFirstValueFromCollection(map, key);
+	}
+
+	public static ZoneId getTimeZoneId() {
+		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getAttribute("zoneId") != null) {
+			return (ZoneId) VaadinSession.getCurrent().getAttribute("zoneId");
+		}
+		return ZoneId.systemDefault();
 	}
 
 	/**
@@ -514,6 +523,14 @@ public final class VaadinUtils {
 	 */
 	public static void storeLocale(Locale locale) {
 		VaadinSession.getCurrent().setLocale(locale);
+	}
+
+	/**
+	 * 
+	 * @param zoneId
+	 */
+	public static void storeTimeZone(ZoneId zoneId) {
+		VaadinSession.getCurrent().setAttribute("zoneId", zoneId);
 	}
 
 	/**
