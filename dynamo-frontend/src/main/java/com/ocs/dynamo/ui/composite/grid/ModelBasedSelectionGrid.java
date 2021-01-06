@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -21,6 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.vaadin.componentfactory.selectiongrid.SelectionGrid;
 import com.vaadin.flow.component.Component;
@@ -31,6 +33,7 @@ import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 public class ModelBasedSelectionGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends SelectionGrid<T> {
@@ -113,6 +116,14 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 
 		};
 		gridBuilder.generateColumnsRecursive(model.getAttributeModelsSortedForGrid());
+		
+		addSortListener(event -> {
+			UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+			if (helper != null) {
+				List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
+				helper.storeSortOrders(collect);
+			}
+		});
 	}
 
 	/**

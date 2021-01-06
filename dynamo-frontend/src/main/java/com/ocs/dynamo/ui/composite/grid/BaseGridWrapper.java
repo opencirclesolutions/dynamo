@@ -132,7 +132,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	protected Grid<T> constructGrid() {
 		boolean checkBoxes = SystemPropertyUtils.useGridSelectionCheckBoxes();
-		if (checkBoxes) {
+		if (checkBoxes || !getFormOptions().isPopup()) {
 			return new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
 					getFormOptions().getGridEditMode()) {
 
