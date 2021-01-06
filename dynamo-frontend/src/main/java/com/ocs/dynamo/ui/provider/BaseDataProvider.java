@@ -123,14 +123,20 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 			for (QuerySortOrder order : orders) {
 				String sorted = order.getSorted();
 				AttributeModel am = entityModel.getAttributeModel(sorted);
-				so.addSortOrder(new SortOrder(am.getActualSortPath(),
+				if (am != null) {
+					sorted = am.getActualSortPath();
+				}
+				so.addSortOrder(new SortOrder(sorted,
 						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
 			}
 		} else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {
 			for (com.vaadin.flow.data.provider.SortOrder<?> order : fallBackSortOrders) {
 				String sorted = order.getSorted().toString();
 				AttributeModel am = entityModel.getAttributeModel(sorted);
-				so.addSortOrder(new SortOrder(am.getActualSortPath(),
+				if (am != null) {
+					sorted = am.getActualSortPath();
+				}
+				so.addSortOrder(new SortOrder(sorted,
 						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
 			}
 		}
