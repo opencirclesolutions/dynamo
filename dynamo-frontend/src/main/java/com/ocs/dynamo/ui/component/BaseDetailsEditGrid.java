@@ -703,6 +703,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	@Override
 	public void setValue(U value) {
 		super.setValue(value);
+		if (value instanceof Collection) {
+			updateCaption(((Collection) value).size()); 
+		}
 		afterValueSet(value);
 	}
 

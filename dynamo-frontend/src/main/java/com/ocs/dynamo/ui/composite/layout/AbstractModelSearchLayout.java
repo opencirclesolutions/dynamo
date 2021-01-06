@@ -23,6 +23,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -370,6 +372,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		editForm.setGroupTogetherMode(getGroupTogetherMode());
 		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 		editForm.build();
+		editForm.setEntity(entity);
 	}
 
 	/**
@@ -377,6 +380,17 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 */
 	@Override
 	public ServiceBasedGridWrapper<ID, T> constructGridWrapper() {
+
+		// restore stored sort orders
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			List<SortOrder<?>> retrievedOrders = helper.retrieveSortOrders();
+			if (!getFormOptions().isPopup() && getFormOptions().isPreserveSearchTerms() && retrievedOrders != null
+					&& !retrievedOrders.isEmpty()) {
+				setSortOrders(retrievedOrders);
+			}
+		}
+
 		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
 				getQueryType(), getFormOptions(), getSearchForm().extractFilter(), getFieldFilters(), getSortOrders(),
 				false, getJoins()) {

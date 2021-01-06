@@ -293,6 +293,11 @@ public final class VaadinUtils {
 		return getFirstValueFromCollection(map, key);
 	}
 
+	/**
+	 * Returns the time zone ID that is set for the session
+	 * 
+	 * @return
+	 */
 	public static ZoneId getTimeZoneId() {
 		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getAttribute("zoneId") != null) {
 			return (ZoneId) VaadinSession.getCurrent().getAttribute("zoneId");

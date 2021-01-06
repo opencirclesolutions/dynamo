@@ -25,6 +25,7 @@ import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.menubar.MenuBar;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
+import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -79,6 +80,8 @@ public class UIHelper {
 	 */
 	private Map<Class<?>, List<FlexibleFilterDefinition>> searchFilterDefinitionCache = new HashMap<>();
 
+	private Map<Class<?>, List<SortOrder<?>>> sortOrderCache = new HashMap<>();
+
 	/**
 	 * Adds a mapping for carrying out navigation within the application
 	 * 
@@ -97,6 +100,12 @@ public class UIHelper {
 		if (this.selectedView != null) {
 			searchValueCache.remove(selectedView);
 			searchFilterDefinitionCache.remove(selectedView);
+		}
+	}
+
+	public void clearSortOrders() {
+		if (this.selectedView != null) {
+			sortOrderCache.remove(selectedView);
 		}
 	}
 
@@ -198,6 +207,19 @@ public class UIHelper {
 		return new ArrayList<>();
 	}
 
+	/**
+	 * Retrieves previously stored sort orders
+	 * 
+	 * @return
+	 */
+	public List<SortOrder<?>> retrieveSortOrders() {
+		if (this.selectedView != null) {
+			List<SortOrder<?>> list = sortOrderCache.get(this.selectedView);
+			return list != null ? list : new ArrayList<>();
+		}
+		return new ArrayList<>();
+	}
+
 	public List<FlexibleFilterDefinition> retrieveSearchFilterDefinitions() {
 		if (this.selectedView != null) {
 			List<FlexibleFilterDefinition> list = searchFilterDefinitionCache.get(this.selectedView);
@@ -237,9 +259,16 @@ public class UIHelper {
 		}
 	}
 
+	public void storeSortOrders(List<SortOrder<?>> sortOrder) {
+		if (this.selectedView != null) {
+			sortOrderCache.put(selectedView, sortOrder);
+		}
+	}
+
 	public void storeSearchFilterDefinitions(List<FlexibleFilterDefinition> filters) {
 		if (this.selectedView != null) {
 			searchFilterDefinitionCache.put(selectedView, filters);
 		}
 	}
+
 }

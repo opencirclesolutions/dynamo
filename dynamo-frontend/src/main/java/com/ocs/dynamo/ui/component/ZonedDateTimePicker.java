@@ -69,7 +69,7 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 	public void clear() {
 		datePicker.clear();
 		timePicker.clear();
-		timeZone.setValue(ZoneId.systemDefault().toString());
+		timeZone.clear();
 	}
 
 	@Override

@@ -228,6 +228,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 		if (helper != null) {
 			helper.clearSearchTerms();
+			helper.clearSortOrders();
 		}
 		currentFilters.clear();
 		currentFilters.addAll(getDefaultFilters());

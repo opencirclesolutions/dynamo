@@ -16,7 +16,8 @@ package com.ocs.dynamo.ui.composite.form;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -232,6 +233,30 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private SerializablePredicate<T> constructFilter(HasValue<?, ?> field, Object value) {
 			SerializablePredicate<T> filter = null;
 
+			// convert "date only" search fields
+			if (am.isSearchDateOnly()) {
+				if (value != null) {
+					if (LocalDateTime.class.equals(am.getType())) {
+						if (field == this.auxValueComponent) {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay().plusDays(1).minus(1, ChronoUnit.MILLIS);
+						} else {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay();
+						}
+					} else if (ZonedDateTime.class.equals(am.getType())) {
+						if (field == this.auxValueComponent) {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minus(1,
+									ChronoUnit.MILLIS);
+						} else {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
+						}
+					}
+				}
+			}
+
 			switch (this.filterType) {
 			case BETWEEN:
 				// construct new filter for the selected field (or clear it)
@@ -292,18 +317,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				filter = new NotPredicate<>(createStringFilter(value, true));
 				break;
 			default:
-				// date only
-				if (am.isSearchDateOnly()) {
-					LocalDate ldt = (LocalDate) value;
-					if (LocalDateTime.class.equals(am.getType())) {
-						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(),
-								ldt.atStartOfDay().plusDays(1).minusSeconds(1));
-					} else {
-						// zoned date time
-						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(ZoneId.systemDefault()),
-								ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
-					}
-				} else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+				// default case (simple comparison or non-empty collection)
+				if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
 					filter = new EqualsPredicate<>(am.getPath(), value);
 				}
 				break;
@@ -417,7 +432,15 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				} else if (Enum.class.isAssignableFrom(am.getType())) {
 					result.add(FlexibleFilterType.NOT_EQUAL);
 				} else if (Number.class.isAssignableFrom(am.getType())
-						|| (DateUtils.isSupportedDateType(am.getType()) && !am.isSearchDateOnly())) {
+						|| (!am.isSearchDateOnly() && DateUtils.isSupportedDateType(am.getType()))) {
+					result.add(FlexibleFilterType.BETWEEN);
+					result.add(FlexibleFilterType.LESS_THAN);
+					result.add(FlexibleFilterType.LESS_OR_EQUAL);
+					result.add(FlexibleFilterType.GREATER_OR_EQUAL);
+					result.add(FlexibleFilterType.GREATER_THAN);
+				} else if (am.isSearchDateOnly() && DateUtils.isSupportedDateType(am.getType())) {
+					// for a date only comparison, an exact match does not make sense
+					result.remove(FlexibleFilterType.EQUALS);
 					result.add(FlexibleFilterType.BETWEEN);
 					result.add(FlexibleFilterType.LESS_THAN);
 					result.add(FlexibleFilterType.LESS_OR_EQUAL);
@@ -813,8 +836,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				return FlexibleFilterType.CONTAINS;
 			} else if (Enum.class.isAssignableFrom(am.getType())) {
 				return FlexibleFilterType.EQUALS;
-			} else if (Number.class.isAssignableFrom(am.getType())
-					|| (DateUtils.isJava8DateType(am.getType()) && !am.isSearchDateOnly())) {
+			} else if (Number.class.isAssignableFrom(am.getType()) || DateUtils.isJava8DateType(am.getType())) {
 				return FlexibleFilterType.BETWEEN;
 			}
 		}
