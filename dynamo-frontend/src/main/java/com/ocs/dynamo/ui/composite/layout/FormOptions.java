@@ -40,11 +40,6 @@ public class FormOptions implements Serializable {
 	private AttributeGroupMode attributeGroupMode = AttributeGroupMode.PANEL;
 
 	/**
-	 * Whether to preserve search terms when navigating away from the screen
-	 */
-	private boolean preserveSearchTerms = true;
-
-	/**
 	 * Whether to use a complex details mode that contains multiple tabs (only
 	 * supported for AbstractSearchLayout and subclasses)
 	 */
@@ -143,9 +138,19 @@ public class FormOptions implements Serializable {
 	private boolean popup;
 
 	/**
+	 * Whether to preserve search terms when navigating away from the screen
+	 */
+	private boolean preserveSearchTerms = true;
+
+	/**
 	 * Whether to preserve the last selected tab when reopening a screen
 	 */
 	private boolean preserveSelectedTab;
+
+	/**
+	 * Whether to preserve sort orders when navigating away from the screen
+	 */
+	private boolean preserveSortOrders = true;
 
 	/**
 	 * Whether to display the screen in complete read-only mode. Settings readOnly
@@ -241,6 +246,7 @@ public class FormOptions implements Serializable {
 		fo.setEnableAdvancedSearchMode(isEnableAdvancedSearchMode());
 		fo.setStartInAdvancedMode(isStartInAdvancedMode());
 		fo.setPreserveSearchTerms(isPreserveSearchTerms());
+		fo.setPreserveSortOrders(isPreserveSortOrders());
 		return fo;
 	}
 
@@ -330,6 +336,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isPreserveSelectedTab() {
 		return preserveSelectedTab;
+	}
+
+	public boolean isPreserveSortOrders() {
+		return preserveSortOrders;
 	}
 
 	public boolean isReadOnly() {
@@ -612,6 +622,11 @@ public class FormOptions implements Serializable {
 	 */
 	public FormOptions setPreserveSelectedTab(boolean preserveSelectedTab) {
 		this.preserveSelectedTab = preserveSelectedTab;
+		return this;
+	}
+
+	public FormOptions setPreserveSortOrders(boolean preserveSortOrders) {
+		this.preserveSortOrders = preserveSortOrders;
 		return this;
 	}
 

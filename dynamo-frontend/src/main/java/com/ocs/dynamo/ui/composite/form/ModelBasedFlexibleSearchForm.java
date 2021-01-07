@@ -17,7 +17,6 @@ import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -234,12 +233,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			SerializablePredicate<T> filter = null;
 
 			// convert "date only" search fields
-			if (am.isSearchDateOnly()) {
+			if (am.isSearchDateOnly() && !am.isSearchForExactValue()) {
 				if (value != null) {
 					if (LocalDateTime.class.equals(am.getType())) {
 						if (field == this.auxValueComponent) {
 							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay().plusDays(1).minus(1, ChronoUnit.MILLIS);
+							value = ldt.atStartOfDay().plusDays(1).minusNanos(1);
 						} else {
 							LocalDate ldt = (LocalDate) value;
 							value = ldt.atStartOfDay();
@@ -247,8 +246,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					} else if (ZonedDateTime.class.equals(am.getType())) {
 						if (field == this.auxValueComponent) {
 							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minus(1,
-									ChronoUnit.MILLIS);
+							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1);
 						} else {
 							LocalDate ldt = (LocalDate) value;
 							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
@@ -317,8 +315,19 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				filter = new NotPredicate<>(createStringFilter(value, true));
 				break;
 			default:
+				if (value != null && am.isSearchDateOnly() && am.isSearchForExactValue()) {
+					LocalDate ldt = (LocalDate) value;
+					if (LocalDateTime.class.equals(am.getType())) {
+						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(),
+								ldt.atStartOfDay().plusDays(1).minusNanos(1));
+					} else {
+						// zoned date time
+						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(VaadinUtils.getTimeZoneId()),
+								ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1));
+					}
+				}
 				// default case (simple comparison or non-empty collection)
-				if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+				else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
 					filter = new EqualsPredicate<>(am.getPath(), value);
 				}
 				break;
@@ -416,45 +425,47 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private List<FlexibleFilterType> getFilterTypes(AttributeModel am) {
 			List<FlexibleFilterType> result = new ArrayList<>();
 			result.add(FlexibleFilterType.EQUALS);
-			switch (am.getAttributeType()) {
-			case BASIC:
-				if (String.class.equals(am.getType())) {
-					if (basicStringFilterProperties.contains(am.getPath())) {
-						result.add(FlexibleFilterType.CONTAINS);
-						result.add(FlexibleFilterType.STARTS_WITH);
-					} else {
+			if (!am.isSearchForExactValue()) {
+				switch (am.getAttributeType()) {
+				case BASIC:
+					if (String.class.equals(am.getType())) {
+						if (basicStringFilterProperties.contains(am.getPath())) {
+							result.add(FlexibleFilterType.CONTAINS);
+							result.add(FlexibleFilterType.STARTS_WITH);
+						} else {
+							result.add(FlexibleFilterType.NOT_EQUAL);
+							result.add(FlexibleFilterType.CONTAINS);
+							result.add(FlexibleFilterType.STARTS_WITH);
+							result.add(FlexibleFilterType.NOT_CONTAINS);
+							result.add(FlexibleFilterType.NOT_STARTS_WITH);
+						}
+					} else if (Enum.class.isAssignableFrom(am.getType())) {
 						result.add(FlexibleFilterType.NOT_EQUAL);
-						result.add(FlexibleFilterType.CONTAINS);
-						result.add(FlexibleFilterType.STARTS_WITH);
-						result.add(FlexibleFilterType.NOT_CONTAINS);
-						result.add(FlexibleFilterType.NOT_STARTS_WITH);
+					} else if (Number.class.isAssignableFrom(am.getType())
+							|| (!am.isSearchDateOnly() && DateUtils.isSupportedDateType(am.getType()))) {
+						result.add(FlexibleFilterType.BETWEEN);
+						result.add(FlexibleFilterType.LESS_THAN);
+						result.add(FlexibleFilterType.LESS_OR_EQUAL);
+						result.add(FlexibleFilterType.GREATER_OR_EQUAL);
+						result.add(FlexibleFilterType.GREATER_THAN);
+					} else if (am.isSearchDateOnly() && DateUtils.isSupportedDateType(am.getType())) {
+						// for a date only comparison, an exact match does not make sense
+						result.remove(FlexibleFilterType.EQUALS);
+						result.add(FlexibleFilterType.BETWEEN);
+						result.add(FlexibleFilterType.LESS_THAN);
+						result.add(FlexibleFilterType.LESS_OR_EQUAL);
+						result.add(FlexibleFilterType.GREATER_OR_EQUAL);
+						result.add(FlexibleFilterType.GREATER_THAN);
 					}
-				} else if (Enum.class.isAssignableFrom(am.getType())) {
+					break;
+				case MASTER:
+				case DETAIL:
+					// also support "not equal" for entities
 					result.add(FlexibleFilterType.NOT_EQUAL);
-				} else if (Number.class.isAssignableFrom(am.getType())
-						|| (!am.isSearchDateOnly() && DateUtils.isSupportedDateType(am.getType()))) {
-					result.add(FlexibleFilterType.BETWEEN);
-					result.add(FlexibleFilterType.LESS_THAN);
-					result.add(FlexibleFilterType.LESS_OR_EQUAL);
-					result.add(FlexibleFilterType.GREATER_OR_EQUAL);
-					result.add(FlexibleFilterType.GREATER_THAN);
-				} else if (am.isSearchDateOnly() && DateUtils.isSupportedDateType(am.getType())) {
-					// for a date only comparison, an exact match does not make sense
-					result.remove(FlexibleFilterType.EQUALS);
-					result.add(FlexibleFilterType.BETWEEN);
-					result.add(FlexibleFilterType.LESS_THAN);
-					result.add(FlexibleFilterType.LESS_OR_EQUAL);
-					result.add(FlexibleFilterType.GREATER_OR_EQUAL);
-					result.add(FlexibleFilterType.GREATER_THAN);
+					break;
+				default:
+					break;
 				}
-				break;
-			case MASTER:
-			case DETAIL:
-				// also support "not equal" for entities
-				result.add(FlexibleFilterType.NOT_EQUAL);
-				break;
-			default:
-				break;
 			}
 			return result;
 		}
@@ -831,13 +842,18 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * @param am the attribute model the attribute model of the property
 	 */
 	public FlexibleFilterType getDefaultFilterType(AttributeModel am) {
+		if (am.isSearchForExactValue()) {
+			return FlexibleFilterType.EQUALS;
+		}
+
 		if (AttributeType.BASIC.equals(am.getAttributeType())) {
 			if (String.class.equals(am.getType())) {
 				return FlexibleFilterType.CONTAINS;
 			} else if (Enum.class.isAssignableFrom(am.getType())) {
 				return FlexibleFilterType.EQUALS;
 			} else if (Number.class.isAssignableFrom(am.getType()) || DateUtils.isJava8DateType(am.getType())) {
-				return FlexibleFilterType.BETWEEN;
+				return (am.isSearchForExactValue() && am.isSearchDateOnly()) ? FlexibleFilterType.EQUALS
+						: FlexibleFilterType.BETWEEN;
 			}
 		}
 		return FlexibleFilterType.EQUALS;

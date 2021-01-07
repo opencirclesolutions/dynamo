@@ -385,7 +385,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 		if (helper != null) {
 			List<SortOrder<?>> retrievedOrders = helper.retrieveSortOrders();
-			if (!getFormOptions().isPopup() && getFormOptions().isPreserveSearchTerms() && retrievedOrders != null
+			if (!getFormOptions().isPopup() && getFormOptions().isPreserveSortOrders() && retrievedOrders != null
 					&& !retrievedOrders.isEmpty()) {
 				setSortOrders(retrievedOrders);
 			}

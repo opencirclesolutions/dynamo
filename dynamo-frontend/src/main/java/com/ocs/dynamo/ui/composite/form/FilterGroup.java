@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.form;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
@@ -25,6 +26,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.filter.AndPredicate;
+import com.ocs.dynamo.filter.BetweenPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
 import com.ocs.dynamo.filter.LessOrEqualPredicate;
@@ -298,18 +300,29 @@ public class FilterGroup<T> {
 			}
 			break;
 		default:
-			// default value, just an equals
-			if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
+			// in case of exact search on a date, translate to an interval covering all times within that date
+			if (attributeModel.isSearchDateOnly() && value != null) {
+				LocalDate ldt = (LocalDate) value;
+				if (LocalDateTime.class.equals(attributeModel.getType())) {
+					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(),
+							ldt.atStartOfDay().plusDays(1).minusNanos(1));
+				} else {
+					// zoned date time
+					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(VaadinUtils.getTimeZoneId()),
+							ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1));
+				}
+			} else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
 				filter = new EqualsPredicate<>(propertyId, value);
 			}
-			break;
 		}
 
 		// store the current filter
 		this.fieldFilter = filter;
 
 		// propagate the change (this will trigger the actual search action)
-		if (!listeners.isEmpty()) {
+		if (!listeners.isEmpty())
+
+		{
 			broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
 		}
 	}
