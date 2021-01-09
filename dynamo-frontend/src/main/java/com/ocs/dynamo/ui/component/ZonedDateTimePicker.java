@@ -20,6 +20,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.google.common.collect.Lists;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
@@ -56,6 +57,7 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 		timeZone = new ComboBox<>();
 		ListDataProvider<String> provider = new ListDataProvider<>(Lists.newArrayList(TimeZone.getAvailableIDs()));
 		timeZone.setDataProvider(provider);
+		timeZone.setValue(VaadinUtils.getTimeZoneId().toString());
 
 		FlexLayout flexLayout = new FlexLayout();
 		flexLayout.setFlexWrap(FlexWrap.WRAP);
@@ -69,7 +71,7 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 	public void clear() {
 		datePicker.clear();
 		timePicker.clear();
-		timeZone.clear();
+		timeZone.setValue(VaadinUtils.getTimeZoneId().toString());
 	}
 
 	@Override

@@ -205,7 +205,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			Object pivotColumnKey = pivotParameters.getPossibleColumnKeys().get(colIndex);
 			if (!columnValueMatches(entity, pivotColumnKey)) {
 				// appropriate value is missing, write empty cell
-				createCell(row, nrOfFixedCols + colsAdded, entity, "", null, null);
+				createCell(row, nrOfFixedCols + colsAdded, entity, "", null, pivotColumnKey);
 				match = false;
 			} else {
 				// get cell value
