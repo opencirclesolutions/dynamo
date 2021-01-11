@@ -127,7 +127,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 				provider = new ListDataProvider<>(items);
 			}
 		}
-		setDataProvider(new IgnoreDiacriticsCaptionFilter<T>(true, false), provider);
+		setDataProvider(new IgnoreDiacriticsCaptionFilter<>(targetEntityModel, true, false), provider);
 		setItemLabelGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel));
 		setSizeFull();
 	}

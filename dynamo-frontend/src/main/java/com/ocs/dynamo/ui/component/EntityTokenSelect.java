@@ -125,7 +125,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			String value = EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel);
 			return value == null ? "" : value;
 		});
-		setDataProvider(provider);
+		setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<T>(targetEntityModel, true, false), provider);
 		setOrdered(true);
 	}
 

@@ -1293,6 +1293,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	public void doSave() {
 		boolean isNew = entity.getId() == null;
+
 		entity = service.save(entity);
 		setEntity(service.fetchById(entity.getId(), getDetailJoins()));
 		showTrayNotification(message("ocs.changes.saved"));

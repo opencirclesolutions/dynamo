@@ -700,11 +700,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		this.service = service;
 	}
 
+	@SuppressWarnings("rawtypes")
 	@Override
 	public void setValue(U value) {
 		super.setValue(value);
 		if (value instanceof Collection) {
-			updateCaption(((Collection) value).size()); 
+			updateCaption(((Collection) value).size());
 		}
 		afterValueSet(value);
 	}

@@ -17,16 +17,19 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.function.Function;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -87,6 +90,11 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	protected void applyFilter() {
 		SerializablePredicate<T> filter = (filterSupplier == null || parent == null) ? null
 				: filterSupplier.apply(parent);
+		
+		// for new entity without ID you can't filter yet
+		if (parent != null && parent.getId() == null) {
+			filter = new EqualsPredicate<>(DynamoConstants.ID, -1);
+		}
 		getGrid().getDataCommunicator().setDataProvider(provider, filter);
 	}
 
@@ -96,11 +104,17 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		if (getGrid() != null) {
 			applyFilter();
 		}
+		getAddButton().setVisible(this.parent.getId() != null);
 	}
 
 	@Override
 	protected void doAdd() {
-		showPopup(null);
+		if (this.parent.getId() != null) {
+			showPopup(null);
+		} else {
+			VaadinUtils.showErrorNotification(
+					getMessageService().getMessage("ocs.save.entity.first", VaadinUtils.getLocale()));
+		}
 	}
 
 	@Override

@@ -16,9 +16,10 @@ package com.ocs.dynamo.ui.component;
 import java.text.Normalizer;
 import java.util.Objects;
 
+import org.vaadin.gatanaso.MultiselectComboBox.ItemFilter;
+
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.utils.EntityModelUtils;
-import com.vaadin.flow.component.combobox.ComboBox.ItemFilter;
 
 /**
  * A caption filter that ignores diacritic characters when comparing
@@ -26,7 +27,7 @@ import com.vaadin.flow.component.combobox.ComboBox.ItemFilter;
  * @author bas.rutten
  *
  */
-public class IgnoreDiacriticsCaptionFilter<T> implements ItemFilter<T> {
+public class MultiSelectIgnoreDiacriticsCaptionFilter<T> implements ItemFilter<T> {
 
 	private static final long serialVersionUID = -8965855020406086688L;
 
@@ -42,7 +43,8 @@ public class IgnoreDiacriticsCaptionFilter<T> implements ItemFilter<T> {
 	 * @param ignoreCase      whether to ignore case
 	 * @param onlyMatchPrefix whether to only match the prefix
 	 */
-	public IgnoreDiacriticsCaptionFilter(EntityModel<T> entityModel, boolean ignoreCase, boolean onlyMatchPrefix) {
+	public MultiSelectIgnoreDiacriticsCaptionFilter(EntityModel<T> entityModel, boolean ignoreCase,
+			boolean onlyMatchPrefix) {
 		this.ignoreCase = ignoreCase;
 		this.onlyMatchPrefix = onlyMatchPrefix;
 		this.entityModel = entityModel;
@@ -63,7 +65,7 @@ public class IgnoreDiacriticsCaptionFilter<T> implements ItemFilter<T> {
 		if (!(obj instanceof IgnoreDiacriticsCaptionFilter)) {
 			return false;
 		}
-		IgnoreDiacriticsCaptionFilter<T> o = (IgnoreDiacriticsCaptionFilter<T>) obj;
+		MultiSelectIgnoreDiacriticsCaptionFilter<T> o = (MultiSelectIgnoreDiacriticsCaptionFilter<T>) obj;
 		return Objects.equals(ignoreCase, o.ignoreCase) && Objects.equals(onlyMatchPrefix, o.onlyMatchPrefix);
 	}
 

@@ -33,6 +33,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
@@ -399,6 +401,15 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
+
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			List<SortOrder<?>> retrievedOrders = helper.retrieveSortOrders();
+			if (getFormOptions().isPreserveSortOrders() && retrievedOrders != null && !retrievedOrders.isEmpty()) {
+				setSortOrders(retrievedOrders);
+			}
+		}
+
 		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
 				QueryType.ID_BASED, getFormOptions(), filter, getFieldFilters(), getSortOrders(), !viewmode,
 				getJoins()) {
