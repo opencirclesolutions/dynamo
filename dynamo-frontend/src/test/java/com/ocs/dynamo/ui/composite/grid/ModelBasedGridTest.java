@@ -43,73 +43,75 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class ModelBasedGridTest extends BaseMockitoTest {
 
-    private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
+	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
-    @Mock
-    private MessageService messageService;
+	@Mock
+	private MessageService messageService;
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    @BeforeEach
-    public void setUp() {
-        ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
-        MockVaadin.setup();
-    }
+	@BeforeEach
+	public void setUp() {
+		ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
+		MockVaadin.setup();
+	}
 
-    @Test
-    public void testDataProvider() {
-        ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
-        EntityModel<Person> model = entityModelFactory.getModel(Person.class);
+	@Test
+	public void testDataProvider() {
+		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
-        Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
-        provider.getItems().add(person);
+		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+		provider.getItems().add(person);
 
-        new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false, GridEditMode.SINGLE_ROW);
-    }
+		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false, true,
+				GridEditMode.SINGLE_ROW);
+	}
 
-    @Test
-    public void testMultipleRowsEditable() {
-        ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
-        EntityModel<Person> model = entityModelFactory.getModel(Person.class);
+	@Test
+	public void testMultipleRowsEditable() {
+		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
-        Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
-        provider.getItems().add(person);
+		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+		provider.getItems().add(person);
 
-        new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), true, GridEditMode.SIMULTANEOUS);
-    }
+		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), true, true,
+				GridEditMode.SIMULTANEOUS);
+	}
 
-    @Test
-    public void testFixedTableWrapper() {
-        TestEntity entity = new TestEntity();
+	@Test
+	public void testFixedTableWrapper() {
+		TestEntity entity = new TestEntity();
 
-        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
-        FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model, new FormOptions(),
-                new HashMap<String, SerializablePredicate<?>>(), Lists.newArrayList(entity), new ArrayList<>());
-        wrapper.build();
+		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+		FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model, new FormOptions(),
+				new HashMap<String, SerializablePredicate<?>>(), Lists.newArrayList(entity), new ArrayList<>());
+		wrapper.build();
 
-        Grid<TestEntity> grid = wrapper.getGrid();
-        assertNotNull(grid);
-    }
+		Grid<TestEntity> grid = wrapper.getGrid();
+		assertNotNull(grid);
+	}
 
-    @Test
-    public void testSetVisible() {
-        ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
-        EntityModel<Person> model = entityModelFactory.getModel(Person.class);
+	@Test
+	public void testSetVisible() {
+		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
-        Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
-        provider.getItems().add(person);
+		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
+		provider.getItems().add(person);
 
-        ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false,
-                GridEditMode.SINGLE_ROW);
+		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model,
+				new HashMap<String, SerializablePredicate<?>>(), false, true, GridEditMode.SINGLE_ROW);
 
-        assertTrue(grid.getColumnByKey("name").isVisible());
+		assertTrue(grid.getColumnByKey("name").isVisible());
 
-        grid.setColumnVisible("name", true);
-        assertTrue(grid.getColumnByKey("name").isVisible());
+		grid.setColumnVisible("name", true);
+		assertTrue(grid.getColumnByKey("name").isVisible());
 
-        grid.setColumnVisible("name", false);
-        assertFalse(grid.getColumnByKey("name").isVisible());
-    }
+		grid.setColumnVisible("name", false);
+		assertFalse(grid.getColumnByKey("name").isVisible());
+	}
 
 }

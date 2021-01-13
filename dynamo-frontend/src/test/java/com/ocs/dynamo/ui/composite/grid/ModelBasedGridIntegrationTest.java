@@ -55,7 +55,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model,
-				new HashMap<String, SerializablePredicate<?>>(), false, GridEditMode.SINGLE_ROW);
+				new HashMap<String, SerializablePredicate<?>>(), false, true, GridEditMode.SINGLE_ROW);
 
 		assertEquals(17, grid.getColumns().size());
 		assertNotNull(grid.getDataProvider().getId(entity));

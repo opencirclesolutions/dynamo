@@ -61,6 +61,11 @@ public class FormOptions implements Serializable {
 	private boolean detailsGridSearchMode;
 
 	/**
+	 * Whether the columns in a details edit grid are sortable
+	 */
+	private boolean detailsGridSortable = SystemPropertyUtils.getDefaultDetailsGridSortable();
+
+	/**
 	 * Whether details mode is enabled in a search layout
 	 */
 	private boolean detailsModeEnabled = true;
@@ -727,6 +732,15 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setStartInAdvancedMode(boolean startInAdvancedMode) {
 		this.startInAdvancedMode = startInAdvancedMode;
+		return this;
+	}
+
+	public boolean isDetailsGridSortable() {
+		return detailsGridSortable;
+	}
+
+	public FormOptions setDetailsGridSortable(boolean detailsGridSortable) {
+		this.detailsGridSortable = detailsGridSortable;
 		return this;
 	}
 

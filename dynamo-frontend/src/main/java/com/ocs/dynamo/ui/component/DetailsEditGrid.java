@@ -25,6 +25,9 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -74,6 +77,18 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
 		initContent();
+
+		// right click to download
+		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
+			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
+			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));
+			downloadButton.addClickListener(event -> {
+				ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
+				EntityModel<T> em = getExportEntityModel() != null ? getExportEntityModel() : getEntityModel();
+				getExportDelegate().exportFixed(em, getFormOptions().getExportMode(), provider.getItems());
+			});
+			contextMenu.add(downloadButton);
+		}
 	}
 
 	@Override

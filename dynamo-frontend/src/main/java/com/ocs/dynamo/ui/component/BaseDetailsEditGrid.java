@@ -35,6 +35,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
+import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
@@ -45,6 +46,7 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
@@ -97,6 +99,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Map<T, Binder<T>> binders = new HashMap<>();
 
 	/**
+	 * Column width thresholds
+	 */
+	private List<String> columnThresholds = new ArrayList<>();
+
+	/**
 	 * List of components to update after a detail is selected
 	 */
 	private List<Component> componentsToUpdate = new ArrayList<>();
@@ -108,6 +115,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Supplier<T> createEntitySupplier;
 
 	/**
+	 * Custom button mapping
+	 */
+	private Map<String, List<Component>> customButtonMap = new HashMap<>();
+
+	private FetchJoinInformation[] detailJoins;
+
+	/**
 	 * Search dialog
 	 */
 	private ModelBasedSearchDialog<ID, T> dialog;
@@ -117,15 +131,17 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	private final EntityModel<T> entityModel;
 
+	private ExportDelegate exportDelegate = ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);
+
+	/**
+	 * The entity model to use when exporting
+	 */
+	private EntityModel<T> exportEntityModel;
+
 	/**
 	 * Optional field filters for restricting the contents of combo boxes
 	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-
-	/**
-	 * Custom button mapping
-	 */
-	private Map<String, List<Component>> customButtonMap = new HashMap<>();
 
 	/**
 	 * Form options that determine which buttons and functionalities are available
@@ -199,13 +215,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * allowed and no buttons will be displayed
 	 */
 	private boolean viewMode;
-
-	private FetchJoinInformation[] detailJoins;
-
-	/**
-	 * Column width thresholds
-	 */
-	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -406,6 +415,14 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		return entityModel;
 	}
 
+	public ExportDelegate getExportDelegate() {
+		return exportDelegate;
+	}
+
+	public EntityModel<T> getExportEntityModel() {
+		return exportEntityModel;
+	}
+
 	public Map<String, SerializablePredicate<?>> getFieldFilters() {
 		return fieldFilters;
 	}
@@ -466,7 +483,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Constructs the actual component
 	 */
 	protected void initContent() {
-		grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(),
+		grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(), false,
 				GridEditMode.SIMULTANEOUS) {
 
 			private static final long serialVersionUID = 6143503902550597524L;
@@ -549,6 +566,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 				checkComponentState(selectedItem);
 			}
 		});
+
+		// disables sorting (intentional?)
+		if (!getFormOptions().isDetailsGridSortable()) {
+			for (Column<?> c : grid.getColumns()) {
+				c.setSortable(false);
+			}
+		}
 
 		applyFilter();
 		constructButtonBar(layout);
@@ -658,6 +682,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	public void setDetailJoins(FetchJoinInformation... detailJoins) {
 		this.detailJoins = detailJoins;
+	}
+
+	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
+		this.exportEntityModel = exportEntityModel;
 	}
 
 	public void setFormOptions(FormOptions formOptions) {

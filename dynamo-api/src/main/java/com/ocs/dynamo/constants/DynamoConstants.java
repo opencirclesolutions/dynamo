@@ -266,6 +266,12 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_SEARCH_CASE_SENSITIVE = "ocs.default.search.case.sensitive";
 
 	/**
+	 * Name of the system property that is used to determine whether columns in
+	 * details edit grid are sortable
+	 */
+	public static final String SP_DEFAULT_DETAILS_GRID_SORTABLE = "ocs.default.details.grid.sortable";
+
+	/**
 	 * Name of the system property that is used to determined the default grid
 	 * height in a search dialog
 	 */
@@ -347,9 +353,10 @@ public final class DynamoConstants {
 	 * Indicates whether to use the display name as the input prompt by default
 	 */
 	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
-	
+
 	/**
-	 * Indicates whether to use the browser time zone for formatting zoned date times
+	 * Indicates whether to use the browser time zone for formatting zoned date
+	 * times
 	 */
 	public static final String SP_USE_BROWSER_TIME_ZONE = "ocs.use.browser.time.zone";
 

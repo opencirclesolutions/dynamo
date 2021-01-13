@@ -133,7 +133,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected Grid<T> constructGrid() {
 		boolean checkBoxes = SystemPropertyUtils.useGridSelectionCheckBoxes();
 		if (checkBoxes || !getFormOptions().isPopup()) {
-			return new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
+			return new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters, editable, true,
 					getFormOptions().getGridEditMode()) {
 
 				private static final long serialVersionUID = -4559181057050230055L;

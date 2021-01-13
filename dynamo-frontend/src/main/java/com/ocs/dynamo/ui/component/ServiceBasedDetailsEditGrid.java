@@ -14,7 +14,9 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -30,7 +32,11 @@ import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -50,9 +56,20 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	private static final long serialVersionUID = -1203245694503350276L;
 
 	/**
-	 * The data provider
+	 * The joins to use when exporting (needed when using exportmode FULL)
 	 */
-	private IdBasedDataProvider<ID, T> provider;
+	private FetchJoinInformation[] exportJoins;
+
+	/**
+	 * The search filter to apply
+	 */
+	private SerializablePredicate<T> filter;
+
+	/**
+	 * The supplier for constructing the search filter used to restrict the
+	 * displayed items
+	 */
+	private Function<U, SerializablePredicate<T>> filterSupplier;
 
 	/**
 	 * The currently selected entity in the edit form that this component is part of
@@ -60,10 +77,9 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	private U parent;
 
 	/**
-	 * The supplier for constructing the search filter used to restrict the
-	 * displayed items
+	 * The data provider
 	 */
-	private Function<U, SerializablePredicate<T>> filterSupplier;
+	private IdBasedDataProvider<ID, T> provider;
 
 	/**
 	 * Constructor
@@ -81,6 +97,24 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
 		provider.setAfterCountCompleted(count -> updateCaption(count));
 		initContent();
+
+		// right click to download
+		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
+			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
+			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));
+			downloadButton.addClickListener(event -> {
+				List<SortOrder<?>> orders = new ArrayList<>();
+				List<GridSortOrder<T>> so = getGrid().getSortOrder();
+				for (GridSortOrder<T> gso : so) {
+					orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
+				}
+				applyFilter();
+				EntityModel<T> em = getExportEntityModel() != null ? getExportEntityModel() : getEntityModel();
+				getExportDelegate().export(em, getFormOptions().getExportMode(), filter, orders,
+						getExportJoins() != null ? getExportJoins() : null);
+			});
+			contextMenu.add(downloadButton);
+		}
 	}
 
 	/**
@@ -88,9 +122,8 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 */
 	@Override
 	protected void applyFilter() {
-		SerializablePredicate<T> filter = (filterSupplier == null || parent == null) ? null
-				: filterSupplier.apply(parent);
-		
+		filter = (filterSupplier == null || parent == null) ? null : filterSupplier.apply(parent);
+
 		// for new entity without ID you can't filter yet
 		if (parent != null && parent.getId() == null) {
 			filter = new EqualsPredicate<>(DynamoConstants.ID, -1);
@@ -123,8 +156,17 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	}
 
 	@Override
+	protected U generateModelValue() {
+		return parent;
+	}
+
+	@Override
 	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return provider;
+	}
+
+	public FetchJoinInformation[] getExportJoins() {
+		return exportJoins;
 	}
 
 	public Function<U, SerializablePredicate<T>> getFilterSupplier() {
@@ -151,8 +193,20 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		}
 	}
 
+	public void setExportJoins(FetchJoinInformation... exportJoins) {
+		this.exportJoins = exportJoins;
+	}
+
 	public void setFilterSupplier(Function<U, SerializablePredicate<T>> filterSupplier) {
 		this.filterSupplier = filterSupplier;
+	}
+
+	@Override
+	protected void setPresentationValue(U value) {
+		this.parent = value;
+		if (getGrid() != null) {
+			applyFilter();
+		}
 	}
 
 	/**
@@ -181,19 +235,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		};
 		dialog.setColumnThresholds(getColumnThresholds());
 		dialog.buildAndOpen();
-	}
-
-	@Override
-	protected U generateModelValue() {
-		return parent;
-	}
-
-	@Override
-	protected void setPresentationValue(U value) {
-		this.parent = value;
-		if (getGrid() != null) {
-			applyFilter();
-		}
 	}
 
 }

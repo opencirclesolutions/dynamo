@@ -67,6 +67,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private MessageService messageService;
 
+	private boolean storeSortOrders;
+
 	/**
 	 * Constructor
 	 * 
@@ -77,11 +79,13 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param gridEditMode
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, GridEditMode gridEditMode) {
+			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, boolean storeSortOrders,
+			GridEditMode gridEditMode) {
 		setDataProvider(dataProvider);
 		this.gridEditMode = gridEditMode;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+		this.storeSortOrders = storeSortOrders;
 		addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
 
 		setSizeFull();
@@ -126,7 +130,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 
 		addSortListener(event -> {
 			UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
-			if (helper != null) {
+			if (helper != null && storeSortOrders) {
 				List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
 				helper.storeSortOrders(collect);
 			}

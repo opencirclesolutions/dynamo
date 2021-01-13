@@ -168,6 +168,14 @@ public final class SystemPropertyUtils {
 	 * 
 	 * @return
 	 */
+	public static boolean getDefaultDetailsGridSortable() {
+		return getBooleanProperty(DynamoConstants.SP_DEFAULT_DETAILS_GRID_SORTABLE, false);
+	}
+
+	/**
+	 * 
+	 * @return
+	 */
 	public static List<String> getDefaultEditColumnThresholds() {
 		String temp = getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_FORM_COLUMN_THRESHOLDS, "0px");
 		return Lists.newArrayList(temp.split(","));
@@ -401,19 +409,27 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * 
+	 * @return whether to use the browser time zone for formatting zoned date times
+	 */
+	public static boolean useBrowserTimezone() {
+		return getBooleanProperty(DynamoConstants.SP_USE_BROWSER_TIME_ZONE, false);
+	}
+
+	/**
 	 * @return whether to use the display name of an attribute as the "prompt" value
 	 *         (hint/placeholder) inside the component
 	 */
 	public static boolean useDefaultPromptValue() {
 		return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, true);
 	}
-	
+
 	/**
 	 * 
-	 * @return whether to use the browser time zone for formatting zoned date times
+	 * @return whether to use check boxes for multiple selection in grids
 	 */
-	public static boolean useBrowserTimezone() {
-		return getBooleanProperty(DynamoConstants.SP_USE_BROWSER_TIME_ZONE, false);
+	public static boolean useGridSelectionCheckBoxes() {
+		return getBooleanProperty(DynamoConstants.SP_USE_GRID_SELECTION_CHECK_BOXES, true);
 	}
 
 	/**
@@ -429,14 +445,6 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean useXlsThousandsGrouping() {
 		return getBooleanProperty(DynamoConstants.SP_XLS_THOUSANDS_GROUPING, false);
-	}
-
-	/**
-	 * 
-	 * @return whether to use check boxes for multiple selection in grids
-	 */
-	public static boolean useGridSelectionCheckBoxes() {
-		return getBooleanProperty(DynamoConstants.SP_USE_GRID_SELECTION_CHECK_BOXES, true);
 	}
 
 	private SystemPropertyUtils() {
