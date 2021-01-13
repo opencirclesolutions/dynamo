@@ -35,6 +35,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
+import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
@@ -202,6 +203,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private boolean viewMode;
 
 	private FetchJoinInformation[] detailJoins;
+
+	private ExportDelegate exportDelegate = ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);
+
+	/**
+	 * The entity model to use when exporting
+	 */
+	private EntityModel<T> exportEntityModel;
 
 	/**
 	 * Constructor
@@ -733,6 +741,22 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	public void setDetailJoins(FetchJoinInformation... detailJoins) {
 		this.detailJoins = detailJoins;
+	}
+
+	public ExportDelegate getExportDelegate() {
+		return exportDelegate;
+	}
+
+	public MessageService getMessageService() {
+		return messageService;
+	}
+
+	public EntityModel<T> getExportEntityModel() {
+		return exportEntityModel;
+	}
+
+	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
+		this.exportEntityModel = exportEntityModel;
 	}
 
 }

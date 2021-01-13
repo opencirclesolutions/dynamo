@@ -14,7 +14,9 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -26,8 +28,15 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.grid.GridSortOrder;
+import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -63,6 +72,11 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	private Function<U, SerializablePredicate<T>> filterSupplier;
 
 	/**
+	 * 
+	 */
+	private SerializablePredicate<T> filter;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param service        the service for retrieving data from the database
@@ -77,6 +91,22 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		super(service, entityModel, attributeModel, viewMode, true, formOptions);
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
 		initContent();
+
+		// right click to download
+		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
+			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
+			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));
+			downloadButton.addClickListener(event -> {
+				List<SortOrder<?>> orders = new ArrayList<>();
+				List<GridSortOrder<T>> so = getGrid().getSortOrder();
+				for (GridSortOrder<T> gso : so) {
+					orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
+				}
+				EntityModel<T> em = getExportEntityModel() != null ? getExportEntityModel() : getEntityModel();
+				getExportDelegate().export(em, getFormOptions().getExportMode(), filter, orders);
+			});
+			contextMenu.add(downloadButton);
+		}
 	}
 
 	/**
@@ -84,8 +114,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 */
 	@Override
 	protected void applyFilter() {
-		SerializablePredicate<T> filter = (filterSupplier == null || parent == null) ? null
-				: filterSupplier.apply(parent);
+		filter = (filterSupplier == null || parent == null) ? null : filterSupplier.apply(parent);
 		getGrid().getDataCommunicator().setDataProvider(provider, filter);
 	}
 
