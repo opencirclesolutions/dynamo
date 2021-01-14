@@ -253,12 +253,22 @@ public class UIHelper {
 		this.selectedView = selectedView;
 	}
 
+	/**
+	 * Stores the search terms that have been entered in a search screen for later
+	 * use
+	 * 
+	 * @param filters
+	 */
 	public void storeSearchTerms(List<SerializablePredicate<?>> filters) {
 		if (this.selectedView != null) {
 			searchValueCache.put(selectedView, filters);
 		}
 	}
 
+	/**
+	 * Stores the sort order that have been used in a grid for later use
+	 * @param sortOrder
+	 */
 	public void storeSortOrders(List<SortOrder<?>> sortOrder) {
 		if (this.selectedView != null) {
 			sortOrderCache.put(selectedView, sortOrder);

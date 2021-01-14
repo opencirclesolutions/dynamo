@@ -189,4 +189,9 @@ public class LazyEntityModelWrapper<T> implements EntityModel<T> {
 		return getDelegate().getAttributeModelsSortedForSearch();
 	}
 
+	@Override
+	public AttributeModel getAttributeModelByActualSortPath(String actualSortPath) {
+		return getDelegate().getAttributeModelByActualSortPath(actualSortPath);
+	}
+
 }

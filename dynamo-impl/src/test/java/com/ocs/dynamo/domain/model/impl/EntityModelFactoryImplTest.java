@@ -373,6 +373,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("EntityParent.calculatedChildren", grandChild.getReference());
 		assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
 		assertEquals("children", attributeModel.getReplacementSearchPath());
+		
+		assertNotNull(parent.getAttributeModelByActualSortPath("children"));
 
 		// lazily constructed models are not there yet
 		assertFalse(factory.hasModel("EntityChild.parent.children"));

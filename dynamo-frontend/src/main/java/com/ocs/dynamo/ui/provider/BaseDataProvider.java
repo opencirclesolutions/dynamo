@@ -125,6 +125,11 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 				AttributeModel am = entityModel.getAttributeModel(sorted);
 				if (am != null) {
 					sorted = am.getActualSortPath();
+				} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
+					// it is possible that a sort order was preserved that is not valid for this
+					// provider. In that case,
+					// do not sort
+					sorted = null;
 				}
 				so.addSortOrder(new SortOrder(sorted,
 						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
@@ -135,9 +140,17 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 				AttributeModel am = entityModel.getAttributeModel(sorted);
 				if (am != null) {
 					sorted = am.getActualSortPath();
+				} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
+					// it is possible that a sort order was preserved that is not valid for this
+					// provider. In that case,
+					// do not sort
+					sorted = null;
 				}
-				so.addSortOrder(new SortOrder(sorted,
-						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+
+				if (sorted != null) {
+					so.addSortOrder(new SortOrder(sorted,
+							SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+				}
 			}
 		}
 

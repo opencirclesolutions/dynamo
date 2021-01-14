@@ -46,16 +46,6 @@ public interface EntityModel<T> {
 	String ATTRIBUTE_ORDER = "attributeOrder";
 
 	/**
-	 * Attribute order in search form
-	 */
-	String SEARCH_ATTRIBUTE_ORDER = "searchAttributeOrder";
-
-	/**
-	 * Attribute order in grid
-	 */
-	String GRID_ATTRIBUTE_ORDER = "gridAttributeOrder";
-
-	/**
 	 * Cascade attribute
 	 */
 	String CASCADE = "cascade";
@@ -92,14 +82,14 @@ public interface EntityModel<T> {
 	String CUSTOM = "custom";
 
 	/**
-	 * Custom attribute value
-	 */
-	String CUSTOM_VALUE = "customValue";
-
-	/**
 	 * Custom attribute type
 	 */
 	String CUSTOM_TYPE = "customType";
+
+	/**
+	 * Custom attribute value
+	 */
+	String CUSTOM_VALUE = "customValue";
 
 	/**
 	 * The date type (date, time, or time stamp) of a value from java.time.*
@@ -157,6 +147,11 @@ public interface EntityModel<T> {
 	 * The String representation for the boolean "false" value
 	 */
 	String FALSE_REPRESENTATION = "falseRepresentation";
+
+	/**
+	 * Attribute order in grid
+	 */
+	String GRID_ATTRIBUTE_ORDER = "gridAttributeOrder";
 
 	/**
 	 * The type of component to use in editable grid
@@ -271,6 +266,11 @@ public interface EntityModel<T> {
 	 * Whether this attribute is required when performing a search
 	 */
 	String REQUIRED_FOR_SEARCHING = "requiredForSearching";
+
+	/**
+	 * Attribute order in search form
+	 */
+	String SEARCH_ATTRIBUTE_ORDER = "searchAttributeOrder";
 
 	/**
 	 * Whether searching is case sensitive
@@ -396,25 +396,19 @@ public interface EntityModel<T> {
 	AttributeModel getAttributeModel(String attributeName);
 
 	/**
+	 * Returns an attribute model based on the value of its actualSortPath
+	 * 
+	 * @param actualSortPath the actual sort path
+	 * @return
+	 */
+	AttributeModel getAttributeModelByActualSortPath(String actualSortPath);
+
+	/**
 	 * Returns an ordered list of all attribute models
 	 * 
 	 * @return
 	 */
 	List<AttributeModel> getAttributeModels();
-
-	/**
-	 * Returns an ordered list of all attribute models for display in the grid
-	 * 
-	 * @return
-	 */
-	List<AttributeModel> getAttributeModelsSortedForGrid();
-
-	/**
-	 * Returns an ordered list of all attribute models for search form
-	 * 
-	 * @return
-	 */
-	List<AttributeModel> getAttributeModelsSortedForSearch();
 
 	/**
 	 * Returns the attribute models for a certain group
@@ -435,6 +429,20 @@ public interface EntityModel<T> {
 	 * @return
 	 */
 	List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type);
+
+	/**
+	 * Returns an ordered list of all attribute models for display in the grid
+	 * 
+	 * @return
+	 */
+	List<AttributeModel> getAttributeModelsSortedForGrid();
+
+	/**
+	 * Returns an ordered list of all attribute models for search form
+	 * 
+	 * @return
+	 */
+	List<AttributeModel> getAttributeModelsSortedForSearch();
 
 	/**
 	 * 

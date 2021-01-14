@@ -54,27 +54,27 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private String defaultDisplayNamePlural;
 
+	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
+
 	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
 
 	private Map<String, Optional<String>> displayNamesPlural = new ConcurrentHashMap<>();
-
-	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
 
 	private String displayProperty;
 
 	private Class<T> entityClass;
 
-	private AttributeModel idAttributeModel;
+	private boolean gridOrderSet;
 
-	private String reference;
+	private AttributeModel idAttributeModel;
 
 	private int nestingDepth;
 
-	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
-
-	private boolean gridOrderSet;
+	private String reference;
 
 	private boolean searchOrderSet;
+
+	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
 	@Override
 	public void addAttributeGroup(String attributeGroup) {
@@ -146,6 +146,11 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public AttributeModel getAttributeModelByActualSortPath(String actualSortPath) {
+		return findAttributeModel(m -> m.getActualSortPath().equals(actualSortPath));
 	}
 
 	@Override
