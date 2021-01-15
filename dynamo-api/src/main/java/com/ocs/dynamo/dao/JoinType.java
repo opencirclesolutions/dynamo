@@ -14,7 +14,7 @@
 package com.ocs.dynamo.dao;
 
 /**
- * Query join types lalala
+ * Query join types lalalafdf
  * @author Bas Rutten
  *
  */
