@@ -20,7 +20,6 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 import com.google.common.collect.Lists;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
