@@ -123,7 +123,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 			for (QuerySortOrder order : orders) {
 				String sorted = order.getSorted();
 				AttributeModel am = entityModel.getAttributeModel(sorted);
-				if (am != null) {
+				if (am != null && am.isSortable()) {
 					sorted = am.getActualSortPath();
 				} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
 					// it is possible that a sort order was preserved that is not valid for this
@@ -131,14 +131,16 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 					// do not sort
 					sorted = null;
 				}
-				so.addSortOrder(new SortOrder(sorted,
-						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+				if (sorted != null) {
+					so.addSortOrder(new SortOrder(sorted,
+							SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+				}
 			}
 		} else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {
 			for (com.vaadin.flow.data.provider.SortOrder<?> order : fallBackSortOrders) {
 				String sorted = order.getSorted().toString();
 				AttributeModel am = entityModel.getAttributeModel(sorted);
-				if (am != null) {
+				if (am != null && am.isSortable()) {
 					sorted = am.getActualSortPath();
 				} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
 					// it is possible that a sort order was preserved that is not valid for this

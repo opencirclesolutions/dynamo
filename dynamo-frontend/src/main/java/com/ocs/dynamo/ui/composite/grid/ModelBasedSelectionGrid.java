@@ -214,4 +214,9 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	public void setCurrencySymbol(String currencySymbol) {
 		this.currencySymbol = currencySymbol;
 	}
+
+	public boolean isStoreSortOrders() {
+		return storeSortOrders;
+	}
+
 }

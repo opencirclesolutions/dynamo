@@ -650,10 +650,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			removeAll();
 			add(mainEditLayout);
 		}
-
-		if (nestedMode) {
-			setWidth("80%");
-		}
 	}
 
 	/**
