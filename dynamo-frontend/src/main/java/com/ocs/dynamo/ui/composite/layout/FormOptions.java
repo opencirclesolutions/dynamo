@@ -183,6 +183,11 @@ public class FormOptions implements Serializable {
 	private boolean showBackButton;
 
 	/**
+	 * Whether to show a caption above an edit form
+	 */
+	private boolean showEditFormCaption = true;
+
+	/**
 	 * Whether to display a "next" button inside an edit form
 	 */
 	private boolean showNextButton;
@@ -218,6 +223,11 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean startInAdvancedMode;
 
+	/**
+	 * 
+	 */
+	private boolean useCheckboxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
+
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -252,6 +262,8 @@ public class FormOptions implements Serializable {
 		fo.setStartInAdvancedMode(isStartInAdvancedMode());
 		fo.setPreserveSearchTerms(isPreserveSearchTerms());
 		fo.setPreserveSortOrders(isPreserveSortOrders());
+		fo.setShowEditFormCaption(isShowEditFormCaption());
+		fo.setUseCheckboxesForMultiSelect(isUseCheckboxesForMultiSelect());
 		return fo;
 	}
 
@@ -285,6 +297,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isDetailsGridSearchMode() {
 		return detailsGridSearchMode;
+	}
+
+	public boolean isDetailsGridSortable() {
+		return detailsGridSortable;
 	}
 
 	public boolean isDetailsModeEnabled() {
@@ -357,6 +373,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isShowBackButton() {
 		return showBackButton;
+	}
+
+	public boolean isShowEditFormCaption() {
+		return showEditFormCaption;
 	}
 
 	public boolean isShowNextButton() {
@@ -445,6 +465,11 @@ public class FormOptions implements Serializable {
 	 */
 	public FormOptions setDetailsGridSearchMode(boolean detailsGridSearchMode) {
 		this.detailsGridSearchMode = detailsGridSearchMode;
+		return this;
+	}
+
+	public FormOptions setDetailsGridSortable(boolean detailsGridSortable) {
+		this.detailsGridSortable = detailsGridSortable;
 		return this;
 	}
 
@@ -688,6 +713,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setShowEditFormCaption(boolean showEditFormCaption) {
+		this.showEditFormCaption = showEditFormCaption;
+		return this;
+	}
+
 	/**
 	 * Shorthand method for showing/hiding the previous and next buttons
 	 *
@@ -735,12 +765,12 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
-	public boolean isDetailsGridSortable() {
-		return detailsGridSortable;
+	public boolean isUseCheckboxesForMultiSelect() {
+		return useCheckboxesForMultiSelect;
 	}
 
-	public FormOptions setDetailsGridSortable(boolean detailsGridSortable) {
-		this.detailsGridSortable = detailsGridSortable;
+	public FormOptions setUseCheckboxesForMultiSelect(boolean useCheckboxesForMultiSelect) {
+		this.useCheckboxesForMultiSelect = useCheckboxesForMultiSelect;
 		return this;
 	}
 

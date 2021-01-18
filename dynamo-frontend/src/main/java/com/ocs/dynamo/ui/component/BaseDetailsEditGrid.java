@@ -37,6 +37,7 @@ import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
+import com.ocs.dynamo.ui.composite.grid.ModelBasedSelectionGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -46,6 +47,7 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -151,7 +153,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * The grid for displaying the actual items
 	 */
-	private ModelBasedGrid<ID, T> grid;
+	private Grid<T> grid;
 
 	/**
 	 * The grid height
@@ -223,8 +225,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param entityModel
 	 * @param attributeModel
 	 * @param viewMode
+	 * @param serviceBasedEditMode
 	 * @param formOptions
-	 * @param joins
 	 */
 	public BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean serviceBasedEditMode, FormOptions formOptions) {
@@ -431,7 +433,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		return formOptions;
 	}
 
-	public ModelBasedGrid<ID, T> getGrid() {
+	public Grid<T> getGrid() {
 		return grid;
 	}
 
@@ -483,41 +485,80 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Constructs the actual component
 	 */
 	protected void initContent() {
-		grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(), false,
-				GridEditMode.SIMULTANEOUS) {
+		boolean checkBoxes = getFormOptions().isUseCheckboxesForMultiSelect();
+		if (checkBoxes) {
+			grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(),
+					false, GridEditMode.SIMULTANEOUS) {
 
-			private static final long serialVersionUID = 6143503902550597524L;
+				private static final long serialVersionUID = 6143503902550597524L;
 
-			@Override
-			protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
-				return BaseDetailsEditGrid.this.constructCustomConverter(am);
-			}
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
-				return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
-			}
-
-			@Override
-			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-				return BaseDetailsEditGrid.this.constructCustomValidator(am);
-			}
-
-			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				if (!binders.containsKey(t)) {
-					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
-					binders.get(t).setBean(t);
+				@Override
+				protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
+					return BaseDetailsEditGrid.this.constructCustomConverter(am);
 				}
-				Binder<T> binder = binders.get(t);
-				return binder.forField((HasValue<?, ?>) field);
-			}
 
-			@Override
-			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
-			}
-		};
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
+					return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
+				}
+
+				@Override
+				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+					return BaseDetailsEditGrid.this.constructCustomValidator(am);
+				}
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					if (!binders.containsKey(t)) {
+						binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
+						binders.get(t).setBean(t);
+					}
+					Binder<T> binder = binders.get(t);
+					return binder.forField((HasValue<?, ?>) field);
+				}
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
+				}
+			};
+		} else {
+			grid = new ModelBasedSelectionGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
+					isGridEditEnabled(), false, GridEditMode.SIMULTANEOUS) {
+
+				private static final long serialVersionUID = 6143503902550597524L;
+
+				@Override
+				protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
+					return BaseDetailsEditGrid.this.constructCustomConverter(am);
+				}
+
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
+					return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
+				}
+
+				@Override
+				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+					return BaseDetailsEditGrid.this.constructCustomValidator(am);
+				}
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					if (!binders.containsKey(t)) {
+						binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
+						binders.get(t).setBean(t);
+					}
+					Binder<T> binder = binders.get(t);
+					return binder.forField((HasValue<?, ?>) field);
+				}
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
+				}
+			};
+		}
 
 		// allow editing by showing a pop-up dialog (only for service-based version)
 		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode()) {
@@ -767,7 +808,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param size
 	 */
 	protected void updateCaption(int size) {
-		this.setLabel(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + " "
+		this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " "
 				+ getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
 	}
 

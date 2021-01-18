@@ -668,7 +668,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		titleLabels.put(isViewMode(), constructTitleLabel());
 		titleBars.put(isViewMode(), new DefaultHorizontalLayout(true, true));
-		titleBars.get(isViewMode()).add(titleLabels.get(isViewMode()));
+
+		if (getFormOptions().isShowEditFormCaption()) {
+			titleBars.get(isViewMode()).add(titleLabels.get(isViewMode()));
+		}
 
 		FlexLayout buttonBar = null;
 		if (!nestedMode) {

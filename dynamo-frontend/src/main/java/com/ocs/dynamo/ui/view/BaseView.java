@@ -90,7 +90,8 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 		uiHelper.setSelectedView(event.getNavigationTarget());
 		MenuBar menuBar = uiHelper.getMenuBar();
 		if (menuBar != null) {
-			menuService.setLastVisited(menuBar, event.getLocation().getPath());
+			String path = event.getLocation().getPath();
+			menuService.setLastVisited(menuBar, path.replace('/', '#'));
 		}
 	}
 

@@ -96,7 +96,8 @@ public abstract class BaseCamelMockitoTest extends BaseMockitoTest {
         this.outMessage = outMessage;
     }
 
-    @BeforeEach
+    @SuppressWarnings("deprecation")
+	@BeforeEach
     public void setUp() {
         lenient().when(exchange.getIn()).thenReturn(message);
         lenient().when(exchange.getOut()).thenReturn(outMessage);

@@ -219,4 +219,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		this.currencySymbol = currencySymbol;
 	}
 
+	public boolean isStoreSortOrders() {
+		return storeSortOrders;
+	}
+
 }

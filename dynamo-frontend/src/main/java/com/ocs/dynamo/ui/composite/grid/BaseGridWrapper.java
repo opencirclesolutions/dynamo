@@ -27,7 +27,6 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
@@ -131,8 +130,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @return
 	 */
 	protected Grid<T> constructGrid() {
-		boolean checkBoxes = SystemPropertyUtils.useGridSelectionCheckBoxes();
-		if (checkBoxes || !getFormOptions().isPopup()) {
+		boolean checkBoxes = getFormOptions().isUseCheckboxesForMultiSelect();
+		if (checkBoxes) {
 			return new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
 					getFormOptions().isPreserveSortOrders(), getFormOptions().getGridEditMode()) {
 
@@ -152,7 +151,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 		} else {
 			return new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
-					getFormOptions().getGridEditMode()) {
+					getFormOptions().isPreserveSortOrders(), getFormOptions().getGridEditMode()) {
 
 				private static final long serialVersionUID = -4559181057050230055L;
 

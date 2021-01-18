@@ -61,6 +61,11 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	private MessageService messageService;
 
 	/**
+	 * Whether to store sort orders
+	 */
+	private boolean storeSortOrders;
+
+	/**
 	 * Constructor
 	 * 
 	 * @param dataProvider the data provider
@@ -70,11 +75,13 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	 * @param gridEditMode
 	 */
 	public ModelBasedSelectionGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, GridEditMode gridEditMode) {
+			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, boolean storeSortOrders,
+			GridEditMode gridEditMode) {
 		setDataProvider(dataProvider);
 		this.gridEditMode = gridEditMode;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+		this.storeSortOrders = storeSortOrders;
 		addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
 
 		setSizeFull();
@@ -116,10 +123,10 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 
 		};
 		gridBuilder.generateColumnsRecursive(model.getAttributeModelsSortedForGrid());
-		
+
 		addSortListener(event -> {
 			UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
-			if (helper != null) {
+			if (helper != null && storeSortOrders) {
 				List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
 				helper.storeSortOrders(collect);
 			}

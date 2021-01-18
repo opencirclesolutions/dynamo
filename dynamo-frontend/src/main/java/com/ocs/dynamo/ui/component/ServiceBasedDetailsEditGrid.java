@@ -135,9 +135,12 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	public void assignEntity(U u) {
 		this.parent = u;
 		if (getGrid() != null) {
+			getGrid().deselectAll();
 			applyFilter();
 		}
-		getAddButton().setVisible(this.parent.getId() != null);
+		// hide add button for new entity
+		getAddButton().setVisible(!isViewMode() && !getFormOptions().isHideAddButton()
+				&& !getFormOptions().isDetailsGridSearchMode() && this.parent.getId() != null);
 	}
 
 	@Override
@@ -205,7 +208,9 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	protected void setPresentationValue(U value) {
 		this.parent = value;
 		if (getGrid() != null) {
+			getGrid().deselectAll();
 			applyFilter();
+			getGrid().deselectAll();
 		}
 	}
 
