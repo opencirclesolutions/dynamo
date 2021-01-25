@@ -33,10 +33,12 @@ public final class DynamoConstants {
 
 	public static final String CSS_COMPOSITION_LAYOUT = "compositionLayout";
 
+	public static final String CSS_DETAIL_EDIT_LAYOUT_REMOVE_BUTTON = "detailsEditLayoutRemoveButton";
+
 	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
 
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
-
+	
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
 	/**
@@ -159,13 +161,7 @@ public final class DynamoConstants {
 	 * Name of the system property that is used to set the locale used for month
 	 * names in date components
 	 */
-	public static final String SP_DATE_LOCALE = "ocs.default.date.locale";
-
-	/**
-	 * Name of the system property that is used to determine the default decimal
-	 * precision
-	 */
-	public static final String SP_DECIMAL_PRECISION = "ocs.default.decimal.precision";
+	public static final String SP_DEFAULT_DATE_LOCALE = "ocs.default.date.locale";
 
 	/**
 	 * Name of the system property that is used to determine the default currency
@@ -191,21 +187,16 @@ public final class DynamoConstants {
 	public static final String SP_DEFAULT_DATETIME_ZONE_FORMAT = "ocs.default.datetime.zone.format";
 
 	/**
-	 * Name of the system property that is used to determine the group together mode
-	 */
-	public static final String SP_DEFAULT_GROUP_TOGETHER_MODE = "ocs.default.group.together.mode";
-
-	/**
-	 * Name of the system property that is used to determine the column width from
-	 * grouping together
-	 */
-	public static final String SP_DEFAULT_GROUP_TOGETHER_WIDTH = "ocs.default.group.together.width";
-
-	/**
 	 * Name of the system property that is used to determine the default decimal
 	 * precision
 	 */
 	public static final String SP_DEFAULT_DECIMAL_PRECISION = "ocs.default.decimal.precision";
+
+	/**
+	 * Name of the system property that is used to determine whether columns in
+	 * details edit grid are sortable
+	 */
+	public static final String SP_DEFAULT_DETAILS_GRID_SORTABLE = "ocs.default.details.grid.sortable";
 
 	/**
 	 * The default responsive step thresholds for edit forms
@@ -229,6 +220,17 @@ public final class DynamoConstants {
 	 * height
 	 */
 	public static final String SP_DEFAULT_GRID_HEIGHT = "ocs.default.grid.height";
+
+	/**
+	 * Name of the system property that is used to determine the group together mode
+	 */
+	public static final String SP_DEFAULT_GROUP_TOGETHER_MODE = "ocs.default.group.together.mode";
+
+	/**
+	 * Name of the system property that is used to determine the column width from
+	 * grouping together
+	 */
+	public static final String SP_DEFAULT_GROUP_TOGETHER_WIDTH = "ocs.default.group.together.width";
 
 	/**
 	 * Name of the system property that is used to set the default locale
@@ -264,12 +266,6 @@ public final class DynamoConstants {
 	 * sensitiveness for search
 	 */
 	public static final String SP_DEFAULT_SEARCH_CASE_SENSITIVE = "ocs.default.search.case.sensitive";
-
-	/**
-	 * Name of the system property that is used to determine whether columns in
-	 * details edit grid are sortable
-	 */
-	public static final String SP_DEFAULT_DETAILS_GRID_SORTABLE = "ocs.default.details.grid.sortable";
 
 	/**
 	 * Name of the system property that is used to determined the default grid
@@ -350,15 +346,15 @@ public final class DynamoConstants {
 	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
 
 	/**
-	 * Indicates whether to use the display name as the input prompt by default
-	 */
-	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
-
-	/**
 	 * Indicates whether to use the browser time zone for formatting zoned date
 	 * times
 	 */
 	public static final String SP_USE_BROWSER_TIME_ZONE = "ocs.use.browser.time.zone";
+
+	/**
+	 * Indicates whether to use the display name as the input prompt by default
+	 */
+	public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
 
 	/**
 	 * Indicates whether to use selection check boxes for multiple selection in grid

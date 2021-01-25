@@ -80,7 +80,15 @@ public class UIHelper {
 	 */
 	private Map<Class<?>, List<FlexibleFilterDefinition>> searchFilterDefinitionCache = new HashMap<>();
 
+	/**
+	 * 
+	 */
 	private Map<Class<?>, List<SortOrder<?>>> sortOrderCache = new HashMap<>();
+
+	/**
+	 * Advanced mode cache
+	 */
+	private Map<Class<?>, Boolean> advancedModeCache = new HashMap<>();
 
 	/**
 	 * Adds a mapping for carrying out navigation within the application
@@ -228,6 +236,13 @@ public class UIHelper {
 		return new ArrayList<>();
 	}
 
+	public Boolean retrieveAdvancedMode() {
+		if (this.selectedView != null) {
+			return advancedModeCache.getOrDefault(this.selectedView, Boolean.FALSE);
+		}
+		return false;
+	}
+
 	public void selectAndNavigate(Object selectedEntity, String viewName) {
 		setSelectedEntity(selectedEntity);
 		navigate(viewName);
@@ -267,6 +282,7 @@ public class UIHelper {
 
 	/**
 	 * Stores the sort order that have been used in a grid for later use
+	 * 
 	 * @param sortOrder
 	 */
 	public void storeSortOrders(List<SortOrder<?>> sortOrder) {
@@ -281,4 +297,9 @@ public class UIHelper {
 		}
 	}
 
+	public void storeAdvancedMode(boolean advancedMode) {
+		if (this.selectedView != null) {
+			advancedModeCache.put(selectedView, advancedMode);
+		}
+	}
 }

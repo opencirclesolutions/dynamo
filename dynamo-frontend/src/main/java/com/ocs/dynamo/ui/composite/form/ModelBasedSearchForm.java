@@ -115,7 +115,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	public ModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
 			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
-		setAdvancedSearchMode(formOptions.isStartInAdvancedMode());
+		boolean advancedModeSaved = false;
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null && formOptions.isPreserveAdvancedMode()) {
+			advancedModeSaved = helper.retrieveAdvancedMode();
+		}
+		setAdvancedSearchMode(formOptions.isStartInAdvancedMode() || advancedModeSaved);
 	}
 
 	/**
@@ -180,7 +185,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		}
 
 		return field;
-
 	}
 
 	/**
@@ -538,6 +542,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			getToggleAdvancedModeButton().setText(message("ocs.to.simple.search.mode"));
 		} else {
 			getToggleAdvancedModeButton().setText(message("ocs.to.advanced.search.mode"));
+		}
+
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null && getFormOptions().isPreserveAdvancedMode()) {
+			helper.storeAdvancedMode(isAdvancedSearchMode());
 		}
 
 		// empty the search form and rebuild it

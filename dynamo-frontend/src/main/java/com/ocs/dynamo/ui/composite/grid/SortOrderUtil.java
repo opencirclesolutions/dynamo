@@ -25,7 +25,11 @@ import com.vaadin.flow.data.provider.SortOrder;
  * @author Bas Rutten
  *
  */
-public class SortOrderUtil {
+public final class SortOrderUtil {
+
+	private SortOrderUtil() {
+		// hidden constructor
+	}
 
 	/**
 	 * Translates a list of sort orders from GridSortOrder to SortOrder

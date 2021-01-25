@@ -137,7 +137,7 @@ public final class SystemPropertyUtils {
 	 * @return the locale used for the month names inside date picker components
 	 */
 	public static String getDefaultDateLocale() {
-		return getStringProperty(DynamoConstants.SP_DATE_LOCALE, getDefaultLocale());
+		return getStringProperty(DynamoConstants.SP_DEFAULT_DATE_LOCALE, getDefaultLocale());
 	}
 
 	/**
@@ -161,12 +161,12 @@ public final class SystemPropertyUtils {
 	 * @return the default decimal precision
 	 */
 	public static int getDefaultDecimalPrecision() {
-		return getIntProperty(DynamoConstants.SP_DECIMAL_PRECISION, DEFAULT_DECIMAL_PRECISION);
+		return getIntProperty(DynamoConstants.SP_DEFAULT_DECIMAL_PRECISION, DEFAULT_DECIMAL_PRECISION);
 	}
 
 	/**
 	 * 
-	 * @return
+	 * @return whether a details grid is sortable by default
 	 */
 	public static boolean getDefaultDetailsGridSortable() {
 		return getBooleanProperty(DynamoConstants.SP_DEFAULT_DETAILS_GRID_SORTABLE, false);
@@ -174,7 +174,8 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return
+	 * @return the default column thresholds to use for determining the number of
+	 *         columns in an edit form
 	 */
 	public static List<String> getDefaultEditColumnThresholds() {
 		String temp = getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_FORM_COLUMN_THRESHOLDS, "0px");

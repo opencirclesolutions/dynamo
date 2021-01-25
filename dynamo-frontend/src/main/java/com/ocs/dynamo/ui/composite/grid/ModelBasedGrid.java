@@ -48,11 +48,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private static final long serialVersionUID = 6946260934644731038L;
 
 	/**
-	 * Custom currency symbol to be used for this grid
-	 */
-	private String currencySymbol;
-
-	/**
 	 * The entity model of the entities to display in the grid
 	 */
 	private EntityModel<T> entityModel;
@@ -67,6 +62,9 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private MessageService messageService;
 
+	/**
+	 * Whether to store sort orders for this grid
+	 */
 	private boolean storeSortOrders;
 
 	/**
@@ -181,10 +179,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		return null;
 	}
 
-	public String getCurrencySymbol() {
-		return currencySymbol;
-	}
-
 	public GridEditMode getGridEditMode() {
 		return gridEditMode;
 	}
@@ -213,10 +207,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	public void setColumnVisible(String propertyId, boolean visible) {
 		getColumnByKey(propertyId).setVisible(visible);
-	}
-
-	public void setCurrencySymbol(String currencySymbol) {
-		this.currencySymbol = currencySymbol;
 	}
 
 	public boolean isStoreSortOrders() {

@@ -27,6 +27,7 @@ import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -58,8 +59,8 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <ID> the type of the ID
  * @param <T>  the type of the entity that is managed in the form
  */
-public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends CustomField<Collection<T>>
-		implements NestedComponent, UseInViewMode {
+public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
+		extends CustomField<Collection<T>> implements NestedComponent, UseInViewMode {
 
 	/**
 	 * A container that holds the edit form for a single entity along with a button
@@ -99,7 +100,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 			buttonBar = new DefaultHorizontalLayout(false, true);
 
-			if (sameRow) {
+			if (getFormOptions().isDetailsEditLayoutSameRow()) {
 				HorizontalLayout rowLayout = new DefaultHorizontalLayout();
 				rowLayout.setWidth("100%");
 				add(rowLayout);
@@ -117,8 +118,9 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			if (!viewMode && getFormOptions().isShowRemoveButton()) {
 				removeButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
 				removeButton.setIcon(VaadinIcon.TRASH.create());
+				removeButton.addClassName(DynamoConstants.CSS_DETAIL_EDIT_LAYOUT_REMOVE_BUTTON);
 				removeButton.addClickListener(event -> {
-					ModelBasedEditForm<?, ?> enc = DetailsEditLayout.this.getEnclosingForm();
+					ModelBasedEditForm<ID2, Q> enc = DetailsEditLayout.this.getEnclosingForm();
 					removeEntityConsumer.accept(enc == null ? null : enc.getEntity(), this.form.getEntity());
 					items.remove(this.form.getEntity());
 					mainFormContainer.remove(this);
@@ -202,7 +204,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Supplier for creating a new entity
 	 */
-	private Function<AbstractEntity<?>, T> createEntitySupplier;
+	private Function<Q, T> createEntitySupplier;
 
 	/**
 	 * The entity model of the entity to display
@@ -242,7 +244,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Consumer for removing an entity
 	 */
-	private BiConsumer<AbstractEntity<?>, T> removeEntityConsumer;
+	private BiConsumer<Q, T> removeEntityConsumer;
 
 	/**
 	 * Service for interacting with the database
@@ -255,12 +257,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	private boolean viewMode;
 
-	private ModelBasedEditForm<?, ?> enclosingForm;
+	private ModelBasedEditForm<ID2, Q> enclosingForm;
 
-	/**
-	 * Indicates whether to put buttons on same row
-	 */
-	private boolean sameRow;
+	private GroupTogetherMode groupTogetherMode;
+
+	private Integer groupTogetherWidth;
 
 	/**
 	 * Constructor
@@ -269,11 +270,12 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * @param entityModel    the entity model
 	 * @param attributeModel the attribute model
 	 * @param viewMode       whether the form is in view mode
+	 * @param sameRow        whether to display the fields on the same row
 	 * @param formOptions    the form options
 	 * @param comparator     the comparator for sorting the items
 	 */
 	public DetailsEditLayout(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode, boolean sameRow, FormOptions formOptions, Comparator<T> comparator) {
+			boolean viewMode, FormOptions formOptions, Comparator<T> comparator) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
@@ -282,7 +284,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		this.items = new ArrayList<>();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
-		this.sameRow = sameRow;
 		initContent();
 	}
 
@@ -349,6 +350,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		};
 		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setFieldFilters(fieldFilters);
+		editForm.setGroupTogetherMode(getGroupTogetherMode());
+		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 		editForm.setNestedMode(true);
 		editForm.setViewMode(viewMode);
 		editForm.build();
@@ -516,7 +519,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return formOptions;
 	}
 
-	public BiConsumer<AbstractEntity<?>, T> getRemoveEntityConsumer() {
+	public BiConsumer<Q, T> getRemoveEntityConsumer() {
 		return removeEntityConsumer;
 	}
 
@@ -594,7 +597,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param createEntitySupplier the supplier
 	 */
-	public void setCreateEntitySupplier(Function<AbstractEntity<?>, T> createEntitySupplier) {
+	public void setCreateEntitySupplier(Function<Q, T> createEntitySupplier) {
 		this.createEntitySupplier = createEntitySupplier;
 	}
 
@@ -713,7 +716,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param removeEntityConsumer
 	 */
-	public void setRemoveEntityConsumer(BiConsumer<AbstractEntity<?>, T> removeEntityConsumer) {
+	public void setRemoveEntityConsumer(BiConsumer<Q, T> removeEntityConsumer) {
 		this.removeEntityConsumer = removeEntityConsumer;
 	}
 
@@ -732,15 +735,32 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return error;
 	}
 
-	public ModelBasedEditForm<?, ?> getEnclosingForm() {
+	public ModelBasedEditForm<ID2, Q> getEnclosingForm() {
 		return enclosingForm;
 	}
 
-	public void setEnclosingForm(ModelBasedEditForm<?, ?> enclosingForm) {
+	public void setEnclosingForm(ModelBasedEditForm<ID2, Q> enclosingForm) {
 		this.enclosingForm = enclosingForm;
 	}
 
 	public void setClassName(String className) {
 		this.getElement().setAttribute("class", className);
 	}
+
+	public GroupTogetherMode getGroupTogetherMode() {
+		return groupTogetherMode;
+	}
+
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		this.groupTogetherMode = groupTogetherMode;
+	}
+
+	public Integer getGroupTogetherWidth() {
+		return groupTogetherWidth;
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		this.groupTogetherWidth = groupTogetherWidth;
+	}
+
 }

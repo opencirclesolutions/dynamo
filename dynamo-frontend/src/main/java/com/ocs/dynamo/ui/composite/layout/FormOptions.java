@@ -56,6 +56,11 @@ public class FormOptions implements Serializable {
 	private boolean confirmSave;
 
 	/**
+	 * Whether to display the fields in a details edit layout on the same row
+	 */
+	private boolean detailsEditLayoutSameRow = true;
+
+	/**
 	 * Whether to display a details grid in search mode
 	 */
 	private boolean detailsGridSearchMode;
@@ -141,6 +146,11 @@ public class FormOptions implements Serializable {
 	 * framework when appropriate
 	 */
 	private boolean popup;
+
+	/**
+	 * Whether to preserve advanced search mode
+	 */
+	private boolean preserveAdvancedMode = true;
 
 	/**
 	 * Whether to preserve search terms when navigating away from the screen
@@ -264,6 +274,8 @@ public class FormOptions implements Serializable {
 		fo.setPreserveSortOrders(isPreserveSortOrders());
 		fo.setShowEditFormCaption(isShowEditFormCaption());
 		fo.setUseCheckboxesForMultiSelect(isUseCheckboxesForMultiSelect());
+		fo.setDetailsEditLayoutSameRow(isDetailsEditLayoutSameRow());
+		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
 		return fo;
 	}
 
@@ -293,6 +305,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isConfirmSave() {
 		return confirmSave;
+	}
+
+	public boolean isDetailsEditLayoutSameRow() {
+		return detailsEditLayoutSameRow;
 	}
 
 	public boolean isDetailsGridSearchMode() {
@@ -351,6 +367,10 @@ public class FormOptions implements Serializable {
 		return popup;
 	}
 
+	public boolean isPreserveAdvancedMode() {
+		return preserveAdvancedMode;
+	}
+
 	public boolean isPreserveSearchTerms() {
 		return preserveSearchTerms;
 	}
@@ -407,6 +427,10 @@ public class FormOptions implements Serializable {
 		return startInAdvancedMode;
 	}
 
+	public boolean isUseCheckboxesForMultiSelect() {
+		return useCheckboxesForMultiSelect;
+	}
+
 	/**
 	 * Sets the desired attribute group mode. This determines whether input
 	 * components will be grouped in panels (default) or tabs
@@ -453,6 +477,11 @@ public class FormOptions implements Serializable {
 	 */
 	public FormOptions setConfirmSave(boolean confirmSave) {
 		this.confirmSave = confirmSave;
+		return this;
+	}
+
+	public FormOptions setDetailsEditLayoutSameRow(boolean detailsEditLayoutSameRow) {
+		this.detailsEditLayoutSameRow = detailsEditLayoutSameRow;
 		return this;
 	}
 
@@ -638,6 +667,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setPreserveAdvancedMode(boolean preserveAdvancedMode) {
+		this.preserveAdvancedMode = preserveAdvancedMode;
+		return this;
+	}
+
 	public FormOptions setPreserveSearchTerms(boolean preserveSearchTerms) {
 		this.preserveSearchTerms = preserveSearchTerms;
 		return this;
@@ -763,10 +797,6 @@ public class FormOptions implements Serializable {
 	public FormOptions setStartInAdvancedMode(boolean startInAdvancedMode) {
 		this.startInAdvancedMode = startInAdvancedMode;
 		return this;
-	}
-
-	public boolean isUseCheckboxesForMultiSelect() {
-		return useCheckboxesForMultiSelect;
 	}
 
 	public FormOptions setUseCheckboxesForMultiSelect(boolean useCheckboxesForMultiSelect) {

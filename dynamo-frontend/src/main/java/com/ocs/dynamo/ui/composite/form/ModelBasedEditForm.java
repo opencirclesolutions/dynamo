@@ -650,6 +650,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			removeAll();
 			add(mainEditLayout);
 		}
+
 	}
 
 	/**
@@ -1016,7 +1017,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 
 			if (field instanceof DetailsEditLayout) {
-				DetailsEditLayout<?, ?> del = (DetailsEditLayout<?, ?>) field;
+				DetailsEditLayout<?, ?, ID, T> del = (DetailsEditLayout<?, ?, ID, T>) field;
 				del.setEnclosingForm(this);
 			}
 

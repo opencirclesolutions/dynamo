@@ -58,8 +58,8 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 	public void testEditable() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditLayout<Integer, TestEntity> layout = createLayout(em, em.getAttributeModel("testEntities"), false,
-				new FormOptions().setShowRemoveButton(true));
+		DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> layout = createLayout(em,
+				em.getAttributeModel("testEntities"), false, new FormOptions().setShowRemoveButton(true));
 		assertTrue(layout.getAddButton().isVisible());
 		assertTrue(buttonBarPostconstruct);
 
@@ -100,18 +100,18 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 	public void testReadOnly() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditLayout<Integer, TestEntity> layout = createLayout(em, em.getAttributeModel("testEntities"), true,
-				new FormOptions().setDetailsGridSearchMode(true));
+		DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> layout = createLayout(em,
+				em.getAttributeModel("testEntities"), true, new FormOptions().setDetailsGridSearchMode(true));
 
 		// adding is not possible
 		assertFalse(layout.getAddButton().isVisible());
 	}
 
-	private DetailsEditLayout<Integer, TestEntity> createLayout(EntityModel<TestEntity> em, AttributeModel am,
-			boolean viewMode, FormOptions fo) {
+	private DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> createLayout(EntityModel<TestEntity> em,
+			AttributeModel am, boolean viewMode, FormOptions fo) {
 
-		DetailsEditLayout<Integer, TestEntity> layout = new DetailsEditLayout<Integer, TestEntity>(service, em, am,
-				viewMode, false, fo, Comparator.comparing(TestEntity::getName)) {
+		DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> layout = new DetailsEditLayout<>(service, em, am,
+				viewMode, fo, Comparator.comparing(TestEntity::getName)) {
 
 			private static final long serialVersionUID = -4333833542380882076L;
 
@@ -126,8 +126,7 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 			}
 		};
 		layout.setCreateEntitySupplier(p -> new TestEntity());
-		layout.setRemoveEntityConsumer((p, t) -> {
-		});
+		layout.setRemoveEntityConsumer((p, t) -> {});
 
 		layout.initContent();
 		return layout;
