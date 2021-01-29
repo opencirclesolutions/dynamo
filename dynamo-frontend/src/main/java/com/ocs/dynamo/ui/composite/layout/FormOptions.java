@@ -148,7 +148,7 @@ public class FormOptions implements Serializable {
 	private boolean popup;
 
 	/**
-	 * Whether to preserve advanced search mode
+	 * Whether to preserve advanced search mode when navigation away from the screen
 	 */
 	private boolean preserveAdvancedMode = true;
 
@@ -234,7 +234,7 @@ public class FormOptions implements Serializable {
 	private boolean startInAdvancedMode;
 
 	/**
-	 * 
+	 * Whether to use check boxes 
 	 */
 	private boolean useCheckboxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
 
