@@ -97,6 +97,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private String fileNameProperty;
 
+	private Integer gridOrder;
+
 	private AttributeSelectMode gridSelectMode;
 
 	private final List<String> groupTogetherWith = new ArrayList<>();
@@ -129,10 +131,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Integer order;
 
-	private Integer searchOrder;
-
-	private Integer gridOrder;
-
 	private boolean percentage;
 
 	private int precision;
@@ -159,6 +157,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private SearchMode searchMode;
 
+	private Integer searchOrder;
+
 	private boolean searchPrefixOnly;
 
 	private AttributeSelectMode searchSelectMode;
@@ -173,6 +173,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean thousandsGrouping;
 
+	private boolean trimSpaces;
+
 	private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
 
 	private Class<?> type;
@@ -182,7 +184,7 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean visible;
 
 	private boolean visibleInGrid;
-
+	
 	private boolean week;
 
 	@Override
@@ -564,6 +566,10 @@ public class AttributeModelImpl implements AttributeModel {
 		return thousandsGrouping;
 	}
 
+	public boolean isTrimSpaces() {
+		return trimSpaces;
+	}
+
 	@Override
 	public boolean isUrl() {
 		return url;
@@ -868,6 +874,10 @@ public class AttributeModelImpl implements AttributeModel {
 		this.thousandsGrouping = thousandsGrouping;
 	}
 
+	public void setTrimSpaces(boolean trimSpaces) {
+		this.trimSpaces = trimSpaces;
+	}
+
 	public void setType(Class<?> type) {
 		this.type = type;
 	}
@@ -892,4 +902,6 @@ public class AttributeModelImpl implements AttributeModel {
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
+	
+	
 }

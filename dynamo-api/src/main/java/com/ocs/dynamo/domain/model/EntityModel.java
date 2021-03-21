@@ -67,7 +67,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
-	 * in an edit form
+	 * when inside an edit form
 	 */
 	String COMPLEX_EDITABLE = "complexEditable";
 
@@ -77,17 +77,17 @@ public interface EntityModel<T> {
 	String CURRENCY = "currency";
 
 	/**
-	 * Custom attribute
+	 * Custom setting
 	 */
 	String CUSTOM = "custom";
 
 	/**
-	 * Custom attribute type
+	 * Type of custom setting
 	 */
 	String CUSTOM_TYPE = "customType";
 
 	/**
-	 * Custom attribute value
+	 * Value of custom setting
 	 */
 	String CUSTOM_VALUE = "customValue";
 
@@ -171,7 +171,7 @@ public interface EntityModel<T> {
 	String IGNORE_IN_SEARCH_FILTER = "ignoreInSearchFilter";
 
 	/**
-	 * Whether a field represents an image
+	 * Whether a (BLOB) field represents an image
 	 */
 	String IMAGE = "image";
 
@@ -298,7 +298,7 @@ public interface EntityModel<T> {
 	String SEARCH_SELECT_MODE = "searchSelectMode";
 
 	/**
-	 * Whether the field is searchable
+	 * Whether the field appears inside a search form
 	 */
 	String SEARCHABLE = "searchable";
 
@@ -333,6 +333,11 @@ public interface EntityModel<T> {
 	 * Indicates whether to use thousand grouping characters in view mode
 	 */
 	String THOUSANDS_GROUPING = "thousandsGrouping";
+
+	/**
+	 * Whether to trim excess spaces for text and text area fields
+	 */
+	String TRIM_SPACES = "trimSpaces";
 
 	/**
 	 * The textual representation of the boolean "TRUE" value
@@ -381,9 +386,7 @@ public interface EntityModel<T> {
 	void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
 
 	/**
-	 * Returns the attribute groups that are defined for this entity
-	 * 
-	 * @return
+	 * @return the attribute groups that are defined for this entity
 	 */
 	List<String> getAttributeGroups();
 
@@ -391,7 +394,7 @@ public interface EntityModel<T> {
 	 * Looks up an attribute model by its name
 	 * 
 	 * @param attributeName the name of the attribute
-	 * @return
+	 * @return the attribute model, or null if this is not found
 	 */
 	AttributeModel getAttributeModel(String attributeName);
 
@@ -399,14 +402,12 @@ public interface EntityModel<T> {
 	 * Returns an attribute model based on the value of its actualSortPath
 	 * 
 	 * @param actualSortPath the actual sort path
-	 * @return
+	 * @return the attribute model, or null if this is not found
 	 */
 	AttributeModel getAttributeModelByActualSortPath(String actualSortPath);
 
 	/**
-	 * Returns an ordered list of all attribute models
-	 * 
-	 * @return
+	 * @return an ordered list of all attribute models
 	 */
 	List<AttributeModel> getAttributeModels();
 
@@ -431,21 +432,16 @@ public interface EntityModel<T> {
 	List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type);
 
 	/**
-	 * Returns an ordered list of all attribute models for display in the grid
-	 * 
-	 * @return
+	 * @return an ordered list of all attribute models for display in the grid
 	 */
 	List<AttributeModel> getAttributeModelsSortedForGrid();
 
 	/**
-	 * Returns an ordered list of all attribute models for search form
-	 * 
-	 * @return
+	 * @return an ordered list of all attribute models for use in a  search form
 	 */
 	List<AttributeModel> getAttributeModelsSortedForSearch();
 
 	/**
-	 * 
 	 * @return the attribute models for which cascading has been defined
 	 */
 	List<AttributeModel> getCascadeAttributeModels();
@@ -454,7 +450,7 @@ public interface EntityModel<T> {
 	 * Return the textual description of an entity for the specified locale
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the description in the specified locale
 	 */
 	String getDescription(Locale locale);
 
@@ -462,7 +458,7 @@ public interface EntityModel<T> {
 	 * Returns the display name for a certain locale
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the display name in the specified locale
 	 */
 	String getDisplayName(Locale locale);
 
@@ -483,9 +479,7 @@ public interface EntityModel<T> {
 	String getDisplayProperty();
 
 	/**
-	 * The class of the entity that this model is based on
-	 * 
-	 * @return
+	 * @return The class of the entity that this model is based on
 	 */
 	Class<T> getEntityClass();
 
@@ -495,15 +489,13 @@ public interface EntityModel<T> {
 	AttributeModel getIdAttributeModel();
 
 	/**
-	 * Returns the main attribute
-	 * 
-	 * @return
+	 * @return the main attribute for this entity model
 	 */
 	AttributeModel getMainAttributeModel();
 
 	/**
 	 * 
-	 * @return the nesting depth
+	 * @return the maximum nesting depth up to which to process attributes
 	 */
 	int getNestingDepth();
 
@@ -513,7 +505,6 @@ public interface EntityModel<T> {
 	String getReference();
 
 	/**
-	 * 
 	 * @return all attribute models for all attributes that are required for
 	 *         searching
 	 */
@@ -531,7 +522,7 @@ public interface EntityModel<T> {
 	 * 
 	 * @param group    the attribute group
 	 * @param readOnly whether the group is in read-only mode
-	 * @return
+	 * @return <code>true</code> if the group is visible, false otherwise
 	 */
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
 

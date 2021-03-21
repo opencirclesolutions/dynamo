@@ -465,6 +465,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	boolean isThousandsGrouping();
 
+	boolean isTrimSpaces();
+
 	/**
 	 * Indicates whether this represents a (clickable) URL
 	 * 
@@ -498,7 +500,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	void removeCascades();
 
+	/**
+	 * Adds a custom setting
+	 * 
+	 * @param name  the name of the custom setting
+	 * @param value the value of the custom setting
+	 */
 	void setCustomSetting(String name, Object value);
 
 	void setMainAttribute(boolean main);
+
 }

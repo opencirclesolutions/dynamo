@@ -38,7 +38,7 @@ public final class DynamoConstants {
 	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
 
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
-	
+
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
 	/**
@@ -89,7 +89,7 @@ public final class DynamoConstants {
 	public static final String CSS_PANEL_TITLE = "dynamoPanelTitle";
 
 	/**
-	 * 
+	 * CSS style for parent row in tree grid
 	 */
 	public static final String CSS_PARENT_ROW = "dynamoParentRow";
 
@@ -117,7 +117,7 @@ public final class DynamoConstants {
 	public static final Locale DEFAULT_LOCALE = Locale.UK;
 
 	/**
-	 * 
+	 * ID of the error view
 	 */
 	public static final String ERROR_VIEW = "errorView";
 
@@ -294,7 +294,7 @@ public final class DynamoConstants {
 	 * Name of the system property that is used to determine the default time format
 	 */
 	public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
-
+	
 	/**
 	 * Name of the system property that is used to determine the representation of
 	 * the value true
@@ -338,6 +338,12 @@ public final class DynamoConstants {
 	 * locator, e.g. to use a separate service locator for integration tests)
 	 */
 	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
+	
+	/**
+	 * The name of the system property that is used to determine whether to trim white space for text inputs
+	 */
+	public static final String SP_TRIM_SPACES = "ocs.trim.spaces";
+
 
 	/**
 	 * System property that indicates whether to use the thousands grouping

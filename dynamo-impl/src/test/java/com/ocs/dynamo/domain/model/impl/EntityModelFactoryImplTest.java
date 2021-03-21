@@ -58,6 +58,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
@@ -123,6 +124,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertTrue(nameModel.isVisible());
 		assertEquals(55, nameModel.getMaxLength().intValue());
 		assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
+		assertFalse(nameModel.isTrimSpaces());
 
 		assertEquals("ross", nameModel.getCustomSetting("bob"));
 		assertEquals(4, nameModel.getCustomSetting("bobInt"));
@@ -164,7 +166,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel urlModel = model.getAttributeModel("url");
 		assertTrue(urlModel.isUrl());
-
+	
 		// test the total size
 		assertEquals(7, model.getAttributeModels().size());
 	}
@@ -176,6 +178,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel nameModel = model.getAttributeModel("name");
 		assertEquals(0, nameModel.getOrder().intValue());
+		assertTrue(nameModel.isTrimSpaces());
 
 		AttributeModel birthDateModel = model.getAttributeModel("birthDate");
 		assertEquals(1, birthDateModel.getOrder().intValue());
@@ -764,12 +767,12 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		public void setUrl(String url) {
 			this.url = url;
 		}
-
 	}
 
 	@AttributeOrder(attributeNames = { "name", "birthDate" })
 	public class Entity2 {
 
+		@Attribute(trimSpaces = TrimType.TRIM)
 		private String name;
 
 		private Integer age;

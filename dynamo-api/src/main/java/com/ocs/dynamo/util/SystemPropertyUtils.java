@@ -47,6 +47,7 @@ public final class SystemPropertyUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
 
 	private static Properties properties = new Properties();
+	
 
 	/**
 	 * Load properties from file
@@ -403,6 +404,14 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
+	 * @return whether to trim spaces in text and text area fields 
+	 */
+	public static boolean isDefaultTrimSpaces( ) {
+		return getBooleanProperty(DynamoConstants.SP_TRIM_SPACES, false);
+	}
+
+	/**
+	 * 
 	 * @return whether to indent grid and detail form components
 	 */
 	public static Boolean mustIndentGrids() {
@@ -439,7 +448,7 @@ public final class SystemPropertyUtils {
 	public static boolean useThousandsGroupingInEditMode() {
 		return getBooleanProperty(DynamoConstants.SP_THOUSAND_GROUPING, null);
 	}
-
+	
 	/**
 	 * 
 	 * @return whether to use thousands grouping in XLS export

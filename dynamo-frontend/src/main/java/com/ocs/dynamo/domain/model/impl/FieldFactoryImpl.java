@@ -56,6 +56,7 @@ import com.ocs.dynamo.ui.component.ZonedDateTimePicker;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
+import com.ocs.dynamo.ui.converter.TrimSpacesConverter;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.ui.validator.EmailValidator;
 import com.ocs.dynamo.ui.validator.URLValidator;
@@ -94,6 +95,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
 	public FieldFactoryImpl() {
+		// default constructor
 	}
 
 	public FieldFactoryImpl(FieldFactory delegate) {
@@ -129,29 +131,43 @@ public class FieldFactoryImpl implements FieldFactory {
 			}
 		} else if (builder.getField() instanceof TextField) {
 			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-
-			if (customConverter == null) {
-				sBuilder.withNullRepresentation("");
-				if (am.getType().equals(BigDecimal.class)) {
-					sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(),
-							am.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
-							VaadinUtils.getCurrencySymbol()));
-				} else if (NumberUtils.isInteger(am.getType())) {
-					sBuilder.withConverter(ConverterFactory.createIntegerConverter(
-							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-				} else if (NumberUtils.isLong(am.getType())) {
-					sBuilder.withConverter(ConverterFactory.createLongConverter(
-							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
-				} else if (NumberUtils.isDouble(am.getType())) {
-					sBuilder.withConverter(ConverterFactory.createDoubleConverter(am.isCurrency(),
-							SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage(), am.getPrecision(),
-							VaadinUtils.getCurrencySymbol()));
-				}
-			}
+			addTextFieldConvertersAndValidators(am, customConverter, sBuilder);
 		} else if (builder.getField() instanceof URLField) {
 			BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
 			sBuilder.withNullRepresentation("").withValidator(
 					new URLValidator(messageService.getMessage("ocs.no.valid.url", VaadinUtils.getLocale())));
+		}
+	}
+
+	/**
+	 * Adds converters and validators for text field
+	 * @param <U>
+	 * @param <V>
+	 * @param am the attribute model for the field
+	 * @param customConverter custom converter for the field (if any)
+	 * @param sBuilder
+	 */
+	private <U, V> void addTextFieldConvertersAndValidators(AttributeModel am, Converter<V, U> customConverter,
+			BindingBuilder<U, String> sBuilder) {
+		if (customConverter == null) {
+			sBuilder.withNullRepresentation("");
+			if (am.getType().equals(BigDecimal.class)) {
+				sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
+						VaadinUtils.getCurrencySymbol()));
+			} else if (NumberUtils.isInteger(am.getType())) {
+				sBuilder.withConverter(ConverterFactory.createIntegerConverter(
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+			} else if (NumberUtils.isLong(am.getType())) {
+				sBuilder.withConverter(ConverterFactory
+						.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+			} else if (NumberUtils.isDouble(am.getType())) {
+				sBuilder.withConverter(ConverterFactory.createDoubleConverter(am.isCurrency(),
+						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage(), am.getPrecision(),
+						VaadinUtils.getCurrencySymbol()));
+			} else if (String.class.equals(am.getType()) && am.isTrimSpaces()) {
+				sBuilder.withConverter(new TrimSpacesConverter());
+			}
 		}
 	}
 

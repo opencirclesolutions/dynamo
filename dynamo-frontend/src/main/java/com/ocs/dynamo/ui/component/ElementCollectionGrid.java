@@ -30,6 +30,7 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
+import com.ocs.dynamo.ui.converter.TrimSpacesConverter;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -303,6 +304,10 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 							new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
 									attributeModel.getMinLength(), null));
 				}
+				if (attributeModel.isTrimSpaces()) {
+					builder.withConverter(new TrimSpacesConverter());
+				}
+
 			} else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
 				BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder.withConverter(
 						ConverterFactory.createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(),
