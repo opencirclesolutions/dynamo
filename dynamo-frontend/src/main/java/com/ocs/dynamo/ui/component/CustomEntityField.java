@@ -40,39 +40,16 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 
     private static final long serialVersionUID = 8898382056620026384L;
 
-    /**
-     * The filter used to limit the entities to choose from
-     */
     private SerializablePredicate<T> filter;
 
-    /**
-     * The service
-     */
     private final BaseService<ID, T> service;
 
-    /**
-     * The message service
-     */
     private final MessageService messageService;
 
-    /**
-     * The entity model of the entities that are displayed in the component
-     */
     private final EntityModel<T> entityModel;
 
-    /**
-     * The attribute model used to define the behaviour of the component
-     */
     private final AttributeModel attributeModel;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     * @param attributeModel
-     * @param filter
-     */
     public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
             SerializablePredicate<T> filter) {
         this.service = service;
@@ -109,19 +86,10 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
      */
     public abstract void refresh(SerializablePredicate<T> filter);
 
-    /**
-     * 
-     * @param filter
-     */
     public void setFilter(SerializablePredicate<T> filter) {
         this.filter = filter;
     }
 
-    /**
-     * Sets the placeholder/prompt text
-     * 
-     * @param placeholder
-     */
     public void setPlaceholder(String placeholder) {
         // do nothing - override when subclass if needed
     }

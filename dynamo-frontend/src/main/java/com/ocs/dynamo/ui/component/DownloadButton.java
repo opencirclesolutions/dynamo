@@ -57,11 +57,6 @@ public class DownloadButton extends HorizontalLayout {
 		this(caption, null, createContent, createFileName);
 	}
 
-	/**
-	 * Constructor
-	 *
-	 * @param caption the caption of the button
-	 */
 	public DownloadButton(String caption, ProgressBar progressBar, Supplier<InputStream> createContent,
 			Supplier<String> createFileName) {
 		setMargin(false);
@@ -74,9 +69,7 @@ public class DownloadButton extends HorizontalLayout {
 		button = new Button(caption, VaadinIcon.DOWNLOAD.create());
 		button.addClassName("downloadButton");
 		if (progressBar != null) {
-			button.addClickListener(event -> {
-				progressBar.setVisible(true);
-			});
+			button.addClickListener(event -> progressBar.setVisible(true));
 		}
 
 		anchor.getElement().setAttribute("download", true);
@@ -86,7 +79,7 @@ public class DownloadButton extends HorizontalLayout {
 	}
 
 	/**
-	 * Updates the button after the content to download has been changed
+	 * Updates the component after the content that can be downloaded has changed
 	 */
 	public final void update() {
 		anchor.setHref(new StreamResource(this.createFileName.get(), () -> {

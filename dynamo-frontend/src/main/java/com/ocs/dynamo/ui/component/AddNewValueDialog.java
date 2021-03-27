@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -22,7 +23,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSNonUniqueException;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.composite.dialog.SimpleModalDialog;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.ClassUtils;
@@ -30,99 +30,91 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
 
 /**
- * A pop-up dialog for adding a new value to a domain form a QuickAddEntity
- * components
+ * A popup dialog for quickly adding new values to a domain
  * 
- * @author bas.rutten
+ * @author Bas Rutten
  *
+ * @param <ID> the type of the primary key of the entity being added
+ * @param <T>  the type of the entity being added
  */
-public abstract class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends SimpleModalDialog {
+public class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends SimpleModalDialog {
 
-    private static final long serialVersionUID = 6208738706327329145L;
+	private static final long serialVersionUID = 6208738706327329145L;
 
-    private final MessageService messageService;
+	private Consumer<T> afterNewEntityAdded;
 
-    private TextField valueField;
+	private AttributeModel attributeModel;
 
-    private BaseService<ID, T> service;
+	private EntityModel<T> entityModel;
 
-    private EntityModel<T> entityModel;
+	private BaseService<ID, T> service;
+	
+	private TextField valueField;
 
-    private AttributeModel attributeModel;
+	public AddNewValueDialog(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service) {
+		super(true);
+		this.entityModel = entityModel;
+		this.attributeModel = attributeModel;
+		this.service = service;
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param entityModel
-     * @param attributeModel
-     * @param service
-     * @param messageService
-     */
-    public AddNewValueDialog(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            MessageService messageService) {
-        super(true);
-        this.entityModel = entityModel;
-        this.attributeModel = attributeModel;
-        this.service = service;
-        this.messageService = messageService;
-    }
+	@Override
+	protected void doBuild(VerticalLayout parent) {
 
-    /**
-     * Callback method that fires after the user has created a new entity
-     * 
-     * @param entity the newly added entity
-     */
-    protected abstract void afterNewEntityAdded(T entity);
+		VerticalLayout container = new DefaultVerticalLayout(true, true);
+		parent.add(container);
 
-    @Override
-    protected void doBuild(VerticalLayout parent) {
-        // add a text field that hold the new value
+		valueField = new TextField(message("ocs.enter.new.value", VaadinUtils.getLocale()));
+		valueField.setSizeFull();
+		valueField.focus();
+		container.add(valueField);
+	}
 
-        VerticalLayout container = new DefaultVerticalLayout(true, true);
-        parent.add(container);
+	@Override
+	protected boolean doClose() {
+		String value = valueField.getValue();
+		if (!StringUtils.isEmpty(value)) {
+			T t = service.createNewEntity();
 
-        valueField = new TextField(messageService.getMessage("ocs.enter.new.value", VaadinUtils.getLocale()));
-        valueField.setSizeFull();
-        valueField.focus();
-        container.add(valueField);
-    }
+			// disallow values that are too long
+			String propName = attributeModel.getQuickAddPropertyName();
+			Integer maxLength = entityModel.getAttributeModel(propName).getMaxLength();
 
-    @Override
-    protected boolean doClose() {
-        String value = valueField.getValue();
-        if (!StringUtils.isEmpty(value)) {
-            T t = service.createNewEntity();
+			if (maxLength != null && value.length() > maxLength) {
+				showNotification(message("ocs.value.too.long", VaadinUtils.getLocale()));
+				return false;
+			}
+			ClassUtils.setFieldValue(t, propName, value);
 
-            // disallow values that are too long
-            String propName = attributeModel.getQuickAddPropertyName();
-            Integer maxLength = entityModel.getAttributeModel(propName).getMaxLength();
+			try {
+				t = service.save(t);
+				afterNewEntityAdded.accept(t);
+				return true;
+			} catch (OCSNonUniqueException ex) {
+				showNotification(ex.getMessage());
+			}
+		} else {
+			showNotification(message("ocs.value.required", VaadinUtils.getLocale()));
+		}
+		return false;
+	}
 
-            if (maxLength != null && value.length() > maxLength) {
-                showNotification(messageService.getMessage("ocs.value.too.long", VaadinUtils.getLocale()));
-                return false;
-            }
-            ClassUtils.setFieldValue(t, propName, value);
+	public Consumer<T> getAfterNewEntityAdded() {
+		return afterNewEntityAdded;
+	}
 
-            try {
-                t = service.save(t);
-                afterNewEntityAdded(t);
-                return true;
-            } catch (OCSNonUniqueException ex) {
-                // not unique - produce warning
-                showNotification(ex.getMessage());
-            }
-        } else {
-            showNotification(messageService.getMessage("ocs.value.required", VaadinUtils.getLocale()));
-        }
-        return false;
-    }
+	@Override
+	protected String getTitle() {
+		return message("ocs.enter.new.value", entityModel.getDisplayName(VaadinUtils.getLocale()), VaadinUtils.getLocale());
+	}
 
-    public TextField getValueField() {
-        return valueField;
-    }
+	public TextField getValueField() {
+		return valueField;
+	}
 
-    @Override
-    protected String getTitle() {
-        return messageService.getMessage("ocs.enter.new.value", VaadinUtils.getLocale());
-    }
+	public void setAfterNewEntityAdded(Consumer<T> afterNewEntityAdded) {
+		this.afterNewEntityAdded = afterNewEntityAdded;
+	}
+	
 }

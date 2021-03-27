@@ -15,6 +15,7 @@ package com.ocs.dynamo.functional.domain;
 
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
@@ -53,7 +54,8 @@ public class Currency extends Domain {
 	 * Overridden so we can modify the attribute model
 	 */
 	@Override
-	@Attribute(visible = VisibilityType.SHOW, required = true)
+	@NotNull
+	@Attribute(visible = VisibilityType.SHOW)
 	public String getCode() {
 		return super.getCode();
 	}

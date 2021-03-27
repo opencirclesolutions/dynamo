@@ -15,6 +15,11 @@ package com.ocs.dynamo.ui.component;
 
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
+/**
+ * Default flex layout implementation - sets wrapping to WRAP and padding to true
+ * @author Bas Rutten
+ *
+ */
 public class DefaultFlexLayout extends FlexLayout {
 
 	private static final long serialVersionUID = -22072475272826468L;

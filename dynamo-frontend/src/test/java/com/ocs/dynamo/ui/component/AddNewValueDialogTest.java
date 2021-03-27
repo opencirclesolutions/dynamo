@@ -46,18 +46,9 @@ public class AddNewValueDialogTest extends BaseMockitoTest {
         EntityModel<TestEntity> parent = factory.getModel(TestEntity.class);
         EntityModel<TestDomain> em = factory.getModel(TestDomain.class);
         AddNewValueDialog<Integer, TestDomain> dialog = new AddNewValueDialog<Integer, TestDomain>(em,
-                parent.getAttributeModel("testDomain"), baseService, messageService) {
-
-            private static final long serialVersionUID = -7549550521712714056L;
-
-            @Override
-            protected void afterNewEntityAdded(TestDomain entity) {
-                afterEntity = true;
-            }
-
-        };
-        dialog.build();
-        dialog.open();
+                parent.getAttributeModel("testDomain"), baseService);
+        dialog.setAfterNewEntityAdded(entity -> afterEntity = true);
+        dialog.buildAndOpen();
 
         dialog.getValueField().setValue("value");
         dialog.getOkButton().click();
@@ -71,16 +62,8 @@ public class AddNewValueDialogTest extends BaseMockitoTest {
         EntityModel<TestEntity> parent = factory.getModel(TestEntity.class);
         EntityModel<TestDomain> em = factory.getModel(TestDomain.class);
         AddNewValueDialog<Integer, TestDomain> dialog = new AddNewValueDialog<Integer, TestDomain>(em,
-                parent.getAttributeModel("testDomain"), baseService, messageService) {
-
-            private static final long serialVersionUID = -7549550521712714056L;
-
-            @Override
-            protected void afterNewEntityAdded(TestDomain entity) {
-                afterEntity = true;
-            }
-
-        };
+                parent.getAttributeModel("testDomain"), baseService);
+        dialog.setAfterNewEntityAdded(entity -> afterEntity = true);
         dialog.buildAndOpen();
 
         // no value set

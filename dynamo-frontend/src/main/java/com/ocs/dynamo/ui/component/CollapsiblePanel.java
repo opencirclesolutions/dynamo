@@ -21,7 +21,7 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
- * A collapsible panel for grouping attributes
+ * A panel that can be collapsed for grouping attributes
  * 
  * @author Bas Rutten
  *

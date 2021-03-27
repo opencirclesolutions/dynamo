@@ -404,7 +404,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * @ return whether "quick edit" functionality is allowed. Quick edit
-	 * functionality allows for the inline addition of simple domain values
+	 * functionality allows for the in-line addition of simple domain values
 	 */
 	boolean isQuickAddAllowed();
 

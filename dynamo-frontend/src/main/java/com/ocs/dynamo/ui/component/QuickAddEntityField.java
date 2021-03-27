@@ -100,18 +100,9 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(event -> {
 			AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
-					getService(), getMessageService()) {
-
-				private static final long serialVersionUID = 2040216794358094524L;
-
-				@Override
-				protected void afterNewEntityAdded(T entity) {
-					QuickAddEntityField.this.afterNewEntityAdded(entity);
-				}
-
-			};
-			dialog.build();
-			dialog.open();
+					getService());
+			dialog.setAfterNewEntityAdded(entity -> QuickAddEntityField.this.afterNewEntityAdded(entity));
+			dialog.buildAndOpen();
 		});
 		return addButton;
 	}

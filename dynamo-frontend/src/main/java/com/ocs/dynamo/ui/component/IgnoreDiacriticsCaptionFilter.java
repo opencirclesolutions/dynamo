@@ -39,6 +39,7 @@ public class IgnoreDiacriticsCaptionFilter<T> implements ItemFilter<T> {
 	/**
 	 * Constructor
 	 * 
+	 * @param entityModel     the entity model of the entity that is being edited
 	 * @param ignoreCase      whether to ignore case
 	 * @param onlyMatchPrefix whether to only match the prefix
 	 */
@@ -77,7 +78,6 @@ public class IgnoreDiacriticsCaptionFilter<T> implements ItemFilter<T> {
 
 	@Override
 	public boolean test(T item, String filterText) {
-		// replace any diacritical characters
 		if (item == null) {
 			return false;
 		}

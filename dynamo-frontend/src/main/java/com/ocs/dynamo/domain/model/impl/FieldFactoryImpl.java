@@ -81,6 +81,8 @@ import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
+ * A factory class for generating various input fields based on the entity and
+ * attribute models
  * 
  * @author Bas Rutten
  *
@@ -141,11 +143,12 @@ public class FieldFactoryImpl implements FieldFactory {
 
 	/**
 	 * Adds converters and validators for text field
+	 * 
 	 * @param <U>
 	 * @param <V>
-	 * @param am the attribute model for the field
+	 * @param am              the attribute model for the field
 	 * @param customConverter custom converter for the field (if any)
-	 * @param sBuilder
+	 * @param sBuilder        the binding builder
 	 */
 	private <U, V> void addTextFieldConvertersAndValidators(AttributeModel am, Converter<V, U> customConverter,
 			BindingBuilder<U, String> sBuilder) {
@@ -463,7 +466,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * Constructs a combo box for filtering on a boolean property - this includes
 	 * options for "true" and "false" but also allows searches on "no value"
 	 * 
-	 * @param am the attribute model
+	 * @param am        the attribute model
+	 * @param searching indicates whether the component appears in a search form
 	 * @return
 	 */
 	private ComboBox<Boolean> constructSearchBooleanComboBox(AttributeModel am, boolean searching) {

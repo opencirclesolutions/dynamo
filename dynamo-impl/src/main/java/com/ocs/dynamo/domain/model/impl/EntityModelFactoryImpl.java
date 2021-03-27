@@ -1147,10 +1147,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setQuickAddAllowed(true);
 			}
 
-			if (attribute.required()) {
-				model.setRequired(true);
-			}
-
 			if (!attribute.thousandsGrouping()) {
 				model.setThousandsGrouping(false);
 			}

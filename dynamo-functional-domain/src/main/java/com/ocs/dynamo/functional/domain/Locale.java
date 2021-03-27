@@ -13,12 +13,13 @@
  */
 package com.ocs.dynamo.functional.domain;
 
+import javax.persistence.DiscriminatorValue;
+import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
+
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
-
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
 
 /**
  * A locale identified by an IETF BCP 47 code
@@ -54,7 +55,8 @@ public class Locale extends Domain {
 	}
 
 	@Override
-	@Attribute(visible = VisibilityType.SHOW, required = true)
+	@NotNull
+	@Attribute(visible = VisibilityType.SHOW)
 	public String getCode() {
 		return super.getCode();
 	}

@@ -23,7 +23,6 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -76,7 +75,8 @@ import com.vaadin.flow.function.ValueProvider;
  * 
  * @author Bas Rutten
  *
- * @param <U>  the type of the bound property
+ * @param <U>  the type of the property (can be a collection or a simple
+ *             property) in the entity that this component binds to
  * @param <ID> the type of the ID of the entities that are being displayed
  * @param <T>  the type of the entities that are being displayed
  */
@@ -89,6 +89,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * The button that can be used to add rows to the grid
 	 */
 	private Button addButton;
+
+	/**
+	 * Consumer that is called after a value has been set
+	 */
+	private Consumer<U> afterValueSet;
 
 	/**
 	 * The attribute model of the attribute that is managed by this component
@@ -121,18 +126,19 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	private Map<String, List<Component>> customButtonMap = new HashMap<>();
 
-	private FetchJoinInformation[] detailJoins;
-
 	/**
-	 * Search dialog
+	 * Joins to apply when fetching a single entity for display in a pop-up
 	 */
-	private ModelBasedSearchDialog<ID, T> dialog;
+	private FetchJoinInformation[] detailJoins;
 
 	/**
 	 * The entity model of the entity to display
 	 */
 	private final EntityModel<T> entityModel;
 
+	/**
+	 * Delegate for managing export
+	 */
 	private ExportDelegate exportDelegate = ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);
 
 	/**
@@ -177,6 +183,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Consumer<T> removeEntityConsumer;
 
 	/**
+	 * Search dialog
+	 */
+	private ModelBasedSearchDialog<ID, T> searchDialog;
+
+	/**
 	 * Button used to open the search dialog
 	 */
 	private Button searchDialogButton;
@@ -208,7 +219,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	/**
 	 * Indicates whether the component is used in service-based mode, in this case
-	 * the values in the column cannot be edited directly
+	 * the values in the grid cannot be edited directly
 	 */
 	private boolean serviceBasedEditMode;
 
@@ -239,12 +250,50 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		this.serviceBasedEditMode = serviceBasedEditMode;
 	}
 
+	/**
+	 * Adds an edit button to the grid when in not in edit or search mode
+	 */
+	private void addEditButtonToGrid() {
+		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode()) {
+			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
+				Button edit = new Button();
+				edit.setIcon(VaadinIcon.PENCIL.create());
+				edit.addClickListener(event -> doEdit(getService().fetchById(t.getId(), getDetailJoins())));
+				return edit;
+			});
+		}
+	}
+
+	/**
+	 * Adds a field filter
+	 * 
+	 * @param property the property for which to add a field filter
+	 * @param filter   the field filter to add
+	 */
 	public void addFieldFilter(String property, SerializablePredicate<?> filter) {
 		this.fieldFilters.put(property, filter);
 	}
 
-	protected void afterValueSet(U value) {
-		// overwrite in subclasses
+	private void addRemoveButtonToGrid() {
+		if (!isViewMode() && formOptions.isShowRemoveButton()) {
+			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
+				Button remove = new Button();
+				remove.setIcon(VaadinIcon.TRASH.create());
+				remove.addClickListener(event -> {
+					binders.remove(t);
+					// callback method so the entity can be removed from its
+					// parent
+					if (removeEntityConsumer != null) {
+						removeEntityConsumer.accept(t);
+					}
+					if (getDataProvider() instanceof ListDataProvider) {
+						((ListDataProvider<T>) getDataProvider()).getItems().remove(t);
+					}
+					getDataProvider().refreshAll();
+				});
+				return remove;
+			});
+		}
 	}
 
 	/**
@@ -306,8 +355,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Method that is called to create a custom field. Override in subclasses if
-	 * needed
+	 * Callback method that is called to create a custom field. Override in
+	 * subclasses if needed
 	 *
 	 * @param entityModel    the entity model of the entity that is displayed in the
 	 *                       grid
@@ -325,7 +374,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Callback method for creating a custom validator
 	 * 
-	 * @param am the attribute model
+	 * @param am the attribute model of the component to which to add the validator
 	 * @return
 	 */
 	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
@@ -349,10 +398,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 						messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
 			}
 
-			dialog = new ModelBasedSearchDialog<ID, T>(service,
+			searchDialog = new ModelBasedSearchDialog<ID, T>(service,
 					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
-					searchDialogSortOrder == null ? null : Lists.newArrayList(searchDialogSortOrder), true, true,
-					false) {
+					searchDialogSortOrder == null ? null : List.of(searchDialogSortOrder), true, true, false) {
 
 				private static final long serialVersionUID = 1512969437992973122L;
 
@@ -367,22 +415,97 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 					return true;
 				}
 			};
-			dialog.buildAndOpen();
+			searchDialog.buildAndOpen();
 		});
 		searchDialogButton.setVisible(!viewMode && formOptions.isDetailsGridSearchMode());
 		buttonBar.add(searchDialogButton);
 	}
 
+	private void createCheckboxSelectGrid() {
+		grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(), false,
+				GridEditMode.SIMULTANEOUS) {
+
+			private static final long serialVersionUID = 6143503902550597524L;
+
+			@Override
+			protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
+				return BaseDetailsEditGrid.this.constructCustomConverter(am);
+			}
+
+			@Override
+			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
+				return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
+			}
+
+			@Override
+			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+				return BaseDetailsEditGrid.this.constructCustomValidator(am);
+			}
+
+			@Override
+			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+				if (!binders.containsKey(t)) {
+					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
+					binders.get(t).setBean(t);
+				}
+				Binder<T> binder = binders.get(t);
+				return binder.forField((HasValue<?, ?>) field);
+			}
+
+			@Override
+			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+				BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
+			}
+		};
+	}
+
+	private void createMultiSelectGrid() {
+		grid = new ModelBasedSelectionGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
+				isGridEditEnabled(), false, GridEditMode.SIMULTANEOUS) {
+
+			private static final long serialVersionUID = 6143503902550597524L;
+
+			@Override
+			protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
+				return BaseDetailsEditGrid.this.constructCustomConverter(am);
+			}
+
+			@Override
+			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
+				return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
+			}
+
+			@Override
+			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+				return BaseDetailsEditGrid.this.constructCustomValidator(am);
+			}
+
+			@Override
+			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+				if (!binders.containsKey(t)) {
+					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
+					binders.get(t).setBean(t);
+				}
+				Binder<T> binder = binders.get(t);
+				return binder.forField((HasValue<?, ?>) field);
+			}
+
+			@Override
+			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+				BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
+			}
+		};
+	}
+
 	/**
-	 * The code to carry out after clicking on the add button
+	 * Callback method that is carried out after a click on the Add button
 	 */
 	protected abstract void doAdd();
 
 	/**
-	 * The code to carry out after clicking the edit button
+	 * Callback method that is carried out after a click on the Edit button
 	 */
-	protected void doEdit(T t) {
-	}
+	protected abstract void doEdit(T t);
 
 	public Button getAddButton() {
 		return addButton;
@@ -404,9 +527,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		return createEntitySupplier;
 	}
 
-	/**
-	 * Returns the data provider
-	 */
 	protected abstract DataProvider<T, SerializablePredicate<T>> getDataProvider();
 
 	public FetchJoinInformation[] getDetailJoins() {
@@ -474,10 +594,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Method that is called after closing the popup dialog - handles the selected
-	 * items in the dialog
+	 * Callback method that is executed after closing the pop-up dialog - handles
+	 * the selected items in the dialog
 	 * 
-	 * @param selected the collection of selected items
+	 * @param selected the entities that were selected in the dialog
 	 */
 	protected abstract void handleDialogSelection(Collection<T> selected);
 
@@ -485,111 +605,15 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Constructs the actual component
 	 */
 	protected void initContent() {
-		boolean checkBoxes = getFormOptions().isUseCheckboxesForMultiSelect();
-		if (checkBoxes) {
-			grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(), isGridEditEnabled(),
-					false, GridEditMode.SIMULTANEOUS) {
-
-				private static final long serialVersionUID = 6143503902550597524L;
-
-				@Override
-				protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
-					return BaseDetailsEditGrid.this.constructCustomConverter(am);
-				}
-
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
-					return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
-				}
-
-				@Override
-				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-					return BaseDetailsEditGrid.this.constructCustomValidator(am);
-				}
-
-				@Override
-				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-					if (!binders.containsKey(t)) {
-						binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
-						binders.get(t).setBean(t);
-					}
-					Binder<T> binder = binders.get(t);
-					return binder.forField((HasValue<?, ?>) field);
-				}
-
-				@Override
-				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-					BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
-				}
-			};
+		boolean checkBoxesForMultiSelect = getFormOptions().isUseCheckboxesForMultiSelect();
+		if (checkBoxesForMultiSelect) {
+			createCheckboxSelectGrid();
 		} else {
-			grid = new ModelBasedSelectionGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
-					isGridEditEnabled(), false, GridEditMode.SIMULTANEOUS) {
-
-				private static final long serialVersionUID = 6143503902550597524L;
-
-				@Override
-				protected <W, V> Converter<W, V> constructCustomConverter(AttributeModel am) {
-					return BaseDetailsEditGrid.this.constructCustomConverter(am);
-				}
-
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
-					return BaseDetailsEditGrid.this.constructCustomField(entityModel, am, false);
-				}
-
-				@Override
-				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-					return BaseDetailsEditGrid.this.constructCustomValidator(am);
-				}
-
-				@Override
-				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-					if (!binders.containsKey(t)) {
-						binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
-						binders.get(t).setBean(t);
-					}
-					Binder<T> binder = binders.get(t);
-					return binder.forField((HasValue<?, ?>) field);
-				}
-
-				@Override
-				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-					BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
-				}
-			};
+			createMultiSelectGrid();
 		}
 
-		// allow editing by showing a pop-up dialog (only for service-based version)
-		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode()) {
-			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
-				Button edit = new Button();
-				edit.setIcon(VaadinIcon.PENCIL.create());
-				edit.addClickListener(event -> doEdit(getService().fetchById(t.getId(), getDetailJoins())));
-				return edit;
-			});
-		}
-
-		// add a remove button directly in the grid
-		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
-				Button remove = new Button();
-				remove.setIcon(VaadinIcon.TRASH.create());
-				remove.addClickListener(event -> {
-					binders.remove(t);
-					// callback method so the entity can be removed from its
-					// parent
-					if (removeEntityConsumer != null) {
-						removeEntityConsumer.accept(t);
-					}
-					if (getDataProvider() instanceof ListDataProvider) {
-						((ListDataProvider<T>) getDataProvider()).getItems().remove(t);
-					}
-					getDataProvider().refreshAll();
-				});
-				return remove;
-			});
-		}
+		addEditButtonToGrid();
+		addRemoveButtonToGrid();
 
 		grid.setHeight(gridHeight);
 		grid.setSelectionMode(SelectionMode.SINGLE);
@@ -608,7 +632,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			}
 		});
 
-		// disables sorting (intentional?)
 		if (!getFormOptions().isDetailsGridSortable()) {
 			for (Column<?> c : grid.getColumns()) {
 				c.setSortable(false);
@@ -622,7 +645,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Check whether the provided component is a custom component stored under the
+	 * Check whether the specified component is a custom component stored under the
 	 * provided key
 	 * 
 	 * @param key     the key
@@ -643,19 +666,16 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 				&& !serviceBasedEditMode;
 	}
 
-	/**
-	 * 
-	 * @return whether the component is in view mode
-	 */
 	public boolean isViewMode() {
 		return viewMode;
 	}
 
 	/**
-	 * Method that is called in order to enable/disable a button after selecting an
-	 * item in the grid
+	 * Callback method that is executed in order to enable/disable a component after
+	 * selecting an item in the grid
 	 *
-	 * @param button
+	 * @param component    the component
+	 * @param selectedItem the currently selected entity in the grid
 	 * @return
 	 */
 	protected boolean mustEnableComponent(Component component, T selectedItem) {
@@ -664,32 +684,38 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Respond to a selection of an item in the grid
+	 * Callback method that is executed after an entity in the grid is selected
+	 * 
+	 * @param selected the selected entity
 	 */
-	protected void onSelect(Object selected) {
+	protected void onSelect(T selected) {
 		// overwrite when needed
 	}
 
 	/**
-	 * Perform any necessary post construction
+	 * Callback method that is executed after the regular construction process of
+	 * the component has been completed
 	 */
 	protected void postConstruct() {
-		// overwrite in subclasses
+		// overwrite in subclass if needed
 	}
 
 	/**
-	 * Callback method that is used to modify the button bar. Override in subclasses
-	 * if needed
+	 * Callback method that is executed after the button bar has been constructed.
+	 * Use this to make any additional changes to the button bar
 	 *
 	 * @param buttonBar the button bar
+	 * @param viewMode  whether the grid is currently in view mode
 	 */
 	protected void postProcessButtonBar(HorizontalLayout buttonBar, boolean viewMode) {
 		// overwrite in subclass if needed
 	}
 
 	/**
-	 * Callback method that is used to post-process an input component
+	 * Callback method that is executed after a component in the grid has been
+	 * constructed
 	 * 
+	 * @param id   the primary key of the component
 	 * @param am   the attribute model for the component
 	 * @param comp the component
 	 */
@@ -698,9 +724,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Registers a button that must be enabled/disabled after an item is selected.
-	 * use the "mustEnableButton" callback method to impose additional constraints
-	 * on when the button must be enabled
+	 * Registers a component that must be enabled/disabled after an item is
+	 * selected. use the "mustEnableComponent" callback method to impose additional
+	 * constraints on when the button must be enabled
 	 *
 	 * @param button the button to register
 	 */
@@ -711,6 +737,15 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			}
 			componentsToUpdate.add(component);
 		}
+	}
+
+	/**
+	 * Set the code to carry out after the value of this component has been set
+	 * 
+	 * @param afterValueSet 
+	 */
+	public void setAfterValueSet(Consumer<U> afterValueSet) {
+		this.afterValueSet = afterValueSet;
 	}
 
 	public void setColumnThresholds(List<String> columnThresholds) {
@@ -751,8 +786,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	public void setSearchDialogFilters(List<SerializablePredicate<T>> searchDialogFilters) {
 		this.searchDialogFilters = searchDialogFilters;
-		if (dialog != null) {
-			dialog.setFilters(searchDialogFilters);
+		if (searchDialog != null) {
+			searchDialog.setFilters(searchDialogFilters);
 		}
 	}
 
@@ -769,14 +804,16 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		this.service = service;
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
+	@SuppressWarnings("rawtypes")
 	public void setValue(U value) {
 		super.setValue(value);
 		if (value instanceof Collection) {
 			updateCaption(((Collection) value).size());
 		}
-		afterValueSet(value);
+		if (afterValueSet != null) {
+			afterValueSet.accept(value);
+		}
 	}
 
 	/**
@@ -805,7 +842,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Updates the caption
 	 * 
-	 * @param size
+	 * @param size the number of items currently being shown in the grid 
 	 */
 	protected void updateCaption(int size) {
 		this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " "

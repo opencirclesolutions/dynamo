@@ -56,7 +56,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	private static final long serialVersionUID = -1203245694503350276L;
 
 	/**
-	 * The joins to use when exporting (needed when using exportmode FULL)
+	 * The joins to use when exporting (needed when using export mode FULL)
 	 */
 	private FetchJoinInformation[] exportJoins;
 
@@ -76,9 +76,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 */
 	private U parent;
 
-	/**
-	 * The data provider
-	 */
 	private IdBasedDataProvider<ID, T> provider;
 
 	/**
@@ -97,8 +94,10 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
 		provider.setAfterCountCompleted(count -> updateCaption(count));
 		initContent();
+		addDownloadMenu();
+	}
 
-		// right click to download
+	private void addDownloadMenu() {
 		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
 			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
 			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));
@@ -124,7 +123,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	protected void applyFilter() {
 		filter = (filterSupplier == null || parent == null) ? null : filterSupplier.apply(parent);
 
-		// for new entity without ID you can't filter yet
+		// for a new entity without ID you can't filter yet
 		if (parent != null && parent.getId() == null) {
 			filter = new EqualsPredicate<>(DynamoConstants.ID, -1);
 		}
@@ -148,6 +147,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		if (this.parent.getId() != null) {
 			showPopup(null);
 		} else {
+			// cannot add a new entity if the parent entity has not been saved yet
 			VaadinUtils.showErrorNotification(
 					getMessageService().getMessage("ocs.save.entity.first", VaadinUtils.getLocale()));
 		}
@@ -190,10 +190,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		if (getLinkEntityConsumer() == null) {
 			throw new OCSRuntimeException("No linkEntityConsumer specified!");
 		}
-
-		for (T t : selected) {
-			getLinkEntityConsumer().accept(t);
-		}
+		selected.forEach(t -> getLinkEntityConsumer().accept(t));
 	}
 
 	public void setExportJoins(FetchJoinInformation... exportJoins) {
@@ -236,7 +233,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			protected T createEntity() {
 				return getCreateEntitySupplier().get();
 			}
-
 		};
 		dialog.setColumnThresholds(getColumnThresholds());
 		dialog.buildAndOpen();

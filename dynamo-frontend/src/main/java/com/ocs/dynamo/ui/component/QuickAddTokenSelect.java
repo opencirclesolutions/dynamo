@@ -65,12 +65,12 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	/**
 	 * Constructor
 	 * 
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param multiSelect
-	 * @param sortOrder
+	 * @param entityModel the entity model of the entity that is being edited
+	 * @param attributeModel the attribute  model the component is based on
+	 * @param service service for database communication
+	 * @param filter search filter to apply 
+	 * @param search whether the component is part of a search form
+	 * @param sortOrder sort orders
 	 */
 	@SafeVarargs
 	public QuickAddTokenSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,

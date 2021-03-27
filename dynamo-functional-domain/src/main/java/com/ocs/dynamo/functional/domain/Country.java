@@ -16,6 +16,7 @@ package com.ocs.dynamo.functional.domain;
 import javax.annotation.Nullable;
 import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
+import javax.validation.constraints.NotNull;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
@@ -72,7 +73,8 @@ public class Country extends DomainChild<Country, Region> {
      * Overridden so we can modify the attribute model
      */
     @Override
-    @Attribute(visible = VisibilityType.SHOW, required = true)
+    @NotNull
+    @Attribute(visible = VisibilityType.SHOW)
     public String getCode() {
         return super.getCode();
     }

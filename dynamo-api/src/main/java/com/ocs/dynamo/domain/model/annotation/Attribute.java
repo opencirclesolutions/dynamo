@@ -215,11 +215,6 @@ public @interface Attribute {
 	String replacementSortPath() default "";
 
 	/**
-	 * @return whether the attribute is required when creating/updating
-	 */
-	boolean required() default false;
-
-	/**
 	 * @return whether the attribute is required when performing a search
 	 */
 	boolean requiredForSearching() default false;

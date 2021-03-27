@@ -33,17 +33,17 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * A complex grid component for the in-place editing of a one-to-many relation.
- * It can also be used to manage a many-to-many relation but in this case the
+ * A grid component for the in-line editing of a one-to-many relation. It can
+ * also be used to manage a many-to-many relation but in this case the
  * "setDetailsGridSearchMode" on the FormOptions must be set to true. You can
  * then use the setSearchXXX methods to configure the behaviour of the search
  * dialog that can be used to modify the values If you need a component like
  * this, you should override the constructCustomField method and use it to
  * construct a subclass of this component
  * 
- * Note that a separate instance of this component is generated for both the
- * view mode and the edit mode of the form it appears in, so this component does
- * not contain logic for switching between the modes
+ * Note that a separate instance of this component is generated for the view
+ * mode and the edit mode of the form it appears in, so this component does not
+ * contain logic for switching between the modes
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
@@ -54,14 +54,8 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
-	/**
-	 * The comparator (will be used to sort the items)
-	 */
 	private Comparator<T> comparator;
 
-	/**
-	 * The data provider
-	 */
 	private ListDataProvider<T> provider;
 
 	/**
@@ -77,8 +71,13 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
 		initContent();
+		addDownloadMenu();
+	}
 
-		// right click to download
+	/**
+	 * Adds a context menu used to download the contents of the grid
+	 */
+	private void addDownloadMenu() {
 		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
 			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
 			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));
@@ -93,7 +92,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 	@Override
 	protected void applyFilter() {
-		// not needed
+		// do nothing
 	}
 
 	@Override
@@ -101,6 +100,11 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		T t = getCreateEntitySupplier().get();
 		provider.getItems().add(t);
 		provider.refreshAll();
+	}
+
+	@Override
+	protected void doEdit(T t) {
+		// do nothing
 	}
 
 	@Override
@@ -145,14 +149,6 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		for (T t : selected) {
 			getLinkEntityConsumer().accept(t);
 		}
-	}
-
-	/**
-	 * Respond to a selection of an item in the grid
-	 */
-	@Override
-	protected void onSelect(Object selected) {
-		// overwrite when needed
 	}
 
 	public void setComparator(Comparator<T> comparator) {
