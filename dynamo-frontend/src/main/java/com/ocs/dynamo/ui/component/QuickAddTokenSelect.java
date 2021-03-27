@@ -235,4 +235,9 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 		super.setValue(value);
 	}
 
+	@Override
+	public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
+		super.setRequiredIndicatorVisible(requiredIndicatorVisible);
+		tokenSelect.setRequiredIndicatorVisible(requiredIndicatorVisible);
+	}
 }

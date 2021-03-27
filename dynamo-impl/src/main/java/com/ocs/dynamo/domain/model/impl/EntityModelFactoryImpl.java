@@ -251,9 +251,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			model.setRequired(notNull != null);
 
 			model.setAttributeType(determineAttributeType(parentClass, model));
-
-			// minimum and maximum length based on the @Size annotation
 			Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);
+			if (size != null && size.min() > 0 && AttributeType.DETAIL.equals(model.getAttributeType())) {
+				model.setRequired(true);
+			}			
+			
+			// minimum and maximum length based on the @Size annotation
 			if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
 				model.setMaxLength(size.max());
 				model.setMinLength(size.min());
