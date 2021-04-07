@@ -11,10 +11,7 @@
 		<module name="JavadocMethod">
 			<property name="scope" value="package" />
 			<property name="excludeScope" value="public" />
-			<property name="allowUndeclaredRTE" value="true" />
-			<property name="allowThrowsTagsForSubclasses" value="true" />
 			<property name="allowMissingParamTags" value="true" />
-			<property name="allowMissingThrowsTags" value="true" />
 			<property name="allowMissingReturnTag" value="true" />
 		</module>
 		<module name="JavadocVariable">

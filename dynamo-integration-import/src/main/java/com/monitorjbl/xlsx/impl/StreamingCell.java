@@ -13,6 +13,9 @@
  */
 package com.monitorjbl.xlsx.impl;
 
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.util.Calendar;
 import java.util.Date;
 
@@ -55,6 +58,12 @@ public class StreamingCell implements Cell {
 	private Row row;
 	private CellStyle cellStyle;
 	private boolean formulaType;
+
+	public StreamingCell(Sheet sheet, int columnIndex, int rowIndex, boolean use1904Dates) {
+		this.columnIndex = columnIndex;
+		this.rowIndex = rowIndex;
+		this.use1904Dates = use1904Dates;
+	}
 
 	public StreamingCell(int columnIndex, int rowIndex, boolean use1904Dates) {
 		this.columnIndex = columnIndex;
@@ -233,6 +242,11 @@ public class StreamingCell implements Cell {
 		return rawContents == null ? null : HSSFDateUtil.getJavaDate(getNumericCellValue(), use1904Dates);
 	}
 
+	@Override
+	public LocalDateTime getLocalDateTimeCellValue() {
+		return LocalDateTime.ofInstant(Instant.ofEpochMilli(getDateCellValue().getTime()), ZoneOffset.systemDefault());
+	}
+
 	/**
 	 * Get the value of the cell as a boolean. For strings we throw an exception.
 	 * For blank cells we return a false.
@@ -353,6 +367,14 @@ public class StreamingCell implements Cell {
 	 * Not supported
 	 */
 	@Override
+	public void setBlank() {
+		throw new NotSupportedException();
+	}
+
+	/**
+	 * Not supported
+	 */
+	@Override
 	public Sheet getSheet() {
 		throw new NotSupportedException();
 	}
@@ -370,6 +392,14 @@ public class StreamingCell implements Cell {
 	 */
 	@Override
 	public void setCellValue(Date value) {
+		throw new NotSupportedException();
+	}
+
+	/**
+	 * Not supported
+	 */
+	@Override
+	public void setCellValue(LocalDateTime localDateTime) {
 		throw new NotSupportedException();
 	}
 
@@ -402,6 +432,14 @@ public class StreamingCell implements Cell {
 	 */
 	@Override
 	public void setCellFormula(String formula) {
+		throw new NotSupportedException();
+	}
+
+	/**
+	 * Not supported
+	 */
+	@Override
+	public void removeFormula() throws IllegalStateException {
 		throw new NotSupportedException();
 	}
 
