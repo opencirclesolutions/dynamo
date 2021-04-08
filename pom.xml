@@ -84,7 +84,7 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- Dependency versions. -->
-		<vaadin.version>14.4.4</vaadin.version>
+		<vaadin.version>14.5.1</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<commons.io.version>2.8.0</commons.io.version>
 		<commons.lang.version>3.12.0</commons.lang.version>
