@@ -331,7 +331,6 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 					String col = CellReference.convertNumToColString(ci);
 					totalsCell.setCellStyle(getGenerator().getTotalsStyle(clazz, null));
-					totalsCell.setCellType(CellType.FORMULA);
 
 					int firstRow = 1;
 					int lastRow = sheet.getLastRowNum();
@@ -346,7 +345,6 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 			Cell totalsCell = totalsRow.createCell(ci);
 			totalsCell.setCellStyle(getGenerator().getTotalsStyle(clazz, null));
-			totalsCell.setCellType(CellType.FORMULA);
 			String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
 			String lastCol = CellReference.convertNumToColString(ci - 1);
 			int rowNum = sheet.getLastRowNum() + 1;
@@ -374,7 +372,6 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		String lastCol = CellReference.convertNumToColString(nrOfFixedCols + nrOfVariableCols - 1);
 
 		totalsCell.setCellStyle(getGenerator().getTotalsStyle(aggregateClass, null));
-		totalsCell.setCellType(CellType.FORMULA);
 
 		int rn = row.getRowNum() + 1;
 		totalsCell.setCellFormula(toExcelFunction(type) + "(" + firstCol + rn + ":" + lastCol + rn + ")");
