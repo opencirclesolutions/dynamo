@@ -190,8 +190,8 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 		} else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
 			// sort based on the entity model
 
-			for (AttributeModel am : entityModel.getSortOrder().keySet()) {
-				boolean asc = entityModel.getSortOrder().get(am);
+			for (AttributeModel am : getEntityModel().getSortOrder().keySet()) {
+				boolean asc = getEntityModel().getSortOrder().get(am);
 				if (getGrid().getColumnByKey(am.getPath()) != null) {
 					if (asc) {
 						builder.thenAsc(getGrid().getColumnByKey(am.getPath()));

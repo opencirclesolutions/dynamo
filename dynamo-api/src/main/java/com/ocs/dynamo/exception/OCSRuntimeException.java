@@ -13,19 +13,18 @@
  */
 package com.ocs.dynamo.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Base class for any runtime exceptions. Must always be used instead of a plain
  * java.lang.RuntimeException. Subclass when appropriate
  * 
  * @author bas.rutten
  */
+@NoArgsConstructor
 public class OCSRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -6263372299801009820L;
-
-    public OCSRuntimeException() {
-    	// default constructor
-    }
 
     public OCSRuntimeException(String message) {
         super(message);

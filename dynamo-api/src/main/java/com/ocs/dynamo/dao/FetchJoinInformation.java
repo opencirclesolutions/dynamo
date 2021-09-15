@@ -13,68 +13,51 @@
  */
 package com.ocs.dynamo.dao;
 
-import java.util.Objects;
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * A DTO representing the properties of a fetch join
  * 
  * @author bas.rutten
  */
+@Getter
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class FetchJoinInformation {
 
-    private final String property;
+	@EqualsAndHashCode.Include
+	private final String property;
 
-    private final JoinType joinType;
+	@EqualsAndHashCode.Include
+	private final JoinType joinType;
 
-    /**
-     * Constructor
-     * 
-     * @param property the property to use for the fetch
-     * @param joinType the desired join type (left, inner etc)
-     */
-    public FetchJoinInformation(String property, JoinType joinType) {
-        this.property = property;
-        this.joinType = joinType;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param property the property to use for the fetch
+	 * @param joinType the desired join type (left, inner etc)
+	 */
+	public FetchJoinInformation(String property, JoinType joinType) {
+		this.property = property;
+		this.joinType = joinType;
+	}
 
-    /**
-     * Constructor - defaults to left join
-     * 
-     * @param property
-     */
-    public FetchJoinInformation(String property) {
-        this(property, JoinType.LEFT);
-    }
+	/**
+	 * Constructor - defaults to left join
+	 * 
+	 * @param property
+	 */
+	public FetchJoinInformation(String property) {
+		this(property, JoinType.LEFT);
+	}
 
-    public String getProperty() {
-        return property;
-    }
-
-    public JoinType getJoinType() {
-        return joinType;
-    }
-
-    @Override
-    public int hashCode() {
-        return Objects.hashCode(property) + Objects.hashCode(joinType);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof FetchJoinInformation)) {
-            return false;
-        }
-        FetchJoinInformation other = (FetchJoinInformation) obj;
-        return Objects.equals(this.getProperty(), other.getProperty()) && Objects.equals(this.getJoinType(), other.getJoinType());
-    }
-
-    /**
-     * Creates an array based on the specified vararg
-     * 
-     * @param joins
-     * @return
-     */
-    public static FetchJoinInformation[] of(FetchJoinInformation... joins) {
-        return joins;
-    }
+	/**
+	 * Creates an array based on the specified vararg
+	 * 
+	 * @param joins
+	 * @return
+	 */
+	public static FetchJoinInformation[] of(FetchJoinInformation... joins) {
+		return joins;
+	}
 }

@@ -13,11 +13,11 @@
  */
 package com.ocs.dynamo.service;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+
+import lombok.NoArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Factory class for creating a service locator.
@@ -25,14 +25,11 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
  * @author bas.rutten
  *
  */
+@NoArgsConstructor
+@Slf4j
 public final class ServiceLocatorFactory {
 
 	private static volatile ServiceLocator serviceLocator;
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(ServiceLocatorFactory.class);
-
-	private ServiceLocatorFactory() {
-	}
 
 	@SuppressWarnings("deprecation")
 	public static ServiceLocator getServiceLocator() {
@@ -40,7 +37,7 @@ public final class ServiceLocatorFactory {
 			synchronized (ServiceLocatorFactory.class) {
 				if (serviceLocator == null) {
 					String serviceLocatorClassName = SystemPropertyUtils.getServiceLocatorClassName();
-					LOGGER.info("Using service locator class {} ", serviceLocatorClassName);
+					log.info("Using service locator class {} ", serviceLocatorClassName);
 					try {
 						serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();
 					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {

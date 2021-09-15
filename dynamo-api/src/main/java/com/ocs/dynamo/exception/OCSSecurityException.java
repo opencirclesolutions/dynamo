@@ -14,7 +14,7 @@
 package com.ocs.dynamo.exception;
 
 /**
- * An exception that indicates that a security-related issues has occurrred
+ * An exception that indicates that a security-related issues has occurred
  * 
  * @author bas.rutten
  */

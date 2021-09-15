@@ -26,7 +26,7 @@ public abstract class ComparePredicate<T> extends PropertyPredicate<T> {
 	private static final long serialVersionUID = -1140861553052524418L;
 
 	/**
-	 * Cnostructor
+	 * Constructor
 	 * 
 	 * @param property the property to compare
 	 * @param value    the property value to compare to
@@ -52,5 +52,6 @@ public abstract class ComparePredicate<T> extends PropertyPredicate<T> {
 		}
 		throw new IllegalArgumentException("Could not compare the arguments: " + value1 + ", " + getValue());
 	}
+
 
 }

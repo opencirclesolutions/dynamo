@@ -32,14 +32,11 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 
 	private Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
 
+	private VerticalLayout contentWrapper = new DefaultVerticalLayout();
+
 	private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
 
-	/**
-	 * The button that serves as the "header" for the panel
-	 */
 	private Button toggle = new Button(openIcon);
-
-	private VerticalLayout contentWrapper = new DefaultVerticalLayout();
 
 	public CollapsiblePanel() {
 
@@ -58,37 +55,49 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 		contentWrapper.add(content);
 	}
 
-	public boolean isOpen() {
-		return toggle.getIcon() == openIcon;
-	}
-
-	public CollapsiblePanel setOpen(boolean open) {
-		contentWrapper.setVisible(open);
-		contentWrapper.getChildren().forEach(c -> c.setVisible(open));
-		toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
-		return this;
-	}
-
-	public CollapsiblePanel setContent(Component content) {
-		this.contentWrapper.removeAll();
-		this.contentWrapper.add(content);
-		return this;
+	public Icon getClosedIcon() {
+		return closedIcon;
 	}
 
 	public VerticalLayout getContentWrapper() {
 		return contentWrapper;
 	}
 
-	public Icon getClosedIcon() {
-		return closedIcon;
+	public Icon getOpenIcon() {
+		return openIcon;
+	}
+
+	public boolean isOpen() {
+		return toggle.getIcon() == openIcon;
 	}
 
 	public void setClosedIcon(Icon closedIcon) {
 		this.closedIcon = closedIcon;
 	}
 
-	public Icon getOpenIcon() {
-		return openIcon;
+	/**
+	 * Sets the desired content for the panel
+	 * 
+	 * @param content the component that is to serve as the new content
+	 * @return
+	 */
+	public CollapsiblePanel setContent(Component content) {
+		this.contentWrapper.removeAll();
+		this.contentWrapper.add(content);
+		return this;
+	}
+
+	/**
+	 * Sets the opened status of the panel
+	 * 
+	 * @param open the desired status
+	 * @return
+	 */
+	public CollapsiblePanel setOpen(boolean open) {
+		contentWrapper.setVisible(open);
+		contentWrapper.getChildren().forEach(c -> c.setVisible(open));
+		toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
+		return this;
 	}
 
 	public void setOpenIcon(Icon openIcon) {

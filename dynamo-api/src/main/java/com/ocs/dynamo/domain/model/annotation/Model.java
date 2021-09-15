@@ -51,6 +51,12 @@ public @interface Model {
      *         components
      */
     String displayProperty() default "";
+    
+    /**
+     * 
+     * @return the path of the property that will be used to filter inside lookup components
+     */
+    String filterProperty() default "";
 
     /**
      * 

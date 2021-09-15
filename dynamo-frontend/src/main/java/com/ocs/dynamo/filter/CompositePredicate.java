@@ -16,6 +16,8 @@ package com.ocs.dynamo.filter;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -33,5 +35,10 @@ public abstract class CompositePredicate<T> implements SerializablePredicate<T> 
 
 	public List<SerializablePredicate<T>> getOperands() {
 		return operands;
+	}
+	
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
 	}
 }

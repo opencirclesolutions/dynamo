@@ -56,7 +56,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Whether the component is inside a grid
 	 */
-	private boolean grid;
+	private boolean insideGrid;
 
 	/**
 	 * Whether direct navigation via internal link is allowed
@@ -130,7 +130,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		this.clearAllowed = true;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 		this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isNavigable());
-		this.grid = grid;
+		this.insideGrid = grid;
 		initContent();
 	}
 
@@ -229,7 +229,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		bar.add(label);
 
 		// button for selecting an entity - brings up the search dialog
-		selectButton = new Button(grid ? "" : getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
+		selectButton = new Button(insideGrid ? "" : getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
 		selectButton.setIcon(VaadinIcon.SEARCH.create());
 		selectButton.addClickListener(event -> {
 			List<SerializablePredicate<T>> filterList = new ArrayList<>();
@@ -272,7 +272,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 		// button for clearing the current selection
 		if (clearAllowed) {
-			clearButton = new Button(grid ? "" : getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
+			clearButton = new Button(insideGrid ? "" : getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
 			clearButton.setIcon(VaadinIcon.ERASER.create());
 			clearButton.addClickListener(event -> clearValue());
 			bar.add(clearButton);

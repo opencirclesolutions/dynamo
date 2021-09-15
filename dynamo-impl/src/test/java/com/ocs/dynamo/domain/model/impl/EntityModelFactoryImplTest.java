@@ -58,10 +58,12 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.CustomSetting;
@@ -142,7 +144,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertNull(nameModel.getDisplayFormat());
 		assertEquals(AttributeType.BASIC, ageModel.getAttributeType());
 		assertTrue(ageModel.isRequired());
-		assertTrue(ageModel.isThousandsGrouping());
+		assertEquals(ThousandsGroupingMode.ALWAYS, ageModel.getThousandsGroupingMode());
 
 		AttributeModel birthDateModel = model.getAttributeModel("birthDate");
 		assertNull(birthDateModel.getDefaultValue());
@@ -166,7 +168,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel urlModel = model.getAttributeModel("url");
 		assertTrue(urlModel.isUrl());
-	
+
 		// test the total size
 		assertEquals(7, model.getAttributeModels().size());
 	}
@@ -240,7 +242,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("Naampje", nameModel.getDisplayName(locale));
 		assertEquals("Test", nameModel.getDescription(locale));
 		assertEquals("Prompt", nameModel.getPrompt(locale));
-		assertEquals("myStyle", nameModel.getStyles());
 		assertEquals(String.class, nameModel.getType());
 		assertNull(nameModel.getDisplayFormat());
 		assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
@@ -256,7 +257,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertNotNull(ageModel);
 		assertTrue(ageModel.isSearchCaseSensitive());
 		assertTrue(ageModel.isSearchPrefixOnly());
-		assertFalse(ageModel.isThousandsGrouping());
+		assertEquals(ThousandsGroupingMode.NEVER, ageModel.getThousandsGroupingMode());
 
 		AttributeModel entityModel = model.getAttributeModel("entity2");
 		assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
@@ -310,9 +311,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		assertEquals("Override", nameModel.getDisplayName(locale));
 		assertEquals("Prompt override", nameModel.getPrompt(locale));
-		assertEquals("Style override", nameModel.getStyles());
 		assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
-		assertEquals("Style override", nameModel.getStyles());
 
 		assertFalse(model.usesDefaultGroupOnly());
 
@@ -376,11 +375,10 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("EntityParent.calculatedChildren", grandChild.getReference());
 		assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
 		assertEquals("children", attributeModel.getReplacementSearchPath());
-		
+
 		assertNotNull(parent.getAttributeModelByActualSortPath("children"));
 
-		// lazily constructed models are not there yet
-		assertFalse(factory.hasModel("EntityChild.parent.children"));
+		assertTrue(factory.hasModel("EntityChild.parent.children"));
 		assertFalse(factory.hasModel("EntityParent.children.parent"));
 
 		// check on demand constrution of model
@@ -805,14 +803,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop", sortOrder = "name asc")
-	@AttributeGroup(messageKey = "group1.key", attributeNames = { "name" })
-	@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" })
+	@AttributeGroups(value = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
+			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	public class Entity3 {
 
-		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false, styles = "myStyle")
+		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false)
 		private String name;
 
-		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = false, requiredForSearching = true, searchable = SearchMode.ALWAYS)
+		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = ThousandsGroupingMode.NEVER, requiredForSearching = true, searchable = SearchMode.ALWAYS)
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")

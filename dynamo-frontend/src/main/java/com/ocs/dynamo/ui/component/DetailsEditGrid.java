@@ -58,14 +58,6 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 	private ListDataProvider<T> provider;
 
-	/**
-	 * Constructor
-	 *
-	 * @param entityModel    the entity model of the entities to display
-	 * @param attributeModel the attribute model of the attribute to display
-	 * @param viewMode       the view mode
-	 * @param formOptions    the form options that determine how the grid behaves
-	 */
 	public DetailsEditGrid(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
 			FormOptions formOptions) {
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);

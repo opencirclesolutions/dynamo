@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.EditableType;
+import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 
@@ -47,13 +48,11 @@ public @interface Attribute {
 	Cascade[] cascade() default {};
 
 	/**
-	 * 
 	 * @return whether the attribute will show up inside an edit form
 	 */
 	boolean complexEditable() default false;
 
 	/**
-	 * 
 	 * @return whether a currency symbol will be prepended to the value
 	 */
 	boolean currency() default false;
@@ -64,7 +63,6 @@ public @interface Attribute {
 	CustomSetting[] custom() default {};
 
 	/**
-	 * 
 	 * @return the date/time type of the attribute
 	 */
 	AttributeDateType dateType() default AttributeDateType.INHERIT;
@@ -76,12 +74,12 @@ public @interface Attribute {
 	String defaultValue() default "";
 
 	/**
-	 * @return the description of the attribute. This will show up as a tooltip
+	 * @return the description of the attribute. This will show up as a tool tip
 	 */
 	String description() default "";
 
 	/**
-	 * @return the format to use when the attribute value is a date, time, or timestamp
+	 * @return the format to use when the attribute value is a date, time, or time stamp
 	 */
 	String displayFormat() default "";
 
@@ -101,7 +99,7 @@ public @interface Attribute {
 	boolean embedded() default false;
 
 	/**
-	 * @return the textual representation to use instead of "false"
+	 * @return the textual representation of the boolean "false"
 	 */
 	String falseRepresentation() default "";
 
@@ -262,11 +260,6 @@ public @interface Attribute {
 	boolean sortable() default true;
 
 	/**
-	 * @return the set of custom CSS styles to use (separate by spaces)
-	 */
-	String styles() default "";
-
-	/**
 	 * @return whether to display a text attribute as a text field or a text area
 	 */
 	AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;
@@ -274,7 +267,7 @@ public @interface Attribute {
 	/**
 	 * @return whether to use a thousands separate for numerical fields
 	 */
-	boolean thousandsGrouping() default true;
+	ThousandsGroupingMode thousandsGrouping() default ThousandsGroupingMode.INHERIT;
 
 	/**
 	 * @return whether to trim additional spaces from text fields and text area fields

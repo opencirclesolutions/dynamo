@@ -18,6 +18,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import org.vaadin.gatanaso.MultiselectComboBox;
@@ -65,7 +66,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	private final boolean elementCollection;
 
 	/**
-	 * 
+	 * The type of the element that is being displayed, e.g. String
 	 */
 	private Class<T> elementType;
 
@@ -75,31 +76,20 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	private EntityModel<S> entityModel;
 
 	/**
+	 * The field filter
+	 */
+	private SerializablePredicate<S> fieldFilter;
+
+	/**
 	 * The token field
 	 */
 	private final MultiselectComboBox<T> multiComboBox;
-
-	/**
-	 * 
-	 */
-	private SerializablePredicate<S> fieldFilter;
 
 	/**
 	 * Service for querying the database
 	 */
 	private BaseService<ID, S> service;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param fieldFilter
-	 * @param distinctField
-	 * @param elementType
-	 * @param elementCollection
-	 */
 	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<S> fieldFilter, String distinctField, Class<T> elementType,
 			boolean elementCollection) {
@@ -123,28 +113,9 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		initContent();
 	}
 
-	/**
-	 * Fills the combo box with the available values
-	 * 
-	 * @param elementCollection whether to query an element collection
-	 */
-	private void retrieveValues(boolean elementCollection) {
-		List<T> items = null;
-		if (elementCollection) {
-			// search element collection table
-			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
-					attributeModel.getCollectionTableFieldName(), elementType);
-		} else {
-			// search field in regular table
-			items = service.findDistinct(new FilterConverter<S>(entityModel).convert(fieldFilter), distinctField,
-					elementType);
-		}
-
-		items = items.stream().filter(i -> i != null).collect(Collectors.toList());
-		items.sort(Comparator.naturalOrder());
-		ListDataProvider<T> provider = new ListDataProvider<>(items);
-
-		multiComboBox.setDataProvider(provider);
+	@Override
+	protected Collection<T> generateModelValue() {
+		return multiComboBox.getValue();
 	}
 
 	@Override
@@ -164,9 +135,28 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		retrieveValues(elementCollection);
 	}
 
-	@Override
-	protected Collection<T> generateModelValue() {
-		return multiComboBox.getValue();
+	/**
+	 * Fills the combo box with the available values
+	 * 
+	 * @param elementCollection whether to query an element collection
+	 */
+	private void retrieveValues(boolean elementCollection) {
+		List<T> items = null;
+		if (elementCollection) {
+			// search element collection table
+			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
+					attributeModel.getCollectionTableFieldName(), elementType);
+		} else {
+			// search field in regular table
+			items = service.findDistinct(new FilterConverter<S>(entityModel).convert(fieldFilter), distinctField,
+					elementType);
+		}
+
+		items = items.stream().filter(Objects::nonNull).collect(Collectors.toList());
+		items.sort(Comparator.naturalOrder());
+		ListDataProvider<T> provider = new ListDataProvider<>(items);
+
+		multiComboBox.setDataProvider(provider);
 	}
 
 	@Override

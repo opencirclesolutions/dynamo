@@ -13,12 +13,15 @@
  */
 package com.ocs.dynamo.dao;
 
+import lombok.Getter;
+
 /**
  * Implementation of an object that holds paging information
  * 
  * @author bas.rutten
  *
  */
+@Getter
 public class PageableImpl implements Pageable {
 
     private final int pageNumber;
@@ -52,23 +55,9 @@ public class PageableImpl implements Pageable {
     }
 
     @Override
-    public int getPageNumber() {
-        return pageNumber;
-    }
-
-    @Override
-    public int getPageSize() {
-        return pageSize;
-    }
-
-    @Override
     public int getOffset() {
         return pageNumber * pageSize;
     }
 
-    @Override
-    public SortOrders getSortOrders() {
-        return sortOrders;
-    }
 
 }

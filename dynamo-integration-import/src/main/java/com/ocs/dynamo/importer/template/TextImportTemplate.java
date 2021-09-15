@@ -19,12 +19,11 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Template class for importing data from a text (CSV or fixed width) file and translating it to an
@@ -37,9 +36,8 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
  * @param <T>
  *            the type of the entity
  */
+@Slf4j
 public abstract class TextImportTemplate<ID, T> {
-
-    private static final Logger LOG = LoggerFactory.getLogger(TextImportTemplate.class);
 
     private List<String[]> lines;
 
@@ -107,7 +105,7 @@ public abstract class TextImportTemplate<ID, T> {
                 try {
                     executeRow(i, row, results);
                 } catch (OCSImportException ex) {
-                    LOG.error(ex.getMessage(), ex);
+                    log.error(ex.getMessage(), ex);
                     // catch errors on a record by record level
                     errors.add(String.format("Row %d: %s", i + 1, ex.getMessage()));
                 }

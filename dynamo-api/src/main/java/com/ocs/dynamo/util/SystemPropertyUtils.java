@@ -19,12 +19,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
+import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Utility methods for retrieving system property values
@@ -32,6 +32,7 @@ import com.ocs.dynamo.domain.model.GroupTogetherMode;
  * @author bas.rutten
  *
  */
+@Slf4j
 public final class SystemPropertyUtils {
 
 	private static final int DEFAULT_DECIMAL_PRECISION = 2;
@@ -44,13 +45,11 @@ public final class SystemPropertyUtils {
 
 	private static final String DEFAULT_TRUE_REPRESENTATION = "true";
 
-	private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
-
 	private static Properties properties = new Properties();
-	
 
 	/**
-	 * Load properties from file
+	 * Load properties from file TODO: this currently only looks at the standard
+	 * "application.properties" file, not environment-specific files
 	 */
 	static {
 		try {
@@ -60,7 +59,7 @@ public final class SystemPropertyUtils {
 				properties.load(resourceAsStream);
 			}
 		} catch (IOException ex) {
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 		}
 	}
 
@@ -361,6 +360,14 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * 
+	 * @return the height of a list select component
+	 */
+	public static String getListSelectHeight() {
+		return getStringProperty(DynamoConstants.SP_LIST_SELECT_HEIGHT, "100px");
+	}
+
+	/**
 	 * @return the maximum number of selected items to display in a lookup field
 	 *         description
 	 */
@@ -395,7 +402,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
 	 * @return whether to capitalize every word in a property name
 	 */
 	public static boolean isCapitalizeWords() {
@@ -403,15 +409,13 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
-	 * @return whether to trim spaces in text and text area fields 
+	 * @return whether to trim spaces in text and text area fields
 	 */
-	public static boolean isDefaultTrimSpaces( ) {
+	public static boolean isDefaultTrimSpaces() {
 		return getBooleanProperty(DynamoConstants.SP_TRIM_SPACES, false);
 	}
 
 	/**
-	 * 
 	 * @return whether to indent grid and detail form components
 	 */
 	public static Boolean mustIndentGrids() {
@@ -419,7 +423,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
 	 * @return whether to use the browser time zone for formatting zoned date times
 	 */
 	public static boolean useBrowserTimezone() {
@@ -435,7 +438,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
 	 * @return whether to use check boxes for multiple selection in grids
 	 */
 	public static boolean useGridSelectionCheckBoxes() {
@@ -445,10 +447,10 @@ public final class SystemPropertyUtils {
 	/**
 	 * @return whether to include thousands grouping separators in edit mode
 	 */
-	public static boolean useThousandsGroupingInEditMode() {
-		return getBooleanProperty(DynamoConstants.SP_THOUSAND_GROUPING, null);
+	public static ThousandsGroupingMode getDefaultThousandsGroupingMode() {
+		return ThousandsGroupingMode.valueOf(getStringProperty(DynamoConstants.SP_THOUSAND_GROUPING, "ALWAYS"));
 	}
-	
+
 	/**
 	 * 
 	 * @return whether to use thousands grouping in XLS export

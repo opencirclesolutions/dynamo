@@ -32,43 +32,18 @@ public class URLField extends CustomField<String> {
 
     private static final long serialVersionUID = -1899451186343723434L;
 
-    /**
-     * The underlying attribute model
-     */
     private AttributeModel attributeModel;
 
-    /**
-     * Horizontal wrapper layout
-     */
     private FormLayout bar;
 
-    /**
-     * Whether the field is in editable mode
-     */
     private boolean editable;
 
-    /**
-     * The clickable link
-     */
     private Anchor link;
 
-    /**
-     * The main layout
-     */
     private HorizontalLayout main;
 
-    /**
-     * The text field for editing
-     */
     private TextField textField;
 
-    /**
-     * Constructor
-     * 
-     * @param textField      the text field that this component wraps around
-     * @param attributeModel the attribute model used to construct the compoent
-     * @param editable       whether to display the field in editable mode
-     */
     public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
         setSizeFull();
         this.attributeModel = attributeModel;
@@ -159,7 +134,7 @@ public class URLField extends CustomField<String> {
      * Updates the field value - renders a clickable URL if the field value is not
      * empty
      * 
-     * @param value
+     * @param value the new value
      */
     private void updateLink(String value) {
         if (bar != null) {

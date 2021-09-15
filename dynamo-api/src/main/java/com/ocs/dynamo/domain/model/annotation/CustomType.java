@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.domain.model.annotation;
 
+/**
+ * The supported type of custom setting on an attribute model
+ * 
+ * @author Bas Rutten
+ *
+ */
 public enum CustomType {
 
 	STRING, INT, BOOLEAN;

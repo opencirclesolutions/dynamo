@@ -29,13 +29,6 @@ public class Between extends AbstractFilter implements PropertyFilter {
 
 	private final Comparable<?> endValue;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param propertyId
-	 * @param startValue
-	 * @param endValue
-	 */
 	public Between(String propertyId, Comparable<?> startValue, Comparable<?> endValue) {
 		this.propertyId = propertyId;
 		this.startValue = startValue;

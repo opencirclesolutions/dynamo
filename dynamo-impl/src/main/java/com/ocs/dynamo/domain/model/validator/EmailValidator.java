@@ -19,8 +19,7 @@ import javax.validation.ConstraintValidatorContext;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * A very simple {@link ConstraintValidator} for checking if a string value is a
- * valid email address.
+ * A validator for checking if a string value is a valid email address.
  * 
  * @author bas.rutten
  */

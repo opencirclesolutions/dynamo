@@ -13,17 +13,17 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import com.ocs.dynamo.dao.TreeDao;
-import com.ocs.dynamo.domain.TestEntity;
-
 import java.util.List;
+
+import com.ocs.dynamo.dao.BaseDao;
+import com.ocs.dynamo.domain.TestEntity;
 
 /**
  * Dao used for testing purposes
  * 
  * @author bas.rutten
  */
-public interface TestEntityDao extends TreeDao<Integer, TestEntity> {
+public interface TestEntityDao extends BaseDao<Integer, TestEntity> {
 
 	public List<TestEntity> findByBirthDate();
 }

@@ -48,7 +48,7 @@ import com.ocs.dynamo.domain.model.annotation.SearchMode;
 @Entity
 @Table(name = "test_entity")
 @Model(displayProperty = "name", sortOrder = "name,age")
-public class TestEntity extends AbstractTreeEntity<Integer, TestEntity> {
+public class TestEntity extends AbstractEntity<Integer> {
 
     private static final long serialVersionUID = 5557043276302609211L;
 

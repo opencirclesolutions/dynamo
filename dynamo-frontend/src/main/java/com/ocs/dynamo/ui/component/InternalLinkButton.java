@@ -20,6 +20,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.FormatUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
@@ -31,39 +32,45 @@ import com.vaadin.flow.component.button.ButtonVariant;
  * @author Bas Rutten
  *
  * @param <ID> the type of the ID of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public class InternalLinkButton<ID extends Serializable, T extends AbstractEntity<ID>> extends Button {
 
-    private static final long serialVersionUID = -7930361861398979317L;
+	private static final long serialVersionUID = -7930361861398979317L;
 
-    private T value;
+	private T value;
 
-    /**
-     * Constructor
-     * 
-     * @param entity      the entity
-     * @param entityModel the entity model
-     * @param am          the attribute model
-     */
-    public InternalLinkButton(T value, EntityModel<T> entityModel, AttributeModel am) {
-        String caption = FormatUtils.formatEntity(entityModel != null ? entityModel : am.getNestedEntityModel(), value);
-        setText(caption);
-        addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-        this.value = value;
-        addClickListener(event -> {
-            UIHelper ui = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
-            ui.navigateToEntityScreen(this.value);
-        });
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param entity      the entity
+	 * @param entityModel the entity model
+	 * @param am          the attribute model
+	 */
+	public InternalLinkButton(T value, EntityModel<T> entityModel, AttributeModel am) {
+		EntityModel<?> em = entityModel != null ? entityModel : am.getNestedEntityModel();
+		String caption = FormatUtils.formatEntity(em, value);
+		setText(caption);
+		addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
+		this.value = value;
+		addClickListener(event -> {
+			UIHelper ui = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+			ui.navigateToEntityScreen(this.value);
+		});
+		VaadinUtils.setTooltip(this, message("ocs.navigate.to", em.getDisplayName(VaadinUtils.getLocale())));
+	}
 
-    public T getValue() {
-        return value;
-    }
+	public T getValue() {
+		return value;
+	}
 
-    @SuppressWarnings("unchecked")
-    public void setValue(Object value) {
-        this.value = (T) value;
-    }
+	@SuppressWarnings("unchecked")
+	public void setValue(Object value) {
+		this.value = (T) value;
+	}
 
+	private String message(String key, Object... arguments) {
+		return ServiceLocatorFactory.getServiceLocator().getMessageService().getMessage(key, VaadinUtils.getLocale(),
+				arguments);
+	}
 }

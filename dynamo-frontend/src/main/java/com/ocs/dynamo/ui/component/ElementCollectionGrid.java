@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -60,11 +59,13 @@ import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.function.ValueProvider;
 
 /**
- * A grid for editing a collection of simple values stored in a collection table
+ * A grid for editing a collection of simple values stored in a JPA collection
+ * table
  * 
  * @author Bas Rutten
  *
- * @param <ID> the type of the key of the entity
+ * @param <ID> the type of the key of the entity on which the element collection
+ *             is defined
  * @param <U>  the type of the entity on which the collection is stored
  * @param <T>  the type of the elements in the collection
  */
@@ -73,57 +74,22 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
-	private static final String VALUE_TOO_LONG = "ocs.value.too.long";
+	private static final String VALUE_TOO_HIGH = "ocs.value.too.high";
 
-	private static final String VALUE_TOO_SHORT = "ocs.value.too.short";
+	private static final String VALUE_TOO_LONG = "ocs.value.too.long";
 
 	private static final String VALUE_TOO_LOW = "ocs.value.too.low";
 
-	private static final String VALUE_TOO_HIGH = "ocs.value.too.high";
+	private static final String VALUE_TOO_SHORT = "ocs.value.too.short";
 
-	/**
-	 * The attribute model
-	 */
+	private Button addButton;
+
 	private final AttributeModel attributeModel;
 
 	/**
-	 * The message service
+	 * Map of bindings. Contains one binding for each row
 	 */
-	private final MessageService messageService;
-
-	/**
-	 * The data provider
-	 */
-	private ListDataProvider<ValueHolder<T>> provider;
-
-	/**
-	 * The grid for displaying the actual items
-	 */
-	private Grid<ValueHolder<T>> grid;
-
-	/**
-	 * Button for adding new items to the grid
-	 */
-	private Button addButton;
-
-	/**
-	 * 
-	 * Form options that determine which buttons and functionalities are* available
-	 */
-	private FormOptions formOptions;
-
-	/**
-	 * 
-	 * The currently selected item in the grid
-	 */
-	private Object selectedItem;
-
-	/**
-	 * 
-	 * Whether the grid is in view mode. If this is the case, editing is not*
-	 * allowed
-	 */
-	private boolean viewMode;
+	private Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
 
 	/**
 	 * The entity on to which to store the values. This should not normally be
@@ -132,19 +98,27 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 */
 	private U entity;
 
-	/**
-	 * Map of bindings. Contains one binding for each row
-	 */
-	private Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
+	private FormOptions formOptions;
+
+	private Grid<ValueHolder<T>> grid;
 
 	private String gridHeight = SystemPropertyUtils.getDefaultEditGridHeight();
 
+	private final MessageService messageService;
+
+	private ListDataProvider<ValueHolder<T>> provider;
+
 	/**
-	 * Constructor
-	 * 
-	 * @param attributeModel the attribute model
-	 * @param formOptions    the form options that govern how the grid behaves
+	 * The currently selected item in the grid
 	 */
+	private T selectedItem;
+
+	/**
+	 * 
+	 * Whether the grid is in view mode. If this is the case, editing is not allowed
+	 */
+	private boolean viewMode;
+
 	public ElementCollectionGrid(AttributeModel attributeModel, FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.formOptions = formOptions;
@@ -158,14 +132,14 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 * Assigns the parent entity
 	 */
 	@Override
-	public void assignEntity(U t) {
-		this.entity = t;
+	public void assignEntity(U entity) {
+		this.entity = entity;
 	}
 
 	/**
 	 * Constructs the button that is used for adding new items
 	 *
-	 * @param buttonBar
+	 * @param buttonBar the button bar to add the button to
 	 */
 	protected void constructAddButton(HorizontalLayout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
@@ -188,7 +162,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	/**
 	 * Constructs the button bar
 	 * 
-	 * @param parent the parent layout
+	 * @param parent the parent layout to which to add the button bar
 	 */
 	protected void constructButtonBar(VerticalLayout parent) {
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
@@ -221,6 +195,16 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		}
 	}
 
+	@Override
+	protected Collection<T> generateModelValue() {
+		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
+		Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
+		if (entity != null) {
+			ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
+		}
+		return converted;
+	}
+
 	public Button getAddButton() {
 		return addButton;
 	}
@@ -231,6 +215,10 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	public FormOptions getFormOptions() {
 		return formOptions;
+	}
+
+	public Grid<ValueHolder<T>> getGrid() {
+		return grid;
 	}
 
 	public Integer getMaxLength() {
@@ -310,7 +298,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 			} else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
 				BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder.withConverter(
-						ConverterFactory.createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(),
+						ConverterFactory.createIntegerConverter(attributeModel.useThousandsGroupingInEditMode(),
 								attributeModel.isPercentage()));
 				if (attributeModel.getMaxValue() != null) {
 					iBuilder.withValidator(
@@ -324,7 +312,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 				}
 			} else if (NumberUtils.isLong(attributeModel.getMemberType())) {
 				BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(
-						ConverterFactory.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(),
+						ConverterFactory.createLongConverter(attributeModel.useThousandsGroupingInEditMode(),
 								attributeModel.isPercentage()));
 				if (attributeModel.getMaxValue() != null) {
 					iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
@@ -337,7 +325,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 			} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
 				BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
 						.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
-								attributeModel.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(),
+								attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
 								attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
 				if (attributeModel.getMaxValue() != null) {
 					iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
@@ -383,16 +371,17 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	}
 
 	/**
-	 * Respond to a selection of an item in the grid
+	 * Callback method that is executed after an item is selected in the grid
 	 */
-	protected void onSelect(final Object selected) {
+	protected void onSelect(T selected) {
 		// overwrite in subclass if needed
 	}
 
 	/**
-	 * Add additional buttons to the button bar
+	 * Callback method that is executed after the button bar has been constructed.
+	 * Use this method to add extra buttons to the button bar
 	 *
-	 * @param buttonBar
+	 * @param buttonBar the button bar
 	 */
 	protected void postProcessButtonBar(HorizontalLayout buttonBar) {
 		// overwrite in subclass if needed
@@ -404,38 +393,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	public void setFormOptions(final FormOptions formOptions) {
 		this.formOptions = formOptions;
-	}
-
-	public void setSelectedItem(final String selectedItem) {
-		this.selectedItem = selectedItem;
-	}
-
-	public void setViewMode(final boolean viewMode) {
-		this.viewMode = viewMode;
-	}
-
-	@Override
-	public boolean validateAllFields() {
-		boolean error = false;
-		// refresh the bindings and validate
-		for (Entry<ValueHolder<T>, Binder<ValueHolder<T>>> entry : binders.entrySet()) {
-			error |= !entry.getValue().validate().isOk();
-		}
-		return error;
-	}
-
-	public Grid<ValueHolder<T>> getGrid() {
-		return grid;
-	}
-
-	@Override
-	protected Collection<T> generateModelValue() {
-		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
-		Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
-		if (entity != null) {
-			ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
-		}
-		return converted;
 	}
 
 	@Override
@@ -451,5 +408,18 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 			binder.setBean(vh);
 			binders.put(vh, binder);
 		}
+	}
+
+	public void setSelectedItem(T selectedItem) {
+		this.selectedItem = selectedItem;
+	}
+
+	public void setViewMode(boolean viewMode) {
+		this.viewMode = viewMode;
+	}
+
+	@Override
+	public boolean validateAllFields() {
+		return binders.entrySet().stream().anyMatch(entry -> !entry.getValue().validate().isOk());
 	}
 }

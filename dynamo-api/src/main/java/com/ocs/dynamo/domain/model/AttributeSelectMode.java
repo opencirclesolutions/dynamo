@@ -14,9 +14,12 @@
 package com.ocs.dynamo.domain.model;
 
 /**
+ * The various attribute selection modes that determine which component to use
+ * for entity fields
+ * 
  * @author bas.rutten
  */
 public enum AttributeSelectMode {
 
-    INHERIT, COMBO, LOOKUP, LIST, TOKEN;
+	INHERIT, COMBO, LOOKUP, LIST, TOKEN;
 }

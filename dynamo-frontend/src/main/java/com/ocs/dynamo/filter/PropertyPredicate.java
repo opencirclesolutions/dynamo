@@ -15,6 +15,8 @@ package com.ocs.dynamo.filter;
 
 import java.util.function.Predicate;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -61,4 +63,8 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 		return this.property.equals(property);
 	}
 
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
+	}
 }

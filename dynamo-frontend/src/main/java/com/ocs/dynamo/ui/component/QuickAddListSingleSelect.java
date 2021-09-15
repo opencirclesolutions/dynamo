@@ -58,17 +58,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	 */
 	private boolean quickAddAllowed;
 
-	/**
-	 * Constructor
-	 *
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param multiSelect
-	 * @param rows
-	 * @param sortOrder
-	 */
 	@SafeVarargs
 	public QuickAddListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel,
 			BaseService<ID, T> service, SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider,
@@ -143,35 +132,25 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	}
 
 	protected void initContent() {
-		if (!quickAddAllowed && !directNavigationAllowed) {
-			// just add the list select, no need for any buttons
-			listSelect.setWidthFull();
-			add(listSelect);
-		} else {
-			HorizontalLayout bar = new HorizontalLayout();
-			bar.setSizeFull();
-
-			if (this.getAttributeModel() != null) {
-				this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
-			}
-
-			listSelect.addValueChangeListener(event -> setValue(event.getValue()));
-
-			bar.add(listSelect);
-			if (quickAddAllowed) {
-				Button addButton = constructAddButton();
-				addButton.setSizeFull();
-				bar.add(addButton);
-
-			}
-			if (directNavigationAllowed) {
-				Button directNavigationButton = constructDirectNavigationButton();
-				directNavigationButton.setSizeFull();
-				bar.add(directNavigationButton);
-			}
-
-			add(bar);
+		HorizontalLayout bar = new HorizontalLayout();
+		bar.setSizeFull();
+		
+		if (this.getAttributeModel() != null) {
+			this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
 		}
+
+		listSelect.setWidthFull();
+		bar.add(listSelect);
+		if (quickAddAllowed) {
+			Button addButton = constructAddButton();
+			bar.add(addButton);
+		}
+		if (directNavigationAllowed) {
+			Button directNavigationButton = constructDirectNavigationButton();
+			bar.add(directNavigationButton);
+		}
+
+		add(bar);
 	}
 
 	/**

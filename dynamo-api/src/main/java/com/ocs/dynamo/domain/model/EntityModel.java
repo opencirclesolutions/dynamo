@@ -319,20 +319,15 @@ public interface EntityModel<T> {
 	String SORTABLE = "sortable";
 
 	/**
-	 * One or more styles for the field
-	 */
-	String STYLES = "styles";
-
-	/**
 	 * The text field mode - indicates whether to use a text field or text area for
 	 * editing a String field
 	 */
 	String TEXTFIELD_MODE = "textFieldMode";
 
 	/**
-	 * Indicates whether to use thousand grouping characters in view mode
+	 * Indicates whether when to use thousands grouping characters
 	 */
-	String THOUSANDS_GROUPING = "thousandsGrouping";
+	String THOUSANDS_GROUPING_MODE = "thousandsGroupingMode";
 
 	/**
 	 * Whether to trim excess spaces for text and text area fields
@@ -437,7 +432,7 @@ public interface EntityModel<T> {
 	List<AttributeModel> getAttributeModelsSortedForGrid();
 
 	/**
-	 * @return an ordered list of all attribute models for use in a  search form
+	 * @return an ordered list of all attribute models for use in a search form
 	 */
 	List<AttributeModel> getAttributeModelsSortedForSearch();
 
@@ -477,6 +472,14 @@ public interface EntityModel<T> {
 	 * @return
 	 */
 	String getDisplayProperty();
+
+	/**
+	 * The name of the property that is used to filter inside a combo box or token
+	 * component
+	 * 
+	 * @return
+	 */
+	String getFilterProperty();
 
 	/**
 	 * @return The class of the entity that this model is based on

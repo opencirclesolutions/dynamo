@@ -32,10 +32,11 @@ import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
 
 /**
- * @author Patrick Deenen (patrick@opencircle.solutions)
+ * 
+ * @author Bas Rutten
  *
  */
-@SpringBootTest()
+@SpringBootTest
 public class DomainDaoTest extends BackendIntegrationTest {
 
     @Inject

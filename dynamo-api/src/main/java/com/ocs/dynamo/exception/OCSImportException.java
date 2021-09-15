@@ -13,18 +13,17 @@
  */
 package com.ocs.dynamo.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
- * An exception used to indicate that something went wrong during an import
+ * An exception that is used to indicate that something went wrong during an import
  * 
  * @author bas.rutten
  */
+@NoArgsConstructor
 public class OCSImportException extends OCSRuntimeException {
 
     private static final long serialVersionUID = -8031113801985156724L;
-
-    public OCSImportException() {
-    	// default constructor
-    }
 
     public OCSImportException(String message) {
         super(message);

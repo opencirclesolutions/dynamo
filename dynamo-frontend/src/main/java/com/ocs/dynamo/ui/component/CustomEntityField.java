@@ -31,67 +31,68 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
- * @param <U> the type of the value of the component (can typically be an entity
- *        or a collection of entities)
+ * @param <T>  the type of the entity
+ * @param <U>  the type of the value of the component (can typically be an
+ *             entity or a collection of entities)
  */
 public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends CustomField<U>
-        implements Cascadable<T> {
+		implements Cascadable<T> {
 
-    private static final long serialVersionUID = 8898382056620026384L;
+	private static final long serialVersionUID = 8898382056620026384L;
 
-    private SerializablePredicate<T> filter;
+	private SerializablePredicate<T> filter;
 
-    private final BaseService<ID, T> service;
+	private final BaseService<ID, T> service;
 
-    private final MessageService messageService;
+	private final MessageService messageService;
 
-    private final EntityModel<T> entityModel;
+	private final EntityModel<T> entityModel;
 
-    private final AttributeModel attributeModel;
+	private final AttributeModel attributeModel;
 
-    public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-            SerializablePredicate<T> filter) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.attributeModel = attributeModel;
-        this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-        setFilter(filter);
-    }
+	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			SerializablePredicate<T> filter) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.attributeModel = attributeModel;
+		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+		setFilter(filter);
+	}
 
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
+	public AttributeModel getAttributeModel() {
+		return attributeModel;
+	}
 
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	public EntityModel<T> getEntityModel() {
+		return entityModel;
+	}
 
-    public SerializablePredicate<T> getFilter() {
-        return filter;
-    }
+	public SerializablePredicate<T> getFilter() {
+		return filter;
+	}
 
-    public MessageService getMessageService() {
-        return messageService;
-    }
+	public MessageService getMessageService() {
+		return messageService;
+	}
 
-    public BaseService<ID, T> getService() {
-        return service;
-    }
+	public BaseService<ID, T> getService() {
+		return service;
+	}
 
-    /**
-     * Sets the search filter to the provided filter then updates the lookup list
-     * 
-     * @param filter the new filter
-     */
-    public abstract void refresh(SerializablePredicate<T> filter);
+	/**
+	 * Sets the search filter to the provided filter then refreshes the data
+	 * provider
+	 * 
+	 * @param filter the new filter
+	 */
+	public abstract void refresh(SerializablePredicate<T> filter);
 
-    public void setFilter(SerializablePredicate<T> filter) {
-        this.filter = filter;
-    }
+	public void setFilter(SerializablePredicate<T> filter) {
+		this.filter = filter;
+	}
 
-    public void setPlaceholder(String placeholder) {
-        // do nothing - override when subclass if needed
-    }
+	public void setPlaceholder(String placeholder) {
+		// do nothing - override when subclass if needed
+	}
 
 }

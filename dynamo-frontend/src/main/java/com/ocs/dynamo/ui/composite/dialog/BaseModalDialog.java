@@ -13,9 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -33,6 +30,8 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Base class for modal dialogs. This class has an empty button bar and no
  * content. Subclasses should implement the "doBuildButtonBar" method to add the
@@ -40,9 +39,8 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * 
  * @author bas.rutten
  */
+@Slf4j
 public abstract class BaseModalDialog extends Dialog implements Buildable {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BaseModalDialog.class);
 
 	private static final long serialVersionUID = -2265149201475495504L;
 
@@ -153,7 +151,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
 					.addThemeVariants(NotificationVariant.LUMO_ERROR);
 		} else {
-			LOG.info(message);
+			log.info(message);
 		}
 	}
 }

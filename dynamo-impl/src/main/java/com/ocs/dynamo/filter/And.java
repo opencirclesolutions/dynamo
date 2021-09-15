@@ -22,30 +22,22 @@ import java.util.Collection;
  */
 public final class And extends AbstractJunctionFilter {
 
-    /**
-     * @param filters
-     *            filters of which the And filter will be composed
-     */
-    public And(Filter... filters) {
-        super(filters);
-    }
+	public And(Filter... filters) {
+		super(filters);
+	}
 
-    /**
-     * @param filters
-     *            filters of which the And filter will be composed
-     */
-    public And(Collection<Filter> filters) {
-        super(filters);
-    }
+	public And(Collection<Filter> filters) {
+		super(filters);
+	}
 
-    @Override
-    public boolean evaluate(Object that) {
-        for (Filter filter : getFilters()) {
-            if (!filter.evaluate(that)) {
-                return false;
-            }
-        }
-        return true;
-    }
+	@Override
+	public boolean evaluate(Object that) {
+		for (Filter filter : getFilters()) {
+			if (!filter.evaluate(that)) {
+				return false;
+			}
+		}
+		return true;
+	}
 
 }

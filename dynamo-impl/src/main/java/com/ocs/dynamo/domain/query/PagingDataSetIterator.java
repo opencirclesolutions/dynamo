@@ -16,45 +16,44 @@ package com.ocs.dynamo.domain.query;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Function;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
  * An iterator for traversing large data sets without loading them all into
- * memory
+ * memory at once
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
-public abstract class PagingDataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>>
+public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>>
 		implements DataSetIterator<ID, T> {
 
 	private static final int PAGE_SIZE = 2000;
 
-	// the list of IDs
+	private Function<List<ID>, List<T>> mapper;
+
 	private List<ID> idList;
 
-	// the date in the current page
 	private List<T> page;
 
-	// the overall index
 	private int index;
 
-	// the index of the first record in the latest page that was read
 	private int lastRead;
 
-	// the index in the current page
 	private int indexInPage;
 
 	private int pageSize;
 
 	/**
 	 * Constructor
+	 * 
 	 * @param idList the IDs of the relevant records
 	 */
-	public PagingDataSetIterator(List<ID> idList) {
-		this(idList, PAGE_SIZE);
+	public PagingDataSetIterator(List<ID> idList, Function<List<ID>, List<T>> mapper) {
+		this(idList, mapper, PAGE_SIZE);
 	}
 
 	/**
@@ -63,12 +62,13 @@ public abstract class PagingDataSetIterator<ID extends Serializable, T extends A
 	 * @param idList   the IDs of the relevant records
 	 * @param pageSize the page size
 	 */
-	public PagingDataSetIterator(List<ID> idList, int pageSize) {
+	public PagingDataSetIterator(List<ID> idList, Function<List<ID>, List<T>> mapper, int pageSize) {
 		this.idList = idList;
 		index = 0;
 		lastRead = 0;
 		indexInPage = 0;
 		this.pageSize = pageSize;
+		this.mapper = mapper;
 	}
 
 	@Override
@@ -85,7 +85,7 @@ public abstract class PagingDataSetIterator<ID extends Serializable, T extends A
 			}
 
 			if (!ids.isEmpty()) {
-				page = readPage(ids);
+				page = mapper.apply(ids);
 			} else {
 				page = new ArrayList<>();
 			}
@@ -104,15 +104,7 @@ public abstract class PagingDataSetIterator<ID extends Serializable, T extends A
 	}
 
 	/**
-	 * Returns a page of data given a list of IDs
-	 * 
-	 * @param ids
-	 * @return
-	 */
-	protected abstract List<T> readPage(List<ID> ids);
-
-	/**
-	 * Returns the size
+	 * Returns the size of the iterator
 	 * 
 	 * @return
 	 */
@@ -120,4 +112,5 @@ public abstract class PagingDataSetIterator<ID extends Serializable, T extends A
 	public int size() {
 		return idList.size();
 	}
+
 }

@@ -97,12 +97,12 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Adds the "order by" clause to a JPA 2 criteria query
+	 * Adds the "order by" clause to a criteria query
 	 *
 	 * @param builder     the criteria builder
 	 * @param cq          the criteria query
 	 * @param root        the query root
-	 * @param multiSelect optional properties, when supplied applied as multi select
+	 * @param multiSelect whether to select multiple properties
 	 * @param distinct    whether a "distinct"is applied to the query. This
 	 *                    influences how the sort part is built
 	 * @param sortOrders  the sort orders
@@ -131,7 +131,7 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Adds the "order by" clause to a JPA 2 criteria query
+	 * Adds the "order by" clause to a criteria query
 	 * 
 	 * @param builder    the criteria builder
 	 * @param cq         the criteria query
@@ -151,6 +151,7 @@ public final class JpaQueryBuilder {
 	 * @param builder the criteria builder
 	 * @param root    the root object
 	 * @param filter  the "And" filter
+	 * @param parameters the parameters passed to the query
 	 * @return
 	 */
 	private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter,
@@ -202,7 +203,6 @@ public final class JpaQueryBuilder {
 				str = str.replaceAll("\\.", "").replace(',', '.');
 				value = str;
 			}
-
 		}
 
 		switch (compare.getOperation()) {
@@ -293,7 +293,7 @@ public final class JpaQueryBuilder {
 	 * @param entityManager the entity manager
 	 * @param entityClass   the entity class
 	 * @param ids           the IDs of the desired entities
-	 * @param sortOrders    the sorting information
+	 * @param sortOrders    the wort orders
 	 * @param fetchJoins    the desired fetch joins
 	 * @return
 	 */
@@ -309,16 +309,17 @@ public final class JpaQueryBuilder {
 		// use parameters to prevent Hibernate from creating different query plan
 		// every time
 		Expression<String> exp = root.get(DynamoConstants.ID);
-		ParameterExpression<List> p = builder.parameter(List.class, DynamoConstants.IDS);
-		cq.where(exp.in(p));
+		ParameterExpression<List> idExpression = builder.parameter(List.class, DynamoConstants.IDS);
 		cq.distinct(distinct);
 
 		Map<String, Object> pars = createParameterMap();
 		if (additionalFilter != null) {
 			Predicate pr = createPredicate(additionalFilter, builder, root, pars);
 			if (pr != null) {
-				cq.where(pr, exp.in(p));
+				cq.where(pr, exp.in(idExpression));
 			}
+		} else {
+			cq.where(exp.in(idExpression));
 		}
 
 		addSortInformation(builder, cq, root, distinct, sortOrders == null ? null : sortOrders.toArray());
@@ -391,11 +392,9 @@ public final class JpaQueryBuilder {
 		CriteriaQuery<Tuple> cq = builder.createTupleQuery();
 		Root<T> root = cq.from(entityClass);
 
-		// select only the ID
 		List<Selection<?>> selection = new ArrayList<>();
 		selection.add(root.get(DynamoConstants.ID));
 
-		// Set where clause
 		Map<String, Object> pars = createParameterMap();
 		Predicate p = createPredicate(filter, builder, root, pars);
 		if (p != null) {
@@ -476,17 +475,12 @@ public final class JpaQueryBuilder {
 		return predicate;
 	}
 
-	/**
-	 * Creates an empty parameter map
-	 * 
-	 * @return
-	 */
-	public static Map<String, Object> createParameterMap() {
+	private static Map<String, Object> createParameterMap() {
 		return new HashMap<>();
 	}
 
 	/**
-	 * Creates a JPA2 predicate based on a Filter
+	 * Creates a predicate based on a Filter
 	 * 
 	 * @param filter  the filter
 	 * @param builder the criteria builder
@@ -515,11 +509,11 @@ public final class JpaQueryBuilder {
 			return createComparePredicate(builder, root, filter);
 		} else if (filter instanceof IsNull) {
 			IsNull isNull = (IsNull) filter;
-			Path p = getPropertyPath(root, isNull.getPropertyId(), true);
-			if (p.type() != null && java.util.Collection.class.isAssignableFrom(p.type().getJavaType())) {
-				return builder.isEmpty(p);
+			Path path = getPropertyPath(root, isNull.getPropertyId(), true);
+			if (path.type() != null && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				return builder.isEmpty(path);
 			}
-			return builder.isNull(p);
+			return builder.isNull(path);
 		} else if (filter instanceof Like) {
 			return createLikePredicate(builder, root, filter);
 		} else if (filter instanceof Contains) {
@@ -819,7 +813,6 @@ public final class JpaQueryBuilder {
 					path = curJoin;
 				}
 			}
-
 		}
 		return (Path<Object>) path;
 	}
@@ -844,12 +837,12 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Sets any parameter values on the query
+	 * Sets the values of all parameters used in the query
 	 * 
 	 * @param query the query
 	 * @param pars  the parameter values
 	 */
-	public static void setParameters(TypedQuery<?> query, Map<String, Object> pars) {
+	private static void setParameters(TypedQuery<?> query, Map<String, Object> pars) {
 		for (Entry<String, Object> entry : pars.entrySet()) {
 			query.setParameter(entry.getKey(), entry.getValue());
 		}
