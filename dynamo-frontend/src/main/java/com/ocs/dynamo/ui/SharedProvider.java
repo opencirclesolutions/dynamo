@@ -13,11 +13,13 @@
  */
 package com.ocs.dynamo.ui;
 
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
+import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * Interface used to indicate that the data provider used by the component can be
- * shared by multiple components (e.g. inside an editable grid)
+ * Interface used to indicate that the data provider used by the component can
+ * be shared by multiple components (e.g. inside an editable grid)
+ * 
  * @author Bas Rutten
  *
  * @param <T> the type of the objects managed by the provider
@@ -28,5 +30,5 @@ public interface SharedProvider<T> {
 	 * 
 	 * @return the shared data provider
 	 */
-	ListDataProvider<T> getSharedProvider();
+	DataProvider<T, SerializablePredicate<T>> getSharedProvider();
 }

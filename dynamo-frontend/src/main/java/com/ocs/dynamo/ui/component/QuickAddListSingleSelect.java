@@ -85,8 +85,10 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
 		// add to the container
-		ListDataProvider<T> provider = (ListDataProvider<T>) listSelect.getDataProvider();
-		provider.getItems().add(entity);
+		if (listSelect.getDataProvider() instanceof ListDataProvider) {
+			ListDataProvider<T> provider = (ListDataProvider<T>) listSelect.getDataProvider();
+			provider.getItems().add(entity);
+		}
 		listSelect.setValue(entity);
 	}
 
@@ -134,7 +136,7 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	protected void initContent() {
 		HorizontalLayout bar = new HorizontalLayout();
 		bar.setSizeFull();
-		
+
 		if (this.getAttributeModel() != null) {
 			this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
 		}
@@ -190,5 +192,7 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 			}
 		}
 	}
+	
+	
 
 }

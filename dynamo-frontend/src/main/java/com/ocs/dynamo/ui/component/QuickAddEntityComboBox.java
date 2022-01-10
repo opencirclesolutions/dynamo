@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -76,8 +77,8 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 */
 	@SafeVarargs
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SelectMode mode, SerializablePredicate<T> filter, boolean search, ListDataProvider<T> sharedProvider,
-			List<T> items, SortOrder<?>... sortOrder) {
+			SelectMode mode, SerializablePredicate<T> filter, boolean search,
+			DataProvider<T, SerializablePredicate<T>> sharedProvider, List<T> items, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
 		this.comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, sharedProvider, items,
 				sortOrder);
@@ -99,8 +100,10 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
-		ListDataProvider<T> provider = (ListDataProvider<T>) comboBox.getDataProvider();
-		provider.getItems().add(entity);
+		if (comboBox.getDataProvider() instanceof ListDataProvider) {
+			ListDataProvider<T> provider = (ListDataProvider<T>) comboBox.getDataProvider();
+			provider.getItems().add(entity);
+		}
 		comboBox.setValue(entity);
 	}
 
@@ -130,8 +133,8 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public ListDataProvider<T> getSharedProvider() {
-		return (ListDataProvider<T>) comboBox.getDataProvider();
+	public DataProvider<T, SerializablePredicate<T>> getSharedProvider() {
+		return (DataProvider<T, SerializablePredicate<T>>) comboBox.getDataProvider();
 	}
 
 	@Override

@@ -1624,7 +1624,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private <E extends Enum> void setEnumSetting(String value, Class<E> enumClass, Consumer<E> receiver) {
 		if (!StringUtils.isEmpty(value)) {
-			receiver.accept(Enum.valueOf(enumClass, value));
+			 E enumValue = (E) Enum.valueOf(enumClass, value);
+			 receiver.accept(enumValue);
 		}
 	}
 

@@ -215,7 +215,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 				// have to handle it in this ugly way
 				return null;
 			} catch (Exception ex) {
-				throw new OCSImportException(format("Found an invalid numeric value: %d", cell.getStringCellValue()),
+				throw new OCSImportException(format("Found an invalid numeric value: %s", cell.getStringCellValue()),
 						ex);
 			}
 		} else if (cell != null && CellType.STRING == cell.getCellType()) {
@@ -223,7 +223,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			// field is required, this will trigger
 			// an error at a later stage
 			if (!StringUtils.isEmpty(cell.getStringCellValue().trim())) {
-				throw new OCSImportException(format("Found an invalid numeric value: %d", cell.getStringCellValue()));
+				throw new OCSImportException(format("Found an invalid numeric value: %s", cell.getStringCellValue()));
 			}
 		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
 			try {
@@ -231,7 +231,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			} catch (NullPointerException nex) {
 				return null;
 			} catch (NumberFormatException ex) {
-				throw new OCSImportException(format("Found an invalid numeric value: %d", cell.getStringCellValue()));
+				throw new OCSImportException(format("Found an invalid numeric value: %s", cell.getStringCellValue()));
 			}
 		}
 		return null;
@@ -274,7 +274,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			try {
 				return cell.getStringCellValue();
 			} catch (Exception ex) {
-				throw new OCSImportException("Found an invalid String value", ex);
+				throw new OCSImportException("Found an invalid string value", ex);
 			}
 		}
 		return null;

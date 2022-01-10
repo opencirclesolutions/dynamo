@@ -75,6 +75,7 @@ import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -188,7 +189,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructCollectionSelect(
 			AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
-			ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
+			DataProvider<?, SerializablePredicate<?>> sharedProvider, boolean search, boolean grid) {
 		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
@@ -223,19 +224,25 @@ public class FieldFactoryImpl implements FieldFactory {
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> QuickAddEntityComboBox<ID, S> constructComboBox(
 			AttributeModel am, EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter,
-			ListDataProvider<?> sharedProvider, boolean search) {
+			DataProvider<?, SerializablePredicate<?>> sharedProvider, boolean search) {
 		entityModel = resolveEntityModel(entityModel, am, search);
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
-		SortOrder<?>[] sos = constructSortOrder(entityModel);
+		SortOrder<?>[] sortOrder = constructSortOrder(entityModel);
 		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
-				(SerializablePredicate<S>) fieldFilter, search, (ListDataProvider<S>) sharedProvider, null, sos);
+				(SerializablePredicate<S>) fieldFilter, search, castSharedProvider(sharedProvider), null, sortOrder);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private <S> DataProvider<S, SerializablePredicate<S>> castSharedProvider(
+			DataProvider<?, SerializablePredicate<?>> provider) {
+		return (DataProvider<S, SerializablePredicate<S>>) (DataProvider) provider;
 	}
 
 	/**
 	 * Constructs a combo box for displaying values from an enumeration
 	 * 
-	 * @param <E>       the type of the enumermation
+	 * @param <E>       the type of the enumeration
 	 * @param enumClass the class of the enumeration
 	 * @return
 	 */
@@ -289,7 +296,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		boolean search = context.isSearch();
 		boolean grid = context.isEditableGrid();
 
-		ListDataProvider<?> sharedProvider = context.getSharedProvider(am.getPath());
+		DataProvider<?, SerializablePredicate<?>> sharedProvider = context.getSharedProvider(am.getPath());
 
 		// for read-only attributes, do not render a field unless it's a link field or
 		// unless the component is inside a search form
@@ -308,7 +315,8 @@ public class FieldFactoryImpl implements FieldFactory {
 			field = constructSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
 		} else if (Collection.class.isAssignableFrom(am.getType())) {
 			// render a multiple select component for a collection
-			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
+			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter,
+					(DataProvider<?, SerializablePredicate<?>>) sharedProvider, search, grid);
 		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search && !grid) {
 			// construct text area (but only when not inside search form or grid)
 			field = new TextArea();
@@ -415,13 +423,13 @@ public class FieldFactoryImpl implements FieldFactory {
 	 */
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructListSelect(AttributeModel am,
-			EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider,
-			boolean search) {
+			EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
+			DataProvider<?, SerializablePredicate<?>> sharedProvider, boolean search) {
 		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
 		SortOrder<?>[] sos = constructSortOrder(em);
 		return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
-				(ListDataProvider<S>) sharedProvider, search, sos);
+				null, search, sos);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -474,7 +482,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @return
 	 */
 	private Component constructSelect(AttributeModel am, EntityModel<?> fieldEntityModel,
-			SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
+			SerializablePredicate<?> fieldFilter, DataProvider<?, SerializablePredicate<?>> sharedProvider,
+			boolean search, boolean grid) {
 		Component field = null;
 		AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
 		if (grid) {

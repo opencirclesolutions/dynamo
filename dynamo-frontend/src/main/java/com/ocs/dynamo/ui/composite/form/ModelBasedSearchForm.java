@@ -175,8 +175,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		Component field = constructCustomField(entityModel, attributeModel);
 		if (field == null) {
 			EntityModel<?> em = getFieldEntityModel(attributeModel);
-			FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(attributeModel)
-					.setFieldEntityModel(em).setFieldFilters(getFieldFilters()).setViewMode(false).setSearch(true);
+			FieldFactoryContext ctx = FieldFactoryContext.create().attributeModel(attributeModel)
+					.fieldEntityModel(em).fieldFilters(getFieldFilters()).viewMode(false).search(true).build();
 			field = getFieldFactory().constructField(ctx);
 		}
 

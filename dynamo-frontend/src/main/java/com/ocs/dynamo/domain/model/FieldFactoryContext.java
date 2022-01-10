@@ -16,8 +16,11 @@ package com.ocs.dynamo.domain.model;
 import java.util.Map;
 
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Builder;
+import lombok.Data;
 
 /**
  * Field factory context that can be used to specify how the FieldFactory must
@@ -26,158 +29,52 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author Bas Rutten
  *
  */
-public final class FieldFactoryContext {
+@Data
+@Builder(toBuilder = true)
+public class FieldFactoryContext {
 
-    /**
-     * Creates a blank context
-     * 
-     * @return
-     */
-    public static FieldFactoryContext create() {
-        return new FieldFactoryContext();
-    }
+	/**
+	 * Creates a blank context
+	 * 
+	 * @return
+	 */
+	public static FieldFactoryContext.FieldFactoryContextBuilder create() {
+		return FieldFactoryContext.builder();
+	}
 
-    /**
-     * Creates a default context based on only the attribute model
-     * 
-     * @param am the attribute model
-     * @return
-     */
-    public static FieldFactoryContext createDefault(AttributeModel am) {
-        return new FieldFactoryContext().setAttributeModel(am);
-    }
+	/**
+	 * Creates a default context based on only the attribute model
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	public static FieldFactoryContext createDefault(AttributeModel am) {
+		return FieldFactoryContext.builder().attributeModel(am).build();
+	}
 
-    private AttributeModel attributeModel;
+	private AttributeModel attributeModel;
 
-    private boolean editableGrid;
+	private boolean editableGrid;
 
-    private EntityModel<?> fieldEntityModel;
+	private EntityModel<?> fieldEntityModel;
 
-    private Map<String, SerializablePredicate<?>> fieldFilters;
+	private Map<String, SerializablePredicate<?>> fieldFilters;
 
-    private AbstractEntity<?> parentEntity;
+	private AbstractEntity<?> parentEntity;
 
-    private boolean search;
+	private boolean search;
 
-    private Map<String, ListDataProvider<?>> sharedProviders;
+	private Map<String, DataProvider<?, SerializablePredicate<?>>> sharedProviders;
 
-    private boolean viewMode;
+	private boolean viewMode;
 
-    private FieldFactoryContext() {
-        // hidden
-    }
+	public void addSharedProvider(String attribute,
+			DataProvider<? extends AbstractEntity<?>, SerializablePredicate<?>> sharedProvider) {
+		sharedProviders.put(attribute, sharedProvider);
+	}
 
-    public void addSharedProvider(String attribute, ListDataProvider<?> sharedProvider) {
-        sharedProviders.put(attribute, sharedProvider);
-    }
-
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
-
-    public EntityModel<?> getFieldEntityModel() {
-        return fieldEntityModel;
-    }
-
-    public Map<String, SerializablePredicate<?>> getFieldFilters() {
-        return fieldFilters;
-    }
-
-    public AbstractEntity<?> getParentEntity() {
-        return parentEntity;
-    }
-
-    public ListDataProvider<?> getSharedProvider(String attribute) {
-        return sharedProviders == null ? null : sharedProviders.get(attribute);
-    }
-
-    public Map<String, ListDataProvider<?>> getSharedProviders() {
-        return sharedProviders;
-    }
-
-    public boolean isEditableGrid() {
-        return editableGrid;
-    }
-
-    /**
-     * @return the search
-     */
-    public boolean isSearch() {
-        return search;
-    }
-
-    public boolean isViewMode() {
-        return viewMode;
-    }
-
-    /**
-     * Sets the attribute model to base the field construction on
-     * 
-     * @param attributeModel the attribute model
-     * @return
-     */
-    public FieldFactoryContext setAttributeModel(AttributeModel attributeModel) {
-        this.attributeModel = attributeModel;
-        return this;
-    }
-
-    public FieldFactoryContext setEditableGrid(boolean editableGrid) {
-        this.editableGrid = editableGrid;
-        return this;
-    }
-
-    /**
-     * Sets the field entity model to be used during field construction
-     * 
-     * @param fieldEntityModel the field entity model
-     * @return
-     */
-    public FieldFactoryContext setFieldEntityModel(EntityModel<?> fieldEntityModel) {
-        this.fieldEntityModel = fieldEntityModel;
-        return this;
-    }
-
-    /**
-     * Sets the field filters to use during field construction
-     * 
-     * @param fieldFilters the field filters
-     * @return
-     */
-    public FieldFactoryContext setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
-        this.fieldFilters = fieldFilters;
-        return this;
-    }
-
-    public FieldFactoryContext setParentEntity(AbstractEntity<?> parentEntity) {
-        this.parentEntity = parentEntity;
-        return this;
-    }
-
-    /**
-     * Sets whether to construct the field for search mode
-     * 
-     * @param search whether to construct the field for search mode
-     * @return
-     */
-    public FieldFactoryContext setSearch(boolean search) {
-        this.search = search;
-        return this;
-    }
-
-    public FieldFactoryContext setSharedProviders(Map<String, ListDataProvider<?>> sharedProviders) {
-        this.sharedProviders = sharedProviders;
-        return this;
-    }
-
-    /**
-     * Sets whether to construct the field for view mode
-     * 
-     * @param viewMode whether to construct the field for view mode
-     * @return
-     */
-    public FieldFactoryContext setViewMode(boolean viewMode) {
-        this.viewMode = viewMode;
-        return this;
-    }
+	public DataProvider<?, SerializablePredicate<?>> getSharedProvider(String attribute) {
+		return sharedProviders == null ? null : sharedProviders.get(attribute);
+	}
 
 }

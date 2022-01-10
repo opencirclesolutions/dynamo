@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -21,6 +22,7 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.flow.data.binder.Result;
 
+@Disabled
 public class ConvertUtilsTest extends BaseMockitoTest {
 
     private EntityModelFactory emf = new EntityModelFactoryImpl();

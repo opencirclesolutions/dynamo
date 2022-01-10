@@ -60,15 +60,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
 	private Component constructField(String name, boolean search) {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setSearch(search);
+		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+				.search(search).build();
 		return fieldFactory.constructField(context);
 	}
 
 	private Component constructField(String name, String entityModelRef) {
 		EntityModel<TestEntity> em = factory.getModel(entityModelRef, TestEntity.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setSearch(false);
+		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+				.search(false).build();
 		return fieldFactory.constructField(context);
 	}
 
@@ -78,15 +78,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
 	private Component constructField2(String name, boolean search, boolean viewMode, boolean grid) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setSearch(search).setViewMode(viewMode).setEditableGrid(grid);
+		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+				.search(search).viewMode(viewMode).editableGrid(grid).build();
 		return fieldFactory.constructField(context);
 	}
 
 	private Component constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setFieldFilters(fieldFilters);
+		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+				.fieldFilters(fieldFilters).build();
 		return fieldFactory.constructField(context);
 	}
 
@@ -366,8 +366,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	@Test
 	public void testConstructEntityComboBoxMultipleSearch() {
 		EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create()
-				.setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
+		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel("testEntityAlt"))
+				.search(true).build();
 		assertDoesNotThrow(() -> fieldFactory.constructField(context));
 	}
 
