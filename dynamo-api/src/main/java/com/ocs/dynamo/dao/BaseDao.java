@@ -28,18 +28,18 @@ import com.ocs.dynamo.filter.Filter;
 public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 
 	/**
-	 * Returns the total number of entities of this type
-	 * 
-	 * @return
+	 * Counts the number of entities
+	 *
+	 * @return the total number of entities of this type
 	 */
 	long count();
 
 	/**
-	 * Returns the number of entities that match the provided filter
+	 * Counts the number of entities that match the provided filter
 	 * 
 	 * @param filter   the filter
 	 * @param distinct whether to return only distinct results
-	 * @return
+	 * @return  the number of entities that match the provided filter
 	 */
 	long count(Filter filter, boolean distinct);
 
@@ -159,7 +159,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Returns all entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param sort   the sort info
+	 * @param orders   the sort orders
 	 * @return
 	 */
 	List<T> find(Filter filter, SortOrder... orders);
@@ -174,7 +174,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns a list of all entities. Use with caution
 	 * 
-	 * @param sort the desired sorting information
+	 * @param sortOrders the desired sorting information
 	 * @return
 	 */
 	List<T> findAll(SortOrder... sortOrders);

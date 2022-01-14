@@ -38,27 +38,23 @@ public abstract class AbstractFilter implements Filter {
      */
     public And and() {
         if (this instanceof And) {
-            // Do nothing
             return (And) this;
         }
-        // Else create And add current
         return new And(this);
     }
 
     /**
      * Constructs a filter that is a conjunction of the provided filters
      * 
-     * @param filters
+     * @param filters the filter to combine
      * @return
      */
     public And and(Collection<Filter> filters) {
         And result = null;
         if (this instanceof And) {
             result = (And) this;
-            // Add filters to current
             result.getFilters().addAll(filters);
         } else {
-            // Create And and add current and given
             result = new And(this).and(filters);
         }
         return result;

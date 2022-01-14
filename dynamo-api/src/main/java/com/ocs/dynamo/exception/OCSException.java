@@ -29,7 +29,7 @@ public class OCSException extends Exception {
 	/**
 	 * Constructor
 	 * 
-	 * @param message
+	 * @param message the error message
 	 */
 	public OCSException(String message) {
 		super(message);
@@ -38,8 +38,8 @@ public class OCSException extends Exception {
 	/**
 	 * Constructor
 	 * 
-	 * @param message
-	 * @param cause
+	 * @param message the error message
+	 * @param cause the cause
 	 */
 	public OCSException(String message, Throwable cause) {
 		super(message, cause);

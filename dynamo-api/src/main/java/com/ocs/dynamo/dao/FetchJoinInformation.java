@@ -71,8 +71,8 @@ public class FetchJoinInformation {
     /**
      * Creates an array based on the specified vararg
      * 
-     * @param joins
-     * @return
+     * @param joins the specified joins
+     * @return an array based on the joins
      */
     public static FetchJoinInformation[] of(FetchJoinInformation... joins) {
         return joins;

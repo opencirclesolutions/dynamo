@@ -173,6 +173,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			MemoryBuffer buffer = new MemoryBuffer();
 			Upload upload = new Upload(buffer);
+
+			if (am.getAllowedExtensions() != null && !am.getAllowedExtensions().isEmpty()) {
+				Set<String> extensions = am.getAllowedExtensions().stream().map(s -> "." + s)
+						.collect(Collectors.toSet());
+				upload.setAcceptedFileTypes(extensions.toArray(new String[0]));
+			}
+
 			upload.addFinishedListener(event -> {
 
 				String extension = FilenameUtils.getExtension(event.getFileName());

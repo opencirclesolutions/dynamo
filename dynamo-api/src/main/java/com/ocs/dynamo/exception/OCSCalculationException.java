@@ -26,7 +26,7 @@ public class OCSCalculationException extends OCSRuntimeException {
     /**
      * Constructor
      * 
-     * @param message
+     * @param message the error message
      */
     public OCSCalculationException(String message) {
         super(message);

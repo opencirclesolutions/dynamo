@@ -30,14 +30,14 @@ public interface DataSetIterator<ID extends Serializable, T extends AbstractEnti
     /**
      * Returns the next entity
      * 
-     * @return
+     * @return the next entity in the iterator, or <code>null</code> if there is none
      */
     T next();
 
     /**
      * Returns the total number of entities
      * 
-     * @return
+     * @return the total number of entities in the iterator
      */
     int size();
 }

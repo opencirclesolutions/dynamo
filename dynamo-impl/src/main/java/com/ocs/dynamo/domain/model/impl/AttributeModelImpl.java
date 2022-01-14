@@ -591,16 +591,16 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	/**
-	 * Looks up the translations of a value for a certain locale
+	 * Looks up the translation of a value for a certain locale
 	 * 
 	 * @param source         the translation cache
 	 * @param locale         the locale
 	 * @param key            the message key
 	 * @param fallBack       the first fallback value
 	 * @param secondFallBack the second fallback value
-	 * @return
+	 * @return the translation for the specified key
 	 */
-	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallback,
+	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack,
 			String secondFallBack) {
 		if (!source.containsKey(locale.toString())) {
 			try {
@@ -613,7 +613,7 @@ public class AttributeModelImpl implements AttributeModel {
 		}
 
 		Optional<String> optional = source.get(locale.toString());
-		return optional.orElse(fallback != null ? fallback : secondFallBack);
+		return optional.orElse(fallBack != null ? fallBack : secondFallBack);
 	}
 
 	/**

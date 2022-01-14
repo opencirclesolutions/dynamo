@@ -22,7 +22,6 @@ import java.util.Properties;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
 
@@ -47,11 +46,7 @@ public final class SystemPropertyUtils {
 	private static final Logger LOG = LoggerFactory.getLogger(SystemPropertyUtils.class);
 
 	private static Properties properties = new Properties();
-	
 
-	/**
-	 * Load properties from file
-	 */
 	static {
 		try {
 			InputStream resourceAsStream = SystemPropertyUtils.class.getClassLoader()
@@ -180,7 +175,7 @@ public final class SystemPropertyUtils {
 	 */
 	public static List<String> getDefaultEditColumnThresholds() {
 		String temp = getStringProperty(DynamoConstants.SP_DEFAULT_EDIT_FORM_COLUMN_THRESHOLDS, "0px");
-		return Lists.newArrayList(temp.split(","));
+		return List.of(temp.split(","));
 	}
 
 	/**
@@ -279,7 +274,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return whether searches on text fields will be default be case insensitive
+	 * @return whether searches on text fields will be default be case-insensitive
 	 */
 	public static boolean getDefaultSearchCaseSensitive() {
 		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE, null);
@@ -291,7 +286,7 @@ public final class SystemPropertyUtils {
 	 */
 	public static List<String> getDefaultSearchColumnThresholds() {
 		String temp = getStringProperty(DynamoConstants.SP_DEFAULT_SEARCH_FORM_COLUMN_THRESHOLDS, "0px,650px,1300px");
-		return Lists.newArrayList(temp.split(","));
+		return List.of(temp.split(","));
 	}
 
 	/**
@@ -337,7 +332,7 @@ public final class SystemPropertyUtils {
 	 * look for a system property names ocs.default.true.representation.<lan> where
 	 * <lan> is the language code of the locale, e.g. "en", "nl"
 	 * 
-	 * @param locale
+	 * @param locale the locale
 	 * @return
 	 */
 	public static String getDefaultTrueRepresentation(Locale locale) {
@@ -404,9 +399,9 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return whether to trim spaces in text and text area fields 
+	 * @return whether to trim spaces in text and text area fields
 	 */
-	public static boolean isDefaultTrimSpaces( ) {
+	public static boolean isDefaultTrimSpaces() {
 		return getBooleanProperty(DynamoConstants.SP_TRIM_SPACES, false);
 	}
 
@@ -448,7 +443,7 @@ public final class SystemPropertyUtils {
 	public static boolean useThousandsGroupingInEditMode() {
 		return getBooleanProperty(DynamoConstants.SP_THOUSAND_GROUPING, null);
 	}
-	
+
 	/**
 	 * 
 	 * @return whether to use thousands grouping in XLS export

@@ -106,7 +106,7 @@ public final class JpaQueryBuilder {
 	 * @param distinct    whether a "distinct"is applied to the query. This
 	 *                    influences how the sort part is built
 	 * @param sortOrders  the sort orders
-	 * @return
+	 * @return the criteria query with any relevant sorting instructions added to it
 	 */
 	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
 			Root<T> root, List<Selection<?>> multiSelect, boolean distinct, SortOrder... sortOrders) {
@@ -195,7 +195,7 @@ public final class JpaQueryBuilder {
 			value = ((String) value).replace('%', ' ').trim();
 
 			String str = (String) value;
-			if (str != null && StringUtils.isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
+			if (StringUtils.isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
 				// first remove all periods (which may be used as
 				// thousand
 				// separators), then replace comma by period
@@ -382,7 +382,7 @@ public final class JpaQueryBuilder {
 	 * @param entityManager the entity manager
 	 * @param entityClass   the entity class
 	 * @param filter        the filter to apply
-	 * @param sortOrder     the sorting to apply
+	 * @param sortOrders     the sorting to apply
 	 * @return
 	 */
 	public static <T> TypedQuery<Tuple> createIdQuery(EntityManager entityManager, Class<T> entityClass, Filter filter,
@@ -556,7 +556,7 @@ public final class JpaQueryBuilder {
 	 * @param filter        the filter
 	 * @param entityManager the entity manager
 	 * @param entityClass   the entity class
-	 * @param sortOrder     the sorting information
+	 * @param sortOrders    the sorting information
 	 * @return
 	 */
 	public static <T> TypedQuery<T> createSelectQuery(Filter filter, EntityManager entityManager, Class<T> entityClass,
@@ -680,7 +680,7 @@ public final class JpaQueryBuilder {
 
 		addFetchJoinInformation(root, fetchJoins);
 
-		Predicate equals = null;
+		Predicate equals;
 		if (value instanceof String && !caseSensitive) {
 			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),
 					((String) value).toUpperCase());
@@ -749,7 +749,7 @@ public final class JpaQueryBuilder {
 				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
 						: curJoin.getJoins());
 				if (joins != null) {
-					for (Join<?, ?> j : (Set<Join<?, ?>>) joins) {
+					for (Join<?, ?> j : joins) {
 						if (propertyIdParts[i].equals(j.getAttribute().getName())) {
 							path = j;
 							detailJoin = j;

@@ -122,8 +122,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 
     @Test
     public void testStringToInteger() {
-        // default locale (Central Europe)
-        assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234").intValue());
         assertEquals(1234, VaadinUtils.stringToInteger(false, "1234", LOCALE).intValue());
         assertEquals(1234, VaadinUtils.stringToInteger(true, "1.234", LOCALE).intValue());
     }
@@ -131,8 +129,7 @@ public class VaadinUtilsTest extends BaseMockitoTest {
     @Test
     public void testStringToBigDecimal() {
         // test defaults (European locale and 2 decimals)
-        assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, "1234,341").doubleValue(), 0.001);
-
+        assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, 2, "1234,341", LOCALE).doubleValue(), 0.001);
         assertEquals(1234.34, VaadinUtils.stringToBigDecimal(false, false, false, 2, "1234,34", LOCALE).doubleValue(), 0.001);
         assertEquals(1234.3415, VaadinUtils.stringToBigDecimal(false, false, false, 4, "1234,3415", LOCALE).doubleValue(), 0.001);
         assertEquals(1234, VaadinUtils.stringToBigDecimal(false, true, false, 2, "1.234", LOCALE).doubleValue(), 0.001);
@@ -142,8 +139,6 @@ public class VaadinUtilsTest extends BaseMockitoTest {
 
     @Test
     public void testStringToLong() {
-        // use default locale
-        assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234").longValue());
         assertEquals(1234L, VaadinUtils.stringToLong(false, "1234", LOCALE).longValue());
         assertEquals(1234L, VaadinUtils.stringToLong(true, "1.234", LOCALE).longValue());
     }

@@ -17,8 +17,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 
 /**
- * Interface for entity model factories that provides access to methods during the creation of a new entitymodel by a
- * other entity model factory
+ * Interface for entity model factories that provides access to methods during the creation of a new entity model by another entity model factory
  *
  * @author patrickdeenen
  * @author Bas Rutten

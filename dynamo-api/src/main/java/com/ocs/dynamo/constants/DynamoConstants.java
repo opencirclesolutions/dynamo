@@ -98,6 +98,10 @@ public final class DynamoConstants {
 	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
 
 	public static final String CSS_SPLIT_LAYOUT = "splitLayout";
+	
+	public static final String CSS_SPLIT_LAYOUT_LEFT = "splitLayoutLeft";
+	
+	public static final String CSS_SPLIT_LAYOUT_RIGHT = "splitLayoutRight";
 
 	public static final String CSS_TAB_LAYOUT = "tabLayout";
 

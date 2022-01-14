@@ -45,7 +45,7 @@ public class SortOrders {
 	 * Adds a sort order
 	 * 
 	 * @param order the sort order to add
-	 * @return
+	 * @return the current list of sort orders
 	 */
 	public SortOrders addSortOrder(SortOrder order) {
 		if (order != null && order.getProperty() != null) {
@@ -58,7 +58,7 @@ public class SortOrders {
 	 * Returns the first sort order for the specified property
 	 * 
 	 * @param property the property
-	 * @return
+	 * @return the first sort order that is defined for the specified property
 	 */
 	public SortOrder getOrderFor(String property) {
 		return orders.stream().filter(o -> o.getProperty().equals(property)).findAny().orElse(null);

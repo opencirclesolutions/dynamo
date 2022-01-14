@@ -28,7 +28,7 @@ public class ConvertUtilsTest extends BaseMockitoTest {
     @BeforeAll
     public static void beforeClass() {
         System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
-        System.setProperty("ocs.default.locale", "de");
+        System.setProperty("ocs.default.locale", "en");
     }
 
     @Test
@@ -40,7 +40,7 @@ public class ConvertUtilsTest extends BaseMockitoTest {
         assertTrue(obj instanceof Long);
         assertEquals(12L, ((Long) obj).longValue());
 
-        result = ConvertUtils.convertToModelValue(model.getAttributeModel("discount"), "12,34");
+        result = ConvertUtils.convertToModelValue(model.getAttributeModel("discount"), "12.34");
         obj = result.getOrThrow(r -> new OCSRuntimeException());
         assertTrue(obj instanceof BigDecimal);
         assertEquals(12.34, ((BigDecimal) obj).doubleValue(), 0.0001);
@@ -64,7 +64,7 @@ public class ConvertUtilsTest extends BaseMockitoTest {
         assertEquals("12", s);
 
         s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("discount"), BigDecimal.valueOf(17.79));
-        assertEquals("17,79", s);
+        assertEquals("17.79", s);
 
         s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("id"), 1234);
         assertEquals("1234", s);
@@ -73,7 +73,7 @@ public class ConvertUtilsTest extends BaseMockitoTest {
         assertEquals("2015-05", s);
 
         s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("someDouble"), 1234.56);
-        assertEquals("1234,56", s);
+        assertEquals("1234.56", s);
     }
 
     @Test

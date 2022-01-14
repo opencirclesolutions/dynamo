@@ -65,6 +65,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public long count() {
 		return createQuery().fetchCount();
 	}
@@ -76,9 +77,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	/**
-	 * Creates a new new JPADeleteClause for the entity
+	 * Creates a new JPADeleteClause for the entity
 	 *
-	 * @return
+	 * @return the newly created JPADeleteClause
 	 */
 	protected JPADeleteClause createDeleteClause() {
 		return new JPADeleteClause(getEntityManager(), getDslRoot());
@@ -87,7 +88,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/**
 	 * Creates a default query that simply retrieves instances of the domain class
 	 * 
-	 * @return
+	 * @return the newly created JPAQuery
 	 */
 	protected JPAQuery<T> createQuery() {
 		JPAQuery<T> query = new JPAQuery<>(entityManager);
@@ -96,9 +97,9 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	/**
-	 * Creates a new new JPAUpdateClause for the entity
+	 * Creates a new JPAUpdateClause for the entity
 	 *
-	 * @return
+	 * @return the newly created JPAUpdateClause
 	 */
 	protected JPAUpdateClause createUpdateClause() {
 		return new JPAUpdateClause(getEntityManager(), getDslRoot());
@@ -132,10 +133,10 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	 * 
 	 * @param filter     the filter to apply
 	 * @param pageable   object containing the paging data
-	 * @param sortOrders list of sort orders to apply
+	 * @param sortOrders list of sort orders that must be applied
 	 * @param joins      the joins to apply - if null then the default joins will be
 	 *                   used
-	 * @return
+	 * @return a page of entities that match the filter
 	 */
 	private List<T> fetch(Filter filter, Pageable pageable, SortOrders sortOrders, FetchJoinInformation... joins) {
 		TypedQuery<T> query = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(),
@@ -328,7 +329,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	/**
 	 * Returns the query DSL root
 	 * 
-	 * @return
+	 * @return the DSL root object
 	 */
 	protected abstract EntityPathBase<T> getDslRoot();
 

@@ -31,11 +31,11 @@ import org.springframework.transaction.annotation.Transactional;
 @Transactional
 public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T> {
 
-    private EntityPathBase<T> dslRoot;
+    private final EntityPathBase<T> dslRoot;
 
-    private Class<T> entityClass;
+    private final Class<T> entityClass;
 
-    private String[] fetchPropertyIds;
+    private final String[] fetchPropertyIds;
 
     public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
         this(dslRoot, entityClass, (String[]) null);

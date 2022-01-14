@@ -59,8 +59,8 @@ public abstract class AbstractEntity<ID> implements Serializable {
 	 * Basic equals function. Override this (and of the hashCode() method) if your
 	 * entity has a more meaningful key
 	 * 
-	 * @param obj
-	 * @return
+	 * @param obj the object to compare true
+	 * @return <code>true</code> if the objects are equal and <code>false</code> otherwise
 	 */
 	@Override
 	public boolean equals(Object obj) {

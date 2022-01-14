@@ -31,7 +31,6 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testCreate() {
 
         FormOptions fo = new FormOptions().setShowQuickSearchField(true).setShowRemoveButton(true);
@@ -59,7 +58,6 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
     }
 
     @Test
-    @SuppressWarnings("unchecked")
     public void testCreateInReadOnly() {
         FormOptions fo = new FormOptions();
         MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, Lists.newArrayList(Country.class, Region.class)) {

@@ -45,7 +45,7 @@ public class UIHelper {
 	private MenuBar menuBar;
 
 	/**
-	 * The screen mmode as specified in menu.properties
+	 * The screen mode as specified in menu.properties
 	 */
 	private String screenMode;
 

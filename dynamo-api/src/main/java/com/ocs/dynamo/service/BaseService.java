@@ -102,7 +102,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * Fetches a list of entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param order  the sort orders to apply
+	 * @param orders the sort orders to apply
 	 * @param joins  the desired relations to fetch
 	 * @return
 	 */
@@ -186,7 +186,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns a list of all entities, sorted according to the provided sort orders
 	 * 
-	 * @param sort the desired sort orders
+	 * @param sortOrders the desired sort orders
 	 * @return
 	 */
 	List<T> findAll(SortOrder... sortOrders);
@@ -269,22 +269,22 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @param filter           the filter
 	 * @param selectProperties the properties to use in the selection
 	 * @param sortOrders       the sort order
-	 * @return
+	 * @return the properties that match the provided filter
 	 */
 	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders);
 
 	/**
 	 * Returns the class of the entity managed by this DAO
 	 * 
-	 * @return
+	 * @return the entity class
 	 */
 	Class<T> getEntityClass();
 
 	/**
-	 * Saves the provide list of entities
+	 * Saves the provided list of entities
 	 * 
 	 * @param list the list of entities
-	 * @return
+	 * @return the list of saved entities
 	 */
 	List<T> save(List<T> list);
 
@@ -297,8 +297,8 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	T save(T entity);
 
 	/**
-	 * 
-	 * @param t
+	 * Validates the provided entity
+	 * @param entity the entity to validate
 	 */
-	void validate(T t);
+	void validate(T entity);
 }

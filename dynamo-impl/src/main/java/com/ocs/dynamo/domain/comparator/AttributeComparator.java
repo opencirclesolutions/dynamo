@@ -25,12 +25,12 @@ import java.util.Comparator;
  */
 public class AttributeComparator<T extends AbstractEntity<?>> implements Comparator<T> {
 
-    private String attribute;
+    private final String attribute;
 
     /**
      * Constructor
      * 
-     * @param attribute
+     * @param attribute the attribute on which to perform the comparison
      */
     public AttributeComparator(String attribute) {
         this.attribute = attribute;

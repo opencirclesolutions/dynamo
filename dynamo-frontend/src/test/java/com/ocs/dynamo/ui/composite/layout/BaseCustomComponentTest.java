@@ -60,7 +60,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 	@BeforeEach
 	public void setupBaseCustomComponentTest() throws NoSuchFieldException {
-		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "en");
 		MockUtil.mockMessageService(messageService);
 		ReflectionTestUtils.setField(component, "messageService", messageService);
 	}
@@ -69,7 +69,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 	public void test() {
 		EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
 
-		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("nl"));
+		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("en"));
 
 		TestEntity e = new TestEntity("Kevin", 12L);
 		e.setDiscount(BigDecimal.valueOf(12.34));

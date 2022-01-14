@@ -46,10 +46,12 @@ import com.ocs.dynamo.utils.FormatUtils;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.grid.editor.Editor;
+import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -145,7 +147,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
-	 * 
+	 * The IDS of the entities that were modified
 	 */
 	private Set<ID> changedEntityIds = new HashSet<>();
 
@@ -230,50 +232,54 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			cancelButton.setVisible(isEditAllowed() && !isViewmode() && getFormOptions().isOpenInViewMode());
 			getButtonBar().add(cancelButton);
 
-			// button for saving changes
-			saveButton = new Button(message("ocs.save"));
-			saveButton.addClickListener(event -> {
-
-				// perform validation
-				List<T> toSave = Lists.newArrayList(binders.keySet());
-				boolean valid = binders.values().stream().map(b -> b.validate()).allMatch(s -> s.isOk());
-				if (valid) {
-					if (getFormOptions().isConfirmSave()) {
-						// ask for confirmation before saving
-						VaadinUtils.showConfirmDialog(
-								getMessageService().getMessage("ocs.confirm.save.all", VaadinUtils.getLocale(),
-										getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale())),
-								() -> {
-									try {
-										getService().save(toSave);
-										// save and recreate grid to avoid optimistic locks
-										clearAll();
-										constructGrid();
-									} catch (RuntimeException ex) {
-										handleSaveException(ex);
-									}
-								});
-					} else {
-						// do not ask for confirmation before saving
-						try {
-							getService().save(toSave);
-							// save and reassign to avoid optimistic locks
-							clearAll();
-							constructGrid();
-						} catch (RuntimeException ex) {
-							handleSaveException(ex);
-						}
-					}
-				}
-			});
-			saveButton.setVisible(isEditAllowed() && !isViewmode()
-					&& GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));
-			getButtonBar().add(saveButton);
+			createSaveButton();
 
 			postProcessButtonBar(getButtonBar());
 			postProcessLayout(mainLayout);
 		}
 		add(mainLayout);
+	}
+
+	private void createSaveButton() {
+		saveButton = new Button(message("ocs.save"));
+		saveButton.addClickListener(event -> {
+
+			// perform validation
+			List<T> toSave = Lists.newArrayList(binders.keySet());
+			boolean valid = binders.values().stream().map(b -> b.validate()).allMatch(s -> s.isOk());
+			if (valid) {
+				if (getFormOptions().isConfirmSave()) {
+					// ask for confirmation before saving
+					VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save.all",
+							VaadinUtils.getLocale(), getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale())),
+							() -> {
+								try {
+									getService().save(toSave);
+									VaadinUtils.showTrayNotification(message("ocs.changes.saved"));
+									// save and recreate grid to avoid optimistic locks
+									clearAll();
+									constructGrid();
+								} catch (RuntimeException ex) {
+									handleSaveException(ex);
+								}
+							});
+				} else {
+					// do not ask for confirmation before saving
+					try {
+						getService().save(toSave);
+						VaadinUtils.showTrayNotification(message("ocs.changes.saved"));
+						// save and reassign to avoid optimistic locks
+						clearAll();
+						constructGrid();
+					} catch (RuntimeException ex) {
+						handleSaveException(ex);
+					}
+				}
+			}
+		});
+		saveButton.setVisible(isEditAllowed() && !isViewmode()
+				&& GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));
+		getButtonBar().add(saveButton);
 	}
 
 	/**
@@ -346,6 +352,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 							// save changes then rebuild grid
 							try {
 								getService().save(editor.getItem());
+								VaadinUtils.showTrayNotification(message("ocs.changes.saved"));
 								// save and recreate grid to avoid optimistic locks
 								binders.clear();
 								clearGridWrapper();
@@ -357,20 +364,21 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 					});
 					return sb;
 				} else {
-					// cancel editing and go back to normal
-					Button cb = new Button("");
-					cb.setIcon(VaadinIcon.BAN.create());
-					cb.addClickListener(event -> {
-						binders.clear();
-						clearGridWrapper();
-						constructGrid();
-					});
-					return cb;
+					// not the current row, no button
+					return new Span("");
 				}
 			});
 
 			saveColumn.setHeader(message("ocs.save")).setKey("save");
 			getGridWrapper().getGrid().getColumnByKey("save").setVisible(false);
+
+			getGridWrapper().getGrid().addItemClickListener(event -> {
+				if (!Objects.equals(event.getItem(), editor.getItem())) {
+					binders.clear();
+					clearGridWrapper();
+					constructGrid();
+				}
+			});
 		}
 
 		// remove button at the end of the row
@@ -526,11 +534,13 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 * @param am   the attribute model for the component
 	 * @param comp the component
 	 */
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		compMap.put(id + "_" + am.getPath(), comp);
 		if (comp instanceof HasValue) {
 			HasValue<?, ?> hv = (HasValue<?, ?>) comp;
-			hv.addValueChangeListener(event -> changedEntityIds.add(id));
+			ValueChangeListener listener = event -> changedEntityIds.add(id);
+			hv.addValueChangeListener(listener);
 		}
 	}
 

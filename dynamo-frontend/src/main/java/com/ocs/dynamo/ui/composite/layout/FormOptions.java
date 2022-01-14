@@ -234,7 +234,7 @@ public class FormOptions implements Serializable {
 	private boolean startInAdvancedMode;
 
 	/**
-	 * Whether to use check boxes 
+	 * Whether to use check boxes for multiple selection inside popup
 	 */
 	private boolean useCheckboxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
 
@@ -436,7 +436,7 @@ public class FormOptions implements Serializable {
 	 * components will be grouped in panels (default) or tabs
 	 * 
 	 * @param attributeGroupMode the desired attribute group mode
-	 * @return
+	 * @return 
 	 */
 	public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
 		this.attributeGroupMode = attributeGroupMode;

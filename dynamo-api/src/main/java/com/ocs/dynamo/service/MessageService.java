@@ -59,9 +59,9 @@ public interface MessageService {
 	 * Retrieves a simple parameterized message - returns a warning if no such
 	 * message can be found
 	 * 
-	 * @param key  the key of the message
-	 * @param local the locale
-	 * @param args the arguments. These are referred to using {0}, {1} etc
+	 * @param key    the key of the message
+	 * @param locale the locale
+	 * @param args   the arguments. These are referred to using {0}, {1} etc
 	 * @return
 	 */
 	String getMessage(String key, Locale locale, Object... args);

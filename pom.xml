@@ -1,10 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>2.8.7-SNAPSHOT</version>
+	<version>2.9-SNAPSHOT</version>
 	<name>Dynamo Framework</name>
 	<description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
@@ -82,32 +84,34 @@
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
 		<!-- Dependency versions. -->
-		<vaadin.version>14.5.1</vaadin.version>
+		<vaadin.version>14.8.0</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<commons.io.version>2.8.0</commons.io.version>
 		<commons.lang.version>3.12.0</commons.lang.version>
+		<commons.text.version>1.9</commons.text.version>
 		<poi.version>4.1.2</poi.version>
 		<xlsx-streamer.version>2.2.0</xlsx-streamer.version>
-		<opencsv.version>5.4</opencsv.version>
+		<opencsv.version>5.5.2</opencsv.version>
 		<javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
-		<spring.boot.version>2.4.4</spring.boot.version>
+		<spring.boot.version>2.6.2</spring.boot.version>
 		<karibu.testing.version>1.1.30</karibu.testing.version>
 		<javax.annotation.api.version>1.3.2</javax.annotation.api.version>
 		<!-- Maven plugin versions. -->
-		<org.apache.maven.plugins.compiler.version>3.8.0</org.apache.maven.plugins.compiler.version>
-		<org.apache.maven.plugins.jar.version>3.2.0</org.apache.maven.plugins.jar.version>
+		<org.apache.maven.plugins.compiler.version>3.8.1</org.apache.maven.plugins.compiler.version>
+		<org.apache.maven.plugins.jar.version>3.2.1</org.apache.maven.plugins.jar.version>
 		<org.apache.maven.plugins.source.version>3.2.1</org.apache.maven.plugins.source.version>
-		<org.apache.maven.plugins.javadoc.version>3.2.0</org.apache.maven.plugins.javadoc.version>
+		<org.apache.maven.plugins.javadoc.version>3.3.1</org.apache.maven.plugins.javadoc.version>
 		<com.maven.plugins.apt.version>1.1.3</com.maven.plugins.apt.version>
 		<org.apache.maven.plugins.release.version>3.0.0-M1</org.apache.maven.plugins.release.version>
 		<org.apache.maven.plugins.checkstyle.version>3.1.2</org.apache.maven.plugins.checkstyle.version>
 		<org.apache.maven.plugins.gpg.version>1.6</org.apache.maven.plugins.gpg.version>
-		<org.jacoco.maven.plugins.version>0.8.6</org.jacoco.maven.plugins.version>
+		<org.jacoco.maven.plugins.version>0.8.7</org.jacoco.maven.plugins.version>
 		<github-release-plugin.version>1.4.0</github-release-plugin.version>
 		<org.sonatype.plugins.version>1.6.8</org.sonatype.plugins.version>
 		<javax.el-api.version>3.0.1-b06</javax.el-api.version>
-		<glassfish.javax.el.version>3.0.1-b12</glassfish.javax.el.version>
-		<junit.version>5.7.1</junit.version>
+		<junit.version>5.8.2</junit.version>
+		<spotbugs.version>4.5.3.0</spotbugs.version>
+		<guava.version>31.0-jre</guava.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -148,13 +152,6 @@
 				<version>${javax.el-api.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>org.glassfish</groupId>
-				<artifactId>javax.el</artifactId>
-				<version>${glassfish.javax.el.version}</version>
-				<scope>test</scope>
-			</dependency>
-			<!-- Excel -->
-			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi</artifactId>
 				<version>${poi.version}</version>
@@ -184,7 +181,7 @@
 			<dependency>
 				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-text</artifactId>
-				<version>1.9</version>
+				<version>${commons.text.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>commons-io</groupId>
@@ -205,7 +202,12 @@
 			<dependency>
 				<groupId>com.vaadin.componentfactory</groupId>
 				<artifactId>selection-grid-flow</artifactId>
-				<version>0.4.0</version>
+				<version>0.5.0</version>
+			</dependency>
+			<dependency>
+				<groupId>com.google.guava</groupId>
+				<artifactId>guava</artifactId>
+				<version>${guava.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -277,6 +279,13 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-checkstyle-plugin</artifactId>
 					<version>${org.apache.maven.plugins.checkstyle.version}</version>
+					<dependencies>
+						<dependency>
+							<groupId>com.puppycrawl.tools</groupId>
+							<artifactId>checkstyle</artifactId>
+							<version>9.2.1</version>
+						</dependency>
+					</dependencies>
 					<configuration>
 						<configLocation>${project.baseUri}../dynamo-qa/ocs_checks.xml</configLocation>
 						<encoding>UTF-8</encoding>
@@ -300,7 +309,7 @@
 				<plugin>
 					<groupId>com.github.spotbugs</groupId>
 					<artifactId>spotbugs-maven-plugin</artifactId>
-					<version>4.2.2</version>
+					<version>${spotbugs.version}</version>
 				</plugin>
 				<!-- QA - Jacoco code coverage -->
 				<plugin>
@@ -463,20 +472,6 @@
 			<id>release</id>
 			<build>
 				<plugins>
-					<!-- Create source jars. -->
-					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-source-plugin</artifactId>
-						<version>${org.apache.maven.plugins.source.version}</version>
-						<executions>
-							<execution>
-								<id>attach-sources</id>
-								<goals>
-									<goal>jar-no-fork</goal>
-								</goals>
-							</execution>
-						</executions>
-					</plugin>
 					<!-- Create javadoc jars. -->
 					<plugin>
 						<groupId>org.apache.maven.plugins</groupId>

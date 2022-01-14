@@ -299,7 +299,8 @@ public class FilterGroup<T> {
 			}
 			break;
 		default:
-			// in case of exact search on a date, translate to an interval covering all times within that date
+			// in case of exact search on a date, translate to an interval covering all
+			// times within that date
 			if (attributeModel.isSearchDateOnly() && value != null) {
 				LocalDate ldt = (LocalDate) value;
 				if (LocalDateTime.class.equals(attributeModel.getType())) {

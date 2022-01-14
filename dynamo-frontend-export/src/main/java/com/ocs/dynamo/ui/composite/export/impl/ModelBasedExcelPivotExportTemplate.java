@@ -20,7 +20,6 @@ import java.util.Objects;
 import java.util.function.Supplier;
 
 import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.util.CellRangeAddress;
@@ -60,14 +59,13 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param exportMode
-	 * @param sortOrders
-	 * @param filter
-	 * @param title
-	 * @param customGenerator
-	 * @param pivotParameters
+	 * @param service the service used to query the database
+	 * @param entityModel the entity model of the entity to export
+	 * @param sortOrders the sort order to apply to the data
+	 * @param filter the filter used when querying the database
+	 * @param title title of the report
+	 * @param customGenerator custom generator
+	 * @param pivotParameters pivot parameters
 	 * @param joins
 	 */
 	public ModelBasedExcelPivotExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel,
@@ -331,7 +329,6 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 					String col = CellReference.convertNumToColString(ci);
 					totalsCell.setCellStyle(getGenerator().getTotalsStyle(clazz, null));
-					totalsCell.setCellType(CellType.FORMULA);
 
 					int firstRow = 1;
 					int lastRow = sheet.getLastRowNum();
@@ -346,7 +343,6 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 			Cell totalsCell = totalsRow.createCell(ci);
 			totalsCell.setCellStyle(getGenerator().getTotalsStyle(clazz, null));
-			totalsCell.setCellType(CellType.FORMULA);
 			String firstCol = CellReference.convertNumToColString(nrOfFixedCols);
 			String lastCol = CellReference.convertNumToColString(ci - 1);
 			int rowNum = sheet.getLastRowNum() + 1;
@@ -358,12 +354,11 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	/**
 	 * Writes a cell containing an aggregation total at the end of a rwow
 	 * 
-	 * @param entity        the entity that is being processed
 	 * @param row           the current row
 	 * @param type          the aggregation type
-	 * @param lastColAdded  the index of the last column that was added
+	 * @param aggregateClass the class of the aggregate object
+	 * @param nrOfVariableCols the number of variable columns
 	 * @param nrOfFixedCols the number of fixed columns
-	 * @param colsAdded     the number of (variable) columns added so far
 	 */
 	private void writeRowAggregate(Row row, PivotAggregationType type, Class<?> aggregateClass, int nrOfVariableCols,
 			int nrOfFixedCols) {
@@ -374,7 +369,6 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		String lastCol = CellReference.convertNumToColString(nrOfFixedCols + nrOfVariableCols - 1);
 
 		totalsCell.setCellStyle(getGenerator().getTotalsStyle(aggregateClass, null));
-		totalsCell.setCellType(CellType.FORMULA);
 
 		int rn = row.getRowNum() + 1;
 		totalsCell.setCellFormula(toExcelFunction(type) + "(" + firstCol + rn + ":" + lastCol + rn + ")");

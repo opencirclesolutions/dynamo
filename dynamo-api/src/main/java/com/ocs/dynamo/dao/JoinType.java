@@ -20,5 +20,5 @@ package com.ocs.dynamo.dao;
  */
 public enum JoinType {
 
-    INNER, LEFT, RIGHT;
+    INNER, LEFT, RIGHT
 }

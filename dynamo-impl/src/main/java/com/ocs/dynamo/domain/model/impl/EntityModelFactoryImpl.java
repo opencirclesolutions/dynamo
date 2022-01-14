@@ -254,8 +254,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);
 			if (size != null && size.min() > 0 && AttributeType.DETAIL.equals(model.getAttributeType())) {
 				model.setRequired(true);
-			}			
-			
+			}
+
 			// minimum and maximum length based on the @Size annotation
 			if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
 				model.setMaxLength(size.max());
@@ -600,8 +600,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		// loop over the attributes and set the orders
 		int i = 0;
 		for (String attributeName : result) {
-			AttributeModel am = attributeModels.stream().filter(m -> m.getName().equals(attributeName)).findFirst()
-					.orElse(null);
+			AttributeModel am = attributeModels.stream() //
+					.filter(m -> m.getName().equals(attributeName)) //
+					.findFirst().orElse(null);
 			if (am != null) {
 				consumer.accept((AttributeModelImpl) am, i);
 				i++;

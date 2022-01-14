@@ -26,7 +26,7 @@ import java.time.ZonedDateTime;
 
 /**
  * Aspect for intercepting calls and automatically setting audit information (created by/created on
- * etc)
+ * etc.)
  * 
  * Can be used in your application simply by adding "com.ocs.dynamo.aop" to the list of packages to
  * scan for components
@@ -56,8 +56,8 @@ public class AuditAspect {
      *            the join point
      * @param entity
      *            the entity that is being saved
-     * @return
-     * @throws Throwable
+     * @return the result of proceeding with the join point
+     * @throws Throwable when something goes wrong
      */
     @Around("anySaveMethod() && args(entity)")
     public Object auditSave(ProceedingJoinPoint joinPoint, AbstractAuditableEntity<?> entity)
@@ -67,9 +67,9 @@ public class AuditAspect {
     }
 
     /**
-     * Fills in the audit fields (created by, created on etc)
+     * Fills in the audit fields (created by, created on etc.)
      * 
-     * @param entity
+     * @param entity the entity for which to set the audit fields
      */
     private void setAuditFields(AbstractAuditableEntity<?> entity) {
         String userName = userDetailsService.getCurrentUserName();

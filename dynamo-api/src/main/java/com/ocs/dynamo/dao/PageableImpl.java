@@ -30,9 +30,9 @@ public class PageableImpl implements Pageable {
     /**
      * Constructor
      * 
-     * @param pageNumber
-     * @param pageSize
-     * @param sortOrders
+     * @param pageNumber the page number
+     * @param pageSize the page size
+     * @param sortOrders the sort orders
      */
     public PageableImpl(int pageNumber, int pageSize, SortOrder... sortOrders) {
         this(pageNumber, pageSize, new SortOrders(sortOrders));
@@ -40,10 +40,10 @@ public class PageableImpl implements Pageable {
 
     /**
      * Constructor
-     * 
-     * @param pageNumber
-     * @param pageSize
-     * @param sortOrders
+     *
+     * @param pageNumber the page number
+     * @param pageSize the page size
+     * @param sortOrders the sort orders
      */
     public PageableImpl(int pageNumber, int pageSize, SortOrders sortOrders) {
         this.pageNumber = pageNumber;

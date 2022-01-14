@@ -93,7 +93,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * The search filters to apply to the individual fields
 	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-	
+
 	/**
 	 * Column threshold
 	 */

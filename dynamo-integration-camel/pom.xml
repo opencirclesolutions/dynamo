@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dynamo-integration-camel</artifactId>
 	<packaging>jar</packaging>
@@ -8,7 +10,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>2.8.7-SNAPSHOT</version>
+		<version>2.9-SNAPSHOT</version>
 	</parent>
 	<organization>
 		<name>Open Circle Solutions</name>
@@ -22,7 +24,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<camel.version>2.25.1</camel.version>
+		<camel.version>2.25.4</camel.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -40,6 +42,12 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-to-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Camel -->
 		<dependency>
@@ -104,7 +112,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
 </project>

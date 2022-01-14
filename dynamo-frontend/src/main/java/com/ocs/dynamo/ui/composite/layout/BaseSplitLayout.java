@@ -159,6 +159,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				mainLayout.add(splitter);
 
 				splitterLayout = new DefaultVerticalLayout(false, true);
+				splitterLayout.setClassName(DynamoConstants.CSS_SPLIT_LAYOUT_LEFT);
 
 				// optional header layout
 				headerLayout = constructHeaderLayout();
@@ -191,8 +192,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			if (isHorizontalMode()) {
 				// create the layout that is the right part of the splitter
 				VerticalLayout extra = new DefaultVerticalLayout(false, true);
+				extra.setClassName(DynamoConstants.CSS_SPLIT_LAYOUT_RIGHT);
 				extra.add(editPanel);
 				splitter.addToSecondary(extra);
+
 			} else {
 				mainLayout.add(editPanel);
 			}
