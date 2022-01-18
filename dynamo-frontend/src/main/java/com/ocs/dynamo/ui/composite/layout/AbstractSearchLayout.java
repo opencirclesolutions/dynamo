@@ -154,7 +154,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Override
 	public void build() {
 		if (mainSearchLayout == null) {
-			mainSearchLayout = new DefaultVerticalLayout(false, false);
+			mainSearchLayout = new DefaultVerticalLayout(true, false);
 			mainSearchLayout.addClassName(DynamoConstants.CSS_MAIN_SEARCH_LAYOUT);
 
 			// if search immediately, construct the search results grid

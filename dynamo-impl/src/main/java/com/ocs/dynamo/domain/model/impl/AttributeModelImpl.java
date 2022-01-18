@@ -184,7 +184,7 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean visible;
 
 	private boolean visibleInGrid;
-	
+
 	private boolean week;
 
 	@Override
@@ -902,6 +902,5 @@ public class AttributeModelImpl implements AttributeModel {
 	public String toString() {
 		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
 	}
-	
-	
+
 }

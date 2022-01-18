@@ -96,7 +96,7 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
 		while (entity != null) {
 			Row row = sheet.createRow(rowIndex);
 			int colIndex = 0;
-			for (AttributeModel am : getEntityModel().getAttributeModels()) {
+			for (AttributeModel am : getEntityModel().getAttributeModelsSortedForGrid()) {
 				if (am != null && show(am)) {
 					Object value = ClassUtils.getFieldValue(entity, am.getPath());
 					Cell cell = createCell(row, colIndex, entity, value, am, null);

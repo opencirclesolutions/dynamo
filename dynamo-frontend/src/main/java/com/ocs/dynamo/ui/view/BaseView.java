@@ -69,12 +69,12 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	private boolean confirmBeforeLeave;
 
 	public BaseView() {
-		this(false);
-		setSpacing(false);
+		this(false, false);
 	}
 
-	public BaseView(boolean confirmBeforeLeave) {
+	public BaseView(boolean confirmBeforeLeave, boolean spacing) {
 		this.confirmBeforeLeave = confirmBeforeLeave;
+		setSpacing(spacing);
 	}
 
 	@Override

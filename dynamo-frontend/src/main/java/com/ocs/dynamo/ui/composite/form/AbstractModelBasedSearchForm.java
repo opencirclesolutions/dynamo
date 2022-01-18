@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -189,6 +190,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	public void build() {
 		if (main == null) {
 			main = new DefaultVerticalLayout(false, true);
+			main.addClassName(DynamoConstants.CSS_SEARCH_FORM_LAYOUT);
 			preProcessLayout(main);
 
 			// create the search form
@@ -196,7 +198,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			if (((Component) filterLayout).isVisible()) {
 
 				// add a wrapper for adding an action handlers
-				wrapperPanel = new DefaultVerticalLayout(false, true);
+				wrapperPanel = new DefaultVerticalLayout(false, false);
+				wrapperPanel.addClassName(DynamoConstants.CSS_SEARCH_FORM_WRAPPER);
 				main.add(wrapperPanel);
 
 				wrapperPanel.add((Component) filterLayout);

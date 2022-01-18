@@ -177,7 +177,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		FilterRegion(FilterListener<T> listener) {
 			this.listener = listener;
 			layout = new FlexLayout();
-			layout.setFlexWrap(FlexWrap.NOWRAP);
+			layout.setSizeFull();
+			layout.setFlexWrap(FlexWrap.WRAP);
 			layout.addClassName("dynamoFlexRow");
 
 			removeButton = new Button("");
@@ -817,7 +818,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	@Override
 	protected VerticalLayout constructFilterLayout() {
 		// just an empty layout - filters will be added on the fly
-		return new DefaultVerticalLayout();
+		DefaultVerticalLayout layout = new DefaultVerticalLayout();
+		layout.addClassName("dynamoFlexFilterLayout");
+		return layout;
 	}
 
 	/**

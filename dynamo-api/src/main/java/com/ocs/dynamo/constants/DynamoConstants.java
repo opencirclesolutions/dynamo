@@ -74,6 +74,12 @@ public final class DynamoConstants {
 
 	public static final String CSS_MAIN_SEARCH_LAYOUT = "mainSearchLayout";
 
+	public static final String CSS_SEARCH_FORM_LAYOUT = "searchFormLayout";
+
+	public static final String CSS_SEARCH_FORM_WRAPPER = "searchFormWrapper";
+
+	public static final String CSS_FLEXIBLE_SEARCH_LAYOUT_SEARCH_FORM = "flexibleSearchForm";
+
 	public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
 
 	public static final String CSS_MODEL_BASED_EDIT_FORM_MAIN = "modelBasedEditFormMain";
