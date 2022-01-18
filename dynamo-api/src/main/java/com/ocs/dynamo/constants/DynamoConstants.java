@@ -98,9 +98,9 @@ public final class DynamoConstants {
 	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
 
 	public static final String CSS_SPLIT_LAYOUT = "splitLayout";
-	
+
 	public static final String CSS_SPLIT_LAYOUT_LEFT = "splitLayoutLeft";
-	
+
 	public static final String CSS_SPLIT_LAYOUT_RIGHT = "splitLayoutRight";
 
 	public static final String CSS_TAB_LAYOUT = "tabLayout";
@@ -298,7 +298,7 @@ public final class DynamoConstants {
 	 * Name of the system property that is used to determine the default time format
 	 */
 	public static final String SP_DEFAULT_TIME_FORMAT = "ocs.default.time.format";
-	
+
 	/**
 	 * Name of the system property that is used to determine the representation of
 	 * the value true
@@ -338,16 +338,22 @@ public final class DynamoConstants {
 	public static final String SP_LOOKUP_FIELD_MAX_ITEMS = "ocs.default.lookupfield.max.items";
 
 	/**
+	 * The number of rows that must be present in a result set before resorting to a
+	 * streaming approach for Excel export
+	 */
+	public static final String SP_MAX_ROWS_BEFORE_STREAMING = "ocs.max.rows.before.streaming";
+
+	/**
 	 * Class name for the service locator (override to create a different service
 	 * locator, e.g. to use a separate service locator for integration tests)
 	 */
 	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
-	
+
 	/**
-	 * The name of the system property that is used to determine whether to trim white space for text inputs
+	 * The name of the system property that is used to determine whether to trim
+	 * white space for text inputs
 	 */
 	public static final String SP_TRIM_SPACES = "ocs.trim.spaces";
-
 
 	/**
 	 * System property that indicates whether to use the thousands grouping

@@ -56,12 +56,6 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
      */
     protected static final int TITLE_ROW_HEIGHT = 40;
 
-    /**
-     * The maximum number of rows that will be created normally. If the number is
-     * larger, then a streaming writer will be used. This is faster but it will mean
-     * we cannot auto size the columns
-     */
-    protected static final int MAX_SIZE_BEFORE_STREAMING = 1000;
 
     /**
      * The page size

@@ -129,7 +129,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	 * @return
 	 */
 	protected Workbook createWorkbook(int size) {
-		if (size > MAX_SIZE_BEFORE_STREAMING) {
+		if (size > SystemPropertyUtils.getMaxExportRowsBeforeStreaming()) {
 			return new SXSSFWorkbook();
 		}
 		return new XSSFWorkbook();

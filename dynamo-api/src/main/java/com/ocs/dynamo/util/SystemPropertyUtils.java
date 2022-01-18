@@ -60,11 +60,10 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * Returns whether export of grid contents to Excel/CSV is allowed. This system
-	 * property can be used to either enable or disable this on the application
-	 * level.
 	 * 
-	 * @return
+	 * @return whether export of grid contents to Excel/CSV is allowed. This system
+	 *         property can be used to either enable or disable this on the
+	 *         application level.
 	 */
 	public static boolean allowListExport() {
 		return getBooleanProperty(DynamoConstants.SP_ALLOW_LIST_EXPORT, null);
@@ -76,7 +75,7 @@ public final class SystemPropertyUtils {
 	 * 
 	 * @param propertyName the name of the property
 	 * @param defaultValue the default value
-	 * @return
+	 * @return the value of the property
 	 */
 	private static Boolean getBooleanProperty(String propertyName, Boolean defaultValue) {
 		String sys = System.getProperty(propertyName);
@@ -199,7 +198,7 @@ public final class SystemPropertyUtils {
 	 * <lan> is the language code of the locale, e.g. "en", "nl"
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the default faulse representation
 	 */
 	public static String getDefaultFalseRepresentation(Locale locale) {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION + "." + locale.getLanguage(), null);
@@ -361,6 +360,15 @@ public final class SystemPropertyUtils {
 	 */
 	public static int getLookupFieldMaxItems() {
 		return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
+	}
+
+	/**
+	 * 
+	 * @return the maximum number of rows that a result set is allowed to have
+	 *         before resorting to a streaming approach when doing Excel exports
+	 */
+	public static Integer getMaxExportRowsBeforeStreaming() {
+		return getIntProperty(DynamoConstants.SP_MAX_ROWS_BEFORE_STREAMING, 1000);
 	}
 
 	/**
