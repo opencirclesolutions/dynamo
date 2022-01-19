@@ -11,19 +11,14 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.domain.model.impl;
-
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
+package com.ocs.dynamo.domain.model;
 
 /**
- * Interface for entity model factories that provides access to methods during the creation of a new entity model by another entity model factory
- *
- * @author patrickdeenen
+ * 
  * @author Bas Rutten
  *
  */
-interface EntityModelConstruct {
+public enum ThousandsGroupingMode {
 
-	EntityModel<?> constructNestedEntityModel(EntityModelFactory master, Class<?> type, String reference);
+	NEVER, INHERIT, ALWAYS, VIEW, EDIT
 }

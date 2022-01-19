@@ -86,9 +86,35 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private Button addButton;
 
 	/**
-	 * Button for canceling edit mode
+	 * Mapping from entity to associated binder
+	 */
+	private Map<T, Binder<T>> binders = new HashMap<>();
+
+	/**
+	 * Button for canceling edit mode. Displayed below the grid when
+	 * "openInViewMode" is true
 	 */
 	private Button cancelButton;
+
+	/**
+	 * The IDS of the entities that were modified
+	 */
+	private Set<ID> changedEntityIds = new HashSet<>();
+
+	/**
+	 * Columns threshold for edit form
+	 */
+	private List<String> columnThresholds = new ArrayList<>();
+
+	/**
+	 * Map from entity ID + attribute to component
+	 */
+	private Map<String, Component> compMap = new HashMap<>();
+
+	/**
+	 * The currently used wrapper component
+	 */
+	private BaseGridWrapper<ID, T> currentWrapper;
 
 	/**
 	 * The button for changing to edit mode
@@ -96,15 +122,14 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private Button editButton;
 
 	/**
-	 * Button for saving changes that appears below the grid (in "edit all at once"
-	 * mode)
-	 */
-	private Button saveButton;
-
-	/**
 	 * The filter that is applied to limit the search results
 	 */
 	protected SerializablePredicate<T> filter;
+
+	/**
+	 * Supplier for creating the filter
+	 */
+	private Supplier<SerializablePredicate<T>> filterSupplier;
 
 	/**
 	 * The main layout
@@ -117,47 +142,23 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	private String removeMessage;
 
 	/**
+	 * Button for saving changes that appears below the grid (in "edit all at once"
+	 * mode)
+	 */
+	private Button saveButton;
+
+	/**
 	 * Whether the screen is in view mode
 	 */
 	private boolean viewmode;
 
 	/**
-	 * Mapping from entity to associated binder
-	 */
-	private Map<T, Binder<T>> binders = new HashMap<>();
-
-	/**
-	 * Supplier for creating the filter
-	 */
-	private Supplier<SerializablePredicate<T>> filterSupplier;
-
-	/**
-	 * The currently used wrapper component
-	 */
-	private BaseGridWrapper<ID, T> currentWrapper;
-
-	/**
-	 * Map from entity ID + attribute to component
-	 */
-	private Map<String, Component> compMap = new HashMap<>();
-
-	/**
-	 * Columns threshold for edit form
-	 */
-	private List<String> columnThresholds = new ArrayList<>();
-
-	/**
-	 * The IDS of the entities that were modified
-	 */
-	private Set<ID> changedEntityIds = new HashSet<>();
-
-	/**
 	 * Constructor
 	 * 
-	 * @param service     the service
+	 * @param service     the service that is used for querying the database
 	 * @param entityModel the entity model to base the grid on
-	 * @param formOptions
-	 * @param sortOrder
+	 * @param formOptions the form options
+	 * @param sortOrder   the sort order to apply
 	 * @param joins
 	 */
 	public EditableGridLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
@@ -178,108 +179,15 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 			mainLayout.add(getButtonBar());
 
-			addButton = new Button(message("ocs.add"));
-			addButton.setIcon(VaadinIcon.PLUS.create());
-			addButton.addClickListener(event -> {
-				// create new entry by means of pop-up dialog
-				EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), null, getEntityModel(),
-						getFieldFilters(), new FormOptions()) {
-
-					@Override
-					public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-						// reload so that the newly created entity shows up
-						reload();
-					}
-
-					@Override
-					protected T createEntity() {
-						return EditableGridLayout.this.createEntity();
-					}
-
-				};
-				dialog.setColumnThresholds(columnThresholds);
-				dialog.buildAndOpen();
-			});
-			getButtonBar().add(addButton);
-			addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
-
-			// button for switching to edit mode
-			editButton = new Button(message("ocs.edit"));
-			editButton.setIcon(VaadinIcon.EDIT.create());
-			editButton.addClickListener(event -> toggleViewMode(false));
-			editButton.setVisible(getFormOptions().isEditAllowed() && isEditAllowed() && isViewmode());
-			getButtonBar().add(editButton);
-
-			// button for canceling edit mode
-			cancelButton = new Button(message("ocs.cancel"));
-			cancelButton.setIcon(VaadinIcon.BAN.create());
-			cancelButton.addClickListener(event -> {
-
-				Runnable r = () -> {
-					if (getGridWrapper().getGrid().getEditor().isOpen()) {
-						getGridWrapper().getGrid().getEditor().cancel();
-					}
-					toggleViewMode(true);
-				};
-
-				// check for pending changes before cancelling
-				if (!changedEntityIds.isEmpty()) {
-					VaadinUtils.showConfirmDialog(message("ocs.pending.changes"), r);
-				} else {
-					r.run();
-				}
-			});
-			cancelButton.setVisible(isEditAllowed() && !isViewmode() && getFormOptions().isOpenInViewMode());
-			getButtonBar().add(cancelButton);
-
+			createAddButton();
+			createEditButton();
+			createCancelButton();
 			createSaveButton();
 
 			postProcessButtonBar(getButtonBar());
 			postProcessLayout(mainLayout);
 		}
 		add(mainLayout);
-	}
-
-	private void createSaveButton() {
-		saveButton = new Button(message("ocs.save"));
-		saveButton.addClickListener(event -> {
-
-			// perform validation
-			List<T> toSave = Lists.newArrayList(binders.keySet());
-			boolean valid = binders.values().stream().map(b -> b.validate()).allMatch(s -> s.isOk());
-			if (valid) {
-				if (getFormOptions().isConfirmSave()) {
-					// ask for confirmation before saving
-					VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save.all",
-							VaadinUtils.getLocale(), getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale())),
-							() -> {
-								try {
-									getService().save(toSave);
-									VaadinUtils.showTrayNotification(message("ocs.changes.saved"));
-									// save and recreate grid to avoid optimistic locks
-									clearAll();
-									constructGrid();
-								} catch (RuntimeException ex) {
-									handleSaveException(ex);
-								}
-							});
-				} else {
-					// do not ask for confirmation before saving
-					try {
-						getService().save(toSave);
-						VaadinUtils.showTrayNotification(message("ocs.changes.saved"));
-						// save and reassign to avoid optimistic locks
-						clearAll();
-						constructGrid();
-					} catch (RuntimeException ex) {
-						handleSaveException(ex);
-					}
-				}
-			}
-		});
-		saveButton.setVisible(isEditAllowed() && !isViewmode()
-				&& GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));
-		getButtonBar().add(saveButton);
 	}
 
 	/**
@@ -449,11 +357,125 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				EditableGridLayout.this.postProcessDataProvider(provider);
 			}
 
+			@Override
+			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+				return EditableGridLayout.this.constructCustomField(entityModel, attributeModel, isViewmode(), false);
+			}
+
 		};
 		postConfigureGridWrapper(wrapper);
 		wrapper.setMaxResults(getMaxResults());
 		wrapper.build();
 		return wrapper;
+	}
+
+	private void createAddButton() {
+		addButton = new Button(message("ocs.add"));
+		addButton.setIcon(VaadinIcon.PLUS.create());
+		addButton.addClickListener(event -> {
+			// create new entry by means of pop-up dialog
+			EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), null, getEntityModel(),
+					getFieldFilters(), new FormOptions()) {
+
+				@Override
+				public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+					// reload so that the newly created entity shows up
+					reload();
+				}
+
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+						boolean viewMode, boolean searchMode) {
+					return EditableGridLayout.this.constructCustomField(entityModel, attributeModel, viewMode,
+							searchMode);
+				}
+
+				@Override
+				protected T createEntity() {
+					return EditableGridLayout.this.createEntity();
+				}
+
+			};
+			dialog.setColumnThresholds(columnThresholds);
+			dialog.buildAndOpen();
+		});
+		getButtonBar().add(addButton);
+		addButton.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed() && !isViewmode());
+	}
+
+	private void createCancelButton() {
+		// button for canceling edit mode
+		cancelButton = new Button(message("ocs.cancel"));
+		cancelButton.setIcon(VaadinIcon.BAN.create());
+		cancelButton.addClickListener(event -> {
+
+			Runnable r = () -> {
+				if (getGridWrapper().getGrid().getEditor().isOpen()) {
+					getGridWrapper().getGrid().getEditor().cancel();
+				}
+				toggleViewMode(true);
+			};
+
+			// check for pending changes before cancelling
+			if (!changedEntityIds.isEmpty()) {
+				VaadinUtils.showConfirmDialog(message("ocs.pending.changes"), r);
+			} else {
+				r.run();
+			}
+		});
+		cancelButton.setVisible(isEditAllowed() && !isViewmode() && getFormOptions().isOpenInViewMode());
+		getButtonBar().add(cancelButton);
+	}
+
+	private void createEditButton() {
+		// button for switching to edit mode
+		editButton = new Button(message("ocs.edit"));
+		editButton.setIcon(VaadinIcon.EDIT.create());
+		editButton.addClickListener(event -> toggleViewMode(false));
+		editButton.setVisible(getFormOptions().isEditAllowed() && isEditAllowed() && isViewmode());
+		getButtonBar().add(editButton);
+	}
+
+	private void createSaveButton() {
+		saveButton = new Button(message("ocs.save"));
+		saveButton.addClickListener(event -> {
+
+			// perform validation
+			List<T> toSave = Lists.newArrayList(binders.keySet());
+			boolean valid = binders.values().stream().map(b -> b.validate()).allMatch(s -> s.isOk());
+			if (valid) {
+				if (getFormOptions().isConfirmSave()) {
+					// ask for confirmation before saving
+					VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save.all",
+							VaadinUtils.getLocale(), getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale())),
+							() -> {
+								try {
+									getService().save(toSave);
+									VaadinUtils.showTrayNotification(message("ocs.changes.saved"));
+									// save and recreate grid to avoid optimistic locks
+									clearAll();
+									constructGrid();
+								} catch (RuntimeException ex) {
+									handleSaveException(ex);
+								}
+							});
+				} else {
+					// do not ask for confirmation before saving
+					try {
+						getService().save(toSave);
+						VaadinUtils.showTrayNotification(message("ocs.changes.saved"));
+						// save and reassign to avoid optimistic locks
+						clearAll();
+						constructGrid();
+					} catch (RuntimeException ex) {
+						handleSaveException(ex);
+					}
+				}
+			}
+		});
+		saveButton.setVisible(isEditAllowed() && !isViewmode()
+				&& GridEditMode.SIMULTANEOUS.equals(getFormOptions().getGridEditMode()));
+		getButtonBar().add(saveButton);
 	}
 
 	@Override
@@ -485,7 +507,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 * Gets a component for the entity identified by ID and for the specified
 	 * attribute model
 	 * 
-	 * @param id the ID
+	 * @param id the ID of the entity
 	 * @param am the attribute model
 	 * @return
 	 */

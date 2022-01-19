@@ -23,16 +23,15 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
+import lombok.NoArgsConstructor;
+
 /**
  * 
  * @author Bas Rutten
  *
  */
+@NoArgsConstructor
 public final class DynamoFilterUtil {
-
-	private DynamoFilterUtil() {
-		// hidden constructor
-	}
 
 	/**
 	 * Extracts a specific filter from a (possibly) composite filter
@@ -170,8 +169,6 @@ public final class DynamoFilterUtil {
 			// junction filter, iterate over its children
 			AbstractJunctionFilter junction = (AbstractJunctionFilter) filter;
 			removeFilterFormJunction(junction, propertyIds);
-
-			// clean up empty filters
 			cleanupEmptyFilters(junction);
 		} else if (filter instanceof Not) {
 			// in case of a not-filter, propagate to the child
@@ -237,13 +234,13 @@ public final class DynamoFilterUtil {
 				// check which property to use in the query
 				String prop = am.getReplacementSearchPath() != null ? am.getReplacementSearchPath() : am.getPath();
 
-				Compare.Equal bf = (Compare.Equal) detailFilter;
+				Compare.Equal equal = (Compare.Equal) detailFilter;
 				if (AttributeType.DETAIL.equals(am.getAttributeType())
 						|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
-					if (bf.getValue() instanceof Collection) {
+					if (equal.getValue() instanceof Collection) {
 						// multiple values supplied - construct an OR filter
 
-						Collection<?> col = (Collection<?>) bf.getValue();
+						Collection<?> col = (Collection<?>) equal.getValue();
 						if (!col.isEmpty()) {
 							Or or = new Or();
 							for (Object o : col) {
@@ -256,13 +253,13 @@ public final class DynamoFilterUtil {
 						}
 					} else {
 						// just a single value - construct a single contains filter
-						replaceFilter(filter, new Contains(prop, bf.getValue()), am.getPath(), false);
+						replaceFilter(filter, new Contains(prop, equal.getValue()), am.getPath(), false);
 					}
 				} else {
 					// master attribute - translate to an "in" filter
-					if (bf.getValue() instanceof Collection) {
+					if (equal.getValue() instanceof Collection) {
 						// multiple values supplied - construct an OR filter
-						Collection<?> col = (Collection<?>) bf.getValue();
+						Collection<?> col = (Collection<?>) equal.getValue();
 						if (!col.isEmpty()) {
 							In in = new In(prop, col);
 							replaceFilter(null, filter, in, am.getPath(), false);
@@ -272,9 +269,9 @@ public final class DynamoFilterUtil {
 						}
 					} else if (am.getReplacementSearchPath() != null) {
 						// single value property implemented by means of a collection
-						Object o = bf.getValue();
-						Contains contains = new Contains(prop, o);
-						replaceFilter(null, filter, contains, am.getPath(), false);
+						Object o = equal.getValue();
+						Compare.Equal equals = new Compare.Equal(prop, o);
+						replaceFilter(null, filter, equals, am.getPath(), false);
 					}
 				}
 			}

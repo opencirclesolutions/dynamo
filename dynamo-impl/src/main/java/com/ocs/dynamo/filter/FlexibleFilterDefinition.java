@@ -18,55 +18,55 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import com.ocs.dynamo.domain.model.AttributeModel;
 
 /**
- * Flexible filter definition
+ * Flexible filter definitions for use with a flexible search layout
  * 
  * @author bas.rutten
  *
  */
 public class FlexibleFilterDefinition {
 
-    private AttributeModel attributeModel;
+	private AttributeModel attributeModel;
 
-    private FlexibleFilterType flexibleFilterType;
+	private FlexibleFilterType flexibleFilterType;
 
-    private Object value;
+	private Object value;
 
-    private Object valueTo;
+	private Object valueTo;
 
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
+	public AttributeModel getAttributeModel() {
+		return attributeModel;
+	}
 
-    public FlexibleFilterType getFlexibleFilterType() {
-        return flexibleFilterType;
-    }
+	public FlexibleFilterType getFlexibleFilterType() {
+		return flexibleFilterType;
+	}
 
-    public Object getValue() {
-        return value;
-    }
+	public Object getValue() {
+		return value;
+	}
 
-    public Object getValueTo() {
-        return valueTo;
-    }
+	public Object getValueTo() {
+		return valueTo;
+	}
 
-    public void setAttributeModel(AttributeModel attributeModel) {
-        this.attributeModel = attributeModel;
-    }
+	public void setAttributeModel(AttributeModel attributeModel) {
+		this.attributeModel = attributeModel;
+	}
 
-    public void setFlexibleFilterType(FlexibleFilterType flexibleFilterType) {
-        this.flexibleFilterType = flexibleFilterType;
-    }
+	public void setFlexibleFilterType(FlexibleFilterType flexibleFilterType) {
+		this.flexibleFilterType = flexibleFilterType;
+	}
 
-    public void setValue(Object value) {
-        this.value = value;
-    }
+	public void setValue(Object value) {
+		this.value = value;
+	}
 
-    public void setValueTo(Object valueTo) {
-        this.valueTo = valueTo;
-    }
+	public void setValueTo(Object valueTo) {
+		this.valueTo = valueTo;
+	}
 
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this);
-    }
+	@Override
+	public String toString() {
+		return ReflectionToStringBuilder.toString(this);
+	}
 }

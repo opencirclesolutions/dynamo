@@ -29,24 +29,25 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
- * @author patrick.deenen Utility class for dealing with classes and annotations
+ * 
+ * @author Bas Rutten
+ *
  */
+@Slf4j
 public final class ClassUtils {
 
 	private static final String GET = "get";
 
 	private static final String IS = "is";
-
-	private static final Logger LOG = LoggerFactory.getLogger(ClassUtils.class);
 
 	private static final String SET = "set";
 
@@ -118,7 +119,7 @@ public final class ClassUtils {
 				result = Class.forName(clazz);
 			}
 		} catch (final ClassNotFoundException e) {
-			LOG.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 		}
 		return result;
 	}
@@ -266,7 +267,7 @@ public final class ClassUtils {
 				constructor = clazz.getConstructor(types.toArray(new Class<?>[0]));
 			}
 		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 		}
 		return constructor;
 	}
@@ -533,7 +534,7 @@ public final class ClassUtils {
 				MethodUtils.invokeMethod(obj, SET + StringUtils.capitalize(fieldName), value);
 			}
 		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
-			LOG.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			throw new OCSRuntimeException(e.getMessage(), e);
 		}
 	}
@@ -548,7 +549,7 @@ public final class ClassUtils {
 				copyFields(from, to, aClass.getFields());
 			}
 		} catch (Exception e) {
-			LOG.error(e.getMessage(), e);
+			log.error(e.getMessage(), e);
 			throw new OCSRuntimeException(e.getMessage(), e);
 		}
 	}
@@ -557,7 +558,7 @@ public final class ClassUtils {
 		for (Field field : fields) {
 			final int fieldModifiers = field.getModifiers();
 			if (!Modifier.isFinal(fieldModifiers) && !Modifier.isStatic(fieldModifiers)) {
-				final Object value = FieldUtils.readField(field, from, true);
+				Object value = FieldUtils.readField(field, from, true);
 				FieldUtils.writeField(field, to, value, true);
 			}
 		}

@@ -125,46 +125,46 @@ public final class FormatUtils {
 	 *
 	 * @param entityModelFactory the entity model factory
 	 * @param entityModel        the entity model
-	 * @param model              the attribute model
+	 * @param am              the attribute model
 	 * @param value              the property value
 	 * @param locale             the locale to use
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
-			AttributeModel model, Object value, String separator, Locale locale, ZoneId zoneId, String currencySymbol) {
-		if (model != null && value != null) {
-			if (model.isWeek()) {
+			AttributeModel am, Object value, String separator, Locale locale, ZoneId zoneId, String currencySymbol) {
+		if (am != null && value != null) {
+			if (am.isWeek()) {
 				if (value instanceof LocalDate) {
 					return DateUtils.toWeekCode((LocalDate) value);
 				}
-			} else if (Boolean.class.equals(model.getType()) || boolean.class.equals(model.getType())) {
+			} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
 				// translate boolean to String representation
-				if (!StringUtils.isEmpty(model.getTrueRepresentation(locale)) && Boolean.TRUE.equals(value)) {
-					return model.getTrueRepresentation(locale);
-				} else if (!StringUtils.isEmpty(model.getFalseRepresentation(locale)) && Boolean.FALSE.equals(value)) {
-					return model.getFalseRepresentation(locale);
+				if (!StringUtils.isEmpty(am.getTrueRepresentation(locale)) && Boolean.TRUE.equals(value)) {
+					return am.getTrueRepresentation(locale);
+				} else if (!StringUtils.isEmpty(am.getFalseRepresentation(locale)) && Boolean.FALSE.equals(value)) {
+					return am.getFalseRepresentation(locale);
 				}
 				return Boolean.toString(Boolean.TRUE.equals(value));
-			} else if (DateUtils.isJava8DateType(model.getType())) {
+			} else if (DateUtils.isJava8DateType(am.getType())) {
 				// other Java 8 dates
-				return DateUtils.formatJava8Date(model.getType(), value, model.getDisplayFormat(), zoneId);
-			} else if (NumberUtils.isNumeric(model.getType())) {
-				return NumberUtils.numberToString(model, value, model.isThousandsGrouping(), locale, currencySymbol);
-			} else if (model.getType().isEnum()) {
+				return DateUtils.formatJava8Date(am.getType(), value, am.getDisplayFormat(), zoneId);
+			} else if (NumberUtils.isNumeric(am.getType())) {
+				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInEditMode(), locale, currencySymbol);
+			} else if (am.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message
 				// bundle
-				String msg = messageService.getEnumMessage((Class<Enum<?>>) model.getType(), (Enum<?>) value, locale);
+				String msg = messageService.getEnumMessage((Class<Enum<?>>) am.getType(), (Enum<?>) value, locale);
 				if (msg != null) {
 					return msg;
 				}
 			} else if (value instanceof Iterable) {
-				return formatEntityCollection(entityModelFactory, model, value, separator, locale, currencySymbol);
-			} else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
+				return formatEntityCollection(entityModelFactory, am, value, separator, locale, currencySymbol);
+			} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 				// entity -> translate using the "displayProperty"
-				EntityModel<?> detailEntityModel = model.getNestedEntityModel();
+				EntityModel<?> detailEntityModel = am.getNestedEntityModel();
 				if (detailEntityModel == null) {
-					detailEntityModel = entityModelFactory.getModel(model.getType());
+					detailEntityModel = entityModelFactory.getModel(am.getType());
 				}
 				String displayProperty = detailEntityModel.getDisplayProperty();
 				if (displayProperty == null) {
@@ -176,7 +176,7 @@ public final class FormatUtils {
 						ClassUtils.getFieldValue(value, displayProperty), separator, locale, zoneId, currencySymbol);
 			} else if (value instanceof AbstractEntity) {
 				// single entity
-				Object result = ClassUtils.getFieldValue(value, model.getPath());
+				Object result = ClassUtils.getFieldValue(value, am.getPath());
 				return result == null ? null : result.toString();
 			} else {
 				// just use the String value

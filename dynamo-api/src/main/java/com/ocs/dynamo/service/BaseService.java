@@ -30,9 +30,7 @@ import com.ocs.dynamo.filter.Filter;
 public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
 	/**
-	 * Returns the total number of entities of this type
-	 * 
-	 * @return
+	 * @return the total number of entities of this type
 	 */
 	long count();
 
@@ -48,7 +46,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Creates a new entity
 	 * 
-	 * @return
+	 * @return the newly created entity
 	 */
 	T createNewEntity();
 
@@ -69,7 +67,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Fetches entities that match the provided filter
 	 * 
-	 * @param filter the filter ot match
+	 * @param filter the filter to match
 	 * @param joins  the desired relations to fetch
 	 * @return
 	 */
@@ -102,7 +100,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * Fetches a list of entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param orders the sort orders to apply
+	 * @param order  the sort orders to apply
 	 * @param joins  the desired relations to fetch
 	 * @return
 	 */
@@ -171,10 +169,10 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * provided sort orders
 	 * 
 	 * @param filter the filter
-	 * @param orders the sort order
+	 * @param orders the sort orders
 	 * @return
 	 */
-	List<T> find(Filter filter, SortOrder... orders);
+	List<T> find(Filter filter, SortOrder... sortOrders);
 
 	/**
 	 * Returns a list of all entities. Use with caution
@@ -186,7 +184,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns a list of all entities, sorted according to the provided sort orders
 	 * 
-	 * @param sortOrders the desired sort orders
+	 * @param sort the desired sort orders
 	 * @return
 	 */
 	List<T> findAll(SortOrder... sortOrders);
@@ -217,10 +215,10 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @param filter        the filter
 	 * @param distinctField the field for which to return the distinct values
 	 * @param resultType    the type of the distinct values
-	 * @param orders        the sort orders to apply
+	 * @param sortOrders    the sort orders
 	 * @return
 	 */
-	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> resultType, SortOrder... orders);
+	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> resultType, SortOrder... sortOrders);
 
 	/**
 	 * Finds distinct elements in a collection table
@@ -237,19 +235,19 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 *
 	 * @param filter     the filter
 	 * @param maxResults limit the amount of results
-	 * @param orders     the desired sorting
+	 * @param sortOrders the sort orders
 	 * @return
 	 */
-	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders);
+	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders);
 
 	/**
 	 * Returns the IDs of the entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param orders the desired sorting
+	 * @param orders the sort orders
 	 * @return
 	 */
-	List<ID> findIds(Filter filter, SortOrder... orders);
+	List<ID> findIds(Filter filter, SortOrder... sortOrders);
 
 	/**
 	 * Finds and sorts properties (NOT ENTITIES) that match the provided filter
@@ -269,22 +267,22 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @param filter           the filter
 	 * @param selectProperties the properties to use in the selection
 	 * @param sortOrders       the sort order
-	 * @return the properties that match the provided filter
+	 * @return
 	 */
 	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders);
 
 	/**
 	 * Returns the class of the entity managed by this DAO
 	 * 
-	 * @return the entity class
+	 * @return
 	 */
 	Class<T> getEntityClass();
 
 	/**
 	 * Saves the provided list of entities
 	 * 
-	 * @param list the list of entities
-	 * @return the list of saved entities
+	 * @param list the list of entities to save
+	 * @return
 	 */
 	List<T> save(List<T> list);
 
@@ -298,6 +296,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 
 	/**
 	 * Validates the provided entity
+	 * 
 	 * @param entity the entity to validate
 	 */
 	void validate(T entity);

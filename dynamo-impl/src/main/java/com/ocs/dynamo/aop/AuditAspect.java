@@ -28,26 +28,26 @@ import java.time.ZonedDateTime;
  * Aspect for intercepting calls and automatically setting audit information (created by/created on
  * etc.)
  * 
- * Can be used in your application simply by adding "com.ocs.dynamo.aop" to the list of packages to
- * scan for components
+ * Can be used in your application simply by adding "com.ocs.dynamo.aop" to the
+ * list of packages to scan for components
  * 
  * @author bas.rutten
  *
  */
-@Service("auditAspect")
+@Service
 @Aspect
 public class AuditAspect {
 
-    @Autowired
-    private UserDetailsService userDetailsService;
+	@Autowired
+	private UserDetailsService userDetailsService;
 
-    /**
-     * Intercept all save methods on all classes that inherit from BaseService
-     */
-    @Pointcut("execution(public * com.ocs.dynamo.service.BaseService+.save(..))")
-    public static void anySaveMethod() {
-        // pointcut method for intercepting any save method
-    }
+	/**
+	 * Intercept all save methods on all classes that inherit from BaseService
+	 */
+	@Pointcut("execution(public * com.ocs.dynamo.service.BaseService+.save(..))")
+	public static void anySaveMethod() {
+		// pointcut method for intercepting any save method
+	}
 
     /**
      * intercept any method that saves an auditable entity

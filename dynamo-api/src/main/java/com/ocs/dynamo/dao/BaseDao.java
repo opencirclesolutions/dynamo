@@ -35,7 +35,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	long count();
 
 	/**
-	 * Counts the number of entities that match the provided filter
+	 * Returns the number of entities that match the provided filter
 	 * 
 	 * @param filter   the filter
 	 * @param distinct whether to return only distinct results
@@ -87,26 +87,6 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
 
 	/**
-	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
-	 * 
-	 * @param filter           the filter
-	 * @param selectProperties the properties to use in the selection
-	 * @param orders           the sort info
-	 * @return
-	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders);
-
-	/**
-	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
-	 * 
-	 * @param filter           the filter
-	 * @param selectProperties the properties to use in the selection
-	 * @param pageable         object containing the paging data
-	 * @return
-	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable);
-
-	/**
 	 * Fetches an entity (and its relations) based on its ID
 	 * 
 	 * @param id    the ID of the entity
@@ -114,16 +94,6 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	T fetchById(ID id, FetchJoinInformation... joins);
-	
-	/**
-	 * Fetches the entities identified by the provided IDs
-	 * 
-	 * @param ids        the IDs of the entities to fetch
-	 * @param sortOrders the sort orders to apply
-	 * @param joins      the desired relations to fetch
-	 * @return
-	 */
-	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
 	 * Fetches the entities identified by the provided IDs
@@ -134,6 +104,16 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	List<T> fetchByIds(List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 * 
+	 * @param ids        the IDs of the entities to fetch
+	 * @param sortOrders the sort orders to apply
+	 * @param joins      the desired relations to fetch
+	 * @return
+	 */
+	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
 
 	/**
 	 * Fetches an entity based on a unique property
@@ -156,7 +136,8 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	List<T> find(Filter filter);
 
 	/**
-	 * Returns all entities that match the provided filter
+	 * Returns all entities that match the provided filter, sorted according to the
+	 * provided sort orders
 	 * 
 	 * @param filter the filter
 	 * @param orders   the sort orders
@@ -199,23 +180,64 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
 
 	/**
-	 * Returns the IDS of the entities that match the provided filter
+	 * Returns all entities that match the provided filter and apply a distinct on
+	 * the given column
 	 * 
-	 * @param filter the filter
-	 * @param orders the desired sorting
+	 * @param filter        the filter
+	 * @param distinctField the field used to remove duplicate rows
+	 * @param sortOrders    the sort orders
 	 * @return
 	 */
-	List<ID> findIds(Filter filter, SortOrder... orders);
+	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... sortOrders);
+
+	/**
+	 * Returns all distinct values in an element collection table
+	 * 
+	 * @param tableName     the table name
+	 * @param distinctField the distinct field
+	 * @param elementType   the element type
+	 * @return
+	 */
+	<S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType);
 
 	/**
 	 * Returns the IDS of the entities that match the provided filter
 	 *
 	 * @param filter     the filter
 	 * @param maxResults limit the amount of results
-	 * @param orders     the desired sorting
+	 * @param sortOrders the sort orders
 	 * @return
 	 */
-	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... orders);
+	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders);
+
+	/**
+	 * Returns the IDS of the entities that match the provided filter
+	 * 
+	 * @param filter the filter
+	 * @param orders the sort orders
+	 * @return
+	 */
+	List<ID> findIds(Filter filter, SortOrder... sortOrders);
+
+	/**
+	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param pageable         object containing the paging data
+	 * @return
+	 */
+	List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable);
+
+	/**
+	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
+	 * 
+	 * @param filter           the filter
+	 * @param selectProperties the properties to use in the selection
+	 * @param orders           the sort info
+	 * @return
+	 */
+	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders);
 
 	/**
 	 * Flushes and clears the entity manager (useful after an explicit update or
@@ -245,25 +267,4 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @return
 	 */
 	T save(T entity);
-
-	/**
-	 * Returns all entities that match the provided filter and apply a distinct on
-	 * the given column
-	 * 
-	 * @param filter        the filter
-	 * @param distinctField the field used to remove duplicate rows
-	 * @param orders        the sort info
-	 * @return
-	 */
-	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders);
-
-	/**
-	 * Returns all distinct values in an element collection table
-	 * 
-	 * @param tableName     the table name
-	 * @param distinctField the distinct field
-	 * @param elementType   the element type
-	 * @return
-	 */
-	<S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType);
 }

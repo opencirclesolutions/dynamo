@@ -13,19 +13,18 @@
  */
 package com.ocs.dynamo.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * An exception that is used to indicates that an entity cannot be added or update because it would
  * violate a uniqueness constraint
  * 
  * @author bas.rutten
  */
+@NoArgsConstructor
 public class OCSNonUniqueException extends OCSRuntimeException {
 
     private static final long serialVersionUID = -6263372299801009820L;
-
-    public OCSNonUniqueException() {
-    	// default constructor
-    }
 
     public OCSNonUniqueException(String message) {
         super(message);

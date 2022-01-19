@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import javax.persistence.CollectionTable;
@@ -49,8 +50,6 @@ import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -66,6 +65,7 @@ import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
@@ -86,55 +86,131 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Implementation of the entity model factory - creates models that hold
  * metadata about an entity
  *
  * @author bas.rutten
  */
-
-public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelConstruct {
-
-	private static final String PLURAL_POSTFIX = "s";
+@Slf4j
+@NoArgsConstructor
+public class EntityModelFactoryImpl implements EntityModelFactory {
 
 	private static final String CLASS = "class";
 
+	private static final String PLURAL_POSTFIX = "s";
+
 	private static final String VERSION = "version";
-
-	private static final Logger LOG = LoggerFactory.getLogger(EntityModelFactoryImpl.class);
-
-	@Autowired(required = false)
-	private MessageService messageService;
-
-	private ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<>();
 
 	private ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<>();
 
+	private ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<>();
+
 	private EntityModelFactory[] delegatedModelFactories;
 
-	/**
-	 * Default constructor without the use of delegated model factories
-	 */
-	public EntityModelFactoryImpl() {
-	}
+	@Autowired(required = false)
+	private MessageService messageService;
 
 	/**
 	 * Use this constructor when one needs to delegate creation of models to other
 	 * model factories
 	 *
-	 * @param delegatedModelFactories
+	 * @param delegatedModelFactories the delegates
 	 */
 	public EntityModelFactoryImpl(EntityModelFactory... delegatedModelFactories) {
-		super();
 		this.delegatedModelFactories = delegatedModelFactories;
+	}
+
+	/**
+	 * Actually adds the attribute models to the entity model, in the correct group
+	 * 
+	 * @param <T>             type parameter
+	 * @param entityClass     the entity class
+	 * @param entityModel     the entity model
+	 * @param attributeModels the list of attribute models to add
+	 */
+	private <T> void addAttributeModels(Class<T> entityClass, EntityModelImpl<T> entityModel,
+			List<AttributeModel> attributeModels) {
+		Map<String, String> attributeGroupMap = determineAttributeGroupMapping(entityModel, entityClass);
+		entityModel.addAttributeGroup(EntityModel.DEFAULT_GROUP);
+
+		Collections.sort(attributeModels, Comparator.comparing(AttributeModel::getOrder));
+		for (AttributeModel attributeModel : attributeModels) {
+			// determine the attribute group name
+			String group = attributeGroupMap.get(attributeModel.getName());
+			if (StringUtils.isEmpty(group)) {
+				group = EntityModel.DEFAULT_GROUP;
+			}
+			entityModel.addAttributeModel(group, attributeModel);
+		}
+	}
+
+	/**
+	 * Adds overrides from annotation to entity model
+	 * 
+	 * @param <T>         type parameter
+	 * @param entityClass the entity class
+	 * @param builder     the entity model builder
+	 */
+	private <T> void addEntityModelAnnotationOverrides(Class<?> entityClass,
+			EntityModelImpl.EntityModelImplBuilder<T> builder) {
+		Model annot = entityClass.getAnnotation(Model.class);
+		if (annot != null) {
+			if (!StringUtils.isEmpty(annot.displayName())) {
+				builder.defaultDisplayName(annot.displayName());
+				builder.defaultDescription(annot.description());
+			}
+			if (!StringUtils.isEmpty(annot.displayNamePlural())) {
+				builder.defaultDisplayNamePlural(annot.displayNamePlural());
+			}
+			if (!StringUtils.isEmpty(annot.description())) {
+				builder.defaultDescription(annot.description());
+			}
+			if (!StringUtils.isEmpty(annot.displayProperty())) {
+				builder.displayProperty(annot.displayProperty());
+				builder.filterProperty(annot.displayProperty());
+			}
+			if (annot.nestingDepth() > -1) {
+				builder.nestingDepth(annot.nestingDepth());
+			}
+
+			if (!StringUtils.isEmpty(annot.filterProperty())) {
+				builder.filterProperty(annot.filterProperty());
+			}
+
+		}
+	}
+
+	/**
+	 * Adds overrides from message bundle to entity model
+	 * 
+	 * @param <T>       type parameter
+	 * @param reference the entity model reference
+	 * @param builder   the entity model builder
+	 */
+	private <T> void addEntityModelMessageBundleOverrides(String reference,
+			EntityModelImpl.EntityModelImplBuilder<T> builder) {
+		setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_NAME),
+				value -> builder.defaultDisplayName(value));
+		setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_NAME_PLURAL),
+				value -> builder.defaultDisplayNamePlural(value));
+		setStringSetting(getEntityMessage(reference, EntityModel.DESCRIPTION),
+				value -> builder.defaultDescription(value));
+		setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_PROPERTY),
+				value -> builder.displayProperty(value));
+		setIntSetting(getEntityMessage(reference, EntityModel.NESTING_DEPTH), -1, value -> builder.nestingDepth(value));
 	}
 
 	/**
 	 * Indicates whether this factory can provide the model for the specified
 	 * combination of reference and entity class
 	 * 
-	 * @param reference the reference
-	 * @pram entityClass the entity class
+	 * @param reference   the reference
+	 * @param entityClass the entity class
 	 */
 	@Override
 	public <T> boolean canProvideModel(String reference, Class<T> entityClass) {
@@ -155,12 +231,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	/**
 	 * Collect attribute group data by checking the @AttributeGroup(s) annotations
 	 * 
-	 * @param <T>
-	 * @param model
-	 * @param entityClass
-	 * @return
+	 * @param <T>         the type parameter
+	 * @param model       the entity model
+	 * @param entityClass the entity class
+	 * @return a mapping from attribute name to the associated group
 	 */
 	private <T> Map<String, String> collectAttributeGroups(EntityModel<T> model, Class<T> entityClass) {
+
 		Map<String, String> result = new HashMap<>();
 		AttributeGroups groups = entityClass.getAnnotation(AttributeGroups.class);
 
@@ -182,6 +259,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			}
 		}
 		return result;
+
 	}
 
 	/**
@@ -192,201 +270,116 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 * @param parentClass the type of the direct parent of the attribute (relevant
 	 *                    in case of embedded attributes)
 	 * @param nested      whether this is a nested attribute
-	 * @param prefix      the prefix to apply to the attribute name
+	 * @param prefix      the prefix to apply to the attribute name (in case of
+	 *                    nested attributes)
 	 * @return
 	 */
 	protected <T> List<AttributeModel> constructAttributeModel(PropertyDescriptor descriptor,
 			EntityModelImpl<T> entityModel, Class<?> parentClass, boolean nested, String prefix) {
 		List<AttributeModel> result = new ArrayList<>();
 
-		// validation methods annotated with @AssertTrue or @AssertFalse have to
-		// be ignored
+		// ignore methods annotated with @AssertTrue or @AssertFalse
 		String fieldName = descriptor.getName();
 		Class<?> pClass = parentClass != null ? parentClass : entityModel.getEntityClass();
 		AssertTrue assertTrue = ClassUtils.getAnnotation(pClass, fieldName, AssertTrue.class);
 		AssertFalse assertFalse = ClassUtils.getAnnotation(pClass, fieldName, AssertFalse.class);
-
-		if (assertTrue == null && assertFalse == null) {
-
-			AttributeModelImpl model = new AttributeModelImpl();
-			model.setEntityModel(entityModel);
-
-			String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
-					SystemPropertyUtils.isCapitalizeWords());
-
-			model.setDefaultDisplayName(displayName);
-			model.setDefaultDescription(displayName);
-			model.setDefaultPrompt(displayName);
-
-			model.setMainAttribute(descriptor.isPreferred());
-			model.setSearchMode(SearchMode.NONE);
-			model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
-			model.setImage(false);
-
-			model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
-			model.setSortable(true);
-			model.setComplexEditable(false);
-			model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
-			model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
-			model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
-			model.setUrl(false);
-			model.setThousandsGrouping(true);
-			model.setTrimSpaces(SystemPropertyUtils.isDefaultTrimSpaces());
-
-			Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Id.class);
-			if (idAttr != null) {
-				entityModel.setIdAttributeModel(model);
-				// the ID column is hidden. details collections are also hidden by default
-				model.setVisible(false);
-			} else {
-				model.setVisible(true);
-			}
-			model.setType(descriptor.getPropertyType());
-			model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(), fieldName));
-			model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(), model.getDateType()));
-
-			// determine if the attribute is required based on the @NotNull
-			// annotation
-			NotNull notNull = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, NotNull.class);
-			model.setRequired(notNull != null);
-
-			model.setAttributeType(determineAttributeType(parentClass, model));
-			Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);
-			if (size != null && size.min() > 0 && AttributeType.DETAIL.equals(model.getAttributeType())) {
-				model.setRequired(true);
-			}
-
-			// minimum and maximum length based on the @Size annotation
-			if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
-				model.setMaxLength(size.max());
-				model.setMinLength(size.min());
-			}
-
-			setNestedEntityModel(entityModel, model);
-
-			// only basic attributes are shown in the grid by default
-			model.setVisibleInGrid(
-					!nested && model.isVisible() && (AttributeType.BASIC.equals(model.getAttributeType())));
-
-			if (getMessageService() != null) {
-				model.setDefaultTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
-				model.setDefaultFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
-			}
-
-			// by default, use a combo box to look up
-			model.setSelectMode(AttributeSelectMode.COMBO);
-			model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);
-			model.setSearchSelectMode(AttributeSelectMode.COMBO);
-			model.setGridSelectMode(AttributeSelectMode.COMBO);
-
-			// is the field an email field?
-			Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Email.class);
-			if (email != null) {
-				model.setEmail(true);
-			}
-
-			setAnnotationOverrides(parentClass, model, descriptor, nested);
-			setMessageBundleOverrides(entityModel, model);
-
-			if (!model.isEmbedded()) {
-				result.add(model);
-			} else {
-				processEmbeddedAttributeModel(result, model, entityModel, nested);
-			}
-			validateAttributeModel(model);
+		if (assertTrue != null || assertFalse != null) {
+			return result;
 		}
+
+		AttributeModelImpl model = new AttributeModelImpl();
+		model.setEntityModel(entityModel);
+
+		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
+				SystemPropertyUtils.isCapitalizeWords());
+		model.setDefaultDisplayName(displayName);
+		model.setDefaultDescription(displayName);
+		model.setDefaultPrompt(displayName);
+		model.setMainAttribute(descriptor.isPreferred());
+		model.setSearchMode(SearchMode.NONE);
+		model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
+		model.setImage(false);
+		model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
+		model.setSortable(true);
+		model.setComplexEditable(false);
+		model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
+		model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
+		model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
+		model.setUrl(false);
+		model.setThousandsGroupingMode(SystemPropertyUtils.getDefaultThousandsGroupingMode());
+		model.setTrimSpaces(SystemPropertyUtils.isDefaultTrimSpaces());
+
+		setIdAttribute(entityModel, model, fieldName);
+		model.setType(descriptor.getPropertyType());
+		model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(), fieldName));
+		model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(), model.getDateType()));
+
+		setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
+		setNestedEntityModel(entityModel, model);
+
+		// only basic attributes are shown in the grid by default
+		model.setVisibleInGrid(!nested && model.isVisible() && (AttributeType.BASIC.equals(model.getAttributeType())));
+
+		if (getMessageService() != null) {
+			model.setDefaultTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
+			model.setDefaultFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
+		}
+
+		model.setSelectMode(AttributeSelectMode.COMBO);
+		model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);
+		model.setSearchSelectMode(AttributeSelectMode.COMBO);
+		model.setGridSelectMode(AttributeSelectMode.COMBO);
+
+		Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Email.class);
+		if (email != null) {
+			model.setEmail(true);
+		}
+
+//			model.setAttributeType(determineAttributeType(parentClass, model));
+//			Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);
+//			if (size != null && size.min() > 0 && AttributeType.DETAIL.equals(model.getAttributeType())) {
+//				model.setRequired(true);
+//			}
+//
+//			// minimum and maximum length based on the @Size annotation
+//			if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
+//				model.setMaxLength(size.max());
+//				model.setMinLength(size.min());
+//			}
+			
+			setAttributeModelAnnotationOverrides(parentClass, model, descriptor, nested);
+			setAttributeModelMessageBundleOverrides(entityModel, model);
+
+
+		if (!model.isEmbedded()) {
+			result.add(model);
+		} else {
+			processEmbeddedAttributeModel(result, model, entityModel, nested);
+		}
+		validateAttributeModel(model);
+
 		return result;
 	}
 
 	/**
-	 * Constructs the entity model for a class
-	 *
+	 * Iterates over the properties of an entity and created attribute models for
+	 * each of them
+	 * 
+	 * @param <T>         the type parameter
+	 * @param reference   reference of the entity model
 	 * @param entityClass the entity class
-	 * @param reference   the unique reference for the entity model
-	 * @param entityModel the base entity model
+	 * @param entityModel the entity model
 	 * @return
 	 */
-	protected <T> EntityModelImpl<T> constructModel(Class<T> entityClass, String reference,
+	private <T> List<AttributeModel> constructAttributeModels(String reference, Class<T> entityClass,
 			EntityModelImpl<T> entityModel) {
-
-		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName(),
-				SystemPropertyUtils.isCapitalizeWords());
-		String displayNamePlural = displayName + PLURAL_POSTFIX;
-		String description = displayName;
-		String displayProperty = null;
-		int nestingDepth = SystemPropertyUtils.getDefaultNestingDepth();
-
-		Model annot = entityClass.getAnnotation(Model.class);
-		if (annot != null) {
-			if (!StringUtils.isEmpty(annot.displayName())) {
-				displayName = annot.displayName();
-				// set description to display name by default
-				description = annot.displayName();
-			}
-			if (!StringUtils.isEmpty(annot.displayNamePlural())) {
-				displayNamePlural = annot.displayNamePlural();
-			}
-			if (!StringUtils.isEmpty(annot.description())) {
-				description = annot.description();
-			}
-			if (!StringUtils.isEmpty(annot.displayProperty())) {
-				displayProperty = annot.displayProperty();
-			}
-			if (annot.nestingDepth() > -1) {
-				nestingDepth = annot.nestingDepth();
-			}
-		}
-
-		// override using message bundle
-		String displayMsg = getEntityMessage(reference, EntityModel.DISPLAY_NAME);
-		if (!StringUtils.isEmpty(displayMsg)) {
-			displayName = displayMsg;
-		}
-
-		String pluralMsg = getEntityMessage(reference, EntityModel.DISPLAY_NAME_PLURAL);
-		if (!StringUtils.isEmpty(pluralMsg)) {
-			displayNamePlural = pluralMsg;
-		}
-
-		String descriptionMsg = getEntityMessage(reference, EntityModel.DESCRIPTION);
-		if (!StringUtils.isEmpty(descriptionMsg)) {
-			description = descriptionMsg;
-		}
-
-		String displayPropertyMsg = getEntityMessage(reference, EntityModel.DISPLAY_PROPERTY);
-		if (!StringUtils.isEmpty(displayPropertyMsg)) {
-			displayProperty = displayPropertyMsg;
-		}
-
-		String nestingDepthMsg = getEntityMessage(reference, EntityModel.NESTING_DEPTH);
-		if (!StringUtils.isEmpty(nestingDepthMsg)) {
-			nestingDepth = Integer.parseInt(nestingDepthMsg);
-		}
-
-		entityModel.setEntityClass(entityClass);
-		entityModel.setReference(reference);
-		entityModel.setNestingDepth(nestingDepth);
-		entityModel.setDefaultDisplayName(displayName);
-		entityModel.setDefaultDisplayNamePlural(displayNamePlural);
-		entityModel.setDefaultDescription(description);
-		entityModel.setDisplayProperty(displayProperty);
-
-		Map<String, String> attributeGroupMap = determineAttributeGroupMapping(entityModel, entityClass);
-		entityModel.addAttributeGroup(EntityModel.DEFAULT_GROUP);
-
-		alreadyProcessed.put(reference, entityClass);
-
-		// keep track of main attributes - if no main attribute is defined, mark either
-		// the first string attribute or
-		// the first searchable attribute as the main
 		boolean mainAttributeFound = false;
 		AttributeModel firstStringAttribute = null;
 		AttributeModel firstSearchableAttribute = null;
 		boolean nested = reference.indexOf('.') >= 0;
 
 		PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(entityClass);
-		// create attribute models for all attributes
-		List<AttributeModel> tempModelList = new ArrayList<>();
+		List<AttributeModel> result = new ArrayList<>();
 		for (PropertyDescriptor descriptor : descriptors) {
 			if (!skipAttribute(descriptor.getName())) {
 				List<AttributeModel> attributeModels = constructAttributeModel(descriptor, entityModel,
@@ -405,33 +398,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 					if (firstSearchableAttribute == null && attributeModel.isSearchable()) {
 						firstSearchableAttribute = attributeModel;
 					}
-					tempModelList.add(attributeModel);
+					result.add(attributeModel);
 				}
 			}
 		}
-
-		// assign ordering and sort by name
-		Collections.sort(tempModelList, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
-		determineAttributeOrder(entityClass, reference, tempModelList);
-
-		boolean gridOrder = determineGridAttributeOrder(entityClass, reference, tempModelList);
-		boolean searchOrder = determineSearchAttributeOrder(entityClass, reference, tempModelList);
-
-		entityModel.setGridOrderSet(gridOrder);
-		entityModel.setSearchOrderSet(searchOrder);
-
-		// add the attributes to the model
-		Collections.sort(tempModelList, Comparator.comparing(AttributeModel::getOrder));
-		for (AttributeModel attributeModel : tempModelList) {
-			// determine the attribute group name
-			String group = attributeGroupMap.get(attributeModel.getName());
-			if (StringUtils.isEmpty(group)) {
-				group = EntityModel.DEFAULT_GROUP;
-			}
-			entityModel.addAttributeModel(group, attributeModel);
-		}
-
-		validateGroupTogetherSettings(entityModel);
 
 		// set main attribute
 		if (!mainAttributeFound && !nested) {
@@ -442,25 +412,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			}
 		}
 
-		String sortOrder = null;
-		annot = entityClass.getAnnotation(Model.class);
-		if (annot != null && !StringUtils.isEmpty(annot.sortOrder())) {
-			sortOrder = annot.sortOrder();
-		}
-
-		String sortOrderMsg = getEntityMessage(reference, EntityModel.SORT_ORDER);
-		if (!StringUtils.isEmpty(sortOrderMsg)) {
-			sortOrder = sortOrderMsg;
-		}
-		setSortOrder(entityModel, sortOrder);
-		cache.put(reference, entityModel);
-
-		return entityModel;
+		return result;
 	}
 
 	/**
 	 * Constructs the model for an entity
 	 *
+	 * @param reference   unique reference to the entity model
 	 * @param entityClass the class of the entity
 	 * @return
 	 */
@@ -478,22 +436,80 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				}
 			}
 		}
-		// construct the basic model
-		if (entityModel == null) {
-			entityModel = new EntityModelImpl<>();
+
+		if (entityModel != null) {
+			return entityModel;
 		}
-		entityModel = constructModel(entityClass, reference, entityModel);
+		return constructModelInner(entityClass, reference);
+	}
+
+	/**
+	 * Constructs the entity model for a class
+	 *
+	 * @param entityClass the entity class
+	 * @param reference   the unique reference for the entity model
+	 * @param entityModel the base entity model
+	 * @return
+	 */
+	private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
+
+		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName(),
+				SystemPropertyUtils.isCapitalizeWords());
+
+		EntityModelImpl.EntityModelImplBuilder<T> builder = EntityModelImpl.builder();
+		builder.reference(reference).nestingDepth(SystemPropertyUtils.getDefaultNestingDepth())
+				.defaultDescription(displayName).defaultDisplayName(displayName)
+				.defaultDisplayNamePlural(displayName + PLURAL_POSTFIX).entityClass(entityClass);
+
+		addEntityModelAnnotationOverrides(entityClass, builder);
+		addEntityModelMessageBundleOverrides(reference, builder);
+
+		EntityModelImpl<T> entityModel = builder.build();
+
+		alreadyProcessed.put(reference, entityClass);
+
+		List<AttributeModel> attributeModels = constructAttributeModels(reference, entityClass, entityModel);
+
+		// calculate the various attribute orders
+		Collections.sort(attributeModels, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+		determineAttributeOrder(entityClass, reference, attributeModels);
+		boolean gridOrder = determineGridAttributeOrder(entityClass, reference, attributeModels);
+		boolean searchOrder = determineSearchAttributeOrder(entityClass, reference, attributeModels);
+		entityModel.setGridOrderSet(gridOrder);
+		entityModel.setSearchOrderSet(searchOrder);
+
+		addAttributeModels(entityClass, entityModel, attributeModels);
+
+		validateGroupTogetherSettings(entityModel);
+
+		String sortOrder = null;
+		Model annot = entityClass.getAnnotation(Model.class);
+		if (annot != null && !StringUtils.isEmpty(annot.sortOrder())) {
+			sortOrder = annot.sortOrder();
+		}
+
+		String sortOrderMsg = getEntityMessage(reference, EntityModel.SORT_ORDER);
+		if (!StringUtils.isEmpty(sortOrderMsg)) {
+			sortOrder = sortOrderMsg;
+		}
+		setSortOrder(entityModel, sortOrder);
+		cache.put(reference, entityModel);
 
 		return entityModel;
 	}
 
-	@Override
-	public EntityModel<?> constructNestedEntityModel(EntityModelFactory master, Class<?> type, String reference) {
-		return new LazyEntityModelWrapper<>(master, reference, type);
+	/**
+	 * 
+	 * @param type
+	 * @param reference
+	 * @return
+	 */
+	public EntityModel<?> constructNestedEntityModel(Class<?> type, String reference) {
+		return getModel(reference, type);
 	}
 
 	/**
-	 * Constructs the attribute group mapping - from attribute name to the group it
+	 * Determines the attribute group mapping - from attribute name to the group it
 	 * belongs to
 	 *
 	 * @param model       the entity model
@@ -617,7 +633,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	/**
 	 * Determines the attribute type of an attribute
 	 * 
-	 * @param parentClass the parent class in which the attribute is defined
+	 * @param parentClass the parent class on which the attribute is defined
 	 * @param model       the model representation of the attribute
 	 * @return
 	 */
@@ -720,7 +736,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 * Determines the order in which attributes must appear in a search results grid
 	 * for an entity
 	 * 
-	 * @param <T>
+	 * @param <T>             type parameter
 	 * @param entityClass     the class of the entity model
 	 * @param reference       unique reference of the entity model
 	 * @param attributeModels the list of attribute models to order
@@ -827,7 +843,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (!StringUtils.isEmpty(reference) && entityClass != null) {
 			model = (EntityModel<T>) cache.get(reference);
 			if (model == null) {
-				LOG.debug("Creating entity model for {}, ({})", reference, entityClass);
+				log.debug("Creating entity model for {}, ({})", reference, entityClass);
 				model = constructModel(reference, entityClass);
 			}
 		}
@@ -965,8 +981,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 * @param descriptor  the property descriptor for the attribute
 	 * @param nested      whether the attribute is nested
 	 */
-	protected void setAnnotationOverrides(Class<?> parentClass, AttributeModelImpl model, PropertyDescriptor descriptor,
-			boolean nested) {
+	protected void setAttributeModelAnnotationOverrides(Class<?> parentClass, AttributeModelImpl model,
+			PropertyDescriptor descriptor, boolean nested) {
 		Attribute attribute = ClassUtils.getAnnotation(parentClass, descriptor.getName(), Attribute.class);
 
 		if (attribute != null) {
@@ -976,25 +992,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setDefaultPrompt(attribute.displayName());
 			}
 
-			if (!StringUtils.isEmpty(attribute.description())) {
-				model.setDefaultDescription(attribute.description());
-			}
-
-			if (!StringUtils.isEmpty(attribute.prompt())) {
-				model.setDefaultPrompt(attribute.prompt());
-			}
-
-			if (!StringUtils.isEmpty(attribute.displayFormat())) {
-				model.setDisplayFormat(attribute.displayFormat());
-			}
+			setStringSetting(attribute.description(), model::setDefaultDescription);
+			setStringSetting(attribute.prompt(), model::setDefaultPrompt);
+			setStringSetting(attribute.displayFormat(), model::setDisplayFormat);
+			setStringSetting(attribute.trueRepresentation(), model::setDefaultTrueRepresentation);
+			setStringSetting(attribute.falseRepresentation(), model::setDefaultFalseRepresentation);
 
 			model.setEditableType(attribute.editable());
 
-			// note that nested attributes are hidden by default
-			if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible()) && !nested) {
-				model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
-				model.setVisibleInGrid(model.isVisible());
-			}
+			setAnnotationVisibilityOverrides(attribute, model, nested);
 
 			if ((SearchMode.ADVANCED.equals(attribute.searchable()) || SearchMode.ALWAYS.equals(attribute.searchable()))
 					&& !nested) {
@@ -1005,26 +1011,17 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setRequiredForSearching(true);
 			}
 
-			if (!attribute.sortable()) {
-				model.setSortable(false);
-			}
-
 			if (attribute.main() && !nested) {
 				model.setMainAttribute(true);
 			}
 
-			if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid())
-					&& !nested) {
-				model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));
-			}
+			setBooleanTrueSetting(attribute.complexEditable(), model::setComplexEditable);
+			setBooleanTrueSetting(attribute.image(), model::setImage);
+			setBooleanTrueSetting(attribute.percentage(), model::setPercentage);
+			setBooleanTrueSetting(attribute.currency(), model::setCurrency);
+			setBooleanTrueSetting(attribute.url(), model::setUrl);
 
-			if (attribute.complexEditable()) {
-				model.setComplexEditable(true);
-			}
-
-			if (attribute.image()) {
-				model.setImage(true);
-			}
+			setBooleanFalseSetting(attribute.sortable(), model::setSortable);
 
 			if (attribute.week()) {
 				checkWeekSettingAllowed(model);
@@ -1038,8 +1035,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			}
 
 			if (attribute.cascade() != null && attribute.cascade().length > 0) {
-				for (Cascade cc : attribute.cascade()) {
-					model.addCascade(cc.cascadeTo(), cc.filterPath(), cc.mode());
+				for (Cascade cascade : attribute.cascade()) {
+					model.addCascade(cascade.cascadeTo(), cascade.filterPath(), cascade.mode());
 				}
 			}
 
@@ -1051,24 +1048,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				}
 			}
 
-			if (!StringUtils.isEmpty(attribute.trueRepresentation())) {
-				model.setDefaultTrueRepresentation(attribute.trueRepresentation());
-			}
-
-			if (!StringUtils.isEmpty(attribute.falseRepresentation())) {
-				model.setDefaultFalseRepresentation(attribute.falseRepresentation());
-			}
-
-			if (attribute.percentage()) {
-				model.setPercentage(true);
-			}
-
 			if (attribute.embedded()) {
 				model.setAttributeType(AttributeType.EMBEDDED);
-			}
-
-			if (attribute.currency()) {
-				model.setCurrency(true);
 			}
 
 			if (attribute.dateType() != null && !AttributeDateType.INHERIT.equals(attribute.dateType())) {
@@ -1110,58 +1091,27 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				model.setTextFieldMode(attribute.textFieldMode());
 			}
 
-			if (attribute.precision() > -1) {
-				model.setPrecision(attribute.precision());
-			}
+			setIntSetting(attribute.precision(), -1, model::setPrecision);
+			setIntSetting(attribute.minLength(), -1, model::setMinLength);
+			setIntSetting(attribute.maxLength(), -1, model::setMaxLength);
+			setIntSetting(attribute.maxLengthInGrid(), -1, model::setMaxLengthInGrid);
 
-			if (attribute.minLength() > -1) {
-				model.setMinLength(attribute.minLength());
-			}
+			setLongSetting(attribute.minValue(), Long.MIN_VALUE, true, model::setMinValue);
+			setLongSetting(attribute.maxValue(), Long.MAX_VALUE, false, model::setMaxValue);
 
-			if (attribute.minValue() > Long.MIN_VALUE) {
-				model.setMinValue(attribute.minValue());
-			}
-
-			if (attribute.maxLength() > -1) {
-				model.setMaxLength(attribute.maxLength());
-			}
-
-			if (attribute.maxLengthInGrid() > -1) {
-				model.setMaxLengthInGrid(attribute.maxLengthInGrid());
-			}
-
-			if (attribute.maxValue() < Long.MAX_VALUE) {
-				model.setMaxValue(attribute.maxValue());
-			}
-
-			if (attribute.url()) {
-				model.setUrl(true);
-			}
-
-			if (!StringUtils.isEmpty(attribute.replacementSearchPath())) {
-				model.setReplacementSearchPath(attribute.replacementSearchPath());
-			}
-
-			if (!StringUtils.isEmpty(attribute.replacementSortPath())) {
-				model.setReplacementSortPath(attribute.replacementSortPath());
-			}
-
-			if (!StringUtils.isEmpty(attribute.quickAddPropertyName())) {
-				model.setQuickAddPropertyName(attribute.quickAddPropertyName());
+			setStringSetting(attribute.replacementSearchPath(), model::setReplacementSearchPath);
+			setStringSetting(attribute.replacementSortPath(), model::setReplacementSortPath);
+			setStringSetting(attribute.quickAddPropertyName(), name -> {
+				model.setQuickAddPropertyName(name);
 				model.setQuickAddAllowed(true);
+			});
+
+			if (!ThousandsGroupingMode.INHERIT.equals(attribute.thousandsGrouping())) {
+				model.setThousandsGroupingMode(attribute.thousandsGrouping());
 			}
 
-			if (!attribute.thousandsGrouping()) {
-				model.setThousandsGrouping(false);
-			}
-
-			if (attribute.searchForExactValue()) {
-				model.setSearchForExactValue(true);
-			}
-
-			if (!StringUtils.isEmpty(attribute.fileNameProperty())) {
-				model.setFileNameProperty(attribute.fileNameProperty());
-			}
+			setBooleanTrueSetting(attribute.searchForExactValue(), model::setSearchForExactValue);
+			setStringSetting(attribute.fileNameProperty(), model::setFileNameProperty);
 
 			if (!StringUtils.isEmpty(attribute.defaultValue())) {
 				if (!AttributeType.BASIC.equals(model.getAttributeType())) {
@@ -1173,22 +1123,50 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				setDefaultValue(model, defaultValue);
 			}
 
-			if (!StringUtils.isEmpty(attribute.styles())) {
-				model.setStyles(attribute.styles());
-			}
-
 			model.setNavigable(attribute.navigable());
-
-			if (!StringUtils.isEmpty(attribute.styles())) {
-				model.setStyles(attribute.styles());
-			}
-
 			model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
 			model.setSearchDateOnly(attribute.searchDateOnly());
 
 			if (!TrimType.INHERIT.equals(attribute.trimSpaces())) {
 				model.setTrimSpaces(TrimType.TRIM.equals(attribute.trimSpaces()));
 			}
+		}
+	}
+
+	/**
+	 * Sets visibility settings for an attribute model based on annotation overrides
+	 * 
+	 * @param attribute the attribute annotation
+	 * @param model     the attribute model
+	 * @param nested    whether we are dealing with a nested attribute
+	 */
+	private void setAnnotationVisibilityOverrides(Attribute attribute, AttributeModelImpl model, boolean nested) {
+		// set visibility (hide nested attribute by default; they must be shown using
+		// the message bundle)
+		if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible()) && !nested) {
+			model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
+			model.setVisibleInGrid(model.isVisible());
+		}
+
+		// set grid visibility
+		if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid()) && !nested) {
+			model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));
+		}
+	}
+
+	private void setBooleanFalseSetting(Boolean value, Consumer<Boolean> receiver) {
+		if (!value) {
+			receiver.accept(value);
+		}
+	}
+
+	private void setBooleanTrueSetting(String value, Consumer<Boolean> receiver) {
+		setBooleanTrueSetting(Boolean.valueOf(value), receiver);
+	}
+
+	private void setBooleanTrueSetting(Boolean value, Consumer<Boolean> receiver) {
+		if (value) {
+			receiver.accept(value);
 		}
 	}
 
@@ -1211,6 +1189,47 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 			model.setDefaultValue(Boolean.valueOf(defaultValue));
 		} else {
 			model.setDefaultValue(ClassUtils.instantiateClass(model.getType(), defaultValue));
+		}
+	}
+
+	private <T> void setIdAttribute(EntityModelImpl<T> entityModel, AttributeModelImpl model, String fieldName) {
+		Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Id.class);
+		if (idAttr != null) {
+			entityModel.setIdAttributeModel(model);
+			// the ID column is hidden. details collections are also hidden by default
+			model.setVisible(false);
+		} else {
+			model.setVisible(true);
+		}
+	}
+
+	private void setIntSetting(Integer value, int limit, Consumer<Integer> receiver) {
+		if (value != null && value > limit) {
+			receiver.accept(value);
+		}
+	}
+
+	private void setIntSetting(String value, int limit, Consumer<Integer> receiver) {
+		if (value == null) {
+			return;
+		}
+
+		int intValue = Integer.parseInt(value);
+		if (intValue > limit) {
+			receiver.accept(intValue);
+		}
+	}
+
+	/**
+	 * 
+	 * @param value
+	 * @param limit
+	 * @param above
+	 * @param receiver
+	 */
+	private void setLongSetting(Long value, long limit, boolean above, Consumer<Long> receiver) {
+		if (value != null && ((above && value > limit) || value < limit)) {
+			receiver.accept(value);
 		}
 	}
 
@@ -1280,281 +1299,234 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	}
 
 	/**
-	 * Overwrite the values of the model with values read from the messageBundle
+	 * Overwrite the values of an attribute model with values from a message bundle
 	 *
 	 * @param entityModel the entity model
 	 * @param model       the attribute model implementation
 	 */
-	private <T> void setMessageBundleOverrides(EntityModel<T> entityModel, AttributeModelImpl model) {
+	private <T> void setAttributeModelMessageBundleOverrides(EntityModel<T> entityModel,
+			AttributeModelImpl attributeModel) {
 
-		String msg = getAttributeMessage(entityModel, model, EntityModel.DISPLAY_NAME);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setDefaultDisplayName(msg);
-		}
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_NAME),
+				value -> attributeModel.setDefaultDisplayName(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DESCRIPTION),
+				value -> attributeModel.setDefaultDescription(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_VALUE),
+				value -> attributeModel.setDefaultValue(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_FORMAT),
+				value -> attributeModel.setDisplayFormat(value));
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.DESCRIPTION);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setDefaultDescription(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.DEFAULT_VALUE);
-		if (!StringUtils.isEmpty(msg)) {
-			setDefaultValue(model, msg);
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.DISPLAY_FORMAT);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setDisplayFormat(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.MAIN);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setMainAttribute(Boolean.valueOf(msg));
-		}
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAIN),
+				value -> attributeModel.setMainAttribute(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REQUIRED_FOR_SEARCHING),
+				value -> attributeModel.setRequiredForSearching(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),
+				value -> attributeModel.setSortable(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.COMPLEX_EDITABLE),
+				value -> attributeModel.setComplexEditable(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),
+				value -> attributeModel.setImage(value));
 
 		// check for read only (convenience only, overwritten by "editable")
-		msg = getAttributeMessage(entityModel, model, EntityModel.READ_ONLY);
+		String msg = getAttributeMessage(entityModel, attributeModel, EntityModel.READ_ONLY);
 		if (!StringUtils.isEmpty(msg)) {
 			boolean edt = Boolean.parseBoolean(msg);
 			if (edt) {
-				model.setEditableType(EditableType.READ_ONLY);
+				attributeModel.setEditableType(EditableType.READ_ONLY);
 			} else {
-				model.setEditableType(EditableType.EDITABLE);
+				attributeModel.setEditableType(EditableType.EDITABLE);
 			}
 		}
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.EDITABLE), EditableType.class,
+				value -> attributeModel.setEditableType(value));
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.EDITABLE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setEditableType(EditableType.valueOf(msg));
+			attributeModel.setVisible(isVisible(msg));
+		}
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_GRID);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setVisibleInGrid(isVisible(msg));
 		}
 
 		// "searchable" also supports true/false for legacy reasons
-		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCHABLE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCHABLE);
 		if (!StringUtils.isEmpty(msg)) {
 			if ("true".equals(msg)) {
-				model.setSearchMode(SearchMode.ALWAYS);
+				attributeModel.setSearchMode(SearchMode.ALWAYS);
 			} else if ("false".equals(msg)) {
-				model.setSearchMode(SearchMode.NONE);
+				attributeModel.setSearchMode(SearchMode.NONE);
 			} else {
-				model.setSearchMode(SearchMode.valueOf(msg));
+				attributeModel.setSearchMode(SearchMode.valueOf(msg));
 			}
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.REQUIRED_FOR_SEARCHING);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.WEEK);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setRequiredForSearching(Boolean.valueOf(msg));
+			checkWeekSettingAllowed(attributeModel);
+			attributeModel.setWeek(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.SORTABLE);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setSortable(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.VISIBLE);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setVisible(isVisible(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.VISIBLE_IN_GRID);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setVisibleInGrid(isVisible(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.COMPLEX_EDITABLE);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setComplexEditable(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.IMAGE);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setImage(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.WEEK);
-		if (!StringUtils.isEmpty(msg)) {
-			checkWeekSettingAllowed(model);
-			model.setWeek(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.ALLOWED_EXTENSIONS);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.ALLOWED_EXTENSIONS);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			String[] extensions = msg.split(",");
 			Set<String> hashSet = Sets.newHashSet(extensions);
-			model.setAllowedExtensions(hashSet);
+			attributeModel.setAllowedExtensions(hashSet);
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.GROUP_TOGETHER_WITH);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.GROUP_TOGETHER_WITH);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			String[] extensions = msg.split(",");
 			for (String s : extensions) {
-				model.addGroupTogetherWith(s);
+				attributeModel.addGroupTogetherWith(s);
 			}
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.TRUE_REPRESENTATION);
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRUE_REPRESENTATION),
+				value -> attributeModel.setDefaultTrueRepresentation(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.FALSE_REPRESENTATION),
+				value -> attributeModel.setDefaultFalseRepresentation(value));
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.PERCENTAGE);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setDefaultTrueRepresentation(msg);
+			attributeModel.setPercentage(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.FALSE_REPRESENTATION);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setDefaultFalseRepresentation(msg);
-		}
+		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,
+				value -> attributeModel.setPrecision(value));
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.PERCENTAGE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setPercentage(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.PRECISION);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setPercentage(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.EMBEDDED);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.EMBEDDED);
 		if (msg != null && !StringUtils.isEmpty(msg) && Boolean.valueOf(msg)) {
-			model.setAttributeType(AttributeType.EMBEDDED);
+			attributeModel.setAttributeType(AttributeType.EMBEDDED);
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.CURRENCY);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY);
 		if (msg != null && !StringUtils.isEmpty(msg) && Boolean.valueOf(msg)) {
-			model.setCurrency(Boolean.valueOf(msg));
+			attributeModel.setCurrency(Boolean.valueOf(msg));
 		}
 
 		// multiple search setting - setting this to true also sets the search select
 		// mode to TOKEN
-		msg = getAttributeMessage(entityModel, model, EntityModel.MULTIPLE_SEARCH);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MULTIPLE_SEARCH);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setMultipleSearch(Boolean.valueOf(msg));
-			model.setSearchSelectMode(AttributeSelectMode.TOKEN);
+			attributeModel.setMultipleSearch(Boolean.valueOf(msg));
+			attributeModel.setSearchSelectMode(AttributeSelectMode.TOKEN);
 		}
 
 		// set the select mode (also sets the search select mode and grid select mode)
-		msg = getAttributeMessage(entityModel, model, EntityModel.SELECT_MODE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SELECT_MODE);
 		if (msg != null && !StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
 			AttributeSelectMode mode = AttributeSelectMode.valueOf(msg);
-			model.setSelectMode(mode);
-			model.setSearchSelectMode(mode);
-			model.setGridSelectMode(mode);
+			attributeModel.setSelectMode(mode);
+			attributeModel.setSearchSelectMode(mode);
+			attributeModel.setGridSelectMode(mode);
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_SELECT_MODE);
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_SELECT_MODE),
+				AttributeSelectMode.class, value -> attributeModel.setSearchSelectMode(value));
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.GRID_SELECT_MODE);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setSearchSelectMode(AttributeSelectMode.valueOf(msg));
+			attributeModel.setGridSelectMode(AttributeSelectMode.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.GRID_SELECT_MODE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setGridSelectMode(AttributeSelectMode.valueOf(msg));
+			attributeModel.setDateType(AttributeDateType.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.DATE_TYPE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_CASE_SENSITIVE);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setDateType(AttributeDateType.valueOf(msg));
+			attributeModel.setSearchCaseSensitive(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_CASE_SENSITIVE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_PREFIX_ONLY);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setSearchCaseSensitive(Boolean.valueOf(msg));
+			attributeModel.setSearchPrefixOnly(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_PREFIX_ONLY);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setSearchPrefixOnly(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.TEXTFIELD_MODE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.TEXTFIELD_MODE);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setTextFieldMode(AttributeTextFieldMode.valueOf(msg));
+			attributeModel.setTextFieldMode(AttributeTextFieldMode.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_LENGTH);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setMinLength(Integer.parseInt(msg));
+			attributeModel.setMinLength(Integer.parseInt(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.MIN_VALUE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_VALUE);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setMinValue(Long.parseLong(msg));
+			attributeModel.setMinValue(Long.parseLong(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setMaxLength(Integer.parseInt(msg));
+			attributeModel.setMaxLength(Integer.parseInt(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_LENGTH_IN_GRID);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH_IN_GRID);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setMaxLengthInGrid(Integer.parseInt(msg));
+			attributeModel.setMaxLengthInGrid(Integer.parseInt(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.MAX_VALUE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_VALUE);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setMaxValue(Long.parseLong(msg));
+			attributeModel.setMaxValue(Long.parseLong(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.URL);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.URL);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setUrl(Boolean.valueOf(msg));
+			attributeModel.setUrl(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SEARCH_PATH);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SEARCH_PATH);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setReplacementSearchPath(msg);
+			attributeModel.setReplacementSearchPath(msg);
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.REPLACEMENT_SORT_PATH);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SORT_PATH);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setReplacementSortPath(msg);
+			attributeModel.setReplacementSortPath(msg);
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.QUICK_ADD_PROPERTY);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_PROPERTY);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setQuickAddPropertyName(msg);
+			attributeModel.setQuickAddPropertyName(msg);
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.THOUSANDS_GROUPING);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setThousandsGrouping(Boolean.valueOf(msg));
+			attributeModel.setThousandsGroupingMode(ThousandsGroupingMode.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_EXACT_VALUE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setSearchForExactValue(Boolean.valueOf(msg));
+			attributeModel.setSearchForExactValue(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.STYLES);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			model.setStyles(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, model, EntityModel.NAVIGABLE);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setNavigable(Boolean.valueOf(msg));
+			attributeModel.setNavigable(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.STYLES);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setStyles(msg);
+			attributeModel.setSearchDateOnly(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.SEARCH_DATE_ONLY);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setSearchDateOnly(Boolean.valueOf(msg));
+			attributeModel.setIgnoreInSearchFilter(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.IGNORE_IN_SEARCH_FILTER);
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.TRIM_SPACES);
 		if (!StringUtils.isEmpty(msg)) {
-			model.setIgnoreInSearchFilter(Boolean.valueOf(msg));
+			attributeModel.setTrimSpaces(Boolean.valueOf(msg));
 		}
 
-		msg = getAttributeMessage(entityModel, model, EntityModel.TRIM_SPACES);
-		if (!StringUtils.isEmpty(msg)) {
-			model.setTrimSpaces(Boolean.valueOf(msg));
-		}
-
-		setMessageBundleCascadeOverrides(entityModel, model);
-		setMessageBundleCustomOverrides(entityModel, model);
+		setMessageBundleCascadeOverrides(entityModel, attributeModel);
+		setMessageBundleCustomOverrides(entityModel, attributeModel);
 	}
 
 	/**
@@ -1585,10 +1557,40 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 				}
 
 				if (type.equals(em.getEntityClass()) || !hasEntityModel(type, ref)) {
-					model.setNestedEntityModel(((EntityModelConstruct) findModelFactory(ref, type))
-							.constructNestedEntityModel(this, type, ref));
+					model.setNestedEntityModel(findModelFactory(ref, type).getModel(ref, type));
 				}
 			}
+		}
+	}
+
+	/**
+	 * Sets the "required" setting on an attribute based on JPA validation
+	 * annotations
+	 * 
+	 * @param <T>         the type parameter
+	 * @param entityModel the entity model that the attribute model is part of
+	 * @param model       the attribute model
+	 * @param parentClass the parent class
+	 * @param fieldName
+	 */
+	private <T> void setRequiredAndMinMaxSetting(EntityModelImpl<T> entityModel, AttributeModelImpl model,
+			Class<?> parentClass, String fieldName) {
+		// determine if the attribute is required based on the @NotNull
+		// annotation
+		NotNull notNull = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, NotNull.class);
+		model.setRequired(notNull != null);
+
+		// also set to required when it is a collection with a size greater than 0
+		model.setAttributeType(determineAttributeType(parentClass, model));
+		Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);
+		if (size != null && size.min() > 0 && AttributeType.DETAIL.equals(model.getAttributeType())) {
+			model.setRequired(true);
+		}
+
+		// minimum and maximum length based on the @Size annotation
+		if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
+			model.setMaxLength(size.max());
+			model.setMinLength(size.min());
 		}
 	}
 
@@ -1613,6 +1615,35 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	}
 
 	/**
+	 * Sets a string field based on a value from a message bundle
+	 * 
+	 * @param value
+	 * @param receiver
+	 */
+	private void setStringSetting(String value, Consumer<String> receiver) {
+		if (!StringUtils.isEmpty(value)) {
+			receiver.accept(value);
+		}
+	}
+
+	/**
+	 * Sets an enum field based on a string value from a message bundle
+	 * 
+	 * @param <E>
+	 * @param value     the string value
+	 * @param enumClass the type of the enum
+	 * @param receiver  receiver function
+	 */
+	@SneakyThrows
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private <E extends Enum> void setEnumSetting(String value, Class<E> enumClass, Consumer<E> receiver) {
+		if (!StringUtils.isEmpty(value)) {
+			 E enumValue = (E) Enum.valueOf(enumClass, value);
+			 receiver.accept(enumValue);
+		}
+	}
+
+	/**
 	 * Indicates whether to skip an attribute since it does not constitute an actual
 	 * property but rather a generic or technical field that all entities have
 	 *
@@ -1621,32 +1652,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 	 */
 	protected boolean skipAttribute(String name) {
 		return CLASS.equals(name) || VERSION.equals(name);
-	}
-
-	/**
-	 * Validates the "group together with" settings for all attributes in the
-	 * specified entity model
-	 * 
-	 * @param <T>
-	 * @param entityModel
-	 */
-	private <T> void validateGroupTogetherSettings(EntityModel<T> entityModel) {
-		Set<String> alreadyUsed = new HashSet<>();
-		// check if there aren't any illegal "group together" settings
-		for (AttributeModel m : entityModel.getAttributeModels()) {
-			alreadyUsed.add(m.getName());
-			if (!m.getGroupTogetherWith().isEmpty()) {
-				for (String together : m.getGroupTogetherWith()) {
-					if (alreadyUsed.contains(together)) {
-						AttributeModel other = entityModel.getAttributeModel(together);
-						if (together != null) {
-							((AttributeModelImpl) other).setAlreadyGrouped(true);
-							LOG.warn("Incorrect groupTogetherWith found: {} refers to {} ", m.getName(), together);
-						}
-					}
-				}
-			}
-		}
 	}
 
 	/**
@@ -1683,6 +1688,32 @@ public class EntityModelFactoryImpl implements EntityModelFactory, EntityModelCo
 		if (model.isSearchDateOnly() && !LocalDateTime.class.equals(model.getType())
 				&& !ZonedDateTime.class.equals(model.getType())) {
 			throw new OCSRuntimeException("SearchDateOnly is not allowed for attribute " + model.getName());
+		}
+	}
+
+	/**
+	 * Validates the "group together with" settings for all attributes in the
+	 * specified entity model
+	 * 
+	 * @param <T>
+	 * @param entityModel the entity model
+	 */
+	private <T> void validateGroupTogetherSettings(EntityModel<T> entityModel) {
+		Set<String> alreadyUsed = new HashSet<>();
+		// check if there aren't any illegal "group together" settings
+		for (AttributeModel am : entityModel.getAttributeModels()) {
+			alreadyUsed.add(am.getName());
+			if (!am.getGroupTogetherWith().isEmpty()) {
+				for (String together : am.getGroupTogetherWith()) {
+					if (alreadyUsed.contains(together)) {
+						AttributeModel other = entityModel.getAttributeModel(together);
+						if (together != null) {
+							((AttributeModelImpl) other).setAlreadyGrouped(true);
+							log.warn("Incorrect groupTogetherWith found: {} refers to {} ", am.getName(), together);
+						}
+					}
+				}
+			}
 		}
 	}
 }

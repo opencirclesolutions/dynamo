@@ -11,19 +11,8 @@
    See the License for the specific language governing permissions and
    limitations under the License.
  */
-package com.ocs.dynamo.dao.impl;
+package com.ocs.dynamo.domain.model;
 
-import java.util.List;
-
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.domain.TestEntity;
-
-/**
- * Dao used for testing purposes
- * 
- * @author bas.rutten
- */
-public interface TestEntityDao extends BaseDao<Integer, TestEntity> {
-
-	public List<TestEntity> findByBirthDate();
+public enum SelectMode {
+	ALL, FILTERED, FIXED;
 }

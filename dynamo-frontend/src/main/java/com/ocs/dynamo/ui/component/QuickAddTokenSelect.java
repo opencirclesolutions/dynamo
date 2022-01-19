@@ -21,13 +21,15 @@ import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
@@ -43,40 +45,43 @@ import com.vaadin.flow.shared.Registration;
  * @param <T>  the type of the entity that is being displayed
  */
 public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
+		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable, SharedProvider<T> {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
 	/**
 	 * Whether direct navigation is allowed
 	 */
-	private boolean directNavigationAllowed;
+	private final boolean directNavigationAllowed;
 
 	/**
 	 * Whether quick adding is allowed
 	 */
-	private boolean quickAddAllowed;
+	private final boolean quickAddAllowed;
 
 	/**
 	 * The list select component
 	 */
-	private EntityTokenSelect<ID, T> tokenSelect;
+	private final EntityTokenSelect<ID, T> tokenSelect;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param entityModel the entity model of the entity that is being edited
-	 * @param attributeModel the attribute  model the component is based on
-	 * @param service service for database communication
-	 * @param filter search filter to apply 
-	 * @param search whether the component is part of a search form
-	 * @param sortOrder sort orders
+	 * @param entityModel    the entity model of the entity that is being edited
+	 * @param attributeModel the attribute model the component is based on
+	 * @param service        service for database communication
+	 * @param filter         search filter to apply
+	 * @param sharedProvider shared data provider
+	 * @param search         whether the component is part of a search form
+	 * @param sortOrder      sort orders
 	 */
 	@SafeVarargs
 	public QuickAddTokenSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrder) {
+			SelectMode selectMode, SerializablePredicate<T> filter,
+			DataProvider<T, SerializablePredicate<T>> sharedProvider, boolean search, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
-		tokenSelect = new EntityTokenSelect<>(entityModel, attributeModel, service, filter, sortOrder);
+		tokenSelect = new EntityTokenSelect<>(entityModel, attributeModel, service, selectMode, filter, null,
+				sharedProvider, sortOrder);
 		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
 		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
 		initContent();
@@ -95,12 +100,8 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
-		// add to the container
-		ListDataProvider<T> provider = (ListDataProvider<T>) tokenSelect.getDataProvider();
-		provider.getItems().add(entity);
-		tokenSelect.select(entity);
+		tokenSelect.afterNewEntityAdded(entity);
 	}
 
 	@Override
@@ -121,6 +122,12 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	@Override
 	protected Collection<T> generateModelValue() {
 		return retrieveValue();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public DataProvider<T, SerializablePredicate<T>> getSharedProvider() {
+		return (DataProvider<T, SerializablePredicate<T>>) tokenSelect.getDataProvider();
 	}
 
 	public EntityTokenSelect<ID, T> getTokenSelect() {
@@ -189,6 +196,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 		super.setAdditionalFilter(additionalFilter);
 		if (tokenSelect != null) {
 			tokenSelect.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
+			tokenSelect.clear();
 		}
 	}
 
@@ -225,6 +233,12 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	}
 
 	@Override
+	public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
+		super.setRequiredIndicatorVisible(requiredIndicatorVisible);
+		tokenSelect.setRequiredIndicatorVisible(requiredIndicatorVisible);
+	}
+
+	@Override
 	public void setValue(Collection<T> value) {
 		if (tokenSelect != null) {
 			if (value == null) {
@@ -233,11 +247,5 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 			tokenSelect.setValue(Sets.newHashSet(value));
 		}
 		super.setValue(value);
-	}
-
-	@Override
-	public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
-		super.setRequiredIndicatorVisible(requiredIndicatorVisible);
-		tokenSelect.setRequiredIndicatorVisible(requiredIndicatorVisible);
 	}
 }

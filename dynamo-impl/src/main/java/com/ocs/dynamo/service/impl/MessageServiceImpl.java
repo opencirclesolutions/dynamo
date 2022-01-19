@@ -15,8 +15,6 @@ package com.ocs.dynamo.service.impl;
 
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
@@ -24,17 +22,17 @@ import org.springframework.context.NoSuchMessageException;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Implementation of the simple message service
  * 
  * @author bas.rutten
  */
-//@Service
+@Slf4j
 public class MessageServiceImpl implements MessageService {
 
     private static final String MESSAGE_NOT_FOUND = "[Warning: message '%s' not found]";
-
-    private static final Logger LOG = LoggerFactory.getLogger(MessageServiceImpl.class);
 
     @Autowired
     private MessageSource source;
@@ -77,7 +75,7 @@ public class MessageServiceImpl implements MessageService {
         try {
             return source.getMessage(key, args, locale);
         } catch (NoSuchMessageException ex) {
-            LOG.error(ex.getMessage());
+            log.error(ex.getMessage());
             return String.format(MESSAGE_NOT_FOUND, key);
         }
     }

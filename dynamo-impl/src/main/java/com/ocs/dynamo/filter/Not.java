@@ -20,46 +20,41 @@ package com.ocs.dynamo.filter;
  */
 public final class Not extends AbstractFilter {
 
-    private Filter filter;
+	private Filter filter;
 
-    /**
-     * Constructor
-     * 
-     * @param filter
-     */
-    public Not(Filter filter) {
-        this.filter = filter;
-    }
+	public Not(Filter filter) {
+		this.filter = filter;
+	}
 
-    public Filter getFilter() {
-        return filter;
-    }
+	public Filter getFilter() {
+		return filter;
+	}
 
-    @Override
-    public boolean equals(Object obj) {
-        if (!(obj instanceof Not)) {
-            return false;
-        }
-        return filter.equals(((Not) obj).getFilter());
-    }
+	@Override
+	public boolean equals(Object obj) {
+		if (!(obj instanceof Not)) {
+			return false;
+		}
+		return filter.equals(((Not) obj).getFilter());
+	}
 
-    @Override
-    public int hashCode() {
-        return filter.hashCode();
-    }
+	@Override
+	public int hashCode() {
+		return filter.hashCode();
+	}
 
-    @Override
-    public boolean evaluate(Object that) {
-        return !this.filter.evaluate(that);
-    }
+	@Override
+	public boolean evaluate(Object that) {
+		return !this.filter.evaluate(that);
+	}
 
-    @Override
-    public String toString() {
-        return super.toString() + " " + getFilter();
-    }
+	@Override
+	public String toString() {
+		return super.toString() + " " + getFilter();
+	}
 
-    public void setFilter(Filter filter) {
-        this.filter = filter;
-    }
+	public void setFilter(Filter filter) {
+		this.filter = filter;
+	}
 
 }

@@ -19,6 +19,8 @@ import java.util.Objects;
 import javax.persistence.MappedSuperclass;
 import javax.persistence.Version;
 
+import lombok.Data;
+
 /**
  * Base class for entities
  * 
@@ -26,6 +28,7 @@ import javax.persistence.Version;
  * @param <ID> the type of the primary key
  */
 @MappedSuperclass
+@Data
 public abstract class AbstractEntity<ID> implements Serializable {
 
 	private static final long serialVersionUID = -8442763252267825950L;
@@ -37,14 +40,6 @@ public abstract class AbstractEntity<ID> implements Serializable {
 	public abstract ID getId();
 
 	public abstract void setId(ID id);
-
-	public Integer getVersion() {
-		return version;
-	}
-
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
 
 	/**
 	 * Basic hash code function - uses the ID. Override this (and the equals()

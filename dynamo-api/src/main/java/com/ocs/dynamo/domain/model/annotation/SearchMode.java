@@ -13,7 +13,13 @@
  */
 package com.ocs.dynamo.domain.model.annotation;
 
+/**
+ * The supported settings that govern when a field shows up within a search form
+ * 
+ * @author Bas Rutten
+ *
+ */
 public enum SearchMode {
 
-    NONE, ALWAYS, ADVANCED;
+	NONE, ALWAYS, ADVANCED;
 }

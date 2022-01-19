@@ -147,6 +147,11 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 					BaseGridWrapper.this.postProcessComponent(id, am, comp);
 				}
 
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
+				}
+
 			};
 
 		} else {
@@ -163,6 +168,11 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 				@Override
 				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 					BaseGridWrapper.this.postProcessComponent(id, am, comp);
+				}
+
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
 				}
 
 			};
@@ -267,6 +277,17 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		// overwrite in subclasses
+	}
+
+	/**
+	 * Callback method for constructing a custom field
+	 * 
+	 * @param entityModel    the entity model of the main entity
+	 * @param attributeModel the attribute model to base the field on
+	 * @return
+	 */
+	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
 	}
 
 }

@@ -27,35 +27,35 @@ import com.ocs.dynamo.domain.model.AttributeModel;
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public interface XlsStyleGenerator<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-    /**
-     * Returns the style to use for a cell in the header row
-     * 
-     * @param index the index of the column
-     * @return
-     */
-    CellStyle getHeaderStyle(int index);
+	/**
+	 * Returns the style to use for a cell in the header row
+	 * 
+	 * @param index the index of the column
+	 * @return
+	 */
+	CellStyle getHeaderStyle(int index);
 
-    /**
-     * Returns the cell style for a certain cell
-     * 
-     * @param index          the column index of the cell
-     * @param entity         the entity for which a value is displayed in the cell
-     * @param value          the value of the cell
-     * @param attributeModel the attribute model
-     * @return
-     */
-    CellStyle getCellStyle(int index, T entity, Object value, AttributeModel am);
+	/**
+	 * Returns the cell style for a certain cell
+	 * 
+	 * @param index  the column index of the cell
+	 * @param entity the entity for which a value is displayed in the cell
+	 * @param value  the value of the cell
+	 * @param am     the attribute model
+	 * @return
+	 */
+	CellStyle getCellStyle(int index, T entity, Object value, AttributeModel am);
 
-    /**
-     * 
-     * @param type
-     * @param am
-     * @return
-     */
-    CellStyle getTotalsStyle(Class<?> type, AttributeModel am);
+	/**
+	 * 
+	 * @param type
+	 * @param am
+	 * @return
+	 */
+	CellStyle getTotalsStyle(Class<?> type, AttributeModel am);
 
 }

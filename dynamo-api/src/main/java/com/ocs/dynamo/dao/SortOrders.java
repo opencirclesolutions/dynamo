@@ -16,7 +16,7 @@ package com.ocs.dynamo.dao;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import lombok.ToString;
 
 /**
  * A list of SortOrder objects
@@ -24,6 +24,7 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
  * @author bas.rutten
  *
  */
+@ToString
 public class SortOrders {
 
 	private List<SortOrder> orders = new ArrayList<>();
@@ -96,11 +97,6 @@ public class SortOrders {
 	@Override
 	public int hashCode() {
 		return super.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
 	}
 
 	public List<SortOrder> getOrders() {

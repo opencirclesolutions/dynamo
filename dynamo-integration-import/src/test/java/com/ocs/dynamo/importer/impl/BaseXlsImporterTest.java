@@ -154,7 +154,7 @@ public class BaseXlsImporterTest {
 		try {
 			importer.processRow(0, sheet.getRow(0), PersonDTO.class);
 		} catch (OCSImportException ex) {
-			assertEquals("Row doesn't have enough columns", ex.getMessage());
+			assertEquals("Row 0 doesn't have enough columns", ex.getMessage());
 		}
 
 	}

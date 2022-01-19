@@ -207,6 +207,11 @@
 				<artifactId>guava</artifactId>
 				<version>${guava.version}</version>
 			</dependency>
+			<dependency>
+				<groupId>org.projectlombok</groupId>
+				<artifactId>lombok</artifactId>
+				<version>1.18.20</version>
+			</dependency>
 		</dependencies>
 	</dependencyManagement>
 	<build>

@@ -39,9 +39,10 @@ import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
-import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -52,8 +53,8 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author Bas Rutten
  *
- * @param <ID>
- * @param <T>
+ * @param <ID> the type of the primary key of the entity
+ * @param <T>  the type of the entity
  */
 public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends AbstractEntity<ID>> {
 
@@ -79,7 +80,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 * Map from attribute path to "shared provider" that can be shared by all
 	 * components in the same column in a grid
 	 */
-	private Map<String, ListDataProvider<?>> sharedProviders = new HashMap<>();
+	private Map<String, DataProvider<?, SerializablePredicate<?>>> sharedProviders = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -118,6 +119,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 * 
 	 * @param am the attribute model on which to base the column
 	 */
+	@SuppressWarnings("unchecked")
 	private void addColumn(AttributeModel am) {
 		if (am.isVisibleInGrid()) {
 			Column<T> column;
@@ -140,15 +142,22 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 					column = grid.addComponentColumn(t -> {
 						Component comp = constructCustomField(entityModel, am);
 						if (comp == null) {
-							FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(am)
-									.setFieldFilters(fieldFilters).setViewMode(false)
-									.setSharedProviders(sharedProviders).setEditableGrid(true);
+							FieldFactoryContext ctx = FieldFactoryContext.create().attributeModel(am)
+									.fieldFilters(fieldFilters).viewMode(false).sharedProviders(sharedProviders)
+									.editableGrid(true).build();
 							comp = fieldFactory.constructField(ctx);
 						}
 
+						// always hide label inside grid
+						VaadinUtils.setLabel(comp, "");
+
 						// store shared date provider so it can be used by multiple components
 						if (comp instanceof SharedProvider) {
-							sharedProviders.put(am.getPath(), ((SharedProvider<?>) comp).getSharedProvider());
+							DataProvider<?, ?> sharedProvider = ((SharedProvider<?>) comp).getSharedProvider();
+							if (sharedProvider instanceof ListDataProvider) {
+								sharedProviders.put(am.getPath(),
+										(DataProvider<?, SerializablePredicate<?>>) sharedProvider);
+							}
 						}
 
 						if (comp instanceof HasSize) {
@@ -176,8 +185,8 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 			if (editable && GridEditMode.SINGLE_ROW.equals(gridEditMode)
 					&& EditableType.EDITABLE.equals(am.getEditableType())) {
 				Binder<T> binder = grid.getEditor().getBinder();
-				FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am).setViewMode(false)
-						.setFieldFilters(fieldFilters).setEditableGrid(true);
+				FieldFactoryContext context = FieldFactoryContext.create().attributeModel(am).viewMode(false)
+						.fieldFilters(fieldFilters).editableGrid(true).build();
 				Component comp = fieldFactory.constructField(context);
 				if (comp != null) {
 					Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?, ?>) comp);

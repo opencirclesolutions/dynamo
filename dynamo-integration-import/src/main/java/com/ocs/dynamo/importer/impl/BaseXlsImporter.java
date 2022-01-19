@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.importer.impl;
 
+import static java.lang.String.format;
+
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -50,10 +52,10 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	private static final int CACHE_SIZE = 500;
 
 	/**
-	 * Checks if any cell in the row contains a certain (String) value
+	 * Checks if any cell in a row contains a certain (String) value
 	 * 
-	 * @param row   the row
-	 * @param value the String value
+	 * @param row   the row to check
+	 * @param value the String value to check for
 	 * @return
 	 */
 	protected boolean containsStringValue(Row row, String value) {
@@ -75,9 +77,6 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		return found;
 	}
 
-	/**
-	 * {@inheritDoc}
-	 */
 	@Override
 	public int countRows(byte[] bytes, int sheetIndex) {
 		int count = 0;
@@ -134,7 +133,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	}
 
 	/**
-	 * Extracts a boolean value from a cell
+	 * Extracts a Boolean value from a cell
 	 * 
 	 * @param cell the cell to extract the value from
 	 * @return
@@ -173,14 +172,14 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			try {
 				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));
 			} catch (NullPointerException nex) {
-				// horrible code throws NPE in case of empty cell
+				// horrible code throws NPE when cell is empty
 				return null;
 			}
 		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
 			try {
 				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));
 			} catch (NullPointerException nex) {
-				// horrible code throws NPE in case of empty cell
+				// horrible code throws NPE when cell is empty
 				return null;
 			}
 		}
@@ -193,7 +192,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	@Override
 	protected LocalDate getDateValueWithDefault(Cell cell, ImportField field) {
 		LocalDate value = getDateValue(cell);
-		if (value == null && field.defaultValue() != null && !"".equals(field.defaultValue())) {
+		if (value == null && !StringUtils.isEmpty(field.defaultValue())) {
 			value = LocalDate.parse(field.defaultValue(),
 					DateTimeFormatter.ofPattern(SystemPropertyUtils.getDefaultDateFormat()));
 		}
@@ -201,9 +200,9 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	}
 
 	/**
-	 * Retrieves the numeric value of a cell
+	 * Retrieves a numeric value for a cell
 	 * 
-	 * @param cell the cell
+	 * @param cell the cell to retrieve the value from
 	 * @return
 	 */
 	protected Double getNumericValue(Cell cell) {
@@ -216,14 +215,15 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 				// have to handle it in this ugly way
 				return null;
 			} catch (Exception ex) {
-				throw new OCSImportException("Found an invalid numeric value: " + cell.getStringCellValue(), ex);
+				throw new OCSImportException(format("Found an invalid numeric value: %s", cell.getStringCellValue()),
+						ex);
 			}
 		} else if (cell != null && CellType.STRING == cell.getCellType()) {
 			// in case the value is not numeric, simply output a warning. If the
 			// field is required, this will trigger
 			// an error at a later stage
 			if (!StringUtils.isEmpty(cell.getStringCellValue().trim())) {
-				throw new OCSImportException("Found an invalid numeric value: " + cell.getStringCellValue());
+				throw new OCSImportException(format("Found an invalid numeric value: %s", cell.getStringCellValue()));
 			}
 		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
 			try {
@@ -231,7 +231,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			} catch (NullPointerException nex) {
 				return null;
 			} catch (NumberFormatException ex) {
-				throw new OCSImportException("Found an invalid numeric value: " + cell.getStringCellValue(), ex);
+				throw new OCSImportException(format("Found an invalid numeric value: %s", cell.getStringCellValue()));
 			}
 		}
 		return null;
@@ -274,7 +274,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 			try {
 				return cell.getStringCellValue();
 			} catch (Exception ex) {
-				throw new OCSImportException("Found an invalid String value", ex);
+				throw new OCSImportException("Found an invalid string value", ex);
 			}
 		}
 		return null;
@@ -369,11 +369,12 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 							ClassUtils.setFieldValue(t, d.getName(), obj);
 						} else if (field.required()) {
 							// a required value is missing!
-							throw new OCSImportException("Required value for field '" + d.getName() + "' is missing");
+							throw new OCSImportException(
+									format("Required value for field '%s' is missing", d.getName()));
 						}
 					} else {
 						throw new OCSImportException(
-								"Input doesn't have enoug rows: row " + rowNum + " does not exist");
+								format("Input doesn't have enough rows: row %d does not exist", rowNum));
 					}
 				}
 			}

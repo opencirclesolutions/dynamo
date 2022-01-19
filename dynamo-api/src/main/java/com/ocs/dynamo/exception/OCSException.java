@@ -13,34 +13,22 @@
  */
 package com.ocs.dynamo.exception;
 
+import lombok.NoArgsConstructor;
+
 /**
  * Base class for OCS checked exceptions
  * 
  * @author bas.rutten
  */
+@NoArgsConstructor
 public class OCSException extends Exception {
 
 	private static final long serialVersionUID = -4040969323105084394L;
 
-	public OCSException() {
-		// default constructor
-	}
-
-	/**
-	 * Constructor
-	 * 
-	 * @param message the error message
-	 */
 	public OCSException(String message) {
 		super(message);
 	}
 
-	/**
-	 * Constructor
-	 * 
-	 * @param message the error message
-	 * @param cause the cause
-	 */
 	public OCSException(String message, Throwable cause) {
 		super(message, cause);
 	}

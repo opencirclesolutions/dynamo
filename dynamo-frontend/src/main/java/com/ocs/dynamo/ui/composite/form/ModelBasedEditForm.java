@@ -998,9 +998,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// allow the user to override the construction of a field
 		Component field = constructCustomField(entityModel, attributeModel, viewMode);
 		if (field == null) {
-			FieldFactoryContext ctx = FieldFactoryContext.create().setAttributeModel(attributeModel)
-					.setFieldEntityModel(fieldEntityModel).setFieldFilters(getFieldFilters()).setViewMode(viewMode)
-					.setParentEntity(entity);
+			FieldFactoryContext ctx = FieldFactoryContext.create().attributeModel(attributeModel)
+					.fieldEntityModel(fieldEntityModel).fieldFilters(getFieldFilters()).viewMode(viewMode)
+					.parentEntity(entity).build();
 			field = fieldFactory.constructField(ctx);
 		}
 

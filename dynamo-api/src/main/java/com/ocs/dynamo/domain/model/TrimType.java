@@ -13,6 +13,11 @@
  */
 package com.ocs.dynamo.domain.model;
 
+/**
+ * The supported settings for trimming excess spaces 
+ * @author Bas Rutten
+ *
+ */
 public enum TrimType {
 
 	TRIM, NO_TRIM, INHERIT;

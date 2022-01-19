@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.configuration;
 
+import java.nio.charset.StandardCharsets;
+
 import javax.validation.ValidatorFactory;
 
 import org.springframework.context.annotation.Bean;
@@ -22,7 +24,8 @@ import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
- * Spring Java configuration
+ * Default configuration for Dynamo applications. Adds a message source and a
+ * validator factory
  * 
  * @author Bas Rutten
  *
@@ -37,7 +40,7 @@ public abstract class ApplicationConfigurationSupport {
 	public ReloadableResourceBundleMessageSource messageSource() {
 		ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();
 		source.setBasenames(getBaseNames());
-		source.setDefaultEncoding("UTF-8");
+		source.setDefaultEncoding(StandardCharsets.UTF_8.name());
 		source.setFallbackToSystemLocale(false);
 		return source;
 	}

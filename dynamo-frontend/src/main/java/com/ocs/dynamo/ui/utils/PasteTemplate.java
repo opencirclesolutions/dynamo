@@ -15,11 +15,10 @@ package com.ocs.dynamo.ui.utils;
 
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
+
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A template for handling a paste into a text field. The template will try to
@@ -30,9 +29,8 @@ import com.vaadin.flow.component.grid.Grid;
  * 
  * @author bas.rutten
  */
+@Slf4j
 public abstract class PasteTemplate<T> {
-
-	private static final Logger LOG = LoggerFactory.getLogger(PasteTemplate.class);
 
 	private ValueChangeEvent<String> event;
 
@@ -71,7 +69,7 @@ public abstract class PasteTemplate<T> {
 						process(i, s);
 
 					} catch (Exception ex) {
-						LOG.error(ex.getMessage(), ex);
+						log.error(ex.getMessage(), ex);
 					}
 				}
 			}

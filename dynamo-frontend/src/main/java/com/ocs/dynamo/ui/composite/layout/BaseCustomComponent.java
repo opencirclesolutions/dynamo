@@ -15,8 +15,6 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import javax.persistence.OptimisticLockException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -38,15 +36,16 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Base class for custom components - contains convenience methods for getting
  * various often-used services
  * 
  * @author bas.rutten
  */
+@Slf4j
 public abstract class BaseCustomComponent extends DefaultVerticalLayout implements Buildable {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BaseCustomComponent.class);
 
 	private static final long serialVersionUID = -8982555842423738005L;
 
@@ -88,19 +87,19 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	protected void handleSaveException(RuntimeException ex) {
 		if (ex instanceof OCSValidationException) {
 			// validation exception
-			LOG.warn(ex.getMessage(), ex);
+			log.warn(ex.getMessage(), ex);
 			showErrorNotification(((OCSValidationException) ex).getErrors().get(0));
 		} else if (ex instanceof OCSRuntimeException) {
 			// any other OCS runtime exception
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 			showErrorNotification(ex.getMessage());
 		} else if (ex instanceof OptimisticLockException | ex instanceof ObjectOptimisticLockingFailureException) {
 			// optimistic lock
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 			showErrorNotification(message("ocs.optimistic.lock"));
 		} else {
 			// any other save exception
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 			showErrorNotification(message("ocs.error.occurred"));
 		}
 	}
@@ -158,7 +157,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position)
 					.addThemeVariants(variant);
 		} else {
-			LOG.info(message);
+			log.info(message);
 		}
 	}
 

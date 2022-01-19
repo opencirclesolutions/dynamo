@@ -13,28 +13,24 @@
  */
 package com.ocs.dynamo.domain.comparator;
 
+import java.util.Comparator;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.utils.ClassUtils;
 
-import java.util.Comparator;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 /**
  * A comparator for comparing two entities based on a value of an attribute (using reflection)
  * 
  * @author bas.rutten
  */
+@Getter
+@AllArgsConstructor
 public class AttributeComparator<T extends AbstractEntity<?>> implements Comparator<T> {
 
     private final String attribute;
-
-    /**
-     * Constructor
-     * 
-     * @param attribute the attribute on which to perform the comparison
-     */
-    public AttributeComparator(String attribute) {
-        this.attribute = attribute;
-    }
 
     @Override
     @SuppressWarnings({ "rawtypes", "unchecked" })
@@ -54,6 +50,5 @@ public class AttributeComparator<T extends AbstractEntity<?>> implements Compara
             return ((Comparable) v1).compareTo(v2);
         }
         return 0;
-
     }
 }

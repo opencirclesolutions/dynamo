@@ -18,9 +18,6 @@ import java.io.InputStream;
 import java.io.Serializable;
 import java.util.function.Supplier;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
@@ -34,6 +31,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Base class for export dialogs
  * 
@@ -42,13 +41,12 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
  * @param <ID> the type of the ID of the entity to export
  * @param <T>  the type of the entity to export
  */
+@Slf4j
 public abstract class BaseExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
 	protected static final String EXTENSION_CSV = ".csv";
 
 	protected static final String EXTENSION_XLS = ".xlsx";
-
-	protected static final Logger LOG = LoggerFactory.getLogger(BaseExportDialog.class);
 
 	private static final long serialVersionUID = 2066899457738401866L;
 
@@ -122,7 +120,7 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 			this.close();
 			return stream;
 		} catch (Exception ex) {
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 			getUi().access(() -> VaadinUtils.showErrorNotification(ex.getMessage()));
 			return null;
 		} finally {

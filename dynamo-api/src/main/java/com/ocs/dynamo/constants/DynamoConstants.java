@@ -15,51 +15,87 @@ package com.ocs.dynamo.constants;
 
 import java.util.Locale;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Various constants that are used by the Dynamo framework.
  *
  * @author bas.rutten
  */
-public final class DynamoConstants {
+@UtilityClass
+public class DynamoConstants {
 
 	/**
-	 * Maximum cache size (for lazy query container)
+	 * CSS style for the main layout for a base view
 	 */
-	public static final int CACHE_SIZE = 10000;
-
 	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
 
+	/**
+	 * CSS style for the button that is used as the header for a collapsible panel
+	 */
 	public static final String CSS_COLLAPSIBLE_PANEL_BUTTON = "collapsiblePanelButton";
 
+	/**
+	 * CSS style for composition layout
+	 */
 	public static final String CSS_COMPOSITION_LAYOUT = "compositionLayout";
 
+	/**
+	 * CSS style for remove button in details edit layout
+	 */
 	public static final String CSS_DETAIL_EDIT_LAYOUT_REMOVE_BUTTON = "detailsEditLayoutRemoveButton";
 
+	/**
+	 * CSS style for details edit layout
+	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
 
+	/**
+	 * CSS style for button bar in details edit layout that apepars below the
+	 * components
+	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
 
+	/**
+	 * CSS style for button bar in details edit layout that appears on same line as
+	 * the components
+	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
 	/**
-	 * CSS style for dialog
+	 * CSS style for modal dialog
 	 */
 	public static final String CSS_DIALOG = "dynamoDialog";
 
 	/**
-	 * CSS style for dialog title
+	 * CSS style for modal dialog title
 	 */
 	public static final String CSS_DIALOG_TITLE = "dynamoDialogTitle";
+
+	/**
+	 * CSS style for download button
+	 */
+	public static final String CSS_DOWNLOAD_BUTTON = "downloadButton";
 
 	/**
 	 * CSS style for flex layouts
 	 */
 	public static final String CSS_DYNAMO_FLEX_ROW = "dynamoFlexRow";
 
+	/**
+	 * CSS style for editable grid layout
+	 */
 	public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
 
+	/**
+	 * CSS style for form layout that is used for grouping components together on
+	 * same row
+	 */
 	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
 
+	/**
+	 * CSS style for horizontal display layout
+	 */
 	public static final String CSS_HORIZONTAL_DISPLAY_LAYOUT = "horizontalDisplayLayout";
 
 	/**
@@ -72,6 +108,9 @@ public final class DynamoConstants {
 	 */
 	public static final String CSS_LAST_VISITED = "lastVisited";
 
+	/**
+	 * CSS style for main search layout
+	 */
 	public static final String CSS_MAIN_SEARCH_LAYOUT = "mainSearchLayout";
 
 	public static final String CSS_SEARCH_FORM_LAYOUT = "searchFormLayout";
@@ -82,6 +121,9 @@ public final class DynamoConstants {
 
 	public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
 
+	/**
+	 * CSS style for edit form main layout
+	 */
 	public static final String CSS_MODEL_BASED_EDIT_FORM_MAIN = "modelBasedEditFormMain";
 
 	/**
@@ -99,10 +141,19 @@ public final class DynamoConstants {
 	 */
 	public static final String CSS_PARENT_ROW = "dynamoParentRow";
 
+	/**
+	 * CSS style for search results layout
+	 */
 	public static final String CSS_SEARCH_RESULTS_LAYOUT = "searchResultsLayout";
 
+	/**
+	 * CSS style for simple edit layout
+	 */
 	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
 
+	/**
+	 * CSS style for split layout
+	 */
 	public static final String CSS_SPLIT_LAYOUT = "splitLayout";
 
 	public static final String CSS_SPLIT_LAYOUT_LEFT = "splitLayoutLeft";
@@ -168,12 +219,6 @@ public final class DynamoConstants {
 	public static final String SP_CAPITALIZE_WORDS = "ocs.capitalize.words";
 
 	/**
-	 * Name of the system property that is used to set the locale used for month
-	 * names in date components
-	 */
-	public static final String SP_DEFAULT_DATE_LOCALE = "ocs.default.date.locale";
-
-	/**
 	 * Name of the system property that is used to determine the default currency
 	 * symbol
 	 */
@@ -183,6 +228,12 @@ public final class DynamoConstants {
 	 * Name of the system property that is used to determine the default date format
 	 */
 	public static final String SP_DEFAULT_DATE_FORMAT = "ocs.default.date.format";
+
+	/**
+	 * Name of the system property that is used to set the locale used for month
+	 * names in date components
+	 */
+	public static final String SP_DEFAULT_DATE_LOCALE = "ocs.default.date.locale";
 
 	/**
 	 * Name of the system property that is used to determine the default date/time
@@ -338,6 +389,12 @@ public final class DynamoConstants {
 	public static final String SP_INDENT_GRIDS_IN_FORM = "ocs.indent.grids";
 
 	/**
+	 * Name of the system property that indicates the default height of a list
+	 * select component
+	 */
+	public static final String SP_LIST_SELECT_HEIGHT = "ocs.default.list.select.height";
+
+	/**
 	 * Name of the system property that indicates the maximum number of items to
 	 * display in an entity lookup field in multiple select mode
 	 */
@@ -356,16 +413,16 @@ public final class DynamoConstants {
 	public static final String SP_SERVICE_LOCATOR_CLASS_NAME = "ocs.service.locator.classname";
 
 	/**
+	 * System property that indicates whether to use the thousands grouping
+	 * separator
+	 */
+	public static final String SP_THOUSAND_GROUPING = "ocs.default.thousands.grouping";
+
+	/**
 	 * The name of the system property that is used to determine whether to trim
 	 * white space for text inputs
 	 */
 	public static final String SP_TRIM_SPACES = "ocs.trim.spaces";
-
-	/**
-	 * System property that indicates whether to use the thousands grouping
-	 * separator in edit mode
-	 */
-	public static final String SP_THOUSAND_GROUPING = "ocs.edit.thousands.grouping";
 
 	/**
 	 * Indicates whether to use the browser time zone for formatting zoned date
@@ -388,19 +445,4 @@ public final class DynamoConstants {
 	 */
 	public static final String SP_XLS_THOUSANDS_GROUPING = "ocs.xls.thousands.grouping";
 
-	/**
-	 * The name of the variable that is used to store the user
-	 */
-	public static final String USER = "user";
-
-	/**
-	 * The name of the variable that is used to store the user name in the session
-	 */
-	public static final String USER_NAME = "userName";
-
-	/**
-	 * Constructor for OCSConstants.
-	 */
-	private DynamoConstants() {
-	}
 }

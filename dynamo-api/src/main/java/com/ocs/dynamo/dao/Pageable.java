@@ -14,35 +14,35 @@
 package com.ocs.dynamo.dao;
 
 /**
- * Interface for pagination information
+ * Interface for defining pagination
  * 
  * @author bas.rutten
  *
  */
 public interface Pageable {
 
-    /**
-     * 
-     * @return the index of the current page
-     */
-    int getPageNumber();
+	/**
+	 * 
+	 * @return the index of the current page
+	 */
+	int getPageNumber();
 
-    /**
-     * 
-     * @return the size of the page
-     */
-    int getPageSize();
+	/**
+	 * 
+	 * @return the size of the page
+	 */
+	int getPageSize();
 
-    /**
-     * 
-     * @return the offset of the first record
-     */
-    int getOffset();
+	/**
+	 * 
+	 * @return the offset of the first record
+	 */
+	int getOffset();
 
-    /**
-     * 
-     * @return the desired sort orders
-     */
-    SortOrders getSortOrders();
+	/**
+	 * 
+	 * @return the desired sort orders
+	 */
+	SortOrders getSortOrders();
 
 }

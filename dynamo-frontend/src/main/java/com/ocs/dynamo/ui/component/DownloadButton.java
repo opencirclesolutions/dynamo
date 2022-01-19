@@ -17,6 +17,7 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.util.function.Supplier;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -67,13 +68,13 @@ public class DownloadButton extends HorizontalLayout {
 		update();
 
 		button = new Button(caption, VaadinIcon.DOWNLOAD.create());
-		button.addClassName("downloadButton");
+		button.addClassName(DynamoConstants.CSS_DOWNLOAD_BUTTON);
 		if (progressBar != null) {
 			button.addClickListener(event -> progressBar.setVisible(true));
 		}
 
 		anchor.getElement().setAttribute("download", true);
-		anchor.addClassName("downloadButton");
+		anchor.addClassName(DynamoConstants.CSS_DOWNLOAD_BUTTON);
 		anchor.add(button);
 		add(anchor);
 	}
@@ -83,7 +84,6 @@ public class DownloadButton extends HorizontalLayout {
 	 */
 	public final void update() {
 		anchor.setHref(new StreamResource(this.createFileName.get(), () -> {
-
 			InputStream inputStream = this.createContent.get();
 			if (inputStream == null) {
 				return new ByteArrayInputStream(new byte[0]);

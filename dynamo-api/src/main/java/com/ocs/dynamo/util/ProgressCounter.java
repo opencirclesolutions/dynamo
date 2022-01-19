@@ -13,13 +13,34 @@
  */
 package com.ocs.dynamo.util;
 
+/**
+ * Interface for a simple progress counter
+ * 
+ * @author Bas Rutten
+ *
+ */
 public interface ProgressCounter {
 
-    void reset();
+	/**
+	 * Resets the counter to zero
+	 */
+	void reset();
 
-    void increment();
+	/**
+	 * Increments the value of the counter
+	 */
+	void increment();
 
-    int getCurrent();
+	/**
+	 * 
+	 * @return the current value of the counter
+	 */
+	int getCurrent();
 
-    void incrementBy(int value);
+	/**
+	 * Increment the counter by the specified value
+	 * 
+	 * @param value the desired increment
+	 */
+	void incrementBy(int value);
 }

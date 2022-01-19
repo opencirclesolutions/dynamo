@@ -19,16 +19,16 @@ import java.util.List;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.SharedProvider;
-import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
@@ -48,9 +48,9 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	private static final long serialVersionUID = 4246187881499965296L;
 
 	/**
-	 * Whether quick addition of new domain values is allowed
+	 * The combo box that holds the actual values
 	 */
-	private final boolean quickAddAllowed;
+	private EntityComboBox<ID, T> comboBox;
 
 	/**
 	 * Whether direct navigation from edit screen or grid to another screen is
@@ -59,9 +59,9 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	private final boolean directNavigationAllowed;
 
 	/**
-	 * The combo box that holds the actual values
+	 * Whether quick addition of new domain values is allowed
 	 */
-	private EntityComboBox<ID, T> comboBox;
+	private final boolean quickAddAllowed;
 
 	/**
 	 * Constructor
@@ -72,15 +72,15 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 * @param mode           the mode
 	 * @param filter         the filter that is used for filtering the data
 	 * @param items          the fixed collection of items to display
-	 * @param sortOrder      the desired sort order
+	 * @param sortOrder      the desired sort orders
 	 */
 	@SafeVarargs
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SelectMode mode, SerializablePredicate<T> filter, boolean search, ListDataProvider<T> sharedProvider,
-			List<T> items, SortOrder<?>... sortOrder) {
+			SelectMode mode, SerializablePredicate<T> filter, boolean search,
+			DataProvider<T, SerializablePredicate<T>> sharedProvider, List<T> items, SortOrder<?>... sortOrders) {
 		super(service, entityModel, attributeModel, filter);
-		this.comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, sharedProvider, items,
-				sortOrder);
+		this.comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items, sharedProvider,
+				sortOrders);
 		this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed() && !search;
 		this.directNavigationAllowed = attributeModel != null && attributeModel.isNavigable() && !search;
 		initContent();
@@ -97,11 +97,8 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
-		ListDataProvider<T> provider = (ListDataProvider<T>) comboBox.getDataProvider();
-		provider.getItems().add(entity);
-		comboBox.setValue(entity);
+		comboBox.afterNewEntityAdded(entity);
 	}
 
 	@Override
@@ -130,8 +127,8 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public ListDataProvider<T> getSharedProvider() {
-		return (ListDataProvider<T>) comboBox.getDataProvider();
+	public DataProvider<T, SerializablePredicate<T>> getSharedProvider() {
+		return (DataProvider<T, SerializablePredicate<T>>) comboBox.getDataProvider();
 	}
 
 	@Override
@@ -209,6 +206,12 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 		if (comboBox != null) {
 			comboBox.setValue(value);
 		}
+	}
+
+	@Override
+	public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
+		super.setRequiredIndicatorVisible(requiredIndicatorVisible);
+		comboBox.setRequiredIndicatorVisible(requiredIndicatorVisible);
 	}
 
 	@Override

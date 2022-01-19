@@ -20,8 +20,6 @@ import javax.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.TestPropertySource;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
@@ -35,6 +33,7 @@ import com.ocs.dynamo.constants.DynamoConstants;
 
 /**
  * Base class for integration tests using Spring Boot
+ * 
  * @author Bas Rutten
  *
  */
@@ -43,46 +42,41 @@ import com.ocs.dynamo.constants.DynamoConstants;
 @Transactional
 public abstract class BaseIntegrationTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(BaseIntegrationTest.class);
+	@Autowired
+	private PlatformTransactionManager transactionManager;
 
-    @Autowired
-    private PlatformTransactionManager transactionManager;
+	@PersistenceContext
+	protected EntityManager entityManager;
 
-    @PersistenceContext
-    protected EntityManager entityManager;
+	@BeforeAll
+	public static void beforeClass() {
+		// make sure the test service locator is loaded
+		System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
+	}
 
-    @BeforeAll
-    public static void beforeClass() {
-        // make sure the test service locator is loaded
-        System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
-    }
+	public EntityManager getEntityManager() {
+		return entityManager;
+	}
 
-    protected Logger getLog() {
-        return LOG;
-    }
+	public void setEntityManager(EntityManager entityManager) {
+		this.entityManager = entityManager;
+	}
 
-    public EntityManager getEntityManager() {
-        return entityManager;
-    }
+	public void wait(int miliSeconds) {
+		try {
+			Thread.sleep(miliSeconds);
+		} catch (InterruptedException ex) {
+			fail("Waiting period was interrupted");
+		}
+	}
 
-    public void setEntityManager(EntityManager entityManager) {
-        this.entityManager = entityManager;
-    }
+	protected TransactionStatus startTransaction() {
+		return transactionManager
+				.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
+	}
 
-    public void wait(int miliSeconds) {
-        try {
-            Thread.sleep(miliSeconds);
-        } catch (InterruptedException ex) {
-            fail("Waiting period was interrupted");
-        }
-    }
-
-    protected TransactionStatus startTransaction() {
-        return transactionManager.getTransaction(new DefaultTransactionDefinition(TransactionDefinition.PROPAGATION_REQUIRES_NEW));
-    }
-
-    protected void commitTransaction(TransactionStatus status) {
-        transactionManager.commit(status);
-    }
+	protected void commitTransaction(TransactionStatus status) {
+		transactionManager.commit(status);
+	}
 
 }

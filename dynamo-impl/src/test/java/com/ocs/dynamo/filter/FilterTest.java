@@ -371,16 +371,4 @@ public class FilterTest {
         assertTrue(result instanceof Or);
     }
 
-    @Test
-    public void testApplyFilter() {
-        Compare.Equal equal1 = new Compare.Equal("name", "Bob");
-
-        TestEntity t1 = new TestEntity("Pete", 14L);
-        TestEntity t2 = new TestEntity("Bob", 14L);
-        List<TestEntity> list = Lists.newArrayList(t1, t2);
-
-        List<TestEntity> result = equal1.applyFilter(list);
-        assertEquals(1, result.size());
-    }
-
 }

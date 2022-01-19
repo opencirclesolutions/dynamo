@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation that allow for the storing of custom settings in an attribute model
+ * Annotation that allow for the storing of custom settings on an attribute model
  * @author Bas Rutten
  *
  */

@@ -25,71 +25,65 @@ import com.ocs.dynamo.domain.query.PagingDataSetIterator;
 
 public class DataSetIteratorTest {
 
-    private PagingDataSetIterator<Integer, TestEntity> iterator;
+	private PagingDataSetIterator<Integer, TestEntity> iterator;
 
-    private List<Integer> ids = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+	private List<Integer> ids = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-    private List<Integer> ids2 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+	private List<Integer> ids2 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
-    private int pagesRead = 0;
+	private int pagesRead = 0;
 
-    @Test
-    public void test() {
+	@Test
+	public void test() {
 
-        iterator = new PagingDataSetIterator<Integer, TestEntity>(ids, 5) {
+		iterator = new PagingDataSetIterator<Integer, TestEntity>(ids, pages -> {
+			List<TestEntity> result = new ArrayList<>();
+			for (Integer i : pages) {
+				TestEntity entity = new TestEntity();
+				entity.setId(i);
+				result.add(entity);
+			}
+			pagesRead++;
+			return result;
+		}, 5);
 
-            @Override
-            protected List<TestEntity> readPage(List<Integer> ids) {
-                List<TestEntity> result = new ArrayList<>();
-                for (Integer i : ids) {
-                    TestEntity entity = new TestEntity();
-                    entity.setId(i);
-                    result.add(entity);
-                }
-                pagesRead++;
-                return result;
-            }
-        };
-        int i = 0;
-        TestEntity entity = null;
-        do {
-            entity = iterator.next();
-            if (entity != null) {
-                i++;
-            }
-        } while (entity != null);
+		int i = 0;
+		TestEntity entity = null;
+		do {
+			entity = iterator.next();
+			if (entity != null) {
+				i++;
+			}
+		} while (entity != null);
 
-        assertEquals(10, i);
-        assertEquals(2, pagesRead);
-    }
+		assertEquals(10, i);
+		assertEquals(2, pagesRead);
+	}
 
-    @Test
-    public void testPartial() {
+	@Test
+	public void testPartial() {
 
-        iterator = new PagingDataSetIterator<Integer, TestEntity>(ids2, 5) {
+		iterator = new PagingDataSetIterator<Integer, TestEntity>(ids2, page -> {
+			List<TestEntity> result = new ArrayList<>();
+			for (Integer i : page) {
+				TestEntity entity = new TestEntity();
+				entity.setId(i);
+				result.add(entity);
+			}
+			pagesRead++;
+			return result;
+		}, 5);
 
-            @Override
-            protected List<TestEntity> readPage(List<Integer> ids) {
-                List<TestEntity> result = new ArrayList<>();
-                for (Integer i : ids) {
-                    TestEntity entity = new TestEntity();
-                    entity.setId(i);
-                    result.add(entity);
-                }
-                pagesRead++;
-                return result;
-            }
-        };
-        int i = 0;
-        TestEntity entity = null;
-        do {
-            entity = iterator.next();
-            if (entity != null) {
-                i++;
-            }
-        } while (entity != null);
+		int i = 0;
+		TestEntity entity = null;
+		do {
+			entity = iterator.next();
+			if (entity != null) {
+				i++;
+			}
+		} while (entity != null);
 
-        assertEquals(12, i);
-        assertEquals(3, pagesRead);
-    }
+		assertEquals(12, i);
+		assertEquals(3, pagesRead);
+	}
 }

@@ -24,8 +24,6 @@ import javax.validation.ValidatorFactory;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,6 +42,8 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Base service implementation
  * 
@@ -51,10 +51,8 @@ import com.ocs.dynamo.utils.ClassUtils;
  * @param <ID> type of the primary key
  * @param <T>  type of the entity
  */
-
+@Slf4j
 public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implements BaseService<ID, T> {
-
-	private static final Logger LOGGER = LoggerFactory.getLogger(BaseServiceImpl.class);
 
 	@Autowired
 	private ValidatorFactory factory;
@@ -303,7 +301,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 			}
 
 			for (String error : errors) {
-				LOGGER.warn(error);
+				log.warn(error);
 			}
 
 			throw new OCSValidationException(errors);

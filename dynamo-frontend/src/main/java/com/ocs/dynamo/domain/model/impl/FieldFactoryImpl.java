@@ -37,6 +37,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -44,7 +45,6 @@ import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DateTimePicker;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
-import com.ocs.dynamo.ui.component.EntityComboBox.SelectMode;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
@@ -75,10 +75,13 @@ import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.NoArgsConstructor;
 
 /**
  * A factory class for generating various input fields based on the entity and
@@ -87,6 +90,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author Bas Rutten
  *
  */
+@NoArgsConstructor
 public class FieldFactoryImpl implements FieldFactory {
 
 	private FieldFactory delegate;
@@ -94,11 +98,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	@Autowired
 	private MessageService messageService;
 
-	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
-
-	public FieldFactoryImpl() {
-		// default constructor
-	}
+	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
 	public FieldFactoryImpl(FieldFactory delegate) {
 		this.delegate = delegate;
@@ -142,7 +142,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	/**
-	 * Adds converters and validators for text field
+	 * Adds converters and validators for a text field
 	 * 
 	 * @param <U>
 	 * @param <V>
@@ -156,18 +156,17 @@ public class FieldFactoryImpl implements FieldFactory {
 			sBuilder.withNullRepresentation("");
 			if (am.getType().equals(BigDecimal.class)) {
 				sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.getPrecision(),
-						VaadinUtils.getCurrencySymbol()));
+						am.useThousandsGroupingInEditMode(), am.getPrecision(), VaadinUtils.getCurrencySymbol()));
 			} else if (NumberUtils.isInteger(am.getType())) {
-				sBuilder.withConverter(ConverterFactory.createIntegerConverter(
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+				sBuilder.withConverter(ConverterFactory.createIntegerConverter(am.useThousandsGroupingInEditMode(),
+						am.isPercentage()));
 			} else if (NumberUtils.isLong(am.getType())) {
-				sBuilder.withConverter(ConverterFactory
-						.createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage()));
+				sBuilder.withConverter(
+						ConverterFactory.createLongConverter(am.useThousandsGroupingInEditMode(), am.isPercentage()));
 			} else if (NumberUtils.isDouble(am.getType())) {
-				sBuilder.withConverter(ConverterFactory.createDoubleConverter(am.isCurrency(),
-						SystemPropertyUtils.useThousandsGroupingInEditMode(), am.isPercentage(), am.getPrecision(),
-						VaadinUtils.getCurrencySymbol()));
+				sBuilder.withConverter(
+						ConverterFactory.createDoubleConverter(am.isCurrency(), am.useThousandsGroupingInEditMode(),
+								am.isPercentage(), am.getPrecision(), VaadinUtils.getCurrencySymbol()));
 			} else if (String.class.equals(am.getType()) && am.isTrimSpaces()) {
 				sBuilder.withConverter(new TrimSpacesConverter());
 			}
@@ -175,19 +174,22 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	/**
-	 * Constructs a field for selecting multiple values from a collection
+	 * Constructs a field for selecting multiple values from a collection. This can
+	 * only be a lookup field or a token field
 	 * 
 	 * @param am               the attribute model
 	 * @param fieldEntityModel the entity model
 	 * @param fieldFilter      the field filter to apply
+	 * @param sharedProvider   shared provider to use when multiple identical
+	 *                         components are used e.g. in a grid
 	 * @param search           whether the field is in search mode
-	 * @param multipleSelect   whether multiple select is allowed
+	 * @param grid             whether the component appears inside a grid
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructCollectionSelect(
 			AttributeModel am, EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
-			ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
+			DataProvider<?, SerializablePredicate<?>> sharedProvider, boolean search, boolean grid) {
 		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
@@ -202,44 +204,48 @@ public class FieldFactoryImpl implements FieldFactory {
 			return constructLookupField(am, fieldEntityModel, fieldFilter, search, true, grid);
 		} else {
 			// by default, use a token field
-			return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service,
-					(SerializablePredicate<S>) fieldFilter, search, sos);
+			return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, SelectMode.FILTERED,
+					(SerializablePredicate<S>) fieldFilter, castSharedProvider(sharedProvider), search, sos);
 		}
 	}
 
 	/**
-	 * Constructs a field for selecting multiple values from a collection
+	 * Constructs a combo box for selectin a value from a collection
 	 * 
-	 * @param am               the attribute model
-	 * @param fieldEntityModel the entity model
-	 * @param fieldFilter      the field filter to apply
-	 * @param search           whether the field is in search mode
-	 * @param multipleSelect   whether multiple select is allowed
+	 * @param <ID>
+	 * @param <S>
+	 * @param am             the attribute model
+	 * @param entityModel    the entity model
+	 * @param fieldFilter    the field filter
+	 * @param sharedProvider the shared data provider to use (if any)
+	 * @param search         whether the component is part of a search form
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructListSelect(AttributeModel am,
-			EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider,
-			boolean search) {
-		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
-		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
-		SortOrder<?>[] sos = constructSortOrder(em);
-		return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
-				(ListDataProvider<S>) sharedProvider, search, sos);
-	}
-
-	@SuppressWarnings("unchecked")
 	private <ID extends Serializable, S extends AbstractEntity<ID>> QuickAddEntityComboBox<ID, S> constructComboBox(
 			AttributeModel am, EntityModel<?> entityModel, SerializablePredicate<?> fieldFilter,
-			ListDataProvider<?> sharedProvider, boolean search) {
+			DataProvider<?, SerializablePredicate<?>> sharedProvider, boolean search) {
 		entityModel = resolveEntityModel(entityModel, am, search);
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
-		SortOrder<?>[] sos = constructSortOrder(entityModel);
-		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service, SelectMode.FILTERED,
-				(SerializablePredicate<S>) fieldFilter, search, (ListDataProvider<S>) sharedProvider, null, sos);
+		SortOrder<?>[] sortOrder = constructSortOrder(entityModel);
+		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service, SelectMode.ALL,
+				(SerializablePredicate<S>) fieldFilter, search, castSharedProvider(sharedProvider), null, sortOrder);
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private <S> DataProvider<S, SerializablePredicate<S>> castSharedProvider(
+			DataProvider<?, SerializablePredicate<?>> provider) {
+		return (DataProvider<S, SerializablePredicate<S>>) (DataProvider) provider;
+	}
+
+	/**
+	 * Constructs a combo box for displaying values from an enumeration
+	 * 
+	 * @param <E>       the type of the enumeration
+	 * @param enumClass the class of the enumeration
+	 * @return
+	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private <E extends Enum> ComboBox constructEnumComboBox(Class<E> enumClass) {
 		ComboBox cb = new ComboBox<>();
@@ -252,14 +258,13 @@ public class FieldFactoryImpl implements FieldFactory {
 			return msg1.compareToIgnoreCase(msg2);
 		});
 
-		// set data provider and caption generator
 		cb.setDataProvider(new ListDataProvider<E>(list));
 		cb.setItemLabelGenerator(e -> messageService.getEnumMessage(enumClass, (E) e, VaadinUtils.getLocale()));
 		return cb;
 	}
 
 	/**
-	 * Constructs a field
+	 * Constructs a field - shortcut method that used the default context
 	 * 
 	 * @param am the attribute model to base the field on
 	 * @return
@@ -291,9 +296,10 @@ public class FieldFactoryImpl implements FieldFactory {
 		boolean search = context.isSearch();
 		boolean grid = context.isEditableGrid();
 
-		ListDataProvider<?> sharedProvider = context.getSharedProvider(am.getPath());
+		DataProvider<?, SerializablePredicate<?>> sharedProvider = context.getSharedProvider(am.getPath());
 
-		// for read-only attributes, do not render a field unless it's a link field
+		// for read-only attributes, do not render a field unless it's a link field or
+		// unless the component is inside a search form
 		if (EditableType.READ_ONLY.equals(am.getEditableType()) && !AttributeType.DETAIL.equals(am.getAttributeType())
 				&& !context.isSearch()) {
 			return null;
@@ -309,18 +315,16 @@ public class FieldFactoryImpl implements FieldFactory {
 			field = constructSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
 		} else if (Collection.class.isAssignableFrom(am.getType())) {
 			// render a multiple select component for a collection
-			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter, sharedProvider, search, grid);
+			field = constructCollectionSelect(am, fieldEntityModel, fieldFilter,
+					(DataProvider<?, SerializablePredicate<?>>) sharedProvider, search, grid);
 		} else if (AttributeTextFieldMode.TEXTAREA.equals(am.getTextFieldMode()) && !search && !grid) {
+			// construct text area (but only when not inside search form or grid)
 			field = new TextArea();
 			((TextArea) field).setHeight(SystemPropertyUtils.getDefaultTextAreaHeight());
 		} else if (Enum.class.isAssignableFrom(am.getType())) {
 			field = constructEnumComboBox(am.getType().asSubclass(Enum.class));
-		} else if (search && (am.getType().equals(Boolean.class) || am.getType().equals(boolean.class))) {
-			// in a search screen, we need to offer the true, false, and
-			// undefined options
-			field = constructSearchBooleanComboBox(am, search);
-		} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
-			field = new Checkbox();
+		} else if (am.isBoolean()) {
+			field = search ? constructSearchBooleanComboBox(am, search) : new Checkbox();
 		} else if (am.isWeek()) {
 			field = new TextField();
 		} else if (search && AttributeSelectMode.TOKEN.equals(am.getSearchSelectMode())
@@ -329,7 +333,6 @@ public class FieldFactoryImpl implements FieldFactory {
 			field = constructSimpleTokenField(fieldEntityModel != null ? fieldEntityModel : am.getEntityModel(), am,
 					am.getPath().substring(am.getPath().lastIndexOf('.') + 1), false, fieldFilter);
 		} else if (LocalDate.class.equals(am.getType()) || (search && am.isSearchDateOnly())) {
-			// date field
 			DatePicker df = new DatePicker();
 			df.setLocale(dateLoc);
 			df.setI18n(getDatePickerLocalization(dateLoc));
@@ -362,34 +365,6 @@ public class FieldFactoryImpl implements FieldFactory {
 		return field;
 	}
 
-	private DatePickerI18n getDatePickerLocalization(Locale dateLoc) {
-		DatePickerI18n dpi = new DatePickerI18n();
-		dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLoc));
-
-		String weekdays = messageService.getMessage("ocs.calendar.days", dateLoc);
-		if (weekdays != null) {
-			dpi.setWeekdays(Lists.newArrayList(weekdays.split(",")));
-		}
-
-		String weekdaysShort = messageService.getMessage("ocs.calendar.days.short", dateLoc);
-		if (weekdaysShort != null) {
-			dpi.setWeekdaysShort(Lists.newArrayList(weekdaysShort.split(",")));
-		}
-
-		String months = messageService.getMessage("ocs.calendar.months", dateLoc);
-		if (months != null) {
-			dpi.setMonthNames(Lists.newArrayList(months.split(",")));
-		}
-
-		dpi.setCancel(messageService.getMessage("ocs.calendar.cancel", dateLoc));
-		dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLoc));
-		dpi.setFirstDayOfWeek(Integer.parseInt(messageService.getMessage("ocs.calendar.first", dateLoc)));
-		dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLoc));
-		dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLoc));
-
-		return dpi;
-	}
-
 	/**
 	 * Constructs a component for managing a (simple) element collection
 	 * 
@@ -403,22 +378,16 @@ public class FieldFactoryImpl implements FieldFactory {
 		Component field = null;
 		if (!context.isSearch()) {
 			// use a "collection grid" for an element collection
-			final FormOptions fo = new FormOptions().setShowRemoveButton(true);
-			if (String.class.equals(am.getMemberType())) {
-				ElementCollectionGrid<?, ?, String> grid = new ElementCollectionGrid<>(am, fo);
-				field = grid;
-			} else if (NumberUtils.isInteger(am.getMemberType())) {
-				ElementCollectionGrid<?, ?, Integer> grid = new ElementCollectionGrid<>(am, fo);
-				field = grid;
-			} else if (NumberUtils.isLong(am.getMemberType())) {
-				ElementCollectionGrid<?, ?, Long> grid = new ElementCollectionGrid<>(am, fo);
-				field = grid;
-			} else if (BigDecimal.class.equals(am.getMemberType())) {
-				ElementCollectionGrid<?, ?, BigDecimal> grid = new ElementCollectionGrid<>(am, fo);
-				field = grid;
+			FormOptions fo = new FormOptions().setShowRemoveButton(true);
+
+			boolean allowed = String.class.equals(am.getMemberType()) || NumberUtils.isLong(am.getMemberType())
+					|| NumberUtils.isInteger(am.getMemberType()) || BigDecimal.class.equals(am.getMemberType());
+			if (allowed) {
+				field = new ElementCollectionGrid<>(am, fo);
 			} else {
 				// other types not supported for now
-				throw new OCSRuntimeException("Element collections of this type are currently not supported");
+				throw new OCSRuntimeException(
+						"Element collections of type " + am.getMemberType() + " are currently not supported");
 			}
 		} else {
 			// token search field
@@ -440,6 +409,27 @@ public class FieldFactoryImpl implements FieldFactory {
 			AttributeModel am, EntityModel<?> entityModel) {
 		EntityModel<?> em = resolveEntityModel(entityModel, am, true);
 		return new InternalLinkField<>(am, (EntityModel<S>) em);
+	}
+
+	/**
+	 * Constructs a list field for selecting a value from a collection
+	 * 
+	 * @param am               the attribute model
+	 * @param fieldEntityModel the entity model
+	 * @param fieldFilter      the field filter to apply
+	 * @param sharedProvider   shared data provider
+	 * @param search           whether the component is part of a search form
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <ID extends Serializable, S extends AbstractEntity<ID>> Component constructListSelect(AttributeModel am,
+			EntityModel<?> fieldEntityModel, SerializablePredicate<?> fieldFilter,
+			DataProvider<?, SerializablePredicate<?>> sharedProvider, boolean search) {
+		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
+		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
+		SortOrder<?>[] sos = constructSortOrder(em);
+		return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
+				null, search, sos);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -492,7 +482,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @return
 	 */
 	private Component constructSelect(AttributeModel am, EntityModel<?> fieldEntityModel,
-			SerializablePredicate<?> fieldFilter, ListDataProvider<?> sharedProvider, boolean search, boolean grid) {
+			SerializablePredicate<?> fieldFilter, DataProvider<?, SerializablePredicate<?>> sharedProvider,
+			boolean search, boolean grid) {
 		Component field = null;
 		AttributeSelectMode selectMode = search ? am.getSearchSelectMode() : am.getSelectMode();
 		if (grid) {
@@ -548,6 +539,34 @@ public class FieldFactoryImpl implements FieldFactory {
 					entityModel.getSortOrder().get(am) ? SortDirection.ASCENDING : SortDirection.DESCENDING);
 		}
 		return sos;
+	}
+
+	private DatePickerI18n getDatePickerLocalization(Locale dateLoc) {
+		DatePickerI18n dpi = new DatePickerI18n();
+		dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLoc));
+
+		String weekdays = messageService.getMessage("ocs.calendar.days", dateLoc);
+		if (weekdays != null) {
+			dpi.setWeekdays(Lists.newArrayList(weekdays.split(",")));
+		}
+
+		String weekdaysShort = messageService.getMessage("ocs.calendar.days.short", dateLoc);
+		if (weekdaysShort != null) {
+			dpi.setWeekdaysShort(Lists.newArrayList(weekdaysShort.split(",")));
+		}
+
+		String months = messageService.getMessage("ocs.calendar.months", dateLoc);
+		if (months != null) {
+			dpi.setMonthNames(Lists.newArrayList(months.split(",")));
+		}
+
+		dpi.setCancel(messageService.getMessage("ocs.calendar.cancel", dateLoc));
+		dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLoc));
+		dpi.setFirstDayOfWeek(Integer.parseInt(messageService.getMessage("ocs.calendar.first", dateLoc)));
+		dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLoc));
+		dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLoc));
+
+		return dpi;
 	}
 
 	private void postProcessField(Component field, AttributeModel am, boolean search, boolean editableGrid) {

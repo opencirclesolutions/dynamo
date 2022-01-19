@@ -37,15 +37,22 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.utils.ClassUtils;
 
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+
 /**
  * An implementation of an entity model - holds metadata about an entity
  * 
  * @author bas.rutten
  * @param <T> the class of the entity
  */
+@Data
+@EqualsAndHashCode(callSuper = false, of = { "reference", "entityClass" })
+@Builder(toBuilder = true)
 public class EntityModelImpl<T> implements EntityModel<T> {
 
-	// use a linked hash map to guarantee the ordering
+	@Builder.Default
 	private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
 
 	private String defaultDescription;
@@ -54,13 +61,18 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private String defaultDisplayNamePlural;
 
+	@Builder.Default
 	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
 
+	@Builder.Default
 	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
 
+	@Builder.Default
 	private Map<String, Optional<String>> displayNamesPlural = new ConcurrentHashMap<>();
 
 	private String displayProperty;
+	
+	private String filterProperty;
 
 	private Class<T> entityClass;
 
@@ -74,6 +86,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private boolean searchOrderSet;
 
+	@Builder.Default
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 
 	@Override
@@ -211,14 +224,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		return Collections.unmodifiableList(result);
 	}
 
-	public String getDefaultDisplayName() {
-		return defaultDisplayName;
-	}
-
-	public String getDefaultDisplayNamePlural() {
-		return defaultDisplayNamePlural;
-	}
-
 	@Override
 	public String getDescription(Locale locale) {
 		return lookup(descriptions, locale, EntityModel.DESCRIPTION, defaultDescription);
@@ -235,33 +240,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	}
 
 	@Override
-	public String getDisplayProperty() {
-		return displayProperty;
-	}
-
-	@Override
-	public Class<T> getEntityClass() {
-		return entityClass;
-	}
-
-	@Override
-	public AttributeModel getIdAttributeModel() {
-		return idAttributeModel;
-	}
-
-	@Override
 	public AttributeModel getMainAttributeModel() {
 		return findAttributeModel(AttributeModel::isMainAttribute);
-	}
-
-	@Override
-	public int getNestingDepth() {
-		return nestingDepth;
-	}
-
-	@Override
-	public String getReference() {
-		return reference;
 	}
 
 	@Override
@@ -283,24 +263,11 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	}
 
 	@Override
-	public Map<AttributeModel, Boolean> getSortOrder() {
-		return sortOrder;
-	}
-
-	@Override
 	public boolean isAttributeGroupVisible(String group, boolean readOnly) {
 		return attributeModels.get(group).stream()
 				.filter(m -> AttributeType.BASIC.equals(m.getAttributeType())
 						|| AttributeType.LOB.equals(m.getAttributeType()) || m.isComplexEditable())
 				.anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
-	}
-
-	public boolean isGridOrderSet() {
-		return gridOrderSet;
-	}
-
-	public boolean isSearchOrderSet() {
-		return searchOrderSet;
 	}
 
 	/**
@@ -327,50 +294,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		// look up or return fallback value
 		Optional<String> optional = source.get(locale.toString());
 		return optional.orElse(fallBack);
-	}
-
-	public void setDefaultDescription(String defaultDescription) {
-		this.defaultDescription = defaultDescription;
-	}
-
-	public void setDefaultDisplayName(String defaultDisplayName) {
-		this.defaultDisplayName = defaultDisplayName;
-	}
-
-	public void setDefaultDisplayNamePlural(String defaultDisplayNamePlural) {
-		this.defaultDisplayNamePlural = defaultDisplayNamePlural;
-	}
-
-	public void setDisplayProperty(String displayProperty) {
-		this.displayProperty = displayProperty;
-	}
-
-	public void setEntityClass(Class<T> entityClass) {
-		this.entityClass = entityClass;
-	}
-
-	public void setGridOrderSet(boolean gridOrderSet) {
-		this.gridOrderSet = gridOrderSet;
-	}
-
-	void setIdAttributeModel(AttributeModel idAttributeModel) {
-		this.idAttributeModel = idAttributeModel;
-	}
-
-	public void setNestingDepth(int nestingDepth) {
-		this.nestingDepth = nestingDepth;
-	}
-
-	public void setReference(String reference) {
-		this.reference = reference;
-	}
-
-	public void setSearchOrderSet(boolean searchOrderSet) {
-		this.searchOrderSet = searchOrderSet;
-	}
-
-	public void setSortOrder(Map<AttributeModel, Boolean> sortOrder) {
-		this.sortOrder = sortOrder;
 	}
 
 	@Override

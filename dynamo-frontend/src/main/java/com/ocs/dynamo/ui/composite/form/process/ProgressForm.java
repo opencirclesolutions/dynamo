@@ -13,9 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.form.process;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -30,6 +27,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * A form that displays of a progress bar while some time consuming process is
  * taking place
@@ -39,6 +38,7 @@ import com.vaadin.flow.component.progressbar.ProgressBar;
  *        be "Object" but can e.g. be more specific in case of a file upload you
  *        can provide a byte array.
  */
+@Slf4j
 public abstract class ProgressForm<T> extends BaseCustomComponent implements Progressable {
 
     private static final long serialVersionUID = -4717815709838453902L;
@@ -55,8 +55,6 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
 
     // the polling interval in milliseconds
     public static final int POLL_INTERVAL = 500;
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(ProgressForm.class);
 
     // counter for keeping track of the number of processed items
     private ProgressCounter counter = new DefaultProgressCounter();
@@ -323,7 +321,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
                     process(t, 0);
                     done(false);
                 } catch (RuntimeException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
+                    log.error(ex.getMessage(), ex);
                     // exception during size estimation
                     showNotification(ex.getMessage());
                     signalDone(true);
@@ -356,7 +354,7 @@ public abstract class ProgressForm<T> extends BaseCustomComponent implements Pro
                     });
                     worker.start();
                 } catch (RuntimeException ex) {
-                    LOGGER.error(ex.getMessage(), ex);
+                    log.error(ex.getMessage(), ex);
                     // exception during size estimation
                     showNotification(ex.getMessage());
                     signalDone(true);

@@ -39,7 +39,6 @@ public class TestEntity2 extends AbstractEntity<Integer> {
     @GeneratedValue
     private Integer id;
 
-    @Attribute(styles = "myStyle")
     private String name;
 
     private Integer value;

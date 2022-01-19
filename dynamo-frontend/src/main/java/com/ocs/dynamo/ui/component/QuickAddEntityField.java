@@ -98,6 +98,8 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	protected Button constructAddButton() {
 		addButton = new Button("");
 		addButton.setIcon(VaadinIcon.PLUS.create());
+		VaadinUtils.setTooltip(addButton,
+				getMessageService().getMessage("ocs.new.value.button", VaadinUtils.getLocale()));
 		addButton.addClickListener(event -> {
 			AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
 					getService());
@@ -114,8 +116,10 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 * @return
 	 */
 	protected Button constructDirectNavigationButton() {
-		directNavigationButton = new Button(
-				getMessageService().getMessage("ocs.direct.navigate", VaadinUtils.getLocale()));
+		directNavigationButton = new Button("");
+		directNavigationButton.setIcon(VaadinIcon.ARROW_RIGHT.create());
+		VaadinUtils.setTooltip(directNavigationButton, getMessageService().getMessage("ocs.navigate.to",
+				VaadinUtils.getLocale(), getEntityModel().getDisplayName(VaadinUtils.getLocale())));
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 		directNavigationButton.addClickListener(event -> helper.navigateToEntityScreen(getValue()));
 		return directNavigationButton;

@@ -41,7 +41,7 @@ public class FilterGroupTest extends FrontendIntegrationTest {
 
     private Component constructField(String name) {
         AttributeModel am = model.getAttributeModel(name);
-        FieldFactoryContext context = FieldFactoryContext.create().setSearch(true).setAttributeModel(am);
+        FieldFactoryContext context = FieldFactoryContext.create().search(true).attributeModel(am).build();
         return factory.constructField(context);
     }
 

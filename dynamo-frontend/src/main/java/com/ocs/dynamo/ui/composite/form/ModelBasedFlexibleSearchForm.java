@@ -545,9 +545,9 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			// construct the field
 			Component custom = constructCustomField(getEntityModel(), am);
 
-			FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(am)
-					.setFieldEntityModel(getFieldEntityModel(am)).setFieldFilters(getFieldFilters()).setViewMode(false)
-					.setSearch(true);
+			FieldFactoryContext context = FieldFactoryContext.create().attributeModel(am)
+					.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(getFieldFilters()).viewMode(false)
+					.search(true).build();
 			Component newComponent = custom != null ? custom : factory.constructField(context);
 
 			// add value change listener for adapting fields in response to input
