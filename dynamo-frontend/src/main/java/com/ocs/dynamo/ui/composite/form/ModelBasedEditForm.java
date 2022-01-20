@@ -134,6 +134,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		private Button clearButton;
 
+		private Span previewSpan;
+
 		private UploadComponent(AttributeModel am) {
 			this.am = am;
 			initContent();
@@ -157,18 +159,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			FlexLayout main = new DefaultFlexLayout();
 			Image image = new Image();
 			image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
+			image.setVisible(false);
+			main.add(image);
 
-			// for a LOB field, create an upload and an image
-			// retrieve the current value
-			if (am.isImage()) {
+			previewSpan = new Span(message("ocs.no.preview.available"));
+			previewSpan.setVisible(false);
+			main.add(previewSpan);
+
+			if (isImageFile()) {
 				image.setVisible(bytes != null);
 				if (bytes != null) {
 					image.setSrc(new StreamResource(System.nanoTime() + ".png", () -> new ByteArrayInputStream(bytes)));
 				}
-				main.add(image);
 			} else {
-				Span text = new Span(message("ocs.no.preview.available"));
-				main.add(text);
+				previewSpan.setVisible(true);
 			}
 
 			MemoryBuffer buffer = new MemoryBuffer();
@@ -180,6 +184,46 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				upload.setAcceptedFileTypes(extensions.toArray(new String[0]));
 			}
 
+			addUploadListener(image, buffer, upload);
+			addClearListener(image, upload);
+
+			// if there is an initial value, provide a clear button
+			main.add(upload);
+			addClearButton(bytes, main, image);
+
+			setLabel(am.getDisplayName(VaadinUtils.getLocale()));
+			add(main);
+		}
+
+		private void addClearButton(byte[] bytes, FlexLayout main, Image image) {
+			clearButton = new Button(message("ocs.clear"));
+			clearButton.addClickListener(event -> {
+				ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
+				image.setVisible(false);
+				if (am.getFileNameProperty() != null) {
+					ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
+					setLabelValue(am.getFileNameProperty(), "");
+				}
+				// clear button is no longer needed since the component itself can be used
+				clearButton.setVisible(false);
+			});
+			main.add(clearButton);
+			clearButton.setVisible(bytes != null);
+		}
+
+		private void addClearListener(Image image, Upload upload) {
+			upload.getElement().addEventListener("file-remove", event -> {
+				ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
+				image.setVisible(false);
+				if (am.getFileNameProperty() != null) {
+					ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
+					setLabelValue(am.getFileNameProperty(), "");
+				}
+				clearButton.setVisible(false);
+			});
+		}
+
+		private void addUploadListener(Image image, MemoryBuffer buffer, Upload upload) {
 			upload.addFinishedListener(event -> {
 
 				String extension = FilenameUtils.getExtension(event.getFileName());
@@ -187,10 +231,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (allowedExtensions == null || allowedExtensions.isEmpty()
 						|| (extension != null && allowedExtensions.contains(extension.toLowerCase()))) {
 
-					// set the image source
-					if (image != null) {
+					if (am.isImage() || event.getMIMEType().contains("image")) {
 						image.setVisible(true);
 						image.setSrc(new StreamResource(System.nanoTime() + ".png", () -> buffer.getInputStream()));
+						previewSpan.setVisible(false);
+					} else {
+						image.setVisible(false);
+						previewSpan.setVisible(true);
 					}
 
 					byte[] content = new byte[(int) event.getContentLength()];
@@ -215,36 +262,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 				clearButton.setVisible(false);
 			});
+		}
 
-			// clear content and file name after file upload is removed
-			upload.getElement().addEventListener("file-remove", event -> {
-				ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
-				image.setVisible(false);
-				if (am.getFileNameProperty() != null) {
-					ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
-					setLabelValue(am.getFileNameProperty(), "");
+		private boolean isImageFile() {
+			if (am.isImage()) {
+				return true;
+			}
+
+			if (am.getFileNameProperty() != null) {
+				String fileName = (String) ClassUtils.getFieldValue(entity, am.getFileNameProperty());
+				if (fileName == null) {
+					return false;
 				}
-				clearButton.setVisible(false);
-			});
 
-			// if there is an initial value, provide a clear button
-			main.add(upload);
-			clearButton = new Button(message("ocs.clear"));
-			clearButton.addClickListener(event -> {
-				ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
-				image.setVisible(false);
-				if (am.getFileNameProperty() != null) {
-					ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
-					setLabelValue(am.getFileNameProperty(), "");
-				}
-				// clear button is no longer needed since the component itself can be used
-				clearButton.setVisible(false);
-			});
-			main.add(clearButton);
-			clearButton.setVisible(bytes != null);
-
-			setLabel(am.getDisplayName(VaadinUtils.getLocale()));
-			add(main);
+				return fileName.endsWith("jpeg") || fileName.endsWith("jpg") || fileName.endsWith("bmp")
+						|| fileName.endsWith("bmp") || fileName.endsWith("tiff") || fileName.endsWith("tif")
+						|| fileName.endsWith("gif") || fileName.endsWith("png") || fileName.endsWith("svg");
+			}
+			return false;
 		}
 
 		@Override
