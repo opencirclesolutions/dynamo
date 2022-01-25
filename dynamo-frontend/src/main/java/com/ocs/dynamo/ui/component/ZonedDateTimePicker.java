@@ -92,8 +92,8 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 	@Override
 	protected void setPresentationValue(ZonedDateTime value) {
 		if (value == null) {
-			datePicker.setValue(null);
-			timePicker.setValue(null);
+			datePicker.clear();
+			timePicker.clear();
 			timeZone.setValue(ZoneId.systemDefault().toString());
 		} else {
 			datePicker.setValue(value.toLocalDate());

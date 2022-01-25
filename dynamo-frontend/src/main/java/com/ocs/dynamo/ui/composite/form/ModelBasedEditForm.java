@@ -920,7 +920,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Adds any value change listeners for taking care of cascading search
+	 * Adds any value change listeners for handling cascaded search
 	 */
 	@SuppressWarnings("unchecked")
 	private <S> void constructCascadeListeners() {
@@ -1931,6 +1931,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		for (CanAssignEntity<ID, T> field : assignEntityToFields) {
 			field.assignEntity(this.entity);
 		}
+
 		afterEntitySet(this.entity);
 
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);
@@ -1956,7 +1957,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					|| (getFormOptions().isFormNested() && entity.getId() == null));
 		}
 
+		triggerCascadeListeners();
 		afterEntitySelected(entity);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void triggerCascadeListeners() {
+		for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+			HasValue field = (HasValue) getField(isViewMode(), am.getPath());
+			if (field != null) {
+				if (field.getValue() != null) {
+					Object value = field.getValue();
+					field.clear();
+					field.setValue(value);
+				}
+			}
+		}
 	}
 
 	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {

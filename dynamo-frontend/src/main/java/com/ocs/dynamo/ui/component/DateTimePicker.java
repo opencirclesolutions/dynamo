@@ -33,61 +33,61 @@ import com.vaadin.flow.component.timepicker.TimePicker;
  */
 public class DateTimePicker extends CustomField<LocalDateTime> {
 
-    private static final long serialVersionUID = 8711426577974057547L;
+	private static final long serialVersionUID = 8711426577974057547L;
 
-    private DatePicker datePicker;
+	private DatePicker datePicker;
 
-    private TimePicker timePicker;
+	private TimePicker timePicker;
 
-    public DateTimePicker(Locale locale) {
-        datePicker = new DatePicker();
-        datePicker.setLocale(locale);
-        timePicker = new TimePicker();
-        timePicker.setLocale(locale);
+	public DateTimePicker(Locale locale) {
+		datePicker = new DatePicker();
+		datePicker.setLocale(locale);
+		timePicker = new TimePicker();
+		timePicker.setLocale(locale);
 
-        FlexLayout hor = new DefaultFlexLayout();
-        hor.add(datePicker);
-        hor.add(timePicker);
-        add(hor);
-    }
+		FlexLayout hor = new DefaultFlexLayout();
+		hor.add(datePicker);
+		hor.add(timePicker);
+		add(hor);
+	}
 
-    @Override
-    public void clear() {
-        datePicker.clear();
-        timePicker.clear();
-    }
+	@Override
+	public void clear() {
+		datePicker.clear();
+		timePicker.clear();
+	}
 
-    @Override
-    protected LocalDateTime generateModelValue() {
-        if (datePicker.getValue() == null) {
-            return null;
-        } else {
-            LocalTime time = timePicker.getValue() == null ? LocalTime.of(0, 0) : timePicker.getValue();
-            return LocalDateTime.of(datePicker.getValue(), time);
-        }
-    }
+	@Override
+	protected LocalDateTime generateModelValue() {
+		if (datePicker.getValue() == null) {
+			return null;
+		} else {
+			LocalTime time = timePicker.getValue() == null ? LocalTime.of(0, 0) : timePicker.getValue();
+			return LocalDateTime.of(datePicker.getValue(), time);
+		}
+	}
 
-    public DatePicker getDatePicker() {
-        return datePicker;
-    }
+	public DatePicker getDatePicker() {
+		return datePicker;
+	}
 
-    public TimePicker getTimePicker() {
-        return timePicker;
-    }
+	public TimePicker getTimePicker() {
+		return timePicker;
+	}
 
-    public void setI18n(DatePickerI18n i18n) {
-        datePicker.setI18n(i18n);
-    }
+	public void setI18n(DatePickerI18n i18n) {
+		datePicker.setI18n(i18n);
+	}
 
-    @Override
-    protected void setPresentationValue(LocalDateTime value) {
-        if (value == null) {
-            datePicker.setValue(null);
-            timePicker.setValue(null);
-        } else {
-            datePicker.setValue(value.toLocalDate());
-            timePicker.setValue(value.toLocalTime());
-        }
-    }
+	@Override
+	protected void setPresentationValue(LocalDateTime value) {
+		if (value == null) {
+			datePicker.clear();
+			timePicker.clear();
+		} else {
+			datePicker.setValue(value.toLocalDate());
+			timePicker.setValue(value.toLocalTime());
+		}
+	}
 
 }

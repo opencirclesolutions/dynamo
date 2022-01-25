@@ -62,11 +62,11 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 
 	@SafeVarargs
 	public QuickAddListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SerializablePredicate<T> filter,
+			BaseService<ID, T> service, SelectMode selectMode, SerializablePredicate<T> filter,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, boolean search, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
-		listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, SelectMode.FILTERED, filter,
-				null, sharedProvider, sortOrder);
+		listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, selectMode, filter, null,
+				sharedProvider, sortOrder);
 		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
 		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
 		initContent();
@@ -173,20 +173,14 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (listSelect != null) {
-			listSelect.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
+			listSelect.setAdditionalFilter(additionalFilter);
 		}
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void setPresentationValue(T value) {
 		if (listSelect != null) {
-			// select the item if it's included in the item list
-			// ListDataProvider<T> provider = (ListDataProvider<T>)
-			// listSelect.getDataProvider();
-			// if (provider.getItems().contains(value)) {
 			listSelect.setValue(value);
-			// }
 		}
 	}
 

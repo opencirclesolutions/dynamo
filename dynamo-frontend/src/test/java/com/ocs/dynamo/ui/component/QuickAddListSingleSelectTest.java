@@ -18,6 +18,7 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.Filter;
@@ -63,7 +64,8 @@ public class QuickAddListSingleSelectTest extends BaseMockitoTest {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("testDomain");
 
-        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null, null, false);
+        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service,
+        		SelectMode.FILTERED_PAGED, null, null, false);
         select.initContent();
         
         select.refresh();
@@ -88,7 +90,8 @@ public class QuickAddListSingleSelectTest extends BaseMockitoTest {
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("testDomain");
 
-        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service, null, null, false);
+        QuickAddListSingleSelect<Integer, TestEntity> select = new QuickAddListSingleSelect<>(em, am, service,
+        		SelectMode.FILTERED_PAGED, null, null, false);
         select.initContent();
 
         // list must contain 3 items

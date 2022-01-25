@@ -195,8 +195,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (tokenSelect != null) {
-			tokenSelect.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
-			tokenSelect.clear();
+			tokenSelect.setAdditionalFilter(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
 		}
 	}
 

@@ -13,6 +13,12 @@
  */
 package com.ocs.dynamo.domain.model;
 
-public enum SelectMode {
-	ALL, FILTERED_PAGED, FILTERED_ALL, FIXED;
+/**
+ * 
+ * @author BasRutten
+ *
+ */
+public enum PagingType {
+
+	PAGED, NON_PAGED;
 }

@@ -25,6 +25,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.filter.AndPredicate;
+import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
@@ -74,7 +75,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The select mode (filtered, all, or fixed)
 	 */
-	private SelectMode selectMode = SelectMode.FILTERED;
+	private final SelectMode selectMode;
 
 	private final BaseService<ID, T> service;
 
@@ -86,13 +87,14 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Constructor
 	 * 
-	 * @param targetEntityModel the entity model
-	 * @param attributeModel    the attribute model
-	 * @param service           the service that is used to query the database
-	 * @param selectMode        the select mode
-	 * @param filter            the field filter
-	 * @param items             the fixed collection on entities to display
-	 * @param sortOrders        the sort orders to apply
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model
+	 * @param service        the service that is used to query the database
+	 * @param selectMode     the select mode
+	 * @param filter         the field filter
+	 * @param items          the fixed collection on entities to display
+	 * @param sharedProvider the shared data provider
+	 * @param sortOrders     the sort orders to apply
 	 */
 	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -134,7 +136,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
 			BaseService<ID, T> service, SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {
-		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, null, sortOrders);
+		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrders);
 	}
 
 	/**
@@ -239,9 +241,14 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 				ListDataProvider<T> listProvider = new ListDataProvider<>(
 						service.findAll(SortUtils.translateSortOrders(sortOrders)));
 				setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false), listProvider);
-			} else if (SelectMode.FILTERED.equals(mode)) {
+			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setDataProvider(callbackProvider);
+			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
+				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+						SortUtils.translateSortOrders(sortOrders));
+				setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
+						new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
 				setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 						new ListDataProvider<>(items));
@@ -267,9 +274,15 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		refresh();
 	}
 
+	private void reloadDataProvider(ListDataProvider<T> listProvider, List<T> items) {
+		listProvider.getItems().clear();
+		listProvider.getItems().addAll(items);
+		listProvider.refreshAll();
+	}
+
 	@Override
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
-		setValue(null);
+		clear();
 		this.additionalFilter = additionalFilter;
 		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
@@ -286,10 +299,14 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			// add all items (but sorted)
 			listProvider.getItems().clear();
 			listProvider.getItems().addAll(service.findAll(SortUtils.translateSortOrders(sortOrders)));
-		} else if (SelectMode.FILTERED.equals(selectMode)) {
+		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
 			// add a filtered selection of items
 			setDataProvider(createCallbackProvider());
+		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
+			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
+			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+					SortUtils.translateSortOrders(sortOrders));
+			reloadDataProvider(listProvider, items);
 		}
 	}
-
 }

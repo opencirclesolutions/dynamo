@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.filter.AndPredicate;
+import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
@@ -61,7 +62,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private SerializablePredicate<T> originalFilter;
 
-	private SelectMode selectMode = SelectMode.FILTERED;
+	private final SelectMode selectMode;
 
 	private final BaseService<ID, T> service;
 
@@ -70,20 +71,19 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * Constructor
 	 *
-	 * @param targetEntityModel the entity model for the entities that are displayed
-	 *                          in the combo box
-	 * @param attributeModel    the attribute model for the attribute to which the
-	 *                          selected value will be assigned
-	 * @param service           the service used to retrieve entities
-	 * @param mode              the select mode
-	 * @param filter            optional filters to apply to the search
-	 * @param sharedProvider    shared data provider when using component inside
-	 *                          grid
-	 * @param items             the items to display (in fixed mode)
-	 * @param sortOrder         the sort order(s) to apply
+	 * @param entityModel    the entity model for the entities that are displayed in
+	 *                       the combo box
+	 * @param attributeModel the attribute model for the attribute to which the
+	 *                       selected value will be assigned
+	 * @param service        the service used to retrieve entities
+	 * @param mode           the select mode
+	 * @param filter         optional filters to apply to the search
+	 * @param sharedProvider shared data provider when using component inside grid
+	 * @param items          the items to display (in fixed mode)
+	 * @param sortOrder      the sort order(s) to apply
 	 * 
 	 */
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode mode, SerializablePredicate<T> filter, List<T> items,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, SortOrder<?>... sortOrders) {
 		this.service = service;
@@ -91,7 +91,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		this.sortOrders = sortOrders;
 		this.attributeModel = attributeModel;
 		this.filter = filter;
-		this.entityModel = targetEntityModel;
+		this.entityModel = entityModel;
 		if (attributeModel != null) {
 			this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 		}
@@ -99,52 +99,50 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		DataProvider<T, SerializablePredicate<T>> provider = sharedProvider;
 		initProvider(provider, items, mode);
 
-		setItemLabelGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel));
+		setItemLabelGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, entityModel));
 		setSizeFull();
 	}
 
 	/**
 	 * Constructor (for a filtering combo box)
 	 *
-	 * @param targetEntityModel the entity model for the entities that are displayed
-	 *                          in the box
-	 * @param attributeModel    the attribute model
-	 * @param service           the service for querying the database
-	 * @param filter            the filter to apply when searching
-	 * @param sortOrder         the sort orders to apply when searching
+	 * @param entityModel    the entity model for the entities that are displayed in
+	 *                       the box
+	 * @param attributeModel the attribute model
+	 * @param service        the service for querying the database
+	 * @param filter         the filter to apply when searching
+	 * @param sortOrder      the sort orders to apply when searching
 	 */
 	@SafeVarargs
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {
-		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, null, sortOrders);
+		this(entityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrders);
 	}
 
 	/**
 	 * Constructor - for the "ALL"mode
 	 *
-	 * @param targetEntityModel the entity model for the entities that are displayed
-	 * @param attributeModel    the attribute model of the property that is bound to
-	 *                          this component
-	 * @param service           the service used to retrieve the entities
-	 * @param sharedProvider    the shared data provider
+	 * @param entityModel    the entity model for the entities that are displayed
+	 * @param attributeModel the attribute model of the property that is bound to
+	 *                       this component
+	 * @param service        the service used to retrieve the entities
 	 */
 	@SafeVarargs
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SortOrder<?>... sortOrders) {
-		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrders);
+		this(entityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrders);
 	}
 
 	/**
 	 * Constructor - for the "FIXED" mode
 	 *
-	 * @param targetEntityModel the entity model for the entities that are displayed
-	 * @param attributeModel    the attribute model of the property that is bound to
-	 *                          this component
-	 * @param items             the list of entities to display
+	 * @param entityModel    the entity model for the entities that are displayed
+	 * @param attributeModel the attribute model of the property that is bound to
+	 *                       this component
+	 * @param items          the list of entities to display
 	 */
-	public EntityComboBox(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items,
-			DataProvider<T, SerializablePredicate<T>> sharedProvider) {
-		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items, sharedProvider);
+	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, List<T> items) {
+		this(entityModel, attributeModel, null, SelectMode.FIXED, null, items, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -214,9 +212,14 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 				ListDataProvider<T> listProvider = new ListDataProvider<>(
 						service.findAll(SortUtils.translateSortOrders(sortOrders)));
 				setDataProvider(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false), listProvider);
-			} else if (SelectMode.FILTERED.equals(mode)) {
+			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setDataProvider(callbackProvider);
+			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
+				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+						SortUtils.translateSortOrders(sortOrders));
+				setDataProvider(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
+						new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
 				setDataProvider(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 						new ListDataProvider<>(items));
@@ -236,20 +239,21 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		setValue(stored);
 	}
 
-	/**
-	 * Sets the provided filter then refreshes the component
-	 * 
-	 * @param filter
-	 */
 	public void refresh(SerializablePredicate<T> filter) {
 		this.originalFilter = filter;
 		this.filter = filter;
 		refresh();
 	}
 
+	private void reloadDataProvider(ListDataProvider<T> listProvider, List<T> items) {
+		listProvider.getItems().clear();
+		listProvider.getItems().addAll(items);
+		listProvider.refreshAll();
+	}
+
 	@Override
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
-		setValue(null);
+		clear();
 		this.additionalFilter = additionalFilter;
 		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
@@ -263,13 +267,14 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	private void updateProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (SelectMode.ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			// add all items (but sorted)
-			listProvider.getItems().clear();
-			listProvider.getItems().addAll(service.findAll(SortUtils.translateSortOrders(sortOrders)));
-		} else if (SelectMode.FILTERED.equals(selectMode)) {
-			// add a filtered selection of items
+			reloadDataProvider(listProvider, service.findAll(SortUtils.translateSortOrders(sortOrders)));
+		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
 			setDataProvider(createCallbackProvider());
+		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
+			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
+			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+					SortUtils.translateSortOrders(sortOrders));
+			reloadDataProvider(listProvider, items);
 		}
 	}
-
 }

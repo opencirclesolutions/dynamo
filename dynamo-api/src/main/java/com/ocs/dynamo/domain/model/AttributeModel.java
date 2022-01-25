@@ -259,6 +259,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Integer getOrder();
 
 	/**
+	 * 
+	 * @return the paging type used in entity select components
+	 */
+	PagingType getPagingType();
+
+	/**
 	 * @return The (nested) path to this attribute
 	 */
 	String getPath();
@@ -324,6 +330,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The text field mode (text field or text area)
 	 */
 	AttributeTextFieldMode getTextFieldMode();
+
+	/**
+	 * @return the thousands grouping seperator setting
+	 */
+	ThousandsGroupingMode getThousandsGroupingMode();
 
 	/**
 	 * @return The textual representation of a "true" value
@@ -472,23 +483,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSortable();
 
 	/**
-	 * @return the thousands grouping seperator setting
-	 */
-	ThousandsGroupingMode getThousandsGroupingMode();
-
-	/**
-	 * 
-	 * @return whether to use thousands grouping in edit mode
-	 */
-	boolean useThousandsGroupingInEditMode();
-
-	/**
-	 * 
-	 * @return whether to use thousands grouping in edit mode
-	 */
-	boolean useThousandsGroupingInViewMode();
-
-	/**
 	 * Indicates whether to trim extra spaces from text input
 	 * 
 	 * @return
@@ -538,8 +532,21 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * Sets whether this attribute is the main attribute
+	 * 
 	 * @param main
 	 */
 	void setMainAttribute(boolean main);
+
+	/**
+	 * 
+	 * @return whether to use thousands grouping in edit mode
+	 */
+	boolean useThousandsGroupingInEditMode();
+
+	/**
+	 * 
+	 * @return whether to use thousands grouping in edit mode
+	 */
+	boolean useThousandsGroupingInViewMode();
 
 }

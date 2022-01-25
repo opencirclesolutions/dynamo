@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.EditableType;
+import com.ocs.dynamo.domain.model.PagingType;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -110,6 +111,12 @@ public @interface Attribute {
 	 *         upload)
 	 */
 	String fileNameProperty() default "";
+
+	/**
+	 * 
+	 * @return the filter type to use for entity select components
+	 */
+	PagingType pagingType() default PagingType.PAGED;
 
 	/**
 	 * @return the select mode that determines which component to used when the
@@ -312,7 +319,5 @@ public @interface Attribute {
 	 *         notation
 	 */
 	boolean week() default false;
-
-
 
 }

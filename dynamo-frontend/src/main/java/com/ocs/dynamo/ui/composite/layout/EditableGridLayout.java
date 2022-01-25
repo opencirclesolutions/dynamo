@@ -173,7 +173,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		buildFilter();
 		if (mainLayout == null) {
 			setViewmode(!isEditAllowed() || getFormOptions().isOpenInViewMode());
-			mainLayout = new DefaultVerticalLayout(false, true);
+			mainLayout = new DefaultVerticalLayout(false, false);
 
 			constructGrid();
 

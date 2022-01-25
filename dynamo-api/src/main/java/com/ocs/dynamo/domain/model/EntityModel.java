@@ -227,6 +227,11 @@ public interface EntityModel<T> {
 	String NESTING_DEPTH = "nestingDepth";
 
 	/**
+	 * The paging type for selection components
+	 */
+	String PAGING_TYPE = "pagingType";
+
+	/**
 	 * Whether to include a percentage sign to a numerical field (cosmetic only)
 	 */
 	String PERCENTAGE = "percentage";
@@ -485,11 +490,6 @@ public interface EntityModel<T> {
 	 * @return The class of the entity that this model is based on
 	 */
 	Class<T> getEntityClass();
-
-	/**
-	 * @return The attribute model of the id
-	 */
-	AttributeModel getIdAttributeModel();
 
 	/**
 	 * @return the main attribute for this entity model

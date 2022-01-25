@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -67,6 +68,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, sortOrder, joins);
+		addClassName(DynamoConstants.CSS_SIMPLE_SEARCH_LAYOUT);
 	}
 
 	/**

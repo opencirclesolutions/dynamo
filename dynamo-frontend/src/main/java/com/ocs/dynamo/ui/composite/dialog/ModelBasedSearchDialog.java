@@ -45,14 +45,29 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	private static final long serialVersionUID = -7158664165266474097L;
 
 	/**
-	 * The (default) filters to apply to any search
+	 * Indicates whether advanced search mode is enabled
 	 */
-	private List<SerializablePredicate<T>> filters;
+	private boolean advancedSearchMode;
+
+	/**
+	 * Column threshold
+	 */
+	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
 	 * The entity model
 	 */
 	private EntityModel<T> entityModel;
+
+	/**
+	 * The search filters to apply to the individual fields
+	 */
+	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+
+	/**
+	 * The (default) filters to apply to any search
+	 */
+	private List<SerializablePredicate<T>> filters;
 
 	/**
 	 * The optional joins that determine which related data to fetch
@@ -85,31 +100,17 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
 	/**
-	 * Indicates whether advanced search mode is enabled
-	 */
-	private boolean advancedSearchMode;
-
-	/**
-	 * The search filters to apply to the individual fields
-	 */
-	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-
-	/**
-	 * Column threshold
-	 */
-	private List<String> columnThresholds = new ArrayList<>();
-
-	/**
 	 * Constructor
 	 * 
-	 * @param service           the service used to query the database
-	 * @param entityModel       the entity model
-	 * @param filters           the search filters
-	 * @param sortOrders        the sort orders
-	 * @param multiSelect       whether multiple selection is allowed
-	 * @param searchImmediately whether to search immediately after the screen is
-	 *                          opened
-	 * @param joins             the fetch joins
+	 * @param service            the service used to query the database
+	 * @param entityModel        the entity model
+	 * @param filters            the search filters
+	 * @param sortOrders         the sort orders
+	 * @param multiSelect        whether multiple selection is allowed
+	 * @param searchImmediately  whether to search immediately after the screen is
+	 *                           opened
+	 * @param advancedSearchMode whether advanced search mode is enabled
+	 * @param joins              the fetch joins
 	 */
 	public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel,
 			List<SerializablePredicate<T>> filters, List<SortOrder<?>> sortOrders, boolean multiSelect,
@@ -135,13 +136,20 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		this.fieldFilters.put(property, filter);
 	}
 
+	/**
+	 * Callback method that is executed once the dialog has been opened
+	 */
+	public void afterOpen() {
+		// overwrite in subclasses
+	}
+
 	@Override
 	protected void doBuild(VerticalLayout parent) {
 		FormOptions formOptions = new FormOptions().setReadOnly(true).setPopup(true).setDetailsModeEnabled(false)
 				.setSearchImmediately(searchImmediately).setEnableAdvancedSearchMode(advancedSearchMode);
 
 		searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
-		searchLayout.setPadding(false);
+		searchLayout.setPadding(true);
 		searchLayout.setDefaultFilters(filters);
 
 		searchLayout.setGridHeight(SystemPropertyUtils.getDefaultSearchDialogGridHeight());
@@ -188,6 +196,12 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		return message("ocs.search.title", entityModel.getDisplayNamePlural(VaadinUtils.getLocale()));
 	}
 
+	@Override
+	public void open() {
+		super.open();
+		afterOpen();
+	}
+
 	/**
 	 * Callback method that is executed once the layout has been constructed
 	 */
@@ -195,10 +209,14 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		// overwrite in subclasses
 	}
 
+	public void search() {
+		searchLayout.search();
+	}
+
 	/**
 	 * Select one or more items in the grid
 	 * 
-	 * @param selectedItems
+	 * @param selectedItems the items to select
 	 */
 	@SuppressWarnings("unchecked")
 	public void select(Object selectedItems) {
@@ -223,5 +241,4 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 			searchLayout.setDefaultFilters(filters);
 		}
 	}
-
 }

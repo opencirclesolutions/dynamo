@@ -65,6 +65,7 @@ import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.PagingType;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -106,9 +107,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 	private static final String VERSION = "version";
 
-	private ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, Class<?>> alreadyProcessed = new ConcurrentHashMap<>();
 
-	private ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<>();
+	private final ConcurrentMap<String, EntityModel<?>> cache = new ConcurrentHashMap<>();
 
 	private EntityModelFactory[] delegatedModelFactories;
 
@@ -346,10 +347,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 //				model.setMaxLength(size.max());
 //				model.setMinLength(size.min());
 //			}
-			
-			setAttributeModelAnnotationOverrides(parentClass, model, descriptor, nested);
-			setAttributeModelMessageBundleOverrides(entityModel, model);
 
+		setAttributeModelAnnotationOverrides(parentClass, model, descriptor, nested);
+		setAttributeModelMessageBundleOverrides(entityModel, model);
 
 		if (!model.isEmbedded()) {
 			result.add(model);
@@ -448,8 +448,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 *
 	 * @param entityClass the entity class
 	 * @param reference   the unique reference for the entity model
-	 * @param entityModel the base entity model
-	 * @return
+	 * @return the constructed entity model
 	 */
 	private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
 
@@ -956,7 +955,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param attribute the attribute annotation
 	 * @param model     the attribute model
 	 */
-	protected void setAnnotationCustomOverwrites(Attribute attribute, AttributeModel model) {
+	private void setAnnotationCustomOverwrites(Attribute attribute, AttributeModel model) {
 		if (attribute.custom() != null && attribute.custom().length > 0) {
 			for (CustomSetting s : attribute.custom()) {
 				if (!StringUtils.isEmpty(s.name())) {
@@ -974,6 +973,27 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
+	 * Sets visibility settings for an attribute model based on annotation overrides
+	 * 
+	 * @param attribute the attribute annotation
+	 * @param model     the attribute model
+	 * @param nested    whether we are dealing with a nested attribute
+	 */
+	private void setAnnotationVisibilityOverrides(Attribute attribute, AttributeModelImpl model, boolean nested) {
+		// set visibility (hide nested attribute by default; they must be shown using
+		// the message bundle)
+		if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible()) && !nested) {
+			model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
+			model.setVisibleInGrid(model.isVisible());
+		}
+
+		// set grid visibility
+		if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid()) && !nested) {
+			model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));
+		}
+	}
+
+	/**
 	 * Overwrite the default settings for an attribute model with the
 	 *
 	 * @param parentClass the entity class in which the attribute is declared
@@ -981,7 +1001,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param descriptor  the property descriptor for the attribute
 	 * @param nested      whether the attribute is nested
 	 */
-	protected void setAttributeModelAnnotationOverrides(Class<?> parentClass, AttributeModelImpl model,
+	private void setAttributeModelAnnotationOverrides(Class<?> parentClass, AttributeModelImpl model,
 			PropertyDescriptor descriptor, boolean nested) {
 		Attribute attribute = ClassUtils.getAnnotation(parentClass, descriptor.getName(), Attribute.class);
 
@@ -1020,7 +1040,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			setBooleanTrueSetting(attribute.percentage(), model::setPercentage);
 			setBooleanTrueSetting(attribute.currency(), model::setCurrency);
 			setBooleanTrueSetting(attribute.url(), model::setUrl);
-
 			setBooleanFalseSetting(attribute.sortable(), model::setSortable);
 
 			if (attribute.week()) {
@@ -1126,6 +1145,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setNavigable(attribute.navigable());
 			model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
 			model.setSearchDateOnly(attribute.searchDateOnly());
+			model.setPagingType(attribute.pagingType());
 
 			if (!TrimType.INHERIT.equals(attribute.trimSpaces())) {
 				model.setTrimSpaces(TrimType.TRIM.equals(attribute.trimSpaces()));
@@ -1134,40 +1154,247 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Sets visibility settings for an attribute model based on annotation overrides
-	 * 
-	 * @param attribute the attribute annotation
-	 * @param model     the attribute model
-	 * @param nested    whether we are dealing with a nested attribute
+	 * Overwrite the values of an attribute model with values from a message bundle
+	 *
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model implementation
 	 */
-	private void setAnnotationVisibilityOverrides(Attribute attribute, AttributeModelImpl model, boolean nested) {
-		// set visibility (hide nested attribute by default; they must be shown using
-		// the message bundle)
-		if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible()) && !nested) {
-			model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
-			model.setVisibleInGrid(model.isVisible());
+	private <T> void setAttributeModelMessageBundleOverrides(EntityModel<T> entityModel,
+			AttributeModelImpl attributeModel) {
+
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_NAME),
+				value -> attributeModel.setDefaultDisplayName(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DESCRIPTION),
+				value -> attributeModel.setDefaultDescription(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_VALUE),
+				value -> attributeModel.setDefaultValue(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_FORMAT),
+				value -> attributeModel.setDisplayFormat(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRUE_REPRESENTATION),
+				value -> attributeModel.setDefaultTrueRepresentation(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.FALSE_REPRESENTATION),
+				value -> attributeModel.setDefaultFalseRepresentation(value));
+
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAIN),
+				value -> attributeModel.setMainAttribute(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REQUIRED_FOR_SEARCHING),
+				value -> attributeModel.setRequiredForSearching(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),
+				value -> attributeModel.setSortable(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.COMPLEX_EDITABLE),
+				value -> attributeModel.setComplexEditable(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),
+				value -> attributeModel.setImage(value));
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_CASE_SENSITIVE),
+				attributeModel::setSearchCaseSensitive);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_PREFIX_ONLY),
+				attributeModel::setSearchPrefixOnly);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRIM_SPACES),
+				attributeModel::setTrimSpaces);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PERCENTAGE),
+				attributeModel::setPercentage);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY),
+				attributeModel::setCurrency);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.URL),
+				attributeModel::setUrl);
+
+		// check for read only (convenience only, overwritten by "editable")
+		String msg = getAttributeMessage(entityModel, attributeModel, EntityModel.READ_ONLY);
+		if (!StringUtils.isEmpty(msg)) {
+			boolean edt = Boolean.parseBoolean(msg);
+			if (edt) {
+				attributeModel.setEditableType(EditableType.READ_ONLY);
+			} else {
+				attributeModel.setEditableType(EditableType.EDITABLE);
+			}
+		}
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.EDITABLE), EditableType.class,
+				value -> attributeModel.setEditableType(value));
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setVisible(isVisible(msg));
+		}
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_GRID);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setVisibleInGrid(isVisible(msg));
 		}
 
-		// set grid visibility
-		if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid()) && !nested) {
-			model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));
+		// "searchable" also supports true/false for legacy reasons
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCHABLE);
+		if (!StringUtils.isEmpty(msg)) {
+			if ("true".equals(msg)) {
+				attributeModel.setSearchMode(SearchMode.ALWAYS);
+			} else if ("false".equals(msg)) {
+				attributeModel.setSearchMode(SearchMode.NONE);
+			} else {
+				attributeModel.setSearchMode(SearchMode.valueOf(msg));
+			}
 		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.WEEK);
+		if (!StringUtils.isEmpty(msg)) {
+			checkWeekSettingAllowed(attributeModel);
+			attributeModel.setWeek(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.ALLOWED_EXTENSIONS);
+		if (msg != null && !StringUtils.isEmpty(msg)) {
+			String[] extensions = msg.split(",");
+			Set<String> hashSet = Sets.newHashSet(extensions);
+			attributeModel.setAllowedExtensions(hashSet);
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.GROUP_TOGETHER_WITH);
+		if (msg != null && !StringUtils.isEmpty(msg)) {
+			String[] extensions = msg.split(",");
+			for (String s : extensions) {
+				attributeModel.addGroupTogetherWith(s);
+			}
+		}
+
+		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,
+				value -> attributeModel.setPrecision(value));
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.EMBEDDED);
+		if (msg != null && !StringUtils.isEmpty(msg) && Boolean.valueOf(msg)) {
+			attributeModel.setAttributeType(AttributeType.EMBEDDED);
+		}
+
+		// multiple search setting - setting this to true also sets the search select
+		// mode to TOKEN
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MULTIPLE_SEARCH);
+		if (msg != null && !StringUtils.isEmpty(msg)) {
+			attributeModel.setMultipleSearch(Boolean.valueOf(msg));
+			attributeModel.setSearchSelectMode(AttributeSelectMode.TOKEN);
+		}
+
+		// set the select mode (also sets the search select mode and grid select mode)
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SELECT_MODE);
+		if (msg != null && !StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
+			AttributeSelectMode mode = AttributeSelectMode.valueOf(msg);
+			attributeModel.setSelectMode(mode);
+			attributeModel.setSearchSelectMode(mode);
+			attributeModel.setGridSelectMode(mode);
+		}
+
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_SELECT_MODE),
+				AttributeSelectMode.class, value -> attributeModel.setSearchSelectMode(value));
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.GRID_SELECT_MODE),
+				AttributeSelectMode.class, value -> attributeModel.setGridSelectMode(value));
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE);
+		if (msg != null && !StringUtils.isEmpty(msg)) {
+			attributeModel.setDateType(AttributeDateType.valueOf(msg));
+		}
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE), AttributeDateType.class,
+				value -> attributeModel.setDateType(value));
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXTFIELD_MODE),
+				AttributeTextFieldMode.class, value -> attributeModel.setTextFieldMode(value));
+
+		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH), -1,
+				attributeModel::setMinLength);
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_VALUE);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setMinValue(Long.parseLong(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setMaxLength(Integer.parseInt(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH_IN_GRID);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setMaxLengthInGrid(Integer.parseInt(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_VALUE);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setMaxValue(Long.parseLong(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SEARCH_PATH);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setReplacementSearchPath(msg);
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SORT_PATH);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setReplacementSortPath(msg);
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_PROPERTY);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setQuickAddPropertyName(msg);
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setThousandsGroupingMode(ThousandsGroupingMode.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setSearchForExactValue(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setNavigable(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setSearchDateOnly(Boolean.valueOf(msg));
+		}
+
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setIgnoreInSearchFilter(Boolean.valueOf(msg));
+		}
+
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PAGING_TYPE), PagingType.class,
+				value -> attributeModel.setPagingType(value));
+
+		setMessageBundleCascadeOverrides(entityModel, attributeModel);
+		setMessageBundleCustomOverrides(entityModel, attributeModel);
 	}
 
+	/**
+	 * Sets a value on an attribute model if the provided boolean value is false
+	 * 
+	 * @param value    the boolean value
+	 * @param receiver the code that is executed to set the value
+	 */
 	private void setBooleanFalseSetting(Boolean value, Consumer<Boolean> receiver) {
 		if (!value) {
 			receiver.accept(value);
 		}
 	}
 
-	private void setBooleanTrueSetting(String value, Consumer<Boolean> receiver) {
-		setBooleanTrueSetting(Boolean.valueOf(value), receiver);
-	}
-
+	/**
+	 * Sets a value on the attribute model if the provided boolean value is true
+	 * 
+	 * @param value    the boolean value
+	 * @param receiver the code that is executed to set the value
+	 */
 	private void setBooleanTrueSetting(Boolean value, Consumer<Boolean> receiver) {
 		if (value) {
 			receiver.accept(value);
 		}
+	}
+
+	/**
+	 * Sets a value on the attribute model if the provided String value evaluates to
+	 * true
+	 * 
+	 * @param value    the string value to evaluate
+	 * @param receiver the code that is executed to set the value
+	 */
+	private void setBooleanTrueSetting(String value, Consumer<Boolean> receiver) {
+		setBooleanTrueSetting(Boolean.valueOf(value), receiver);
 	}
 
 	/**
@@ -1192,23 +1419,62 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 	}
 
-	private <T> void setIdAttribute(EntityModelImpl<T> entityModel, AttributeModelImpl model, String fieldName) {
-		Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Id.class);
-		if (idAttr != null) {
-			entityModel.setIdAttributeModel(model);
-			// the ID column is hidden. details collections are also hidden by default
-			model.setVisible(false);
-		} else {
-			model.setVisible(true);
+	/**
+	 * Sets an enum field based on a string value from a message bundle
+	 * 
+	 * @param <E>
+	 * @param value     the string value
+	 * @param enumClass the type of the enum
+	 * @param receiver  receiver function
+	 */
+	@SneakyThrows
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private <E extends Enum> void setEnumSetting(String value, Class<E> enumClass, Consumer<E> receiver) {
+		if (!StringUtils.isEmpty(value)) {
+			E enumValue = (E) Enum.valueOf(enumClass, value);
+			receiver.accept(enumValue);
 		}
 	}
 
+	/**
+	 * Sets the attribute model as the "ID" attribute model if needed
+	 * 
+	 * @param <T>
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model for the ID
+	 * @param fieldName      the name of the field
+	 */
+	private <T> void setIdAttribute(EntityModelImpl<T> entityModel, AttributeModelImpl attributeModel,
+			String fieldName) {
+		Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Id.class);
+		if (idAttr != null) {
+			// the ID column is hidden. details collections are also hidden by default
+			attributeModel.setVisible(false);
+		} else {
+			attributeModel.setVisible(true);
+		}
+	}
+
+	/**
+	 * Sets an integer value on the attribute model if the value is above the
+	 * specified limit
+	 * 
+	 * @param value    the integer value
+	 * @param limit    the lower limit
+	 * @param receiver the receiver function
+	 */
 	private void setIntSetting(Integer value, int limit, Consumer<Integer> receiver) {
 		if (value != null && value > limit) {
 			receiver.accept(value);
 		}
 	}
 
+	/**
+	 * 
+	 * @param value
+	 * @param limit
+	 * @param receiver
+	 */
 	private void setIntSetting(String value, int limit, Consumer<Integer> receiver) {
 		if (value == null) {
 			return;
@@ -1221,9 +1487,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
+	 * Sets a long value on the attribute model if it is either above or below the
+	 * specified limit
 	 * 
-	 * @param value
-	 * @param limit
+	 * @param value    the value
+	 * @param limit    the limit
 	 * @param above
 	 * @param receiver
 	 */
@@ -1296,237 +1564,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				name = getAttributeMessage(entityModel, model, EntityModel.CUSTOM + "." + customIndex);
 			}
 		}
-	}
-
-	/**
-	 * Overwrite the values of an attribute model with values from a message bundle
-	 *
-	 * @param entityModel the entity model
-	 * @param model       the attribute model implementation
-	 */
-	private <T> void setAttributeModelMessageBundleOverrides(EntityModel<T> entityModel,
-			AttributeModelImpl attributeModel) {
-
-		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_NAME),
-				value -> attributeModel.setDefaultDisplayName(value));
-		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DESCRIPTION),
-				value -> attributeModel.setDefaultDescription(value));
-		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_VALUE),
-				value -> attributeModel.setDefaultValue(value));
-		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_FORMAT),
-				value -> attributeModel.setDisplayFormat(value));
-
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAIN),
-				value -> attributeModel.setMainAttribute(value));
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REQUIRED_FOR_SEARCHING),
-				value -> attributeModel.setRequiredForSearching(value));
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),
-				value -> attributeModel.setSortable(value));
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.COMPLEX_EDITABLE),
-				value -> attributeModel.setComplexEditable(value));
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),
-				value -> attributeModel.setImage(value));
-
-		// check for read only (convenience only, overwritten by "editable")
-		String msg = getAttributeMessage(entityModel, attributeModel, EntityModel.READ_ONLY);
-		if (!StringUtils.isEmpty(msg)) {
-			boolean edt = Boolean.parseBoolean(msg);
-			if (edt) {
-				attributeModel.setEditableType(EditableType.READ_ONLY);
-			} else {
-				attributeModel.setEditableType(EditableType.EDITABLE);
-			}
-		}
-		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.EDITABLE), EditableType.class,
-				value -> attributeModel.setEditableType(value));
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setVisible(isVisible(msg));
-		}
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_GRID);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setVisibleInGrid(isVisible(msg));
-		}
-
-		// "searchable" also supports true/false for legacy reasons
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCHABLE);
-		if (!StringUtils.isEmpty(msg)) {
-			if ("true".equals(msg)) {
-				attributeModel.setSearchMode(SearchMode.ALWAYS);
-			} else if ("false".equals(msg)) {
-				attributeModel.setSearchMode(SearchMode.NONE);
-			} else {
-				attributeModel.setSearchMode(SearchMode.valueOf(msg));
-			}
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.WEEK);
-		if (!StringUtils.isEmpty(msg)) {
-			checkWeekSettingAllowed(attributeModel);
-			attributeModel.setWeek(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.ALLOWED_EXTENSIONS);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			String[] extensions = msg.split(",");
-			Set<String> hashSet = Sets.newHashSet(extensions);
-			attributeModel.setAllowedExtensions(hashSet);
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.GROUP_TOGETHER_WITH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			String[] extensions = msg.split(",");
-			for (String s : extensions) {
-				attributeModel.addGroupTogetherWith(s);
-			}
-		}
-
-		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRUE_REPRESENTATION),
-				value -> attributeModel.setDefaultTrueRepresentation(value));
-		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.FALSE_REPRESENTATION),
-				value -> attributeModel.setDefaultFalseRepresentation(value));
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.PERCENTAGE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			attributeModel.setPercentage(Boolean.valueOf(msg));
-		}
-
-		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,
-				value -> attributeModel.setPrecision(value));
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.EMBEDDED);
-		if (msg != null && !StringUtils.isEmpty(msg) && Boolean.valueOf(msg)) {
-			attributeModel.setAttributeType(AttributeType.EMBEDDED);
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY);
-		if (msg != null && !StringUtils.isEmpty(msg) && Boolean.valueOf(msg)) {
-			attributeModel.setCurrency(Boolean.valueOf(msg));
-		}
-
-		// multiple search setting - setting this to true also sets the search select
-		// mode to TOKEN
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MULTIPLE_SEARCH);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			attributeModel.setMultipleSearch(Boolean.valueOf(msg));
-			attributeModel.setSearchSelectMode(AttributeSelectMode.TOKEN);
-		}
-
-		// set the select mode (also sets the search select mode and grid select mode)
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SELECT_MODE);
-		if (msg != null && !StringUtils.isEmpty(msg) && AttributeSelectMode.valueOf(msg) != null) {
-			AttributeSelectMode mode = AttributeSelectMode.valueOf(msg);
-			attributeModel.setSelectMode(mode);
-			attributeModel.setSearchSelectMode(mode);
-			attributeModel.setGridSelectMode(mode);
-		}
-
-		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_SELECT_MODE),
-				AttributeSelectMode.class, value -> attributeModel.setSearchSelectMode(value));
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.GRID_SELECT_MODE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			attributeModel.setGridSelectMode(AttributeSelectMode.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			attributeModel.setDateType(AttributeDateType.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_CASE_SENSITIVE);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			attributeModel.setSearchCaseSensitive(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_PREFIX_ONLY);
-		if (msg != null && !StringUtils.isEmpty(msg)) {
-			attributeModel.setSearchPrefixOnly(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.TEXTFIELD_MODE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setTextFieldMode(AttributeTextFieldMode.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setMinLength(Integer.parseInt(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_VALUE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setMinValue(Long.parseLong(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setMaxLength(Integer.parseInt(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH_IN_GRID);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setMaxLengthInGrid(Integer.parseInt(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_VALUE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setMaxValue(Long.parseLong(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.URL);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setUrl(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SEARCH_PATH);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setReplacementSearchPath(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SORT_PATH);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setReplacementSortPath(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_PROPERTY);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setQuickAddPropertyName(msg);
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setThousandsGroupingMode(ThousandsGroupingMode.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setSearchForExactValue(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setNavigable(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setSearchDateOnly(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setIgnoreInSearchFilter(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.TRIM_SPACES);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setTrimSpaces(Boolean.valueOf(msg));
-		}
-
-		setMessageBundleCascadeOverrides(entityModel, attributeModel);
-		setMessageBundleCustomOverrides(entityModel, attributeModel);
 	}
 
 	/**
@@ -1615,31 +1652,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Sets a string field based on a value from a message bundle
+	 * Sets a String field based on a value from a message bundle
 	 * 
-	 * @param value
-	 * @param receiver
+	 * @param value    the string value
+	 * @param receiver the code that is executed to set the value
 	 */
 	private void setStringSetting(String value, Consumer<String> receiver) {
 		if (!StringUtils.isEmpty(value)) {
 			receiver.accept(value);
-		}
-	}
-
-	/**
-	 * Sets an enum field based on a string value from a message bundle
-	 * 
-	 * @param <E>
-	 * @param value     the string value
-	 * @param enumClass the type of the enum
-	 * @param receiver  receiver function
-	 */
-	@SneakyThrows
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private <E extends Enum> void setEnumSetting(String value, Class<E> enumClass, Consumer<E> receiver) {
-		if (!StringUtils.isEmpty(value)) {
-			 E enumValue = (E) Enum.valueOf(enumClass, value);
-			 receiver.accept(enumValue);
 		}
 	}
 

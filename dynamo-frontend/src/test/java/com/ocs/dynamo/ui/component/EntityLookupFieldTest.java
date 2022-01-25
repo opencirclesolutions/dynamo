@@ -39,56 +39,57 @@ import com.vaadin.flow.data.provider.SortOrder;
 
 public class EntityLookupFieldTest extends BaseMockitoTest {
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    @Spy
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	@Spy
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    private TestEntity e1;
+	private TestEntity e1;
 
-    @BeforeEach
-    public void setUp() {
-        e1 = new TestEntity(1, "Bob", 14L);
+	@BeforeEach
+	public void setUp() {
+		e1 = new TestEntity(1, "Bob", 14L);
 
-        when(service.createNewEntity()).thenReturn(new TestEntity());
-        MockUtil.mockServiceSave(service, TestEntity.class);
-        MockVaadin.setup();
-    }
+		when(service.createNewEntity()).thenReturn(new TestEntity());
+		MockUtil.mockServiceSave(service, TestEntity.class);
+		MockVaadin.setup();
+	}
 
-    @Test
-    public void test() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class), null, null,
-                false, false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
-        field.initContent();
-        assertEquals("name", field.getSortOrders().get(0).getSorted().toString());
-    }
+	@Test
+	public void test() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), null, null, false, false,
+				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
+		field.initContent();
+		assertEquals("name", field.getSortOrders().get(0).getSorted().toString());
+	}
 
-    @Test
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-    public void testMultipleSelectWithPreviousValue() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class),
-                factory.getModel(TestEntity2.class).getAttributeModel("testEntity"), null, false, true, false,
-                Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
-        field.initContent();
-        field.setValue(Lists.newArrayList(e1));
-        field.getSelectButton().click();
-        Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
-        assertTrue(col.contains(e1));
-    }
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	public void testMultipleSelectWithPreviousValue() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), factory.getModel(TestEntity2.class).getAttributeModel("testEntity"),
+				null, false, true, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+		field.initContent();
+		field.setValue(Lists.newArrayList(e1));
+		field.getSelectButton().click();
+		Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
+		assertTrue(col.contains(e1));
+	}
 
-    /**
-     * Test that the clear button has the desired effect
-     */
-    @Test
-    public void testClear() {
-        EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service, factory.getModel(TestEntity.class),
-                factory.getModel(TestEntity2.class).getAttributeModel("testEntity"), null, false, false, false,
-                Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
-        field.initContent();
-        field.setValue(new TestEntity("Kevin", 47L));
+	/**
+	 * Test that the clear button has the desired effect
+	 */
+	@Test
+	public void testClear() {
+		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
+				factory.getModel(TestEntity.class), factory.getModel(TestEntity2.class).getAttributeModel("testEntity"),
+				null, false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
+		field.initContent();
+		field.setValue(new TestEntity("Kevin", 47L));
 
-        field.getClearButton().click();
-        assertNull(field.getValue());
-    }
+		field.getClearButton().click();
+		assertNull(field.getValue());
+	}
 }

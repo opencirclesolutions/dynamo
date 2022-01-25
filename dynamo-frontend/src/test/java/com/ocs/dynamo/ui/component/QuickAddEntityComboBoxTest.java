@@ -58,7 +58,7 @@ public class QuickAddEntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = em.getAttributeModel("testDomain");
 
 		QuickAddEntityComboBox<Integer, TestEntity> select = new QuickAddEntityComboBox<>(em, am, service,
-				SelectMode.FILTERED, null, false, null, null);
+				SelectMode.FILTERED_PAGED, null, false, null, null);
 		select.initContent();
 
 		// test propagation of the value

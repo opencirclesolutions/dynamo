@@ -36,6 +36,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.PagingType;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -136,6 +137,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private EntityModel<?> nestedEntityModel;
 
 	private Integer order;
+
+	private PagingType pagingType;
 
 	private boolean percentage;
 
@@ -291,13 +294,13 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public boolean isEmbedded() {
-		return AttributeType.EMBEDDED.equals(attributeType);
+	public boolean isBoolean() {
+		return Boolean.class.equals(type) || boolean.class.equals(type);
 	}
 
 	@Override
-	public boolean isBoolean() {
-		return Boolean.class.equals(type) || boolean.class.equals(type);
+	public boolean isEmbedded() {
+		return AttributeType.EMBEDDED.equals(attributeType);
 	}
 
 	@Override
@@ -386,4 +389,6 @@ public class AttributeModelImpl implements AttributeModel {
 				|| ThousandsGroupingMode.VIEW.equals(thousandsGroupingMode);
 	}
 
+	
+	
 }

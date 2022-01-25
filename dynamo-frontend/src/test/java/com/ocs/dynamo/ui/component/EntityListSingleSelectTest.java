@@ -65,7 +65,7 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 
 		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
 				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED, select.getSelectMode());
+		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
 		verify(service).fetch(isNull(), eq(0), anyInt());
 	}
@@ -75,7 +75,7 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 
 		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
 				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED, select.getSelectMode());
+		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
 		select.refresh();
 
@@ -87,7 +87,7 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 
 		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
 				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED, select.getSelectMode());
+		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
 		select.refresh();
 		verify(service, times(2)).fetch(isNull(), eq(0), anyInt());

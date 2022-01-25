@@ -202,6 +202,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			addButton = constructAddButton();
 			getButtonBar().add(addButton);
+			registerComponent(addButton);
 
 			removeButton = constructRemoveButton();
 			registerComponent(removeButton);

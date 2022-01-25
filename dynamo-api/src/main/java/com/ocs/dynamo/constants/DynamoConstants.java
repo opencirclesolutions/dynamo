@@ -108,6 +108,8 @@ public class DynamoConstants {
 	 */
 	public static final String CSS_LAST_VISITED = "lastVisited";
 
+	public static final String CSS_MAIN_EDIT_LAYOUT = "mainEditLayout";
+	
 	/**
 	 * CSS style for main search layout
 	 */
@@ -151,6 +153,8 @@ public class DynamoConstants {
 	 */
 	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
 
+	public static final String CSS_SIMPLE_SEARCH_LAYOUT = "simpleSearchLayout";
+	
 	/**
 	 * CSS style for split layout
 	 */

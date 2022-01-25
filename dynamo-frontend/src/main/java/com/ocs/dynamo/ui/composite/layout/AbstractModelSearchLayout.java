@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -428,8 +429,8 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	protected void detailsMode(T entity) {
 
 		if (mainEditLayout == null) {
-			mainEditLayout = new DefaultVerticalLayout(false, false);
-			mainEditLayout.addClassName("mainEditLayout");
+			mainEditLayout = new DefaultVerticalLayout(true, false);
+			mainEditLayout.addClassName(DynamoConstants.CSS_MAIN_EDIT_LAYOUT);
 		}
 
 		FormOptions copy = new FormOptions();

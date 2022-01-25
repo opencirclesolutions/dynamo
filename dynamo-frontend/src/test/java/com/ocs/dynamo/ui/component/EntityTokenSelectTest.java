@@ -63,7 +63,7 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 
 		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class),
 				null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED, select.getSelectMode());
+		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
 		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
 	}
@@ -73,7 +73,7 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 
 		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class),
 				null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED, select.getSelectMode());
+		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
 		select.refresh();
 
@@ -85,7 +85,7 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 
 		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class),
 				null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED, select.getSelectMode());
+		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
 		select.refresh();
 

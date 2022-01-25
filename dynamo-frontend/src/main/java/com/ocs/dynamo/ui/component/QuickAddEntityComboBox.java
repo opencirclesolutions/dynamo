@@ -20,7 +20,6 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.SelectMode;
-import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.SharedProvider;
@@ -69,18 +68,18 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 * @param entityModel    the entity model
 	 * @param attributeModel the attribute model
 	 * @param service        the service
-	 * @param mode           the mode
+	 * @param selectMode     the selectMode
 	 * @param filter         the filter that is used for filtering the data
 	 * @param items          the fixed collection of items to display
 	 * @param sortOrder      the desired sort orders
 	 */
 	@SafeVarargs
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SelectMode mode, SerializablePredicate<T> filter, boolean search,
+			SelectMode selectMode, SerializablePredicate<T> filter, boolean search,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, List<T> items, SortOrder<?>... sortOrders) {
 		super(service, entityModel, attributeModel, filter);
-		this.comboBox = new EntityComboBox<>(entityModel, attributeModel, service, mode, filter, items, sharedProvider,
-				sortOrders);
+		this.comboBox = new EntityComboBox<>(entityModel, attributeModel, service, selectMode, filter, items,
+				sharedProvider, sortOrders);
 		this.quickAddAllowed = attributeModel != null && attributeModel.isQuickAddAllowed() && !search;
 		this.directNavigationAllowed = attributeModel != null && attributeModel.isNavigable() && !search;
 		initContent();
@@ -181,8 +180,9 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (comboBox != null) {
-			comboBox.refresh(
-					getFilter() == null ? additionalFilter : new AndPredicate<T>(getFilter(), additionalFilter));
+//			comboBox.refresh(
+//					getFilter() == null ? additionalFilter : new AndPredicate<T>(getFilter(), additionalFilter));
+			comboBox.setAdditionalFilter(additionalFilter);
 		}
 	}
 

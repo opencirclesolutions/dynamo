@@ -33,6 +33,7 @@ import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
@@ -54,24 +55,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private static final long serialVersionUID = 5377765863515463622L;
 
 	/**
-	 * Whether the component is inside a grid
+	 * Indicates whether it is allowed to add items
 	 */
-	private boolean insideGrid;
-
-	/**
-	 * Whether direct navigation via internal link is allowed
-	 */
-	private boolean directNavigationAllowed;
+	private final boolean addAllowed;
 
 	/**
 	 * Indicates whether it is allowed to clear the selection
 	 */
-	private boolean clearAllowed;
-
-	/**
-	 * Indicates whether it is allowed to add items
-	 */
-	private boolean addAllowed;
+	private final boolean clearAllowed;
 
 	/**
 	 * The button used to clear the current selection
@@ -79,19 +70,24 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private Button clearButton;
 
 	/**
+	 * Whether direct navigation via internal link is allowed
+	 */
+	private final boolean directNavigationAllowed;
+
+	/**
 	 * The joins to apply to the search in the search dialog
 	 */
 	private FetchJoinInformation[] joins;
 
 	/**
-	 * The label that displays the currently selected item
+	 * The label that displays the currently selected items
 	 */
 	private Span label;
 
 	/**
 	 * Whether the component allows multiple select
 	 */
-	private boolean multiSelect;
+	private final boolean multiSelect;
 
 	/**
 	 * The button that brings up the search dialog
@@ -108,6 +104,10 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 */
 	private Object value;
 
+	private ModelBasedSearchDialog<ID, T> dialog;
+
+	private UI ui = UI.getCurrent();
+
 	/**
 	 * Constructor
 	 *
@@ -121,8 +121,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 *                       pop-up dialog
 	 */
 	public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			SerializablePredicate<T> filter, boolean search, boolean multiSelect, boolean grid,
-			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+			SerializablePredicate<T> filter, boolean search, boolean multiSelect, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins) {
 		super(service, entityModel, attributeModel, filter);
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
@@ -130,7 +130,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		this.clearAllowed = true;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 		this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isNavigable());
-		this.insideGrid = grid;
 		initContent();
 	}
 
@@ -170,12 +169,14 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
-	public Button getClearButton() {
-		return clearButton;
-	}
-
-	protected FetchJoinInformation[] getJoins() {
-		return joins;
+	public void clearValue() {
+		if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
+			setValue(Sets.newHashSet());
+		} else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
+			setValue(Lists.newArrayList());
+		} else {
+			setValue(null);
+		}
 	}
 
 	/**
@@ -187,7 +188,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 */
 	@SuppressWarnings("unchecked")
 	protected String constructLabelValue(Object newValue) {
-		String caption = getMessageService().getMessage("ocs.no.item.selected", VaadinUtils.getLocale());
+		String caption = getMessageService().getMessage(multiSelect ? "ocs.no.items.selected" : "ocs.no.item.selected",
+				VaadinUtils.getLocale());
 		if (newValue instanceof Collection<?>) {
 			Collection<T> col = (Collection<T>) newValue;
 			if (!col.isEmpty()) {
@@ -195,13 +197,87 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 						SystemPropertyUtils.getLookupFieldMaxItems(), getMessageService(), VaadinUtils.getLocale());
 			}
 		} else {
-			// just a single value
 			T t = (T) newValue;
 			if (newValue != null) {
 				caption = EntityModelUtils.getDisplayPropertyValue(t, getEntityModel());
 			}
 		}
 		return caption;
+	}
+
+	private void constructSelectButton(HorizontalLayout bar) {
+		selectButton = new Button("");
+		selectButton.setIcon(VaadinIcon.SEARCH.create());
+		VaadinUtils.setTooltip(selectButton, getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
+		selectButton.addClickListener(event -> {
+			List<SerializablePredicate<T>> filterList = new ArrayList<>();
+			if (getFilter() != null) {
+				filterList.add(getFilter());
+			}
+			if (getAdditionalFilter() != null) {
+				filterList.add(getAdditionalFilter());
+			}
+
+			dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(), filterList, sortOrders,
+					multiSelect, true, false, getJoins()) {
+
+				private static final long serialVersionUID = -3432107069929941520L;
+
+				@Override
+				@SuppressWarnings("unchecked")
+				protected boolean doClose() {
+					if (multiSelect) {
+						if (EntityLookupField.this.getValue() == null) {
+							EntityLookupField.this.setValue(getSelectedItems());
+						} else {
+							// add selected items to already selected items
+							Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
+							for (T selectedItem : getSelectedItems()) {
+								if (!cumulative.contains(selectedItem)) {
+									cumulative.add(selectedItem);
+								}
+							}
+							EntityLookupField.this.setValue(cumulative);
+						}
+					} else {
+						// single value select
+						EntityLookupField.this.setValue(getSelectedItem());
+					}
+					return true;
+				}
+
+				@Override
+				public void afterOpen() {
+					Runnable runnable = () -> {
+						try {
+							Thread.sleep(200);
+						} catch (InterruptedException e) {
+							// do nothing
+						}
+						ui.access(() -> selectValuesInDialog(dialog));
+					};
+
+					new Thread(runnable).start();
+				}
+
+			};
+			dialog.buildAndOpen();
+
+		});
+		bar.add(selectButton);
+	}
+
+	@Override
+	protected Object generateModelValue() {
+		return convertToCorrectCollection(value);
+	}
+
+	public Button getClearButton() {
+		return clearButton;
+	}
+
+	protected FetchJoinInformation[] getJoins() {
+		return joins;
 	}
 
 	public Button getSelectButton() {
@@ -219,6 +295,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	protected void initContent() {
 		HorizontalLayout bar = new HorizontalLayout();
+		bar.setSizeFull();
 		if (this.getAttributeModel() != null) {
 			this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
 		}
@@ -227,64 +304,23 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		label = new Span("");
 		updateLabel(getValue());
 		bar.add(label);
+		bar.setFlexGrow(5, label);
 
-		// button for selecting an entity - brings up the search dialog
-		selectButton = new Button(insideGrid ? "" : getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
-		selectButton.setIcon(VaadinIcon.SEARCH.create());
-		selectButton.addClickListener(event -> {
-			List<SerializablePredicate<T>> filterList = new ArrayList<>();
-			if (getFilter() != null) {
-				filterList.add(getFilter());
-			}
-			if (getAdditionalFilter() != null) {
-				filterList.add(getAdditionalFilter());
-			}
+		constructSelectButton(bar);
 
-			ModelBasedSearchDialog<ID, T> dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(),
-					filterList, sortOrders, multiSelect, true, false, getJoins()) {
-
-				private static final long serialVersionUID = -3432107069929941520L;
-
-				@Override
-				protected boolean doClose() {
-					if (multiSelect) {
-						if (EntityLookupField.this.getValue() == null) {
-							EntityLookupField.this.setValue(getSelectedItems());
-						} else {
-							// add selected items to already selected items
-							@SuppressWarnings("unchecked")
-							Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
-							cumulative.addAll(getSelectedItems());
-							EntityLookupField.this.setValue(cumulative);
-						}
-					} else {
-						// single value select
-						EntityLookupField.this.setValue(getSelectedItem());
-					}
-					return true;
-				}
-			};
-			dialog.build();
-			selectValuesInDialog(dialog);
-			dialog.open();
-		});
-		bar.add(selectButton);
-
-		// button for clearing the current selection
 		if (clearAllowed) {
-			clearButton = new Button(insideGrid ? "" : getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
+			clearButton = new Button("");
+			VaadinUtils.setTooltip(bar, getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
 			clearButton.setIcon(VaadinIcon.ERASER.create());
 			clearButton.addClickListener(event -> clearValue());
 			bar.add(clearButton);
 		}
 
-		// quick add button
 		if (addAllowed) {
 			Button addButton = constructAddButton();
 			bar.add(addButton);
 		}
 
-		// direct navigation link
 		if (directNavigationAllowed) {
 			Button directNavigationButton = constructDirectNavigationButton();
 			bar.add(directNavigationButton);
@@ -316,31 +352,16 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 *
 	 * @param dialog the dialog
 	 */
-	@SuppressWarnings("unchecked")
 	public void selectValuesInDialog(ModelBasedSearchDialog<ID, T> dialog) {
-		// select any previously selected values in the dialog
-		if (multiSelect && getValue() != null && getValue() instanceof Collection) {
-			Collection<T> col = (Collection<T>) getValue();
-			dialog.select(col);
+		if (getValue() != null) {
+			dialog.select(getValue());
 		}
-	}
-
-	protected void setAddAllowed(boolean addAllowed) {
-		this.addAllowed = addAllowed;
 	}
 
 	@Override
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		setValue(null);
 		super.setAdditionalFilter(additionalFilter);
-	}
-
-	protected void setClearAllowed(boolean clearAllowed) {
-		this.clearAllowed = clearAllowed;
-	}
-
-	protected void setDirectNavigationAllowed(boolean directNavigationAllowed) {
-		this.directNavigationAllowed = directNavigationAllowed;
 	}
 
 	@Override
@@ -357,14 +378,15 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
-	public void clearValue() {
-		if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
-			setValue(Sets.newHashSet());
-		} else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
-			setValue(Lists.newArrayList());
-		} else {
-			setValue(null);
-		}
+	@Override
+	public void setPlaceholder(String placeholder) {
+		// do nothing
+	}
+
+	@Override
+	protected void setPresentationValue(Object value) {
+		this.value = value;
+		updateLabel(value);
 	}
 
 	@Override
@@ -394,22 +416,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			String caption = constructLabelValue(newValue);
 			label.setText(caption);
 		}
-	}
-
-	@Override
-	public void setPlaceholder(String placeholder) {
-		// do nothing
-	}
-
-	@Override
-	protected Object generateModelValue() {
-		return convertToCorrectCollection(value);
-	}
-
-	@Override
-	protected void setPresentationValue(Object value) {
-		this.value = value;
-		updateLabel(value);
 	}
 
 }

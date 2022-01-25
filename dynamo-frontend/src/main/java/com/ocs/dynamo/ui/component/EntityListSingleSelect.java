@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.filter.AndPredicate;
+import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
@@ -57,7 +58,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	private SerializablePredicate<T> originalFilter;
 
-	private SelectMode selectMode = SelectMode.FILTERED;
+	private final SelectMode selectMode;
 
 	private final BaseService<ID, T> service;
 
@@ -88,55 +89,47 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	/**
 	 * Constructor - for the "FILTERED" mode
 	 *
-	 * @param targetEntityModel the entity model of the entities that are to be
-	 *                          displayed
-	 * @param attributeModel    the attribute model for the property that is bound
-	 *                          to this component
-	 * @param service           the service used to retrieve the entities
-	 * @param filter            the filter used to filter the entities
-	 * @param sortOrder         the sort order used to sort the entities
+	 * @param entityModel    the entity model of the entities that are to be
+	 *                       displayed
+	 * @param attributeModel the attribute model for the property that is bound to
+	 *                       this component
+	 * @param service        the service used to retrieve the entities
+	 * @param filter         the filter used to filter the entities
+	 * @param sortOrder      the sort order used to sort the entities
 	 */
 	@SafeVarargs
-	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
-		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, null, null, sortOrder);
+	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+			SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
+		this(entityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrder);
 	}
 
 	/**
 	 * Constructor - for the "ALL" mode
 	 *
-	 * @param targetEntityModel the entity model of the entities that are to be
-	 *                          displayed
-	 * @param attributeModel    the attribute model for the property that is bound
-	 *                          to this component
-	 * @param service           the service used to retrieve entities
+	 * @param entityModel    the entity model of the entities that are to be
+	 *                       displayed
+	 * @param attributeModel the attribute model for the property that is bound to
+	 *                       this component
+	 * @param service        the service used to retrieve entities
+	 * @param sortOrder      the sort order
 	 */
 	@SafeVarargs
-	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SortOrder<?>... sortOrder) {
-		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
+	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+			SortOrder<?>... sortOrder) {
+		this(entityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
 	}
 
 	/**
 	 * Constructor - for the "FIXED" mode
 	 *
-	 * @param targetEntityModel the entity model of the entities that are to be
-	 *                          displayed
-	 * @param attributeModel    the attribute model for the property that is bound
-	 *                          to this component
-	 * @param items             the list of entities to display
+	 * @param entityModel    the entity model of the entities that are to be
+	 *                       displayed
+	 * @param attributeModel the attribute model for the property that is bound to
+	 *                       this component
+	 * @param items          the list of entities to display
 	 */
-	public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
-		this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, items, null);
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-		if (provider instanceof CallbackDataProvider) {
-			setDataProvider((CallbackDataProvider) provider);
-		} else if (provider instanceof ListDataProvider) {
-			setDataProvider((ListDataProvider) provider);
-		}
+	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, List<T> items) {
+		this(entityModel, attributeModel, null, SelectMode.FIXED, null, items, null);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -148,6 +141,15 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 			updateProvider((DataProvider<T, SerializablePredicate<T>>) getDataProvider());
 		}
 		setValue(entity);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+		if (provider instanceof CallbackDataProvider) {
+			setDataProvider((CallbackDataProvider) provider);
+		} else if (provider instanceof ListDataProvider) {
+			setDataProvider((ListDataProvider) provider);
+		}
 	}
 
 	@Override
@@ -197,9 +199,15 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 				ListDataProvider<T> listProvider = new ListDataProvider<>(
 						service.findAll(SortUtils.translateSortOrders(sortOrders)));
 				setDataProvider(listProvider);
-			} else if (SelectMode.FILTERED.equals(mode)) {
+			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setDataProvider(callbackProvider);
+			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
+				// add a filtered selection of items
+				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+						SortUtils.translateSortOrders(sortOrders));
+				setDataProvider(new ListDataProvider<>(items));
+
 			} else if (SelectMode.FIXED.equals(mode)) {
 				setDataProvider(new ListDataProvider<>(items));
 			}
@@ -224,9 +232,15 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		refresh();
 	}
 
+	private void reloadDataProvider(ListDataProvider<T> listProvider, List<T> items) {
+		listProvider.getItems().clear();
+		listProvider.getItems().addAll(items);
+		listProvider.refreshAll();
+	}
+
 	@Override
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
-		setValue(null);
+		clear();
 		this.additionalFilter = additionalFilter;
 		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
@@ -240,12 +254,14 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	private void updateProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (SelectMode.ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			// add all items (but sorted)
-			listProvider.getItems().clear();
-			listProvider.getItems().addAll(service.findAll(SortUtils.translateSortOrders(sortOrders)));
-		} else if (SelectMode.FILTERED.equals(selectMode)) {
-			// add a filtered selection of items
+			reloadDataProvider(listProvider, service.findAll(SortUtils.translateSortOrders(sortOrders)));
+		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
 			setDataProvider(createCallbackProvider());
+		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
+			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
+			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+					SortUtils.translateSortOrders(sortOrders));
+			reloadDataProvider(listProvider, items);
 		}
 	}
 

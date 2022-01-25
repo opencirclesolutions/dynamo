@@ -2,7 +2,6 @@ package com.ocs.dynamo.envers.dao.impl;
 
 import org.springframework.stereotype.Repository;
 
-import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.impl.BaseDaoImpl;
 import com.ocs.dynamo.envers.dao.PersonDao;
 import com.ocs.dynamo.envers.domain.Person;

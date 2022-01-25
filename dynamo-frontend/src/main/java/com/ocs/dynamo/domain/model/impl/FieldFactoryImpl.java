@@ -37,6 +37,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.PagingType;
 import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -173,6 +174,12 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 	}
 
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private <S> DataProvider<S, SerializablePredicate<S>> castSharedProvider(
+			DataProvider<?, SerializablePredicate<?>> provider) {
+		return (DataProvider<S, SerializablePredicate<S>>) (DataProvider) provider;
+	}
+
 	/**
 	 * Constructs a field for selecting multiple values from a collection. This can
 	 * only be a lookup field or a token field
@@ -204,7 +211,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			return constructLookupField(am, fieldEntityModel, fieldFilter, search, true, grid);
 		} else {
 			// by default, use a token field
-			return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, SelectMode.FILTERED,
+			return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, mapPagingType(am.getPagingType()),
 					(SerializablePredicate<S>) fieldFilter, castSharedProvider(sharedProvider), search, sos);
 		}
 	}
@@ -229,14 +236,10 @@ public class FieldFactoryImpl implements FieldFactory {
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
 		SortOrder<?>[] sortOrder = constructSortOrder(entityModel);
-		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service, SelectMode.ALL,
-				(SerializablePredicate<S>) fieldFilter, search, castSharedProvider(sharedProvider), null, sortOrder);
-	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private <S> DataProvider<S, SerializablePredicate<S>> castSharedProvider(
-			DataProvider<?, SerializablePredicate<?>> provider) {
-		return (DataProvider<S, SerializablePredicate<S>>) (DataProvider) provider;
+		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service,
+				mapPagingType(am.getPagingType()), (SerializablePredicate<S>) fieldFilter, search,
+				castSharedProvider(sharedProvider), null, sortOrder);
 	}
 
 	/**
@@ -428,8 +431,8 @@ public class FieldFactoryImpl implements FieldFactory {
 		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
 		SortOrder<?>[] sos = constructSortOrder(em);
-		return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, (SerializablePredicate<S>) fieldFilter,
-				null, search, sos);
+		return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, mapPagingType(am.getPagingType()),
+				(SerializablePredicate<S>) fieldFilter, null, search, sos);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -448,7 +451,7 @@ public class FieldFactoryImpl implements FieldFactory {
 				.getServiceForEntity(am.getMemberType() != null ? am.getMemberType() : entityModel.getEntityClass());
 		SortOrder<?>[] sos = constructSortOrder(entityModel);
 		return new EntityLookupField<>(service, (EntityModel<S>) entityModel, am,
-				(SerializablePredicate<S>) fieldFilter, search, multiSelect, grid,
+				(SerializablePredicate<S>) fieldFilter, search, multiSelect,
 				sos.length == 0 ? null : Lists.newArrayList(sos));
 	}
 
@@ -567,6 +570,23 @@ public class FieldFactoryImpl implements FieldFactory {
 		dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLoc));
 
 		return dpi;
+	}
+
+	/**
+	 * Maps the filter type from the attribute model to a select mode for the
+	 * component
+	 * 
+	 * @param pagingType the pagingType to map
+	 * @return the associated SelectMode
+	 */
+	private SelectMode mapPagingType(PagingType filterType) {
+		switch (filterType) {
+		case NON_PAGED:
+			return SelectMode.FILTERED_ALL;
+		case PAGED:
+			return SelectMode.FILTERED_PAGED;
+		}
+		return null;
 	}
 
 	private void postProcessField(Component field, AttributeModel am, boolean search, boolean editableGrid) {

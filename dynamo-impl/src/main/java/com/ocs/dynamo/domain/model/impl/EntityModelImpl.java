@@ -71,14 +71,14 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	private Map<String, Optional<String>> displayNamesPlural = new ConcurrentHashMap<>();
 
 	private String displayProperty;
-	
+
 	private String filterProperty;
 
 	private Class<T> entityClass;
 
 	private boolean gridOrderSet;
 
-	private AttributeModel idAttributeModel;
+	// private AttributeModel idAttributeModel;
 
 	private int nestingDepth;
 

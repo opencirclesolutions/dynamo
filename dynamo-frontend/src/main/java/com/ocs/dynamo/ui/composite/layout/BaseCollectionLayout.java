@@ -199,7 +199,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	protected final Button constructAddButton() {
 		Button ab = new Button(message("ocs.add"));
 		ab.setIcon(VaadinIcon.PLUS.create());
-		ab.addClickListener(e -> doAdd());
+		ab.addClickListener(e -> {
+			checkComponentState(null);
+			doAdd();
+		});
 		ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
 		return ab;
 	}
