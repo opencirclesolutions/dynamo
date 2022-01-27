@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
@@ -52,14 +54,14 @@
 		<tag>dynamo-parent-2.8.5-SNAPSHOT</tag>
 	</scm>
 	<distributionManagement>
-		<snapshotRepository>
-			<id>ocs-maven-snapshot</id>
-			<url>https://maven.square.opencirclesolutions.nl/snapshots/</url>
-		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
 			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2/</url>
 		</repository>
+		<snapshotRepository>
+			<id>gitlab-maven-dynamo</id>
+			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/307/packages/maven</url>
+		</snapshotRepository>
 	</distributionManagement>
 	<modules>
 		<module>dynamo-api</module>
@@ -551,7 +553,6 @@
 			</properties>
 		</profile>
 	</profiles>
-
 	<repositories>
 		<repository>
 			<id>central</id>
@@ -583,6 +584,10 @@
 			<releases>
 				<enabled>true</enabled>
 			</releases>
+		</repository>
+		<repository>
+			<id>gitlab-maven</id>
+			<url>https://gitlab.opencirclesolutions.nl/api/v4/groups/dynamo/-/packages/maven</url>
 		</repository>
 	</repositories>
 </project>
