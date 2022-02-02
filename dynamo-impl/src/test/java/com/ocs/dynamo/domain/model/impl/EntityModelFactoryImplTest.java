@@ -55,10 +55,11 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.BooleanType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.PagingType;
+import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -502,14 +503,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals(AttributeSelectMode.LOOKUP, am.getSelectMode());
 		assertEquals(AttributeSelectMode.LOOKUP, am.getSearchSelectMode());
 		assertEquals(AttributeSelectMode.LOOKUP, am.getGridSelectMode());
-		assertEquals(PagingType.NON_PAGED, am.getPagingType());
+		assertEquals(PagingMode.NON_PAGED, am.getPagingMode());
 
 		// multiple search defaults to token
 		AttributeModel am2 = model.getAttributeModel("entity5");
 		assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
 		assertEquals(AttributeSelectMode.LOOKUP, am2.getSearchSelectMode());
 		assertEquals(AttributeSelectMode.COMBO, am2.getGridSelectMode());
-		assertEquals(PagingType.PAGED, am2.getPagingType());
+		assertEquals(PagingMode.PAGED, am2.getPagingMode());
 
 		// overwritten attribute modes
 		AttributeModel am3 = model.getAttributeModel("entity52");
@@ -817,7 +818,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false)
 		private String name;
 
-		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = ThousandsGroupingMode.NEVER, requiredForSearching = true, searchable = SearchMode.ALWAYS)
+		@Attribute(searchCaseSensitive = BooleanType.TRUE, searchPrefixOnly = BooleanType.TRUE, thousandsGrouping = ThousandsGroupingMode.NEVER, requiredForSearching = true, searchable = SearchMode.ALWAYS)
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")
@@ -940,10 +941,10 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	 */
 	public class Entity7 {
 
-		@Attribute(selectMode = AttributeSelectMode.LOOKUP, pagingType = PagingType.NON_PAGED)
+		@Attribute(selectMode = AttributeSelectMode.LOOKUP)
 		private Entity6 entity6;
 
-		@Attribute(multipleSearch = true)
+		@Attribute(multipleSearch = true, pagingMode = PagingMode.PAGED)
 		private Entity5 entity5;
 
 		@Attribute(multipleSearch = true, searchSelectMode = AttributeSelectMode.TOKEN, gridSelectMode = AttributeSelectMode.LIST)

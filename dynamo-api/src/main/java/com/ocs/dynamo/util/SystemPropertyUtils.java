@@ -21,6 +21,7 @@ import java.util.Properties;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
+import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 
 import lombok.extern.slf4j.Slf4j;
@@ -223,6 +224,16 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
+	 * @return the default "paging" mode. This determines how to retrieve items in
+	 *         UI components that maintain a list of items like combo boxes
+	 */
+	public static PagingMode getDefaultPagingMode() {
+		String s = getStringProperty(DynamoConstants.SP_DEFAULT_PAGING_MODE, "non_paged");
+		return PagingMode.valueOf(s.toUpperCase());
+	}
+
+	/**
+	 * 
 	 * @return the default threshold width for group together columns (when mode =
 	 *         pixel)
 	 */
@@ -272,10 +283,10 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return whether searches on text fields will be default be case-insensitive
+	 * @return whether searches on text fields will be case sensitive by default
 	 */
 	public static boolean getDefaultSearchCaseSensitive() {
-		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE, null);
+		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE, false);
 	}
 
 	/**
@@ -299,7 +310,7 @@ public final class SystemPropertyUtils {
 	 * @return default search prefix only. False if not specified
 	 */
 	public static boolean getDefaultSearchPrefixOnly() {
-		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_PREFIX_ONLY, null);
+		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_PREFIX_ONLY, false);
 	}
 
 	/**
@@ -450,7 +461,8 @@ public final class SystemPropertyUtils {
 	 * @return whether to include thousands grouping separators in edit mode
 	 */
 	public static ThousandsGroupingMode getDefaultThousandsGroupingMode() {
-		return ThousandsGroupingMode.valueOf(getStringProperty(DynamoConstants.SP_THOUSAND_GROUPING, "ALWAYS"));
+		return ThousandsGroupingMode
+				.valueOf(getStringProperty(DynamoConstants.SP_THOUSAND_GROUPING, "ALWAYS").toUpperCase());
 	}
 
 	/**

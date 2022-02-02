@@ -287,10 +287,15 @@ public class DynamoConstants {
 	public static final String SP_DEFAULT_GRID_HEIGHT = "ocs.default.grid.height";
 
 	/**
-	 * Name of the system property that is used to determine the group together mode
+	 * Name of the system property that is used to determine the default group together mode
 	 */
 	public static final String SP_DEFAULT_GROUP_TOGETHER_MODE = "ocs.default.group.together.mode";
 
+	/**
+	 * Name of the system property that is used to determine the default paging mode
+	 */
+	public static final String SP_DEFAULT_PAGING_MODE = "ocs.default.paging.mode";
+	
 	/**
 	 * Name of the system property that is used to determine the column width from
 	 * grouping together

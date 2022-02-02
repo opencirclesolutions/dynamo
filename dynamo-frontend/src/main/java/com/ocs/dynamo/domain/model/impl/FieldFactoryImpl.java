@@ -38,7 +38,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.MultiSelectMode;
-import com.ocs.dynamo.domain.model.PagingType;
+import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
@@ -213,7 +213,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			return constructLookupField(am, fieldEntityModel, fieldFilter, search, true, grid);
 		} else {
 			// by default, use a token field
-			return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, mapPagingType(am.getPagingType()),
+			return new QuickAddTokenSelect<ID, S>((EntityModel<S>) em, am, service, mapPagingMode(am.getPagingMode()),
 					(SerializablePredicate<S>) fieldFilter, castSharedProvider(sharedProvider), search, sos);
 		}
 	}
@@ -240,7 +240,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		SortOrder<?>[] sortOrder = constructSortOrder(entityModel);
 
 		return new QuickAddEntityComboBox<>((EntityModel<S>) entityModel, am, service,
-				mapPagingType(am.getPagingType()), (SerializablePredicate<S>) fieldFilter, search,
+				mapPagingMode(am.getPagingMode()), (SerializablePredicate<S>) fieldFilter, search,
 				castSharedProvider(sharedProvider), null, sortOrder);
 	}
 
@@ -433,7 +433,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		EntityModel<?> em = resolveEntityModel(fieldEntityModel, am, search);
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator.getServiceForEntity(em.getEntityClass());
 		SortOrder<?>[] sos = constructSortOrder(em);
-		return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, mapPagingType(am.getPagingType()),
+		return new QuickAddListSingleSelect<>((EntityModel<S>) em, am, service, mapPagingMode(am.getPagingMode()),
 				(SerializablePredicate<S>) fieldFilter, null, search, sos);
 	}
 
@@ -585,14 +585,15 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @param pagingType the pagingType to map
 	 * @return the associated SelectMode
 	 */
-	private SelectMode mapPagingType(PagingType filterType) {
-		switch (filterType) {
+	private SelectMode mapPagingMode(PagingMode mode) {
+		switch (mode) {
 		case NON_PAGED:
 			return SelectMode.FILTERED_ALL;
 		case PAGED:
 			return SelectMode.FILTERED_PAGED;
+		default:
+			return null;
 		}
-		return null;
 	}
 
 	private void postProcessField(Component field, AttributeModel am, boolean search, boolean editableGrid) {

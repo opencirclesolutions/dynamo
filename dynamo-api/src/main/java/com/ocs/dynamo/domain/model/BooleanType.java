@@ -13,14 +13,18 @@
  */
 package com.ocs.dynamo.domain.model;
 
-/**
- * Specifies the way items are retrieved inside entity component (combo box,
- * list and token field)
- * 
- * @author BasRutten
- *
- */
-public enum PagingType {
+public enum BooleanType {
 
-	PAGED, NON_PAGED;
+	TRUE, FALSE, INHERIT;
+
+	public boolean toBoolean() {
+		switch (this) {
+		case TRUE:
+			return true;
+		case FALSE:
+			return false;
+		default:
+			return false;
+		}
+	}
 }

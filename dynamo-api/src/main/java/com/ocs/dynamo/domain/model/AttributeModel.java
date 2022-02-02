@@ -50,7 +50,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the actual path to sort on. This uses the replacementSearchPath when
+	 * @return the actual path to search on. This uses the replacementSearchPath
+	 *         when set or the default search path otherwise
+	 */
+	String getActualSearchPath();
+
+	/**
+	 * 
+	 * @return the actual path to sort on. This uses the replacementSorthPath when
 	 *         set or the default sort path otherwise
 	 */
 	String getActualSortPath();
@@ -265,9 +272,9 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the paging type used in entity select components
+	 * @return the paging mode used in entity select components
 	 */
-	PagingType getPagingType();
+	PagingMode getPagingMode();
 
 	/**
 	 * @return The (nested) path to this attribute
@@ -337,7 +344,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	AttributeTextFieldMode getTextFieldMode();
 
 	/**
-	 * @return the thousands grouping seperator setting
+	 * @return the thousands the mode that determines how to handel the thousands
+	 *         separator when formatting floating point numbers
 	 */
 	ThousandsGroupingMode getThousandsGroupingMode();
 

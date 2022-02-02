@@ -51,7 +51,8 @@ public interface EntityModel<T> {
 	String CASCADE = "cascade";
 
 	/**
-	 * Cascade filter path (the attribute to filter on on the receiving side of a cascade action)
+	 * Cascade filter path (the attribute to filter on on the receiving side of a
+	 * cascade action)
 	 */
 	String CASCADE_FILTER_PATH = "cascadeFilterPath";
 
@@ -234,7 +235,7 @@ public interface EntityModel<T> {
 	/**
 	 * The paging type for selection components
 	 */
-	String PAGING_TYPE = "pagingType";
+	String PAGING_MODE = "pagingMode";
 
 	/**
 	 * Whether to include a percentage sign to a numerical field (cosmetic only)
@@ -335,7 +336,8 @@ public interface EntityModel<T> {
 	String TEXTFIELD_MODE = "textFieldMode";
 
 	/**
-	 * Indicates whether when to use thousands grouping characters
+	 * Indicates whether when to use the thousands separator when formatting
+	 * floating point numbers
 	 */
 	String THOUSANDS_GROUPING_MODE = "thousandsGroupingMode";
 

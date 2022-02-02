@@ -38,6 +38,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -86,6 +87,34 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	private static final long serialVersionUID = 6015180039863418544L;
 
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
+
+	@Getter
+	@Setter
+	private Consumer<T> afterEntitySet;
+
+	@Getter
+	@Setter
+	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+
+	@Getter
+	@Setter
+	private Consumer<Integer> afterTabSelected;
+
+	@Getter
+	@Setter
+	private List<String> columnThresholds = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private ComponentContext componentContext = ComponentContext.builder().build();
+
 	/**
 	 * The list of components to update after an entity is selected
 	 */
@@ -95,6 +124,19 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * Mapping from custom component label to custom component
 	 */
 	private Map<String, List<Component>> customComponentMap = new HashMap<>();
+
+	@Getter
+	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+
+	@Getter
+	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Consumer<T> customSaveConsumer;
+
+	@Getter
+	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
 
 	/**
 	 * The entity model of the entity or entities to display
@@ -115,40 +157,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	private FormOptions formOptions;
 
-	/**
-	 * The service used for retrieving data
-	 */
-	private BaseService<ID, T> service;
-
-	private String maxEditFormWidth = SystemPropertyUtils.getDefaultMaxEditFormWidth();
-
-	@Getter
-	@Setter
-	private ComponentContext componentContext = ComponentContext.builder().build();
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
-
-	@Getter
-	@Setter
-	private Consumer<T> afterEntitySet;
-
-	@Getter
-	@Setter
-	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-
 	@Getter
 	@Setter
 	private GroupTogetherMode groupTogetherMode;
-
-	@Getter
-	@Setter
-	private List<String> columnThresholds = new ArrayList<>();
 
 	@Getter
 	@Setter
@@ -156,14 +167,15 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	@Getter
 	@Setter
-	private Consumer<T> customSaveConsumer;
+	private String maxEditFormWidth = SystemPropertyUtils.getDefaultMaxEditFormWidth();
 
 	@Getter
 	@Setter
-	private Consumer<Integer> afterTabSelected;
+	private Runnable onBackButtonClicked = () -> {
+	};
 
 	@Getter
-	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+	private BaseService<ID, T> service;
 
 	/**
 	 * Constructor
@@ -178,6 +190,18 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		this.formOptions = formOptions;
 	}
 
+	public void addCustomConverter(AttributeModel attributeModel, Supplier<Converter<?, ?>> converter) {
+		customConverters.put(attributeModel, converter);
+	}
+
+	public void addCustomRequiredValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
+		customRequiredValidators.put(attributeModel, validator);
+	}
+
+	public void addCustomValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
+		customValidators.put(attributeModel, validator);
+	}
+
 	/**
 	 * Sets a custom entity model to use for a certain field/property
 	 *
@@ -187,28 +211,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public final void addFieldEntityModel(String path, String reference) {
 		fieldEntityModels.put(path, reference);
 	}
-
-//	/**
-//	 * Method that is called after the user selects an entity to view in Details
-//	 * mode
-//	 *
-//	 * @param editForm the edit form which displays the entity
-//	 * @param entity   the selected entity
-//	 */
-//	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-//		// override in subclass
-//	}
-
-//	/**
-//	 * Method that is called after the mode is changed (from editable to read only
-//	 * or vice versa)
-//	 *
-//	 * @param viewMode whether the component is now in view mode (after the change)
-//	 * @param editForm the edit form
-//	 */
-//	protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
-//		// override in subclasses
-//	}
 
 	/**
 	 * Checks which buttons in the button bar must be enabled after an item has been
@@ -228,17 +230,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		}
 	}
 
-//	/**
-//	 * Callback method for constructing a custom converter - currently only
-//	 * supported for text fields
-//	 * 
-//	 * @param am the attribute model to base the converter on
-//	 * @return
-//	 */
-//	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-//		return null;
-//	}
-
 	/**
 	 * Creates a custom field - override in subclass
 	 *
@@ -251,26 +242,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean searchMode) {
 		// overwrite in subclass
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-		return null;
-	}
-
-	/**
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 		return null;
 	}
 
@@ -293,14 +264,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return fieldEntityModels.get(path);
 	}
 
-	public String getMaxEditFormWidth() {
-		return maxEditFormWidth;
-	}
-
-	public BaseService<ID, T> getService() {
-		return service;
-	}
-
 	/**
 	 * Callback method that is called during the save process. Allows the developer
 	 * to respond to a specific type of exception thrown in the service layer in a
@@ -312,6 +275,30 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	protected boolean handleCustomException(RuntimeException ex) {
 		return false;
+	}
+
+	/**
+	 * Copies component settings to the edit form
+	 * 
+	 * @param editForm the edit form
+	 */
+	protected void initEditForm(ModelBasedEditForm<ID, T> editForm) {
+		editForm.setCustomSaveConsumer(customSaveConsumer);
+		editForm.setFieldEntityModels(getFieldEntityModels());
+		editForm.setColumnThresholds(getColumnThresholds());
+		editForm.setMaxFormWidth(getMaxEditFormWidth());
+		editForm.setGroupTogetherMode(getGroupTogetherMode());
+		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
+		editForm.setAfterEntitySet(getAfterEntitySet());
+		editForm.setAfterEntitySelected(getAfterEntitySelected());
+		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
+		editForm.setAfterModeChanged(getAfterModeChanged());
+		editForm.setAfterTabSelected(getAfterTabSelected());
+		editForm.setOnBackButtonClicked(getOnBackButtonClicked());
+
+		editForm.setCustomConverters(getCustomConverters());
+		editForm.setCustomValidators(getCustomValidators());
+		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
 	}
 
 	/**
@@ -365,10 +352,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		fieldEntityModels.remove(path);
 	}
 
-	public void setMaxEditFormWidth(String maxEditFormWidth) {
-		this.maxEditFormWidth = maxEditFormWidth;
-	}
-
 	/**
 	 * Stores and registers a custom component
 	 * 
@@ -390,30 +373,5 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public void storeCustomComponent(String key, Component component) {
 		customComponentMap.putIfAbsent(key, new ArrayList<>());
 		customComponentMap.get(key).add(component);
-	}
-
-	/**
-	 * Copies component settings to the edit form
-	 * 
-	 * @param editForm the edit form
-	 */
-	protected void initEditForm(ModelBasedEditForm<ID, T> editForm) {
-		editForm.setCustomSaveConsumer(customSaveConsumer);
-		editForm.setFieldEntityModels(getFieldEntityModels());
-		editForm.setColumnThresholds(getColumnThresholds());
-		editForm.setMaxFormWidth(getMaxEditFormWidth());
-		editForm.setGroupTogetherMode(getGroupTogetherMode());
-		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
-		editForm.setAfterEntitySet(getAfterEntitySet());
-		editForm.setAfterEntitySelected(getAfterEntitySelected());
-		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
-		editForm.setAfterModeChanged(getAfterModeChanged());
-		editForm.setAfterTabSelected(getAfterTabSelected());
-
-		editForm.setCustomConverters(getCustomConverters());
-	}
-
-	public void addCustomConverter(AttributeModel attributeModel, Supplier<Converter<?, ?>> converter) {
-		customConverters.put(attributeModel, converter);
 	}
 }

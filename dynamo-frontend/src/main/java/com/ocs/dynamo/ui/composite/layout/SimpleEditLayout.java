@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -33,7 +34,6 @@ import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import lombok.Getter;
@@ -62,6 +62,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	@Getter
 	@Setter
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+	
+	@Getter
+	@Setter
+	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
 
 	/**
 	 * Specifies which relations to fetch. When specified this overrides the default
@@ -109,20 +113,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			}
 		} else {
 			// new entity
-			back();
+			getOnBackButtonClicked().run();
 		}
 	}
-
-//	/**
-//	 * Callback method that first after a tab has been selected in the tab sheet
-//	 * that is used in a detail form when the attribute group mode has been set to
-//	 * TABSHEET
-//	 *
-//	 * @param tabIndex the zero-based index of the selected tab
-//	 */
-//	protected void afterTabSelected(int tabIndex) {
-//		// overwrite in subclasses
-//	}
 
 	@Override
 	public void assignEntity(T t) {
@@ -130,13 +123,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		if (editForm != null) {
 			editForm.resetTabsheetIfNeeded();
 		}
-	}
-
-	/**
-	 * Callback method that fires after the "back" button is pressed
-	 */
-	protected void back() {
-		// overwrite in subclasses
 	}
 
 	/**
@@ -169,10 +155,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 //					SimpleEditLayout.this.afterTabSelected(tabIndex);
 //				}
 
-				@Override
-				protected void back() {
-					SimpleEditLayout.this.back();
-				}
+//				@Override
+//				protected void back() {
+//					SimpleEditLayout.this.back();
+//				}
 
 //				@Override
 //				protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
@@ -185,15 +171,15 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
-				@Override
-				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-					return SimpleEditLayout.this.constructCustomRequiredValidator(am);
-				}
+//				@Override
+//				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+//					return SimpleEditLayout.this.constructCustomRequiredValidator(am);
+//				}
 
-				@Override
-				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-					return SimpleEditLayout.this.constructCustomValidator(am);
-				}
+//				@Override
+//				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+//					return SimpleEditLayout.this.constructCustomValidator(am);
+//				}
 
 				@Override
 				protected String getParentGroup(String childGroup) {
@@ -210,10 +196,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 					return SimpleEditLayout.this.isEditAllowed();
 				}
 
-				@Override
-				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-					SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
-				}
+//				@Override
+//				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
+//					SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
+//				}
 
 				@Override
 				protected void postProcessEditFields() {
@@ -222,6 +208,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			};
 
 			initEditForm(editForm);
+			editForm.setPostProcessButtonBar(postProcessButtonBar);
 			editForm.setDetailJoins(getJoins());
 			editForm.build();
 
@@ -296,16 +283,16 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		build();
 	}
 
-	/**
-	 * Callback method that can be used to add additional buttons to the button bar
-	 * (at both the top and the bottom of the screen)
-	 *
-	 * @param buttonBar the button bar
-	 * @param viewMode  the view mode
-	 */
-	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Callback method that can be used to add additional buttons to the button bar
+//	 * (at both the top and the bottom of the screen)
+//	 *
+//	 * @param buttonBar the button bar
+//	 * @param viewMode  the view mode
+//	 */
+//	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
+//		// overwrite in subclasses
+//	}
 
 	/**
 	 * Callback method that is called after the edit form has been constructed

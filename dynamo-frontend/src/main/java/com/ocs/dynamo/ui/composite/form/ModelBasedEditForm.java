@@ -299,8 +299,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Map<String, List<Button>>> buttons = new HashMap<>();
 
 	/**
-	 * Column width thresholds
+	 * The threshold values at which to start rendering extra columns
 	 */
+	@Getter
+	@Setter
 	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
@@ -426,6 +428,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Getter
 	@Setter
 	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Runnable onBackButtonClicked = () -> {
+	};
+
+	@Getter
+	@Setter
+	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
 
 	/**
 	 * Constructor
@@ -615,12 +634,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //		// overwrite in subclasses
 //	}
 
-	/**
-	 * Callback method that fires after the user presses the Back button
-	 */
-	protected void back() {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Callback method that fires after the user presses the Back button
+//	 */
+//	protected void back() {
+//		// overwrite in subclasses
+//	}
 
 	/**
 	 * Main build method - lazily constructs the layout for either edit or view mode
@@ -677,7 +696,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			removeAll();
 			add(mainEditLayout);
 		}
-
 	}
 
 	/**
@@ -867,7 +885,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// button to go back to the main screen when in view mode
 		Button backButton = new Button(message("ocs.back"));
 		backButton.setIcon(VaadinIcon.BACKWARDS.create());
-		backButton.addClickListener(event -> back());
+
+		if (onBackButtonClicked != null) {
+			backButton.addClickListener(event -> onBackButtonClicked.run());
+		}
 		backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
 		buttonBar.add(backButton);
 		storeButton(BACK_BUTTON_DATA, backButton);
@@ -937,7 +958,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		prevButton.setVisible(isSupportsIteration() && getFormOptions().isShowPrevButton() && entity.getId() != null);
 		nextButton.setVisible(isSupportsIteration() && getFormOptions().isShowNextButton() && entity.getId() != null);
 
-		postProcessButtonBar(buttonBar, isViewMode());
+		// postProcessButtonBar(buttonBar, isViewMode());
+
+		if (postProcessButtonBar != null) {
+			postProcessButtonBar.accept(buttonBar, isViewMode());
+		}
 
 		return buttonBar;
 	}
@@ -983,27 +1008,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return null;
 	}
 
-	/**
-	 * Callback method that can be used to add a custom required validator
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-		return null;
-	}
+//	/**
+//	 * Callback method that can be used to add a custom required validator
+//	 * 
+//	 * @param <V>
+//	 * @param am
+//	 * @return
+//	 */
+//	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+//		return null;
+//	}
 
-	/**
-	 * Callback method that can be used to create a custom validator for a field
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-		return null;
-	}
+//	/**
+//	 * Callback method that can be used to create a custom validator for a field
+//	 * 
+//	 * @param <V>
+//	 * @param am
+//	 * @return
+//	 */
+//	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+//		return null;
+//	}
 
 	/**
 	 * Constructs a field or label for a certain attribute
@@ -1042,7 +1067,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
 
 				fieldFactory.addConvertersAndValidators(builder, attributeModel, getCustomConverter(attributeModel),
-						constructCustomValidator(attributeModel), constructCustomRequiredValidator(attributeModel));
+						getCustomValidator(attributeModel), getCustomRequiredValidator(attributeModel));
 				builder.bind(attributeModel.getPath());
 			}
 
@@ -1147,6 +1172,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (supplier != null) {
 			Converter<?, ?> converter = supplier.get();
 			return converter;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Validator getCustomValidator(AttributeModel attributeModel) {
+		return findCustomValidator(attributeModel, customValidators);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Validator getCustomRequiredValidator(AttributeModel attributeModel) {
+		return findCustomValidator(attributeModel, customRequiredValidators);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Validator findCustomValidator(AttributeModel attributeModel,
+			Map<AttributeModel, Supplier<Validator<?>>> map) {
+		Supplier<Validator<?>> supplier = map.get(attributeModel);
+		if (supplier != null) {
+			Validator<?> validator = supplier.get();
+			return validator;
 		}
 		return null;
 	}
@@ -1377,7 +1423,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Returns the binding for a field
 	 * 
 	 * @param path the the path of the property
-	 * @return
+	 * @return the binding for the field that is used for editing the property
 	 */
 	public Binding<T, ?> getBinding(String path) {
 		Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(path);
@@ -1389,10 +1435,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public List<Button> getCancelButtons() {
 		return filterButtons(CANCEL_BUTTON_DATA);
-	}
-
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
 	}
 
 	public FetchJoinInformation[] getDetailJoins() {
@@ -1662,15 +1704,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return viewMode;
 	}
 
-	/**
-	 * Post-processes the button bar that is displayed above/below the edit form
-	 *
-	 * @param buttonBar the button bar
-	 * @param viewMode
-	 */
-	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Post-processes the button bar that is displayed above/below the edit form
+//	 *
+//	 * @param buttonBar the button bar
+//	 * @param viewMode
+//	 */
+//	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
+//		// overwrite in subclasses
+//	}
 
 	/**
 	 * Post-processes any edit fields- this method does nothing by default but must
@@ -1856,17 +1898,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Shows/hides an attribute group
 	 *
 	 * @param key     the message key by which the group is identified
-	 * @param visible whether to show/hide the group
+	 * @param visible the desired visibility of the group
 	 */
 	public void setAttributeGroupVisible(String key, boolean visible) {
-		Object c = attributeGroups.get(false).get(key);
-		setGroupVisible(c, visible);
-		c = attributeGroups.get(true).get(key);
-		setGroupVisible(c, visible);
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
+		Object object = attributeGroups.get(false).get(key);
+		setGroupVisible(object, visible);
+		object = attributeGroups.get(true).get(key);
+		setGroupVisible(object, visible);
 	}
 
 	/**

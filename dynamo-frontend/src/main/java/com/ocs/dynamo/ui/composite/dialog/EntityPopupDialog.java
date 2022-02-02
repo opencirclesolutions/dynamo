@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -35,6 +36,9 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A pop-up dialog for adding a new entity or viewing the details of an existing
@@ -73,6 +77,10 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	private BaseService<ID, T> service;
 
 	private FetchJoinInformation[] joins;
+	
+	@Getter
+	@Setter
+	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
 
 	/**
 	 * Constructor
@@ -132,10 +140,10 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 					return EntityPopupDialog.this.createEntity();
 				}
 
-				@Override
-				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-					EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
-				}
+//				@Override
+//				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
+//					EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
+//				}
 
 				@Override
 				protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {

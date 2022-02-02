@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -38,6 +39,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A base class for a composite layout that displays a collection of data
@@ -112,6 +116,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The list of sort orders to apply by default
 	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
+	
+	@Getter
+	@Setter
+	private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
 
 	/**
 	 * Constructor
@@ -366,18 +374,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @param provider the provider
 	 */
 	protected void postProcessDataProvider(DataProvider<U, SerializablePredicate<U>> provider) {
-		// override in subclasses
-	}
-
-	/**
-	 * Callback method that fires after the detail button bar that is placed
-	 * above/below the edit form has been constructed. Can be used to add extra
-	 * components to the button bar
-	 * 
-	 * @param buttonBar the detail button bar
-	 * @param viewMode  indicates whether the form is in view mode
-	 */
-	protected void postProcessDetailButtonBar(FlexLayout buttonBar, boolean viewMode) {
 		// override in subclasses
 	}
 

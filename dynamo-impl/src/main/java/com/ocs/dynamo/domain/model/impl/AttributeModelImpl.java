@@ -35,7 +35,7 @@ import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.MultiSelectMode;
-import com.ocs.dynamo.domain.model.PagingType;
+import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -142,7 +142,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Integer order;
 
-	private PagingType pagingType;
+	private PagingMode pagingMode;
 
 	private boolean percentage;
 
@@ -212,6 +212,11 @@ public class AttributeModelImpl implements AttributeModel {
 	@Override
 	public int compareTo(final AttributeModel o) {
 		return this.getOrder() - o.getOrder();
+	}
+
+	@Override
+	public String getActualSearchPath() {
+		return replacementSearchPath != null ? replacementSearchPath : getPath();
 	}
 
 	@Override

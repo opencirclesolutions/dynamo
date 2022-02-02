@@ -21,12 +21,14 @@ import java.lang.annotation.Target;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.BooleanType;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.MultiSelectMode;
-import com.ocs.dynamo.domain.model.PagingType;
+import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * An interface that can be used to specify the properties of an attribute -
@@ -37,6 +39,8 @@ import com.ocs.dynamo.domain.model.VisibilityType;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface Attribute {
+
+	public static boolean CASE_SENSITIVE = SystemPropertyUtils.getDefaultSearchCaseSensitive();
 
 	/**
 	 * @return the allowed extensions for a file upload component
@@ -198,9 +202,9 @@ public @interface Attribute {
 
 	/**
 	 * 
-	 * @return the filter type to use for entity select components
+	 * @return the paging mode to use for selection components
 	 */
-	PagingType pagingType() default PagingType.PAGED;
+	PagingMode pagingMode() default PagingMode.INHERIT;
 
 	/**
 	 * @return whether the attribute value is treated as a percentage
@@ -249,7 +253,7 @@ public @interface Attribute {
 	 * 
 	 * @return whether string based search is case sensitive
 	 */
-	boolean searchCaseSensitive() default false;
+	BooleanType searchCaseSensitive() default BooleanType.INHERIT;
 
 	/**
 	 * @return whether to only search on the date for a LocalDateTime or
@@ -266,7 +270,7 @@ public @interface Attribute {
 	 * 
 	 * @return whether to match on prefix only when searching on the attribute
 	 */
-	boolean searchPrefixOnly() default false;
+	BooleanType searchPrefixOnly() default BooleanType.INHERIT;
 
 	/**
 	 * @return the select mode that determines which component to use for the

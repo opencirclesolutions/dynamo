@@ -305,15 +305,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
-				@Override
-				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-					return BaseSplitLayout.this.constructCustomRequiredValidator(am);
-				}
+//				@Override
+//				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
+//					return BaseSplitLayout.this.constructCustomRequiredValidator(am);
+//				}
 
-				@Override
-				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-					return BaseSplitLayout.this.constructCustomValidator(am);
-				}
+//				@Override
+//				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
+//					return BaseSplitLayout.this.constructCustomValidator(am);
+//				}
 
 				@Override
 				protected String getParentGroup(String childGroup) {
@@ -336,20 +336,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
-				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-					BaseSplitLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
-				}
-
-				@Override
 				protected void postProcessEditFields() {
 					BaseSplitLayout.this.postProcessEditFields(editForm);
 				}
 			};
 
 			initEditForm(editForm);
+			editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
+			editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
 			editForm.setDetailJoins(getDetailJoins());
-			editForm.setColumnThresholds(getColumnThresholds());
-			editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 
 			editForm.build();
 

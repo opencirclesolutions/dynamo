@@ -61,12 +61,13 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.BooleanType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.MultiSelectMode;
-import com.ocs.dynamo.domain.model.PagingType;
+import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -224,7 +225,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 *
 	 * @param model the attribute model
 	 */
-	protected void checkWeekSettingAllowed(AttributeModel model) {
+	private void checkWeekSettingAllowed(AttributeModel model) {
 		if (!LocalDate.class.equals(model.getType())) {
 			throw new OCSRuntimeException("'Week' setting only allowed for attributes of type LocalDate");
 		}
@@ -360,6 +361,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setTrimSpaces(SystemPropertyUtils.isDefaultTrimSpaces());
 		model.setMultiSelectMode(SystemPropertyUtils.useGridSelectionCheckBoxes() ? MultiSelectMode.CHECKBOX
 				: MultiSelectMode.ROWSELECT);
+		model.setPagingMode(SystemPropertyUtils.getDefaultPagingMode());
 
 		setIdAttribute(entityModel, model, fieldName);
 		model.setType(descriptor.getPropertyType());
@@ -1111,8 +1113,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setGridSelectMode(attribute.gridSelectMode());
 			}
 
-			model.setSearchCaseSensitive(attribute.searchCaseSensitive());
-			model.setSearchPrefixOnly(attribute.searchPrefixOnly());
+			if (!BooleanType.INHERIT.equals(attribute.searchCaseSensitive())) {
+				model.setSearchCaseSensitive(attribute.searchCaseSensitive().toBoolean());
+			}
+
+			if (!BooleanType.INHERIT.equals(attribute.searchPrefixOnly())) {
+				model.setSearchPrefixOnly(attribute.searchPrefixOnly().toBoolean());
+			}
 
 			if (attribute.textFieldMode() != null
 					&& !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {
@@ -1154,7 +1161,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setNavigable(attribute.navigable());
 			model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
 			model.setSearchDateOnly(attribute.searchDateOnly());
-			model.setPagingType(attribute.pagingType());
+
+			if (!PagingMode.INHERIT.equals(attribute.pagingMode())) {
+				model.setPagingMode(attribute.pagingMode());
+			}
 
 			if (!MultiSelectMode.INHERIT.equals(attribute.multiSelectMode())) {
 				model.setMultiSelectMode(attribute.multiSelectMode());
@@ -1321,14 +1331,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SEARCH_PATH),
-				value -> attributeModel.setReplacementSearchPath(value));
+				attributeModel::setReplacementSearchPath);
 		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SORT_PATH),
-				value -> attributeModel.setReplacementSortPath(value));
+				attributeModel::setReplacementSortPath);
 		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_PROPERTY),
-				value -> attributeModel.setQuickAddPropertyName(value));
+				attributeModel::setQuickAddPropertyName);
 
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE),
-				ThousandsGroupingMode.class, value -> attributeModel.setThousandsGroupingMode(value));
+				ThousandsGroupingMode.class, attributeModel::setThousandsGroupingMode);
 
 		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE);
 		if (!StringUtils.isEmpty(msg)) {
@@ -1350,8 +1360,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			attributeModel.setIgnoreInSearchFilter(Boolean.valueOf(msg));
 		}
 
-		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PAGING_TYPE), PagingType.class,
-				value -> attributeModel.setPagingType(value));
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PAGING_MODE), PagingMode.class,
+				attributeModel::setPagingMode);
 
 		setMessageBundleCascadeOverrides(entityModel, attributeModel);
 		setMessageBundleCustomOverrides(entityModel, attributeModel);
@@ -1732,6 +1742,4 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 	}
 
-	private void setSearchCaseSensitive(Boolean boolean1) {
-	}
 }

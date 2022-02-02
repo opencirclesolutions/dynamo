@@ -232,7 +232,7 @@ public final class DynamoFilterUtil {
 			Filter detailFilter = extractFilter(filter, am.getPath());
 			if (detailFilter instanceof Compare.Equal) {
 				// check which property to use in the query
-				String prop = am.getReplacementSearchPath() != null ? am.getReplacementSearchPath() : am.getPath();
+				String prop = am.getActualSearchPath();
 
 				Compare.Equal equal = (Compare.Equal) detailFilter;
 				if (AttributeType.DETAIL.equals(am.getAttributeType())
