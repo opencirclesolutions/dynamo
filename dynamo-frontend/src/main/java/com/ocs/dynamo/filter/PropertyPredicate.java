@@ -15,9 +15,10 @@ package com.ocs.dynamo.filter;
 
 import java.util.function.Predicate;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.ToString;
 
 /**
  * Base class for a predicate that is used for checking a property against a
@@ -27,6 +28,8 @@ import com.vaadin.flow.function.SerializablePredicate;
  *
  * @param <T>
  */
+@ToString
+@Getter
 public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 
 	private static final long serialVersionUID = 777842598678435139L;
@@ -40,14 +43,6 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 		this.value = value;
 	}
 
-	public String getProperty() {
-		return property;
-	}
-
-	public Object getValue() {
-		return value;
-	}
-
 	@Override
 	@SuppressWarnings("unchecked")
 	public AndPredicate<T> and(Predicate<? super T> other) {
@@ -55,16 +50,13 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 	}
 
 	/**
+	 * Checks whether the predicate applies to the specified property
 	 * 
-	 * @param property
+	 * @param property the property
 	 * @return
 	 */
 	public boolean appliesToProperty(String property) {
 		return this.property.equals(property);
 	}
 
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
 }

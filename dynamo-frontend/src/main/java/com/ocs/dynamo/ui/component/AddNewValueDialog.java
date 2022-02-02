@@ -37,8 +37,7 @@ import com.vaadin.flow.component.textfield.TextField;
  * @param <ID> the type of the primary key of the entity being added
  * @param <T>  the type of the entity being added
  */
-public class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends SimpleModalDialog {
+public class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends SimpleModalDialog {
 
 	private static final long serialVersionUID = 6208738706327329145L;
 
@@ -49,7 +48,7 @@ public class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity
 	private EntityModel<T> entityModel;
 
 	private BaseService<ID, T> service;
-	
+
 	private TextField valueField;
 
 	public AddNewValueDialog(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service) {
@@ -57,57 +56,61 @@ public class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity
 		this.entityModel = entityModel;
 		this.attributeModel = attributeModel;
 		this.service = service;
+
+		setTitle(message("ocs.enter.new.value", entityModel.getDisplayName(VaadinUtils.getLocale()),
+				VaadinUtils.getLocale()));
+		setBuildMain(parent -> {
+			VerticalLayout container = new DefaultVerticalLayout(true, true);
+			parent.add(container);
+
+			valueField = new TextField(message("ocs.enter.new.value", VaadinUtils.getLocale()));
+			valueField.setSizeFull();
+			valueField.focus();
+			container.add(valueField);
+		});
+
+		constructCloseListener();
 	}
 
-	@Override
-	protected void doBuild(VerticalLayout parent) {
+	private void constructCloseListener() {
+		setOnClose(() -> {
+			String value = valueField.getValue();
+			if (!StringUtils.isEmpty(value)) {
+				T t = service.createNewEntity();
 
-		VerticalLayout container = new DefaultVerticalLayout(true, true);
-		parent.add(container);
+				// disallow values that are too long
+				String propName = attributeModel.getQuickAddPropertyName();
+				Integer maxLength = entityModel.getAttributeModel(propName).getMaxLength();
 
-		valueField = new TextField(message("ocs.enter.new.value", VaadinUtils.getLocale()));
-		valueField.setSizeFull();
-		valueField.focus();
-		container.add(valueField);
-	}
+				if (maxLength != null && value.length() > maxLength) {
+					showNotification(message("ocs.value.too.long", VaadinUtils.getLocale()));
+					return false;
+				}
+				ClassUtils.setFieldValue(t, propName, value);
 
-	@Override
-	protected boolean doClose() {
-		String value = valueField.getValue();
-		if (!StringUtils.isEmpty(value)) {
-			T t = service.createNewEntity();
-
-			// disallow values that are too long
-			String propName = attributeModel.getQuickAddPropertyName();
-			Integer maxLength = entityModel.getAttributeModel(propName).getMaxLength();
-
-			if (maxLength != null && value.length() > maxLength) {
-				showNotification(message("ocs.value.too.long", VaadinUtils.getLocale()));
-				return false;
+				try {
+					t = service.save(t);
+					afterNewEntityAdded.accept(t);
+					return true;
+				} catch (OCSNonUniqueException ex) {
+					showNotification(ex.getMessage());
+				}
+			} else {
+				showNotification(message("ocs.value.required", VaadinUtils.getLocale()));
 			}
-			ClassUtils.setFieldValue(t, propName, value);
-
-			try {
-				t = service.save(t);
-				afterNewEntityAdded.accept(t);
-				return true;
-			} catch (OCSNonUniqueException ex) {
-				showNotification(ex.getMessage());
-			}
-		} else {
-			showNotification(message("ocs.value.required", VaadinUtils.getLocale()));
-		}
-		return false;
+			return false;
+		});
 	}
 
 	public Consumer<T> getAfterNewEntityAdded() {
 		return afterNewEntityAdded;
 	}
 
-	@Override
-	protected String getTitle() {
-		return message("ocs.enter.new.value", entityModel.getDisplayName(VaadinUtils.getLocale()), VaadinUtils.getLocale());
-	}
+//	@Override
+//	protected String getTitle() {
+//		return message("ocs.enter.new.value", entityModel.getDisplayName(VaadinUtils.getLocale()),
+//				VaadinUtils.getLocale());
+//	}
 
 	public TextField getValueField() {
 		return valueField;
@@ -116,5 +119,5 @@ public class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity
 	public void setAfterNewEntityAdded(Consumer<T> afterNewEntityAdded) {
 		this.afterNewEntityAdded = afterNewEntityAdded;
 	}
-	
+
 }

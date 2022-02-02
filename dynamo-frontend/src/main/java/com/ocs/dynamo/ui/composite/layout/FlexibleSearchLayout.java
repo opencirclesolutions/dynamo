@@ -108,6 +108,8 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 			}
 
 		};
+
+		result.setComponentContext(getComponentContext());
 		result.setFieldEntityModels(getFieldEntityModels());
 		result.setBasicStringFilterProperties(basicStringFilterProperties);
 		result.build();

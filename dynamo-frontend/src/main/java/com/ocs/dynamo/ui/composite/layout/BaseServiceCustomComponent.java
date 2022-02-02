@@ -18,21 +18,31 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Base class for UI components that need/have access to a Service that can read
@@ -50,35 +60,28 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 *
 	 * @author bas.rutten
 	 */
-	protected abstract class RemoveButton extends Button {
+	protected class RemoveButton extends Button {
 
 		private static final long serialVersionUID = -942298948585447203L;
 
-		public RemoveButton(String message, Component icon) {
+		public RemoveButton(HasSelectedItem<T> hasSelectedItem, String message, Component icon, Runnable doDelete,
+				Function<T, String> itemDescriptionSupplier) {
 			super(message);
 			setIcon(icon);
 			this.addClickListener(event -> {
 				Runnable r = () -> {
 					try {
-						doDelete();
+						doDelete.run();
 					} catch (OCSRuntimeException ex) {
 						showErrorNotification(ex.getMessage());
 					}
 				};
-				VaadinUtils.showConfirmDialog(message("ocs.delete.confirm", getItemToDelete()), r);
+				T selectedItem = hasSelectedItem.getSelectedItem();
+				String description = itemDescriptionSupplier.apply(selectedItem);
+				VaadinUtils.showConfirmDialog(message("ocs.delete.confirm", description), r);
 			});
 		}
 
-		/**
-		 * Performs the actual deletion
-		 */
-		protected abstract void doDelete();
-
-		/**
-		 * @return the description of the item to delete (for use in the confirmation
-		 *         dialog)
-		 */
-		protected abstract String getItemToDelete();
 	}
 
 	private static final long serialVersionUID = 6015180039863418544L;
@@ -89,24 +92,27 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private List<Component> componentsToUpdate = new ArrayList<>();
 
 	/**
-	 * Custom button mapping
+	 * Mapping from custom component label to custom component
 	 */
-	private Map<String, List<Component>> customButtonMap = new HashMap<>();
+	private Map<String, List<Component>> customComponentMap = new HashMap<>();
 
 	/**
 	 * The entity model of the entity or entities to display
 	 */
-	private EntityModel<T> entityModel;
+	@Getter
+	private final EntityModel<T> entityModel;
 
 	/**
 	 * The entity models used for rendering the individual fields (mostly useful for
 	 * lookup components)
 	 */
+	@Getter
 	private Map<String, String> fieldEntityModels = new HashMap<>();
 
 	/**
 	 * The form options that determine what options are available in the screen
 	 */
+	@Getter
 	private FormOptions formOptions;
 
 	/**
@@ -115,6 +121,49 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private BaseService<ID, T> service;
 
 	private String maxEditFormWidth = SystemPropertyUtils.getDefaultMaxEditFormWidth();
+
+	@Getter
+	@Setter
+	private ComponentContext componentContext = ComponentContext.builder().build();
+
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
+
+	@Getter
+	@Setter
+	private Consumer<T> afterEntitySet;
+
+	@Getter
+	@Setter
+	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+
+	@Getter
+	@Setter
+	private GroupTogetherMode groupTogetherMode;
+
+	@Getter
+	@Setter
+	private List<String> columnThresholds = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private Integer groupTogetherWidth;
+
+	@Getter
+	@Setter
+	private Consumer<T> customSaveConsumer;
+
+	@Getter
+	@Setter
+	private Consumer<Integer> afterTabSelected;
+
+	@Getter
+	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -139,27 +188,27 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		fieldEntityModels.put(path, reference);
 	}
 
-	/**
-	 * Method that is called after the user selects an entity to view in Details
-	 * mode
-	 *
-	 * @param editForm the edit form which displays the entity
-	 * @param entity   the selected entity
-	 */
-	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
-		// override in subclass
-	}
+//	/**
+//	 * Method that is called after the user selects an entity to view in Details
+//	 * mode
+//	 *
+//	 * @param editForm the edit form which displays the entity
+//	 * @param entity   the selected entity
+//	 */
+//	protected void afterEntitySelected(ModelBasedEditForm<ID, T> editForm, T entity) {
+//		// override in subclass
+//	}
 
-	/**
-	 * Method that is called after the mode is changed (from editable to read only
-	 * or vice versa)
-	 *
-	 * @param viewMode whether the component is now in view mode (after the change)
-	 * @param editForm the edit form
-	 */
-	protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
-		// override in subclasses
-	}
+//	/**
+//	 * Method that is called after the mode is changed (from editable to read only
+//	 * or vice versa)
+//	 *
+//	 * @param viewMode whether the component is now in view mode (after the change)
+//	 * @param editForm the edit form
+//	 */
+//	protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<ID, T> editForm) {
+//		// override in subclasses
+//	}
 
 	/**
 	 * Checks which buttons in the button bar must be enabled after an item has been
@@ -179,16 +228,16 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		}
 	}
 
-	/**
-	 * Callback method for constructing a custom converter - currently only
-	 * supported for text fields
-	 * 
-	 * @param am the attribute model to base the converter on
-	 * @return
-	 */
-	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-		return null;
-	}
+//	/**
+//	 * Callback method for constructing a custom converter - currently only
+//	 * supported for text fields
+//	 * 
+//	 * @param am the attribute model to base the converter on
+//	 * @return
+//	 */
+//	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
+//		return null;
+//	}
 
 	/**
 	 * Creates a custom field - override in subclass
@@ -225,20 +274,23 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return null;
 	}
 
+	/**
+	 * Returns all custom components that have been registered with the specified
+	 * key
+	 * 
+	 * @param key the key under which the custom components are stored
+	 * @return
+	 */
 	public List<Component> getCustomComponents(String key) {
-		return customButtonMap.get(key);
+		return customComponentMap.get(key);
 	}
 
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public Map<String, String> getFieldEntityModels() {
-		return fieldEntityModels;
-	}
-
-	public FormOptions getFormOptions() {
-		return formOptions;
+	/**
+	 * @param path the path to the attribute
+	 * @return the field entity model reference for the specified attribute model
+	 */
+	public String getFieldEntityModel(String path) {
+		return fieldEntityModels.get(path);
 	}
 
 	public String getMaxEditFormWidth() {
@@ -271,7 +323,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @return
 	 */
 	public boolean isCustomComponent(String key, Component toCheck) {
-		return customButtonMap.get(key) != null && customButtonMap.get(key).contains(toCheck);
+		return customComponentMap.get(key) != null && customComponentMap.get(key).contains(toCheck);
 	}
 
 	/**
@@ -317,10 +369,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		this.maxEditFormWidth = maxEditFormWidth;
 	}
 
-	public void setService(BaseService<ID, T> service) {
-		this.service = service;
-	}
-
 	/**
 	 * Stores and registers a custom component
 	 * 
@@ -340,7 +388,32 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param component the component to store
 	 */
 	public void storeCustomComponent(String key, Component component) {
-		customButtonMap.putIfAbsent(key, new ArrayList<>());
-		customButtonMap.get(key).add(component);
+		customComponentMap.putIfAbsent(key, new ArrayList<>());
+		customComponentMap.get(key).add(component);
+	}
+
+	/**
+	 * Copies component settings to the edit form
+	 * 
+	 * @param editForm the edit form
+	 */
+	protected void initEditForm(ModelBasedEditForm<ID, T> editForm) {
+		editForm.setCustomSaveConsumer(customSaveConsumer);
+		editForm.setFieldEntityModels(getFieldEntityModels());
+		editForm.setColumnThresholds(getColumnThresholds());
+		editForm.setMaxFormWidth(getMaxEditFormWidth());
+		editForm.setGroupTogetherMode(getGroupTogetherMode());
+		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
+		editForm.setAfterEntitySet(getAfterEntitySet());
+		editForm.setAfterEntitySelected(getAfterEntitySelected());
+		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
+		editForm.setAfterModeChanged(getAfterModeChanged());
+		editForm.setAfterTabSelected(getAfterTabSelected());
+
+		editForm.setCustomConverters(getCustomConverters());
+	}
+
+	public void addCustomConverter(AttributeModel attributeModel, Supplier<Converter<?, ?>> converter) {
+		customConverters.put(attributeModel, converter);
 	}
 }

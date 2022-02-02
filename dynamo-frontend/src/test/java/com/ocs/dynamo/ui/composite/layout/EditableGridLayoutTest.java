@@ -16,6 +16,7 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.Query;

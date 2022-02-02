@@ -14,15 +14,12 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -52,7 +49,7 @@ import com.vaadin.flow.data.provider.SortOrder;
  * @param <T>  type of the entity
  */
 public abstract class BaseSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseCollectionLayout<ID, T, T> {
+		extends BaseCollectionLayout<ID, T, T> implements HasSelectedItem<T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
@@ -85,21 +82,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * component
 	 */
 	private Component selectedDetailLayout;
-
-	/**
-	 * Threshold widths for columns
-	 */
-	private List<String> columnThresholds = new ArrayList<>();
-
-	/**
-	 * The "group together" mode
-	 */
-	private GroupTogetherMode groupTogetherMode;
-
-	/**
-	 * Threshold width (pixels) for every group together column
-	 */
-	private Integer groupTogetherWidth;
 
 	/**
 	 * Constructor
@@ -202,7 +184,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			addButton = constructAddButton();
 			getButtonBar().add(addButton);
-			registerComponent(addButton);
 
 			removeButton = constructRemoveButton();
 			registerComponent(removeButton);
@@ -246,28 +227,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		return null;
 	}
 
-	/**
-	 * Constructs the remove button
-	 */
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton(message("ocs.remove"), null) {
-
-			private static final long serialVersionUID = 6489940330122182935L;
-
-			@Override
-			protected void doDelete() {
-				removeEntity();
-			}
-
-			@Override
-			protected String getItemToDelete() {
-				T t = getSelectedItem();
-				return FormatUtils.formatEntity(getEntityModel(), t);
-			}
-		};
-		rb.setIcon(VaadinIcon.TRASH.create());
-		rb.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
-		return rb;
+		Button removeButton = new RemoveButton(this, message("ocs.remove"), null, () -> removeEntity(),
+				entity -> FormatUtils.formatEntity(getEntityModel(), entity));
+		removeButton.setIcon(VaadinIcon.TRASH.create());
+		removeButton.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+		return removeButton;
 	}
 
 	/**
@@ -324,25 +289,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					}
 				}
 
-				@Override
-				protected void afterEntitySet(T entity) {
-					BaseSplitLayout.this.afterEntitySet(entity);
-				}
+//				@Override
+//				protected void afterTabSelected(int tabIndex) {
+//					BaseSplitLayout.this.afterTabSelected(tabIndex);
+//				}
 
-				@Override
-				protected void afterModeChanged(boolean viewMode) {
-					BaseSplitLayout.this.afterModeChanged(viewMode, editForm);
-				}
-
-				@Override
-				protected void afterTabSelected(int tabIndex) {
-					BaseSplitLayout.this.afterTabSelected(tabIndex);
-				}
-
-				@Override
-				protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-					return BaseSplitLayout.this.constructCustomConverter(am);
-				}
+//				@Override
+//				protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
+//					return BaseSplitLayout.this.constructCustomConverter(am);
+//				}
 
 				@Override
 				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
@@ -391,13 +346,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 			};
 
-			editForm.setCustomSaveConsumer(getCustomSaveConsumer());
+			initEditForm(editForm);
 			editForm.setDetailJoins(getDetailJoins());
-			editForm.setFieldEntityModels(getFieldEntityModels());
-			editForm.setMaxFormWidth(getMaxEditFormWidth());
 			editForm.setColumnThresholds(getColumnThresholds());
-			editForm.setGroupTogetherMode(getGroupTogetherMode());
 			editForm.setGroupTogetherWidth(getGroupTogetherWidth());
+
 			editForm.build();
 
 			detailFormLayout.add(editForm);
@@ -409,7 +362,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 		setSelectedItem(entity);
 		checkComponentState(getSelectedItem());
-		afterEntitySelected(editForm, entity);
+
+		if (getAfterEntitySelected() != null) {
+			getAfterEntitySelected().accept(getEditForm(), entity);
+		}
 
 		detailLayout.replace(selectedDetailLayout, detailFormLayout);
 		selectedDetailLayout = detailFormLayout;
@@ -440,24 +396,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		return addButton;
 	}
 
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
 	public VerticalLayout getDetailLayout() {
 		return detailLayout;
 	}
 
 	public ModelBasedEditForm<ID, T> getEditForm() {
 		return editForm;
-	}
-
-	public GroupTogetherMode getGroupTogetherMode() {
-		return groupTogetherMode;
-	}
-
-	public Integer getGroupTogetherWidth() {
-		return groupTogetherWidth;
 	}
 
 	public TextField getQuickSearchField() {
@@ -558,18 +502,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		} else {
 			getGridWrapper().getGrid().select(t);
 		}
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
-	}
-
-	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
-		this.groupTogetherMode = groupTogetherMode;
-	}
-
-	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
-		this.groupTogetherWidth = groupTogetherWidth;
 	}
 
 	/**

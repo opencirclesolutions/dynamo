@@ -142,12 +142,6 @@ public class FormOptions implements Serializable {
 	private boolean placeButtonBarAtTop = true;
 
 	/**
-	 * Whether the form is shown as part of a popup - this is normally set by the
-	 * framework when appropriate
-	 */
-	private boolean popup;
-
-	/**
 	 * Whether to preserve advanced search mode when navigation away from the screen
 	 */
 	private boolean preserveAdvancedMode = true;
@@ -233,11 +227,6 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean startInAdvancedMode;
 
-	/**
-	 * Whether to use check boxes for multiple selection inside popup
-	 */
-	private boolean useCheckboxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
-
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -251,7 +240,6 @@ public class FormOptions implements Serializable {
 		fo.setHideClearButton(isHideClearButton());
 		fo.setOpenInViewMode(isOpenInViewMode());
 		fo.setPlaceButtonBarAtTop(isPlaceButtonBarAtTop());
-		fo.setPopup(isPopup());
 		fo.setPreserveSelectedTab(isPreserveSelectedTab());
 		fo.setScreenMode(getScreenMode());
 		fo.setSearchImmediately(isSearchImmediately());
@@ -273,7 +261,6 @@ public class FormOptions implements Serializable {
 		fo.setPreserveSearchTerms(isPreserveSearchTerms());
 		fo.setPreserveSortOrders(isPreserveSortOrders());
 		fo.setShowEditFormCaption(isShowEditFormCaption());
-		fo.setUseCheckboxesForMultiSelect(isUseCheckboxesForMultiSelect());
 		fo.setDetailsEditLayoutSameRow(isDetailsEditLayoutSameRow());
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
 		return fo;
@@ -363,10 +350,6 @@ public class FormOptions implements Serializable {
 		return placeButtonBarAtTop;
 	}
 
-	public boolean isPopup() {
-		return popup;
-	}
-
 	public boolean isPreserveAdvancedMode() {
 		return preserveAdvancedMode;
 	}
@@ -427,16 +410,12 @@ public class FormOptions implements Serializable {
 		return startInAdvancedMode;
 	}
 
-	public boolean isUseCheckboxesForMultiSelect() {
-		return useCheckboxesForMultiSelect;
-	}
-
 	/**
 	 * Sets the desired attribute group mode. This determines whether input
 	 * components will be grouped in panels (default) or tabs
 	 * 
 	 * @param attributeGroupMode the desired attribute group mode
-	 * @return 
+	 * @return
 	 */
 	public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
 		this.attributeGroupMode = attributeGroupMode;
@@ -655,18 +634,6 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
-	/**
-	 * Specify whether the component is part of a popupu window. This is used
-	 * internally by the framework and you do not normally need to modify it
-	 * 
-	 * @param popup
-	 * @return
-	 */
-	public FormOptions setPopup(boolean popup) {
-		this.popup = popup;
-		return this;
-	}
-
 	public FormOptions setPreserveAdvancedMode(boolean preserveAdvancedMode) {
 		this.preserveAdvancedMode = preserveAdvancedMode;
 		return this;
@@ -796,11 +763,6 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setStartInAdvancedMode(boolean startInAdvancedMode) {
 		this.startInAdvancedMode = startInAdvancedMode;
-		return this;
-	}
-
-	public FormOptions setUseCheckboxesForMultiSelect(boolean useCheckboxesForMultiSelect) {
-		this.useCheckboxesForMultiSelect = useCheckboxesForMultiSelect;
 		return this;
 	}
 

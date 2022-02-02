@@ -27,14 +27,13 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -61,20 +60,16 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	private FormOptions formOptions;
 
+	private ComponentContext componentContext = ComponentContext.builder().build();
+
 	private SimpleEditLayout<ID, T> layout;
 
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	private List<String> columnThresholds = new ArrayList<>();
 
-	/**
-	 * The OK button used to close the dialog in read-only mode
-	 */
 	private Button okButton;
 
-	/**
-	 * The service used to query the database
-	 */
 	private BaseService<ID, T> service;
 
 	private FetchJoinInformation[] joins;
@@ -96,6 +91,63 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		this.entity = entity;
 		this.fieldFilters = fieldFilters;
 		this.joins = joins;
+		setTitle(entityModel.getDisplayName(VaadinUtils.getLocale()));
+
+		setBuildButtonBar(buttonBar -> {
+			buttonBar.setVisible(formOptions.isReadOnly());
+			if (formOptions.isReadOnly()) {
+				okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
+				okButton.addClickListener(event -> close());
+				buttonBar.add(okButton);
+			}
+		});
+		buildMain();
+	}
+
+	private void buildMain() {
+		setBuildMain(parent -> {
+			// cancel button makes no sense in a popup
+			formOptions.setHideCancelButton(false);
+
+			layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions, componentContext) {
+
+				private static final long serialVersionUID = -2965981316297118264L;
+
+				@Override
+				protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+					super.afterEditDone(cancel, newEntity, entity);
+					EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
+					EntityPopupDialog.this.close();
+				}
+
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+						boolean viewMode, boolean searchMode) {
+					return EntityPopupDialog.this.constructCustomField(entityModel, attributeModel, viewMode,
+							searchMode);
+				}
+
+				@Override
+				protected T createEntity() {
+					return EntityPopupDialog.this.createEntity();
+				}
+
+				@Override
+				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
+					EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
+				}
+
+				@Override
+				protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+					EntityPopupDialog.this.postProcessEditFields(editForm);
+				}
+
+			};
+			layout.setFieldFilters(fieldFilters);
+			layout.setColumnThresholds(columnThresholds);
+			layout.setJoins(joins);
+			parent.add(layout);
+		});
 	}
 
 	/**
@@ -118,61 +170,61 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		return service.createNewEntity();
 	}
 
-	@Override
-	protected void doBuild(VerticalLayout parent) {
+//	@Override
+//	protected void doBuild(VerticalLayout parent) {
+//
+//		// cancel button makes no sense in a popup
+//		formOptions.setHideCancelButton(false);
+//
+//		layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
+//
+//			private static final long serialVersionUID = -2965981316297118264L;
+//
+//			@Override
+//			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
+//				super.afterEditDone(cancel, newEntity, entity);
+//				EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
+//				EntityPopupDialog.this.close();
+//			}
+//
+//			@Override
+//			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+//					boolean viewMode, boolean searchMode) {
+//				return EntityPopupDialog.this.constructCustomField(entityModel, attributeModel, viewMode, searchMode);
+//			}
+//
+//			@Override
+//			protected T createEntity() {
+//				return EntityPopupDialog.this.createEntity();
+//			}
+//
+//			@Override
+//			protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
+//				EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
+//			}
+//
+//			@Override
+//			protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+//				EntityPopupDialog.this.postProcessEditFields(editForm);
+//			}
+//
+//		};
+//		layout.setFieldFilters(fieldFilters);
+//		layout.setColumnThresholds(columnThresholds);
+//		layout.setJoins(joins);
+//		parent.add(layout);
+//	}
 
-		// cancel button makes no sense in a popup
-		formOptions.setHideCancelButton(false);
-
-		layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
-
-			private static final long serialVersionUID = -2965981316297118264L;
-
-			@Override
-			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-				super.afterEditDone(cancel, newEntity, entity);
-				EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
-				EntityPopupDialog.this.close();
-			}
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-					boolean viewMode, boolean searchMode) {
-				return EntityPopupDialog.this.constructCustomField(entityModel, attributeModel, viewMode, searchMode);
-			}
-
-			@Override
-			protected T createEntity() {
-				return EntityPopupDialog.this.createEntity();
-			}
-
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-				EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
-			}
-
-			@Override
-			protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-				EntityPopupDialog.this.postProcessEditFields(editForm);
-			}
-
-		};
-		layout.setFieldFilters(fieldFilters);
-		layout.setColumnThresholds(columnThresholds);
-		layout.setJoins(joins);
-		parent.add(layout);
-	}
-
-	@Override
-	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		// in read-only mode, display only an "OK" button that closes the dialog
-		buttonBar.setVisible(formOptions.isReadOnly());
-		if (formOptions.isReadOnly()) {
-			okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
-			okButton.addClickListener(event -> close());
-			buttonBar.add(okButton);
-		}
-	}
+//	@Override
+//	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+//		// in read-only mode, display only an "OK" button that closes the dialog
+//		buttonBar.setVisible(formOptions.isReadOnly());
+//		if (formOptions.isReadOnly()) {
+//			okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
+//			okButton.addClickListener(event -> close());
+//			buttonBar.add(okButton);
+//		}
+//	}
 
 	public T getEntity() {
 		return layout.getEntity();
@@ -188,11 +240,6 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	public List<Button> getSaveButtons() {
 		return layout.getEditForm().getSaveButtons();
-	}
-
-	@Override
-	protected String getTitle() {
-		return entityModel.getDisplayName(VaadinUtils.getLocale());
 	}
 
 	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {

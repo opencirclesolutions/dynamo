@@ -27,8 +27,6 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
 import lombok.extern.slf4j.Slf4j;
@@ -72,40 +70,39 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 	 * @param exportMode    the export mode
 	 */
 	public BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
+		super("ocsDownloadDialog");
 		this.entityModel = entityModel;
 		this.exportService = exportService;
 		this.exportMode = exportMode;
 		this.ui = UI.getCurrent();
+
+		setTitle(message("ocs.export"));
+		setBuildMain(parent -> {
+			progressBar = new ProgressBar();
+			progressBar.setIndeterminate(true);
+			progressBar.setVisible(false);
+
+			exportExcelButton = createDownloadExcelButton();
+			parent.add(exportExcelButton);
+
+			exportCsvButton = createDownloadCSVButton();
+			parent.add(exportCsvButton);
+
+			UI.getCurrent().setPollInterval(100);
+			parent.add(progressBar);
+		});
+
+		setBuildButtonBar(buttonBar -> {
+			Button cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.addClickListener(event -> close());
+			cancelButton.setIcon(VaadinIcon.BAN.create());
+			buttonBar.add(cancelButton);
+		});
 	}
 
 	protected abstract DownloadButton createDownloadCSVButton();
 
 	protected abstract DownloadButton createDownloadExcelButton();
-
-	@Override
-	protected void doBuild(VerticalLayout parent) {
-
-		progressBar = new ProgressBar();
-		progressBar.setIndeterminate(true);
-		progressBar.setVisible(false);
-
-		exportExcelButton = createDownloadExcelButton();
-		parent.add(exportExcelButton);
-
-		exportCsvButton = createDownloadCSVButton();
-		parent.add(exportCsvButton);
-
-		UI.getCurrent().setPollInterval(100);
-		parent.add(progressBar);
-	}
-
-	@Override
-	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		Button cancelButton = new Button(message("ocs.cancel"));
-		cancelButton.addClickListener(event -> close());
-		cancelButton.setIcon(VaadinIcon.BAN.create());
-		buttonBar.add(cancelButton);
-	}
 
 	/**
 	 * Creates the download stream
@@ -150,16 +147,6 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
 	public ProgressBar getProgressBar() {
 		return progressBar;
-	}
-
-	@Override
-	protected String getStyleName() {
-		return "ocsDownloadDialog";
-	}
-
-	@Override
-	protected String getTitle() {
-		return message("ocs.export");
 	}
 
 	public UI getUi() {

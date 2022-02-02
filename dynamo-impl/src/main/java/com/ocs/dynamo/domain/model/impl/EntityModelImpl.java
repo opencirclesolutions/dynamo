@@ -29,7 +29,6 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -40,6 +39,7 @@ import com.ocs.dynamo.utils.ClassUtils;
 import lombok.Builder;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * An implementation of an entity model - holds metadata about an entity
@@ -50,9 +50,11 @@ import lombok.EqualsAndHashCode;
 @Data
 @EqualsAndHashCode(callSuper = false, of = { "reference", "entityClass" })
 @Builder(toBuilder = true)
+@ToString
 public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Builder.Default
+	@ToString.Exclude
 	private final Map<String, List<AttributeModel>> attributeModels = new LinkedHashMap<>();
 
 	private String defaultDescription;
@@ -77,8 +79,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	private Class<T> entityClass;
 
 	private boolean gridOrderSet;
-
-	// private AttributeModel idAttributeModel;
 
 	private int nestingDepth;
 
@@ -294,11 +294,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		// look up or return fallback value
 		Optional<String> optional = source.get(locale.toString());
 		return optional.orElse(fallBack);
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toStringExclude(this, "attributeModels");
 	}
 
 	@Override

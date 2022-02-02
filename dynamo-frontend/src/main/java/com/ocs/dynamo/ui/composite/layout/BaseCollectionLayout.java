@@ -19,7 +19,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -57,11 +56,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The main button bar that appears below the search results grid
 	 */
 	private FlexLayout buttonBar = new DefaultFlexLayout();
-
-	/**
-	 * Custom code to invoke instead of the regular save logic
-	 */
-	private Consumer<T> customSaveConsumer;
 
 	/**
 	 * The relations to fetch when retrieving a single entity
@@ -103,11 +97,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The maximum number of search results
 	 */
 	private Integer maxResults;
-
-	/**
-	 * Whether selecting more than one component is allowed
-	 */
-	private boolean multiSelect = false;
 
 	/**
 	 * The currently selected item (in the grid)
@@ -161,27 +150,27 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		this.sortOrders.add(sortOrder);
 	}
 
-	/**
-	 * Method that is called after the setEntity method is called. Can be used to
-	 * fetch additional data if required. This method is called before the
-	 * "afterDetailSelected" method is called
-	 * 
-	 * @param entity the entity
-	 */
-	protected void afterEntitySet(T entity) {
-		// override in subclass
-	}
+//	/**
+//	 * Method that is called after the setEntity method is called. Can be used to
+//	 * fetch additional data if required. This method is called before the
+//	 * "afterDetailSelected" method is called
+//	 * 
+//	 * @param entity the entity
+//	 */
+//	protected void afterEntitySet(T entity) {
+//		// override in subclass
+//	}
 
-	/**
-	 * Callback method that is called after a tab has been selected in the tab sheet
-	 * that is used in a detail view when the attribute group mode has been set to
-	 * TABSHEET
-	 * 
-	 * @param tabIndex the zero-based index of the selected tab
-	 */
-	protected void afterTabSelected(int tabIndex) {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Callback method that is called after a tab has been selected in the tab sheet
+//	 * that is used in a detail view when the attribute group mode has been set to
+//	 * TABSHEET
+//	 * 
+//	 * @param tabIndex the zero-based index of the selected tab
+//	 */
+//	protected void afterTabSelected(int tabIndex) {
+//		// overwrite in subclasses
+//	}
 
 	/**
 	 * Throws away the grid wrapper, making sure it is reconstructed the next time
@@ -254,10 +243,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	public FlexLayout getButtonBar() {
 		return buttonBar;
-	}
-
-	public Consumer<T> getCustomSaveConsumer() {
-		return customSaveConsumer;
 	}
 
 	public FetchJoinInformation[] getDetailJoins() {
@@ -350,10 +335,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return true;
 	}
 
-	public boolean isMultiSelect() {
-		return multiSelect;
-	}
-
 	public boolean isSortEnabled() {
 		return sortEnabled;
 	}
@@ -431,10 +412,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// override in subclasses
 	}
 
-	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
-		this.customSaveConsumer = customSaveConsumer;
-	}
-
 	/**
 	 * Sets the joins to use when retrieving a single object for use in a detail
 	 * form. If not set then the application will use the default joins defined in
@@ -484,10 +461,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 */
 	public void setMaxResults(Integer maxResults) {
 		this.maxResults = maxResults;
-	}
-
-	public void setMultiSelect(boolean multiSelect) {
-		this.multiSelect = multiSelect;
 	}
 
 	/**

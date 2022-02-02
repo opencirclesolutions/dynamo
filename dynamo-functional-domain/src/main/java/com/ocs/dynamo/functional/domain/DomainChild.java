@@ -20,17 +20,20 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A domain object that is the child of another domain object
  * 
  * @author Bas Rutten
  *
- * @param <C>
- *            the type of the child
- * @param <P>
- *            the type of the parent
+ * @param <C> the type of the child
+ * @param <P> the type of the parent
  */
 @Entity
+@Getter
+@Setter
 public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
 		implements Serializable {
 
@@ -41,19 +44,10 @@ public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainP
 	private P parent;
 
 	public DomainChild() {
-		super();
 	}
 
 	public DomainChild(String code, String name) {
 		super(code, name);
-	}
-
-	public P getParent() {
-		return this.parent;
-	}
-
-	public void setParent(P parent) {
-		this.parent = parent;
 	}
 
 }

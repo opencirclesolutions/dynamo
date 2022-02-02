@@ -88,35 +88,35 @@ public class ViewRevisionDialog<ID, T extends AbstractEntity<ID>, U extends Vers
         return null;
     }
 
-    @Override
-    protected void doBuild(VerticalLayout parent) {
-        FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(formOptions.getScreenMode())
-                .setAttributeGroupMode(formOptions.getAttributeGroupMode()).setExportAllowed(true);
-        ServiceBasedSplitLayout<RevisionKey<ID>, U> layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(service, entityModel,
-                QueryType.PAGING, fo, null) {
+//    @Override
+//    protected void doBuild(VerticalLayout parent) {
+//        FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(formOptions.getScreenMode())
+//                .setAttributeGroupMode(formOptions.getAttributeGroupMode()).setExportAllowed(true);
+//        ServiceBasedSplitLayout<RevisionKey<ID>, U> layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(service, entityModel,
+//                QueryType.PAGING, fo, null) {
+//
+//            private static final long serialVersionUID = -5302678717934028964L;
+//
+//            @Override
+//            protected Component constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel, boolean viewMode,
+//                    boolean searchMode) {
+//                return ViewRevisionDialog.this.constructCustomField(entityModel, attributeModel);
+//            }
+//        };
+//        layout.setFilterSupplier(() -> new EqualsPredicate<>(DynamoConstants.ID, id));
+//        parent.add(layout);
+//    }
 
-            private static final long serialVersionUID = -5302678717934028964L;
+//    @Override
+//    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
+//        Button closeButton = new Button(messageService.getMessage("ocs.close", VaadinUtils.getLocale()));
+//        closeButton.addClickListener(e -> close());
+//        buttonBar.add(closeButton);
+//    }
 
-            @Override
-            protected Component constructCustomField(EntityModel<U> entityModel, AttributeModel attributeModel, boolean viewMode,
-                    boolean searchMode) {
-                return ViewRevisionDialog.this.constructCustomField(entityModel, attributeModel);
-            }
-        };
-        layout.setFilterSupplier(() -> new EqualsPredicate<>(DynamoConstants.ID, id));
-        parent.add(layout);
-    }
-
-    @Override
-    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-        Button closeButton = new Button(messageService.getMessage("ocs.close", VaadinUtils.getLocale()));
-        closeButton.addClickListener(e -> close());
-        buttonBar.add(closeButton);
-    }
-
-    @Override
-    protected String getTitle() {
-        return messageService.getMessage("ocs.revision.history", VaadinUtils.getLocale());
-    }
+//    @Override
+//    protected String getTitle() {
+//        return messageService.getMessage("ocs.revision.history", VaadinUtils.getLocale());
+//    }
 
 }

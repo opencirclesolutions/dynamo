@@ -86,10 +86,10 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 	 * Register a component with this layout, so that it will automatically be
 	 * reloaded once the CompositionLayout is reloaded
 	 * 
-	 * @param c
+	 * @param component the component to add
 	 */
-	protected void addNestedComponent(Component c) {
-		nestedComponents.add(c);
+	protected void addNestedComponent(Component component) {
+		nestedComponents.add(component);
 	}
 
 	@Override

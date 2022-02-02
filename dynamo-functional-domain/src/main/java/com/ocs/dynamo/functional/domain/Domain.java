@@ -23,8 +23,6 @@ import javax.persistence.Inheritance;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.VisibilityType;
@@ -33,15 +31,22 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.functional.DomainConstants;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * Base class for reference information.
  * 
  * @author Patrick Deenen (patrick@opencircle.solutions)
  *
  */
+@Getter
+@Setter
 @Inheritance
 @DiscriminatorColumn(name = "type")
 @Entity(name = "domain")
+@ToString(onlyExplicitlyIncluded = true)
 @Model(displayProperty = "name", sortOrder = "name asc")
 public abstract class Domain extends AbstractEntity<Integer> {
 
@@ -52,6 +57,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	private static final long serialVersionUID = 1598343469161718498L;
 
 	@Id
+	@ToString.Include
 	private Integer id;
 
 	@Attribute(visible = VisibilityType.HIDE, editable = EditableType.READ_ONLY)
@@ -63,57 +69,23 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	 */
 	@Attribute(visible = VisibilityType.HIDE)
 	@Size(max = 5)
+	@ToString.Include
 	private String code;
 
 	@Size(max = 255)
 	@NotNull
 	@Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = SearchMode.ALWAYS)
+	@ToString.Include
 	private String name;
 
 	public Domain() {
 	}
 
-	/**
-	 * Constructor
-	 * 
-	 * @param code
-	 * @param name
-	 */
 	public Domain(final String code, final String name) {
 		this.code = code;
 		this.name = name;
 	}
-
-	@Override
-	public Integer getId() {
-		return this.id;
-	}
-
-	@Override
-	public void setId(final Integer id) {
-		this.id = id;
-	}
-
-	public String getType() {
-		return type;
-	}
-
-	public String getCode() {
-		return this.code;
-	}
-
-	public void setCode(final String code) {
-		this.code = code;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(final String name) {
-		this.name = name;
-	}
-
+	
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);
@@ -143,8 +115,4 @@ public abstract class Domain extends AbstractEntity<Integer> {
 
 	}
 
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toStringExclude(this, "parent");
-	}
 }

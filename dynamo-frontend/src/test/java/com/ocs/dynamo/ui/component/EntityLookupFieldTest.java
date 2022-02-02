@@ -34,6 +34,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
+import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 
@@ -59,7 +60,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 	@Test
 	public void test() {
 		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
-				factory.getModel(TestEntity.class), null, null, false, false,
+				factory.getModel(TestEntity.class), null, null, false,
+				SearchOptions.builder().multiSelect(false).build(),
 				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
 		field.initContent();
 		assertEquals("name", field.getSortOrders().get(0).getSorted().toString());
@@ -70,7 +72,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 	public void testMultipleSelectWithPreviousValue() {
 		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
 				factory.getModel(TestEntity.class), factory.getModel(TestEntity2.class).getAttributeModel("testEntity"),
-				null, false, true, Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+				null, false, SearchOptions.builder().multiSelect(true).build(),
+				Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
 		field.initContent();
 		field.setValue(Lists.newArrayList(e1));
 		field.getSelectButton().click();
@@ -85,7 +88,8 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 	public void testClear() {
 		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
 				factory.getModel(TestEntity.class), factory.getModel(TestEntity2.class).getAttributeModel("testEntity"),
-				null, false, false, Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
+				null, false, SearchOptions.builder().multiSelect(false).build(),
+				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
 		field.initContent();
 		field.setValue(new TestEntity("Kevin", 47L));
 

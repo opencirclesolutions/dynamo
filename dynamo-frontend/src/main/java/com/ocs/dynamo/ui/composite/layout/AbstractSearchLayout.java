@@ -39,6 +39,7 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
@@ -50,7 +51,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <T>  the type of the entity
  */
 public abstract class AbstractSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>, U>
-		extends BaseCollectionLayout<ID, T, U> {
+		extends BaseCollectionLayout<ID, T, U> implements HasSelectedItem<T> {
 
 	private static final long serialVersionUID = 366639924823921266L;
 
@@ -101,7 +102,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param joins       the joins to include in the query
 	 */
 	public AbstractSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, com.vaadin.flow.data.provider.SortOrder<?> sortOrder,
+			FormOptions formOptions, SortOrder<?> sortOrder,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.queryType = queryType;
@@ -320,29 +321,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
-	/**
-	 * Constructs the remove button
-	 * 
-	 * @return
-	 */
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton(message("ocs.remove"), null) {
-
-			private static final long serialVersionUID = -7428844985367616649L;
-
-			@Override
-			protected void doDelete() {
-				removeEntity();
-			}
-
-			@Override
-			protected String getItemToDelete() {
-				T t = getSelectedItem();
-				return FormatUtils.formatEntity(getEntityModel(), t);
-			}
-
-		};
-		rb.setIcon(VaadinIcon.TRASH.create());
+		Button rb = new RemoveButton(this, message("ocs.remove"), VaadinIcon.TRASH.create(), () -> removeEntity(),
+				entity -> FormatUtils.formatEntity(getEntityModel(), entity));
+		// rb.setIcon(VaadinIcon.TRASH.create());
 		rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
 		return rb;
 	}
@@ -361,7 +343,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		// construct grid and set properties
 		disableGridSorting();
 		getGridWrapper().getGrid().setHeight(getGridHeight());
-		getGridWrapper().getGrid().setSelectionMode(isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
+		getGridWrapper().getGrid()
+				.setSelectionMode(getComponentContext().isMultiSelect() ? SelectionMode.MULTI : SelectionMode.SINGLE);
 
 		// add a listener to respond to the selection of an item
 		getGridWrapper().getGrid().addSelectionListener(e -> {

@@ -30,6 +30,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
+import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
@@ -85,11 +86,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	private Span label;
 
 	/**
-	 * Whether the component allows multiple select
-	 */
-	private final boolean multiSelect;
-
-	/**
 	 * The button that brings up the search dialog
 	 */
 	private Button selectButton;
@@ -106,6 +102,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 
 	private ModelBasedSearchDialog<ID, T> dialog;
 
+	private SearchOptions searchOptions;
+
 	private UI ui = UI.getCurrent();
 
 	/**
@@ -116,20 +114,21 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 * @param attributeModel the attribute mode
 	 * @param filter         the filter to apply when searching
 	 * @param search         whether the component is used in a search screen
+	 * @param searchOptions  the various erach options
 	 * @param sortOrders     the sort order
 	 * @param joins          the joins to use when fetching data when filling the
 	 *                       pop-up dialog
 	 */
 	public EntityLookupField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-			SerializablePredicate<T> filter, boolean search, boolean multiSelect, List<SortOrder<?>> sortOrders,
+			SerializablePredicate<T> filter, boolean search, SearchOptions searchOptions, List<SortOrder<?>> sortOrders,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, attributeModel, filter);
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
-		this.multiSelect = multiSelect;
 		this.clearAllowed = true;
 		this.addAllowed = !search && (attributeModel != null && attributeModel.isQuickAddAllowed());
 		this.directNavigationAllowed = !search && (attributeModel != null && attributeModel.isNavigable());
+		this.searchOptions = searchOptions;
 		initContent();
 	}
 
@@ -154,7 +153,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	@Override
 	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
-		if (multiSelect) {
+		if (searchOptions.isMultiSelect()) {
 			if (getValue() == null) {
 				// create new collection
 				setValue(Lists.newArrayList(entity));
@@ -169,6 +168,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
+	/**
+	 * Clears the current value of the component
+	 */
 	public void clearValue() {
 		if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
 			setValue(Sets.newHashSet());
@@ -183,12 +185,13 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	 * Gets the value that must be displayed on the label that shows which items are
 	 * currently selected
 	 * 
-	 * @param newValue the new value
+	 * @param newValue the new value of the component
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
 	protected String constructLabelValue(Object newValue) {
-		String caption = getMessageService().getMessage(multiSelect ? "ocs.no.items.selected" : "ocs.no.item.selected",
+		String caption = getMessageService().getMessage(
+				searchOptions.isMultiSelect() ? "ocs.no.items.selected" : "ocs.no.item.selected",
 				VaadinUtils.getLocale());
 		if (newValue instanceof Collection<?>) {
 			Collection<T> col = (Collection<T>) newValue;
@@ -219,52 +222,48 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			}
 
 			dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(), filterList, sortOrders,
-					multiSelect, true, false, getJoins()) {
-
-				private static final long serialVersionUID = -3432107069929941520L;
-
-				@Override
-				@SuppressWarnings("unchecked")
-				protected boolean doClose() {
-					if (multiSelect) {
-						if (EntityLookupField.this.getValue() == null) {
-							EntityLookupField.this.setValue(getSelectedItems());
-						} else {
-							// add selected items to already selected items
-							Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
-							for (T selectedItem : getSelectedItems()) {
-								if (!cumulative.contains(selectedItem)) {
-									cumulative.add(selectedItem);
-								}
-							}
-							EntityLookupField.this.setValue(cumulative);
-						}
+					searchOptions, getJoins());
+			dialog.setOnClose(() -> {
+				if (searchOptions.isMultiSelect()) {
+					if (EntityLookupField.this.getValue() == null) {
+						EntityLookupField.this.setValue(dialog.getSelectedItems());
 					} else {
-						// single value select
-						EntityLookupField.this.setValue(getSelectedItem());
-					}
-					return true;
-				}
+						// add selected items to already selected items
+						@SuppressWarnings("unchecked")
+						Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
 
-				@Override
-				public void afterOpen() {
-					Runnable runnable = () -> {
-						try {
-							Thread.sleep(200);
-						} catch (InterruptedException e) {
-							// do nothing
+						for (T selectedItem : dialog.getSelectedItems()) {
+							if (!cumulative.contains(selectedItem)) {
+								cumulative.add(selectedItem);
+							}
 						}
-						ui.access(() -> selectValuesInDialog(dialog));
-					};
 
-					new Thread(runnable).start();
+						EntityLookupField.this.setValue(cumulative);
+					}
+				} else {
+					// single value select
+					EntityLookupField.this.setValue(dialog.getSelectedItem());
 				}
+				return true;
+			});
 
-			};
+			dialog.setAfterOpen(() -> {
+				Runnable run = () -> {
+					try {
+						Thread.sleep(200);
+					} catch (InterruptedException e) {
+						// do nothing
+					}
+					ui.access(() -> selectValuesInDialog(dialog));
+				};
+				new Thread(run).start();
+			});
+
 			dialog.buildAndOpen();
 
 		});
 		bar.add(selectButton);
+
 	}
 
 	@Override

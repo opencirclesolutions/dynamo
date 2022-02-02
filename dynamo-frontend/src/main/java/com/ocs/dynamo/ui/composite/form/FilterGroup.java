@@ -320,10 +320,10 @@ public class FilterGroup<T> {
 		this.fieldFilter = filter;
 
 		// propagate the change (this will trigger the actual search action)
-		if (!listeners.isEmpty())
-
-		{
-			broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
+		if (!listeners.isEmpty()) {
+			FilterChangeEvent<T> event = FilterChangeEvent.<T>builder().propertyId(propertyId).oldFilter(oldFilter)
+					.newFilter(filter).build();
+			broadcast(event);
 		}
 	}
 

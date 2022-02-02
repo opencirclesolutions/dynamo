@@ -327,8 +327,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		}
 
 		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				QueryType.ID_BASED, getFormOptions(), filter, getFieldFilters(), getSortOrders(), !viewmode,
-				getJoins()) {
+				QueryType.ID_BASED, getFormOptions(), getComponentContext(), filter, getFieldFilters(), getSortOrders(),
+				!viewmode, getJoins()) {
 
 			@Override
 			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {

@@ -23,13 +23,13 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.apache.commons.io.FilenameUtils;
@@ -111,6 +111,9 @@ import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.server.StreamResource;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * An edit form that is constructed based on an entity model
@@ -303,6 +306,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Custom consumer that is to be called instead of the regular save behavior
 	 */
+	@Getter
+	@Setter
 	private Consumer<T> customSaveConsumer;
 
 	/**
@@ -398,6 +403,30 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private boolean viewMode;
 
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
+
+	@Getter
+	@Setter
+	private Consumer<T> afterEntitySet;
+
+	@Getter
+	@Setter
+	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+
+	@Getter
+	@Setter
+	private Consumer<Integer> afterTabSelected;
+
+	@Getter
+	@Setter
+	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+
 	/**
 	 * Constructor
 	 *
@@ -413,8 +442,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		addClassName(DynamoConstants.CSS_MODEL_BASED_EDIT_FORM);
 
 		this.service = service;
+
+		// TODO: this likely doesn't any more
 		this.entity = entity;
-		afterEntitySet(entity);
+
 		Class<T> clazz = service.getEntityClass();
 
 		// open in view mode when this is requested, and it is not a new object
@@ -527,12 +558,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Add a listener to respond to a tab change and focus the first available field
 	 *
-	 * @param Tabs
+	 * @param wrapper
 	 */
 	private void addTabChangeListener(TabWrapper wrapper) {
 		wrapper.addSelectedChangeListener(event -> {
 			int index = event.getSource().getSelectedIndex();
-			afterTabSelected(index);
+
+			if (afterTabSelected != null) {
+				afterTabSelected.accept(index);
+			}
+
 			if (firstFields.get(index) != null) {
 				firstFields.get(index).focus();
 			}
@@ -550,55 +585,35 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// override in subclass
 	}
 
-	/**
-	 * Callback method that fires after the provided entity is set as the active
-	 * entity and after data binding has occurred
-	 * 
-	 * @param entity the selected entity
-	 */
-	protected void afterEntitySelected(T entity) {
-		// override in subclass
-	}
+//	/**
+//	 * Callback method that fires after the layout has been built for the first
+//	 * time.
+//	 * 
+//	 * @param layout   the layout
+//	 * @param viewMode whether the layout is currently is view mode
+//	 */
+//	protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
+//		// after the layout
+//	}
 
-	/**
-	 * Callback method that fires after the provided entity is set as the active
-	 * entity but before any data binding occurs
-	 * 
-	 * @param entity the entity
-	 */
-	protected void afterEntitySet(T entity) {
-		// override in subclass
-	}
+//	/**
+//	 * Callback method that fires after the view mode has been changed
+//	 * 
+//	 * @param viewMode the view mode
+//	 */
+//	protected void afterModeChanged(boolean viewMode) {
+//		// overwrite in subclasses
+//	}
 
-	/**
-	 * Callback method that fires after the layout has been built for the first
-	 * time.
-	 * 
-	 * @param layout   the layout
-	 * @param viewMode whether the layout is currently is view mode
-	 */
-	protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
-		// after the layout
-	}
-
-	/**
-	 * Callback method that fires after the view mode has been changed
-	 * 
-	 * @param viewMode the view mode
-	 */
-	protected void afterModeChanged(boolean viewMode) {
-		// overwrite in subclasses
-	}
-
-	/**
-	 * Callback method that fires after a tab has been selected (when multiple tabs
-	 * are displayed when attribute group mode TABSHEET is used)
-	 * 
-	 * @param tabIndex the index of the selected tab
-	 */
-	protected void afterTabSelected(int tabIndex) {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Callback method that fires after a tab has been selected (when multiple tabs
+//	 * are displayed when attribute group mode TABSHEET is used)
+//	 * 
+//	 * @param tabIndex the index of the selected tab
+//	 */
+//	protected void afterTabSelected(int tabIndex) {
+//		// overwrite in subclasses
+//	}
 
 	/**
 	 * Callback method that fires after the user presses the Back button
@@ -612,6 +627,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Override
 	public void build() {
+
+		if (entity != null && afterEntitySet != null) {
+			afterEntitySet.accept(entity);
+		}
+
 		if (isViewMode()) {
 			if (mainViewLayout == null) {
 				Map<AttributeModel, Component> map = new HashMap<>();
@@ -770,7 +790,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		setDefaultValues();
 		disableCreateOnlyFields();
-		afterLayoutBuilt(form, isViewMode());
+
+		if (afterLayoutBuilt != null) {
+			afterLayoutBuilt.accept(form, isViewMode());
+		}
 
 		return layout;
 	}
@@ -933,17 +956,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	/**
-	 * Callback method that can be used to construct a custom converter for a
-	 * certain field
-	 * 
-	 * @param am the attribute model of the attribute for which the field is
-	 *           constructed
-	 * @return
-	 */
-	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-		return null;
-	}
+//	/**
+//	 * Callback method that can be used to construct a custom converter for a
+//	 * certain field
+//	 * 
+//	 * @param am the attribute model of the attribute for which the field is
+//	 *           constructed
+//	 * @return
+//	 */
+//	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
+//		return null;
+//	}
 
 	/**
 	 * Callback method that can be used to create a custom field
@@ -1017,9 +1040,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			// add converters and validators
 			if (!(field instanceof ServiceBasedDetailsEditGrid)) {
 				BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
-				fieldFactory.addConvertersAndValidators(builder, attributeModel,
-						constructCustomConverter(attributeModel), constructCustomValidator(attributeModel),
-						constructCustomRequiredValidator(attributeModel));
+
+				fieldFactory.addConvertersAndValidators(builder, attributeModel, getCustomConverter(attributeModel),
+						constructCustomValidator(attributeModel), constructCustomRequiredValidator(attributeModel));
 				builder.bind(attributeModel.getPath());
 			}
 
@@ -1116,7 +1139,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				assignEntityToFields.add((CanAssignEntity<ID, T>) field);
 			}
 		}
+	}
 
+	@SuppressWarnings("rawtypes")
+	private Converter getCustomConverter(AttributeModel attributeModel) {
+		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel);
+		if (supplier != null) {
+			Converter<?, ?> converter = supplier.get();
+			return converter;
+		}
+		return null;
 	}
 
 	/**
@@ -1361,10 +1393,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public List<String> getColumnThresholds() {
 		return columnThresholds;
-	}
-
-	public Consumer<T> getCustomSaveConsumer() {
-		return customSaveConsumer;
 	}
 
 	public FetchJoinInformation[] getDetailJoins() {
@@ -1858,15 +1886,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Sets the custom code to be carried out after the Save button is clicked
-	 * 
-	 * @param customSaveConsumer
-	 */
-	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
-		this.customSaveConsumer = customSaveConsumer;
-	}
-
-	/**
 	 * Sets the default value for a field
 	 * 
 	 * @param field the field
@@ -1882,27 +1901,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			for (AttributeModel am : getEntityModel().getAttributeModels()) {
 				Component field = getField(isViewMode(), am.getPath());
 				if (field != null && am.getDefaultValue() != null) {
-					// set the default value for new objects
 					Object defaultValue = am.getDefaultValue();
-
-					// adapt decimal value to selected locale
 					if (NumberUtils.isNumeric(am.getType())) {
-						Locale loc = VaadinUtils.getLocale();
-						DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(loc);
-						char sep = nf.getDecimalFormatSymbols().getDecimalSeparator();
-
-						// set correct precision for non-integers
-						if (NumberUtils.isDouble(am.getType()) || NumberUtils.isFloat(am.getType())
-								|| BigDecimal.class.equals(am.getType())) {
-							nf.setMaximumFractionDigits(am.getPrecision());
-							nf.setMinimumFractionDigits(am.getPrecision());
-							nf.setGroupingUsed(false);
-							defaultValue = nf.format(defaultValue);
-						}
-						defaultValue = defaultValue.toString().replace('.', sep);
-						if (am.isPercentage()) {
-							defaultValue = defaultValue.toString() + "%";
-						}
+						defaultValue = getNumericDefaultValue(am, defaultValue);
 					} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
 						defaultValue = Boolean.valueOf(defaultValue.toString());
 					} else if (am.getType().isEnum()) {
@@ -1912,6 +1913,32 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 			}
 		}
+	}
+
+	/**
+	 * Calculates the default value for a numeric field
+	 * 
+	 * @param am           the attribute model for the field
+	 * @param defaultValue the default value
+	 * @return
+	 */
+	private Object getNumericDefaultValue(AttributeModel am, Object defaultValue) {
+		DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(VaadinUtils.getLocale());
+		char sep = nf.getDecimalFormatSymbols().getDecimalSeparator();
+
+		// set correct precision for non-integers
+		if (NumberUtils.isDouble(am.getType()) || NumberUtils.isFloat(am.getType())
+				|| BigDecimal.class.equals(am.getType())) {
+			nf.setMaximumFractionDigits(am.getPrecision());
+			nf.setMinimumFractionDigits(am.getPrecision());
+			nf.setGroupingUsed(false);
+			defaultValue = nf.format(defaultValue);
+		}
+		defaultValue = defaultValue.toString().replace('.', sep);
+		if (am.isPercentage()) {
+			defaultValue = defaultValue.toString() + "%";
+		}
+		return defaultValue;
 	}
 
 	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
@@ -1932,7 +1959,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			field.assignEntity(this.entity);
 		}
 
-		afterEntitySet(this.entity);
+		if (afterEntitySet != null) {
+			afterEntitySet.accept(entity);
+		}
 
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);
 
@@ -1958,7 +1987,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		triggerCascadeListeners();
-		afterEntitySelected(entity);
+
+		if (afterEntitySelected != null) {
+			afterEntitySelected.accept(this, entity);
+		}
+
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -2134,7 +2167,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		resetComponentErrors();
 		if (oldMode != this.viewMode) {
-			afterModeChanged(isViewMode());
+			if (afterModeChanged != null) {
+				afterModeChanged.accept(this, isViewMode());
+			}
 		}
 	}
 

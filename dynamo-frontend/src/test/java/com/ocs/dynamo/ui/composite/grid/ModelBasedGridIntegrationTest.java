@@ -67,8 +67,8 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.ID_BASED, new FormOptions(), null, new HashMap<String, SerializablePredicate<?>>(), null,
-				false);
+				QueryType.ID_BASED, new FormOptions(), ComponentContext.builder().build(), null,
+				new HashMap<String, SerializablePredicate<?>>(), null, false);
 		wrapper.build();
 
 		assertNotNull(wrapper.getGrid());
@@ -98,7 +98,8 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.ID_BASED, new FormOptions(), null, new HashMap<String, SerializablePredicate<?>>(),
+				QueryType.ID_BASED, new FormOptions(), ComponentContext.builder().build(), null,
+				new HashMap<String, SerializablePredicate<?>>(),
 				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
@@ -116,7 +117,8 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 	public void testPagingQuery() {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
-				QueryType.PAGING, new FormOptions(), null, new HashMap<String, SerializablePredicate<?>>(),
+				QueryType.PAGING, new FormOptions(), ComponentContext.builder().build(), null,
+				new HashMap<String, SerializablePredicate<?>>(),
 				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 

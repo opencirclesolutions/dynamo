@@ -37,6 +37,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.MultiSelectMode;
 import com.ocs.dynamo.domain.model.PagingType;
 import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
@@ -55,6 +56,7 @@ import com.ocs.dynamo.ui.component.SimpleTokenFieldSelect;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.component.ZonedDateTimePicker;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.converter.TrimSpacesConverter;
@@ -450,8 +452,12 @@ public class FieldFactoryImpl implements FieldFactory {
 		BaseService<ID, S> service = (BaseService<ID, S>) serviceLocator
 				.getServiceForEntity(am.getMemberType() != null ? am.getMemberType() : entityModel.getEntityClass());
 		SortOrder<?>[] sos = constructSortOrder(entityModel);
+		SearchOptions options = SearchOptions.builder().advancedSearchMode(false).multiSelect(multiSelect)
+				.searchImmediately(true)
+				.useCheckboxesForMultiSelect(MultiSelectMode.CHECKBOX.equals(am.getMultiSelectMode())).build();
+
 		return new EntityLookupField<>(service, (EntityModel<S>) entityModel, am,
-				(SerializablePredicate<S>) fieldFilter, search, multiSelect,
+				(SerializablePredicate<S>) fieldFilter, search, options,
 				sos.length == 0 ? null : Lists.newArrayList(sos));
 	}
 

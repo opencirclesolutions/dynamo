@@ -18,11 +18,12 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A Country identified by an ISO country code
@@ -30,57 +31,55 @@ import com.ocs.dynamo.domain.model.annotation.Model;
  * @author bas.rutten
  *
  */
+@Getter
+@Setter
 @Entity
 @DiscriminatorValue("COUNTRY")
 @Model(displayNamePlural = "Countries", displayProperty = "name", sortOrder = "name asc")
 public class Country extends DomainChild<Country, Region> {
 
-    private static final long serialVersionUID = 1410771214783677106L;
+	private static final long serialVersionUID = 1410771214783677106L;
 
-    public Country() {
-        // default constructor
-    }
+	public Country() {
+		// default constructor
+	}
 
-    public Country(String code, String name) {
-        super(code, name);
-    }
+	public Country(String code, String name) {
+		super(code, name);
+	}
 
-    public void setRegion(Region region) {
-        setParent(region);
-    }
+	public void setRegion(Region region) {
+		setParent(region);
+	}
 
-    /**
-     * The region - note that this is not a JPA attribute and you must use "parent"
-     * instead in queries
-     * 
-     * @return
-     */
-    public Region getRegion() {
-        return getParent();
-    }
+	/**
+	 * The region - note that this is not a JPA attribute and you must use "parent"
+	 * instead in queries
+	 * 
+	 * @return
+	 */
+	public Region getRegion() {
+		return getParent();
+	}
 
-    /**
-     * Overridden so we can modify the attribute model
-     */
-    @Nullable
-    @Override
-    @Attribute(complexEditable = true, displayName = "Region", visibleInGrid = VisibilityType.SHOW)
-    public Region getParent() {
-        return super.getParent();
-    }
+	/**
+	 * Overridden so we can modify the attribute model
+	 */
+	@Nullable
+	@Override
+	@Attribute(complexEditable = true, displayName = "Region", visibleInGrid = VisibilityType.SHOW)
+	public Region getParent() {
+		return super.getParent();
+	}
 
-    /**
-     * Overridden so we can modify the attribute model
-     */
-    @Override
-    @NotNull
-    @Attribute(visible = VisibilityType.SHOW)
-    public String getCode() {
-        return super.getCode();
-    }
+	/**
+	 * Overridden so we can modify the attribute model
+	 */
+	@Override
+	@NotNull
+	@Attribute(visible = VisibilityType.SHOW)
+	public String getCode() {
+		return super.getCode();
+	}
 
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toStringExclude(this, "parent", "region");
-    }
 }

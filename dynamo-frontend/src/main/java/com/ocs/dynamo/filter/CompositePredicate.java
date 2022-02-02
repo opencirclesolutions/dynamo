@@ -16,9 +16,9 @@ package com.ocs.dynamo.filter;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.ToString;
 
 /**
  * A predicate that joins multiple other predicates together
@@ -27,6 +27,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  *
  * @param <T> the type of the entity to filter
  */
+@ToString
 public abstract class CompositePredicate<T> implements SerializablePredicate<T> {
 
 	private static final long serialVersionUID = 8690339909486826760L;
@@ -36,9 +37,5 @@ public abstract class CompositePredicate<T> implements SerializablePredicate<T> 
 	public List<SerializablePredicate<T>> getOperands() {
 		return operands;
 	}
-	
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
+
 }

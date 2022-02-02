@@ -19,17 +19,16 @@ import java.util.Set;
 import com.google.common.collect.Lists;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Various utility methods for dealing with filters
  * 
  * @author bas.rutten
  *
  */
+@UtilityClass
 public final class PredicateUtils {
-
-	private PredicateUtils() {
-		// hidden constructor
-	}
 
 	/**
 	 * Extracts a specific predicate from a larger predicate

@@ -42,6 +42,7 @@ import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CustomEntityField;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -95,17 +96,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * Constructor
 	 * 
-	 * @param searchable  the component on which to carry out the search
-	 * @param entityModel the entity model
-	 * @param formOptions the form options
-	 */
-	public ModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions) {
-		this(searchable, entityModel, formOptions, null, null);
-	}
-
-	/**
-	 * Constructor
-	 * 
 	 * @param searchable     the component on which to carry out the search
 	 * @param entityModel    the entity model
 	 * @param formOptions    the form options
@@ -113,7 +103,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param fieldFilters   the filters to apply to the individual search fields
 	 */
 	public ModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
-			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
+			ComponentContext context, List<SerializablePredicate<T>> defaultFilters,
+			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
 		boolean advancedModeSaved = false;
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
@@ -175,8 +166,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		Component field = constructCustomField(entityModel, attributeModel);
 		if (field == null) {
 			EntityModel<?> em = getFieldEntityModel(attributeModel);
-			FieldFactoryContext ctx = FieldFactoryContext.create().attributeModel(attributeModel)
-					.fieldEntityModel(em).fieldFilters(getFieldFilters()).viewMode(false).search(true).build();
+			FieldFactoryContext ctx = FieldFactoryContext.create().attributeModel(attributeModel).fieldEntityModel(em)
+					.fieldFilters(getFieldFilters()).viewMode(false).search(true).build();
 			field = getFieldFactory().constructField(ctx);
 		}
 

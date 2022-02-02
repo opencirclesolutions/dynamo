@@ -22,7 +22,6 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
@@ -83,16 +82,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	private ServiceBasedGridWrapper<ID, T> gridWrapper;
 
 	/**
-	 * The "group together" mode
-	 */
-	private GroupTogetherMode groupTogetherMode;
-
-	/**
-	 * Threshold width (pixels) for every group together column
-	 */
-	private Integer groupTogetherWidth;
-
-	/**
 	 * The main layout (in edit mode)
 	 */
 	private VerticalLayout mainEditLayout;
@@ -129,7 +118,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	private TabLayout<ID, T> tabLayout;
 
 	public AbstractModelSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation[] joins) {
+			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, sortOrder, joins);
 	}
 
@@ -266,35 +255,35 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				}
 			}
 
-			@Override
-			protected void afterEntitySelected(T entity) {
-				AbstractModelSearchLayout.this.afterEntitySelected(editForm, entity);
-			}
+//			@Override
+//			protected void afterEntitySelected(T entity) {
+//				AbstractModelSearchLayout.this.afterEntitySelected(editForm, entity);
+//			}
 
-			@Override
-			protected void afterEntitySet(T entity) {
-				AbstractModelSearchLayout.this.afterEntitySet(entity);
-			}
+//			@Override
+//			protected void afterEntitySet(T entity) {
+//				AbstractModelSearchLayout.this.afterEntitySet(entity);
+//			}
 
-			@Override
-			protected void afterModeChanged(boolean viewMode) {
-				AbstractModelSearchLayout.this.afterModeChanged(viewMode, editForm);
-			}
+//			@Override
+//			protected void afterModeChanged(boolean viewMode) {
+//				AbstractModelSearchLayout.this.afterModeChanged(viewMode, editForm);
+//			}
 
-			@Override
-			protected void afterTabSelected(int tabIndex) {
-				AbstractModelSearchLayout.this.afterTabSelected(tabIndex);
-			}
+//			@Override
+//			protected void afterTabSelected(int tabIndex) {
+//				AbstractModelSearchLayout.this.afterTabSelected(tabIndex);
+//			}
 
 			@Override
 			protected void back() {
 				searchMode();
 			}
 
-			@Override
-			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-				return AbstractModelSearchLayout.this.constructCustomConverter(am);
-			}
+//			@Override
+//			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
+//				return AbstractModelSearchLayout.this.constructCustomConverter(am);
+//			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
@@ -364,15 +353,18 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			}
 
 		};
-		editForm.setCustomSaveConsumer(getCustomSaveConsumer());
+
+		initEditForm(editForm);
 		editForm.setSupportsIteration(true);
 		editForm.setDetailJoins(getDetailJoins());
-		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setColumnThresholds(getEditColumnThresholds());
-		editForm.setMaxFormWidth(getMaxEditFormWidth());
-		editForm.setGroupTogetherMode(getGroupTogetherMode());
-		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
+
 		editForm.build();
+
+		if (getAfterEntitySelected() != null) {
+			editForm.setAfterEntitySelected(getAfterEntitySelected());
+		}
+
 		editForm.setEntity(entity);
 	}
 
@@ -386,15 +378,15 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 		if (helper != null) {
 			List<SortOrder<?>> retrievedOrders = helper.retrieveSortOrders();
-			if (!getFormOptions().isPopup() && getFormOptions().isPreserveSortOrders() && retrievedOrders != null
+			if (!getComponentContext().isPopup() && getFormOptions().isPreserveSortOrders() && retrievedOrders != null
 					&& !retrievedOrders.isEmpty()) {
 				setSortOrders(retrievedOrders);
 			}
 		}
 
 		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
-				getQueryType(), getFormOptions(), getSearchForm().extractFilter(), getFieldFilters(), getSortOrders(),
-				false, getJoins()) {
+				getQueryType(), getFormOptions(), getComponentContext(), getSearchForm().extractFilter(),
+				getFieldFilters(), getSortOrders(), false, getJoins()) {
 
 			private static final long serialVersionUID = 6343267378913526151L;
 
@@ -410,6 +402,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 
 		};
 		postConfigureGridWrapper(wrapper);
+
 		wrapper.setMaxResults(getMaxResults());
 		wrapper.build();
 
@@ -564,14 +557,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		return gridWrapper;
 	}
 
-	public GroupTogetherMode getGroupTogetherMode() {
-		return groupTogetherMode;
-	}
-
-	public Integer getGroupTogetherWidth() {
-		return groupTogetherWidth;
-	}
-
 	/**
 	 * Returns the next item that is available in the data provider
 	 * 
@@ -661,14 +646,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 
 	public void setEditColumnThresholds(List<String> editColumnThresholds) {
 		this.editColumnThresholds = editColumnThresholds;
-	}
-
-	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
-		this.groupTogetherMode = groupTogetherMode;
-	}
-
-	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
-		this.groupTogetherWidth = groupTogetherWidth;
 	}
 
 	/**

@@ -14,32 +14,30 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.function.Consumer;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A layout for editing a single entity (can either be an existing or a new
@@ -55,33 +53,25 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	private static final long serialVersionUID = -7935358582100755140L;
 
-	private Consumer<T> customSaveConsumer;
-
+	@Getter
 	private ModelBasedEditForm<ID, T> editForm;
 
+	@Getter
 	private T entity;
 
+	@Getter
+	@Setter
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-
-	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
 	 * Specifies which relations to fetch. When specified this overrides the default
 	 * relations defined in the DAO
 	 */
+	@Getter
+	@Setter
 	private FetchJoinInformation[] joins;
 
 	private VerticalLayout main;
-
-	/**
-	 * The "group together" mode
-	 */
-	private GroupTogetherMode groupTogetherMode;
-
-	/**
-	 * Threshold width (pixels) for every group together column
-	 */
-	private Integer groupTogetherWidth;
 
 	/**
 	 * Constructor
@@ -94,7 +84,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 *                    database
 	 */
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			FetchJoinInformation... joins) {
+			ComponentContext context, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
 		setMargin(false);
 		setClassName(DynamoConstants.CSS_SIMPLE_EDIT_LAYOUT);
@@ -123,37 +113,16 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
-	/**
-	 * Callback method that fires directly after the entity is set and before any
-	 * data binding occurs
-	 * 
-	 * @param entity the entity that was just set
-	 */
-	public void afterEntitySet(T entity) {
-		// overwrite in entity
-	}
-
-	/**
-	 * Callback method that fires after one of the layouts of the underlying edit
-	 * form is built for the first time
-	 *
-	 * @param layout   the layout
-	 * @param viewMode whether the layout is in view mode
-	 */
-	protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
-		// override in subclass
-	}
-
-	/**
-	 * Callback method that first after a tab has been selected in the tab sheet
-	 * that is used in a detail form when the attribute group mode has been set to
-	 * TABSHEET
-	 *
-	 * @param tabIndex the zero-based index of the selected tab
-	 */
-	protected void afterTabSelected(int tabIndex) {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Callback method that first after a tab has been selected in the tab sheet
+//	 * that is used in a detail form when the attribute group mode has been set to
+//	 * TABSHEET
+//	 *
+//	 * @param tabIndex the zero-based index of the selected tab
+//	 */
+//	protected void afterTabSelected(int tabIndex) {
+//		// overwrite in subclasses
+//	}
 
 	@Override
 	public void assignEntity(T t) {
@@ -195,35 +164,20 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
 				}
 
-				@Override
-				protected void afterEntitySet(T entity) {
-					SimpleEditLayout.this.afterEntitySet(entity);
-				}
-
-				@Override
-				protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
-					SimpleEditLayout.this.afterLayoutBuilt(layout, viewMode);
-				}
-
-				@Override
-				protected void afterModeChanged(boolean viewMode) {
-					SimpleEditLayout.this.afterModeChanged(viewMode, editForm);
-				}
-
-				@Override
-				protected void afterTabSelected(int tabIndex) {
-					SimpleEditLayout.this.afterTabSelected(tabIndex);
-				}
+//				@Override
+//				protected void afterTabSelected(int tabIndex) {
+//					SimpleEditLayout.this.afterTabSelected(tabIndex);
+//				}
 
 				@Override
 				protected void back() {
 					SimpleEditLayout.this.back();
 				}
 
-				@Override
-				protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-					return SimpleEditLayout.this.constructCustomConverter(am);
-				}
+//				@Override
+//				protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
+//					return SimpleEditLayout.this.constructCustomConverter(am);
+//				}
 
 				@Override
 				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
@@ -267,20 +221,18 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 				}
 			};
 
-			editForm.setCustomSaveConsumer(customSaveConsumer);
+			initEditForm(editForm);
 			editForm.setDetailJoins(getJoins());
-			editForm.setFieldEntityModels(getFieldEntityModels());
-			editForm.setColumnThresholds(getColumnThresholds());
-			editForm.setMaxFormWidth(getMaxEditFormWidth());
-			editForm.setGroupTogetherMode(getGroupTogetherMode());
-			editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 			editForm.build();
 
 			main.add(editForm);
 
 			postProcessLayout(main);
 			add(main);
-			afterEntitySelected(editForm, getEntity());
+
+			if (getAfterEntitySelected() != null) {
+				getAfterEntitySelected().accept(editForm, getEntity());
+			}
 			checkComponentState(getEntity());
 		}
 	}
@@ -296,38 +248,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void doSave() {
 		this.editForm.doSave();
-	}
-
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
-	public Consumer<T> getCustomSaveConsumer() {
-		return customSaveConsumer;
-	}
-
-	public ModelBasedEditForm<ID, T> getEditForm() {
-		return editForm;
-	}
-
-	public T getEntity() {
-		return entity;
-	}
-
-	public Map<String, SerializablePredicate<?>> getFieldFilters() {
-		return fieldFilters;
-	}
-
-	public GroupTogetherMode getGroupTogetherMode() {
-		return groupTogetherMode;
-	}
-
-	public Integer getGroupTogetherWidth() {
-		return groupTogetherWidth;
-	}
-
-	public FetchJoinInformation[] getJoins() {
-		return joins;
 	}
 
 	/**
@@ -431,14 +351,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		editForm.selectTab(index);
 	}
 
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
-	}
-
-	public void setCustomSaveConsumer(Consumer<T> customSaveConsumer) {
-		this.customSaveConsumer = customSaveConsumer;
-	}
-
 	/**
 	 * Sets the entity
 	 *
@@ -450,24 +362,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			this.entity = createEntity();
 		}
 		editForm.setEntity(this.entity);
-		afterEntitySelected(editForm, this.entity);
+		if (getAfterEntitySelected() != null) {
+			getAfterEntitySelected().accept(editForm, entity);
+		}
+
 		checkComponentState(getEntity());
-	}
-
-	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
-		this.fieldFilters = fieldFilters;
-	}
-
-	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
-		this.groupTogetherMode = groupTogetherMode;
-	}
-
-	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
-		this.groupTogetherWidth = groupTogetherWidth;
-	}
-
-	public void setJoins(FetchJoinInformation[] joins) {
-		this.joins = joins;
 	}
 
 	/**

@@ -36,12 +36,12 @@ public interface EntityModel<T> {
 	String ATTRIBUTE_GROUP = "attributeGroup";
 
 	/**
-	 * Attribute names
+	 * The names of the attributes inside an attribute group
 	 */
 	String ATTRIBUTE_NAMES = "attributeNames";
 
 	/**
-	 * Attribute order
+	 * The (default) order of the attributes
 	 */
 	String ATTRIBUTE_ORDER = "attributeOrder";
 
@@ -51,7 +51,7 @@ public interface EntityModel<T> {
 	String CASCADE = "cascade";
 
 	/**
-	 * Cascade filter path (what to filter to receiving end of the cascade on)
+	 * Cascade filter path (the attribute to filter on on the receiving side of a cascade action)
 	 */
 	String CASCADE_FILTER_PATH = "cascadeFilterPath";
 
@@ -214,6 +214,11 @@ public interface EntityModel<T> {
 	 * Whether to allow searching for multiple values in case of a MASTER attribute
 	 */
 	String MULTIPLE_SEARCH = "multipleSearch";
+
+	/**
+	 * The multiple select mode to use inside a search dialog
+	 */
+	String MULTI_SELECT_MODE = "multiSelectMode";
 
 	/**
 	 * Whether this property is navigable (in view mode or inside a grid, a link

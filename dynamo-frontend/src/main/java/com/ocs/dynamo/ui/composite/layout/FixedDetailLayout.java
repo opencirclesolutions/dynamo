@@ -25,10 +25,10 @@ import com.vaadin.flow.data.provider.SortOrder;
  * Split layout that displays a fixed set of items related to a parent entity
  * 
  * @author bas.rutten
- * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <ID>  the type of the primary key
+ * @param <T>   the type of the entity
  * @param <ID2> the type of the primary key of the parent entity
- * @param <Q> the type of the parent entity
+ * @param <Q>   the type of the parent entity
  */
 public abstract class FixedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
 		extends FixedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {

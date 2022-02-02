@@ -13,10 +13,15 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
+import java.util.function.Supplier;
+
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A simple modal dialog
@@ -24,69 +29,57 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
  * @author Bas Rutten
  *
  */
-public abstract class SimpleModalDialog extends BaseModalDialog {
+@Getter
+@Setter
+public class SimpleModalDialog extends BaseModalDialog {
 
-    private static final long serialVersionUID = -2265149201475495504L;
+	private static final long serialVersionUID = -2265149201475495504L;
 
-    private Button cancelButton;
+	private Button cancelButton;
 
-    private Button okButton;
+	private Button okButton;
 
-    private boolean showCancelButton;
+	private boolean showCancelButton;
 
-    /**
-     * Constructor
-     */
-    public SimpleModalDialog(boolean showCancelButton) {
-        this.showCancelButton = showCancelButton;
-    }
+	private Runnable onCancel;
 
-    @Override
-    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-        cancelButton = new Button(message("ocs.cancel"));
-        cancelButton.setIcon(VaadinIcon.BAN.create());
-        cancelButton.addClickListener(event -> {
-            doCancel();
-            SimpleModalDialog.this.close();
-        });
-        cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-        cancelButton.setVisible(showCancelButton);
-        buttonBar.add(cancelButton);
+	private Supplier<Boolean> onClose = () -> true;
 
-        okButton = new Button(message("ocs.ok"));
-        okButton.setIcon(VaadinIcon.CHECK.create());
-        okButton.addClickListener(event -> {
-            if (doClose()) {
-                SimpleModalDialog.this.close();
-            }
-        });
-        buttonBar.add(okButton);
+	public SimpleModalDialog(boolean showCancelButton) {
+		this(showCancelButton, DynamoConstants.CSS_DIALOG);
+	}
 
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param showCancelButton whether do display the "Cancel" button
+	 */
+	public SimpleModalDialog(boolean showCancelButton, String className) {
+		super(className);
+		this.showCancelButton = showCancelButton;
 
-    /**
-     * Callback method that is fired when the user presses the OK button.
-     * 
-     * @return true if the dialog can be closed, false otherwise
-     */
-    protected boolean doClose() {
-        // overwrite in subclass
-        return true;
-    }
+		setBuildButtonBar(buttonBar -> {
+			cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.setIcon(VaadinIcon.BAN.create());
+			cancelButton.addClickListener(event -> {
+				if (onCancel != null) {
+					onCancel.run();
+				}
+				SimpleModalDialog.this.close();
+			});
+			cancelButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			cancelButton.setVisible(showCancelButton);
+			buttonBar.add(cancelButton);
 
-    /**
-     * Callback method that is fired when the user presses the cancel button
-     */
-    protected void doCancel() {
-        // overwrite in subclass
-    }
-
-    public Button getCancelButton() {
-        return cancelButton;
-    }
-
-    public Button getOkButton() {
-        return okButton;
-    }
+			okButton = new Button(message("ocs.ok"));
+			okButton.setIcon(VaadinIcon.CHECK.create());
+			okButton.addClickListener(event -> {
+				if (onClose.get()) {
+					SimpleModalDialog.this.close();
+				}
+			});
+			buttonBar.add(okButton);
+		});
+	}
 
 }

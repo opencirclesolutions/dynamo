@@ -36,6 +36,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -49,6 +50,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 
 	private static final long serialVersionUID = -8982555842423738005L;
 
+	@Getter
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	private UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
@@ -58,7 +60,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 *
 	 * @param entity         the entity that is being displayed
 	 * @param attributeModel the attribute model
-	 * @return
+	 * @return the span containing the label value
 	 */
 	protected Span constructLabel(Object entity, AttributeModel attributeModel) {
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
@@ -69,10 +71,6 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 
 	protected EntityModelFactory getEntityModelFactory() {
 		return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
-	}
-
-	protected MessageService getMessageService() {
-		return messageService;
 	}
 
 	protected <T> T getService(Class<T> clazz) {
@@ -108,7 +106,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * Retrieves a message from the message bundle
 	 *
 	 * @param key the key of the message
-	 * @return
+	 * @return the retrieved message
 	 */
 	protected String message(String key) {
 		return getMessageService().getMessage(key, VaadinUtils.getLocale());
@@ -119,7 +117,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 *
 	 * @param key  the key of the message
 	 * @param args any arguments that are used in the message
-	 * @return
+	 * @return the retrieved message
 	 */
 	protected String message(String key, Object... args) {
 		return getMessageService().getMessage(key, VaadinUtils.getLocale(), args);
@@ -137,11 +135,15 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	/**
 	 * Navigates to the specified view with the specified mode
 	 * 
-	 * @param viewName
-	 * @param mode
+	 * @param viewName the name of the view
+	 * @param mode     the desired mode
 	 */
 	protected void navigate(String viewName, String mode) {
 		helper.navigate(viewName, mode);
+	}
+
+	protected void showErrorNotification(String message) {
+		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
 	}
 
 	/**
@@ -159,10 +161,6 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 		} else {
 			log.info(message);
 		}
-	}
-
-	protected void showErrorNotification(String message) {
-		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
 	}
 
 	protected void showTrayNotification(String message) {

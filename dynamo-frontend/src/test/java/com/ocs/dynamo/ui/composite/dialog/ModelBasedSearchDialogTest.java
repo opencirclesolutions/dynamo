@@ -15,6 +15,7 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
+import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.vaadin.flow.function.SerializablePredicate;
 
 public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
@@ -41,8 +42,10 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
 
 	@Test
 	public void testCreateSingleSelect() {
+		SearchOptions options = SearchOptions.builder().multiSelect(false).searchImmediately(true)
+				.advancedSearchMode(false).build();
 		ModelBasedSearchDialog<Integer, TestEntity> dialog = new ModelBasedSearchDialog<>(testEntityService,
-				entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, false, true, false);
+				entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, options);
 		dialog.build();
 		dialog.select(e1);
 	}
@@ -52,15 +55,20 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
 		List<SerializablePredicate<TestEntity>> filters = new ArrayList<>();
 		filters.add(new EqualsPredicate<TestEntity>("name", "Bob"));
 
+		SearchOptions options = SearchOptions.builder().multiSelect(false).searchImmediately(true)
+				.advancedSearchMode(false).build();
+
 		ModelBasedSearchDialog<Integer, TestEntity> dialog = new ModelBasedSearchDialog<>(testEntityService,
-				entityModelFactory.getModel(TestEntity.class), filters, null, false, true, false);
+				entityModelFactory.getModel(TestEntity.class), filters, null, options);
 		dialog.build();
 	}
 
 	@Test
 	public void testCreateMultiSelect() {
+		SearchOptions options = SearchOptions.builder().multiSelect(false).searchImmediately(true)
+				.advancedSearchMode(false).build();
 		ModelBasedSearchDialog<Integer, TestEntity> dialog = new ModelBasedSearchDialog<>(testEntityService,
-				entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, true, true, false);
+				entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, options);
 		dialog.build();
 		dialog.select(Lists.newArrayList(e1, e2));
 	}

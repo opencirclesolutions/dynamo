@@ -20,9 +20,13 @@ import java.util.Map;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Abstract base class for model-based forms - this includes both search forms
@@ -30,7 +34,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
 public abstract class AbstractModelBasedForm<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCustomComponent {
@@ -52,10 +56,12 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
-	/**
-	 * The form options parameter object
-	 */
-	private FormOptions formOptions;
+	@Getter
+	private final FormOptions formOptions;
+
+	@Getter
+	@Setter
+	private ComponentContext componentContext = ComponentContext.builder().build();
 
 	/**
 	 * Constructor
@@ -96,10 +102,6 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 		return fieldFilters;
 	}
 
-	public FormOptions getFormOptions() {
-		return formOptions;
-	}
-
 	public void setEntityModel(EntityModel<T> entityModel) {
 		this.entityModel = entityModel;
 	}
@@ -110,10 +112,6 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 
 	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
 		this.fieldFilters = fieldFilters;
-	}
-
-	public void setFormOptions(FormOptions formOptions) {
-		this.formOptions = formOptions;
 	}
 
 }

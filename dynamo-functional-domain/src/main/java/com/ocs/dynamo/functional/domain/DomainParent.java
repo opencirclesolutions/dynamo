@@ -22,6 +22,9 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A domain entity that is the parent of another domain entity
  * 
@@ -31,6 +34,8 @@ import javax.persistence.OneToMany;
  * @param <P> the parent entity class
  */
 @Entity
+@Getter
+@Setter
 public abstract class DomainParent<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
 		implements Serializable {
 
@@ -44,14 +49,6 @@ public abstract class DomainParent<C extends DomainChild<C, P>, P extends Domain
 
 	public DomainParent(String code, String name) {
 		super(code, name);
-	}
-
-	public Set<C> getChildren() {
-		return this.children;
-	}
-
-	public void setChildren(Set<C> children) {
-		this.children = children;
 	}
 
 	@SuppressWarnings("unchecked")

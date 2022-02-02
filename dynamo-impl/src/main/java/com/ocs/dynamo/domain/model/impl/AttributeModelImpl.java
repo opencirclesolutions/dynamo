@@ -26,8 +26,6 @@ import java.util.ResourceBundle;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
@@ -36,6 +34,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.MultiSelectMode;
 import com.ocs.dynamo.domain.model.PagingType;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
@@ -43,6 +42,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 /**
  * Implementation of the AttributeModel interface - simple container for
@@ -52,6 +52,7 @@ import lombok.EqualsAndHashCode;
  */
 @Data
 @EqualsAndHashCode(callSuper = false, of = { "entityModel", "name" })
+@ToString
 public class AttributeModelImpl implements AttributeModel {
 
 	private Set<String> allowedExtensions = new HashSet<>();
@@ -98,6 +99,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean email;
 
+	@ToString.Exclude
 	private EntityModel<?> entityModel;
 
 	private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
@@ -129,6 +131,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private Long minValue;
 
 	private boolean multipleSearch;
+
+	private MultiSelectMode multiSelectMode;
 
 	private String name;
 
@@ -373,11 +377,6 @@ public class AttributeModelImpl implements AttributeModel {
 	}
 
 	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toStringExclude(this, "entityModel");
-	}
-
-	@Override
 	public boolean useThousandsGroupingInEditMode() {
 		return ThousandsGroupingMode.ALWAYS.equals(thousandsGroupingMode)
 				|| ThousandsGroupingMode.EDIT.equals(thousandsGroupingMode);
@@ -389,6 +388,4 @@ public class AttributeModelImpl implements AttributeModel {
 				|| ThousandsGroupingMode.VIEW.equals(thousandsGroupingMode);
 	}
 
-	
-	
 }

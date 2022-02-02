@@ -39,71 +39,73 @@ import com.vaadin.flow.function.SerializablePredicate;
  */
 public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseGridWrapper<ID, T> {
 
-    private static final long serialVersionUID = -6711832174203817230L;
+	private static final long serialVersionUID = -6711832174203817230L;
 
-    /**
-     * The items to display in the grid
-     */
-    private Collection<T> items;
+	/**
+	 * The items to display in the grid
+	 */
+	private Collection<T> items;
 
-    /**
-     * Constructor
-     * 
-     * @param service      the service used for retrieving data from the database
-     * @param entityModel  the entity model
-     * @param formOptions  the form options
-     * @param fieldFilters the field
-     * @param items        the entities to display
-     * @param sortOrders   the sort orders
-     */
-    public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-            Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items, List<SortOrder<?>> sortOrders) {
-        super(service, entityModel, QueryType.NONE, formOptions, null, fieldFilters, sortOrders, false);
-        this.items = items;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service      the service used for retrieving data from the database
+	 * @param entityModel  the entity model
+	 * @param formOptions  the form options
+	 * @param fieldFilters the field
+	 * @param items        the entities to display
+	 * @param sortOrders   the sort orders
+	 */
+	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+			ComponentContext context, Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items,
+			List<SortOrder<?>> sortOrders) {
+		super(service, entityModel, QueryType.NONE, formOptions, context, null, fieldFilters, sortOrders, false);
+		this.items = items;
+	}
 
-    @Override
-    protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
-        return new ListDataProvider<>(items);
-    }
+	@Override
+	protected DataProvider<T, SerializablePredicate<T>> constructDataProvider() {
+		return new ListDataProvider<>(items);
+	}
 
-    @Override
-    public void forceSearch() {
-    }
+	@Override
+	public void forceSearch() {
+	}
 
-    @Override
-    protected List<SortOrder<?>> initSortingAndFiltering() {
-        List<SortOrder<?>> fallBacks = super.initSortingAndFiltering();
-        getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
+	@Override
+	protected List<SortOrder<?>> initSortingAndFiltering() {
+		List<SortOrder<?>> fallBacks = super.initSortingAndFiltering();
+		getGrid().addSelectionListener(event -> onSelect(getGrid().getSelectedItems()));
 
-        // right click to download
-        if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
-            GridContextMenu<T> contextMenu = getGrid().addContextMenu();
-            Button downloadButton = new Button(message("ocs.download"));
-            downloadButton.addClickListener(event -> {
-                ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
-                getExportDelegate().exportFixed(getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
-                        getFormOptions().getExportMode(), provider.getItems());
-            });
-            contextMenu.add(downloadButton);
-        }
-        return fallBacks;
-    }
+		// right click to download
+		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
+			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
+			Button downloadButton = new Button(message("ocs.download"));
+			downloadButton.addClickListener(event -> {
+				ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
+				getExportDelegate().exportFixed(
+						getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
+						getFormOptions().getExportMode(), provider.getItems());
+			});
+			contextMenu.add(downloadButton);
+		}
+		return fallBacks;
+	}
 
-    @Override
-    public void reloadDataProvider() {
-        // do nothing
-    }
+	@Override
+	public void reloadDataProvider() {
+		// do nothing
+	}
 
-    @Override
-    public void search(SerializablePredicate<T> filter) {
-        // do nothing (collection of items is fixed)
-    }
+	@Override
+	public void search(SerializablePredicate<T> filter) {
+		// do nothing (collection of items is fixed)
+	}
 
-    @Override
-    public int getDataProviderSize() {
-        ListDataProvider<T> lp = (ListDataProvider<T>) getDataProvider();
-        return lp.getItems().size();
-    }
+	@Override
+	public int getDataProviderSize() {
+		ListDataProvider<T> lp = (ListDataProvider<T>) getDataProvider();
+		return lp.getItems().size();
+	}
 
 }

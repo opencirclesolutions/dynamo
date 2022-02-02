@@ -114,7 +114,8 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	public PivotGridWrapper<ID, T> constructGridWrapper() {
 
 		PivotGridWrapper<ID, T> wrapper = new PivotGridWrapper<ID, T>(getService(), getEntityModel(),
-				QueryType.ID_BASED, getFormOptions(), getSearchForm().extractFilter(), getSortOrders(), getJoins()) {
+				QueryType.ID_BASED, getFormOptions(), getComponentContext(), getSearchForm().extractFilter(),
+				getSortOrders(), getJoins()) {
 
 			private static final long serialVersionUID = -7522369124218869608L;
 
@@ -165,7 +166,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		// unnecessary and
 		// potentially unfiltered search
 		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-				this.getDefaultFilters(), this.getFieldFilters()) {
+				getComponentContext(), this.getDefaultFilters(), this.getFieldFilters()) {
 
 			private static final long serialVersionUID = 8929442625027442714L;
 
@@ -194,6 +195,8 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 				PivotSearchLayout.this.validateBeforeSearch();
 			}
 		};
+
+		result.setComponentContext(getComponentContext());
 		result.setFieldEntityModels(getFieldEntityModels());
 		result.build();
 		return result;

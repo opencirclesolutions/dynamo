@@ -56,6 +56,7 @@ import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -192,8 +193,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 				// remove the filter
 				if (am != null) {
-					FilterRegion.this.listener
-							.onFilterChange(new FilterChangeEvent<T>(am.getPath(), fieldFilter, null));
+					FilterRegion.this.listener.onFilterChange(FilterChangeEvent.<T>builder().propertyId(am.getPath())
+							.oldFilter(fieldFilter).newFilter(null).build());
 				}
 			});
 			layout.add(removeButton);
@@ -631,7 +632,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				// store the current filter
 				this.fieldFilter = filter;
 				// propagate the change (this will trigger the actual search action)
-				listener.onFilterChange(new FilterChangeEvent<>(am.getPath(), oldFilter, filter));
+				listener.onFilterChange(FilterChangeEvent.<T>builder().propertyId(am.getPath()).oldFilter(oldFilter)
+						.newFilter(filter).build());
 			});
 			result.ifError(r -> ((HasValidation) field).setErrorMessage(r));
 		}
@@ -643,16 +645,18 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		 */
 		public FlexibleFilterDefinition toDefinition() {
 			if (mainValueComponent != null) {
-				FlexibleFilterDefinition definition = new FlexibleFilterDefinition();
-				definition.setFlexibleFilterType(filterType);
-				definition.setAttributeModel(am);
+
+				FlexibleFilterDefinition.FlexibleFilterDefinitionBuilder builder = FlexibleFilterDefinition.builder();
+
+				builder.flexibleFilterType(filterType);
+				builder.attributeModel(am);
 				Result<?> result = ConvertUtils.convertToModelValue(am, mainValueComponent.getValue());
-				result.ifOk(v -> definition.setValue(v));
+				result.ifOk(v -> builder.value(v));
 				if (auxValueComponent != null) {
 					result = ConvertUtils.convertToModelValue(am, auxValueComponent.getValue());
-					result.ifOk(v -> definition.setValueTo(v));
+					result.ifOk(v -> builder.valueTo(v));
 				}
-				return definition;
+				return builder.build();
 			}
 			return null;
 		}

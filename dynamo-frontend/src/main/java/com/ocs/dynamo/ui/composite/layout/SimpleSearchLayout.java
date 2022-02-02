@@ -91,7 +91,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		// unnecessary and
 		// potentially unfiltered search
 		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-				this.getDefaultFilters(), this.getFieldFilters()) {
+				getComponentContext(), getDefaultFilters(), getFieldFilters()) {
 
 			private static final long serialVersionUID = 8929442625027442714L;
 
@@ -120,6 +120,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 				SimpleSearchLayout.this.validateBeforeSearch();
 			}
 		};
+		result.setComponentContext(getComponentContext());
 		result.setFieldEntityModels(getFieldEntityModels());
 		result.setColumnThresholds(getSearchColumnThresholds());
 		result.setMaxFormWidth(getMaxSearchFormWidth());

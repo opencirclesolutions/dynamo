@@ -24,14 +24,18 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A dialog that contains a search form based on the Entity Model
@@ -40,14 +44,11 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <ID> the type of the primary key
  * @param <T>  the type of the entity to search for
  */
+@Getter
+@Setter
 public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends SimpleModalDialog {
 
 	private static final long serialVersionUID = -7158664165266474097L;
-
-	/**
-	 * Indicates whether advanced search mode is enabled
-	 */
-	private boolean advancedSearchMode;
 
 	/**
 	 * Column threshold
@@ -75,16 +76,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	private FetchJoinInformation[] joins;
 
 	/**
-	 * Indicates whether the dialog is in multiple select mode
-	 */
-	private boolean multiSelect;
-
-	/**
-	 * Whether to immediately perform a search
-	 */
-	private boolean searchImmediately;
-
-	/**
 	 * The actual search layout
 	 */
 	private SimpleSearchLayout<ID, T> searchLayout;
@@ -95,9 +86,15 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	private BaseService<ID, T> service;
 
 	/**
-	 * The sort order
+	 * The sort orders to us when searching for results
 	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
+
+	private Runnable afterOpen;
+
+	private Runnable postProcessDialog;
+
+	private SearchOptions searchOptions;
 
 	/**
 	 * Constructor
@@ -113,21 +110,23 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * @param joins              the fetch joins
 	 */
 	public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel,
-			List<SerializablePredicate<T>> filters, List<SortOrder<?>> sortOrders, boolean multiSelect,
-			boolean searchImmediately, boolean advancedSearchMode, FetchJoinInformation... joins) {
+			List<SerializablePredicate<T>> filters, List<SortOrder<?>> sortOrders, SearchOptions searchOptions,
+			FetchJoinInformation... joins) {
 		super(true);
+
 		this.service = service;
 		this.entityModel = entityModel;
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.filters = filters;
-		this.multiSelect = multiSelect;
+		this.searchOptions = searchOptions;
 		this.joins = joins;
-		this.searchImmediately = searchImmediately;
-		this.advancedSearchMode = advancedSearchMode;
+
+		setTitle(message("ocs.search.title", entityModel.getDisplayNamePlural(VaadinUtils.getLocale())));
+		buildMain();
 	}
 
 	/**
-	 * Adds a field filter
+	 * Adds a field filter for a property
 	 * 
 	 * @param property the property for which to add a field filter
 	 * @param filter   the field filter
@@ -136,77 +135,59 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		this.fieldFilters.put(property, filter);
 	}
 
-	/**
-	 * Callback method that is executed once the dialog has been opened
-	 */
-	public void afterOpen() {
-		// overwrite in subclasses
-	}
+	private void buildMain() {
+		setBuildMain(parent -> {
 
-	@Override
-	protected void doBuild(VerticalLayout parent) {
-		FormOptions formOptions = new FormOptions().setReadOnly(true).setPopup(true).setDetailsModeEnabled(false)
-				.setSearchImmediately(searchImmediately).setEnableAdvancedSearchMode(advancedSearchMode);
+			ComponentContext context = ComponentContext.builder().popup(true).multiSelect(searchOptions.isMultiSelect())
+					.useCheckboxesForMultiSelect(searchOptions.isUseCheckboxesForMultiSelect())
+					.build();
 
-		searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
-		searchLayout.setPadding(true);
-		searchLayout.setDefaultFilters(filters);
+			FormOptions formOptions = new FormOptions().setReadOnly(true).setDetailsModeEnabled(false)
+					.setSearchImmediately(searchOptions.isSearchImmediately())
+					.setEnableAdvancedSearchMode(searchOptions.isAdvancedSearchMode());
 
-		searchLayout.setGridHeight(SystemPropertyUtils.getDefaultSearchDialogGridHeight());
-		for (SortOrder<?> order : sortOrders) {
-			searchLayout.addSortOrder(order);
-		}
-		searchLayout.setMultiSelect(multiSelect);
-		searchLayout.setSearchColumnThresholds(getColumnThresholds());
-		this.fieldFilters.entrySet().forEach(c -> searchLayout.addFieldFilter(c.getKey(), c.getValue()));
+			searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
+			searchLayout.setComponentContext(context);
+			searchLayout.setPadding(true);
+			searchLayout.setDefaultFilters(filters);
 
-		// add double click listener for quickly selecting item and closing the
-		// dialog
-		searchLayout.getGridWrapper().getGrid().addItemDoubleClickListener(event -> {
-			select(event.getItem());
-			getOkButton().click();
+			searchLayout.setGridHeight(SystemPropertyUtils.getDefaultSearchDialogGridHeight());
+			for (SortOrder<?> order : sortOrders) {
+				searchLayout.addSortOrder(order);
+			}
+
+			searchLayout.setSearchColumnThresholds(getColumnThresholds());
+
+			this.fieldFilters.entrySet().forEach(c -> searchLayout.addFieldFilter(c.getKey(), c.getValue()));
+
+			// add double click listener for quickly selecting item and closing the
+			// dialog
+			searchLayout.getGridWrapper().getGrid().addItemDoubleClickListener(event -> {
+				select(event.getItem());
+				getOkButton().click();
+			});
+			parent.add(searchLayout);
+
+			if (postProcessDialog != null) {
+				postProcessDialog.run();
+			}
 		});
-		parent.add(searchLayout);
-
-		postProcessDialog();
 	}
 
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
-	public List<SerializablePredicate<T>> getFilters() {
-		return filters;
-	}
-
-	public SimpleSearchLayout<ID, T> getSearchLayout() {
-		return searchLayout;
-	}
-
-	protected T getSelectedItem() {
+	public T getSelectedItem() {
 		return searchLayout.getSelectedItem();
 	}
 
-	protected Collection<T> getSelectedItems() {
+	public Collection<T> getSelectedItems() {
 		return searchLayout.getSelectedItems();
-	}
-
-	@Override
-	protected String getTitle() {
-		return message("ocs.search.title", entityModel.getDisplayNamePlural(VaadinUtils.getLocale()));
 	}
 
 	@Override
 	public void open() {
 		super.open();
-		afterOpen();
-	}
-
-	/**
-	 * Callback method that is executed once the layout has been constructed
-	 */
-	public void postProcessDialog() {
-		// overwrite in subclasses
+		if (afterOpen != null) {
+			afterOpen.run();
+		}
 	}
 
 	public void search() {
@@ -229,10 +210,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 			T t = (T) selectedItems;
 			searchLayout.getGridWrapper().getGrid().select(t);
 		}
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
 	}
 
 	public void setFilters(List<SerializablePredicate<T>> filters) {

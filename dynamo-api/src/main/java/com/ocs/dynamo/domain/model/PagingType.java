@@ -14,6 +14,8 @@
 package com.ocs.dynamo.domain.model;
 
 /**
+ * Specifies the way items are retrieved inside entity component (combo box,
+ * list and token field)
  * 
  * @author BasRutten
  *

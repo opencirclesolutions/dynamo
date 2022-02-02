@@ -81,6 +81,8 @@ public class DomainDaoTest extends BackendIntegrationTest {
     public void testAll() {
         List<Domain> all = domainDao.findAll();
         assertEquals(12, all.size());
+        
+        all.forEach(s -> System.out.println(s));
     }
 
     @Test

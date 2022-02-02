@@ -35,6 +35,8 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 public abstract class GridWrapper<ID extends Serializable, T extends AbstractEntity<ID>, U> extends BaseCustomComponent
 		implements Searchable<T> {
 
@@ -68,7 +70,11 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * The form options
 	 */
+	@Getter
 	private FormOptions formOptions;
+
+	@Getter
+	private ComponentContext componentContext;
 
 	/**
 	 * The fetch joins to use when querying
@@ -91,8 +97,8 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
 	public GridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
+			FormOptions formOptions, ComponentContext componentContext, SerializablePredicate<T> filter,
+			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
 		setSpacing(false);
 		setPadding(false);
 		this.entityModel = entityModel;
@@ -100,6 +106,7 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 		this.service = service;
 		this.queryType = queryType;
 		this.formOptions = formOptions;
+		this.componentContext = componentContext;
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
 	}
@@ -139,10 +146,6 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 
 	protected SerializablePredicate<T> getFilter() {
 		return filter;
-	}
-
-	public FormOptions getFormOptions() {
-		return formOptions;
 	}
 
 	public abstract Grid<U> getGrid();

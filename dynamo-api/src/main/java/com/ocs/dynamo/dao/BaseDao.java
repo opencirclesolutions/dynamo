@@ -39,7 +39,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param filter   the filter
 	 * @param distinct whether to return only distinct results
-	 * @return  the number of entities that match the provided filter
+	 * @return the number of entities that match the provided filter
 	 */
 	long count(Filter filter, boolean distinct);
 
@@ -62,7 +62,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param filter the filter
 	 * @param joins  the desired relations to fetch
-	 * @return
+	 * @return a list of entities that match the filter
 	 */
 	List<T> fetch(Filter filter, FetchJoinInformation... joins);
 
@@ -72,7 +72,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param filter   the filter
 	 * @param pageable the page info
 	 * @param joins    the desired relations to fetch
-	 * @return
+	 * @return a page of entities that match the provided filter
 	 */
 	List<T> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins);
 
@@ -80,9 +80,10 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Fetches entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param orders the sort info
+	 * @param orders the desired sort order
 	 * @param joins  the desired relations to fetch
-	 * @return
+	 * @return a list of entities that match the provided filter, sorted according
+	 *         to the provided sort orders
 	 */
 	List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
 
@@ -140,7 +141,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * provided sort orders
 	 * 
 	 * @param filter the filter
-	 * @param orders   the sort orders
+	 * @param orders the sort orders
 	 * @return
 	 */
 	List<T> find(Filter filter, SortOrder... orders);

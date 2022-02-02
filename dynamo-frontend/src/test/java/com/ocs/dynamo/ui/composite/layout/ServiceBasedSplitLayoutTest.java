@@ -30,169 +30,178 @@ import com.vaadin.flow.data.provider.SortOrder;
 
 public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 
-    @Inject
-    private EntityModelFactory entityModelFactory;
+	@Inject
+	private EntityModelFactory entityModelFactory;
 
-    @Inject
-    private TestEntityService testEntityService;
+	@Inject
+	private TestEntityService testEntityService;
 
-    @Inject
-    private TestEntity2Service testEntity2Service;
+	@Inject
+	private TestEntity2Service testEntity2Service;
 
-    private TestEntity e1;
+	private TestEntity e1;
 
-    private TestEntity e2;
+	private TestEntity e2;
 
-    private TestEntity2 child1;
+	private TestEntity2 child1;
 
-    private TestEntity2 child2;
+	private TestEntity2 child2;
 
-    private boolean modeChanged = false;
+	private boolean modeChanged = false;
 
-    private boolean entitySelected = false;
+	private boolean entitySelected = false;
 
-    @BeforeEach
-    public void setup() {
-        MockVaadin.setup();
+	@BeforeEach
+	public void setup() {
+		MockVaadin.setup();
 
-        e1 = new TestEntity("Bob", 11L);
-        e1 = testEntityService.save(e1);
+		e1 = new TestEntity("Bob", 11L);
+		e1 = testEntityService.save(e1);
 
-        e2 = new TestEntity("Harry", 12L);
-        e2 = testEntityService.save(e2);
+		e2 = new TestEntity("Harry", 12L);
+		e2 = testEntityService.save(e2);
 
-        child1 = new TestEntity2();
-        child1.setTestEntity(e1);
-        child1 = testEntity2Service.save(child1);
+		child1 = new TestEntity2();
+		child1.setTestEntity(e1);
+		child1 = testEntity2Service.save(child1);
 
-        child2 = new TestEntity2();
-        child2.setTestEntity(e2);
-        child2 = testEntity2Service.save(child2);
+		child2 = new TestEntity2();
+		child2.setTestEntity(e2);
+		child2 = testEntity2Service.save(child2);
 
-    }
+	}
 
-    @Test
-    public void testCreateInEditMode() {
-        FormOptions fo = new FormOptions().setShowQuickSearchField(true);
-        ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
-                new SortOrder<String>("name", SortDirection.ASCENDING));
-        layout.setQuickSearchFilterSupplier(value -> new EqualsPredicate<TestEntity>("name", "%" + value + "%"));
-        layout.build();
+	@Test
+	public void testCreateInEditMode() {
+		FormOptions fo = new FormOptions().setShowQuickSearchField(true);
+		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
+				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
+				new SortOrder<String>("name", SortDirection.ASCENDING));
+		layout.setQuickSearchFilterSupplier(value -> new EqualsPredicate<TestEntity>("name", "%" + value + "%"));
+		layout.build();
 
-        assertNull(layout.getFilter());
+		assertNull(layout.getFilter());
 
-        // select an item and check that the edit form is generated
-        layout.getGridWrapper().getGrid().select(e1);
-        assertNotNull(layout.getEditForm());
-        assertFalse(layout.getEditForm().isViewMode());
+		// select an item and check that the edit form is generated
+		layout.getGridWrapper().getGrid().select(e1);
+		assertNotNull(layout.getEditForm());
+		assertFalse(layout.getEditForm().isViewMode());
 
-        // check that a quick search field is created
-        assertNotNull(layout.getQuickSearchField());
+		// check that a quick search field is created
+		assertNotNull(layout.getQuickSearchField());
 
-        // test selection
-        layout.setSelectedItems(e1);
-        assertEquals(e1, layout.getSelectedItem());
+		// test selection
+		layout.setSelectedItems(e1);
+		assertEquals(e1, layout.getSelectedItem());
 
-        layout.setSelectedItems(List.of(e2));
-        assertEquals(e2, layout.getSelectedItem());
+		layout.setSelectedItems(List.of(e2));
+		assertEquals(e2, layout.getSelectedItem());
 
-        layout.setSelectedItem(null);
-        assertNull(layout.getSelectedItem());
-    }
+		layout.setSelectedItem(null);
+		assertNull(layout.getSelectedItem());
+	}
 
-    /**
-     * Test creation in vertical mode
-     */
-    @Test
-    public void testCreateInVerticalMode() {
-        FormOptions fo = new FormOptions().setShowQuickSearchField(true).setScreenMode(ScreenMode.VERTICAL);
-        ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
-                new SortOrder<String>("name", SortDirection.ASCENDING));
-        layout.build();
+	/**
+	 * Test creation in vertical mode
+	 */
+	@Test
+	public void testCreateInVerticalMode() {
+		FormOptions fo = new FormOptions().setShowQuickSearchField(true).setScreenMode(ScreenMode.VERTICAL);
+		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
+				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
+				new SortOrder<String>("name", SortDirection.ASCENDING));
+		layout.build();
 
-        // test selection
-        layout.getGridWrapper().getGrid().select(e1);
-        assertEquals(e1, layout.getSelectedItem());
+		// test selection
+		layout.getGridWrapper().getGrid().select(e1);
+		assertEquals(e1, layout.getSelectedItem());
 
-        // try saving
-        TextField tf = (TextField) layout.getEditForm().getField("name");
-        tf.setValue("NewName");
-        layout.getEditForm().getSaveButtons().get(0).click();
+		// try saving
+		TextField tf = (TextField) layout.getEditForm().getField("name");
+		tf.setValue("NewName");
+		layout.getEditForm().getSaveButtons().get(0).click();
 
-        assertEquals("NewName", e1.getName());
+		assertEquals("NewName", e1.getName());
 
-    }
+	}
 
-    @Test
-    public void testCreateWithFilter() {
-        FormOptions fo = new FormOptions();
-        ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
-                new SortOrder<String>("name", SortDirection.ASCENDING));
-        layout.setFilterSupplier(() -> new EqualsPredicate<TestEntity>("name", "Bob"));
-        layout.build();
+	@Test
+	public void testCreateWithFilter() {
+		FormOptions fo = new FormOptions();
+		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
+				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
+				new SortOrder<String>("name", SortDirection.ASCENDING));
+		layout.setFilterSupplier(() -> new EqualsPredicate<TestEntity>("name", "Bob"));
+		layout.build();
 
-        assertNotNull(layout.getFilter());
+		assertNotNull(layout.getFilter());
 
-        // no quick search field this time
-        assertNull(layout.getQuickSearchField());
-    }
+		// no quick search field this time
+		assertNull(layout.getQuickSearchField());
+	}
 
-    @Test
-    public void testCreateInViewMode() {
-        FormOptions fo = new FormOptions().setOpenInViewMode(true);
-        ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(testEntityService,
-                entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
-                new SortOrder<String>("name", SortDirection.ASCENDING)) {
+	@Test
+	public void testCreateInViewMode() {
+		FormOptions fo = new FormOptions().setOpenInViewMode(true);
+		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
+				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
+				new SortOrder<String>("name", SortDirection.ASCENDING)) {
 
-            private static final long serialVersionUID = 7323448065402690401L;
+			private static final long serialVersionUID = 7323448065402690401L;
 
-            @Override
-            protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<Integer, TestEntity> editForm) {
-                modeChanged = true;
-            }
+//			@Override
+//			protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<Integer, TestEntity> editForm) {
+//				modeChanged = true;
+//			}
 
-            @Override
-            protected void afterEntitySelected(ModelBasedEditForm<Integer, TestEntity> editForm, TestEntity entity) {
-                entitySelected = true;
-            }
+//            @Override
+//            protected void afterEntitySelected(ModelBasedEditForm<Integer, TestEntity> editForm, TestEntity entity) {
+//                entitySelected = true;
+//            }
 
-        };
-        layout.buildFilter();
-        layout.build();
+		};
 
-        // select an item and check that the edit form is generated (in view
-        // mode)
-        layout.getGridWrapper().getGrid().select(e1);
-        assertNotNull(layout.getEditForm());
-        assertTrue(layout.getEditForm().isViewMode());
+		layout.setAfterEntitySelected((form, entity) -> {
+			entitySelected = true;
+		});
+		layout.setAfterModeChanged((form, viewMode) -> {
+			modeChanged = true;
+		});
 
-        // change into edit mode
-        layout.getEditForm().getEditButtons().get(0).click();
-        assertFalse(layout.getEditForm().isViewMode());
-        assertTrue(modeChanged);
-        assertTrue(entitySelected);
-    }
+		layout.buildFilter();
+		layout.build();
 
-    /**
-     * Test the creation of a detail layout
-     */
-    @Test
-    public void testCreateDetailLayout() {
-        FormOptions fo = new FormOptions();
-        ServiceBasedDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new ServiceBasedDetailLayout<Integer, TestEntity2, Integer, TestEntity>(
-                testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class), QueryType.ID_BASED, fo, null);
+		// select an item and check that the edit form is generated (in view
+		// mode)
+		layout.getGridWrapper().getGrid().select(e1);
+		assertNotNull(layout.getEditForm());
+		assertTrue(layout.getEditForm().isViewMode());
 
-        layout.setParentFilterSupplier(parent -> new EqualsPredicate<TestEntity2>("testEntity", parent));
-        layout.build();
-        layout.getGridWrapper().forceSearch();
+		// change into edit mode
+		layout.getEditForm().getEditButtons().get(0).click();
+		assertFalse(layout.getEditForm().isViewMode());
+		assertTrue(modeChanged);
+		assertTrue(entitySelected);
+	}
 
-        assertEquals(1, layout.getGridWrapper().getDataProviderSize());
-        assertEquals(e1, layout.getParentEntity());
-        assertNotNull(layout.getFilter());
+	/**
+	 * Test the creation of a detail layout
+	 */
+	@Test
+	public void testCreateDetailLayout() {
+		FormOptions fo = new FormOptions();
+		ServiceBasedDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new ServiceBasedDetailLayout<Integer, TestEntity2, Integer, TestEntity>(
+				testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class),
+				QueryType.ID_BASED, fo, null);
 
-        layout.reload();
-    }
+		layout.setParentFilterSupplier(parent -> new EqualsPredicate<TestEntity2>("testEntity", parent));
+		layout.build();
+		layout.getGridWrapper().forceSearch();
+
+		assertEquals(1, layout.getGridWrapper().getDataProviderSize());
+		assertEquals(e1, layout.getParentEntity());
+		assertNotNull(layout.getFilter());
+
+		layout.reload();
+	}
 }

@@ -20,18 +20,21 @@ import com.querydsl.core.types.dsl.EntityPathBase;
 import org.springframework.stereotype.Repository;
 
 /**
- * Created by R.E.M. Claassen on 6-4-2017.
+ * Implementation of the DAO for the Parameter entity
+ * 
+ * @author BasRutten
+ *
  */
 @Repository("parameterDao")
 public class ParameterDaoImpl extends BaseDaoImpl<Integer, Parameter> implements ParameterDao {
 
-    @Override
-    public Class<Parameter> getEntityClass() {
-        return Parameter.class;
-    }
+	@Override
+	public Class<Parameter> getEntityClass() {
+		return Parameter.class;
+	}
 
-    @Override
-    protected EntityPathBase<Parameter> getDslRoot() {
-        return QParameter.parameter;
-    }
+	@Override
+	protected EntityPathBase<Parameter> getDslRoot() {
+		return QParameter.parameter;
+	}
 }

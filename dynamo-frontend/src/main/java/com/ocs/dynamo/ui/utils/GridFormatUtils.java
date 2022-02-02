@@ -23,11 +23,16 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.FormatUtils;
 
+import lombok.experimental.UtilityClass;
+
 /**
- * Utilities for formatting values inside a grid. Mostly delegates to FormatUtils
+ * Utilities for formatting values inside a grid. Mostly delegates to
+ * FormatUtils
+ * 
  * @author Bas Rutten
  *
  */
+@UtilityClass
 public final class GridFormatUtils {
 
 	private static EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
@@ -84,7 +89,4 @@ public final class GridFormatUtils {
 		return input;
 	}
 
-	private GridFormatUtils() {
-		// hidden constructor
-	}
 }

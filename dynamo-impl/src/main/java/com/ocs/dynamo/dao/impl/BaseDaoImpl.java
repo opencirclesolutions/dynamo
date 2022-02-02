@@ -46,7 +46,7 @@ import com.querydsl.jpa.impl.JPAUpdateClause;
  * 
  * @author bas.rutten
  * @param <ID> type parameter, the type of the primary key of the domain object
- * @param <T>  type parameter, the domain object class
+ * @param <T>  type parameter, the entity class
  */
 public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements BaseDao<ID, T> {
 
@@ -131,8 +131,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	/**
-	 * Executes a fetch query - watch out, paging combined with one-to-many joins leads to everything being
-	 * calculated in-memory
+	 * Executes a fetch query - watch out, paging combined with one-to-many joins
+	 * leads to everything being calculated in-memory
 	 * 
 	 * @param filter     the filter to apply
 	 * @param pageable   object containing the paging data

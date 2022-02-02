@@ -155,9 +155,9 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public PivotGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, filter, sortOrders, joins);
+			FormOptions formOptions, ComponentContext componentContext, SerializablePredicate<T> filter,
+			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+		super(service, entityModel, queryType, formOptions, componentContext, filter, sortOrders, joins);
 	}
 
 	/**
@@ -305,18 +305,18 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 					orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
 				}
 
-				PivotParameters pars = new PivotParameters();
-				pars.setColumnKeyProperty(columnKeyProperty);
-				pars.setFixedColumnKeys(fixedColumnKeys);
-				pars.setHeaderMapper(exportHeaderMapper != null ? exportHeaderMapper : headerMapper);
-				pars.setFixedHeaderMapper(fixedHeaderMapper);
-				pars.setPivotedProperties(pivotedProperties);
-				pars.setPossibleColumnKeys(possibleColumnKeys);
-				pars.setRowKeyProperty(rowKeyProperty);
-				pars.setHiddenPivotedProperties(hiddenPivotedProperties);
-				pars.setAggregationMap(aggregationMap);
-				pars.setIncludeAggregateRow(includeAggregateRow);
-				pars.setAggregationClassMap(aggregationClassMap);
+				PivotParameters pars = PivotParameters.builder() //
+						.columnKeyProperty(columnKeyProperty) //
+						.fixedColumnKeys(fixedColumnKeys) //
+						.fixedHeaderMapper(fixedHeaderMapper) //
+						.pivotedProperties(pivotedProperties) //
+						.possibleColumnKeys(possibleColumnKeys) //
+						.rowKeyProperty(rowKeyProperty) //
+						.hiddenPivotedProperties(hiddenPivotedProperties) //
+						.aggregationMap(aggregationMap) //
+						.aggregationClassMap(aggregationClassMap) //
+						.includeAggregateRow(includeAggregateRow) //
+						.build();
 
 				// use the fallback sort orders here
 				getExportDelegate().exportPivoted(

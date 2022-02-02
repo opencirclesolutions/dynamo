@@ -87,7 +87,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model, new FormOptions(),
-				new HashMap<String, SerializablePredicate<?>>(), Lists.newArrayList(entity), new ArrayList<>());
+				ComponentContext.builder().build(), new HashMap<String, SerializablePredicate<?>>(),
+				Lists.newArrayList(entity), new ArrayList<>());
 		wrapper.build();
 
 		Grid<TestEntity> grid = wrapper.getGrid();

@@ -218,7 +218,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			postProcessLayout(main);
 			add(main);
 
-			if (getFormOptions().isPreserveSearchTerms() && !getFormOptions().isPopup()) {
+			if (getFormOptions().isPreserveSearchTerms() && !getComponentContext().isPopup()) {
 				restoreSearchValues();
 			}
 		}
@@ -629,7 +629,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Sets the code to be carrried out after the search filters are cleared
+	 * Sets the code to be carried out after the search filters are cleared
 	 * 
 	 * @param afterClearConsumer
 	 */

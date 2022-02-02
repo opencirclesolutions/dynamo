@@ -18,28 +18,29 @@ import com.ocs.dynamo.ui.composite.export.PivotedExportDialog;
 
 public class PivotExportDialogTest extends BaseMockitoTest {
 
-    @Mock
-    private ExportService exportService;
+	@Mock
+	private ExportService exportService;
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
+	private EntityModelFactory emf = new EntityModelFactoryImpl();
 
-    @BeforeEach
-    public void setup() {
-        MockVaadin.setup();
-    }
+	@BeforeEach
+	public void setup() {
+		MockVaadin.setup();
+	}
 
-    @Test
-    public void test() {
-        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
-        PivotParameters pars = new PivotParameters();
+	@Test
+	public void test() {
+		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-        when(exportService.exportCsvPivot(em, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
-        when(exportService.exportExcelPivot(em, null, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
+		PivotParameters pars = PivotParameters.builder().build();
 
-        PivotedExportDialog<Integer, TestEntity> dialog = new PivotedExportDialog<>(exportService, em, null, null, null,
-                new PivotParameters());
-        dialog.build();
-        dialog.open();
+		when(exportService.exportCsvPivot(em, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
+		when(exportService.exportExcelPivot(em, null, null, null, pars)).thenReturn(new byte[] { 1, 2, 3 });
 
-    }
+		PivotedExportDialog<Integer, TestEntity> dialog = new PivotedExportDialog<>(exportService, em, null, null, null,
+				pars);
+		dialog.build();
+		dialog.open();
+
+	}
 }

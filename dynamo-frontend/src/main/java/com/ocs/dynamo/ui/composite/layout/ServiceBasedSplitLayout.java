@@ -105,7 +105,8 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		}
 
 		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				getQueryType(), getFormOptions(), filter, getFieldFilters(), getSortOrders(), false, getJoins()) {
+				getQueryType(), getFormOptions(), getComponentContext(), filter, getFieldFilters(), getSortOrders(),
+				false, getJoins()) {
 
 			@Override
 			protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {

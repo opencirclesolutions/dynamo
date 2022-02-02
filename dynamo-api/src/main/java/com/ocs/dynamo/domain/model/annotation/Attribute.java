@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.EditableType;
+import com.ocs.dynamo.domain.model.MultiSelectMode;
 import com.ocs.dynamo.domain.model.PagingType;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
@@ -113,12 +114,6 @@ public @interface Attribute {
 	String fileNameProperty() default "";
 
 	/**
-	 * 
-	 * @return the filter type to use for entity select components
-	 */
-	PagingType pagingType() default PagingType.PAGED;
-
-	/**
 	 * @return the select mode that determines which component to used when the
 	 *         attribute appears in an editable grid
 	 */
@@ -190,9 +185,22 @@ public @interface Attribute {
 	boolean multipleSearch() default false;
 
 	/**
+	 * 
+	 * @return the select mode to use when selecting multiple items in a search
+	 *         dialog
+	 */
+	MultiSelectMode multiSelectMode() default MultiSelectMode.INHERIT;
+
+	/**
 	 * @return whether the attribute is navigable when inside a grid
 	 */
 	boolean navigable() default false;
+
+	/**
+	 * 
+	 * @return the filter type to use for entity select components
+	 */
+	PagingType pagingType() default PagingType.PAGED;
 
 	/**
 	 * @return whether the attribute value is treated as a percentage

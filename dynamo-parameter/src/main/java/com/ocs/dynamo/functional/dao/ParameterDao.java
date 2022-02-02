@@ -17,7 +17,10 @@ import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.functional.domain.Parameter;
 
 /**
- * Created by R.E.M. Claassen on 6-4-2017.
+ * DAO for the Parameter entity
+ * 
+ * @author BasRutten
+ *
  */
 public interface ParameterDao extends BaseDao<Integer, Parameter> {
 

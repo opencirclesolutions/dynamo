@@ -36,6 +36,7 @@ import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
@@ -50,6 +51,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A layout for displaying various nested forms below each other
@@ -221,6 +225,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	private FormOptions formOptions;
 
+	private ComponentContext context = ComponentContext.builder().build();
+
 	/**
 	 * The individual edit forms
 	 */
@@ -263,6 +269,14 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	private Integer groupTogetherWidth;
 
+	@Getter
+	@Setter
+	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+
 	/**
 	 * Constructor
 	 * 
@@ -284,6 +298,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		this.items = new ArrayList<>();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
+
 		initContent();
 	}
 
@@ -311,20 +326,20 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 			private static final long serialVersionUID = -7229109969816505927L;
 
-			@Override
-			protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
-				DetailsEditLayout.this.afterLayoutBuilt(this, viewMode);
-			}
+//			@Override
+//			protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
+//				DetailsEditLayout.this.afterLayoutBuilt(this, viewMode);
+//			}
 
-			@Override
-			protected void afterModeChanged(boolean viewMode) {
-				DetailsEditLayout.this.afterModeChanged(this, viewMode);
-			}
+//			@Override
+//			protected void afterModeChanged(boolean viewMode) {
+//				DetailsEditLayout.this.afterModeChanged(this, viewMode);
+//			}
 
-			@Override
-			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-				return DetailsEditLayout.this.constructCustomConverter(am);
-			}
+//			@Override
+//			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
+//				return DetailsEditLayout.this.constructCustomConverter(am);
+//			}
 
 			@Override
 			protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
@@ -354,6 +369,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 		editForm.setNestedMode(true);
 		editForm.setViewMode(viewMode);
+		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
+		editForm.setAfterModeChanged(getAfterModeChanged());
 		editForm.build();
 
 		FormContainer fc = new FormContainer(editForm) {
@@ -369,15 +386,15 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		mainFormContainer.add(fc);
 	}
 
-	/**
-	 * Callback method that is called after a detail layout has been built
-	 * 
-	 * @param editForm
-	 * @param viewMode
-	 */
-	protected void afterLayoutBuilt(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
-		// override in subclasses
-	}
+//	/**
+//	 * Callback method that is called after a detail layout has been built
+//	 * 
+//	 * @param editForm
+//	 * @param viewMode
+//	 */
+//	protected void afterLayoutBuilt(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
+//		// override in subclasses
+//	}
 
 	/**
 	 * Callback method that is called after the view mode has changed

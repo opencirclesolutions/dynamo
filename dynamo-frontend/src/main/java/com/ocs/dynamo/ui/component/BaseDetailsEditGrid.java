@@ -38,6 +38,7 @@ import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedSelectionGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -398,23 +399,21 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 						messageService.getMessage("ocs.no.service.specified", VaadinUtils.getLocale()));
 			}
 
+			SearchOptions options = SearchOptions.builder().advancedSearchMode(false).multiSelect(true)
+					.searchImmediately(true).build();
+
 			searchDialog = new ModelBasedSearchDialog<ID, T>(service,
 					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
-					searchDialogSortOrder == null ? null : List.of(searchDialogSortOrder), true, true, false) {
+					searchDialogSortOrder == null ? null : List.of(searchDialogSortOrder), options);
 
-				private static final long serialVersionUID = 1512969437992973122L;
-
-				@Override
-				protected boolean doClose() {
-					// add the selected items to the grid
-					Collection<T> selected = getSelectedItems();
-					if (selected != null) {
-						handleDialogSelection(selected);
-						getDataProvider().refreshAll();
-					}
-					return true;
+			searchDialog.setOnClose(() -> {
+				Collection<T> selected = searchDialog.getSelectedItems();
+				if (selected != null) {
+					handleDialogSelection(selected);
+					getDataProvider().refreshAll();
 				}
-			};
+				return true;
+			});
 			searchDialog.buildAndOpen();
 		});
 		searchDialogButton.setVisible(!viewMode && formOptions.isDetailsGridSearchMode());
@@ -605,7 +604,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Constructs the actual component
 	 */
 	protected void initContent() {
-		boolean checkBoxesForMultiSelect = getFormOptions().isUseCheckboxesForMultiSelect();
+		boolean checkBoxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
 		if (checkBoxesForMultiSelect) {
 			createCheckboxSelectGrid();
 		} else {
@@ -742,7 +741,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Set the code to carry out after the value of this component has been set
 	 * 
-	 * @param afterValueSet 
+	 * @param afterValueSet
 	 */
 	public void setAfterValueSet(Consumer<U> afterValueSet) {
 		this.afterValueSet = afterValueSet;
@@ -842,7 +841,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Updates the caption
 	 * 
-	 * @param size the number of items currently being shown in the grid 
+	 * @param size the number of items currently being shown in the grid
 	 */
 	protected void updateCaption(int size) {
 		this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " "

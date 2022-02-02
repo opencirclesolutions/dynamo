@@ -29,7 +29,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
  */
 @Entity
 @DiscriminatorValue("CURRENCY")
-@Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc")
+@Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc", filterProperty = "name")
 public class Currency extends Domain {
 
 	private static final long serialVersionUID = 3270223599926941961L;
@@ -41,10 +41,8 @@ public class Currency extends Domain {
 	/**
 	 * Constructor
 	 * 
-	 * @param code
-	 *            the code of the currency
-	 * @param name
-	 *            the name of the currency
+	 * @param code the code of the currency
+	 * @param name the name of the currency
 	 */
 	public Currency(String code, String name) {
 		super(code, name);

@@ -72,7 +72,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Set<String> getCascadeAttributes();
 
 	/**
-	 * Returns the path to filter on when applying a cascade
+	 * Returns the path to filter on when applying a cascade operation
 	 * 
 	 * @param cascadeTo the path of the property to which to apply cascading
 	 * @return the path to filter on
@@ -106,13 +106,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * Returns the value for a custom setting
 	 * 
 	 * @param name the name of the custom setting
-	 * @return
+	 * @return the value of the custom setting
 	 */
 	Object getCustomSetting(String name);
 
 	/**
 	 * 
-	 * @return The date type (date, time, or time stamp) of the attribute
+	 * @return the date type (date, time, or time stamp) of the attribute
 	 */
 	AttributeDateType getDateType();
 
@@ -127,14 +127,14 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * Returns the description of the attribute for a certain locale
 	 * 
 	 * @param the locale
-	 * @return The description of the attribute. This is used as the tool tip in
+	 * @return the description of the attribute. This is used as the tool tip in
 	 *         tables
 	 */
 	String getDescription(Locale locale);
 
 	/**
 	 * 
-	 * @return The display format of the attribute (used in date formatting)
+	 * @return the display format of the attribute (used in date formatting)
 	 */
 	String getDisplayFormat();
 
@@ -148,13 +148,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getDisplayName(Locale locale);
 
 	/**
-	 * @return When the attribute can be edited (never, always, or only when
+	 * @return when the attribute can be edited (never, always, or only when
 	 *         creating new entities)
 	 */
 	EditableType getEditableType();
 
 	/**
-	 * @return The EntityModel for the entity that contains this attribute
+	 * @return the EntityModel for the entity that contains this attribute
 	 */
 	EntityModel<?> getEntityModel();
 
@@ -168,8 +168,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The name of the property in which to store the file name of an
-	 *         uploaded file
+	 * @return The name of the property in which to store the file name after a
+	 *         successful file upload
 	 */
 	String getFileNameProperty();
 
@@ -180,8 +180,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Integer getGridOrder();
 
 	/**
-	 * @return the select mode (determines which component to render in editable
-	 *         grids)
+	 * @return the select mode to use when editing the attribute inside a grid
 	 */
 	AttributeSelectMode getGridSelectMode();
 
@@ -201,7 +200,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the maximum length of the text representation inside a grid
+	 * @return the maximum length of the text when displaying the attribute inside a
+	 *         grid
 	 */
 	Integer getMaxLengthInGrid();
 
@@ -234,26 +234,31 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The name/identifier of the attribute
+	 * @return the select mode (combo boxes or row click) when selecting multiple
+	 *         items inside a search dialog
+	 */
+	MultiSelectMode getMultiSelectMode();
+
+	/**
+	 * 
+	 * @return the name/identifier of the attribute
 	 */
 	String getName();
 
 	/**
 	 * 
-	 * @return The nested entity model for this attribute
+	 * @return the nested entity model for this attribute
 	 */
 	EntityModel<?> getNestedEntityModel();
 
 	/**
-	 * @return The normalized type of the attribute (this is the same as the
+	 * @return the normalized type of the attribute (this is the same as the
 	 *         <code>type</code> in case of a singular attribute, and the member
 	 *         type of the collection case of collection attribute
 	 */
 	Class<?> getNormalizedType();
 
 	/**
-	 * 
-	 * 
 	 * @return The order number (used to internally order the attribute models)
 	 */
 	Integer getOrder();
@@ -289,7 +294,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The path by which to replace the actual path when carrying out a
+	 * @return the path by which to replace the actual path when carrying out a
 	 *         search. This is needed in very specific cases when an Entity has
 	 *         multiple detail relations that are mapped to the same table
 	 */
@@ -297,7 +302,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The path to use for sorting on this attribute when it does not
+	 * @return the path to use for sorting on this attribute when it does not
 	 *         normally support sorting
 	 */
 	String getReplacementSortPath();
@@ -548,5 +553,4 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return whether to use thousands grouping in edit mode
 	 */
 	boolean useThousandsGroupingInViewMode();
-
 }
