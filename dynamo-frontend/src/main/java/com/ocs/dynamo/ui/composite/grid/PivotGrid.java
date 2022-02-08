@@ -70,7 +70,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 		for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {
 			String fk = provider.getFixedColumnKeys().get(i);
 			addColumn(t -> t.getFixedValue(fk)).setHeader(fixedHeaderMapper.apply(fk)).setFrozen(true)
-					.setAutoWidth(true).setKey(fk).setId(fk);
+					.setResizable(true).setAutoWidth(true).setKey(fk).setId(fk);
 		}
 
 		for (int i = 0; i < possibleColumnKeys.size(); i++) {

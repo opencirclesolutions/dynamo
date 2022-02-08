@@ -58,7 +58,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	private PivotGridWrapper<ID, T> pivotGridWrapper;
 
 	/**
-	 * Header mapping function. Excepts the column key and the property
+	 * Header mapping function. Expects the column key and the property
 	 */
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 

@@ -59,11 +59,11 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	/**
 	 * Constructor
 	 * 
-	 * @param service the service used to query the database
-	 * @param entityModel the entity model of the entity to export
-	 * @param sortOrders the sort order to apply to the data
-	 * @param filter the filter used when querying the database
-	 * @param title title of the report
+	 * @param service         the service used to query the database
+	 * @param entityModel     the entity model of the entity to export
+	 * @param sortOrders      the sort order to apply to the data
+	 * @param filter          the filter used when querying the database
+	 * @param title           title of the report
 	 * @param customGenerator custom generator
 	 * @param pivotParameters pivot parameters
 	 * @param joins
@@ -99,6 +99,12 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 		// add header row
 		Row titleRow = sheet.createRow(0);
+		Row subtitleRow = null;
+
+		if (pivotParameters.getPivotedProperties().size() > 1) {
+			subtitleRow = sheet.createRow(1);
+		}
+
 		titleRow.setHeightInPoints(TITLE_ROW_HEIGHT);
 
 		int nrOfPivotProps = pivotParameters.getPivotedProperties().size();
@@ -118,7 +124,11 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		}
 
 		// add variable columns
+		int startIndex = i;
+
 		for (Object fc : pivotParameters.getPossibleColumnKeys()) {
+
+			int mergeStart = i;
 			for (String property : pivotParameters.getPivotedProperties()) {
 				Cell cell = titleRow.createCell(i);
 				if (!resize) {
@@ -131,6 +141,32 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 					cell.setCellValue(value);
 				}
 				i++;
+			}
+
+			if (nrOfPivotProps > 1) {
+				sheet.addMergedRegion(
+						new CellRangeAddress(titleRow.getRowNum(), titleRow.getRowNum(), mergeStart, i - 1));
+			}
+
+		}
+
+		if (nrOfPivotProps > 1) {
+
+			i = startIndex;
+			for (Object fc : pivotParameters.getPossibleColumnKeys()) {
+				for (String property : pivotParameters.getPivotedProperties()) {
+					Cell cell = subtitleRow.createCell(i);
+					if (!resize) {
+						sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+					}
+
+					cell.setCellStyle(getGenerator().getHeaderStyle(i));
+					String value = pivotParameters.getSubHeaderMapper().apply(property);
+					if (value != null) {
+						cell.setCellValue(value);
+					}
+					i++;
+				}
 			}
 		}
 
@@ -224,14 +260,14 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			if (propIndex == pivotParameters.getPivotedProperties().size() - 1) {
 				propIndex = 0;
 				colIndex = colIndex + 1;
+				if (match) {
+					entity = iterator.next();
+				}
 			} else {
 				propIndex++;
 			}
 			colsAdded++;
 
-			if (match) {
-				entity = iterator.next();
-			}
 			prevRowKey = rowKey;
 		}
 
@@ -354,11 +390,11 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	/**
 	 * Writes a cell containing an aggregation total at the end of a rwow
 	 * 
-	 * @param row           the current row
-	 * @param type          the aggregation type
-	 * @param aggregateClass the class of the aggregate object
+	 * @param row              the current row
+	 * @param type             the aggregation type
+	 * @param aggregateClass   the class of the aggregate object
 	 * @param nrOfVariableCols the number of variable columns
-	 * @param nrOfFixedCols the number of fixed columns
+	 * @param nrOfFixedCols    the number of fixed columns
 	 */
 	private void writeRowAggregate(Row row, PivotAggregationType type, Class<?> aggregateClass, int nrOfVariableCols,
 			int nrOfFixedCols) {

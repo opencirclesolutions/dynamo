@@ -50,6 +50,8 @@ public class PivotParameters {
 
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
+	private Function<Object, String> subHeaderMapper = a -> a.toString();
+
 	private boolean includeAggregateRow;
 
 	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
@@ -140,6 +142,14 @@ public class PivotParameters {
 
 	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
 		this.aggregationClassMap = aggregationClassMap;
+	}
+
+	public Function<Object, String> getSubHeaderMapper() {
+		return subHeaderMapper;
+	}
+
+	public void setSubHeaderMapper(Function<Object, String> subHeaderMapper) {
+		this.subHeaderMapper = subHeaderMapper;
 	}
 
 }
