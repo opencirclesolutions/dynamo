@@ -24,7 +24,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
@@ -141,11 +141,12 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 					// edit all columns at once
 					column = grid.addComponentColumn(t -> {
 						Component comp = constructCustomField(entityModel, am);
+						FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
+								.fieldFilters(fieldFilters).viewMode(false).sharedProviders(sharedProviders)
+								.editableGrid(true).build();
+
 						if (comp == null) {
-							FieldFactoryContext ctx = FieldFactoryContext.create().attributeModel(am)
-									.fieldFilters(fieldFilters).viewMode(false).sharedProviders(sharedProviders)
-									.editableGrid(true).build();
-							comp = fieldFactory.constructField(ctx);
+							comp = fieldFactory.constructField(context);
 						}
 
 						// always hide label inside grid
@@ -167,7 +168,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 						// delegate the binding to the enveloping component
 						BindingBuilder<T, ?> builder = doBind(t, comp, am.getPath());
 						if (builder != null) {
-							fieldFactory.addConvertersAndValidators(builder, am, constructCustomConverter(am),
+							fieldFactory.addConvertersAndValidators(builder, am, context, constructCustomConverter(am),
 									constructCustomValidator(am), null);
 							builder.bind(am.getPath());
 						}
@@ -185,7 +186,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 			if (editable && GridEditMode.SINGLE_ROW.equals(gridEditMode)
 					&& EditableType.EDITABLE.equals(am.getEditableType())) {
 				Binder<T> binder = grid.getEditor().getBinder();
-				FieldFactoryContext context = FieldFactoryContext.create().attributeModel(am).viewMode(false)
+				FieldCreationContext context = FieldCreationContext.create().attributeModel(am).viewMode(false)
 						.fieldFilters(fieldFilters).editableGrid(true).build();
 				Component comp = fieldFactory.constructField(context);
 				if (comp != null) {
@@ -193,7 +194,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 					if (am.isRequired()) {
 						builder.asRequired();
 					}
-					fieldFactory.addConvertersAndValidators(builder, am, null, null, null);
+					fieldFactory.addConvertersAndValidators(builder, am, context, null, null, null);
 					builder.bind(am.getPath());
 				}
 				column.setEditorComponent(comp);

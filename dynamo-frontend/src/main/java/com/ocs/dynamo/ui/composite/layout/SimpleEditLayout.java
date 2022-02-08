@@ -62,7 +62,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	@Getter
 	@Setter
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-	
+
 	@Getter
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
@@ -201,10 +201,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 //					SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
 //				}
 
-				@Override
-				protected void postProcessEditFields() {
-					SimpleEditLayout.this.postProcessEditFields(editForm);
-				}
+//				@Override
+//				protected void postProcessEditFields() {
+//					SimpleEditLayout.this.postProcessEditFields(editForm);
+//				}
 			};
 
 			initEditForm(editForm);
@@ -294,14 +294,14 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 //		// overwrite in subclasses
 //	}
 
-	/**
-	 * Callback method that is called after the edit form has been constructed
-	 * 
-	 * @param editForm the edit form
-	 */
-	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// do nothing by default - override in subclasses
-	}
+//	/**
+//	 * Callback method that is called after the edit form has been constructed
+//	 * 
+//	 * @param editForm the edit form
+//	 */
+//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+//		// do nothing by default - override in subclasses
+//	}
 
 	/**
 	 * Method that is called after the entire layout has been constructed. Use this

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -38,7 +39,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
 
@@ -175,7 +175,23 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	};
 
 	@Getter
+	@Setter
+	private BiConsumer<String, byte[]> afterUploadCompleted;
+
+	@Getter
+	@Setter
+	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
+
+	@Getter
+	@Setter
+	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
+
+	@Getter
 	private BaseService<ID, T> service;
+
+	@Getter
+	@Setter
+	private BiPredicate<Component, T> mustEnableComponent;
 
 	/**
 	 * Constructor
@@ -219,13 +235,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param selectedItem the selected item
 	 */
 	protected void checkComponentState(T selectedItem) {
-		for (Component b : componentsToUpdate) {
-			if (b instanceof DownloadButton) {
-				((DownloadButton) b).update();
+		for (Component component : componentsToUpdate) {
+			if (component instanceof DownloadButton) {
+				((DownloadButton) component).update();
 			}
-			boolean enabled = selectedItem != null && mustEnableComponent(b, selectedItem);
-			if (b instanceof HasEnabled) {
-				((HasEnabled) b).setEnabled(enabled);
+			boolean enabled = selectedItem != null && mustEnableComponent != null
+					&& mustEnableComponent.test(component, selectedItem);
+			if (component instanceof HasEnabled) {
+				((HasEnabled) component).setEnabled(enabled);
 			}
 		}
 	}
@@ -264,18 +281,18 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return fieldEntityModels.get(path);
 	}
 
-	/**
-	 * Callback method that is called during the save process. Allows the developer
-	 * to respond to a specific type of exception thrown in the service layer in a
-	 * custom way
-	 * 
-	 * @param ex
-	 * @return <code>true</code> if the exception was handled by this method, false
-	 *         otherwise
-	 */
-	protected boolean handleCustomException(RuntimeException ex) {
-		return false;
-	}
+//	/**
+//	 * Callback method that is called during the save process. Allows the developer
+//	 * to respond to a specific type of exception thrown in the service layer in a
+//	 * custom way
+//	 * 
+//	 * @param ex
+//	 * @return <code>true</code> if the exception was handled by this method, false
+//	 *         otherwise
+//	 */
+//	protected boolean handleCustomException(RuntimeException ex) {
+//		return false;
+//	}
 
 	/**
 	 * Copies component settings to the edit form
@@ -299,6 +316,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		editForm.setCustomConverters(getCustomConverters());
 		editForm.setCustomValidators(getCustomValidators());
 		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
+		editForm.setAfterUploadCompleted(getAfterUploadCompleted());
+		editForm.setPostProcessEditFields(getPostProcessEditFields());
+		editForm.setCustomSaveExceptionHandler(getCustomSaveExceptionHandler());
 	}
 
 	/**
@@ -313,18 +333,18 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return customComponentMap.get(key) != null && customComponentMap.get(key).contains(toCheck);
 	}
 
-	/**
-	 * Method that is called in order to enable/disable a component (i.e. a button)
-	 * in a button bar after selecting an item in the grid
-	 *
-	 * @param component    the component
-	 * @param selectedItem the currently selected item in the grid
-	 * @return
-	 */
-	protected boolean mustEnableComponent(Component component, T selectedItem) {
-		// overwrite in subclasses if needed
-		return true;
-	}
+//	/**
+//	 * Method that is called in order to enable/disable a component (i.e. a button)
+//	 * in a button bar after selecting an item in the grid
+//	 *
+//	 * @param component    the component
+//	 * @param selectedItem the currently selected item in the grid
+//	 * @return
+//	 */
+//	protected boolean mustEnableComponent(Component component, T selectedItem) {
+//		// overwrite in subclasses if needed
+//		return true;
+//	}
 
 	/**
 	 * Registers a component that must be enabled/disabled after an item is

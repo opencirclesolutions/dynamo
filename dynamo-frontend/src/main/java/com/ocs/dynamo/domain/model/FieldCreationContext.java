@@ -23,33 +23,33 @@ import lombok.Builder;
 import lombok.Data;
 
 /**
- * Field factory context that can be used to specify how the FieldFactory must
- * construct a field
+ * DTO object that can be used to construct the context that is used for
+ * constructing a component
  * 
  * @author Bas Rutten
  *
  */
 @Data
 @Builder(toBuilder = true)
-public class FieldFactoryContext {
+public class FieldCreationContext {
 
 	/**
 	 * Creates a blank context
 	 * 
-	 * @return
+	 * @return the freshly created context
 	 */
-	public static FieldFactoryContext.FieldFactoryContextBuilder create() {
-		return FieldFactoryContext.builder();
+	public static FieldCreationContext.FieldCreationContextBuilder create() {
+		return FieldCreationContext.builder();
 	}
 
 	/**
 	 * Creates a default context based on only the attribute model
 	 * 
 	 * @param am the attribute model
-	 * @return
+	 * @return the freshly created context
 	 */
-	public static FieldFactoryContext createDefault(AttributeModel am) {
-		return FieldFactoryContext.builder().attributeModel(am).build();
+	public static FieldCreationContext createDefault(AttributeModel am) {
+		return FieldCreationContext.builder().attributeModel(am).build();
 	}
 
 	private AttributeModel attributeModel;
@@ -75,6 +75,17 @@ public class FieldFactoryContext {
 
 	public DataProvider<?, SerializablePredicate<?>> getSharedProvider(String attribute) {
 		return sharedProviders == null ? null : sharedProviders.get(attribute);
+	}
+
+	/**
+	 * Returns the AttributeSelectMode of the attribute model to use depending on
+	 * the context
+	 * 
+	 * @param am the attribute model
+	 * @return
+	 */
+	public AttributeSelectMode getAppropriateMode(AttributeModel am) {
+		return isSearch() ? am.getSearchSelectMode() : (isEditableGrid() ? am.getGridSelectMode() : am.getSelectMode());
 	}
 
 }

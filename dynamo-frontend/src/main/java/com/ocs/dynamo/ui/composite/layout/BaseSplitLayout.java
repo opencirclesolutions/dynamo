@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -31,13 +32,13 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.SortOrder;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Base class for a layout that contains both a results grid and a details view.
@@ -82,6 +83,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * component
 	 */
 	private Component selectedDetailLayout;
+
+	@Getter
+	@Setter
+	private Supplier<Component> buildHeaderLayout;
 
 	/**
 	 * Constructor
@@ -144,7 +149,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				splitterLayout.setClassName(DynamoConstants.CSS_SPLIT_LAYOUT_LEFT);
 
 				// optional header layout
-				headerLayout = constructHeaderLayout();
+				headerLayout = buildHeaderLayout == null ? null : buildHeaderLayout.get();
 				if (headerLayout != null) {
 					splitterLayout.add(headerLayout);
 				}
@@ -190,7 +195,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			getButtonBar().add(removeButton);
 
 			// allow the user to define extra buttons
-			postProcessButtonBar(getButtonBar());
+			if (getPostProcessMainButtonBar() != null) {
+				getPostProcessMainButtonBar().accept(getButtonBar());
+			}
+
 			postProcessLayout(mainLayout);
 
 			checkComponentState(null);
@@ -217,15 +225,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		}
 	}
 
-	/**
-	 * Constructs a header layout (displayed above the actual tabular content). By
-	 * default this is empty, overwrite in subclasses if you want to modify this
-	 *
-	 * @return
-	 */
-	protected Component constructHeaderLayout() {
-		return null;
-	}
+//	/**
+//	 * Constructs a header layout (displayed above the actual tabular content). By
+//	 * default this is empty, overwrite in subclasses if you want to modify this
+//	 *
+//	 * @return
+//	 */
+//	protected Component constructHeaderLayout() {
+//		return null;
+//	}
 
 	protected final Button constructRemoveButton() {
 		Button removeButton = new RemoveButton(this, message("ocs.remove"), null, () -> removeEntity(),
@@ -326,24 +334,19 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				}
 
 				@Override
-				protected boolean handleCustomException(RuntimeException ex) {
-					return BaseSplitLayout.this.handleCustomException(ex);
-				}
-
-				@Override
 				protected boolean isEditAllowed() {
 					return BaseSplitLayout.this.isEditAllowed();
 				}
 
-				@Override
-				protected void postProcessEditFields() {
-					BaseSplitLayout.this.postProcessEditFields(editForm);
-				}
+//				@Override
+//				protected void postProcessEditFields() {
+//					BaseSplitLayout.this.postProcessEditFields(editForm);
+//				}
 			};
 
 			initEditForm(editForm);
 			editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
-			editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
+			editForm.setPostProcessEditFields(getPostProcessEditFields());
 			editForm.setDetailJoins(getDetailJoins());
 
 			editForm.build();
@@ -441,7 +444,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	@Override
 	public void reload() {
 		// replace the header layout (if there is one)
-		Component component = constructHeaderLayout();
+		Component component = buildHeaderLayout == null ? null : buildHeaderLayout.get();
 		if (component != null) {
 			if (headerLayout != null) {
 				splitterLayout.replace(headerLayout, component);

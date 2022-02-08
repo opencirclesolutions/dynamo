@@ -102,8 +102,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param joins       the joins to include in the query
 	 */
 	public AbstractSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SortOrder<?> sortOrder,
-			FetchJoinInformation... joins) {
+			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.queryType = queryType;
 	}
@@ -227,7 +226,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			addManageDetailButtons();
 
 			// callback for adding additional buttons
-			postProcessButtonBar(getButtonBar());
+			if (getPostProcessMainButtonBar() != null) {
+				getPostProcessMainButtonBar().accept(getButtonBar());
+			}
+
 			mainSearchLayout.add(getButtonBar());
 
 			checkComponentState(null);

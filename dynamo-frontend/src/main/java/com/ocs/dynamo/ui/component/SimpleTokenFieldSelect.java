@@ -153,7 +153,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		}
 
 		items = items.stream().filter(Objects::nonNull).collect(Collectors.toList());
-		items.sort(Comparator.naturalOrder());
+		Collections.sort(items, Comparator.naturalOrder());
 		ListDataProvider<T> provider = new ListDataProvider<>(items);
 
 		multiComboBox.setDataProvider(provider);

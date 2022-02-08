@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -28,7 +29,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
-import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.GridWrapper;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.button.Button;
@@ -120,6 +120,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	@Getter
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
+	
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessMainButtonBar;
 
 	/**
 	 * Constructor
@@ -357,15 +361,15 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		wrapper.setExportJoins(getExportJoins());
 	}
 
-	/**
-	 * Adds additional buttons to the main button bar (that appears below the
-	 * results grid in a search layout, split layout, or tabular edit layout)
-	 * 
-	 * @param buttonBar the button bar
-	 */
-	protected void postProcessButtonBar(FlexLayout buttonBar) {
-		// override in subclasses
-	}
+//	/**
+//	 * Adds additional buttons to the main button bar (that appears below the
+//	 * results grid in a search layout, split layout, or tabular edit layout)
+//	 * 
+//	 * @param buttonBar the button bar
+//	 */
+//	protected void postProcessButtonBar(FlexLayout buttonBar) {
+//		// override in subclasses
+//	}
 
 	/**
 	 * Callback method that fires after the provider has been created. Override this
@@ -377,16 +381,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// override in subclasses
 	}
 
-	/**
-	 * Callback method that fires after the edit form has been created. Can be used
-	 * to add extra validations or cross-field functionality. This method will only
-	 * be called once
-	 * 
-	 * @param editForm the edit form
-	 */
-	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// override in subclasses
-	}
+//	/**
+//	 * Callback method that fires after the edit form has been created. Can be used
+//	 * to add extra validations or cross-field functionality. This method will only
+//	 * be called once
+//	 * 
+//	 * @param editForm the edit form
+//	 */
+//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+//		// override in subclasses
+//	}
 
 	/**
 	 * Callback method that fires after the search results grid wrapper

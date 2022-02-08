@@ -20,6 +20,8 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -49,5 +51,10 @@ public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainP
 	public DomainChild(String code, String name) {
 		super(code, name);
 	}
+	
+//    @Override
+//    public String toString() {
+//        return ReflectionToStringBuilder.toStringExclude(this, "parent", "region");
+//    }
 
 }

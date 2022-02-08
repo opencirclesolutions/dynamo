@@ -34,8 +34,8 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.BetweenPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
@@ -56,7 +56,6 @@ import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -546,7 +545,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			// construct the field
 			Component custom = constructCustomField(getEntityModel(), am);
 
-			FieldFactoryContext context = FieldFactoryContext.create().attributeModel(am)
+			FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
 					.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(getFieldFilters()).viewMode(false)
 					.search(true).build();
 			Component newComponent = custom != null ? custom : factory.constructField(context);

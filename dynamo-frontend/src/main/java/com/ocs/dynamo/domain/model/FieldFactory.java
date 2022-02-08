@@ -36,15 +36,22 @@ public interface FieldFactory {
 	}
 
 	/**
-	 * Adds converters and validators for a field
+	 * Adds the converters and validators that are to be used for a component. This
+	 * is separate from the actual component creation since the converters and
+	 * validators must be configured on a binding builder
 	 * 
-	 * @param builder         the binding builder to which to add the converters and
-	 *                        validators
-	 * @param am              the attribute model for the field
-	 * @param customConverter custom converter to be used for data conversion
+	 * @param <U>
+	 * @param <V>
+	 * @param builder                 the builder
+	 * @param am                      the attribute model
+	 * @param context                 the component creation context
+	 * @param customConverter         the custom converter to add
+	 * @param customValidator         the custom validator to add
+	 * @param customRequiredValidator the custom required validator to add
 	 */
 	<U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
-			Converter<V, U> customConverter, Validator<V> customValidator, Validator<V> customRequiredValidator);
+			FieldCreationContext context, Converter<V, U> customConverter, Validator<V> customValidator,
+			Validator<V> customRequiredValidator);
 
 	/**
 	 * Constructs a field based on the provided attribute model (given the default
@@ -61,5 +68,5 @@ public interface FieldFactory {
 	 * @param context the context
 	 * @return
 	 */
-	Component constructField(FieldFactoryContext context);
+	Component constructField(FieldCreationContext context);
 }

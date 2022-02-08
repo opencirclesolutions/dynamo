@@ -29,7 +29,6 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;

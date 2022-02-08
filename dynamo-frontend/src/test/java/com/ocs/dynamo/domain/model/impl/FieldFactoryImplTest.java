@@ -22,7 +22,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
@@ -60,14 +60,14 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
 	private Component constructField(String name, boolean search) {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
 				.search(search).build();
 		return fieldFactory.constructField(context);
 	}
 
 	private Component constructField(String name, String entityModelRef) {
 		EntityModel<TestEntity> em = factory.getModel(entityModelRef, TestEntity.class);
-		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
 				.search(false).build();
 		return fieldFactory.constructField(context);
 	}
@@ -78,14 +78,14 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
 	private Component constructField2(String name, boolean search, boolean viewMode, boolean grid) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
 				.search(search).viewMode(viewMode).editableGrid(grid).build();
 		return fieldFactory.constructField(context);
 	}
 
 	private Component constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel(name))
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
 				.fieldFilters(fieldFilters).build();
 		return fieldFactory.constructField(context);
 	}
@@ -119,6 +119,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	public void testTextArea() {
 		Component ac = constructField("someTextArea", false);
 		assertTrue(ac instanceof TextArea);
+	}
+
+	/**
+	 * Test that in search mode, a text field is used rather than a text area
+	 */
+	@Test
+	public void testTextAreaNotInSearchMode() {
+		Component ac = constructField("someTextArea", true);
+		assertTrue(ac instanceof TextField);
 	}
 
 	/**
@@ -275,7 +284,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 		binder.setBean(t2);
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
 
-		fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"), null, null, null);
+		fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"),
+				FieldCreationContext.create().build(), null, null, null);
 	}
 
 	/**
@@ -366,7 +376,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	@Test
 	public void testConstructEntityComboBoxMultipleSearch() {
 		EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().attributeModel(em.getAttributeModel("testEntityAlt"))
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel("testEntityAlt"))
 				.search(true).build();
 		assertDoesNotThrow(() -> fieldFactory.constructField(context));
 	}

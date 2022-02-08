@@ -13,7 +13,6 @@
 package com.ocs.dynamo.ui.composite.form;
 
 import java.io.ByteArrayInputStream;
-import java.io.IOException;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
@@ -29,10 +28,9 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
-
-import org.apache.commons.io.FilenameUtils;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -42,8 +40,8 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
@@ -64,6 +62,7 @@ import com.ocs.dynamo.ui.component.ElementCollectionGrid;
 import com.ocs.dynamo.ui.component.InternalLinkButton;
 import com.ocs.dynamo.ui.component.ServiceBasedDetailsEditGrid;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.component.UploadComponent;
 import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.TabWrapper;
@@ -79,7 +78,6 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
-import com.vaadin.flow.component.HasOrderedComponents;
 import com.vaadin.flow.component.HasSize;
 import com.vaadin.flow.component.HasValidation;
 import com.vaadin.flow.component.HasValue;
@@ -87,7 +85,6 @@ import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.checkbox.Checkbox;
-import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.FormItem;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
@@ -100,8 +97,6 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
-import com.vaadin.flow.component.upload.Upload;
-import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.Binding;
@@ -122,140 +117,8 @@ import lombok.Setter;
  * @param <T>  the type of the entity
  * @author bas.rutten
  */
-@SuppressWarnings("serial")
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends AbstractModelBasedForm<ID, T> implements NestedComponent {
-
-	/**
-	 * A custom field that can be used to upload a file
-	 *
-	 * @author bas.rutten
-	 */
-	private final class UploadComponent extends CustomField<byte[]> {
-
-		private AttributeModel am;
-
-		private Button clearButton;
-
-		private UploadComponent(AttributeModel am) {
-			this.am = am;
-			initContent();
-		}
-
-		@Override
-		protected byte[] generateModelValue() {
-			// not needed
-			return null;
-		}
-
-		@Override
-		public byte[] getValue() {
-			// not needed
-			return null;
-		}
-
-		protected void initContent() {
-			byte[] bytes = ClassUtils.getBytes(getEntity(), am.getName());
-
-			FlexLayout main = new DefaultFlexLayout();
-			Image image = new Image();
-			image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
-
-			// for a LOB field, create an upload and an image
-			// retrieve the current value
-			if (am.isImage()) {
-				image.setVisible(bytes != null);
-				if (bytes != null) {
-					image.setSrc(new StreamResource(System.nanoTime() + ".png", () -> new ByteArrayInputStream(bytes)));
-				}
-				main.add(image);
-			} else {
-				Span text = new Span(message("ocs.no.preview.available"));
-				main.add(text);
-			}
-
-			MemoryBuffer buffer = new MemoryBuffer();
-			Upload upload = new Upload(buffer);
-
-			if (am.getAllowedExtensions() != null && !am.getAllowedExtensions().isEmpty()) {
-				Set<String> extensions = am.getAllowedExtensions().stream().map(s -> "." + s)
-						.collect(Collectors.toSet());
-				upload.setAcceptedFileTypes(extensions.toArray(new String[0]));
-			}
-
-			upload.addFinishedListener(event -> {
-
-				String extension = FilenameUtils.getExtension(event.getFileName());
-				Set<String> allowedExtensions = am.getAllowedExtensions();
-				if (allowedExtensions == null || allowedExtensions.isEmpty()
-						|| (extension != null && allowedExtensions.contains(extension.toLowerCase()))) {
-
-					// set the image source
-					if (image != null) {
-						image.setVisible(true);
-						image.setSrc(new StreamResource(System.nanoTime() + ".png", () -> buffer.getInputStream()));
-					}
-
-					byte[] content = new byte[(int) event.getContentLength()];
-					try {
-						buffer.getInputStream().read(content);
-					} catch (IOException e) {
-						// do nothing
-					}
-					ClassUtils.setBytes(content, getEntity(), am.getName());
-
-					// also set the file name if needed
-					if (am.getFileNameProperty() != null) {
-						ClassUtils.setFieldValue(getEntity(), am.getFileNameProperty(), event.getFileName());
-						setLabelValue(am.getFileNameProperty(), event.getFileName());
-					}
-
-					if (afterUploadConsumer != null) {
-						afterUploadConsumer.accept(event.getFileName(), content);
-					}
-				} else {
-					showErrorNotification(message("ocs.modelbasededitform.upload.format.invalid"));
-				}
-				clearButton.setVisible(false);
-			});
-
-			// clear content and file name after file upload is removed
-			upload.getElement().addEventListener("file-remove", event -> {
-				ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
-				image.setVisible(false);
-				if (am.getFileNameProperty() != null) {
-					ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
-					setLabelValue(am.getFileNameProperty(), "");
-				}
-				clearButton.setVisible(false);
-			});
-
-			// if there is an initial value, provide a clear button
-			main.add(upload);
-			clearButton = new Button(message("ocs.clear"));
-			clearButton.addClickListener(event -> {
-				ClassUtils.clearFieldValue(getEntity(), am.getName(), byte[].class);
-				image.setVisible(false);
-				if (am.getFileNameProperty() != null) {
-					ClassUtils.clearFieldValue(getEntity(), am.getFileNameProperty(), String.class);
-					setLabelValue(am.getFileNameProperty(), "");
-				}
-				// clear button is no longer needed since the component itself can be used
-				clearButton.setVisible(false);
-			});
-			main.add(clearButton);
-			clearButton.setVisible(bytes != null);
-
-			setLabel(am.getDisplayName(VaadinUtils.getLocale()));
-			add(main);
-		}
-
-		@Override
-		protected void setPresentationValue(byte[] newPresentationValue) {
-			// not needed
-		}
-
-	}
 
 	private static final String BACK_BUTTON_DATA = "backButton";
 
@@ -274,7 +137,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * The code to be carried out after a file has been successfully uploaded
 	 */
-	private BiConsumer<String, byte[]> afterUploadConsumer;
+	@Getter
+	@Setter
+	private BiConsumer<String, byte[]> afterUploadCompleted;
 
 	/**
 	 * Map for keeping track of which attributes have already been bound to a
@@ -398,8 +263,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Boolean, Span> titleLabels = new HashMap<>();
 
-	private Map<Boolean, Map<AttributeModel, Component>> uploads = new HashMap<>();
-
 	/**
 	 * Whether to display the component in view mode
 	 */
@@ -420,6 +283,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Getter
 	@Setter
 	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+
+	@Getter
+	@Setter
+	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	@Getter
 	@Setter
@@ -445,6 +312,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Getter
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
 
 	/**
 	 * Constructor
@@ -559,15 +430,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						|| AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION.equals(type)) {
 					constructField(parent, entityModel, attributeModel, false, tabIndex);
 				} else if (AttributeType.LOB.equals(type)) {
-					// for a LOB field we need to construct a rather
-					// elaborate upload component
-					UploadComponent uploadForm = constructUploadField(attributeModel);
-
-					// extra nesting needed to be able to replace component
-					VerticalLayout container = new DefaultVerticalLayout();
-					parent.add(container);
-					container.add(uploadForm);
-					uploads.get(isViewMode()).put(attributeModel, uploadForm);
+					constructField(parent, entityModel, attributeModel, viewMode, tabIndex);
 				}
 			}
 			alreadyBound.get(isViewMode()).add(attributeModel.getPath());
@@ -659,9 +522,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				Map<AttributeModel, FormItem> formItemMap = new HashMap<>();
 				formItems.put(Boolean.TRUE, formItemMap);
 
-				Map<AttributeModel, Component> uploadMap = new HashMap<>();
-				uploads.put(Boolean.TRUE, uploadMap);
-
 				Map<AttributeModel, Component> previewMap = new HashMap<>();
 				previews.put(Boolean.TRUE, previewMap);
 
@@ -677,9 +537,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				Map<AttributeModel, FormItem> formItemMap = new HashMap<>();
 				formItems.put(Boolean.FALSE, formItemMap);
 
-				Map<AttributeModel, Component> uploadMap = new HashMap<>();
-				uploads.put(Boolean.FALSE, uploadMap);
-
 				Map<AttributeModel, Component> previewMap = new HashMap<>();
 				previews.put(Boolean.FALSE, previewMap);
 
@@ -689,7 +546,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 
 				if (!fieldsProcessed) {
-					postProcessEditFields();
+					// postProcessEditFields();
+					if (postProcessEditFields != null) {
+						postProcessEditFields.accept(this);
+					}
+
 					fieldsProcessed = true;
 				}
 			}
@@ -1045,11 +906,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		EntityModel<?> fieldEntityModel = getFieldEntityModel(attributeModel);
 		// allow the user to override the construction of a field
 		Component field = constructCustomField(entityModel, attributeModel, viewMode);
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(attributeModel)
+				.fieldEntityModel(fieldEntityModel).fieldFilters(getFieldFilters()).viewMode(viewMode)
+				.parentEntity(entity).build();
 		if (field == null) {
-			FieldFactoryContext ctx = FieldFactoryContext.create().attributeModel(attributeModel)
-					.fieldEntityModel(fieldEntityModel).fieldFilters(getFieldFilters()).viewMode(viewMode)
-					.parentEntity(entity).build();
-			field = fieldFactory.constructField(ctx);
+			field = fieldFactory.constructField(context);
 		}
 
 		if (field instanceof URLField) {
@@ -1066,10 +927,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (!(field instanceof ServiceBasedDetailsEditGrid)) {
 				BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
 
-				fieldFactory.addConvertersAndValidators(builder, attributeModel, getCustomConverter(attributeModel),
-						getCustomValidator(attributeModel), getCustomRequiredValidator(attributeModel));
+				fieldFactory.addConvertersAndValidators(builder, attributeModel, context,
+						getCustomConverter(attributeModel), getCustomValidator(attributeModel),
+						getCustomRequiredValidator(attributeModel));
 				builder.bind(attributeModel.getPath());
 			}
+
+			addUploadFieldListeners(attributeModel, field);
 
 			if (field instanceof DetailsEditLayout) {
 				DetailsEditLayout<?, ?, ID, T> del = (DetailsEditLayout<?, ?, ID, T>) field;
@@ -1162,6 +1026,22 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (field instanceof CanAssignEntity) {
 				((CanAssignEntity<ID, T>) field).assignEntity(entity);
 				assignEntityToFields.add((CanAssignEntity<ID, T>) field);
+			}
+		}
+	}
+
+	private void addUploadFieldListeners(AttributeModel attributeModel, Component field) {
+		if (field instanceof UploadComponent) {
+			UploadComponent upload = (UploadComponent) field;
+			if (attributeModel.getFileNameProperty() != null) {
+				upload.setFileNameConsumer(fileName -> {
+					ClassUtils.setFieldValue(getEntity(), attributeModel.getFileNameProperty(), fileName);
+					setLabelValue(attributeModel.getFileNameProperty(), fileName);
+				});
+			}
+
+			if (afterUploadCompleted != null) {
+				upload.setAfterUploadCompleted(afterUploadCompleted);
 			}
 		}
 	}
@@ -1326,7 +1206,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					}
 				}
 			} catch (RuntimeException ex) {
-				if (!handleCustomException(ex)) {
+				if (customSaveExceptionHandler == null || !customSaveExceptionHandler.apply(ex)) {
 					handleSaveException(ex);
 				}
 			}
@@ -1348,15 +1228,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Span constructTitleLabel() {
 		String value = getTitleLabelValue();
 		return new Span(value);
-	}
-
-	/**
-	 * Constructs an upload field
-	 *
-	 * @param am
-	 */
-	private UploadComponent constructUploadField(AttributeModel am) {
-		return new UploadComponent(am);
 	}
 
 	/**
@@ -1401,10 +1272,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private List<Button> filterButtons(String data) {
 		List<Button> list = buttons.get(isViewMode()).get(data);
 		return Collections.unmodifiableList(list == null ? new ArrayList<>() : list);
-	}
-
-	public BiConsumer<String, byte[]> getAfterUploadConsumer() {
-		return afterUploadConsumer;
 	}
 
 	public CollapsiblePanel getAttributeGroupPanel(String key) {
@@ -1626,15 +1493,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	/**
-	 * Overwrite this method to add custom exception handling
-	 * 
-	 * @param ex the exception to handle
-	 * @return
-	 */
-	protected boolean handleCustomException(RuntimeException ex) {
-		return false;
-	}
+//	/**
+//	 * Overwrite this method to add custom exception handling
+//	 * 
+//	 * @param ex the exception to handle
+//	 * @return
+//	 */
+//	protected boolean handleCustomException(RuntimeException ex) {
+//		return false;
+//	}
 
 	protected boolean hasNextEntity() {
 		return false;
@@ -1714,14 +1581,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //		// overwrite in subclasses
 //	}
 
-	/**
-	 * Post-processes any edit fields- this method does nothing by default but must
-	 * be used to call the postProcessEditFields callback method on an enclosing
-	 * component
-	 */
-	protected void postProcessEditFields() {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Post-processes any edit fields- this method does nothing by default but must
+//	 * be used to call the postProcessEditFields callback method on an enclosing
+//	 * component
+//	 */
+//	protected void postProcessEditFields() {
+//		// overwrite in subclasses
+//	}
 
 	/**
 	 * Processes all fields that are part of a property group
@@ -1830,31 +1697,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Refreshes all upload and preview components
-	 */
-	private void refreshUploadComponents() {
-		// refresh the upload components
-		for (Entry<AttributeModel, Component> e : uploads.get(isViewMode()).entrySet()) {
-			Component pc = e.getValue().getParent().orElse(null);
-			if (pc instanceof HasOrderedComponents) {
-				Component uc = constructUploadField(e.getKey());
-				((HasOrderedComponents<?>) pc).replace(e.getValue(), uc);
-				uploads.get(isViewMode()).put(e.getKey(), uc);
-			}
-		}
-
-		// refresh preview components
-		for (Entry<AttributeModel, Component> e : previews.get(isViewMode()).entrySet()) {
-			Component pc = e.getValue().getParent().orElse(null);
-			if (pc instanceof HasOrderedComponents && e.getKey().isImage()) {
-				Component pv = constructImagePreview(e.getKey());
-				((HasOrderedComponents<?>) pc).replace(e.getValue(), pv);
-				previews.get(isViewMode()).put(e.getKey(), pv);
-			}
-		}
-	}
-
-	/**
 	 * Removes any error messages from the individual form components
 	 */
 	private void resetComponentErrors() {
@@ -1883,15 +1725,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		if (tabs.get(isViewMode()) != null) {
 			tabs.get(isViewMode()).setSelectedIndex(index);
 		}
-	}
-
-	/**
-	 * Sets the code to be carried out after a succesfull upload
-	 * 
-	 * @param afterUploadConsumer
-	 */
-	public void setAfterUploadConsumer(BiConsumer<String, byte[]> afterUploadConsumer) {
-		this.afterUploadConsumer = afterUploadConsumer;
 	}
 
 	/**
@@ -2010,7 +1843,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		build();
 		refreshLabelsAndUrls();
 		resetTabsheetIfNeeded();
-		refreshUploadComponents();
 
 		// enable/disable fields for create only mode
 		disableCreateOnlyFields();
@@ -2183,14 +2015,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// if this is the first time in edit mode, post process the editable
 		// fields
 		if (!isViewMode() && !fieldsProcessed) {
-			postProcessEditFields();
+			// postProcessEditFields();
+			if (postProcessEditFields != null) {
+				postProcessEditFields.accept(this);
+			}
+
 			fieldsProcessed = true;
 		}
 
 		// update button captions
 		updateSaveButtonCaptions();
 		disableCreateOnlyFields();
-		refreshUploadComponents();
 
 		// preserve tab index when switching between view modes
 		if (tabs.get(oldMode) != null) {
@@ -2224,7 +2059,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 							doSave();
 						}
 					} catch (RuntimeException ex) {
-						if (!handleCustomException(ex)) {
+						if (customSaveExceptionHandler == null || !customSaveExceptionHandler.apply(ex)) {
 							handleSaveException(ex);
 						}
 					}

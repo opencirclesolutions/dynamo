@@ -124,6 +124,16 @@ public final class ClassUtils {
 		return result;
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends Annotation> T getAnnotationOnClass(Class<?> clazz, Class<T> annotationClass) {
+		for (Annotation a : clazz.getAnnotations()) {
+			if (a.annotationType().equals(annotationClass)) {
+				return (T) a;
+			}
+		}
+		return null;
+	}
+
 	/**
 	 * Tries to retrieve an annotation, by first looking at the field name, and then
 	 * at the getter method

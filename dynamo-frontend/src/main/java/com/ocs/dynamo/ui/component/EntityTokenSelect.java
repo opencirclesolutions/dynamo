@@ -211,8 +211,11 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	@SuppressWarnings("unchecked")
 	public int getDataProviderSize() {
-		ListDataProvider<T> bic = (ListDataProvider<T>) this.getDataProvider();
-		return bic.getItems().size();
+		if (this.getDataProvider() instanceof ListDataProvider) {
+			ListDataProvider<T> bic = (ListDataProvider<T>) this.getDataProvider();
+			return bic.getItems().size();
+		}
+		return -1;
 	}
 
 	public SerializablePredicate<T> getFilter() {

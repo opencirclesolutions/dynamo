@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -42,6 +44,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A layout that allows the user to easily manage multiple domains. The list of
  * domain classes can be passed to the constructor. Please note that for every
@@ -51,305 +56,309 @@ import com.vaadin.flow.data.provider.SortOrder;
  */
 public class MultiDomainEditLayout extends BaseCustomComponent {
 
-    private static final long serialVersionUID = 4410282343830892631L;
+	private static final long serialVersionUID = 4410282343830892631L;
 
-    /**
-     * The classes of the domains that are managed by this screen
-     */
-    private final List<Class<? extends Domain>> domainClasses;
+	/**
+	 * The classes of the domains that are managed by this screen
+	 */
+	private final List<Class<? extends Domain>> domainClasses;
 
-    /**
-     * Entity model overrides
-     */
-    private Map<Class<?>, String> entityModelOverrides = new HashMap<>();
+	/**
+	 * Entity model overrides
+	 */
+	private Map<Class<?>, String> entityModelOverrides = new HashMap<>();
 
-    /**
-     * The form options (these are passed directly to the split layout)
-     */
-    private FormOptions formOptions;
+	/**
+	 * The form options (these are passed directly to the split layout)
+	 */
+	private FormOptions formOptions;
 
-    /**
-     * The main layout
-     */
-    private VerticalLayout mainLayout;
+	/**
+	 * The main layout
+	 */
+	private VerticalLayout mainLayout;
 
-    /**
-     * The selected domain class
-     */
-    private Class<? extends Domain> selectedDomain;
+	/**
+	 * The selected domain class
+	 */
+	private Class<? extends Domain> selectedDomain;
 
-    /**
-     * The layout that contains the controls for editing the selected domain
-     */
-    private VerticalLayout selectedDomainLayout;
+	/**
+	 * The layout that contains the controls for editing the selected domain
+	 */
+	private VerticalLayout selectedDomainLayout;
 
-    /**
-     * The split layout that displays the currently selected domain
-     */
-    private ServiceBasedSplitLayout<?, ?> splitLayout;
+	/**
+	 * The split layout that displays the currently selected domain
+	 */
+	private ServiceBasedSplitLayout<?, ?> splitLayout;
 
-    private List<Component> toRegister = new ArrayList<>();
+	private List<Component> toRegister = new ArrayList<>();
 
-    /**
-     * Constructor
-     *
-     * @param formOptions   the form options
-     * @param domainClasses the classes of the domains
-     */
-    public MultiDomainEditLayout(FormOptions formOptions, List<Class<? extends Domain>> domainClasses) {
-        this.formOptions = formOptions;
-        this.domainClasses = domainClasses;
-    }
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessMainButtonBar;
 
-    /**
-     * Callback method that is used after the user changes the selected domain
-     */
-    public void afterSelectedDomainChanged() {
-        // overwrite in subclasses
-    }
+	@Getter
+	@Setter
+	private Supplier<Component> buildHeaderLayout;
 
-    /**
-     * Adds an entity model override
-     *
-     * @param clazz     the entity class
-     * @param reference the reference to use for the overridden model
-     */
-    public void addEntityModelOverride(Class<?> clazz, String reference) {
-        entityModelOverrides.put(clazz, reference);
-    }
+	@Getter
+	@Setter
+	private Consumer<Class<? extends Domain>> afterDomainSelected;
 
-    @Override
-    protected void onAttach(AttachEvent attachEvent) {
-        super.onAttach(attachEvent);
-        build();
-    }
+	/**
+	 * Constructor
+	 *
+	 * @param formOptions   the form options
+	 * @param domainClasses the classes of the domains
+	 */
+	public MultiDomainEditLayout(FormOptions formOptions, List<Class<? extends Domain>> domainClasses) {
+		this.formOptions = formOptions;
+		this.domainClasses = domainClasses;
+	}
 
-    @Override
-    public void build() {
-        if (mainLayout == null) {
+	/**
+	 * Adds an entity model override
+	 *
+	 * @param clazz     the entity class
+	 * @param reference the reference to use for the overridden model
+	 */
+	public void addEntityModelOverride(Class<?> clazz, String reference) {
+		entityModelOverrides.put(clazz, reference);
+	}
 
-            mainLayout = new DefaultVerticalLayout(true, true);
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		build();
+	}
 
-            // form that contains the combo box
-            FormLayout form = new FormLayout();
-            mainLayout.add(form);
+	@Override
+	public void build() {
+		if (mainLayout == null) {
 
-            // combo box for selecting domain
-            ComboBox<Class<? extends Domain>> domainCombo = new ComboBox<>(message("ocs.select.domain"), getDomainClasses());
-            domainCombo.setItemLabelGenerator(item -> getEntityModel(item).getDisplayName(VaadinUtils.getLocale()));
-            domainCombo.setSizeFull();
+			mainLayout = new DefaultVerticalLayout(true, true);
 
-            // respond to a change by displaying the correct domain
-            domainCombo.addValueChangeListener(event -> selectDomain((Class<? extends Domain>) event.getValue()));
+			// form that contains the combo box
+			FormLayout form = new FormLayout();
+			mainLayout.add(form);
 
-            form.add(domainCombo);
+			// combo box for selecting domain
+			ComboBox<Class<? extends Domain>> domainCombo = new ComboBox<>(message("ocs.select.domain"),
+					getDomainClasses());
+			domainCombo.setItemLabelGenerator(item -> getEntityModel(item).getDisplayName(VaadinUtils.getLocale()));
+			domainCombo.setSizeFull();
 
-            selectedDomainLayout = new DefaultVerticalLayout();
-            mainLayout.add(selectedDomainLayout);
+			// respond to a change by displaying the correct domain
+			domainCombo.addValueChangeListener(event -> selectDomain((Class<? extends Domain>) event.getValue()));
 
-            // select the first domain (if there is any)
-            if (!getDomainClasses().isEmpty()) {
-                domainCombo.setValue(getDomainClasses().get(0));
-            }
-            add(mainLayout);
-        }
-    }
+			form.add(domainCombo);
 
-    /**
-     * Constructs a custom field
-     * 
-     * @param entityModel    the entity model
-     * @param attributeModel the attribute mode
-     * @param viewMode       whether the screen is in view mode
-     * @return
-     */
-    protected <R extends AbstractEntity<?>> Component constructCustomField(EntityModel<R> entityModel, AttributeModel attributeModel,
-            boolean viewMode) {
-        // overwrite in subclasses
-        return null;
-    }
+			selectedDomainLayout = new DefaultVerticalLayout();
+			mainLayout.add(selectedDomainLayout);
 
-    /**
-     * Constructs the header layout that is placed above the results grid
-     * 
-     * @return
-     */
-    protected Component constructHeaderLayout() {
-        // overwrite in subclasses
-        return null;
-    }
+			// select the first domain (if there is any)
+			if (!getDomainClasses().isEmpty()) {
+				domainCombo.setValue(getDomainClasses().get(0));
+			}
+			add(mainLayout);
+		}
+	}
 
-    /**
-     * Construct a split layout for a certain domain
-     *
-     * @param domainClass the class of the domain
-     * @param formOptions the form options
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private <T extends Domain> ServiceBasedSplitLayout<Integer, T> constructSplitLayout(Class<T> domainClass, FormOptions formOptions) {
+	/**
+	 * Constructs a custom field
+	 * 
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute mode
+	 * @param viewMode       whether the screen is in view mode
+	 * @return
+	 */
+	protected <R extends AbstractEntity<?>> Component constructCustomField(EntityModel<R> entityModel,
+			AttributeModel attributeModel, boolean viewMode) {
+		// overwrite in subclasses
+		return null;
+	}
 
-        BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocatorFactory.getServiceLocator()
-                .getServiceForEntity(domainClass);
-        if (baseService != null) {
-            toRegister.clear();
-            ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<Integer, T>(baseService,
-                    getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
-                    new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
+	/**
+	 * Construct a split layout for a certain domain
+	 *
+	 * @param domainClass the class of the domain
+	 * @param formOptions the form options
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <T extends Domain> ServiceBasedSplitLayout<Integer, T> constructSplitLayout(Class<T> domainClass,
+			FormOptions formOptions) {
 
-                private static final long serialVersionUID = -6504072714662771230L;
+		BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(domainClass);
+		if (baseService != null) {
+			toRegister.clear();
+			ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<Integer, T>(baseService,
+					getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
+					new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
 
-                @Override
-                protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel, boolean viewMode,
-                        boolean searchMode) {
-                    return MultiDomainEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
-                }
+				private static final long serialVersionUID = -6504072714662771230L;
 
-                @Override
-                protected Component constructHeaderLayout() {
-                    return MultiDomainEditLayout.this.constructHeaderLayout();
-                }
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+						boolean viewMode, boolean searchMode) {
+					return MultiDomainEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
+				}
 
-                @Override
-                protected boolean isEditAllowed() {
-                    return MultiDomainEditLayout.this.isEditAllowed();
-                }
+				@Override
+				protected boolean isEditAllowed() {
+					return MultiDomainEditLayout.this.isEditAllowed();
+				}
 
-                @Override
-                protected boolean mustEnableComponent(Component component, T selectedItem) {
-                    if (getRemoveButton() == component) {
-                        return isDeleteAllowed(getSelectedDomain());
-                    }
-                    return true;
-                }
+//				@Override
+//				protected boolean mustEnableComponent(Component component, T selectedItem) {
+//					if (getRemoveButton() == component) {
+//						return isDeleteAllowed(getSelectedDomain());
+//					}
+//					return true;
+//				}
 
-                @Override
-                protected void postProcessButtonBar(FlexLayout buttonBar) {
-                    MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
-                }
+//                @Override
+//                protected void postProcessButtonBar(FlexLayout buttonBar) {
+//                    MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
+//                }
 
-                @Override
-                protected void postProcessLayout(VerticalLayout main) {
-                    MultiDomainEditLayout.this.postProcessSplitLayout(main);
-                }
-            };
-            layout.setQuickSearchFilterSupplier(
-                    value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),
-                            new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
+				@Override
+				protected void postProcessLayout(VerticalLayout main) {
+					MultiDomainEditLayout.this.postProcessSplitLayout(main);
+				}
+			};
 
-            // register afterwards so that we actually register for the current layout
-            // rather than the previous one
-            layout.build();
-            for (Component c : toRegister) {
-                layout.registerComponent(c);
-            }
+			layout.setMustEnableComponent((component, t) -> {
+				if (layout.getRemoveButton() == component) {
+					return isDeleteAllowed(getSelectedDomain());
+				}
+				return true;
+			});
+			layout.setBuildHeaderLayout(buildHeaderLayout);
+			layout.setPostProcessMainButtonBar(postProcessMainButtonBar);
+			layout.setQuickSearchFilterSupplier(
+					value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),
+							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
 
-            return layout;
-        } else {
-            throw new OCSRuntimeException(message("ocs.no.service.class.found", domainClass));
-        }
-    }
+			// register afterwards so that we actually register for the current layout
+			// rather than the previous one
+			layout.build();
+			for (Component c : toRegister) {
+				layout.registerComponent(c);
+			}
 
-    public List<Class<? extends Domain>> getDomainClasses() {
-        return domainClasses;
-    }
+			return layout;
+		} else {
+			throw new OCSRuntimeException(message("ocs.no.service.class.found", domainClass));
+		}
+	}
 
-    /**
-     * Returns the entity model to use for a certain domain class
-     *
-     * @param domainClass the domain class
-     * @return
-     */
-    private <T> EntityModel<T> getEntityModel(Class<T> domainClass) {
-        String override = entityModelOverrides.get(domainClass);
-        return override != null ? getEntityModelFactory().getModel(override, domainClass) : getEntityModelFactory().getModel(domainClass);
-    }
+	public List<Class<? extends Domain>> getDomainClasses() {
+		return domainClasses;
+	}
 
-    /**
-     * @return the currently selected domain class
-     */
-    public Class<? extends Domain> getSelectedDomain() {
-        return selectedDomain;
-    }
+	/**
+	 * Returns the entity model to use for a certain domain class
+	 *
+	 * @param domainClass the domain class
+	 * @return
+	 */
+	private <T> EntityModel<T> getEntityModel(Class<T> domainClass) {
+		String override = entityModelOverrides.get(domainClass);
+		return override != null ? getEntityModelFactory().getModel(override, domainClass)
+				: getEntityModelFactory().getModel(domainClass);
+	}
 
-    /**
-     * @return the currently selected item
-     */
-    public Domain getSelectedItem() {
-        return (Domain) splitLayout.getSelectedItem();
-    }
+	/**
+	 * @return the currently selected domain class
+	 */
+	public Class<? extends Domain> getSelectedDomain() {
+		return selectedDomain;
+	}
 
-    /**
-     * @return the currently selected split layout
-     */
-    public ServiceBasedSplitLayout<?, ?> getSplitLayout() {
-        return splitLayout;
-    }
+	/**
+	 * @return the currently selected item
+	 */
+	public Domain getSelectedItem() {
+		return (Domain) splitLayout.getSelectedItem();
+	}
 
-    /**
-     * Check if the deletion of domain values for a certain class is allowed
-     *
-     * @param clazz the class
-     * @return
-     */
-    protected boolean isDeleteAllowed(Class<?> clazz) {
-        return true;
-    }
+	/**
+	 * @return the currently selected split layout
+	 */
+	public ServiceBasedSplitLayout<?, ?> getSplitLayout() {
+		return splitLayout;
+	}
 
-    /**
-     * Indicates whether editing is allowed
-     */
-    protected boolean isEditAllowed() {
-        return true;
-    }
+	/**
+	 * Check if the deletion of domain values for a certain class is allowed
+	 *
+	 * @param clazz the class
+	 * @return
+	 */
+	protected boolean isDeleteAllowed(Class<?> clazz) {
+		return true;
+	}
 
-    /**
-     * Post processes the button bar that appears below the search screen
-     * 
-     * @param buttonBar
-     */
-    protected void postProcessButtonBar(FlexLayout buttonBar) {
-        // overwrite in subclasses
-    }
+	/**
+	 * Indicates whether editing is allowed
+	 */
+	protected boolean isEditAllowed() {
+		return true;
+	}
 
-    /**
-     * Post processes the split layout after it has been created
-     *
-     * @param main
-     */
-    protected void postProcessSplitLayout(VerticalLayout main) {
-        // overwrite in subclasses
-    }
+	/**
+	 * Post processes the button bar that appears below the search screen
+	 * 
+	 * @param buttonBar
+	 */
+	protected void postProcessButtonBar(FlexLayout buttonBar) {
+		// overwrite in subclasses
+	}
 
-    /**
-     * Registers a component. The component will be disabled or enabled depending on
-     * whether an item is selected
-     *
-     * @param button the button to register
-     */
-    public void registerComponent(Component comp) {
-        toRegister.add(comp);
-    }
+	/**
+	 * Post processes the split layout after it has been created
+	 *
+	 * @param main
+	 */
+	protected void postProcessSplitLayout(VerticalLayout main) {
+		// overwrite in subclasses
+	}
 
-    /**
-     * Reloads the screen
-     */
-    public void reload() {
-        if (splitLayout != null) {
-            splitLayout.reload();
-        }
-    }
+	/**
+	 * Registers a component. The component will be disabled or enabled depending on
+	 * whether an item is selected
+	 *
+	 * @param button the button to register
+	 */
+	public void registerComponent(Component comp) {
+		toRegister.add(comp);
+	}
 
-    /**
-     * Constructs a layout for editing a certain domain
-     *
-     * @param clazz the domain class
-     */
-    public void selectDomain(Class<? extends Domain> clazz) {
-        selectedDomain = clazz;
-        ServiceBasedSplitLayout<?, ?> layout = constructSplitLayout(clazz, formOptions);
-        selectedDomainLayout.replace(splitLayout, layout);
-        splitLayout = layout;
-        afterSelectedDomainChanged();
-    }
+	/**
+	 * Reloads the screen
+	 */
+	public void reload() {
+		if (splitLayout != null) {
+			splitLayout.reload();
+		}
+	}
+
+	/**
+	 * Constructs a layout for editing a certain domain
+	 *
+	 * @param clazz the domain class
+	 */
+	public void selectDomain(Class<? extends Domain> clazz) {
+		selectedDomain = clazz;
+		ServiceBasedSplitLayout<?, ?> layout = constructSplitLayout(clazz, formOptions);
+		selectedDomainLayout.replace(splitLayout, layout);
+		splitLayout = layout;
+		if (afterDomainSelected != null) {
+			afterDomainSelected.accept(clazz);
+		}
+	}
 }

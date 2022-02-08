@@ -248,15 +248,18 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			});
 
 			dialog.setAfterOpen(() -> {
-				Runnable run = () -> {
-					try {
-						Thread.sleep(200);
-					} catch (InterruptedException e) {
-						// do nothing
-					}
-					ui.access(() -> selectValuesInDialog(dialog));
-				};
-				new Thread(run).start();
+				if (searchOptions.isMultiSelect()) {
+					Runnable run = () -> {
+						try {
+							Thread.sleep(200);
+							ui.access(() -> selectValuesInDialog(dialog));
+						} catch (Exception e) {
+							// do nothing
+						}
+
+					};
+					new Thread(run).start();
+				}
 			});
 
 			dialog.buildAndOpen();

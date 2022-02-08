@@ -184,7 +184,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			createCancelButton();
 			createSaveButton();
 
-			postProcessButtonBar(getButtonBar());
+			// allow the user to define extra buttons
+			if (getPostProcessMainButtonBar() != null) {
+				getPostProcessMainButtonBar().accept(getButtonBar());
+			}
 			postProcessLayout(mainLayout);
 		}
 		add(mainLayout);
@@ -396,6 +399,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				}
 
 			};
+
+			dialog.setPostProcessEditFields(getPostProcessEditFields());
+			dialog.setPostProcessButtonBar(getPostProcessDetailButtonBar());
+
 			dialog.setColumnThresholds(columnThresholds);
 			dialog.buildAndOpen();
 		});

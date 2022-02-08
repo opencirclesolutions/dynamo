@@ -325,10 +325,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				return AbstractModelSearchLayout.this.getPreviousEntity();
 			}
 
-			@Override
-			protected boolean handleCustomException(RuntimeException ex) {
-				return AbstractModelSearchLayout.this.handleCustomException(ex);
-			}
+//			@Override
+//			protected boolean handleCustomException(RuntimeException ex) {
+//				return AbstractModelSearchLayout.this.handleCustomException(ex);
+//			}
 
 			@Override
 			protected boolean hasNextEntity() {
@@ -350,10 +350,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 //				AbstractModelSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
 //			}
 
-			@Override
-			protected void postProcessEditFields() {
-				AbstractModelSearchLayout.this.postProcessEditFields(editForm);
-			}
+//			@Override
+//			protected void postProcessEditFields() {
+//				AbstractModelSearchLayout.this.postProcessEditFields(editForm);
+//			}
 
 		};
 

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -77,10 +78,14 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	private BaseService<ID, T> service;
 
 	private FetchJoinInformation[] joins;
-	
+
 	@Getter
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	/**
 	 * Constructor
@@ -145,12 +150,15 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 //					EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
 //				}
 
-				@Override
-				protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-					EntityPopupDialog.this.postProcessEditFields(editForm);
-				}
+//				@Override
+//				protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+//					EntityPopupDialog.this.postProcessEditFields(editForm);
+//				}
 
 			};
+
+			layout.setPostProcessButtonBar(getPostProcessButtonBar());
+			layout.setPostProcessEditFields(getPostProcessEditFields());
 			layout.setFieldFilters(fieldFilters);
 			layout.setColumnThresholds(columnThresholds);
 			layout.setJoins(joins);
@@ -249,14 +257,14 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	public List<Button> getSaveButtons() {
 		return layout.getEditForm().getSaveButtons();
 	}
-
-	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-		// overwrite in subclasses when needed
-	}
-
-	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// overwrite in subclasses when needed
-	}
+//
+//	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
+//		// overwrite in subclasses when needed
+//	}
+//
+//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
+//		// overwrite in subclasses when needed
+//	}
 
 	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean searchMode) {

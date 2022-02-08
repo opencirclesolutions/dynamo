@@ -18,6 +18,8 @@ import javax.persistence.DiscriminatorValue;
 import javax.persistence.Entity;
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
@@ -82,4 +84,9 @@ public class Country extends DomainChild<Country, Region> {
 		return super.getCode();
 	}
 
+//    @Override
+//    public String toString() {
+//        return ReflectionToStringBuilder.toStringExclude(this, "parent", "region");
+//    }
+	
 }

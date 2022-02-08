@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -277,6 +278,10 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Setter
 	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
 
+	@Getter
+	@Setter
+	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
+
 	/**
 	 * Constructor
 	 * 
@@ -357,12 +362,14 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 				return DetailsEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
 			}
 
-			@Override
-			protected void postProcessEditFields() {
-				super.postProcessEditFields();
-				DetailsEditLayout.this.postProcessEditFields(this);
-			}
+//			@Override
+//			protected void postProcessEditFields() {
+//				super.postProcessEditFields();
+//				DetailsEditLayout.this.postProcessEditFields(this);
+//			}
 		};
+
+		editForm.setPostProcessEditFields(getPostProcessEditFields());
 		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setFieldFilters(fieldFilters);
 		editForm.setGroupTogetherMode(getGroupTogetherMode());

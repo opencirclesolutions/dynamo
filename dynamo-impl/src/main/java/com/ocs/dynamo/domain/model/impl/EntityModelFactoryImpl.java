@@ -304,10 +304,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setDefaultFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
 		}
 
-		model.setSelectMode(AttributeSelectMode.COMBO);
+		AttributeSelectMode defaultMode = AttributeType.DETAIL.equals(model.getAttributeType())
+				? AttributeSelectMode.TOKEN
+				: AttributeSelectMode.COMBO;
+
+		model.setSelectMode(defaultMode);
 		model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);
-		model.setSearchSelectMode(AttributeSelectMode.COMBO);
-		model.setGridSelectMode(AttributeSelectMode.COMBO);
+		model.setSearchSelectMode(defaultMode);
+		model.setGridSelectMode(defaultMode);
 
 		Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Email.class);
 		if (email != null) {
