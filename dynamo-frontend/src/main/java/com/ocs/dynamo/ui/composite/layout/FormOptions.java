@@ -227,6 +227,12 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean startInAdvancedMode;
 
+	/**
+	 * Whether to display a panel containing the item that is selected in a grid,
+	 * below that grid
+	 */
+	private boolean showGridDetailsPanel;
+
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -263,6 +269,7 @@ public class FormOptions implements Serializable {
 		fo.setShowEditFormCaption(isShowEditFormCaption());
 		fo.setDetailsEditLayoutSameRow(isDetailsEditLayoutSameRow());
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
+		fo.setShowGridDetailsPanel(isShowGridDetailsPanel());
 		return fo;
 	}
 
@@ -763,6 +770,15 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setStartInAdvancedMode(boolean startInAdvancedMode) {
 		this.startInAdvancedMode = startInAdvancedMode;
+		return this;
+	}
+
+	public boolean isShowGridDetailsPanel() {
+		return showGridDetailsPanel;
+	}
+
+	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
+		this.showGridDetailsPanel = showDetailsGridDetailPanel;
 		return this;
 	}
 

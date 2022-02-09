@@ -29,6 +29,11 @@ public class DynamoConstants {
 	 * CSS style for the main layout for a base view
 	 */
 	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
+	
+	/**
+	 * CSS style for grid details panel
+	 */
+	public static final String CSS_GRID_DETAILS_PANEL = "gridDetailsPanel";
 
 	/**
 	 * CSS style for the button that is used as the header for a collapsible panel
