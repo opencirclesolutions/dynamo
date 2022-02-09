@@ -23,6 +23,7 @@ import java.util.Map.Entry;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -38,6 +39,7 @@ import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedSelectionGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -166,6 +168,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	private String gridHeight = SystemPropertyUtils.getDefaultEditGridHeight();
 
+	private VerticalLayout layout;
+
 	/**
 	 * Code to execute after selecting one or more items in the pop-up (link the
 	 * selected item to the parent)
@@ -206,6 +210,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Sort order to apply to the search dialog
 	 */
 	private SortOrder<T> searchDialogSortOrder;
+
+	private SimpleEditLayout<ID, T> selectedDetailsLayout;
+
+	/**
+	 * A panel for displaying the item that was selected in the grid
+	 */
+	private VerticalLayout selectedDetailsPanel;
 
 	/**
 	 * The currently selected item
@@ -249,6 +260,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		this.attributeModel = attributeModel;
 		this.serviceBasedEditMode = serviceBasedEditMode;
 	}
+
+	protected abstract void addDownloadMenu();
 
 	/**
 	 * Adds an edit button to the grid when in not in edit or search mode
@@ -324,7 +337,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	protected void constructAddButton(HorizontalLayout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcon.PLUS.create());
-		addButton.addClickListener(event -> doAdd());
+		addButton.addClickListener(event -> {
+			hideSelectedDetailsPanel();
+			doAdd();
+		});
 		addButton.setVisible((isGridEditEnabled()
 				|| (!isViewMode() && serviceBasedEditMode && !formOptions.isDetailsGridSearchMode()))
 				&& !formOptions.isHideAddButton());
@@ -601,47 +617,84 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	protected abstract void handleDialogSelection(Collection<T> selected);
 
+	private void hideSelectedDetailsPanel() {
+		if (selectedDetailsPanel != null) {
+			selectedDetailsPanel.setVisible(false);
+		}
+	}
+
 	/**
 	 * Constructs the actual component
 	 */
 	protected void initContent() {
-		boolean checkBoxesForMultiSelect = getFormOptions().isUseCheckboxesForMultiSelect();
-		if (checkBoxesForMultiSelect) {
-			createCheckboxSelectGrid();
-		} else {
-			createMultiSelectGrid();
-		}
+		if (layout == null) {
 
-		addEditButtonToGrid();
-		addRemoveButtonToGrid();
-
-		grid.setHeight(gridHeight);
-		grid.setSelectionMode(SelectionMode.SINGLE);
-
-		VerticalLayout layout = new DefaultVerticalLayout(false, true);
-		layout.setSizeFull();
-		layout.add(grid);
-
-		// add a change listener (to make sure the buttons are correctly
-		// enabled/disabled)
-		grid.addSelectionListener(event -> {
-			if (grid.getSelectedItems().iterator().hasNext()) {
-				selectedItem = grid.getSelectedItems().iterator().next();
-				onSelect(selectedItem);
-				checkComponentState(selectedItem);
+			boolean checkBoxesForMultiSelect = getFormOptions().isUseCheckboxesForMultiSelect();
+			if (checkBoxesForMultiSelect) {
+				createCheckboxSelectGrid();
+			} else {
+				createMultiSelectGrid();
 			}
-		});
 
-		if (!getFormOptions().isDetailsGridSortable()) {
-			for (Column<?> c : grid.getColumns()) {
-				c.setSortable(false);
+			addEditButtonToGrid();
+			addRemoveButtonToGrid();
+
+			grid.setHeight(gridHeight);
+			grid.setSelectionMode(SelectionMode.SINGLE);
+
+			layout = new DefaultVerticalLayout(false, true);
+			layout.setSizeFull();
+			layout.add(grid);
+
+			// add a change listener (to make sure the buttons are correctly
+			// enabled/disabled)
+			grid.addSelectionListener(event -> {
+				if (grid.getSelectedItems().iterator().hasNext()) {
+					selectedItem = grid.getSelectedItems().iterator().next();
+					onSelect(selectedItem);
+					checkComponentState(selectedItem);
+
+					if (getFormOptions().isShowGridDetailsPanel()) {
+						showInDetailsPanel(selectedItem);
+					}
+				}
+			});
+
+			if (!getFormOptions().isDetailsGridSortable()) {
+				for (Column<?> c : grid.getColumns()) {
+					c.setSortable(false);
+				}
 			}
-		}
 
-		applyFilter();
-		constructButtonBar(layout);
-		postConstruct();
-		add(layout);
+			applyFilter();
+			constructButtonBar(layout);
+
+			if (getFormOptions().isShowGridDetailsPanel()) {
+				constructDetailsPanel();
+			}
+
+			postConstruct();
+			add(layout);
+			addDownloadMenu();
+		}
+	}
+
+	/**
+	 * Constructs the panel for displaying the item that is selected in the grid,
+	 * directly below the grid
+	 */
+	private void constructDetailsPanel() {
+		selectedDetailsPanel = new DefaultVerticalLayout(true, false);
+		selectedDetailsPanel.addClassName(DynamoConstants.CSS_GRID_DETAILS_PANEL);
+		selectedDetailsPanel.setVisible(false);
+		FormOptions cloned = formOptions.createCopy().setReadOnly(true).setShowEditFormCaption(true);
+
+		selectedDetailsLayout = new SimpleEditLayout<>(
+				getCreateEntitySupplier() == null ? null : getCreateEntitySupplier().get(), service, entityModel,
+				cloned, getDetailJoins());
+		selectedDetailsPanel.add(selectedDetailsLayout);
+
+		layout.add(selectedDetailsPanel);
 	}
 
 	/**
@@ -742,7 +795,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Set the code to carry out after the value of this component has been set
 	 * 
-	 * @param afterValueSet 
+	 * @param afterValueSet
 	 */
 	public void setAfterValueSet(Consumer<U> afterValueSet) {
 		this.afterValueSet = afterValueSet;
@@ -811,8 +864,23 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		if (value instanceof Collection) {
 			updateCaption(((Collection) value).size());
 		}
+		hideSelectedDetailsPanel();
 		if (afterValueSet != null) {
 			afterValueSet.accept(value);
+		}
+	}
+
+	/**
+	 * Displays the selected item in the details panel below the grid
+	 * 
+	 * @param selectedItem the selected item
+	 */
+	private void showInDetailsPanel(T selectedItem) {
+		if (selectedItem != null && selectedItem.getId() != null && isViewMode()) {
+			selectedDetailsPanel.setVisible(true);
+			selectedDetailsLayout.setEntity(selectedItem);
+		} else {
+			selectedDetailsPanel.setVisible(false);
 		}
 	}
 
@@ -842,7 +910,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Updates the caption
 	 * 
-	 * @param size the number of items currently being shown in the grid 
+	 * @param size the number of items currently being shown in the grid
 	 */
 	protected void updateCaption(int size) {
 		this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()) + " "

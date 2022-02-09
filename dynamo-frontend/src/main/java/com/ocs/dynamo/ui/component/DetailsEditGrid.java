@@ -26,6 +26,7 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.data.provider.DataProvider;
@@ -70,14 +71,19 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 			FormOptions formOptions) {
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
+
+	}
+
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
 		initContent();
-		addDownloadMenu();
 	}
 
 	/**
 	 * Adds a context menu used to download the contents of the grid
 	 */
-	private void addDownloadMenu() {
+	protected void addDownloadMenu() {
 		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
 			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
 			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));

@@ -238,6 +238,12 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean useCheckboxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
 
+	/**
+	 * Whether to display a panel containing the item that is selected in a grid,
+	 * below that grid
+	 */
+	private boolean showGridDetailsPanel;
+	
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -276,6 +282,7 @@ public class FormOptions implements Serializable {
 		fo.setUseCheckboxesForMultiSelect(isUseCheckboxesForMultiSelect());
 		fo.setDetailsEditLayoutSameRow(isDetailsEditLayoutSameRow());
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
+		fo.setShowGridDetailsPanel(isShowGridDetailsPanel());
 		return fo;
 	}
 
@@ -801,6 +808,15 @@ public class FormOptions implements Serializable {
 
 	public FormOptions setUseCheckboxesForMultiSelect(boolean useCheckboxesForMultiSelect) {
 		this.useCheckboxesForMultiSelect = useCheckboxesForMultiSelect;
+		return this;
+	}
+	
+	public boolean isShowGridDetailsPanel() {
+		return showGridDetailsPanel;
+	}
+
+	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
+		this.showGridDetailsPanel = showDetailsGridDetailPanel;
 		return this;
 	}
 

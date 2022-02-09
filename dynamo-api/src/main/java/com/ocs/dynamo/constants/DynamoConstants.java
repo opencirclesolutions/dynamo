@@ -58,6 +58,12 @@ public final class DynamoConstants {
 
 	public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
 
+	/**
+	 * CSS style for grid details panel
+	 */
+	public static final String CSS_GRID_DETAILS_PANEL = "gridDetailsPanel";
+
+	
 	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
 
 	public static final String CSS_HORIZONTAL_DISPLAY_LAYOUT = "horizontalDisplayLayout";

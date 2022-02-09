@@ -32,6 +32,7 @@ import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
@@ -93,11 +94,15 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		super(service, entityModel, attributeModel, viewMode, true, formOptions);
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
 		provider.setAfterCountCompleted(count -> updateCaption(count));
-		initContent();
-		addDownloadMenu();
 	}
 
-	private void addDownloadMenu() {
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		initContent();
+	}
+
+	protected void addDownloadMenu() {
 		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
 			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
 			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));
