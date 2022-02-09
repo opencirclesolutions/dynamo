@@ -66,6 +66,7 @@ public class DynamoFrontendAutoConfigure {
 
 	@Bean
 	@Order(1010)
+	@SuppressWarnings("rawtypes")
 	@ConditionalOnMissingBean(SimpleTokenFieldComponentCreator.class)
 	public SimpleTokenFieldComponentCreator simpleTokenFieldCreator() {
 		return new SimpleTokenFieldComponentCreator();
@@ -73,6 +74,7 @@ public class DynamoFrontendAutoConfigure {
 
 	@Bean
 	@Order(1020)
+	@SuppressWarnings("rawtypes")
 	@ConditionalOnMissingBean(TokenFieldComponentCreator.class)
 	public TokenFieldComponentCreator tokenFieldComponentCreator() {
 		return new TokenFieldComponentCreator<>();
@@ -80,6 +82,7 @@ public class DynamoFrontendAutoConfigure {
 
 	@Bean
 	@Order(1030)
+	@SuppressWarnings("rawtypes")
 	@ConditionalOnMissingBean(LookupFieldComponentCreator.class)
 	public LookupFieldComponentCreator lookupFieldComponentCreator() {
 		return new LookupFieldComponentCreator<>();
@@ -87,6 +90,7 @@ public class DynamoFrontendAutoConfigure {
 
 	@Bean
 	@Order(1040)
+	@SuppressWarnings("rawtypes")
 	@ConditionalOnMissingBean(ComboBoxComponentCreator.class)
 	public ComboBoxComponentCreator comboBoxComponentCreator() {
 		return new ComboBoxComponentCreator();
@@ -94,6 +98,7 @@ public class DynamoFrontendAutoConfigure {
 
 	@Bean
 	@Order(1050)
+	@SuppressWarnings("rawtypes")
 	@ConditionalOnMissingBean(ListBoxComponentCreator.class)
 	public ListBoxComponentCreator listBoxComponentCreator() {
 		return new ListBoxComponentCreator();

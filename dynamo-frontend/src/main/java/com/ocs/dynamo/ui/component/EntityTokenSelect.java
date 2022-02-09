@@ -209,14 +209,14 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		return attributeModel;
 	}
 
-	@SuppressWarnings("unchecked")
-	public int getDataProviderSize() {
-		if (this.getDataProvider() instanceof ListDataProvider) {
-			ListDataProvider<T> bic = (ListDataProvider<T>) this.getDataProvider();
-			return bic.getItems().size();
-		}
-		return -1;
-	}
+//	@SuppressWarnings("unchecked")
+//	public int getDataProviderSize() {
+//		if (this.getDataProvider() instanceof ListDataProvider) {
+//			ListDataProvider<T> bic = (ListDataProvider<T>) this.getDataProvider();
+//			return bic.getItems().size();
+//		}
+//		return -1;
+//	}
 
 	public SerializablePredicate<T> getFilter() {
 		return filter;

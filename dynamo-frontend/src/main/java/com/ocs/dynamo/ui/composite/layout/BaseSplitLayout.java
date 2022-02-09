@@ -84,6 +84,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	private Component selectedDetailLayout;
 
+	/**
+	 * Supplier that is used to define a custom header layout
+	 */
 	@Getter
 	@Setter
 	private Supplier<Component> buildHeaderLayout;
@@ -199,7 +202,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				getPostProcessMainButtonBar().accept(getButtonBar());
 			}
 
-			postProcessLayout(mainLayout);
+			if (getPostProcessLayout() != null) {
+				getPostProcessLayout().accept(mainLayout);
+			}
 
 			checkComponentState(null);
 			add(mainLayout);
@@ -224,16 +229,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			getRemoveButton().setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
 		}
 	}
-
-//	/**
-//	 * Constructs a header layout (displayed above the actual tabular content). By
-//	 * default this is empty, overwrite in subclasses if you want to modify this
-//	 *
-//	 * @return
-//	 */
-//	protected Component constructHeaderLayout() {
-//		return null;
-//	}
 
 	protected final Button constructRemoveButton() {
 		Button removeButton = new RemoveButton(this, message("ocs.remove"), null, () -> removeEntity(),
@@ -280,31 +275,21 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 				private static final long serialVersionUID = 6642035999999009278L;
 
-				@Override
-				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-					if (!cancel) {
-						// update the selected item so master and detail are in sync
-						// again
-						reload();
-						if (newObject) {
-							getGridWrapper().getGrid().select(entity);
-						} else {
-							detailsMode(entity);
-						}
-					} else {
-						reload();
-						reloadDetails();
-					}
-				}
-
 //				@Override
-//				protected void afterTabSelected(int tabIndex) {
-//					BaseSplitLayout.this.afterTabSelected(tabIndex);
-//				}
-
-//				@Override
-//				protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-//					return BaseSplitLayout.this.constructCustomConverter(am);
+//				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+//					if (!cancel) {
+//						// update the selected item so master and detail are in sync
+//						// again
+//						reload();
+//						if (newObject) {
+//							getGridWrapper().getGrid().select(entity);
+//						} else {
+//							detailsMode(entity);
+//						}
+//					} else {
+//						reload();
+//						reloadDetails();
+//					}
 //				}
 
 				@Override
@@ -313,38 +298,30 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
-//				@Override
-//				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-//					return BaseSplitLayout.this.constructCustomRequiredValidator(am);
-//				}
-
-//				@Override
-//				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-//					return BaseSplitLayout.this.constructCustomValidator(am);
-//				}
-
-				@Override
-				protected String getParentGroup(String childGroup) {
-					return BaseSplitLayout.this.getParentGroup(childGroup);
-				}
-
-				@Override
-				protected String[] getParentGroupHeaders() {
-					return BaseSplitLayout.this.getParentGroupHeaders();
-				}
-
 				@Override
 				protected boolean isEditAllowed() {
 					return BaseSplitLayout.this.isEditAllowed();
 				}
 
-//				@Override
-//				protected void postProcessEditFields() {
-//					BaseSplitLayout.this.postProcessEditFields(editForm);
-//				}
 			};
 
 			initEditForm(editForm);
+			editForm.setAfterEditDone((cancel, isNew, ent) -> {
+				if (!cancel) {
+					// update the selected item so master and detail are in sync
+					// again
+					reload();
+					if (isNew) {
+						getGridWrapper().getGrid().select(ent);
+					} else {
+						detailsMode(ent);
+					}
+				} else {
+					reload();
+					reloadDetails();
+				}
+			});
+
 			editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
 			editForm.setPostProcessEditFields(getPostProcessEditFields());
 			editForm.setDetailJoins(getDetailJoins());

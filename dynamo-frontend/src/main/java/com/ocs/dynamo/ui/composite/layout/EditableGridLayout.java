@@ -184,11 +184,13 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			createCancelButton();
 			createSaveButton();
 
-			// allow the user to define extra buttons
 			if (getPostProcessMainButtonBar() != null) {
 				getPostProcessMainButtonBar().accept(getButtonBar());
 			}
-			postProcessLayout(mainLayout);
+
+			if (getPostProcessLayout() != null) {
+				getPostProcessLayout().accept(mainLayout);
+			}
 		}
 		add(mainLayout);
 	}

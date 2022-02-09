@@ -116,14 +116,18 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The list of sort orders to apply by default
 	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
-	
+
 	@Getter
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
-	
+
 	@Getter
 	@Setter
 	private Consumer<FlexLayout> postProcessMainButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> postProcessLayout;
 
 	/**
 	 * Constructor
@@ -298,33 +302,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return maxResults;
 	}
 
-	/**
-	 * Returns the parent group (which must be returned by the getParentGroupHeaders
-	 * method) to which a certain child group belongs
-	 * 
-	 * @param childGroup the name of the child group
-	 * @return
-	 */
-	protected String getParentGroup(String childGroup) {
-		// overwrite in subclasses if needed
-		return null;
-	}
-
-	/**
-	 * Returns a list of keys for the messages that can be used to add an extra
-	 * attribute group layer to the layout. By default this method returns null
-	 * which means that no extra layer will be used. If you return a non-empty
-	 * String array, then the values in this array will be used as additional
-	 * attribute group header. Use the "getParentGroup" method to determine which
-	 * "regular" attribute group must be placed in which parent group.
-	 * 
-	 * @return
-	 */
-	protected String[] getParentGroupHeaders() {
-		// overwrite in subclasses if needed
-		return null;
-	}
-
 	public T getSelectedItem() {
 		return selectedItem;
 	}
@@ -401,16 +378,16 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		// override in subclasses
 	}
 
-	/**
-	 * Callback method that is called after the entire layout has been constructed.
-	 * Use this to e.g. add additional components to the bottom of the layout or to
-	 * modify button captions
-	 * 
-	 * @param main the main layout
-	 */
-	protected void postProcessLayout(VerticalLayout main) {
-		// override in subclasses
-	}
+//	/**
+//	 * Callback method that is called after the entire layout has been constructed.
+//	 * Use this to e.g. add additional components to the bottom of the layout or to
+//	 * modify button captions
+//	 * 
+//	 * @param main the main layout
+//	 */
+//	protected void postProcessLayout(VerticalLayout main) {
+//		// override in subclasses
+//	}
 
 	/**
 	 * Sets the joins to use when retrieving a single object for use in a detail

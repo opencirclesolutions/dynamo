@@ -144,25 +144,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
 					fieldFilters) {
 
-				@Override
-				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-					setEntity(entity);
-					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
-				}
-
 //				@Override
-//				protected void afterTabSelected(int tabIndex) {
-//					SimpleEditLayout.this.afterTabSelected(tabIndex);
-//				}
-
-//				@Override
-//				protected void back() {
-//					SimpleEditLayout.this.back();
-//				}
-
-//				@Override
-//				protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-//					return SimpleEditLayout.this.constructCustomConverter(am);
+//				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+//					setEntity(entity);
+//					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
 //				}
 
 				@Override
@@ -171,45 +156,22 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
-//				@Override
-//				protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-//					return SimpleEditLayout.this.constructCustomRequiredValidator(am);
-//				}
-
-//				@Override
-//				protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-//					return SimpleEditLayout.this.constructCustomValidator(am);
-//				}
-
-				@Override
-				protected String getParentGroup(String childGroup) {
-					return SimpleEditLayout.this.getParentGroup(childGroup);
-				}
-
-				@Override
-				protected String[] getParentGroupHeaders() {
-					return SimpleEditLayout.this.getParentGroupHeaders();
-				}
-
 				@Override
 				protected boolean isEditAllowed() {
 					return SimpleEditLayout.this.isEditAllowed();
 				}
 
-//				@Override
-//				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-//					SimpleEditLayout.this.postProcessButtonBar(buttonBar, viewMode);
-//				}
-
-//				@Override
-//				protected void postProcessEditFields() {
-//					SimpleEditLayout.this.postProcessEditFields(editForm);
-//				}
 			};
 
 			initEditForm(editForm);
 			editForm.setPostProcessButtonBar(postProcessButtonBar);
 			editForm.setDetailJoins(getJoins());
+
+			editForm.setAfterEditDone((cancel, isNew, ent) -> {
+				setEntity(ent);
+				SimpleEditLayout.this.afterEditDone(cancel, isNew, ent);
+			});
+
 			editForm.build();
 
 			main.add(editForm);
@@ -237,28 +199,28 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		this.editForm.doSave();
 	}
 
-	/**
-	 * Returns the parent group (which must be returned by the getParentGroupHeaders
-	 * method) to which a certain child group belongs
-	 *
-	 * @param childGroup the name of the child group
-	 * @return
-	 */
-	protected String getParentGroup(String childGroup) {
-		// overwrite in subclasses if needed
-		return null;
-	}
-
-	/**
-	 * Returns a list of additional group headers that can be used to add an extra
-	 * nesting layer to the layout
-	 *
-	 * @return
-	 */
-	protected String[] getParentGroupHeaders() {
-		// overwrite in subclasses if needed
-		return null;
-	}
+//	/**
+//	 * Returns the parent group (which must be returned by the getParentGroupHeaders
+//	 * method) to which a certain child group belongs
+//	 *
+//	 * @param childGroup the name of the child group
+//	 * @return
+//	 */
+//	protected String getParentGroup(String childGroup) {
+//		// overwrite in subclasses if needed
+//		return null;
+//	}
+//
+//	/**
+//	 * Returns a list of additional group headers that can be used to add an extra
+//	 * nesting layer to the layout
+//	 *
+//	 * @return
+//	 */
+//	protected String[] getParentGroupHeaders() {
+//		// overwrite in subclasses if needed
+//		return null;
+//	}
 
 	/**
 	 *

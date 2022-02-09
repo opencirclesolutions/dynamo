@@ -148,9 +148,9 @@ public final class JpaQueryBuilder {
 	/**
 	 * Creates a predicate based on an "And" filter
 	 * 
-	 * @param builder the criteria builder
-	 * @param root    the root object
-	 * @param filter  the "And" filter
+	 * @param builder    the criteria builder
+	 * @param root       the root object
+	 * @param filter     the "And" filter
 	 * @param parameters the parameters passed to the query
 	 * @return
 	 */
@@ -317,6 +317,8 @@ public final class JpaQueryBuilder {
 			Predicate pr = createPredicate(additionalFilter, builder, root, pars);
 			if (pr != null) {
 				cq.where(pr, exp.in(idExpression));
+			} else {
+				cq.where(exp.in(idExpression));
 			}
 		} else {
 			cq.where(exp.in(idExpression));
@@ -383,7 +385,7 @@ public final class JpaQueryBuilder {
 	 * @param entityManager the entity manager
 	 * @param entityClass   the entity class
 	 * @param filter        the filter to apply
-	 * @param sortOrders     the sorting to apply
+	 * @param sortOrders    the sorting to apply
 	 * @return
 	 */
 	public static <T> TypedQuery<Tuple> createIdQuery(EntityManager entityManager, Class<T> entityClass, Filter filter,

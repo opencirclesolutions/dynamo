@@ -234,8 +234,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			checkComponentState(null);
 
-			// post process the layout
-			postProcessLayout(mainSearchLayout);
+			if (getPostProcessLayout() != null) {
+				getPostProcessLayout().accept(mainSearchLayout);
+			}
 
 			// there is a small chance that the user navigates directly
 			// to the detail screen without the search layout having been

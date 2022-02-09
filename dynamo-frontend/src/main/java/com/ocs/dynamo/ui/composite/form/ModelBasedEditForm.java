@@ -24,6 +24,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
@@ -32,6 +33,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -134,6 +136,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private static final long serialVersionUID = 2201140375797069148L;
 
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
+
+	@Getter
+	@Setter
+	private Consumer<T> afterEntitySet;
+
+	@Getter
+	@Setter
+	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+
+	@Getter
+	@Setter
+	private Consumer<Integer> afterTabSelected;
+
 	/**
 	 * The code to be carried out after a file has been successfully uploaded
 	 */
@@ -170,12 +192,28 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Setter
 	private List<String> columnThresholds = new ArrayList<>();
 
+	@Getter
+	@Setter
+	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
+
 	/**
 	 * Custom consumer that is to be called instead of the regular save behavior
 	 */
 	@Getter
 	@Setter
 	private Consumer<T> customSaveConsumer;
+
+	@Getter
+	@Setter
+	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
+
+	@Getter
+	@Setter
+	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
 
 	/**
 	 * Indicates whether all details tables for editing complex fields are valid
@@ -201,6 +239,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Indicates whether the fields have been post processed
 	 */
 	private boolean fieldsProcessed;
+
+	@Getter
+	@Setter
+	private Function<String, String> findParentGroup;
 
 	/**
 	 * Map from tab index to the first field on each tab
@@ -248,6 +290,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private boolean nestedMode;
 
+	@Getter
+	@Setter
+	private Runnable onBackButtonClicked = () -> {
+	};
+
+	@Getter
+	@Setter
+	private String[] parentGroupHeaders;
+
+	@Getter
+	@Setter
+	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
+
+	@Getter
+	@Setter
+	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+
 	private Map<Boolean, Map<AttributeModel, Component>> previews = new HashMap<>();
 
 	private BaseService<ID, T> service;
@@ -267,55 +330,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Whether to display the component in view mode
 	 */
 	private boolean viewMode;
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
-
-	@Getter
-	@Setter
-	private Consumer<T> afterEntitySet;
-
-	@Getter
-	@Setter
-	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-
-	@Getter
-	@Setter
-	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
-
-	@Getter
-	@Setter
-	private Consumer<Integer> afterTabSelected;
-
-	@Getter
-	@Setter
-	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
-
-	@Getter
-	@Setter
-	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
-
-	@Getter
-	@Setter
-	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
-
-	@Getter
-	@Setter
-	private Runnable onBackButtonClicked = () -> {
-	};
-
-	@Getter
-	@Setter
-	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
-
-	@Getter
-	@Setter
-	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
 
 	/**
 	 * Constructor
@@ -456,15 +470,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		});
 	}
 
-	/**
-	 * Callback method that fires after the user is done editing an entity
-	 *
-	 * @param cancel    whether the user cancelled the editing
-	 * @param newObject whether the object is a new object
-	 * @param entity    the entity
-	 */
-	protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-		// override in subclass
+	private void addUploadFieldListeners(AttributeModel attributeModel, Component field) {
+		if (field instanceof UploadComponent) {
+			UploadComponent upload = (UploadComponent) field;
+			if (attributeModel.getFileNameProperty() != null) {
+				upload.setFileNameConsumer(fileName -> {
+					ClassUtils.setFieldValue(getEntity(), attributeModel.getFileNameProperty(), fileName);
+					setLabelValue(attributeModel.getFileNameProperty(), fileName);
+				});
+			}
+
+			if (afterUploadCompleted != null) {
+				upload.setAfterUploadCompleted(afterUploadCompleted);
+			}
+		}
 	}
 
 //	/**
@@ -502,6 +521,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //	 */
 //	protected void back() {
 //		// overwrite in subclasses
+//	}
+
+//	/**
+//	 * Callback method that fires after the user is done editing an entity
+//	 *
+//	 * @param cancel    whether the user cancelled the editing
+//	 * @param newObject whether the object is a new object
+//	 * @param entity    the entity
+//	 */
+//	protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+//		// override in subclass
 //	}
 
 	/**
@@ -760,7 +790,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (entity.getId() != null) {
 				entity = service.fetchById(entity.getId(), getDetailJoins());
 			}
-			afterEditDone(true, entity.getId() == null, entity);
+			// afterEditDone(true, entity.getId() == null, entity);
+
+			if (afterEditDone != null) {
+				afterEditDone.accept(true, entity.getId() == null, entity);
+			}
 		});
 
 		// display button when in edit mode and explicitly specified, or when creating a
@@ -828,20 +862,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return buttonBar;
 	}
 
-	/**
-	 * Adds any value change listeners for handling cascaded search
-	 */
-	@SuppressWarnings("unchecked")
-	private <S> void constructCascadeListeners() {
-		for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
-			HasValue<?, S> field = (HasValue<?, S>) getField(isViewMode(), am.getPath());
-			if (field != null) {
-				ValueChangeListener<ValueChangeEvent<?>> cascadeListener = event -> addCascadeListener(am, event);
-				field.addValueChangeListener(cascadeListener);
-			}
-		}
-	}
-
 //	/**
 //	 * Callback method that can be used to construct a custom converter for a
 //	 * certain field
@@ -855,18 +875,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //	}
 
 	/**
-	 * Callback method that can be used to create a custom field
-	 *
-	 * @param entityModel    the entity model to base the field on
-	 * @param attributeModel the attribute model to base the field on
-	 * @param viewMode       whether the form is currently in view mode
-	 * @return
+	 * Adds any value change listeners for handling cascaded search
 	 */
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode) {
-		// by default, return null. override in subclasses in order to create
-		// specific fields
-		return null;
+	@SuppressWarnings("unchecked")
+	private <S> void constructCascadeListeners() {
+		for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+			HasValue<?, S> field = (HasValue<?, S>) getField(isViewMode(), am.getPath());
+			if (field != null) {
+				ValueChangeListener<ValueChangeEvent<?>> cascadeListener = event -> addCascadeListener(am, event);
+				field.addValueChangeListener(cascadeListener);
+			}
+		}
 	}
 
 //	/**
@@ -890,6 +909,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
 //		return null;
 //	}
+
+	/**
+	 * Callback method that can be used to create a custom field
+	 *
+	 * @param entityModel    the entity model to base the field on
+	 * @param attributeModel the attribute model to base the field on
+	 * @param viewMode       whether the form is currently in view mode
+	 * @return
+	 */
+	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+			boolean viewMode) {
+		// by default, return null. override in subclasses in order to create
+		// specific fields
+		return null;
+	}
 
 	/**
 	 * Constructs a field or label for a certain attribute
@@ -1028,53 +1062,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				assignEntityToFields.add((CanAssignEntity<ID, T>) field);
 			}
 		}
-	}
-
-	private void addUploadFieldListeners(AttributeModel attributeModel, Component field) {
-		if (field instanceof UploadComponent) {
-			UploadComponent upload = (UploadComponent) field;
-			if (attributeModel.getFileNameProperty() != null) {
-				upload.setFileNameConsumer(fileName -> {
-					ClassUtils.setFieldValue(getEntity(), attributeModel.getFileNameProperty(), fileName);
-					setLabelValue(attributeModel.getFileNameProperty(), fileName);
-				});
-			}
-
-			if (afterUploadCompleted != null) {
-				upload.setAfterUploadCompleted(afterUploadCompleted);
-			}
-		}
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Converter getCustomConverter(AttributeModel attributeModel) {
-		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel);
-		if (supplier != null) {
-			Converter<?, ?> converter = supplier.get();
-			return converter;
-		}
-		return null;
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Validator getCustomValidator(AttributeModel attributeModel) {
-		return findCustomValidator(attributeModel, customValidators);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Validator getCustomRequiredValidator(AttributeModel attributeModel) {
-		return findCustomValidator(attributeModel, customRequiredValidators);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Validator findCustomValidator(AttributeModel attributeModel,
-			Map<AttributeModel, Supplier<Validator<?>>> map) {
-		Supplier<Validator<?>> supplier = map.get(attributeModel);
-		if (supplier != null) {
-			Validator<?> validator = supplier.get();
-			return validator;
-		}
-		return null;
 	}
 
 	/**
@@ -1260,7 +1247,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			viewMode = true;
 			build();
 		}
-		afterEditDone(false, isNew, getEntity());
+
+		if (afterEditDone != null) {
+			afterEditDone.accept(false, isNew, getEntity());
+		}
+
+		// afterEditDone(false, isNew, getEntity());
 	}
 
 	/**
@@ -1272,6 +1264,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private List<Button> filterButtons(String data) {
 		List<Button> list = buttons.get(isViewMode()).get(data);
 		return Collections.unmodifiableList(list == null ? new ArrayList<>() : list);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Validator findCustomValidator(AttributeModel attributeModel,
+			Map<AttributeModel, Supplier<Validator<?>>> map) {
+		Supplier<Validator<?>> supplier = map.get(attributeModel);
+		if (supplier != null) {
+			Validator<?> validator = supplier.get();
+			return validator;
+		}
+		return null;
 	}
 
 	public CollapsiblePanel getAttributeGroupPanel(String key) {
@@ -1302,6 +1305,26 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public List<Button> getCancelButtons() {
 		return filterButtons(CANCEL_BUTTON_DATA);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Converter getCustomConverter(AttributeModel attributeModel) {
+		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel);
+		if (supplier != null) {
+			Converter<?, ?> converter = supplier.get();
+			return converter;
+		}
+		return null;
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Validator getCustomRequiredValidator(AttributeModel attributeModel) {
+		return findCustomValidator(attributeModel, customRequiredValidators);
+	}
+
+	@SuppressWarnings("rawtypes")
+	private Validator getCustomValidator(AttributeModel attributeModel) {
+		return findCustomValidator(attributeModel, customValidators);
 	}
 
 	public FetchJoinInformation[] getDetailJoins() {
@@ -1430,27 +1453,36 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Indicates which parent group a certain child group belongs to. The parent
-	 * group must be mentioned in the result of the
-	 * <code>getParentGroupHeaders</code> method. The childGroup must be the name of
-	 * an attribute group from the entity model
-	 *
-	 * @param childGroup
+	 * Calculates the default value for a numeric field
+	 * 
+	 * @param am           the attribute model for the field
+	 * @param defaultValue the default value
 	 * @return
 	 */
-	protected String getParentGroup(String childGroup) {
-		return null;
+	private Object getNumericDefaultValue(AttributeModel am, Object defaultValue) {
+		DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(VaadinUtils.getLocale());
+		char sep = nf.getDecimalFormatSymbols().getDecimalSeparator();
+
+		// set correct precision for non-integers
+		if (NumberUtils.isDouble(am.getType()) || NumberUtils.isFloat(am.getType())
+				|| BigDecimal.class.equals(am.getType())) {
+			nf.setMaximumFractionDigits(am.getPrecision());
+			nf.setMinimumFractionDigits(am.getPrecision());
+			nf.setGroupingUsed(false);
+			defaultValue = nf.format(defaultValue);
+		}
+		defaultValue = defaultValue.toString().replace('.', sep);
+		if (am.isPercentage()) {
+			defaultValue = defaultValue.toString() + "%";
+		}
+		return defaultValue;
 	}
 
-	/**
-	 * Returns the group headers of any additional parent groups that must be
-	 * included in the form. These can be used to add an extra layer of nesting of
-	 * the attribute groups
-	 *
-	 * @return
-	 */
-	protected String[] getParentGroupHeaders() {
-		return null;
+	private String getParentGroup(String attributeGroup) {
+		if (findParentGroup == null) {
+			return null;
+		}
+		return findParentGroup.apply(attributeGroup);
 	}
 
 	public List<Button> getPreviousButtons() {
@@ -1470,6 +1502,16 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public List<Button> getSaveButtons() {
 		return filterButtons(SAVE_BUTTON_DATA);
 	}
+
+//	/**
+//	 * Overwrite this method to add custom exception handling
+//	 * 
+//	 * @param ex the exception to handle
+//	 * @return
+//	 */
+//	protected boolean handleCustomException(RuntimeException ex) {
+//		return false;
+//	}
 
 	public int getSelectedTabIndex() {
 		return tabs.get(isViewMode()).getSelectedIndex();
@@ -1492,16 +1534,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 		}
 	}
-
-//	/**
-//	 * Overwrite this method to add custom exception handling
-//	 * 
-//	 * @param ex the exception to handle
-//	 * @return
-//	 */
-//	protected boolean handleCustomException(RuntimeException ex) {
-//		return false;
-//	}
 
 	protected boolean hasNextEntity() {
 		return false;
@@ -1556,21 +1588,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return supportsIteration;
 	}
 
-	/**
-	 * Check if the form is valid
-	 *
-	 * @return
-	 */
-	public boolean isValid() {
-		boolean valid = groups.get(isViewMode()).isValid();
-		valid &= detailComponentsValid.values().stream().allMatch(x -> x);
-		return valid;
-	}
-
-	public boolean isViewMode() {
-		return viewMode;
-	}
-
 //	/**
 //	 * Post-processes the button bar that is displayed above/below the edit form
 //	 *
@@ -1591,6 +1608,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //	}
 
 	/**
+	 * Check if the form is valid
+	 *
+	 * @return
+	 */
+	public boolean isValid() {
+		boolean valid = groups.get(isViewMode()).isValid();
+		valid &= detailComponentsValid.values().stream().allMatch(x -> x);
+		return valid;
+	}
+
+	public boolean isViewMode() {
+		return viewMode;
+	}
+
+	/**
 	 * Processes all fields that are part of a property group
 	 *
 	 * @param parentGroupHeader the group header
@@ -1605,7 +1637,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		for (String attributeGroup : getEntityModel().getAttributeGroups()) {
 			if ((!EntityModel.DEFAULT_GROUP.equals(attributeGroup)
 					|| getEntityModel().isAttributeGroupVisible(attributeGroup, viewMode))
-					&& getParentGroup(attributeGroup).equals(parentGroupHeader)) {
+					&& Objects.equals(getParentGroup(attributeGroup), parentGroupHeader)) {
 				HasComponents innerLayout2 = constructAttributeGroupLayout(innerForm, useInnerTabs, innerTabs,
 						attributeGroup, true);
 				for (AttributeModel attributeModel : getEntityModel().getAttributeModelsForGroup(attributeGroup)) {
@@ -1786,32 +1818,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	/**
-	 * Calculates the default value for a numeric field
-	 * 
-	 * @param am           the attribute model for the field
-	 * @param defaultValue the default value
-	 * @return
-	 */
-	private Object getNumericDefaultValue(AttributeModel am, Object defaultValue) {
-		DecimalFormat nf = (DecimalFormat) DecimalFormat.getInstance(VaadinUtils.getLocale());
-		char sep = nf.getDecimalFormatSymbols().getDecimalSeparator();
-
-		// set correct precision for non-integers
-		if (NumberUtils.isDouble(am.getType()) || NumberUtils.isFloat(am.getType())
-				|| BigDecimal.class.equals(am.getType())) {
-			nf.setMaximumFractionDigits(am.getPrecision());
-			nf.setMinimumFractionDigits(am.getPrecision());
-			nf.setGroupingUsed(false);
-			defaultValue = nf.format(defaultValue);
-		}
-		defaultValue = defaultValue.toString().replace('.', sep);
-		if (am.isPercentage()) {
-			defaultValue = defaultValue.toString() + "%";
-		}
-		return defaultValue;
-	}
-
 	public void setDetailJoins(FetchJoinInformation[] detailJoins) {
 		this.detailJoins = detailJoins;
 	}
@@ -1862,20 +1868,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			afterEntitySelected.accept(this, entity);
 		}
 
-	}
-
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	private void triggerCascadeListeners() {
-		for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
-			HasValue field = (HasValue) getField(isViewMode(), am.getPath());
-			if (field != null) {
-				if (field.getValue() != null) {
-					Object value = field.getValue();
-					field.clear();
-					field.setValue(value);
-				}
-			}
-		}
 	}
 
 	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
@@ -2076,6 +2068,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Map<String, List<Button>> map = buttons.get(isViewMode());
 		map.putIfAbsent(data, new ArrayList<>());
 		map.get(data).add(button);
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void triggerCascadeListeners() {
+		for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+			HasValue field = (HasValue) getField(isViewMode(), am.getPath());
+			if (field != null) {
+				if (field.getValue() != null) {
+					Object value = field.getValue();
+					field.clear();
+					field.setValue(value);
+				}
+			}
+		}
 	}
 
 	/**

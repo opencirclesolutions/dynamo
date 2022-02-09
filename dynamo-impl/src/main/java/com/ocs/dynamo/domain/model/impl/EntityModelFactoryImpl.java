@@ -1310,7 +1310,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.GRID_SELECT_MODE),
 				AttributeSelectMode.class, value -> attributeModel.setGridSelectMode(value));
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MULTI_SELECT_MODE),
-				MultiSelectMode.class, value -> attributeModel.setMultiSelectMode(value));
+				MultiSelectMode.class, value -> {
+					System.out.println("bert");
+					attributeModel.setMultiSelectMode(value);
+				});
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE), AttributeDateType.class,
 				value -> attributeModel.setDateType(value));
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXTFIELD_MODE),

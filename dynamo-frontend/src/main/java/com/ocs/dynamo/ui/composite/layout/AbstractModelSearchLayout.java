@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.BiConsumer;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
@@ -37,15 +36,11 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
-
-import lombok.Getter;
-import lombok.Setter;
 
 public abstract class AbstractModelSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends AbstractSearchLayout<ID, T, T> {
@@ -118,7 +113,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * Tab layout for complex detail mode
 	 */
 	private TabLayout<ID, T> tabLayout;
-	
 
 	public AbstractModelSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
@@ -238,54 +232,24 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 
 			private static final long serialVersionUID = 6485097089659928131L;
 
-			@Override
-			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-				if (getFormOptions().isOpenInViewMode()) {
-					if (newObject) {
-						getOnBackButtonClicked().run();
-					} else {
-						// if details screen opens in view mode, simply switch
-						// to view mode
-						setViewMode(true);
-						detailsMode(entity);
-					}
-				} else {
-					// otherwise go back to the main screen
-					if (cancel || newObject
-							|| (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
-						getOnBackButtonClicked().run();
-					}
-				}
-			}
-
 //			@Override
-//			protected void afterEntitySelected(T entity) {
-//				AbstractModelSearchLayout.this.afterEntitySelected(editForm, entity);
-//			}
-
-//			@Override
-//			protected void afterEntitySet(T entity) {
-//				AbstractModelSearchLayout.this.afterEntitySet(entity);
-//			}
-
-//			@Override
-//			protected void afterModeChanged(boolean viewMode) {
-//				AbstractModelSearchLayout.this.afterModeChanged(viewMode, editForm);
-//			}
-
-//			@Override
-//			protected void afterTabSelected(int tabIndex) {
-//				AbstractModelSearchLayout.this.afterTabSelected(tabIndex);
-//			}
-
-//			@Override
-//			protected void back() {
-//				searchMode();
-//			}
-
-//			@Override
-//			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-//				return AbstractModelSearchLayout.this.constructCustomConverter(am);
+//			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
+//				if (getFormOptions().isOpenInViewMode()) {
+//					if (newObject) {
+//						getOnBackButtonClicked().run();
+//					} else {
+//						// if details screen opens in view mode, simply switch
+//						// to view mode
+//						setViewMode(true);
+//						detailsMode(entity);
+//					}
+//				} else {
+//					// otherwise go back to the main screen
+//					if (cancel || newObject
+//							|| (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
+//						getOnBackButtonClicked().run();
+//					}
+//				}
 //			}
 
 			@Override
@@ -295,40 +259,15 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 						false);
 			}
 
-//			@Override
-//			protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-//				return AbstractModelSearchLayout.this.constructCustomRequiredValidator(am);
-//			}
-
-//			@Override
-//			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-//				return AbstractModelSearchLayout.this.constructCustomValidator(am);
-//			}
-
 			@Override
 			protected T getNextEntity() {
 				return AbstractModelSearchLayout.this.getNextEntity();
 			}
 
 			@Override
-			protected String getParentGroup(String childGroup) {
-				return AbstractModelSearchLayout.this.getParentGroup(childGroup);
-			}
-
-			@Override
-			protected String[] getParentGroupHeaders() {
-				return AbstractModelSearchLayout.this.getParentGroupHeaders();
-			}
-
-			@Override
 			protected T getPreviousEntity() {
 				return AbstractModelSearchLayout.this.getPreviousEntity();
 			}
-
-//			@Override
-//			protected boolean handleCustomException(RuntimeException ex) {
-//				return AbstractModelSearchLayout.this.handleCustomException(ex);
-//			}
 
 			@Override
 			protected boolean hasNextEntity() {
@@ -345,21 +284,29 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				return AbstractModelSearchLayout.this.isEditAllowed();
 			}
 
-//			@Override
-//			protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-//				AbstractModelSearchLayout.this.postProcessDetailButtonBar(buttonBar, viewMode);
-//			}
-
-//			@Override
-//			protected void postProcessEditFields() {
-//				AbstractModelSearchLayout.this.postProcessEditFields(editForm);
-//			}
-
 		};
 
 		initEditForm(editForm);
 
 		editForm.setOnBackButtonClicked(() -> searchMode());
+		editForm.setAfterEditDone((cancel, isNew, ent) -> {
+			if (getFormOptions().isOpenInViewMode()) {
+				if (isNew) {
+					searchMode();
+				} else {
+					// if details screen opens in view mode, simply switch
+					// to view mode
+					// editForm.setViewMode(true);
+					detailsMode(ent);
+				}
+			} else {
+				// otherwise go back to the main screen
+				if (cancel || isNew || (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
+					searchMode();
+				}
+			}
+		});
+
 		editForm.setSupportsIteration(true);
 		editForm.setDetailJoins(getDetailJoins());
 		editForm.setColumnThresholds(getEditColumnThresholds());

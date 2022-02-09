@@ -97,15 +97,19 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 	@Getter
 	@Setter
-	private Consumer<FlexLayout> postProcessMainButtonBar;
-
-	@Getter
-	@Setter
 	private Supplier<Component> buildHeaderLayout;
 
 	@Getter
 	@Setter
 	private Consumer<Class<? extends Domain>> afterDomainSelected;
+
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> postProcessSplitLayout;
 
 	/**
 	 * Constructor
@@ -225,12 +229,13 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 //                    MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
 //                }
 
-				@Override
-				protected void postProcessLayout(VerticalLayout main) {
-					MultiDomainEditLayout.this.postProcessSplitLayout(main);
-				}
+//				@Override
+//				protected void postProcessLayout(VerticalLayout main) {
+//					MultiDomainEditLayout.this.postProcessSplitLayout(main);
+//				}
 			};
 
+			layout.setPostProcessLayout(postProcessSplitLayout);
 			layout.setMustEnableComponent((component, t) -> {
 				if (layout.getRemoveButton() == component) {
 					return isDeleteAllowed(getSelectedDomain());
@@ -238,7 +243,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				return true;
 			});
 			layout.setBuildHeaderLayout(buildHeaderLayout);
-			layout.setPostProcessMainButtonBar(postProcessMainButtonBar);
+			layout.setPostProcessMainButtonBar(postProcessButtonBar);
 			layout.setQuickSearchFilterSupplier(
 					value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),
 							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
@@ -311,15 +316,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	}
 
 	/**
-	 * Post processes the button bar that appears below the search screen
-	 * 
-	 * @param buttonBar
-	 */
-	protected void postProcessButtonBar(FlexLayout buttonBar) {
-		// overwrite in subclasses
-	}
-
-	/**
 	 * Post processes the split layout after it has been created
 	 *
 	 * @param main
@@ -341,7 +337,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	/**
 	 * Reloads the screen
 	 */
-	public void reload() {
+	public final void reload() {
 		if (splitLayout != null) {
 			splitLayout.reload();
 		}

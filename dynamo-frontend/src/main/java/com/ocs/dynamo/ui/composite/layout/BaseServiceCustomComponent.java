@@ -109,6 +109,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	@Getter
 	@Setter
+	private BiConsumer<String, byte[]> afterUploadCompleted;
+
+	@Getter
+	@Setter
+	private Function<String, String> findParentGroup;
+
+	@Getter
+	@Setter
 	private List<String> columnThresholds = new ArrayList<>();
 
 	@Getter
@@ -134,6 +142,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	@Setter
 	private Consumer<T> customSaveConsumer;
+
+	@Getter
+	@Setter
+	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
 
 	@Getter
 	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
@@ -171,27 +183,23 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	@Getter
 	@Setter
+	private BiPredicate<Component, T> mustEnableComponent;
+
+	@Getter
+	@Setter
 	private Runnable onBackButtonClicked = () -> {
 	};
 
 	@Getter
 	@Setter
-	private BiConsumer<String, byte[]> afterUploadCompleted;
+	private String[] parentGroupHeaders;
 
 	@Getter
 	@Setter
 	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	@Getter
-	@Setter
-	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
-
-	@Getter
 	private BaseService<ID, T> service;
-
-	@Getter
-	@Setter
-	private BiPredicate<Component, T> mustEnableComponent;
 
 	/**
 	 * Constructor
@@ -239,8 +247,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 			if (component instanceof DownloadButton) {
 				((DownloadButton) component).update();
 			}
-			boolean enabled = selectedItem != null && mustEnableComponent != null
-					&& mustEnableComponent.test(component, selectedItem);
+			boolean enabled = selectedItem != null
+					&& (mustEnableComponent == null || mustEnableComponent.test(component, selectedItem));
 			if (component instanceof HasEnabled) {
 				((HasEnabled) component).setEnabled(enabled);
 			}
@@ -273,14 +281,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		return customComponentMap.get(key);
 	}
 
-	/**
-	 * @param path the path to the attribute
-	 * @return the field entity model reference for the specified attribute model
-	 */
-	public String getFieldEntityModel(String path) {
-		return fieldEntityModels.get(path);
-	}
-
 //	/**
 //	 * Callback method that is called during the save process. Allows the developer
 //	 * to respond to a specific type of exception thrown in the service layer in a
@@ -293,6 +293,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 //	protected boolean handleCustomException(RuntimeException ex) {
 //		return false;
 //	}
+
+	/**
+	 * @param path the path to the attribute
+	 * @return the field entity model reference for the specified attribute model
+	 */
+	public String getFieldEntityModel(String path) {
+		return fieldEntityModels.get(path);
+	}
 
 	/**
 	 * Copies component settings to the edit form
@@ -319,6 +327,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		editForm.setAfterUploadCompleted(getAfterUploadCompleted());
 		editForm.setPostProcessEditFields(getPostProcessEditFields());
 		editForm.setCustomSaveExceptionHandler(getCustomSaveExceptionHandler());
+
+		editForm.setParentGroupHeaders(getParentGroupHeaders());
+		editForm.setFindParentGroup(getFindParentGroup());
 	}
 
 	/**
@@ -332,19 +343,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public boolean isCustomComponent(String key, Component toCheck) {
 		return customComponentMap.get(key) != null && customComponentMap.get(key).contains(toCheck);
 	}
-
-//	/**
-//	 * Method that is called in order to enable/disable a component (i.e. a button)
-//	 * in a button bar after selecting an item in the grid
-//	 *
-//	 * @param component    the component
-//	 * @param selectedItem the currently selected item in the grid
-//	 * @return
-//	 */
-//	protected boolean mustEnableComponent(Component component, T selectedItem) {
-//		// overwrite in subclasses if needed
-//		return true;
-//	}
 
 	/**
 	 * Registers a component that must be enabled/disabled after an item is
