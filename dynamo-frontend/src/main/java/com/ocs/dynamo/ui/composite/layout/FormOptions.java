@@ -56,9 +56,10 @@ public class FormOptions implements Serializable {
 	private boolean confirmSave;
 
 	/**
-	 * Whether to display the fields in a details edit layout on the same row
+	 * Whether to display the buttons in a DetailsEditLayout on the same row as the
+	 * form
 	 */
-	private boolean detailsEditLayoutSameRow = true;
+	private boolean detailsEditLayoutButtonsOnSameRow = true;
 
 	/**
 	 * Whether to display a details grid in search mode
@@ -101,12 +102,6 @@ public class FormOptions implements Serializable {
 	 * visible in the grid
 	 */
 	private ExportMode exportMode = ExportMode.ONLY_VISIBLE_IN_GRID;
-
-	/**
-	 * Whether this form is nested in another form. Used by the framework, there is
-	 * usually no need to set this yourself
-	 */
-	private boolean formNested;
 
 	/**
 	 * The grid edit mode (either all rows at once or one row at a time) inside an
@@ -257,7 +252,6 @@ public class FormOptions implements Serializable {
 		fo.setShowSearchAnyButton(isShowSearchAnyButton());
 		fo.setShowToggleButton(isShowToggleButton());
 		fo.setExportAllowed(isExportAllowed());
-		fo.setFormNested(isFormNested());
 		fo.setConfirmSave(isConfirmSave());
 		fo.setExportMode(getExportMode());
 		fo.setGridEditMode(getGridEditMode());
@@ -267,7 +261,7 @@ public class FormOptions implements Serializable {
 		fo.setPreserveSearchTerms(isPreserveSearchTerms());
 		fo.setPreserveSortOrders(isPreserveSortOrders());
 		fo.setShowEditFormCaption(isShowEditFormCaption());
-		fo.setDetailsEditLayoutSameRow(isDetailsEditLayoutSameRow());
+		fo.setDetailsEditLayoutButtonsOnSameRow(isDetailsEditLayoutButtonsOnSameRow());
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
 		fo.setShowGridDetailsPanel(isShowGridDetailsPanel());
 		return fo;
@@ -301,10 +295,6 @@ public class FormOptions implements Serializable {
 		return confirmSave;
 	}
 
-	public boolean isDetailsEditLayoutSameRow() {
-		return detailsEditLayoutSameRow;
-	}
-
 	public boolean isDetailsGridSearchMode() {
 		return detailsGridSearchMode;
 	}
@@ -331,10 +321,6 @@ public class FormOptions implements Serializable {
 
 	public boolean isExportAllowed() {
 		return exportAllowed;
-	}
-
-	public boolean isFormNested() {
-		return formNested;
 	}
 
 	public boolean isHideAddButton() {
@@ -466,8 +452,8 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
-	public FormOptions setDetailsEditLayoutSameRow(boolean detailsEditLayoutSameRow) {
-		this.detailsEditLayoutSameRow = detailsEditLayoutSameRow;
+	public FormOptions setDetailsEditLayoutButtonsOnSameRow(boolean detailsEditLayoutButtonsOnSameRow) {
+		this.detailsEditLayoutButtonsOnSameRow = detailsEditLayoutButtonsOnSameRow;
 		return this;
 	}
 
@@ -555,18 +541,6 @@ public class FormOptions implements Serializable {
 	 */
 	public FormOptions setExportMode(ExportMode exportMode) {
 		this.exportMode = exportMode;
-		return this;
-	}
-
-	/**
-	 * Specify whether the details edit form is nested. This is used internally by
-	 * the framework and you do not normally have to edit it
-	 * 
-	 * @param formNested
-	 * @return
-	 */
-	public FormOptions setFormNested(boolean formNested) {
-		this.formNested = formNested;
 		return this;
 	}
 
@@ -780,6 +754,10 @@ public class FormOptions implements Serializable {
 	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
 		this.showGridDetailsPanel = showDetailsGridDetailPanel;
 		return this;
+	}
+
+	public boolean isDetailsEditLayoutButtonsOnSameRow() {
+		return detailsEditLayoutButtonsOnSameRow;
 	}
 
 }

@@ -181,4 +181,11 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		// clear the selection
 		setSelectedItem(null);
 	}
+
+	@Override
+	protected boolean showDetailsPanelInEditMode() {
+		return false;
+	}
+	
+	
 }

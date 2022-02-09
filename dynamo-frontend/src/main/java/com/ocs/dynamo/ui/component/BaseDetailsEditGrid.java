@@ -263,11 +263,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		this.serviceBasedEditMode = serviceBasedEditMode;
 	}
 
+	protected abstract void addDownloadMenu();
+
 	/**
 	 * Adds an edit button to the grid when in not in edit or search mode
 	 */
 	private void addEditButtonToGrid() {
-		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode()) {
+		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode() && formOptions.isEditAllowed()) {
 			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
 				Button edit = new Button();
 				edit.setIcon(VaadinIcon.PENCIL.create());
@@ -473,6 +475,20 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		};
 	}
 
+	private void createDetailsPanel() {
+		selectedDetailsPanel = new DefaultVerticalLayout(true, false);
+		selectedDetailsPanel.addClassName(DynamoConstants.CSS_GRID_DETAILS_PANEL);
+		selectedDetailsPanel.setVisible(false);
+		FormOptions cloned = formOptions.createCopy().setReadOnly(true).setShowEditFormCaption(true);
+
+		selectedDetailsLayout = new SimpleEditLayout<>(
+				getCreateEntitySupplier() == null ? null : getCreateEntitySupplier().get(), service, entityModel,
+				cloned, ComponentContext.builder().build(), getDetailJoins());
+		selectedDetailsPanel.add(selectedDetailsLayout);
+
+		layout.add(selectedDetailsPanel);
+	}
+
 	private void createMultiSelectGrid() {
 		grid = new ModelBasedSelectionGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
 				isGridEditEnabled(), false, GridEditMode.SIMULTANEOUS) {
@@ -668,17 +684,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			constructButtonBar(layout);
 
 			if (getFormOptions().isShowGridDetailsPanel()) {
-
-				selectedDetailsPanel = new DefaultVerticalLayout(true, false);
-				selectedDetailsPanel.addClassName(DynamoConstants.CSS_GRID_DETAILS_PANEL);
-				selectedDetailsPanel.setVisible(false);
-				FormOptions cloned = formOptions.createCopy().setReadOnly(true).setShowEditFormCaption(true);
-
-				selectedDetailsLayout = new SimpleEditLayout<>(null, service, entityModel, cloned,
-						ComponentContext.builder().build(), getDetailJoins());
-				selectedDetailsPanel.add(selectedDetailsLayout);
-
-				layout.add(selectedDetailsPanel);
+				createDetailsPanel();
 			}
 
 			postConstruct();
@@ -686,8 +692,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			addDownloadMenu();
 		}
 	}
-	
-	protected abstract void addDownloadMenu();
 
 	/**
 	 * Check whether the specified component is a custom component stored under the
@@ -864,8 +868,18 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		}
 	}
 
+	protected abstract boolean showDetailsPanelInEditMode();
+
+	/**
+	 * Displays the item that is selected in the grid in a panel directly below the
+	 * grid
+	 * 
+	 * @param selectedItem
+	 */
 	private void showInDetailsPanel(T selectedItem) {
-		if (selectedItem != null && selectedItem.getId() != null) {
+		boolean show = isViewMode() || showDetailsPanelInEditMode();
+
+		if (selectedItem != null && selectedItem.getId() != null && show) {
 			selectedDetailsPanel.setVisible(true);
 			selectedDetailsLayout.setEntity(selectedItem);
 		} else {

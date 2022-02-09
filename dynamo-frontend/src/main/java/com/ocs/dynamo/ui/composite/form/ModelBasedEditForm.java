@@ -801,7 +801,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// new entity
 		// in nested mode
 		cancelButton.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
-				|| (getFormOptions().isFormNested() && entity.getId() == null));
+				|| (getComponentContext().isFormNested() && entity.getId() == null));
 		cancelButton.setIcon(VaadinIcon.BAN.create());
 		buttonBar.add(cancelButton);
 		storeButton(CANCEL_BUTTON_DATA, cancelButton);
@@ -861,18 +861,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		return buttonBar;
 	}
-
-//	/**
-//	 * Callback method that can be used to construct a custom converter for a
-//	 * certain field
-//	 * 
-//	 * @param am the attribute model of the attribute for which the field is
-//	 *           constructed
-//	 * @return
-//	 */
-//	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-//		return null;
-//	}
 
 	/**
 	 * Adds any value change listeners for handling cascaded search
@@ -1859,7 +1847,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		for (Button b : getCancelButtons()) {
 			b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
-					|| (getFormOptions().isFormNested() && entity.getId() == null));
+					|| (getComponentContext().isFormNested() && entity.getId() == null));
 		}
 
 		triggerCascadeListeners();

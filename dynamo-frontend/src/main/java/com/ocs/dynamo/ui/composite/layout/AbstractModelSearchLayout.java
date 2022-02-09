@@ -28,6 +28,7 @@ import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
+import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
@@ -227,7 +228,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * @param entity  the currently selected entity
 	 * @param options the form options
 	 */
-	private void buildEditForm(T entity, FormOptions options) {
+	private void buildEditForm(T entity, FormOptions options, ComponentContext context) {
 		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
 
 			private static final long serialVersionUID = 6485097089659928131L;
@@ -287,8 +288,26 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		};
 
 		initEditForm(editForm);
+		editForm.setComponentContext(context);
 
 		editForm.setOnBackButtonClicked(() -> searchMode());
+		addAfterEditDone();
+
+		editForm.setSupportsIteration(true);
+		editForm.setDetailJoins(getDetailJoins());
+		editForm.setColumnThresholds(getEditColumnThresholds());
+		editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
+
+		editForm.build();
+
+		if (getAfterEntitySelected() != null) {
+			editForm.setAfterEntitySelected(getAfterEntitySelected());
+		}
+
+		editForm.setEntity(entity);
+	}
+
+	private void addAfterEditDone() {
 		editForm.setAfterEditDone((cancel, isNew, ent) -> {
 			if (getFormOptions().isOpenInViewMode()) {
 				if (isNew) {
@@ -306,19 +325,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				}
 			}
 		});
-
-		editForm.setSupportsIteration(true);
-		editForm.setDetailJoins(getDetailJoins());
-		editForm.setColumnThresholds(getEditColumnThresholds());
-		editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
-
-		editForm.build();
-
-		if (getAfterEntitySelected() != null) {
-			editForm.setAfterEntitySelected(getAfterEntitySelected());
-		}
-
-		editForm.setEntity(entity);
 	}
 
 	/**
@@ -387,7 +393,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		copy.setShowNextButton(getFormOptions().isShowNextButton());
 		copy.setShowPrevButton(getFormOptions().isShowPrevButton());
 		copy.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
-		copy.setFormNested(true);
+		// copy.setFormNested(true);
 		copy.setConfirmSave(getFormOptions().isConfirmSave());
 
 		// set the form options for the detail form
@@ -422,7 +428,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		} else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
 			if (editForm == null) {
-				buildEditForm(entity, copy);
+				buildEditForm(entity, copy, ComponentContext.builder().formNested(true).build());
 			} else {
 				editForm.setViewMode(copy.isOpenInViewMode());
 				editForm.setEntity(entity);

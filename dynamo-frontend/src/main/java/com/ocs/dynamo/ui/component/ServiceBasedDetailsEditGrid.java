@@ -142,6 +142,9 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			getGrid().deselectAll();
 			applyFilter();
 		}
+
+		initContent();
+
 		// hide add button for new entity
 		getAddButton().setVisible(!isViewMode() && !getFormOptions().isHideAddButton()
 				&& !getFormOptions().isDetailsGridSearchMode() && this.parent.getId() != null);
@@ -241,6 +244,11 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		};
 		dialog.setColumnThresholds(getColumnThresholds());
 		dialog.buildAndOpen();
+	}
+
+	@Override
+	protected boolean showDetailsPanelInEditMode() {
+		return true;
 	}
 
 }

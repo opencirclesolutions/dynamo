@@ -25,4 +25,9 @@ public class ComponentContext {
 	private boolean useCheckboxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
 
 	private boolean popup;
+	
+	/**
+	 * Whether the edit form is nested within another form
+	 */
+	private boolean formNested;
 }

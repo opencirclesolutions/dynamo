@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -78,19 +79,10 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 		private static final long serialVersionUID = 3507638736422806589L;
 
-		/**
-		 * Button bar
-		 */
 		private HorizontalLayout buttonBar;
 
-		/**
-		 * The actual edit form
-		 */
 		private ModelBasedEditForm<ID, T> form;
 
-		/**
-		 * Button for deleting the form
-		 */
 		private Button removeButton;
 
 		/**
@@ -105,9 +97,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 			buttonBar = new DefaultHorizontalLayout(false, true);
 
-			if (getFormOptions().isDetailsEditLayoutSameRow()) {
-				HorizontalLayout rowLayout = new DefaultHorizontalLayout();
-				rowLayout.setWidth("100%");
+			if (getFormOptions().isDetailsEditLayoutButtonsOnSameRow()) {
+				HorizontalLayout rowLayout = new DefaultHorizontalLayout(false, false);
+				rowLayout.addClassName("detailsEditLayoutRow");
+
+				rowLayout.setSizeFull();
 				add(rowLayout);
 				rowLayout.add(form);
 				rowLayout.setFlexGrow(4, form);
@@ -120,6 +114,12 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 				buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR);
 			}
 
+			addRemoveButton();
+
+			postProcessButtonBar(buttonBar);
+		}
+
+		private void addRemoveButton() {
 			if (!viewMode && getFormOptions().isShowRemoveButton()) {
 				removeButton = new Button(messageService.getMessage("ocs.remove", VaadinUtils.getLocale()));
 				removeButton.setIcon(VaadinIcon.TRASH.create());
@@ -133,8 +133,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 				});
 				buttonBar.add(removeButton);
 			}
-
-			postProcessButtonBar(buttonBar);
 		}
 
 		public Button getDeleteButton() {
@@ -188,50 +186,80 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The button that can be used to add forms
 	 */
+	@Getter
 	private Button addButton;
 
-	/**
-	 * The entity models used for rendering the individual fields (mostly useful for
-	 * lookup components)
-	 */
-	private Map<String, String> attributeEntityModels = new HashMap<>();
+	@Getter
+	@Setter
+	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+
+	@Getter
+	@Setter
+	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
 
 	/**
 	 * The attribute model of the attribute to display
 	 */
+	@Getter
 	private final AttributeModel attributeModel;
 
 	/**
 	 * The comparator (will be used to sort the items)
 	 */
+	@Getter
+	@Setter
 	private Comparator<T> comparator;
-
-	/**
-	 * Supplier for creating a new entity
-	 */
-	private Function<Q, T> createEntitySupplier;
-
-	/**
-	 * The entity model of the entity to display
-	 */
-	private final EntityModel<T> entityModel;
-
-	/**
-	 * Optional field filters for restricting the contents of combo boxes
-	 */
-	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-
-	/**
-	 * Form options that determine which buttons and functionalities are available
-	 */
-	private FormOptions formOptions;
 
 	private ComponentContext context = ComponentContext.builder().build();
 
 	/**
-	 * The individual edit forms
+	 * Supplier for creating a new entity
 	 */
+	@Getter
+	@Setter
+	private Function<Q, T> createEntitySupplier;
+
+	@Getter
+	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+
+	@Getter
+	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
+
+	@Getter
+	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
+
+	@Getter
+	@Setter
+	private ModelBasedEditForm<ID2, Q> enclosingForm;
+
+	@Getter
+	private final EntityModel<T> entityModel;
+
+	/**
+	 * The entity models used for rendering the individual fields (most useful for
+	 * lookup components)
+	 */
+	@Getter
+	@Setter
+	private Map<String, String> fieldEntityModels = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+
+	@Getter
+	@Setter
+	private FormOptions formOptions;
+
 	private List<FormContainer> forms = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private GroupTogetherMode groupTogetherMode;
+
+	@Getter
+	@Setter
+	private Integer groupTogetherWidth;
 
 	/**
 	 * The list of items to display
@@ -248,9 +276,15 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	private final MessageService messageService;
 
+	@Getter
+	@Setter
+	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
+
 	/**
 	 * Consumer for removing an entity
 	 */
+	@Getter
+	@Setter
 	private BiConsumer<Q, T> removeEntityConsumer;
 
 	/**
@@ -263,24 +297,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * allowed and no buttons will be displayed
 	 */
 	private boolean viewMode;
-
-	private ModelBasedEditForm<ID2, Q> enclosingForm;
-
-	private GroupTogetherMode groupTogetherMode;
-
-	private Integer groupTogetherWidth;
-
-	@Getter
-	@Setter
-	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-
-	@Getter
-	@Setter
-	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	/**
 	 * Constructor
@@ -309,24 +325,46 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	/**
 	 * Adds an attribute entity model - this can be used to overwrite the default
-	 * entity model that is used for rendering complex selection components (lookup
-	 * dialogs)
+	 * entity model that is used for rendering complex selection components (e.g.
+	 * lookup dialogs)
 	 * 
 	 * @param path      the path to the field
 	 * @param reference the unique ID of the entity model
 	 */
 	public final void addAttributeEntityModel(String path, String reference) {
-		attributeEntityModels.put(path, reference);
+		fieldEntityModels.put(path, reference);
 	}
+
+	public void addCustomConverter(AttributeModel attributeModel, Supplier<Converter<?, ?>> converter) {
+		customConverters.put(attributeModel, converter);
+	}
+
+	public void addCustomRequiredValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
+		customRequiredValidators.put(attributeModel, validator);
+	}
+
+	public void addCustomValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
+		customValidators.put(attributeModel, validator);
+	}
+
+//	/**
+//	 * Constructs a custom converter
+//	 * 
+//	 * @param am
+//	 * @return
+//	 */
+//	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
+//		return null;
+//	}
 
 	/**
 	 * Adds a detail edit form
 	 * 
 	 * @param t the entity to display/edit
 	 */
-	private void addDetailEditForm(T t) {
+	private void addDetailEditForm(T entity) {
 
-		ModelBasedEditForm<ID, T> editForm = new ModelBasedEditForm<ID, T>(t, service, entityModel, formOptions,
+		ModelBasedEditForm<ID, T> editForm = new ModelBasedEditForm<ID, T>(entity, service, entityModel, formOptions,
 				fieldFilters) {
 
 			private static final long serialVersionUID = -7229109969816505927L;
@@ -378,6 +416,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		editForm.setViewMode(viewMode);
 		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
 		editForm.setAfterModeChanged(getAfterModeChanged());
+
+		editForm.setCustomConverters(getCustomConverters());
+		editForm.setCustomValidators(getCustomValidators());
+		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
+
 		editForm.build();
 
 		FormContainer fc = new FormContainer(editForm) {
@@ -391,26 +434,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		};
 		forms.add(fc);
 		mainFormContainer.add(fc);
-	}
-
-//	/**
-//	 * Callback method that is called after a detail layout has been built
-//	 * 
-//	 * @param editForm
-//	 * @param viewMode
-//	 */
-//	protected void afterLayoutBuilt(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
-//		// override in subclasses
-//	}
-
-	/**
-	 * Callback method that is called after the view mode has changed
-	 * 
-	 * @param editForm
-	 * @param viewMode
-	 */
-	protected void afterModeChanged(ModelBasedEditForm<ID, T> editForm, boolean viewMode) {
-		// override in subclasses
 	}
 
 	/**
@@ -448,16 +471,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Constructs a custom converter
-	 * 
-	 * @param am
-	 * @return
-	 */
-	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-		return null;
-	}
-
-	/**
 	 * Method that is called to create a custom field. Override in subclasses if
 	 * needed
 	 * 
@@ -473,11 +486,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return null;
 	}
 
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am, ModelBasedEditForm<ID, T> editForm) {
+	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am, ModelBasedEditForm<ID, T> editForm) {
 		return null;
 	}
 
-	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am, ModelBasedEditForm<ID, T> editForm) {
+	protected <V> Validator<V> constructCustomValidator(AttributeModel am, ModelBasedEditForm<ID, T> editForm) {
 		return null;
 	}
 
@@ -486,31 +499,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return ConvertUtils.convertCollection(items == null ? new ArrayList<>() : items, attributeModel);
 	}
 
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	public Comparator<T> getComparator() {
-		return comparator;
-	}
-
 	public T getEntity(int index) {
 		if (index < this.forms.size()) {
 			return this.forms.get(index).getEntity();
 		}
 		return null;
-	}
-
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public Map<String, String> getFieldEntityModels() {
-		return attributeEntityModels;
-	}
-
-	public Map<String, SerializablePredicate<?>> getFieldFilters() {
-		return fieldFilters;
 	}
 
 	public ModelBasedEditForm<ID, T> getForm(int index) {
@@ -537,14 +530,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	public Integer getFormCount() {
 		return forms.size();
-	}
-
-	public FormOptions getFormOptions() {
-		return formOptions;
-	}
-
-	public BiConsumer<Q, T> getRemoveEntityConsumer() {
-		return removeEntityConsumer;
 	}
 
 	@Override
@@ -612,17 +597,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		// override in subclasses
 	}
 
-	public void setComparator(Comparator<T> comparator) {
-		this.comparator = comparator;
-	}
-
-	/**
-	 * Sets the supplier used for creating a new entity
-	 * 
-	 * @param createEntitySupplier the supplier
-	 */
-	public void setCreateEntitySupplier(Function<Q, T> createEntitySupplier) {
-		this.createEntitySupplier = createEntitySupplier;
+	public void setClassName(String className) {
+		this.getElement().setAttribute("class", className);
 	}
 
 	/**
@@ -674,14 +650,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
-	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
-		this.attributeEntityModels = fieldEntityModels;
-	}
-
-	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
-		this.fieldFilters = fieldFilters;
-	}
-
 	/**
 	 * Sets the visibility of the specified field in a specified sub-form
 	 * 
@@ -693,10 +661,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		if (index < this.forms.size()) {
 			this.forms.get(index).setFieldVisible(path, visible);
 		}
-	}
-
-	public void setFormOptions(FormOptions formOptions) {
-		this.formOptions = formOptions;
 	}
 
 	/**
@@ -730,22 +694,13 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		setItems(value);
 	}
 
+	public void setService(BaseService<ID, T> service) {
+		this.service = service;
+	}
+
 	@Override
 	public void setValue(Collection<T> value) {
 		setItems(value);
-	}
-
-	/**
-	 * Sets the Consumer to be carried out for decoupling/removing an entity
-	 * 
-	 * @param removeEntityConsumer
-	 */
-	public void setRemoveEntityConsumer(BiConsumer<Q, T> removeEntityConsumer) {
-		this.removeEntityConsumer = removeEntityConsumer;
-	}
-
-	public void setService(BaseService<ID, T> service) {
-		this.service = service;
 	}
 
 	/**
@@ -757,34 +712,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			error |= f.validateAllFields();
 		}
 		return error;
-	}
-
-	public ModelBasedEditForm<ID2, Q> getEnclosingForm() {
-		return enclosingForm;
-	}
-
-	public void setEnclosingForm(ModelBasedEditForm<ID2, Q> enclosingForm) {
-		this.enclosingForm = enclosingForm;
-	}
-
-	public void setClassName(String className) {
-		this.getElement().setAttribute("class", className);
-	}
-
-	public GroupTogetherMode getGroupTogetherMode() {
-		return groupTogetherMode;
-	}
-
-	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
-		this.groupTogetherMode = groupTogetherMode;
-	}
-
-	public Integer getGroupTogetherWidth() {
-		return groupTogetherWidth;
-	}
-
-	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
-		this.groupTogetherWidth = groupTogetherWidth;
 	}
 
 }
