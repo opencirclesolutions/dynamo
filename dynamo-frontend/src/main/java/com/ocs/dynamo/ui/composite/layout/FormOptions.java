@@ -20,6 +20,7 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 
 /**
  * Parameter object that can be passed along when creating a page - this object
@@ -64,6 +65,11 @@ public class FormOptions implements Serializable {
 	 * Whether to display a details grid in search mode
 	 */
 	private boolean detailsGridSearchMode;
+
+	/**
+	 * The selection mode to use in the grid
+	 */
+	private SelectionMode detailsGridSelectionMode = SelectionMode.SINGLE;
 
 	/**
 	 * Whether the columns in a details edit grid are sortable
@@ -198,6 +204,12 @@ public class FormOptions implements Serializable {
 	private boolean showEditFormCaption = true;
 
 	/**
+	 * Whether to display a panel containing the item that is selected in a grid,
+	 * below that grid
+	 */
+	private boolean showGridDetailsPanel;
+
+	/**
 	 * Whether to display a "next" button inside an edit form
 	 */
 	private boolean showNextButton;
@@ -238,12 +250,6 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean useCheckboxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
 
-	/**
-	 * Whether to display a panel containing the item that is selected in a grid,
-	 * below that grid
-	 */
-	private boolean showGridDetailsPanel;
-	
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -406,6 +412,10 @@ public class FormOptions implements Serializable {
 		return showEditFormCaption;
 	}
 
+	public boolean isShowGridDetailsPanel() {
+		return showGridDetailsPanel;
+	}
+
 	public boolean isShowNextButton() {
 		return showNextButton;
 	}
@@ -443,7 +453,7 @@ public class FormOptions implements Serializable {
 	 * components will be grouped in panels (default) or tabs
 	 * 
 	 * @param attributeGroupMode the desired attribute group mode
-	 * @return 
+	 * @return
 	 */
 	public FormOptions setAttributeGroupMode(AttributeGroupMode attributeGroupMode) {
 		this.attributeGroupMode = attributeGroupMode;
@@ -759,6 +769,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
+		this.showGridDetailsPanel = showDetailsGridDetailPanel;
+		return this;
+	}
+
 	/**
 	 * Shorthand method for showing/hiding the previous and next buttons
 	 *
@@ -810,13 +825,13 @@ public class FormOptions implements Serializable {
 		this.useCheckboxesForMultiSelect = useCheckboxesForMultiSelect;
 		return this;
 	}
-	
-	public boolean isShowGridDetailsPanel() {
-		return showGridDetailsPanel;
+
+	public SelectionMode getDetailsGridSelectionMode() {
+		return detailsGridSelectionMode;
 	}
 
-	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
-		this.showGridDetailsPanel = showDetailsGridDetailPanel;
+	public FormOptions setDetailsGridSelectionMode(SelectionMode detailsGridSelectionMode) {
+		this.detailsGridSelectionMode = detailsGridSelectionMode;
 		return this;
 	}
 

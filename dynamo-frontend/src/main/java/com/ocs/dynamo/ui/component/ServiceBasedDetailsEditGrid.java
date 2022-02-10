@@ -32,7 +32,6 @@ import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
@@ -94,13 +93,9 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		super(service, entityModel, attributeModel, viewMode, true, formOptions);
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
 		provider.setAfterCountCompleted(count -> updateCaption(count));
-	}
-
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		super.onAttach(attachEvent);
 		initContent();
 	}
+
 
 	protected void addDownloadMenu() {
 		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
@@ -138,10 +133,12 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	@Override
 	public void assignEntity(U u) {
 		this.parent = u;
+		//initContent();
 		if (getGrid() != null) {
 			getGrid().deselectAll();
 			applyFilter();
 		}
+
 		// hide add button for new entity
 		getAddButton().setVisible(!isViewMode() && !getFormOptions().isHideAddButton()
 				&& !getFormOptions().isDetailsGridSearchMode() && this.parent.getId() != null);
@@ -241,6 +238,11 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		};
 		dialog.setColumnThresholds(getColumnThresholds());
 		dialog.buildAndOpen();
+	}
+
+	@Override
+	protected boolean showDetailsPanelInEditMode() {
+		return true;
 	}
 
 }

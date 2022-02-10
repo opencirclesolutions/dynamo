@@ -71,13 +71,8 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 			FormOptions formOptions) {
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
-
-	}
-
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		super.onAttach(attachEvent);
 		initContent();
+
 	}
 
 	/**
@@ -180,5 +175,10 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 		// clear the selection
 		setSelectedItem(null);
+	}
+
+	@Override
+	protected boolean showDetailsPanelInEditMode() {
+		return false;
 	}
 }
