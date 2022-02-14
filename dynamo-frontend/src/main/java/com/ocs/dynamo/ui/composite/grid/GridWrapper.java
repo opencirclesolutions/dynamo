@@ -16,7 +16,10 @@ package com.ocs.dynamo.ui.composite.grid;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -30,12 +33,15 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrderBuilder;
+import com.vaadin.flow.data.binder.Validator;
+import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import lombok.Getter;
+import lombok.Setter;
 
 public abstract class GridWrapper<ID extends Serializable, T extends AbstractEntity<ID>, U> extends BaseCustomComponent
 		implements Searchable<T> {
@@ -90,6 +96,14 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	 * The service used to query the database
 	 */
 	private final BaseService<ID, T> service;
+
+	@Getter
+	@Setter
+	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
 
 	/**
 	 * The sort orders

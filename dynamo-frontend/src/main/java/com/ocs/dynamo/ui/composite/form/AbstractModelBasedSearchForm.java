@@ -51,6 +51,9 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * An abstract model search form that servers as the basis for other model based
  * search forms
@@ -143,6 +146,38 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	private VerticalLayout wrapperPanel;
 
+	@Getter
+	@Setter
+	public Consumer<Boolean> afterSearchFieldToggle;
+
+	@Getter
+	@Setter
+	public Runnable afterClear;
+
+	@Getter
+	@Setter
+	public Runnable afterSearchPerformed;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> postProcessLayout;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> preProcessLayout;
+
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private Runnable validateBeforeSearch;
+
+	@Getter
+	@Setter
+	private Runnable afterAdvancedModeToggled;
+
 	/**
 	 * Constructor
 	 *
@@ -161,37 +196,14 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		this.searchable = searchable;
 	}
 
-	/**
-	 * Callback method that is called when the user switches to or from advanced
-	 * search mode
-	 */
-	protected void afterAdvancedModeToggled() {
-		// override in subclasses
-	}
-
-	/**
-	 * Callback method that is called when the user toggles the visibility of the
-	 * search form
-	 *
-	 * @param visible indicates if the search fields are visible now
-	 */
-	protected void afterSearchFieldToggle(boolean visible) {
-		// override in subclasses
-	}
-
-	/**
-	 * Callback method that is called after a successful search has been performed
-	 */
-	protected void afterSearchPerformed() {
-		// override in subclasses
-	}
-
 	@Override
 	public void build() {
 		if (main == null) {
 			main = new DefaultVerticalLayout(false, true);
 			main.addClassName(DynamoConstants.CSS_SEARCH_FORM_LAYOUT);
-			preProcessLayout(main);
+			if (preProcessLayout != null) {
+				preProcessLayout.accept(main);
+			}
 
 			// create the search form
 			filterLayout = constructFilterLayout();
@@ -208,14 +220,17 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 				buttonBar = new DefaultFlexLayout();
 				main.add(buttonBar);
 				constructButtonBar(buttonBar);
-				// add custom buttons
-				postProcessButtonBar(buttonBar);
+
+				if (postProcessButtonBar != null) {
+					postProcessButtonBar.accept(buttonBar);
+				}
 
 				searchButton.setEnabled(isSearchAllowed());
 			}
 
-			// add any custom functionality
-			postProcessLayout(main);
+			if (postProcessLayout != null) {
+				postProcessLayout.accept(main);
+			}
 			add(main);
 
 			if (getFormOptions().isPreserveSearchTerms() && !getComponentContext().isPopup()) {
@@ -496,7 +511,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			toggle(!wrapperPanel.isVisible());
 		} else if (event.getSource() == toggleAdvancedModeButton) {
 			toggleAdvancedMode();
-			afterAdvancedModeToggled();
+			if (afterAdvancedModeToggled != null) {
+				afterAdvancedModeToggled.run();
+			}
 		}
 	}
 
@@ -517,33 +534,15 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		searchButton.setEnabled(isSearchAllowed());
 	}
 
-	/**
-	 * Callback method that allows the user to modify the button bar
-	 *
-	 * @param groups
-	 */
-	protected void postProcessButtonBar(FlexLayout buttonBar) {
-		// Use in subclass to add additional buttons
-	}
-
-	/**
-	 * Perform any actions necessary after the layout has been build
-	 *
-	 * @param main the layout
-	 */
-	protected void postProcessLayout(VerticalLayout layout) {
-		// override in subclass
-	}
-
-	/**
-	 * Pre-process the layout - this method is called directly after the main layout
-	 * has been created
-	 *
-	 * @param main the layout
-	 */
-	protected void preProcessLayout(VerticalLayout layout) {
-		// override in subclass
-	}
+//	/**
+//	 * Pre-process the layout - this method is called directly after the main layout
+//	 * has been created
+//	 *
+//	 * @param main the layout
+//	 */
+//	protected void preProcessLayout(VerticalLayout layout) {
+//		// override in subclass
+//	}
 
 	/**
 	 * Restores any previously cached search values
@@ -589,7 +588,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		if (searchable != null) {
 			if (!skipValidation) {
 				try {
-					validateBeforeSearch();
+					if (validateBeforeSearch != null) {
+						validateBeforeSearch.run();
+					}
 				} catch (OCSValidationException ex) {
 					showErrorNotification(ex.getErrors().get(0));
 					return false;
@@ -602,7 +603,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			storeSearchFilters();
 
 			if (!skipValidation) {
-				afterSearchPerformed();
+				if (afterSearchPerformed != null) {
+					afterSearchPerformed.run();
+				}
 			}
 
 			return true;
@@ -678,22 +681,15 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			toggleButton.setText(message("ocs.hide.search.fields"));
 		}
 		wrapperPanel.setVisible(show);
-		afterSearchFieldToggle(wrapperPanel.isVisible());
+
+		if (afterSearchFieldToggle != null) {
+			afterSearchFieldToggle.accept(wrapperPanel.isVisible());
+		}
 	}
 
 	/**
 	 * Toggles the advanced search mode
 	 */
 	public abstract void toggleAdvancedMode();
-
-	/**
-	 * Callback method that is called before a search is carried out. The developer
-	 * can use this to carry out additional validation before searching. When this
-	 * method returns an OCSValidationException the search process will be aborted
-	 * and a message will be shown
-	 */
-	protected void validateBeforeSearch() {
-		// overwrite in subclass
-	}
 
 }

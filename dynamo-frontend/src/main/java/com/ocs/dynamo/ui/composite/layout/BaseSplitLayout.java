@@ -223,10 +223,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected void checkMainButtons() {
 		if (getAddButton() != null) {
-			getAddButton().setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
+			getAddButton().setVisible(!getFormOptions().isHideAddButton() && checkEditAllowed());
 		}
 		if (getRemoveButton() != null) {
-			getRemoveButton().setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+			getRemoveButton().setVisible(getFormOptions().isShowRemoveButton() && checkEditAllowed());
 		}
 	}
 
@@ -234,7 +234,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		Button removeButton = new RemoveButton(this, message("ocs.remove"), null, () -> removeEntity(),
 				entity -> FormatUtils.formatEntity(getEntityModel(), entity));
 		removeButton.setIcon(VaadinIcon.TRASH.create());
-		removeButton.setVisible(getFormOptions().isShowRemoveButton() && isEditAllowed());
+		removeButton.setVisible(getFormOptions().isShowRemoveButton() && checkEditAllowed());
 		return removeButton;
 	}
 
@@ -275,33 +275,16 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 				private static final long serialVersionUID = 6642035999999009278L;
 
-//				@Override
-//				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-//					if (!cancel) {
-//						// update the selected item so master and detail are in sync
-//						// again
-//						reload();
-//						if (newObject) {
-//							getGridWrapper().getGrid().select(entity);
-//						} else {
-//							detailsMode(entity);
-//						}
-//					} else {
-//						reload();
-//						reloadDetails();
-//					}
-//				}
-
 				@Override
 				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 						boolean viewMode) {
 					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
-				@Override
-				protected boolean isEditAllowed() {
-					return BaseSplitLayout.this.isEditAllowed();
-				}
+//				@Override
+//				protected boolean isEditAllowed() {
+//					return BaseSplitLayout.this.isEditAllowed();
+//				}
 
 			};
 
@@ -338,8 +321,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		setSelectedItem(entity);
 		checkComponentState(getSelectedItem());
 
-		if (getAfterEntitySelected() != null) {
-			getAfterEntitySelected().accept(getEditForm(), entity);
+		if (getComponentContext().getAfterEntitySelected() != null) {
+			getComponentContext().getAfterEntitySelected().accept(getEditForm(), entity);
 		}
 
 		detailLayout.replace(selectedDetailLayout, detailFormLayout);

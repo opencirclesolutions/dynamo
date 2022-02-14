@@ -28,6 +28,7 @@ import com.ocs.dynamo.domain.model.impl.ComboBoxComponentCreator;
 import com.ocs.dynamo.domain.model.impl.DatePickerComponentCreator;
 import com.ocs.dynamo.domain.model.impl.DateTimePickerComponentCreator;
 import com.ocs.dynamo.domain.model.impl.ElementCollectionComponentCreator;
+import com.ocs.dynamo.domain.model.impl.EmailFieldComponentCreator;
 import com.ocs.dynamo.domain.model.impl.EnumFieldComponentCreator;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
 import com.ocs.dynamo.domain.model.impl.ListBoxComponentCreator;
@@ -111,6 +112,13 @@ public class DynamoFrontendAutoConfigure {
 		return new TextAreaComponentCreator();
 	}
 
+	@Bean
+	@Order(1065)
+	@ConditionalOnMissingBean(EmailFieldComponentCreator.class)
+	public EmailFieldComponentCreator emailFieldComponentCreator() {
+		return new EmailFieldComponentCreator();
+	}
+	
 	@Bean
 	@Order(1070)
 	@ConditionalOnMissingBean(TextFieldComponentCreator.class)

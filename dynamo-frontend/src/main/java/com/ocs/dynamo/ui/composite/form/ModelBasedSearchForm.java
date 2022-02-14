@@ -56,8 +56,9 @@ import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
 
 /**
  * A search form that is constructed based on the metadata model
@@ -84,14 +85,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * The various filter groups
 	 */
+	@Getter
 	private Map<String, FilterGroup<T>> groups = new HashMap<>();
-
-	/**
-	 * Column width thresholds
-	 */
-	private List<String> columnThresholds = new ArrayList<>();
-
-	private String maxFormWidth;
 
 	/**
 	 * Constructor
@@ -103,7 +98,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param fieldFilters   the filters to apply to the individual search fields
 	 */
 	public ModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
-			ComponentContext context, List<SerializablePredicate<T>> defaultFilters,
+			ComponentContext<ID, T> context, List<SerializablePredicate<T>> defaultFilters,
 			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
 		boolean advancedModeSaved = false;
@@ -139,7 +134,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * Adds any value change listeners for taking care of cascading search
 	 */
 	protected void constructCascadeListeners() {
-		for (final AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
+		for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
 			if (am.isSearchable()) {
 				Component field = groups.get(am.getPath()).getField();
 				if (field instanceof HasValue) {
@@ -240,8 +235,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	@Override
 	protected HasComponents constructFilterLayout() {
 		form = new FormLayout();
-		form.setWidth(maxFormWidth);
+		form.setWidth(getComponentContext().getMaxSearchFormWidth());
 
+		List<String> columnThresholds = getComponentContext().getSearchColumnThresholds();
 		if (columnThresholds == null || columnThresholds.isEmpty()) {
 			columnThresholds = SystemPropertyUtils.getDefaultSearchColumnThresholds();
 		}
@@ -290,23 +286,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	public <R> void forceSearch(String propertyId, R lower, R upper) {
 		setSearchValue(propertyId, lower, upper);
 		search();
-	}
-
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
-	/**
-	 * Returns all filter groups
-	 * 
-	 * @return
-	 */
-	public Map<String, FilterGroup<T>> getGroups() {
-		return groups;
-	}
-
-	public String getMaxFormWidth() {
-		return maxFormWidth;
 	}
 
 	/**
@@ -385,26 +364,26 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		return mustShow;
 	}
 
-	/**
-	 * Callback method that allows the developer to overwrite the filter groups
-	 * after they have been created
-	 * 
-	 * @param groups the filter groups
-	 */
-	protected void postProcessFilterGroups(Map<String, FilterGroup<T>> groups) {
-		// overwrite in subclasses
-	}
+//	/**
+//	 * Callback method that allows the developer to overwrite the filter groups
+//	 * after they have been created
+//	 * 
+//	 * @param groups the filter groups
+//	 */
+//	protected void postProcessFilterGroups(Map<String, FilterGroup<T>> groups) {
+//		// overwrite in subclasses
+//	}
 
-	/**
-	 * Callback method that is called once the processing of the layout is complete.
-	 * Allows the developer to modify the layout or add extra components at the end
-	 * 
-	 * @param layout the main layout
-	 */
-	@Override
-	protected void postProcessLayout(VerticalLayout layout) {
-		postProcessFilterGroups(groups);
-	}
+//	/**
+//	 * Callback method that is called once the processing of the layout is complete.
+//	 * Allows the developer to modify the layout or add extra components at the end
+//	 * 
+//	 * @param layout the main layout
+//	 */
+//	@Override
+//	protected void postProcessLayout(VerticalLayout layout) {
+//		postProcessFilterGroups(groups);
+//	}
 
 	/**
 	 * Refreshes any fields that are susceptible to this
@@ -432,14 +411,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				}
 			}
 		}
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
-	}
-
-	public void setMaxFormWidth(String maxFormWidth) {
-		this.maxFormWidth = maxFormWidth;
 	}
 
 	public void setSearchFieldEnabled(String property, boolean enabled) {

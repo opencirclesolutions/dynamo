@@ -77,7 +77,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		super.onAttach(attachEvent);
-		initContent();
+		build();
 	}
 
 	/**

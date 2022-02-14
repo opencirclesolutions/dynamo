@@ -139,8 +139,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 		setBuildMain(parent -> {
 
 			ComponentContext context = ComponentContext.builder().popup(true).multiSelect(searchOptions.isMultiSelect())
-					.useCheckboxesForMultiSelect(searchOptions.isUseCheckboxesForMultiSelect())
-					.build();
+					.useCheckboxesForMultiSelect(searchOptions.isUseCheckboxesForMultiSelect()).build();
 
 			FormOptions formOptions = new FormOptions().setReadOnly(true).setDetailsModeEnabled(false)
 					.setSearchImmediately(searchOptions.isSearchImmediately())

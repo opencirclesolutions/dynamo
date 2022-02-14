@@ -343,6 +343,17 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		return result;
 	}
 
+	/**
+	 * Sets the default values for an attribute model
+	 * 
+	 * @param <T>         the class of the entity model
+	 * @param descriptor  the property descriptor to base the attribute model on
+	 * @param entityModel the entity model
+	 * @param parentClass 
+	 * @param prefix      the prefix of the attribute path (for nested attributes)
+	 * @param fieldName   the name of the field
+	 * @param model       the attribute model
+	 */
 	private <T> void setAttributeModelDefaults(PropertyDescriptor descriptor, EntityModelImpl<T> entityModel,
 			Class<?> parentClass, String prefix, String fieldName, AttributeModelImpl model) {
 		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,

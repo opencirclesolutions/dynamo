@@ -25,6 +25,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -33,6 +34,7 @@ import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
@@ -41,6 +43,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
@@ -66,7 +69,7 @@ import lombok.Setter;
  * @param <T>  the type of the entity that is managed in the form
  */
 public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
-		extends CustomField<Collection<T>> implements NestedComponent, UseInViewMode {
+		extends CustomField<Collection<T>> implements Buildable, NestedComponent, UseInViewMode {
 
 	/**
 	 * A container that holds the edit form for a single entity along with a button
@@ -75,13 +78,19 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * @author Bas Rutten
 	 *
 	 */
-	class FormContainer extends DefaultVerticalLayout {
+	class FormContainer extends DefaultVerticalLayout implements Buildable {
 
 		private static final long serialVersionUID = 3507638736422806589L;
 
 		private HorizontalLayout buttonBar;
 
 		private ModelBasedEditForm<ID, T> form;
+
+		private int index;
+
+		@Getter
+		@Setter
+		private ITriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
 
 		private Button removeButton;
 
@@ -90,33 +99,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		 * 
 		 * @param form the model based edit form
 		 */
-		FormContainer(ModelBasedEditForm<ID, T> form) {
+		FormContainer(int index, ModelBasedEditForm<ID, T> form) {
 			super(false, false);
 			addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT);
 			this.form = form;
-
-			buttonBar = new DefaultHorizontalLayout(false, true);
-
-			if (getFormOptions().isDetailsEditLayoutButtonsOnSameRow()) {
-				HorizontalLayout rowLayout = new DefaultHorizontalLayout(false, false);
-				rowLayout.addClassName("detailsEditLayoutRow");
-
-				rowLayout.setSizeFull();
-				add(rowLayout);
-				rowLayout.add(form);
-				rowLayout.setFlexGrow(4, form);
-				rowLayout.add(buttonBar);
-				rowLayout.setFlexGrow(1, buttonBar);
-				buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME);
-			} else {
-				add(form);
-				add(buttonBar);
-				buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR);
-			}
-
-			addRemoveButton();
-
-			postProcessButtonBar(buttonBar);
+			this.index = index;
 		}
 
 		private void addRemoveButton() {
@@ -135,6 +122,35 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			}
 		}
 
+		public void build() {
+			if (buttonBar == null) {
+				buttonBar = new DefaultHorizontalLayout(false, true);
+
+				if (getFormOptions().isDetailsEditLayoutButtonsOnSameRow()) {
+					HorizontalLayout rowLayout = new DefaultHorizontalLayout(false, false);
+					rowLayout.addClassName("detailsEditLayoutRow");
+
+					rowLayout.setSizeFull();
+					add(rowLayout);
+					rowLayout.add(form);
+					rowLayout.setFlexGrow(4, form);
+					rowLayout.add(buttonBar);
+					rowLayout.setFlexGrow(1, buttonBar);
+					buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME);
+				} else {
+					add(form);
+					add(buttonBar);
+					buttonBar.addClassName(DynamoConstants.CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR);
+				}
+
+				addRemoveButton();
+
+				if (postProcessDetailButtonBar != null) {
+					postProcessDetailButtonBar.accept(index, buttonBar, isViewMode());
+				}
+			}
+		}
+
 		public Button getDeleteButton() {
 			return removeButton;
 		}
@@ -147,8 +163,10 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			return form;
 		}
 
-		public void postProcessButtonBar(HorizontalLayout buttonBar) {
-			// overwrite in subclasses
+		@Override
+		protected void onAttach(AttachEvent attachEvent) {
+			super.onAttach(attachEvent);
+			build();
 		}
 
 		public void setDeleteAllowed(boolean enabled) {
@@ -189,14 +207,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Getter
 	private Button addButton;
 
-	@Getter
-	@Setter
-	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-
 	/**
 	 * The attribute model of the attribute to display
 	 */
@@ -210,7 +220,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Setter
 	private Comparator<T> comparator;
 
-	private ComponentContext context = ComponentContext.builder().build();
+	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().build();
 
 	/**
 	 * Supplier for creating a new entity
@@ -220,28 +230,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	private Function<Q, T> createEntitySupplier;
 
 	@Getter
-	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
-
-	@Getter
-	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
-
-	@Getter
-	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
-
-	@Getter
 	@Setter
 	private ModelBasedEditForm<ID2, Q> enclosingForm;
 
 	@Getter
 	private final EntityModel<T> entityModel;
-
-	/**
-	 * The entity models used for rendering the individual fields (most useful for
-	 * lookup components)
-	 */
-	@Getter
-	@Setter
-	private Map<String, String> fieldEntityModels = new HashMap<>();
 
 	@Getter
 	@Setter
@@ -253,28 +246,42 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	private List<FormContainer> forms = new ArrayList<>();
 
-	@Getter
-	@Setter
-	private GroupTogetherMode groupTogetherMode;
+//	@Getter
+//	@Setter
+//	private GroupTogetherMode groupTogetherMode;
+//
+//	@Getter
+//	@Setter
+//	private Integer groupTogetherWidth;
 
-	@Getter
-	@Setter
-	private Integer groupTogetherWidth;
-
-	/**
-	 * The list of items to display
-	 */
 	private List<T> items;
+
+	private VerticalLayout layout;
 
 	/**
 	 * Container that holds all the sub forms
 	 */
 	private VerticalLayout mainFormContainer;
 
-	/**
-	 * The message service
-	 */
 	private final MessageService messageService;
+
+	
+	
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		componentContext.setGroupTogetherMode(groupTogetherMode);
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		componentContext.setGroupTogetherWidth(groupTogetherWidth);
+	}
+
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private ITriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
 
 	@Getter
 	@Setter
@@ -319,8 +326,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		this.items = new ArrayList<>();
 		this.viewMode = viewMode;
 		this.formOptions = formOptions;
-
-		initContent();
 	}
 
 	/**
@@ -331,68 +336,55 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * @param path      the path to the field
 	 * @param reference the unique ID of the entity model
 	 */
-	public final void addAttributeEntityModel(String path, String reference) {
-		fieldEntityModels.put(path, reference);
+	public void addFieldEntityModel(String path, String reference) {
+		componentContext.addFieldEntityModel(path, reference);
 	}
 
-	public void addCustomConverter(AttributeModel attributeModel, Supplier<Converter<?, ?>> converter) {
-		customConverters.put(attributeModel, converter);
+	/**
+	 * Adds a custom converter
+	 * 
+	 * @param path      the attribute model the attribute model for which to add a
+	 *                  custom converter
+	 * @param converter the converter to add
+	 */
+	public void addCustomConverter(String path, Supplier<Converter<?, ?>> converter) {
+		componentContext.addCustomConverter(path, converter);
 	}
 
-	public void addCustomRequiredValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
-		customRequiredValidators.put(attributeModel, validator);
+	/**
+	 * Adds a custom required validator
+	 * 
+	 * @param attributeModel the attribute model the attribute model for which to
+	 *                       add a custom converter
+	 * @param converter      the validator to add
+	 */
+	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
+		componentContext.addCustomRequiredValidator(path, validator);
 	}
 
-	public void addCustomValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
-		customValidators.put(attributeModel, validator);
+	/**
+	 * Adds a custom validator
+	 * 
+	 * @param attributeModel the attribute model the attribute model for which to
+	 *                       add a custom converter
+	 * @param converter      the converter to add
+	 */
+	public void addCustomValidator(String path, Supplier<Validator<?>> validator) {
+		componentContext.addCustomValidator(path, validator);
 	}
-
-//	/**
-//	 * Constructs a custom converter
-//	 * 
-//	 * @param am
-//	 * @return
-//	 */
-//	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-//		return null;
-//	}
 
 	/**
 	 * Adds a detail edit form
 	 * 
-	 * @param t the entity to display/edit
+	 * @param index  the index of the form
+	 * @param entity the entity to display/edit
 	 */
-	private void addDetailEditForm(T entity) {
+	private void addDetailEditForm(int index, T entity) {
 
 		ModelBasedEditForm<ID, T> editForm = new ModelBasedEditForm<ID, T>(entity, service, entityModel, formOptions,
 				fieldFilters) {
 
 			private static final long serialVersionUID = -7229109969816505927L;
-
-//			@Override
-//			protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
-//				DetailsEditLayout.this.afterLayoutBuilt(this, viewMode);
-//			}
-
-//			@Override
-//			protected void afterModeChanged(boolean viewMode) {
-//				DetailsEditLayout.this.afterModeChanged(this, viewMode);
-//			}
-
-//			@Override
-//			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-//				return DetailsEditLayout.this.constructCustomConverter(am);
-//			}
-
-//			@Override
-//			protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-//				return DetailsEditLayout.this.constructCustomRequiredValidator(am, this);
-//			}
-
-//			@Override
-//			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-//				return DetailsEditLayout.this.constructCustomValidator(am, this);
-//			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
@@ -400,59 +392,68 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 				return DetailsEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
 			}
 
-//			@Override
-//			protected void postProcessEditFields() {
-//				super.postProcessEditFields();
-//				DetailsEditLayout.this.postProcessEditFields(this);
-//			}
 		};
 
 		editForm.setPostProcessEditFields(getPostProcessEditFields());
-		editForm.setFieldEntityModels(getFieldEntityModels());
+//		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setFieldFilters(fieldFilters);
-		editForm.setGroupTogetherMode(getGroupTogetherMode());
-		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
+//		editForm.setGroupTogetherMode(getGroupTogetherMode());
+//		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 		editForm.setNestedMode(true);
 		editForm.setViewMode(viewMode);
-		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
-		editForm.setAfterModeChanged(getAfterModeChanged());
+//		editForm.setAfterLayoutBuilt(getAfterEditFormBuilt());
+//		editForm.setAfterModeChanged(getAfterModeChanged());
 
-		editForm.setCustomConverters(getCustomConverters());
-		editForm.setCustomValidators(getCustomValidators());
-		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
+//		editForm.setCustomConverters(getCustomConverters());
+//		editForm.setCustomValidators(getCustomValidators());
+//		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
 
 		editForm.build();
 
-		FormContainer fc = new FormContainer(editForm) {
+		FormContainer formContainer = new FormContainer(index, editForm);
+		formContainer.setPostProcessDetailButtonBar(getPostProcessDetailButtonBar());
+		formContainer.build();
 
-			private static final long serialVersionUID = 6186428121967857827L;
+		forms.add(formContainer);
+		mainFormContainer.add(formContainer);
+	}
 
-			@Override
-			public void postProcessButtonBar(HorizontalLayout buttonBar) {
-				DetailsEditLayout.this.postProcessDetailButtonBar(forms.size(), buttonBar, viewMode);
-			}
-		};
-		forms.add(fc);
-		mainFormContainer.add(fc);
+	/**
+	 * Constructs the actual component
+	 */
+	@Override
+	public void build() {
+		if (layout == null) {
+			layout = new DefaultVerticalLayout(false, false);
+
+			mainFormContainer = new DefaultVerticalLayout(false, false);
+			layout.add(mainFormContainer);
+
+			// add the buttons
+			constructButtonBar(layout);
+
+			// initial filling
+			setItems(items);
+			add(layout);
+		}
 	}
 
 	/**
 	 * Constructs the button that is used for adding new items
 	 * 
-	 * @param buttonBar the button bar
+	 * @param buttonBar the button bar to which to add the button
 	 */
-	protected void constructAddButton(FlexLayout buttonBar) {
+	protected final void constructAddButton(FlexLayout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(event -> {
 			T t = createEntitySupplier.apply(getEnclosingForm() == null ? null : getEnclosingForm().getEntity());
 			items.add(t);
-			addDetailEditForm(t);
+			addDetailEditForm(getFormCount(), t);
 		});
 
 		addButton.setVisible(!viewMode && !formOptions.isHideAddButton());
 		buttonBar.add(addButton);
-
 	}
 
 	/**
@@ -460,14 +461,16 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 * 
 	 * @param parent the layout to which to add the button bar
 	 */
-	protected void constructButtonBar(VerticalLayout parent) {
+	protected final void constructButtonBar(VerticalLayout parent) {
 		FlexLayout buttonBar = new FlexLayout();
 
 		buttonBar.setVisible(!viewMode);
 		parent.add(buttonBar);
 
 		constructAddButton(buttonBar);
-		postProcessButtonBar(buttonBar);
+		if (postProcessButtonBar != null) {
+			postProcessButtonBar.accept(buttonBar);
+		}
 	}
 
 	/**
@@ -486,19 +489,17 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return null;
 	}
 
-	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am, ModelBasedEditForm<ID, T> editForm) {
-		return null;
-	}
-
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am, ModelBasedEditForm<ID, T> editForm) {
-		return null;
-	}
-
 	@Override
 	protected Collection<T> generateModelValue() {
 		return ConvertUtils.convertCollection(items == null ? new ArrayList<>() : items, attributeModel);
 	}
 
+	/**
+	 * Return the entity that is managed by the form with the specified index
+	 * 
+	 * @param index the index of the desired form
+	 * @return
+	 */
 	public T getEntity(int index) {
 		if (index < this.forms.size()) {
 			return this.forms.get(index).getEntity();
@@ -537,66 +538,29 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		return ConvertUtils.convertCollection(items == null ? new ArrayList<>() : items, attributeModel);
 	}
 
-	/**
-	 * Constructs the actual component
-	 */
-	protected void initContent() {
-
-		VerticalLayout layout = new DefaultVerticalLayout(false, false);
-
-		mainFormContainer = new DefaultVerticalLayout(false, false);
-		layout.add(mainFormContainer);
-
-		// add the buttons
-		constructButtonBar(layout);
-
-		// initial filling
-		setItems(items);
-
-		add(layout);
-		postConstruct();
-	}
-
 	public boolean isViewMode() {
 		return viewMode;
 	}
 
-	protected void postConstruct() {
-		// overwrite in subclasses
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		build();
+	}
+
+	public void setAfterEditFormBuilt(BiConsumer<HasComponents, Boolean> afterLayoutBuilt) {
+		componentContext.setAfterLayoutBuilt(afterLayoutBuilt);
+	}
+
+	public void setAfterModeChanged(BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged) {
+		componentContext.setAfterModeChanged(afterModeChanged);
 	}
 
 	/**
-	 * Callback method that is used to modify the main button bar that appears below
-	 * the sub-forms. Override in subclasses if needed
+	 * Sets the class name
 	 * 
-	 * @param buttonBar the button bar
+	 * @param className the class name
 	 */
-	protected void postProcessButtonBar(FlexLayout buttonBar) {
-		// overwrite in subclass if needed
-	}
-
-	/**
-	 * Callback method that is used to modify the detail button bar that is rendered
-	 * for every sub-form
-	 * 
-	 * @param index     the zero-based index of the sub-form
-	 * @param buttonBar the button bar
-	 * @param viewMode  whether the component is in view mode
-	 */
-	protected void postProcessDetailButtonBar(int index, HorizontalLayout buttonBar, boolean viewMode) {
-		// overwrite in subclass if needed
-	}
-
-	/**
-	 * Callback method that is used to modify the fields after creation. This method
-	 * is called just once during component construction
-	 * 
-	 * @param editForm the edit form that contains the fields
-	 */
-	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-		// override in subclasses
-	}
-
 	public void setClassName(String className) {
 		this.getElement().setAttribute("class", className);
 	}
@@ -684,7 +648,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			mainFormContainer.removeAll();
 			forms.clear();
 			for (T t : this.items) {
-				addDetailEditForm(t);
+				addDetailEditForm(getFormCount(), t);
 			}
 		}
 	}

@@ -23,26 +23,53 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
-import com.ocs.dynamo.ui.composite.type.GridEditMode;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.componentfactory.selectiongrid.SelectionGrid;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
+/**
+ * A grid component that allows the user to select multiple items by
+ * shift-clicking or ctrl-clicking
+ * 
+ * @author BasRutten
+ *
+ * @param <ID>
+ * @param <T>
+ */
 public class ModelBasedSelectionGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends SelectionGrid<T> {
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
+	private boolean built;
+
+	@Getter
+	private ComponentContext componentContext;
+
+	@Getter
+	private FormOptions formOptions;
+
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+//
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
+
 	/**
 	 * Custom currency symbol to be used for this grid
 	 */
+	@Getter
 	private String currencySymbol;
 
 	/**
@@ -50,20 +77,13 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	 */
 	private EntityModel<T> entityModel;
 
-	/**
-	 * The edit mode (row by row or all rows at once)
-	 */
-	private GridEditMode gridEditMode;
+	private Map<String, SerializablePredicate<?>> fieldFilters;
 
 	/**
 	 * The message service
 	 */
+	@Getter
 	private MessageService messageService;
-
-	/**
-	 * Whether to store sort orders
-	 */
-	private boolean storeSortOrders;
 
 	/**
 	 * Constructor
@@ -75,13 +95,15 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	 * @param gridEditMode
 	 */
 	public ModelBasedSelectionGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, boolean storeSortOrders,
-			GridEditMode gridEditMode) {
+			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
+			ComponentContext componentContext) {
 		setDataProvider(dataProvider);
-		this.gridEditMode = gridEditMode;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.storeSortOrders = storeSortOrders;
+		this.formOptions = formOptions;
+		this.fieldFilters = fieldFilters;
+		this.componentContext = componentContext;
+
 		addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
 
 		setSizeFull();
@@ -93,65 +115,40 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 		getEditor().setBinder(binder);
 		getEditor().setBuffered(false);
 
-		ModelBasedGridBuilder<ID, T> gridBuilder = new ModelBasedGridBuilder<ID, T>(this, entityModel, fieldFilters,
-				editable, gridEditMode) {
-
-			@Override
-			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-				return ModelBasedSelectionGrid.this.constructCustomConverter(am);
-			}
-
-			@Override
-			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-				return ModelBasedSelectionGrid.this.constructCustomValidator(am);
-			}
-
-			@Override
-			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				ModelBasedSelectionGrid.this.postProcessComponent(id, am, comp);
-			}
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return ModelBasedSelectionGrid.this.constructCustomField(entityModel, attributeModel);
-			}
-
-			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				return ModelBasedSelectionGrid.this.doBind(t, field, attributeName);
-			}
-
-		};
-		gridBuilder.generateColumnsRecursive(model.getAttributeModelsSortedForGrid());
-
-		addSortListener(event -> {
-			UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
-			if (helper != null && storeSortOrders) {
-				List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
-				helper.storeSortOrders(collect);
-			}
-		});
 	}
 
-	/**
-	 * Callback method for inserting custom converter
-	 * 
-	 * @param am the attribute model for the field for which to add a converter
-	 * @return
-	 */
-	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-		return null;
-	}
+	public void build() {
+		if (!built) {
+			ModelBasedGridBuilder<ID, T> gridBuilder = new ModelBasedGridBuilder<ID, T>(this, entityModel, fieldFilters,
+					formOptions, componentContext) {
 
-	/**
-	 * Callback method for inserting a custom validator
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-		return null;
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+					return ModelBasedSelectionGrid.this.constructCustomField(entityModel, attributeModel);
+				}
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					return ModelBasedSelectionGrid.this.doBind(t, field, attributeName);
+				}
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					ModelBasedSelectionGrid.this.postProcessComponent(id, am, comp);
+				}
+
+			};
+
+			gridBuilder.addColumns(entityModel.getAttributeModelsSortedForGrid());
+
+			addSortListener(event -> {
+				UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+				if (helper != null && formOptions.isPreserveSortOrders()) {
+					List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
+					helper.storeSortOrders(collect);
+				}
+			});
+		}
 	}
 
 	/**
@@ -177,16 +174,10 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 		return null;
 	}
 
-	public String getCurrencySymbol() {
-		return currencySymbol;
-	}
-
-	public GridEditMode getGridEditMode() {
-		return gridEditMode;
-	}
-
-	public MessageService getMessageService() {
-		return messageService;
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		build();
 	}
 
 	/**
@@ -209,14 +200,6 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	 */
 	public void setColumnVisible(String propertyId, boolean visible) {
 		getColumnByKey(propertyId).setVisible(visible);
-	}
-
-	public void setCurrencySymbol(String currencySymbol) {
-		this.currencySymbol = currencySymbol;
-	}
-
-	public boolean isStoreSortOrders() {
-		return storeSortOrders;
 	}
 
 }

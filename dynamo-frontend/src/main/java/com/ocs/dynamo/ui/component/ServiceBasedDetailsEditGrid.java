@@ -32,13 +32,15 @@ import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A grid component that is meant for use inside an edit form. It manages a
@@ -59,6 +61,8 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	/**
 	 * The joins to use when exporting (needed when using export mode FULL)
 	 */
+	@Getter
+	@Setter
 	private FetchJoinInformation[] exportJoins;
 
 	/**
@@ -70,6 +74,8 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 * The supplier for constructing the search filter used to restrict the
 	 * displayed items
 	 */
+	@Getter
+	@Setter
 	private Function<U, SerializablePredicate<T>> filterSupplier;
 
 	/**
@@ -94,12 +100,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		super(service, entityModel, attributeModel, viewMode, true, formOptions);
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
 		provider.setAfterCountCompleted(count -> updateCaption(count));
-	}
-
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		super.onAttach(attachEvent);
-		initContent();
 	}
 
 	protected void addDownloadMenu() {
@@ -138,12 +138,12 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	@Override
 	public void assignEntity(U u) {
 		this.parent = u;
+		build();
+
 		if (getGrid() != null) {
 			getGrid().deselectAll();
 			applyFilter();
 		}
-
-		initContent();
 
 		// hide add button for new entity
 		getAddButton().setVisible(!isViewMode() && !getFormOptions().isHideAddButton()
@@ -176,14 +176,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		return provider;
 	}
 
-	public FetchJoinInformation[] getExportJoins() {
-		return exportJoins;
-	}
-
-	public Function<U, SerializablePredicate<T>> getFilterSupplier() {
-		return filterSupplier;
-	}
-
 	public int getItemCount() {
 		return provider.getSize();
 	}
@@ -199,14 +191,6 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			throw new OCSRuntimeException("No linkEntityConsumer specified!");
 		}
 		selected.forEach(t -> getLinkEntityConsumer().accept(t));
-	}
-
-	public void setExportJoins(FetchJoinInformation... exportJoins) {
-		this.exportJoins = exportJoins;
-	}
-
-	public void setFilterSupplier(Function<U, SerializablePredicate<T>> filterSupplier) {
-		this.filterSupplier = filterSupplier;
 	}
 
 	@Override
@@ -227,22 +211,11 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 */
 	private void showPopup(T entity) {
 		EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), entity, getEntityModel(),
-				getFieldFilters(), new FormOptions(), getDetailJoins()) {
-
-			private static final long serialVersionUID = 3660359220933653009L;
-
-			@Override
-			public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-				// reload so that the newly created entity shows up
-				provider.refreshAll();
-			}
-
-			@Override
-			protected T createEntity() {
-				return getCreateEntitySupplier().get();
-			}
-		};
+				getFieldFilters(), new FormOptions(), getComponentContext(), getDetailJoins());
+		dialog.setAfterEditDone((cancel, newEntity, ent) -> provider.refreshAll());
+		dialog.setCreateEntitySupplier(getCreateEntitySupplier());
 		dialog.setColumnThresholds(getColumnThresholds());
+
 		dialog.buildAndOpen();
 	}
 

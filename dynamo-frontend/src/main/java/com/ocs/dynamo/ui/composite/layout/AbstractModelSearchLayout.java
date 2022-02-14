@@ -35,7 +35,6 @@ import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -64,10 +63,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 */
 	private Button editButton;
 
-	/**
-	 * Edit column width thresholds
-	 */
-	private List<String> editColumnThresholds = new ArrayList<>();
+//	/**
+//	 * Edit column width thresholds
+//	 */
+//	private List<String> editColumnThresholds = new ArrayList<>();
 
 	/**
 	 * The edit form for editing a single object
@@ -191,33 +190,12 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			buttonBar.add(nextButton);
 		}
 
-		tabLayout = new TabLayout<ID, T>(entity) {
+		tabLayout = new TabLayout<ID, T>(entity);
 
-			private static final long serialVersionUID = 1278134557026074688L;
-
-			@Override
-			protected String createTitle() {
-				return AbstractModelSearchLayout.this.getDetailModeTabTitle();
-			}
-
-			@Override
-			protected Icon getIconForTab(int index) {
-				return AbstractModelSearchLayout.this.getIconForTab(index);
-			}
-
-			@Override
-			protected String[] getTabCaptions() {
-				return AbstractModelSearchLayout.this.getDetailModeTabCaptions();
-			}
-
-			@Override
-			protected Component initTab(int index) {
-				// back button and iteration buttons not needed (they are
-				// displayed above
-				// the tabs)
-				return AbstractModelSearchLayout.this.constructComplexDetailModeTab(index, formOptions, false);
-			}
-		};
+		tabLayout.setTitleSupplier(() -> getDetailModeTabTitle());
+		tabLayout.setCaptions(getDetailModeTabCaptions());
+		tabLayout.setTabSupplier(index -> constructComplexDetailModeTab(index, formOptions, false));
+		tabLayout.setIconSupplier(index -> getIconForTab(index));
 		tabLayout.build();
 		tabContainerLayout.add(tabLayout);
 	}
@@ -228,30 +206,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * @param entity  the currently selected entity
 	 * @param options the form options
 	 */
-	private void buildEditForm(T entity, FormOptions options, ComponentContext context) {
+	private void buildEditForm(T entity, FormOptions options, ComponentContext<ID,T> context) {
 		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
 
 			private static final long serialVersionUID = 6485097089659928131L;
-
-//			@Override
-//			protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-//				if (getFormOptions().isOpenInViewMode()) {
-//					if (newObject) {
-//						getOnBackButtonClicked().run();
-//					} else {
-//						// if details screen opens in view mode, simply switch
-//						// to view mode
-//						setViewMode(true);
-//						detailsMode(entity);
-//					}
-//				} else {
-//					// otherwise go back to the main screen
-//					if (cancel || newObject
-//							|| (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
-//						getOnBackButtonClicked().run();
-//					}
-//				}
-//			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
@@ -280,29 +238,27 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				return AbstractModelSearchLayout.this.hasPrevEntity();
 			}
 
-			@Override
-			protected boolean isEditAllowed() {
-				return AbstractModelSearchLayout.this.isEditAllowed();
-			}
+//			@Override
+//			protected boolean isEditAllowed() {
+//				return AbstractModelSearchLayout.this.isEditAllowed();
+//			}
 
 		};
 
 		initEditForm(editForm);
-		editForm.setComponentContext(context);
 
 		editForm.setOnBackButtonClicked(() -> searchMode());
 		addAfterEditDone();
 
 		editForm.setSupportsIteration(true);
 		editForm.setDetailJoins(getDetailJoins());
-		editForm.setColumnThresholds(getEditColumnThresholds());
 		editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
 
 		editForm.build();
 
-		if (getAfterEntitySelected() != null) {
-			editForm.setAfterEntitySelected(getAfterEntitySelected());
-		}
+//		if (getAfterEntitySelected() != null) {
+//			editForm.setAfterEntitySelected(getAfterEntitySelected());
+//		}
 
 		editForm.setEntity(entity);
 	}
@@ -405,7 +361,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			copy.setOpenInViewMode(true).setEditAllowed(false);
 		}
 
-		if (copy.isOpenInViewMode() || !isEditAllowed()) {
+		if (copy.isOpenInViewMode() || !checkEditAllowed()) {
 			copy.setShowBackButton(true);
 		}
 
@@ -428,7 +384,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		} else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
 			if (editForm == null) {
-				buildEditForm(entity, copy, ComponentContext.builder().formNested(true).build());
+				buildEditForm(entity, copy, getComponentContext().toBuilder().formNested(true).build());
 			} else {
 				editForm.setViewMode(copy.isOpenInViewMode());
 				editForm.setEntity(entity);
@@ -500,9 +456,9 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		return editButton;
 	}
 
-	public List<String> getEditColumnThresholds() {
-		return editColumnThresholds;
-	}
+//	public List<String> getEditColumnThresholds() {
+//		return editColumnThresholds;
+//	}
 
 	public ModelBasedEditForm<ID, T> getEditForm() {
 		return editForm;
@@ -603,9 +559,9 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		}
 	}
 
-	public void setEditColumnThresholds(List<String> editColumnThresholds) {
-		this.editColumnThresholds = editColumnThresholds;
-	}
+//	public void setEditColumnThresholds(List<String> editColumnThresholds) {
+//		this.editColumnThresholds = editColumnThresholds;
+//	}
 
 	/**
 	 * Refreshes the contents of a label inside the edit form

@@ -60,10 +60,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	private DataProvider<T, SerializablePredicate<T>> dataProvider;
 
-	/**
-	 * Whether the grid is editable using a row editor
-	 */
-	private boolean editable;
+//	/**
+//	 * Whether the grid is editable using a row editor
+//	 */
+//	private boolean editable;
 
 	/**
 	 * Field filter map
@@ -92,11 +92,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, ComponentContext context, SerializablePredicate<T> filter,
-			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders, boolean editable,
+			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, context, filter, sortOrders, joins);
 		setSpacing(false);
-		this.editable = editable;
 	}
 
 	/**
@@ -137,8 +136,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected Grid<T> constructGrid() {
 		if (getComponentContext().isUseCheckboxesForMultiSelect()) {
 
-			return new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
-					getFormOptions().isPreserveSortOrders(), getFormOptions().getGridEditMode()) {
+			ModelBasedGrid<ID, T> grid = new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters,
+					getFormOptions(), getComponentContext()) {
 
 				private static final long serialVersionUID = -4559181057050230055L;
 
@@ -158,10 +157,14 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 				}
 
 			};
+
+			grid.build();
+
+			return grid;
 
 		} else {
-			return new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(), fieldFilters, editable,
-					getFormOptions().isPreserveSortOrders(), getFormOptions().getGridEditMode()) {
+			ModelBasedSelectionGrid<ID, T> grid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
+					fieldFilters, getFormOptions(), getComponentContext()) {
 
 				private static final long serialVersionUID = -4559181057050230055L;
 
@@ -181,11 +184,12 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 				}
 
 			};
+			grid.build();
+			return grid;
 		}
-
 	}
 
-	protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+	protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
 		return null;
 	}
 

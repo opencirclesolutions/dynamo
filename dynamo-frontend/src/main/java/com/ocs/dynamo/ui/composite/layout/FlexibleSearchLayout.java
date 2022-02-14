@@ -77,48 +77,28 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 
 	@Override
 	protected AbstractModelBasedSearchForm<ID, T> constructSearchForm() {
-		ModelBasedFlexibleSearchForm<ID, T> result = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
+		ModelBasedFlexibleSearchForm<ID, T> searchForm = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
 				getFormOptions(), this.getDefaultFilters(), this.getFieldFilters()) {
 
 			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected void afterSearchFieldToggle(boolean visible) {
-				FlexibleSearchLayout.this.afterSearchFieldToggle(visible);
-			}
-
-			@Override
-			protected void afterSearchPerformed() {
-				FlexibleSearchLayout.this.afterSearchPerformed();
-			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return FlexibleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
 			}
 
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar) {
-				FlexibleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
-			}
-
-			@Override
-			protected void validateBeforeSearch() {
-				FlexibleSearchLayout.this.validateBeforeSearch();
-			}
-
 		};
 
-		result.setComponentContext(getComponentContext());
-		result.setFieldEntityModels(getFieldEntityModels());
-		result.setBasicStringFilterProperties(basicStringFilterProperties);
-		result.build();
+		initSearchForm(searchForm);
+		searchForm.setComponentContext(getComponentContext());
+		searchForm.setBasicStringFilterProperties(basicStringFilterProperties);
+		searchForm.build();
 
 		for (AttributeModel am : getEntityModel().getRequiredForSearchingAttributeModels()) {
-			result.addFilter(am, result.getDefaultFilterType(am), null, null);
+			searchForm.addFilter(am, searchForm.getDefaultFilterType(am), null, null);
 		}
 
-		return result;
+		return searchForm;
 	}
 
 	@Override

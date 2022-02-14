@@ -41,6 +41,7 @@ import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -400,14 +401,16 @@ public final class VaadinUtils {
 			((DatePicker) component).setLabel(label);
 		} else if (component instanceof TimePicker) {
 			((TimePicker) component).setLabel(label);
+		} else if (component instanceof EmailField) {
+			((EmailField) component).setLabel(label);
 		}
 	}
 
 	/**
 	 * Sets the placeholder for the specified component
 	 * 
-	 * @param component
-	 * @param placeHolder
+	 * @param component   the component
+	 * @param placeHolder the placeholder to set
 	 */
 	public static void setPlaceHolder(Component component, String placeHolder) {
 		if (component instanceof TextField) {
@@ -429,6 +432,8 @@ public final class VaadinUtils {
 			((URLField) component).setPlaceholder(placeHolder);
 		} else if (component instanceof ComboBox) {
 			((ComboBox<?>) component).setPlaceholder(placeHolder);
+		} else if (component instanceof EmailField) {
+			((EmailField) component).setPlaceholder(placeHolder);
 		}
 	}
 

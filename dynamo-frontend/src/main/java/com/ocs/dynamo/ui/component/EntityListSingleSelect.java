@@ -74,7 +74,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		this.sortOrders = sortOrders;
 		this.attributeModel = attributeModel;
 		this.filter = filter;
-		setHeight(SystemPropertyUtils.getListSelectHeight());
+		setHeight(SystemPropertyUtils.getDefaultListSelectHeight());
 
 		DataProvider<T, SerializablePredicate<T>> provider = sharedProvider;
 		initProvider(provider, items, mode);

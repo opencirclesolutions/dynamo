@@ -20,7 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
+import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -65,7 +67,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	private FormOptions formOptions;
 
-	private ComponentContext componentContext = ComponentContext.builder().build();
+	private ComponentContext componentContext = ComponentContext.builder().popup(true).build();
 
 	private SimpleEditLayout<ID, T> layout;
 
@@ -87,23 +89,34 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	@Setter
 	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
+	@Getter
+	@Setter
+	private Supplier<T> createEntitySupplier;
+
+	@Getter
+	@Setter
+	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+
 	/**
-	 * Constructor
 	 * 
 	 * @param service
 	 * @param entity
 	 * @param entityModel
+	 * @param fieldFilters
 	 * @param formOptions
+	 * @param componentContext
+	 * @param joins
 	 */
 	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
-			FetchJoinInformation... joins) {
+			ComponentContext componentContext, FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.formOptions = formOptions;
 		this.entity = entity;
 		this.fieldFilters = fieldFilters;
 		this.joins = joins;
+		this.componentContext = componentContext.toBuilder().popup(true).build();
 		setTitle(entityModel.getDisplayName(VaadinUtils.getLocale()));
 
 		setBuildButtonBar(buttonBar -> {
@@ -127,120 +140,29 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 				private static final long serialVersionUID = -2965981316297118264L;
 
 				@Override
-				protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-					super.afterEditDone(cancel, newEntity, entity);
-					EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
-					EntityPopupDialog.this.close();
-				}
-
-				@Override
 				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 						boolean viewMode, boolean searchMode) {
 					return EntityPopupDialog.this.constructCustomField(entityModel, attributeModel, viewMode,
 							searchMode);
 				}
 
-				@Override
-				protected T createEntity() {
-					return EntityPopupDialog.this.createEntity();
+			};
+			layout.setAfterEditDone((cancel, isNew, ent) -> {
+				if (getAfterEditDone() != null) {
+					getAfterEditDone().accept(cancel, isNew, ent);
 				}
 
-//				@Override
-//				protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-//					EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
-//				}
-
-//				@Override
-//				protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-//					EntityPopupDialog.this.postProcessEditFields(editForm);
-//				}
-
-			};
-
+				EntityPopupDialog.this.close();
+			});
+			layout.setCreateEntitySupplier(getCreateEntitySupplier());
 			layout.setPostProcessButtonBar(getPostProcessButtonBar());
 			layout.setPostProcessEditFields(getPostProcessEditFields());
 			layout.setFieldFilters(fieldFilters);
-			layout.setColumnThresholds(columnThresholds);
+			//layout.setEditColumnThresholds(columnThresholds);
 			layout.setJoins(joins);
 			parent.add(layout);
 		});
 	}
-
-	/**
-	 * Callback method that is called after the user is done editing the entry
-	 * 
-	 * @param cancel    whether the edit action was cancelled
-	 * @param newEntity whether the user was adding a new entity
-	 * @param entity    the entity that was being edited
-	 */
-	public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-		// override in subclasses
-	}
-
-	/**
-	 * Creates a new entity
-	 * 
-	 * @return
-	 */
-	protected T createEntity() {
-		return service.createNewEntity();
-	}
-
-//	@Override
-//	protected void doBuild(VerticalLayout parent) {
-//
-//		// cancel button makes no sense in a popup
-//		formOptions.setHideCancelButton(false);
-//
-//		layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
-//
-//			private static final long serialVersionUID = -2965981316297118264L;
-//
-//			@Override
-//			protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-//				super.afterEditDone(cancel, newEntity, entity);
-//				EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
-//				EntityPopupDialog.this.close();
-//			}
-//
-//			@Override
-//			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-//					boolean viewMode, boolean searchMode) {
-//				return EntityPopupDialog.this.constructCustomField(entityModel, attributeModel, viewMode, searchMode);
-//			}
-//
-//			@Override
-//			protected T createEntity() {
-//				return EntityPopupDialog.this.createEntity();
-//			}
-//
-//			@Override
-//			protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-//				EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
-//			}
-//
-//			@Override
-//			protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-//				EntityPopupDialog.this.postProcessEditFields(editForm);
-//			}
-//
-//		};
-//		layout.setFieldFilters(fieldFilters);
-//		layout.setColumnThresholds(columnThresholds);
-//		layout.setJoins(joins);
-//		parent.add(layout);
-//	}
-
-//	@Override
-//	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-//		// in read-only mode, display only an "OK" button that closes the dialog
-//		buttonBar.setVisible(formOptions.isReadOnly());
-//		if (formOptions.isReadOnly()) {
-//			okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
-//			okButton.addClickListener(event -> close());
-//			buttonBar.add(okButton);
-//		}
-//	}
 
 	public T getEntity() {
 		return layout.getEntity();
@@ -257,14 +179,6 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	public List<Button> getSaveButtons() {
 		return layout.getEditForm().getSaveButtons();
 	}
-//
-//	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-//		// overwrite in subclasses when needed
-//	}
-//
-//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-//		// overwrite in subclasses when needed
-//	}
 
 	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean searchMode) {

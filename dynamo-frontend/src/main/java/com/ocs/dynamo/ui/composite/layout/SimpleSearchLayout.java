@@ -25,9 +25,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 
 /**
@@ -42,17 +40,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		extends AbstractModelSearchLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
-
-	/**
-	 * Threshold values that determine when to show additional columns with search
-	 * fields
-	 */
-	private List<String> searchColumnThresholds = new ArrayList<>();
-
-	/**
-	 * The maximum search form width
-	 */
-	private String maxSearchFormWidth = SystemPropertyUtils.getDefaultMaxSearchFormWidth();
 
 	/**
 	 * Constructor - only the most important attributes
@@ -87,50 +74,36 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Override
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-		// by default, do not pass a searchable object, in order to prevent an
-		// unnecessary and
-		// potentially unfiltered search
-		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-				getComponentContext(), getDefaultFilters(), getFieldFilters()) {
+		ModelBasedSearchForm<ID, T> searchForm = new ModelBasedSearchForm<ID, T>(null, getEntityModel(),
+				getFormOptions(), getComponentContext(), getDefaultFilters(), getFieldFilters()) {
 
 			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected void afterSearchFieldToggle(boolean visible) {
-				SimpleSearchLayout.this.afterSearchFieldToggle(visible);
-			}
-
-			@Override
-			protected void afterSearchPerformed() {
-				SimpleSearchLayout.this.afterSearchPerformed();
-			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
 			}
 
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar) {
-				SimpleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
-			}
-
-			@Override
-			protected void validateBeforeSearch() {
-				SimpleSearchLayout.this.validateBeforeSearch();
-			}
 		};
-		result.setComponentContext(getComponentContext());
-		result.setFieldEntityModels(getFieldEntityModels());
-		result.setColumnThresholds(getSearchColumnThresholds());
-		result.setMaxFormWidth(getMaxSearchFormWidth());
-		result.build();
-		return result;
+
+		initSearchForm(searchForm);
+		// searchForm.setColumnThresholds(getSearchColumnThresholds());
+		// searchForm.setMaxFormWidth(getMaxSearchFormWidth());
+		searchForm.build();
+		return searchForm;
 	}
 
 	@Override
 	public ModelBasedSearchForm<ID, T> getSearchForm() {
 		return (ModelBasedSearchForm<ID, T>) super.getSearchForm();
+	}
+
+	public void setSearchColumnThresholds(List<String> searchColumnThresholds) {
+		getComponentContext().setSearchColumnThresholds(searchColumnThresholds);
+	}
+
+	public void setMaxSearchFormWidth(String maxSearchFormWidth) {
+		getComponentContext().setMaxSearchFormWidth(maxSearchFormWidth);
 	}
 
 	/**
@@ -154,22 +127,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		getSearchForm().setSearchValue(propertyId, value, auxValue);
-	}
-
-	public List<String> getSearchColumnThresholds() {
-		return searchColumnThresholds;
-	}
-
-	public void setSearchColumnThresholds(List<String> searchColumnThresholds) {
-		this.searchColumnThresholds = searchColumnThresholds;
-	}
-
-	public String getMaxSearchFormWidth() {
-		return maxSearchFormWidth;
-	}
-
-	public void setMaxSearchFormWidth(String maxSearchFormWidth) {
-		this.maxSearchFormWidth = maxSearchFormWidth;
 	}
 
 }

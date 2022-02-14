@@ -129,7 +129,7 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return the locale used for the month names inside date picker components
+	 * @return the locale used for localization of date picker components
 	 */
 	public static String getDefaultDateLocale() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_DATE_LOCALE, getDefaultLocale());
@@ -186,7 +186,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return the default false representation
+	 * @return the default textual representation of the boolean literal "false"
 	 */
 	public static String getDefaultFalseRepresentation() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION, DEFAULT_FALSE_REPRESENTATION);
@@ -198,7 +198,7 @@ public final class SystemPropertyUtils {
 	 * <lan> is the language code of the locale, e.g. "en", "nl"
 	 * 
 	 * @param locale the locale
-	 * @return the default faulse representation
+	 * @return the default false representation
 	 */
 	public static String getDefaultFalseRepresentation(Locale locale) {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_FALSE_REPRESENTATION + "." + locale.getLanguage(), null);
@@ -206,7 +206,7 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return the default grid height in pixels
+	 * @return the default height of a search results grid
 	 */
 	public static String getDefaultGridHeight() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_GRID_HEIGHT, "400px");
@@ -214,22 +214,12 @@ public final class SystemPropertyUtils {
 
 	/**
 	 * 
-	 * @return the default "group together" mode. This determines how the grouped
-	 *         together fields behave
+	 * @return the default "group together" mode. This determines how the fields
+	 *         that are group together behave with respect to responsiveness
 	 */
 	public static GroupTogetherMode getDefaultGroupTogetherMode() {
 		String s = getStringProperty(DynamoConstants.SP_DEFAULT_GROUP_TOGETHER_MODE, "pixel");
 		return GroupTogetherMode.valueOf(s.toUpperCase());
-	}
-
-	/**
-	 * 
-	 * @return the default "paging" mode. This determines how to retrieve items in
-	 *         UI components that maintain a list of items like combo boxes
-	 */
-	public static PagingMode getDefaultPagingMode() {
-		String s = getStringProperty(DynamoConstants.SP_DEFAULT_PAGING_MODE, "non_paged");
-		return PagingMode.valueOf(s.toUpperCase());
 	}
 
 	/**
@@ -242,11 +232,27 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
+	 * 
+	 * @return the default height of a list select component
+	 */
+	public static String getDefaultListSelectHeight() {
+		return getStringProperty(DynamoConstants.SP_LIST_SELECT_HEIGHT, "100px");
+	}
+
+	/**
 	 *
 	 * @return the default locale used for e.g. the decimal and thousands separators
 	 */
 	public static String getDefaultLocale() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
+	}
+
+	/**
+	 * @return the maximum number of selected items to display in a lookup field
+	 *         description
+	 */
+	public static int getDefaultLookupFieldMaxItems() {
+		return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
 	}
 
 	/**
@@ -268,7 +274,7 @@ public final class SystemPropertyUtils {
 	/**
 	 * 
 	 * @return the amount of time (in milliseconds) that an error or information
-	 *         message will be displayed
+	 *         message will be displayed by default
 	 */
 	public static Integer getDefaultMessageDisplayTime() {
 		return getIntProperty(DynamoConstants.SP_DEFAULT_MESSAGE_DISPLAY_TIME, DEFAULT_MESSAGE_DISPLAY_TIME);
@@ -280,6 +286,16 @@ public final class SystemPropertyUtils {
 	 */
 	public static int getDefaultNestingDepth() {
 		return getIntProperty(DynamoConstants.SP_DEFAULT_NESTING_DEPTH, 2);
+	}
+
+	/**
+	 * 
+	 * @return the default "paging" mode. This determines how to retrieve items in
+	 *         UI components that maintain a list of items like combo boxes
+	 */
+	public static PagingMode getDefaultPagingMode() {
+		String s = getStringProperty(DynamoConstants.SP_DEFAULT_PAGING_MODE, "non_paged");
+		return PagingMode.valueOf(s.toUpperCase());
 	}
 
 	/**
@@ -314,10 +330,18 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return the default height of a text area (e.g. "150px")
+	 * @return the default height of a text area (e.g. "1px")
 	 */
 	public static String getDefaultTextAreaHeight() {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_TEXT_AREA_HEIGHT, "200px");
+	}
+
+	/**
+	 * @return whether to include thousands grouping separators in edit mode
+	 */
+	public static ThousandsGroupingMode getDefaultThousandsGroupingMode() {
+		return ThousandsGroupingMode
+				.valueOf(getStringProperty(DynamoConstants.SP_THOUSAND_GROUPING, "ALWAYS").toUpperCase());
 	}
 
 	/**
@@ -362,22 +386,6 @@ public final class SystemPropertyUtils {
 			sys = s == null ? null : Integer.parseInt(s);
 		}
 		return sys;
-	}
-
-	/**
-	 * 
-	 * @return the height of a list select component
-	 */
-	public static String getListSelectHeight() {
-		return getStringProperty(DynamoConstants.SP_LIST_SELECT_HEIGHT, "100px");
-	}
-
-	/**
-	 * @return the maximum number of selected items to display in a lookup field
-	 *         description
-	 */
-	public static int getLookupFieldMaxItems() {
-		return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
 	}
 
 	/**
@@ -455,14 +463,6 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean useGridSelectionCheckBoxes() {
 		return getBooleanProperty(DynamoConstants.SP_USE_GRID_SELECTION_CHECK_BOXES, true);
-	}
-
-	/**
-	 * @return whether to include thousands grouping separators in edit mode
-	 */
-	public static ThousandsGroupingMode getDefaultThousandsGroupingMode() {
-		return ThousandsGroupingMode
-				.valueOf(getStringProperty(DynamoConstants.SP_THOUSAND_GROUPING, "ALWAYS").toUpperCase());
 	}
 
 	/**

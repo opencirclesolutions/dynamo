@@ -40,7 +40,7 @@ public class SystemPropertyUtilsTest {
 
 		assertEquals("200px", SystemPropertyUtils.getDefaultTextAreaHeight());
 
-		assertEquals(3, SystemPropertyUtils.getLookupFieldMaxItems());
+		assertEquals(3, SystemPropertyUtils.getDefaultLookupFieldMaxItems());
 		assertTrue(SystemPropertyUtils.isCapitalizeWords());
 		assertTrue(SystemPropertyUtils.useDefaultPromptValue());
 	}

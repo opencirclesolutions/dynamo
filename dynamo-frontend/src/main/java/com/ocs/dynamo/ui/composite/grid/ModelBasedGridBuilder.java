@@ -23,11 +23,14 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
+import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.GridFormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -40,8 +43,6 @@ import com.vaadin.flow.component.grid.Grid.Column;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -62,9 +63,9 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 
 	private EntityModel<T> entityModel;
 
-	private boolean editable;
+	// private boolean editable;
 
-	private GridEditMode gridEditMode;
+	// private GridEditMode gridEditMode;
 
 	/**
 	 * The field factory
@@ -82,6 +83,18 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 */
 	private Map<String, DataProvider<?, SerializablePredicate<?>>> sharedProviders = new HashMap<>();
 
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+//
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
+
+	private ComponentContext<ID, T> componentContext;
+
+	private FormOptions formOptions;
+
 	/**
 	 * Constructor
 	 * 
@@ -92,24 +105,21 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 * @param gridEditMode
 	 */
 	public ModelBasedGridBuilder(Grid<T> grid, EntityModel<T> entityModel,
-			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, GridEditMode gridEditMode) {
+			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
+			ComponentContext<ID, T> componentContext) {
 		this.grid = grid;
 		this.entityModel = entityModel;
-		this.editable = editable;
-		this.gridEditMode = gridEditMode;
+		this.formOptions = formOptions;
+		this.componentContext = componentContext;
 		this.fieldFilters = fieldFilters;
 		this.fieldFactory = FieldFactory.getInstance();
 	}
 
-	/**
-	 * 
-	 * @param ams
-	 */
-	public void generateColumnsRecursive(List<AttributeModel> ams) {
+	public void addColumns(List<AttributeModel> ams) {
 		for (AttributeModel am : ams) {
 			addColumn(am);
 			if (am.getNestedEntityModel() != null) {
-				generateColumnsRecursive(am.getNestedEntityModel().getAttributeModelsSortedForGrid());
+				addColumns(am.getNestedEntityModel().getAttributeModelsSortedForGrid());
 			}
 		}
 	}
@@ -127,7 +137,8 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 				column = grid.addComponentColumn(t -> {
 					URLField urlField = new URLField(
 							new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")), am,
-							editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode));
+							componentContext.isEditable()
+									&& GridEditMode.SIMULTANEOUS.equals(formOptions.getGridEditMode()));
 					urlField.setValue(ClassUtils.getFieldValueAsString(t, am.getPath(), ""));
 					return urlField;
 				});
@@ -136,14 +147,14 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 				column = grid.addComponentColumn(
 						t -> generateInternalLinkField(am, ClassUtils.getFieldValue(t, am.getPath())));
 			} else {
-				if (editable && GridEditMode.SIMULTANEOUS.equals(gridEditMode)
+				if (componentContext.isEditable() && GridEditMode.SIMULTANEOUS.equals(formOptions.getGridEditMode())
 						&& EditableType.EDITABLE.equals(am.getEditableType())) {
 					// edit all columns at once
 					column = grid.addComponentColumn(t -> {
 						Component comp = constructCustomField(entityModel, am);
 						FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
-								.fieldFilters(fieldFilters).viewMode(false).sharedProviders(sharedProviders)
-								.editableGrid(true).build();
+								.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(fieldFilters).viewMode(false)
+								.sharedProviders(sharedProviders).editableGrid(true).build();
 
 						if (comp == null) {
 							comp = fieldFactory.constructField(context);
@@ -168,8 +179,9 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 						// delegate the binding to the enveloping component
 						BindingBuilder<T, ?> builder = doBind(t, comp, am.getPath());
 						if (builder != null) {
-							fieldFactory.addConvertersAndValidators(builder, am, context, constructCustomConverter(am),
-									constructCustomValidator(am), null);
+							fieldFactory.addConvertersAndValidators(builder, am, context,
+									componentContext.findCustomConverter(am), componentContext.findCustomValidator(am),
+									null);
 							builder.bind(am.getPath());
 						}
 						postProcessComponent(t.getId(), am, comp);
@@ -183,7 +195,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 			}
 
 			// edit row-by-row, create in-line edit component using binder
-			if (editable && GridEditMode.SINGLE_ROW.equals(gridEditMode)
+			if (componentContext.isEditable() && GridEditMode.SINGLE_ROW.equals(formOptions.getGridEditMode())
 					&& EditableType.EDITABLE.equals(am.getEditableType())) {
 				Binder<T> binder = grid.getEditor().getBinder();
 				FieldCreationContext context = FieldCreationContext.create().attributeModel(am).viewMode(false)
@@ -247,24 +259,13 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 		// override in subclass
 	}
 
-	/**
-	 * Callback method for inserting custom converter
-	 * 
-	 * @param am the attribute model for the field for which to add a converter
-	 * @return
-	 */
-	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-		return null;
+	protected final EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
+		String reference = componentContext.getFieldEntityModels().get(attributeModel.getPath());
+		return reference == null ? null
+				: getEntityModelFactory().getModel(reference, attributeModel.getNormalizedType());
 	}
 
-	/**
-	 * Callback method for inserting a custom validator
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-		return null;
+	protected EntityModelFactory getEntityModelFactory() {
+		return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 	}
 }

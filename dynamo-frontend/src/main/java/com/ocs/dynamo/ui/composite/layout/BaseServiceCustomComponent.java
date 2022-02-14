@@ -34,7 +34,6 @@ import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
@@ -88,45 +87,44 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private static final long serialVersionUID = 6015180039863418544L;
 
 	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
+	private BaseService<ID, T> service;
+
+//	@Getter
+//	@Setter
+//	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
+//
+//	@Getter
+//	@Setter
+//	private Consumer<T> afterEntitySet;
+//
+//	@Getter
+//	@Setter
+//	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+//
+//	@Getter
+//	@Setter
+//	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+//
+//	@Getter
+//	@Setter
+//	private Consumer<Integer> afterTabSelected;
+//
+//	@Getter
+//	@Setter
+//	private BiConsumer<String, byte[]> afterUploadCompleted;
 
 	@Getter
 	@Setter
-	private Consumer<T> afterEntitySet;
-
-	@Getter
-	@Setter
-	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-
-	@Getter
-	@Setter
-	private Consumer<Integer> afterTabSelected;
-
-	@Getter
-	@Setter
-	private BiConsumer<String, byte[]> afterUploadCompleted;
-
-	@Getter
-	@Setter
-	private Function<String, String> findParentGroup;
-
-	@Getter
-	@Setter
-	private List<String> columnThresholds = new ArrayList<>();
-
-	@Getter
-	@Setter
-	private ComponentContext componentContext = ComponentContext.builder().build();
+	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().build();
 
 	/**
 	 * The list of components to update after an entity is selected
 	 */
 	private List<Component> componentsToUpdate = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private Supplier<T> createEntitySupplier = () -> service.createNewEntity();
 
 	/**
 	 * Mapping from custom component label to custom component
@@ -134,21 +132,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private Map<String, List<Component>> customComponentMap = new HashMap<>();
 
 	@Getter
-	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
-
-	@Getter
-	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
-
-	@Getter
-	@Setter
-	private Consumer<T> customSaveConsumer;
-
-	@Getter
 	@Setter
 	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
 
 	@Getter
-	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
+	@Setter
+	private Supplier<Boolean> editAllowed = () -> true;
 
 	/**
 	 * The entity model of the entity or entities to display
@@ -156,12 +145,16 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	private final EntityModel<T> entityModel;
 
-	/**
-	 * The entity models used for rendering the individual fields (mostly useful for
-	 * lookup components)
-	 */
+//	/**
+//	 * The entity models used for rendering the individual fields (mostly useful for
+//	 * lookup components)
+//	 */
+//	@Getter
+//	private Map<String, String> fieldEntityModels = new HashMap<>();
+
 	@Getter
-	private Map<String, String> fieldEntityModels = new HashMap<>();
+	@Setter
+	private Function<String, String> findParentGroup;
 
 	/**
 	 * The form options that determine what options are available in the screen
@@ -169,17 +162,13 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	private FormOptions formOptions;
 
-	@Getter
-	@Setter
-	private GroupTogetherMode groupTogetherMode;
-
-	@Getter
-	@Setter
-	private Integer groupTogetherWidth;
-
-	@Getter
-	@Setter
-	private String maxEditFormWidth = SystemPropertyUtils.getDefaultMaxEditFormWidth();
+//	@Getter
+//	@Setter
+//	private GroupTogetherMode groupTogetherMode;
+//
+//	@Getter
+//	@Setter
+//	private Integer groupTogetherWidth;
 
 	@Getter
 	@Setter
@@ -198,9 +187,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Setter
 	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
-	@Getter
-	private BaseService<ID, T> service;
-
 	/**
 	 * Constructor
 	 *
@@ -214,26 +200,16 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		this.formOptions = formOptions;
 	}
 
-	public void addCustomConverter(AttributeModel attributeModel, Supplier<Converter<?, ?>> converter) {
-		customConverters.put(attributeModel, converter);
+	public void addCustomConverter(String path, Supplier<Converter<?, ?>> converter) {
+		componentContext.addCustomConverter(path, converter);
 	}
 
-	public void addCustomRequiredValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
-		customRequiredValidators.put(attributeModel, validator);
+	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
+		componentContext.addCustomRequiredValidator(path, validator);
 	}
 
-	public void addCustomValidator(AttributeModel attributeModel, Supplier<Validator<?>> validator) {
-		customValidators.put(attributeModel, validator);
-	}
-
-	/**
-	 * Sets a custom entity model to use for a certain field/property
-	 *
-	 * @param path      the path of the property
-	 * @param reference the unique ID of the entity model
-	 */
-	public final void addFieldEntityModel(String path, String reference) {
-		fieldEntityModels.put(path, reference);
+	public void addCustomValidator(String path, Supplier<Validator<?>> validator) {
+		componentContext.addCustomValidator(path, validator);
 	}
 
 	/**
@@ -253,6 +229,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 				((HasEnabled) component).setEnabled(enabled);
 			}
 		}
+	}
+
+	protected boolean checkEditAllowed() {
+		return getEditAllowed() == null ? true : getEditAllowed().get();
 	}
 
 	/**
@@ -280,27 +260,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public List<Component> getCustomComponents(String key) {
 		return customComponentMap.get(key);
 	}
-
+//
 //	/**
-//	 * Callback method that is called during the save process. Allows the developer
-//	 * to respond to a specific type of exception thrown in the service layer in a
-//	 * custom way
-//	 * 
-//	 * @param ex
-//	 * @return <code>true</code> if the exception was handled by this method, false
-//	 *         otherwise
+//	 * @param path the path to the attribute
+//	 * @return the field entity model reference for the specified attribute model
 //	 */
-//	protected boolean handleCustomException(RuntimeException ex) {
-//		return false;
+//	public String getFieldEntityModel(String path) {
+//		return componentContext.getFieldEntityModels.(path);
 //	}
-
-	/**
-	 * @param path the path to the attribute
-	 * @return the field entity model reference for the specified attribute model
-	 */
-	public String getFieldEntityModel(String path) {
-		return fieldEntityModels.get(path);
-	}
 
 	/**
 	 * Copies component settings to the edit form
@@ -308,28 +275,38 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param editForm the edit form
 	 */
 	protected void initEditForm(ModelBasedEditForm<ID, T> editForm) {
-		editForm.setCustomSaveConsumer(customSaveConsumer);
-		editForm.setFieldEntityModels(getFieldEntityModels());
-		editForm.setColumnThresholds(getColumnThresholds());
-		editForm.setMaxFormWidth(getMaxEditFormWidth());
-		editForm.setGroupTogetherMode(getGroupTogetherMode());
-		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
-		editForm.setAfterEntitySet(getAfterEntitySet());
-		editForm.setAfterEntitySelected(getAfterEntitySelected());
-		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
-		editForm.setAfterModeChanged(getAfterModeChanged());
-		editForm.setAfterTabSelected(getAfterTabSelected());
+		editForm.setComponentContext(componentContext);
+//		editForm.setCustomSaveConsumer(getCustomSaveConsumer());
+		// editForm.setFieldEntityModels(getFieldEntityModels());
+		// editForm.setColumnThresholds(getColumnThresholds());
+		// editForm.setMaxFormWidth(getMaxEditFormWidth());
+//		editForm.setGroupTogetherMode(getGroupTogetherMode());
+//		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
+//		editForm.setAfterEntitySet(getAfterEntitySet());
+//		editForm.setAfterEntitySelected(getAfterEntitySelected());
+//		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
+//		editForm.setAfterModeChanged(getAfterModeChanged());
+//		editForm.setAfterTabSelected(getAfterTabSelected());
 		editForm.setOnBackButtonClicked(getOnBackButtonClicked());
 
-		editForm.setCustomConverters(getCustomConverters());
-		editForm.setCustomValidators(getCustomValidators());
-		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
-		editForm.setAfterUploadCompleted(getAfterUploadCompleted());
+//		editForm.setCustomConverters(getCustomConverters());
+//		editForm.setCustomValidators(getCustomValidators());
+//		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
+//		editForm.setAfterUploadCompleted(getAfterUploadCompleted());
 		editForm.setPostProcessEditFields(getPostProcessEditFields());
 		editForm.setCustomSaveExceptionHandler(getCustomSaveExceptionHandler());
 
 		editForm.setParentGroupHeaders(getParentGroupHeaders());
 		editForm.setFindParentGroup(getFindParentGroup());
+		editForm.setEditAllowed(getEditAllowed());
+	}
+
+	public void setMaxEditFormWidth(String maxEditFormWidth) {
+		componentContext.setMaxEditFormWidth(maxEditFormWidth);
+	}
+
+	public void setEditColumnThresholds(List<String> columnThresholds) {
+		componentContext.setEditColumnThresholds(columnThresholds);
 	}
 
 	/**
@@ -361,14 +338,14 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		}
 	}
 
-	/**
-	 * Removes the custom field entity model for a certain attribute
-	 *
-	 * @param path the path to the attribute
-	 */
-	public final void removeFieldEntityModel(String path) {
-		fieldEntityModels.remove(path);
-	}
+//	/**
+//	 * Removes the custom field entity model for a certain attribute
+//	 *
+//	 * @param path the path to the attribute
+//	 */
+//	public final void removeFieldEntityModel(String path) {
+//		fieldEntityModels.remove(path);
+//	}
 
 	/**
 	 * Stores and registers a custom component
@@ -392,4 +369,45 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		customComponentMap.putIfAbsent(key, new ArrayList<>());
 		customComponentMap.get(key).add(component);
 	}
+
+	public void setCustomSaveConsumer(BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer) {
+		componentContext.setCustomSaveConsumer(customSaveConsumer);
+	}
+
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		componentContext.setGroupTogetherMode(groupTogetherMode);
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		componentContext.setGroupTogetherWidth(groupTogetherWidth);
+	}
+
+	public void addFieldEntityModel(String path, String reference) {
+		componentContext.addFieldEntityModel(path, reference);
+	}
+
+	public void setAfterEntitySelected(BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected) {
+		componentContext.setAfterEntitySelected(afterEntitySelected);
+	}
+
+	public void setAfterEntitySet(Consumer<T> afterEntitySet) {
+		componentContext.setAfterEntitySet(afterEntitySet);
+	}
+
+	public void setAfterLayoutBuilt(BiConsumer<HasComponents, Boolean> afterLayoutBuilt) {
+		componentContext.setAfterLayoutBuilt(afterLayoutBuilt);
+	}
+
+	public void setAfterModeChanged(BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged) {
+		componentContext.setAfterModeChanged(afterModeChanged);
+	}
+
+	public void setAfterTabSelected(Consumer<Integer> afterTabSelected) {
+		componentContext.setAfterTabSelected(afterTabSelected);
+	}
+
+	public void setAfterUploadCompleted(BiConsumer<String, byte[]> afterUploadCompleted) {
+		componentContext.setAfterUploadCompleted(afterUploadCompleted);
+	}
+
 }

@@ -74,7 +74,7 @@ public class TabWrapper extends DefaultVerticalLayout {
 	/**
 	 * Adds a selection change listener
 	 * 
-	 * @param listener
+	 * @param listener the listener to add
 	 * @return
 	 */
 	public Registration addSelectedChangeListener(ComponentEventListener<SelectedChangeEvent> listener) {
@@ -87,7 +87,7 @@ public class TabWrapper extends DefaultVerticalLayout {
 	 * @param caption     the caption of the tab
 	 * @param description the tool tip/description of the tab
 	 * @param component   the component to display inside the tab
-	 * @param icon        the icon (optional)
+	 * @param icon        the icon to display on the tab(optional)
 	 * @return
 	 */
 	public Tab addTab(String caption, String description, Component component, Icon icon) {

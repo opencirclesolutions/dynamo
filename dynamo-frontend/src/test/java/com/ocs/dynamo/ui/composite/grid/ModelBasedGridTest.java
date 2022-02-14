@@ -65,8 +65,10 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), false, true,
-				GridEditMode.SINGLE_ROW);
+		ComponentContext cc = ComponentContext.builder().editable(false).build();
+		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
+
+		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc);
 	}
 
 	@Test
@@ -77,8 +79,10 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), true, true,
-				GridEditMode.SIMULTANEOUS);
+		ComponentContext cc = ComponentContext.builder().editable(true).build();
+		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SIMULTANEOUS);
+
+		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc);
 	}
 
 	@Test
@@ -103,8 +107,12 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
+		ComponentContext cc = ComponentContext.builder().editable(false).build();
+		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
+
 		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model,
-				new HashMap<String, SerializablePredicate<?>>(), false, true, GridEditMode.SINGLE_ROW);
+				new HashMap<String, SerializablePredicate<?>>(), fo, cc);
+		grid.build();
 
 		assertTrue(grid.getColumnByKey("name").isVisible());
 

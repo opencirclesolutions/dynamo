@@ -30,6 +30,12 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 import lombok.experimental.UtilityClass;
 
+/**
+ * Utility class for creating callback providers
+ * 
+ * @author BasRutten
+ *
+ */
 @UtilityClass
 public class CallbackProviderHelper {
 

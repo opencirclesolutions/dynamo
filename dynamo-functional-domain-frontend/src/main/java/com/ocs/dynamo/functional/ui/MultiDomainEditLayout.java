@@ -20,6 +20,7 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
+import com.google.common.base.Predicate;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -91,9 +92,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	/**
 	 * The split layout that displays the currently selected domain
 	 */
+	@Getter
 	private ServiceBasedSplitLayout<?, ?> splitLayout;
 
-	private List<Component> toRegister = new ArrayList<>();
+	private List<Component> componentsToRegister = new ArrayList<>();
 
 	@Getter
 	@Setter
@@ -111,6 +113,14 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	@Setter
 	private Consumer<VerticalLayout> postProcessSplitLayout;
 
+	@Getter
+	@Setter
+	private Supplier<Boolean> editAllowed = () -> true;
+
+	@Getter
+	@Setter
+	private Predicate<Class<?>> deleteAllowed = clazz -> true;
+
 	/**
 	 * Constructor
 	 *
@@ -120,6 +130,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	public MultiDomainEditLayout(FormOptions formOptions, List<Class<? extends Domain>> domainClasses) {
 		this.formOptions = formOptions;
 		this.domainClasses = domainClasses;
+	}
+	
+	public boolean checkDeleteAllowed(Class<?> clazz) {
+		return deleteAllowed == null ? true : deleteAllowed.apply(clazz);
 	}
 
 	/**
@@ -198,7 +212,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		BaseService<Integer, T> baseService = (BaseService<Integer, T>) ServiceLocatorFactory.getServiceLocator()
 				.getServiceForEntity(domainClass);
 		if (baseService != null) {
-			toRegister.clear();
+			componentsToRegister.clear();
 			ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<Integer, T>(baseService,
 					getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
 					new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
@@ -211,34 +225,12 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 					return MultiDomainEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
 				}
 
-				@Override
-				protected boolean isEditAllowed() {
-					return MultiDomainEditLayout.this.isEditAllowed();
-				}
-
-//				@Override
-//				protected boolean mustEnableComponent(Component component, T selectedItem) {
-//					if (getRemoveButton() == component) {
-//						return isDeleteAllowed(getSelectedDomain());
-//					}
-//					return true;
-//				}
-
-//                @Override
-//                protected void postProcessButtonBar(FlexLayout buttonBar) {
-//                    MultiDomainEditLayout.this.postProcessButtonBar(buttonBar);
-//                }
-
-//				@Override
-//				protected void postProcessLayout(VerticalLayout main) {
-//					MultiDomainEditLayout.this.postProcessSplitLayout(main);
-//				}
 			};
 
 			layout.setPostProcessLayout(postProcessSplitLayout);
 			layout.setMustEnableComponent((component, t) -> {
 				if (layout.getRemoveButton() == component) {
-					return isDeleteAllowed(getSelectedDomain());
+					return deleteAllowed == null ? true : deleteAllowed.apply(getSelectedDomain());
 				}
 				return true;
 			});
@@ -248,11 +240,13 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 					value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),
 							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
 
+			layout.setEditAllowed(getEditAllowed());
+
 			// register afterwards so that we actually register for the current layout
 			// rather than the previous one
 			layout.build();
-			for (Component c : toRegister) {
-				layout.registerComponent(c);
+			for (Component comp : componentsToRegister) {
+				layout.registerComponent(comp);
 			}
 
 			return layout;
@@ -292,46 +286,13 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	}
 
 	/**
-	 * @return the currently selected split layout
-	 */
-	public ServiceBasedSplitLayout<?, ?> getSplitLayout() {
-		return splitLayout;
-	}
-
-	/**
-	 * Check if the deletion of domain values for a certain class is allowed
-	 *
-	 * @param clazz the class
-	 * @return
-	 */
-	protected boolean isDeleteAllowed(Class<?> clazz) {
-		return true;
-	}
-
-	/**
-	 * Indicates whether editing is allowed
-	 */
-	protected boolean isEditAllowed() {
-		return true;
-	}
-
-	/**
-	 * Post processes the split layout after it has been created
-	 *
-	 * @param main
-	 */
-	protected void postProcessSplitLayout(VerticalLayout main) {
-		// overwrite in subclasses
-	}
-
-	/**
 	 * Registers a component. The component will be disabled or enabled depending on
 	 * whether an item is selected
 	 *
 	 * @param button the button to register
 	 */
-	public void registerComponent(Component comp) {
-		toRegister.add(comp);
+	public final void registerComponent(Component comp) {
+		componentsToRegister.add(comp);
 	}
 
 	/**
@@ -348,7 +309,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 *
 	 * @param clazz the domain class
 	 */
-	public void selectDomain(Class<? extends Domain> clazz) {
+	public final void selectDomain(Class<? extends Domain> clazz) {
 		selectedDomain = clazz;
 		ServiceBasedSplitLayout<?, ?> layout = constructSplitLayout(clazz, formOptions);
 		selectedDomainLayout.replace(splitLayout, layout);

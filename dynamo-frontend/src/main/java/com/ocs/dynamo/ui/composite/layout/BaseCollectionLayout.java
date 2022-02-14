@@ -129,6 +129,10 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	@Setter
 	private Consumer<VerticalLayout> postProcessLayout;
 
+	@Getter
+	@Setter
+	private Consumer<GridWrapper<ID, T, U>> postProcessGridWrapper;
+
 	/**
 	 * Constructor
 	 * 
@@ -166,28 +170,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		this.sortOrders.add(sortOrder);
 	}
 
-//	/**
-//	 * Method that is called after the setEntity method is called. Can be used to
-//	 * fetch additional data if required. This method is called before the
-//	 * "afterDetailSelected" method is called
-//	 * 
-//	 * @param entity the entity
-//	 */
-//	protected void afterEntitySet(T entity) {
-//		// override in subclass
-//	}
-
-//	/**
-//	 * Callback method that is called after a tab has been selected in the tab sheet
-//	 * that is used in a detail view when the attribute group mode has been set to
-//	 * TABSHEET
-//	 * 
-//	 * @param tabIndex the zero-based index of the selected tab
-//	 */
-//	protected void afterTabSelected(int tabIndex) {
-//		// overwrite in subclasses
-//	}
-
 	/**
 	 * Throws away the grid wrapper, making sure it is reconstructed the next time
 	 * the layout is displayed
@@ -208,7 +190,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 			checkComponentState(null);
 			doAdd();
 		});
-		ab.setVisible(!getFormOptions().isHideAddButton() && isEditAllowed());
+		ab.setVisible(!getFormOptions().isHideAddButton() && checkEditAllowed());
 		return ab;
 	}
 
@@ -289,7 +271,11 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public GridWrapper<ID, T, U> getGridWrapper() {
 		if (gridWrapper == null) {
 			gridWrapper = constructGridWrapper();
-			postProcessGridWrapper(gridWrapper);
+
+			if (postProcessGridWrapper != null) {
+				postProcessGridWrapper.accept(gridWrapper);
+			}
+
 		}
 		return gridWrapper;
 	}
@@ -314,16 +300,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return Collections.unmodifiableList(sortOrders);
 	}
 
-	/**
-	 * Indicates whether editing is allowed. This defaults to TRUE but you can
-	 * overwrite it in subclasses if needed
-	 * 
-	 * @return
-	 */
-	protected boolean isEditAllowed() {
-		return true;
-	}
-
 	public boolean isSortEnabled() {
 		return sortEnabled;
 	}
@@ -338,16 +314,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		wrapper.setExportJoins(getExportJoins());
 	}
 
-//	/**
-//	 * Adds additional buttons to the main button bar (that appears below the
-//	 * results grid in a search layout, split layout, or tabular edit layout)
-//	 * 
-//	 * @param buttonBar the button bar
-//	 */
-//	protected void postProcessButtonBar(FlexLayout buttonBar) {
-//		// override in subclasses
-//	}
-
 	/**
 	 * Callback method that fires after the provider has been created. Override this
 	 * to modify data provider construction. This should rarely be needed.
@@ -357,37 +323,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	protected void postProcessDataProvider(DataProvider<U, SerializablePredicate<U>> provider) {
 		// override in subclasses
 	}
-
-//	/**
-//	 * Callback method that fires after the edit form has been created. Can be used
-//	 * to add extra validations or cross-field functionality. This method will only
-//	 * be called once
-//	 * 
-//	 * @param editForm the edit form
-//	 */
-//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-//		// override in subclasses
-//	}
-
-	/**
-	 * Callback method that fires after the search results grid wrapper
-	 * 
-	 * @param wrapper
-	 */
-	protected void postProcessGridWrapper(GridWrapper<ID, T, U> wrapper) {
-		// override in subclasses
-	}
-
-//	/**
-//	 * Callback method that is called after the entire layout has been constructed.
-//	 * Use this to e.g. add additional components to the bottom of the layout or to
-//	 * modify button captions
-//	 * 
-//	 * @param main the main layout
-//	 */
-//	protected void postProcessLayout(VerticalLayout main) {
-//		// override in subclasses
-//	}
 
 	/**
 	 * Sets the joins to use when retrieving a single object for use in a detail

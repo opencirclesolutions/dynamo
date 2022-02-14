@@ -59,7 +59,8 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			ComponentContext context, Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items,
 			List<SortOrder<?>> sortOrders) {
-		super(service, entityModel, QueryType.NONE, formOptions, context, null, fieldFilters, sortOrders, false);
+		super(service, entityModel, QueryType.NONE, formOptions, context.toBuilder().editable(false).build(), null,
+				fieldFilters, sortOrders);
 		this.items = items;
 	}
 

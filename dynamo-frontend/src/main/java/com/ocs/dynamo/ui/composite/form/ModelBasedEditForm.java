@@ -104,8 +104,6 @@ import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.Binding;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.server.StreamResource;
 
@@ -122,6 +120,8 @@ import lombok.Setter;
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends AbstractModelBasedForm<ID, T> implements NestedComponent {
 
+	private static final long serialVersionUID = 2201140375797069148L;
+
 	private static final String BACK_BUTTON_DATA = "backButton";
 
 	private static final String CANCEL_BUTTON_DATA = "cancelButton";
@@ -132,36 +132,40 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private static final String PREV_BUTTON_DATA = "prevButton";
 
+	private static final String REFRESH_BUTTON_DATA = "refreshButton";
+
 	private static final String SAVE_BUTTON_DATA = "saveButton";
 
-	private static final long serialVersionUID = 2201140375797069148L;
-
 	@Getter
 	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
-
-	@Getter
-	@Setter
-	private Consumer<T> afterEntitySet;
-
-	@Getter
-	@Setter
-	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-
-	@Getter
-	@Setter
-	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-
-	@Getter
-	@Setter
-	private Consumer<Integer> afterTabSelected;
-
-	/**
-	 * The code to be carried out after a file has been successfully uploaded
-	 */
-	@Getter
-	@Setter
-	private BiConsumer<String, byte[]> afterUploadCompleted;
+	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+//
+//	@Getter
+//	@Setter
+//	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
+//
+//	@Getter
+//	@Setter
+//	private Consumer<T> afterEntitySet;
+//
+//	@Getter
+//	@Setter
+//	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+//
+//	@Getter
+//	@Setter
+//	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
+//
+//	@Getter
+//	@Setter
+//	private Consumer<Integer> afterTabSelected;
+//
+//	/**
+//	 * The code to be carried out after a file has been successfully uploaded
+//	 */
+//	@Getter
+//	@Setter
+//	private BiConsumer<String, byte[]> afterUploadCompleted;
 
 	/**
 	 * Map for keeping track of which attributes have already been bound to a
@@ -185,35 +189,35 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Map<Boolean, Map<String, List<Button>>> buttons = new HashMap<>();
 
-	/**
-	 * The threshold values at which to start rendering extra columns
-	 */
-	@Getter
-	@Setter
-	private List<String> columnThresholds = new ArrayList<>();
+//	/**
+//	 * The threshold values at which to start rendering extra columns
+//	 */
+//	@Getter
+//	@Setter
+//	private List<String> columnThresholds = new ArrayList<>();
 
-	@Getter
-	@Setter
-	private Map<AttributeModel, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+//
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
 
-	@Getter
-	@Setter
-	private Map<AttributeModel, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
-
-	/**
-	 * Custom consumer that is to be called instead of the regular save behavior
-	 */
-	@Getter
-	@Setter
-	private Consumer<T> customSaveConsumer;
+//	/**
+//	 * Custom consumer that is to be called instead of the regular save behavior
+//	 */
+//	@Getter
+//	@Setter
+//	private Consumer<T> customSaveConsumer;
 
 	@Getter
 	@Setter
 	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
 
-	@Getter
-	@Setter
-	private Map<AttributeModel, Supplier<Validator<?>>> customValidators = new HashMap<>();
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
 
 	/**
 	 * Indicates whether all details tables for editing complex fields are valid
@@ -224,6 +228,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * The relations to fetch when selecting a single detail relation
 	 */
 	private FetchJoinInformation[] detailJoins;
+
+	@Getter
+	@Setter
+	private Supplier<Boolean> editAllowed = () -> true;
 
 	/**
 	 * The selected entity
@@ -260,15 +268,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Map<Boolean, Binder<T>> groups = new HashMap<>();
 
-	/**
-	 * The "group together" mode
-	 */
-	private GroupTogetherMode groupTogetherMode;
-
-	/**
-	 * Threshold width (pixels) for every group together column
-	 */
-	private Integer groupTogetherWidth;
+//	/**
+//	 * The "group together" mode
+//	 */
+//	private GroupTogetherMode groupTogetherMode;
+//
+//	/**
+//	 * Threshold width (pixels) for every group together column
+//	 */
+//	private Integer groupTogetherWidth;
 
 	/**
 	 * A map containing all the labels that were added - used to replace the label
@@ -279,11 +287,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private VerticalLayout mainEditLayout;
 
 	private VerticalLayout mainViewLayout;
-
-	/**
-	 * The maximum form width
-	 */
-	private String maxFormWidth;
 
 	/**
 	 * Whether the form is in nested mode
@@ -307,10 +310,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Setter
 	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
-	@Getter
-	@Setter
-	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
-
 	private Map<Boolean, Map<AttributeModel, Component>> previews = new HashMap<>();
 
 	private BaseService<ID, T> service;
@@ -326,9 +325,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private Map<Boolean, Span> titleLabels = new HashMap<>();
 
-	/**
-	 * Whether to display the component in view mode
-	 */
 	private boolean viewMode;
 
 	/**
@@ -346,14 +342,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		addClassName(DynamoConstants.CSS_MODEL_BASED_EDIT_FORM);
 
 		this.service = service;
-
-		// TODO: this likely doesn't any more
 		this.entity = entity;
 
 		Class<T> clazz = service.getEntityClass();
 
 		// open in view mode when this is requested, and it is not a new object
-		this.viewMode = !isEditAllowed() || (formOptions.isOpenInViewMode() && entity.getId() != null);
+		this.viewMode = !checkEditAllowed() || (formOptions.isOpenInViewMode() && entity.getId() != null);
 
 		// set up a bean field group for automatic binding and validation
 		Binder<T> binder = new BeanValidationBinder<>(clazz);
@@ -460,8 +454,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		wrapper.addSelectedChangeListener(event -> {
 			int index = event.getSource().getSelectedIndex();
 
-			if (afterTabSelected != null) {
-				afterTabSelected.accept(index);
+			if (getComponentContext().getAfterTabSelected() != null) {
+				getComponentContext().getAfterTabSelected().accept(index);
 			}
 
 			if (firstFields.get(index) != null) {
@@ -480,59 +474,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				});
 			}
 
-			if (afterUploadCompleted != null) {
-				upload.setAfterUploadCompleted(afterUploadCompleted);
+			if (getComponentContext().getAfterUploadCompleted() != null) {
+				upload.setAfterUploadCompleted(getComponentContext().getAfterUploadCompleted());
 			}
 		}
 	}
-
-//	/**
-//	 * Callback method that fires after the layout has been built for the first
-//	 * time.
-//	 * 
-//	 * @param layout   the layout
-//	 * @param viewMode whether the layout is currently is view mode
-//	 */
-//	protected void afterLayoutBuilt(HasComponents layout, boolean viewMode) {
-//		// after the layout
-//	}
-
-//	/**
-//	 * Callback method that fires after the view mode has been changed
-//	 * 
-//	 * @param viewMode the view mode
-//	 */
-//	protected void afterModeChanged(boolean viewMode) {
-//		// overwrite in subclasses
-//	}
-
-//	/**
-//	 * Callback method that fires after a tab has been selected (when multiple tabs
-//	 * are displayed when attribute group mode TABSHEET is used)
-//	 * 
-//	 * @param tabIndex the index of the selected tab
-//	 */
-//	protected void afterTabSelected(int tabIndex) {
-//		// overwrite in subclasses
-//	}
-
-//	/**
-//	 * Callback method that fires after the user presses the Back button
-//	 */
-//	protected void back() {
-//		// overwrite in subclasses
-//	}
-
-//	/**
-//	 * Callback method that fires after the user is done editing an entity
-//	 *
-//	 * @param cancel    whether the user cancelled the editing
-//	 * @param newObject whether the object is a new object
-//	 * @param entity    the entity
-//	 */
-//	protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-//		// override in subclass
-//	}
 
 	/**
 	 * Main build method - lazily constructs the layout for either edit or view mode
@@ -540,8 +486,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Override
 	public void build() {
 
-		if (entity != null && afterEntitySet != null) {
-			afterEntitySet.accept(entity);
+		if (entity != null && getComponentContext().getAfterEntitySet() != null) {
+			getComponentContext().getAfterEntitySet().accept(entity);
 		}
 
 		if (isViewMode()) {
@@ -700,11 +646,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setDefaultValues();
 		disableCreateOnlyFields();
 
-		if (afterLayoutBuilt != null) {
-			afterLayoutBuilt.accept(form, isViewMode());
+		if (getComponentContext().getAfterLayoutBuilt() != null) {
+			getComponentContext().getAfterLayoutBuilt().accept(form, isViewMode());
 		}
 
 		return layout;
+	}
+
+	private boolean checkEditAllowed() {
+		return editAllowed == null ? true : editAllowed.get();
 	}
 
 	/**
@@ -790,7 +740,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			if (entity.getId() != null) {
 				entity = service.fetchById(entity.getId(), getDetailJoins());
 			}
-			// afterEditDone(true, entity.getId() == null, entity);
 
 			if (afterEditDone != null) {
 				afterEditDone.accept(true, entity.getId() == null, entity);
@@ -806,7 +755,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		buttonBar.add(cancelButton);
 		storeButton(CANCEL_BUTTON_DATA, cancelButton);
 
-		// create the save button
 		if (!isViewMode()) {
 			Button saveButton = constructSaveButton(bottom);
 			buttonBar.add(saveButton);
@@ -819,7 +767,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		editButton.addClickListener(event -> setViewMode(false));
 		buttonBar.add(editButton);
 		storeButton(EDIT_BUTTON_DATA, editButton);
-		editButton.setVisible(isViewMode() && getFormOptions().isEditAllowed() && isEditAllowed());
+		editButton.setVisible(isViewMode() && getFormOptions().isEditAllowed() && checkEditAllowed());
+
+		if (isViewMode() && getFormOptions().isShowRefreshButton()) {
+			Button refreshButton = constructRefreshButton();
+			buttonBar.add(refreshButton);
+		}
 
 		// button for moving to the previous record
 		Button prevButton = new Button(message("ocs.previous"));
@@ -852,8 +805,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		buttonBar.add(nextButton);
 		prevButton.setVisible(isSupportsIteration() && getFormOptions().isShowPrevButton() && entity.getId() != null);
 		nextButton.setVisible(isSupportsIteration() && getFormOptions().isShowNextButton() && entity.getId() != null);
-
-		// postProcessButtonBar(buttonBar, isViewMode());
 
 		if (postProcessButtonBar != null) {
 			postProcessButtonBar.accept(buttonBar, isViewMode());
@@ -950,8 +901,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
 
 				fieldFactory.addConvertersAndValidators(builder, attributeModel, context,
-						getCustomConverter(attributeModel), getCustomValidator(attributeModel),
-						getCustomRequiredValidator(attributeModel));
+						getComponentContext().findCustomConverter(attributeModel),
+						getComponentContext().findCustomValidator(attributeModel),
+						getComponentContext().findCustomRequiredValidator(attributeModel));
 				builder.bind(attributeModel.getPath());
 			}
 
@@ -970,6 +922,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				rowLayout.addClassName(DynamoConstants.CSS_GROUPTOGETHER_LAYOUT);
 
 				List<ResponsiveStep> steps = new ArrayList<>();
+
+				GroupTogetherMode groupTogetherMode = getComponentContext().getGroupTogetherMode();
+				Integer groupTogetherWidth = getComponentContext().getGroupTogetherWidth();
 
 				GroupTogetherMode gtm = groupTogetherMode != null ? groupTogetherMode
 						: SystemPropertyUtils.getDefaultGroupTogetherMode();
@@ -1154,6 +1109,21 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Constructs a button that can be used to refresh the screen
+	 * 
+	 * @return the button
+	 */
+	private Button constructRefreshButton() {
+		Button refreshButton = new Button(message("ocs.refresh"));
+		refreshButton.setIcon(VaadinIcon.RECYCLE.create());
+		storeButton(REFRESH_BUTTON_DATA, refreshButton);
+		refreshButton.addClickListener(event -> {
+			setEntity(service.fetchById(entity.getId(), getDetailJoins()));
+		});
+		return refreshButton;
+	}
+
+	/**
 	 * Constructs the save button
 	 *
 	 * @param bottom indicates whether this is the button at the bottom of the
@@ -1173,8 +1143,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						service.validate(entity);
 						showSaveConfirmDialog();
 					} else {
+						BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer = getComponentContext()
+								.getCustomSaveConsumer();
 						if (customSaveConsumer != null) {
-							customSaveConsumer.accept(entity);
+							customSaveConsumer.accept(this, entity);
 						} else {
 							doSave();
 						}
@@ -1240,7 +1212,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			afterEditDone.accept(false, isNew, getEntity());
 		}
 
-		// afterEditDone(false, isNew, getEntity());
 	}
 
 	/**
@@ -1254,16 +1225,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return Collections.unmodifiableList(list == null ? new ArrayList<>() : list);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private Validator findCustomValidator(AttributeModel attributeModel,
-			Map<AttributeModel, Supplier<Validator<?>>> map) {
-		Supplier<Validator<?>> supplier = map.get(attributeModel);
-		if (supplier != null) {
-			Validator<?> validator = supplier.get();
-			return validator;
-		}
-		return null;
-	}
+//	@SuppressWarnings("rawtypes")
+//	private Validator findCustomValidator(AttributeModel attributeModel, Map<String, Supplier<Validator<?>>> map) {
+//		Supplier<Validator<?>> supplier = map.get(attributeModel.getPath());
+//		if (supplier != null) {
+//			Validator<?> validator = supplier.get();
+//			return validator;
+//		}
+//		return null;
+//	}
 
 	public CollapsiblePanel getAttributeGroupPanel(String key) {
 		Object c = attributeGroups.get(isViewMode()).get(key);
@@ -1295,25 +1265,25 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return filterButtons(CANCEL_BUTTON_DATA);
 	}
 
-	@SuppressWarnings("rawtypes")
-	private Converter getCustomConverter(AttributeModel attributeModel) {
-		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel);
-		if (supplier != null) {
-			Converter<?, ?> converter = supplier.get();
-			return converter;
-		}
-		return null;
-	}
+//	@SuppressWarnings("rawtypes")
+//	private Converter findCustomConverter(AttributeModel attributeModel) {
+//		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel.getPath());
+//		if (supplier != null) {
+//			Converter<?, ?> converter = supplier.get();
+//			return converter;
+//		}
+//		return null;
+//	}
 
-	@SuppressWarnings("rawtypes")
-	private Validator getCustomRequiredValidator(AttributeModel attributeModel) {
-		return findCustomValidator(attributeModel, customRequiredValidators);
-	}
-
-	@SuppressWarnings("rawtypes")
-	private Validator getCustomValidator(AttributeModel attributeModel) {
-		return findCustomValidator(attributeModel, customValidators);
-	}
+//	@SuppressWarnings("rawtypes")
+//	private Validator getCustomRequiredValidator(AttributeModel attributeModel) {
+//		return findCustomValidator(attributeModel, customRequiredValidators);
+//	}
+//
+//	@SuppressWarnings("rawtypes")
+//	private Validator getCustomValidator(AttributeModel attributeModel) {
+//		return findCustomValidator(attributeModel, customValidators);
+//	}
 
 	public FetchJoinInformation[] getDetailJoins() {
 		return detailJoins;
@@ -1400,14 +1370,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return groups.get(viewMode).getFields().collect(Collectors.toList());
 	}
 
-	public GroupTogetherMode getGroupTogetherMode() {
-		return groupTogetherMode;
-	}
-
-	public Integer getGroupTogetherWidth() {
-		return groupTogetherWidth;
-	}
-
 	/**
 	 * Returns a label for a property
 	 * 
@@ -1420,10 +1382,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			return labels.get(isViewMode()).get(am);
 		}
 		return null;
-	}
-
-	public String getMaxFormWidth() {
-		return maxFormWidth;
 	}
 
 	public List<Button> getNextButtons() {
@@ -1487,6 +1445,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return null;
 	}
 
+	public List<Button> getRefreshButtons() {
+		return filterButtons(REFRESH_BUTTON_DATA);
+	}
+
 	public List<Button> getSaveButtons() {
 		return filterButtons(SAVE_BUTTON_DATA);
 	}
@@ -1542,14 +1504,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return c != null && isGroupVisible(c);
 	}
 
-	/**
-	 * Indicates whether it is allowed to edit this component
-	 *
-	 * @return
-	 */
-	protected boolean isEditAllowed() {
-		return true;
-	}
+//	/**
+//	 * Indicates whether it is allowed to edit this component
+//	 *
+//	 * @return
+//	 */
+//	protected boolean isEditAllowed() {
+//		return true;
+//	}
 
 	/**
 	 * Check if a certain attribute group is visible
@@ -1575,25 +1537,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public boolean isSupportsIteration() {
 		return supportsIteration;
 	}
-
-//	/**
-//	 * Post-processes the button bar that is displayed above/below the edit form
-//	 *
-//	 * @param buttonBar the button bar
-//	 * @param viewMode
-//	 */
-//	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-//		// overwrite in subclasses
-//	}
-
-//	/**
-//	 * Post-processes any edit fields- this method does nothing by default but must
-//	 * be used to call the postProcessEditFields callback method on an enclosing
-//	 * component
-//	 */
-//	protected void postProcessEditFields() {
-//		// overwrite in subclasses
-//	}
 
 	/**
 	 * Check if the form is valid
@@ -1824,8 +1767,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			field.assignEntity(this.entity);
 		}
 
-		if (afterEntitySet != null) {
-			afterEntitySet.accept(entity);
+		if (getComponentContext().getAfterEntitySet() != null) {
+			getComponentContext().getAfterEntitySet().accept(entity);
 		}
 
 		setViewMode(getFormOptions().isOpenInViewMode() && entity.getId() != null, checkIterationButtons);
@@ -1852,18 +1795,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		triggerCascadeListeners();
 
-		if (afterEntitySelected != null) {
-			afterEntitySelected.accept(this, entity);
+		if (getComponentContext().getAfterEntitySelected() != null) {
+			getComponentContext().getAfterEntitySelected().accept(this, entity);
 		}
 
-	}
-
-	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
-		this.groupTogetherMode = groupTogetherMode;
-	}
-
-	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
-		this.groupTogetherWidth = groupTogetherWidth;
 	}
 
 	/**
@@ -1914,10 +1849,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	public void setMaxFormWidth(String maxFormWidth) {
-		this.maxFormWidth = maxFormWidth;
-	}
-
 	public void setNestedMode(boolean nestedMode) {
 		this.nestedMode = nestedMode;
 	}
@@ -1931,9 +1862,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private void setResponsiveSteps(HasComponents comp) {
 		if (comp instanceof FormLayout) {
 			FormLayout form = (FormLayout) comp;
-			if (getMaxFormWidth() != null) {
-				form.setMaxWidth(getMaxFormWidth());
+			if (getComponentContext().getMaxEditFormWidth() != null) {
+				form.setMaxWidth(getComponentContext().getMaxEditFormWidth());
 			}
+
+			List<String> columnThresholds = getComponentContext().getEditColumnThresholds();
 
 			if (columnThresholds == null || columnThresholds.isEmpty()) {
 				columnThresholds = SystemPropertyUtils.getDefaultEditColumnThresholds();
@@ -1983,7 +1916,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		boolean oldMode = this.viewMode;
 
 		// check what the new view mode must become and adapt the screen
-		this.viewMode = !isEditAllowed() || viewMode;
+		this.viewMode = !checkEditAllowed() || viewMode;
 
 		groups.get(isViewMode()).setBean(entity);
 
@@ -2020,8 +1953,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		resetComponentErrors();
 		if (oldMode != this.viewMode) {
-			if (afterModeChanged != null) {
-				afterModeChanged.accept(this, isViewMode());
+			if (getComponentContext().getAfterModeChanged() != null) {
+				getComponentContext().getAfterModeChanged().accept(this, isViewMode());
 			}
 		}
 	}
@@ -2033,8 +1966,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(),
 				getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
 					try {
+						BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer = getComponentContext()
+								.getCustomSaveConsumer();
 						if (customSaveConsumer != null) {
-							customSaveConsumer.accept(entity);
+							customSaveConsumer.accept(this, entity);
 						} else {
 							doSave();
 						}

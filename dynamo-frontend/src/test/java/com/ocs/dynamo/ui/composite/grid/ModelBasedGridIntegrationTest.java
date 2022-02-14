@@ -54,8 +54,12 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 				entityModelFactory.getModel(TestEntity.class));
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
+		ComponentContext cc = ComponentContext.builder().editable(false).build();
+		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
+
 		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model,
-				new HashMap<String, SerializablePredicate<?>>(), false, true, GridEditMode.SINGLE_ROW);
+				new HashMap<String, SerializablePredicate<?>>(), fo, cc);
+		grid.build();
 
 		assertEquals(17, grid.getColumns().size());
 		assertNotNull(grid.getDataProvider().getId(entity));

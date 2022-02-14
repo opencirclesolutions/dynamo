@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -42,6 +43,9 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Base class for layout that support a search form and result grid
  * 
@@ -55,40 +59,50 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	private static final long serialVersionUID = 366639924823921266L;
 
-	/**
-	 * The default filters that are always apply to any query
-	 */
+	@Getter
+	@Setter
+	private Runnable afterAdvancedModeToggled;
+
+	@Getter
+	@Setter
+	private Runnable afterClear = () -> {
+	};
+
+	@Getter
+	@Setter
+	private Consumer<Boolean> afterSearchFieldToggle = b -> {
+	};
+
+	@Getter
+	@Setter
+	private Runnable afterSearchPerformed = () -> {
+	};
+
 	private List<SerializablePredicate<T>> defaultFilters;
 
-	/**
-	 * The main layout (in search mode)
-	 */
 	private VerticalLayout mainSearchLayout;
 
-	/**
-	 * The query type
-	 */
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessSearchButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> postProcessSearchFormLayout;
+
 	private QueryType queryType;
 
-	/**
-	 * The search form
-	 */
 	private AbstractModelBasedSearchForm<ID, T> searchForm;
 
-	/**
-	 * Indicates whether the search layout has been constructed yet
-	 */
 	private boolean searchLayoutConstructed;
 
-	/**
-	 * The layout that contains the grid that contains the search results
-	 */
 	private VerticalLayout searchResultsLayout;
 
-	/**
-	 * The currently selected items in the search results grid
-	 */
 	private Collection<T> selectedItems;
+
+	@Getter
+	@Setter
+	private Runnable validateBeforeSearch;
 
 	/**
 	 * Constructor
@@ -112,30 +126,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Callback method that fires after all search filters have been cleared
-	 */
-	protected void afterClear() {
-		// overwrite in subclasses
-	}
-
-	/**
-	 * Callback method that fires after the visibility of the search form has been
-	 * toggled
+	 * TODO: change to lambda?
 	 * 
-	 * @param visible whether the search form is currently visible
-	 */
-	protected void afterSearchFieldToggle(boolean visible) {
-		// overwrite in subclasses
-	}
-
-	/**
-	 * Callback method that fires after a search has been performed
-	 */
-	protected void afterSearchPerformed() {
-		// overwrite in subclasses
-	}
-
-	/**
 	 * Callback method that fires just before performing a search. Can be used to
 	 * perform any actions that are necessary before carrying out a search.
 	 * 
@@ -163,7 +155,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				searchLayoutConstructed = true;
 			}
 
-			// listen to a click on the clear button
 			mainSearchLayout.add(getSearchForm());
 			if (getSearchForm().getClearButton() != null) {
 				if (!getFormOptions().isSearchImmediately()) {
@@ -182,13 +173,21 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 						getSearchForm().setAfterClearConsumer(e -> {
 							setSelectedItem(null);
 							checkComponentState(getSelectedItem());
-							afterClear();
+							// afterClear();
+
+							if (afterClear != null) {
+								afterClear.run();
+							}
 						});
 					} else {
 						getSearchForm().getClearButton().addClickListener(e -> {
 							setSelectedItem(null);
 							checkComponentState(getSelectedItem());
-							afterClear();
+							// afterClear();
+
+							if (afterClear != null) {
+								afterClear.run();
+							}
 						});
 					}
 				}
@@ -260,7 +259,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		searchLayoutConstructed = false;
 		setSelectedItem(null);
 		checkComponentState(getSelectedItem());
-		afterClear();
+		if (afterClear != null) {
+			afterClear.run();
+		}
 	}
 
 	/**
@@ -285,7 +286,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	protected final Button constructEditButton() {
 		Button eb = new Button(
-				(!getFormOptions().isEditAllowed() || !isEditAllowed()) ? message("ocs.view") : message("ocs.edit"));
+				(!getFormOptions().isEditAllowed() || !checkEditAllowed()) ? message("ocs.view") : message("ocs.edit"));
 		eb.setIcon(VaadinIcon.PENCIL.create());
 		eb.addClickListener(e -> {
 			if (getSelectedItem() != null) {
@@ -309,7 +310,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (!searchLayoutConstructed) {
 			// construct search screen if it is not there yet
 			try {
-				validateBeforeSearch();
+				if (validateBeforeSearch != null) {
+					validateBeforeSearch.run();
+				}
+
 				searchResultsLayout.removeAll();
 				clearGridWrapper();
 				constructSearchLayout();
@@ -317,7 +321,11 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				getSearchForm().setSearchable(getGridWrapper());
 				searchResultsLayout.remove(noSearchYetLabel);
 				searchLayoutConstructed = true;
-				afterSearchPerformed();
+				// afterSearchPerformed();
+
+				if (afterSearchPerformed != null) {
+					afterSearchPerformed.run();
+				}
 			} catch (OCSValidationException ex) {
 				showErrorNotification(ex.getErrors().get(0));
 			}
@@ -325,17 +333,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	protected final Button constructRemoveButton() {
-		Button rb = new RemoveButton(this, message("ocs.remove"), VaadinIcon.TRASH.create(), () -> removeEntity(),
-				entity -> FormatUtils.formatEntity(getEntityModel(), entity));
-		// rb.setIcon(VaadinIcon.TRASH.create());
-		rb.setVisible(isEditAllowed() && getFormOptions().isShowRemoveButton());
-		return rb;
+		Button removeButton = new RemoveButton(this, message("ocs.remove"), VaadinIcon.TRASH.create(),
+				() -> removeEntity(), entity -> FormatUtils.formatEntity(getEntityModel(), entity));
+		removeButton.setVisible(checkEditAllowed() && getFormOptions().isShowRemoveButton());
+		return removeButton;
 	}
 
 	/**
 	 * Constructs the search form - implement in subclasses
 	 * 
-	 * @return
+	 * @return the constructed form
 	 */
 	protected abstract AbstractModelBasedSearchForm<ID, T> constructSearchForm();
 
@@ -471,6 +478,16 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	public Collection<T> getSelectedItems() {
 		return selectedItems;
+	}
+
+	protected void initSearchForm(AbstractModelBasedSearchForm<ID, T> searchForm) {
+		searchForm.setComponentContext(getComponentContext());
+		searchForm.setAfterSearchPerformed(getAfterSearchPerformed());
+		searchForm.setAfterSearchFieldToggle(getAfterSearchFieldToggle());
+		searchForm.setValidateBeforeSearch(getValidateBeforeSearch());
+		searchForm.setPostProcessButtonBar(getPostProcessSearchButtonBar());
+		searchForm.setPostProcessLayout(getPostProcessSearchFormLayout());
+		searchForm.setAfterAdvancedModeToggled(getAfterAdvancedModeToggled());
 	}
 
 	/**
@@ -635,12 +652,4 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param auxValue   the auxiliary value (upper bound)
 	 */
 	public abstract void setSearchValue(String propertyId, Object value, Object auxValue);
-
-	/**
-	 * Validate before a search is carried out - if the search criteria are not
-	 * correctly set, throw an OCSValidationException to abort the search process
-	 */
-	public void validateBeforeSearch() {
-		// overwrite in subclasses
-	}
 }

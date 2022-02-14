@@ -14,22 +14,20 @@
 package com.ocs.dynamo.domain.model.impl;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
-import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+import com.vaadin.flow.component.textfield.EmailField;
 
 /**
- * Component creator used for creating a text field for managing an attribute of
- * type String
+ * 
+ * Component creator that is used for creating a text field with e-mail
+ * validation
  * 
  * @author BasRutten
  *
  */
-public class TextFieldComponentCreator implements SimpleComponentCreator {
+public class EmailFieldComponentCreator implements SimpleComponentCreator {
 
 	@Override
 	public boolean supports(AttributeModel attributeModel, FieldCreationContext context) {
@@ -40,24 +38,16 @@ public class TextFieldComponentCreator implements SimpleComponentCreator {
 		}
 
 		// only for String and number
-		if (!(String.class.equals(attributeModel.getType()) || NumberUtils.isNumeric(attributeModel.getType()))) {
+		if (!String.class.equals(attributeModel.getType())) {
 			return false;
 		}
 
-		return context.isSearch() || context.isEditableGrid()
-				|| AttributeTextFieldMode.TEXTFIELD.equals(attributeModel.getTextFieldMode());
+		return !context.isSearch() && attributeModel.isEmail();
 	}
 
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
-		return new TextField();
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public <U, V> void addConverters(AttributeModel attributeModel, BindingBuilder<U, V> builder) {
-		BindingBuilder<U, String> sBuilder = (BindingBuilder<U, String>) builder;
-		addTextFieldConverters(attributeModel, sBuilder);
+		return new EmailField();
 	}
 
 }

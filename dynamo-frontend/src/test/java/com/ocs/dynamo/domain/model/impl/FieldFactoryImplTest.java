@@ -21,8 +21,8 @@ import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
+import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
@@ -37,11 +37,10 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -275,17 +274,16 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	@Test
 	public void testEmail() {
 		Component ac = constructField2("email", false, false);
+		assertTrue(ac instanceof EmailField);
+	}
+	
+	/**
+	 * E-mail field in search mode
+	 */
+	@Test
+	public void testEmailSearhcMode() {
+		Component ac = constructField2("email", true, false);
 		assertTrue(ac instanceof TextField);
-
-		TextField tf = (TextField) ac;
-
-		Binder<TestEntity2> binder = new BeanValidationBinder<>(TestEntity2.class);
-		TestEntity2 t2 = new TestEntity2();
-		binder.setBean(t2);
-		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-
-		fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"),
-				FieldCreationContext.create().build(), null, null, null);
 	}
 
 	/**
@@ -376,8 +374,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	@Test
 	public void testConstructEntityComboBoxMultipleSearch() {
 		EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
-		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel("testEntityAlt"))
-				.search(true).build();
+		FieldCreationContext context = FieldCreationContext.create()
+				.attributeModel(em.getAttributeModel("testEntityAlt")).search(true).build();
 		assertDoesNotThrow(() -> fieldFactory.constructField(context));
 	}
 

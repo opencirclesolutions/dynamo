@@ -20,6 +20,7 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.vaadin.flow.component.grid.Grid.SelectionMode;
 
 /**
  * Parameter object that can be passed along when creating a page - this object
@@ -67,6 +68,11 @@ public class FormOptions implements Serializable {
 	private boolean detailsGridSearchMode;
 
 	/**
+	 * The selection mode to use in the grid
+	 */
+	private SelectionMode detailsGridSelectionMode = SelectionMode.SINGLE;
+
+	/**
 	 * Whether the columns in a details edit grid are sortable
 	 */
 	private boolean detailsGridSortable = SystemPropertyUtils.getDefaultDetailsGridSortable();
@@ -88,7 +94,7 @@ public class FormOptions implements Serializable {
 	private boolean editAllowed = true;
 
 	/**
-	 * Whether to enabled advanced search mode
+	 * Whether to enabled advanced search mode in a search layout
 	 */
 	private boolean enableAdvancedSearchMode;
 
@@ -187,6 +193,12 @@ public class FormOptions implements Serializable {
 	private boolean showEditFormCaption = true;
 
 	/**
+	 * Whether to display a panel containing the item that is selected in a grid,
+	 * below that grid
+	 */
+	private boolean showGridDetailsPanel;
+
+	/**
 	 * Whether to display a "next" button inside an edit form
 	 */
 	private boolean showNextButton;
@@ -213,6 +225,11 @@ public class FormOptions implements Serializable {
 	private boolean showSearchAnyButton;
 
 	/**
+	 * Whether to show a refresh button in an edit form
+	 */
+	private boolean showRefreshButton;
+
+	/**
 	 * Whether to display a button for toggling search fields
 	 */
 	private boolean showToggleButton;
@@ -221,12 +238,6 @@ public class FormOptions implements Serializable {
 	 * Whether to start the search screen in advanced mode
 	 */
 	private boolean startInAdvancedMode;
-
-	/**
-	 * Whether to display a panel containing the item that is selected in a grid,
-	 * below that grid
-	 */
-	private boolean showGridDetailsPanel;
 
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
@@ -271,6 +282,10 @@ public class FormOptions implements Serializable {
 		return attributeGroupMode;
 	}
 
+	public SelectionMode getDetailsGridSelectionMode() {
+		return detailsGridSelectionMode;
+	}
+
 	public ExportMode getExportMode() {
 		return exportMode;
 	}
@@ -293,6 +308,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isConfirmSave() {
 		return confirmSave;
+	}
+
+	public boolean isDetailsEditLayoutButtonsOnSameRow() {
+		return detailsEditLayoutButtonsOnSameRow;
 	}
 
 	public boolean isDetailsGridSearchMode() {
@@ -373,6 +392,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isShowEditFormCaption() {
 		return showEditFormCaption;
+	}
+
+	public boolean isShowGridDetailsPanel() {
+		return showGridDetailsPanel;
 	}
 
 	public boolean isShowNextButton() {
@@ -466,6 +489,11 @@ public class FormOptions implements Serializable {
 	 */
 	public FormOptions setDetailsGridSearchMode(boolean detailsGridSearchMode) {
 		this.detailsGridSearchMode = detailsGridSearchMode;
+		return this;
+	}
+
+	public FormOptions setDetailsGridSelectionMode(SelectionMode detailsGridSelectionMode) {
+		this.detailsGridSelectionMode = detailsGridSelectionMode;
 		return this;
 	}
 
@@ -700,6 +728,11 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
+		this.showGridDetailsPanel = showDetailsGridDetailPanel;
+		return this;
+	}
+
 	/**
 	 * Shorthand method for showing/hiding the previous and next buttons
 	 *
@@ -747,17 +780,13 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
-	public boolean isShowGridDetailsPanel() {
-		return showGridDetailsPanel;
+	public boolean isShowRefreshButton() {
+		return showRefreshButton;
 	}
 
-	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
-		this.showGridDetailsPanel = showDetailsGridDetailPanel;
+	public FormOptions setShowRefreshButton(boolean showRefreshButton) {
+		this.showRefreshButton = showRefreshButton;
 		return this;
-	}
-
-	public boolean isDetailsEditLayoutButtonsOnSameRow() {
-		return detailsEditLayoutButtonsOnSameRow;
 	}
 
 }

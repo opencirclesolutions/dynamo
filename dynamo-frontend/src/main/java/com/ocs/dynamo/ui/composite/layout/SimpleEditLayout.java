@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
 
+import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -75,6 +76,10 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	@Setter
 	private FetchJoinInformation[] joins;
 
+	@Getter
+	@Setter
+	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+
 	private VerticalLayout main;
 
 	/**
@@ -90,26 +95,23 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			ComponentContext context, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
+		setComponentContext(context);
 		setMargin(false);
 		setClassName(DynamoConstants.CSS_SIMPLE_EDIT_LAYOUT);
 		this.entity = entity;
 		this.joins = joins;
 	}
 
-	/**
-	 * Method that is called after the user has completed (or cancelled) an edit
-	 * action
-	 *
-	 * @param cancel    whether the edit was cancelled
-	 * @param newEntity whether a new entity was being edited
-	 * @param entity    the entity that has just been edited
-	 */
-	protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-		if (entity.getId() != null) {
+	protected final void handleEditDone(boolean cancel, boolean newEntity, T entity) {
+		if (entity.getId() != null || getComponentContext().isPopup()) {
 			// reset to view mode
 			if (getFormOptions().isOpenInViewMode()) {
 				editForm.setViewMode(true);
 				checkComponentState(getEntity());
+			}
+
+			if (afterEditDone != null) {
+				afterEditDone.accept(cancel, newEntity, entity);
 			}
 		} else {
 			// new entity
@@ -135,7 +137,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			// create new entity if it does not exist yet
 			if (entity == null) {
-				entity = createEntity();
+				entity = getCreateEntitySupplier().get();
 			}
 
 			// there is just one component here, so the screen mode is always
@@ -144,22 +146,16 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
 					fieldFilters) {
 
-//				@Override
-//				protected void afterEditDone(boolean cancel, boolean newObject, T entity) {
-//					setEntity(entity);
-//					SimpleEditLayout.this.afterEditDone(cancel, newObject, entity);
-//				}
-
 				@Override
 				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
 						boolean viewMode) {
 					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
 				}
 
-				@Override
-				protected boolean isEditAllowed() {
-					return SimpleEditLayout.this.isEditAllowed();
-				}
+//				@Override
+//				protected boolean isEditAllowed() {
+//					return SimpleEditLayout.this.isEditAllowed();
+//				}
 
 			};
 
@@ -169,7 +165,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			editForm.setAfterEditDone((cancel, isNew, ent) -> {
 				setEntity(ent);
-				SimpleEditLayout.this.afterEditDone(cancel, isNew, ent);
+				handleEditDone(cancel, isNew, ent);
 			});
 
 			editForm.build();
@@ -179,55 +175,15 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			postProcessLayout(main);
 			add(main);
 
-			if (getAfterEntitySelected() != null) {
-				getAfterEntitySelected().accept(editForm, getEntity());
+			if (getComponentContext().getAfterEntitySelected() != null) {
+				getComponentContext().getAfterEntitySelected().accept(editForm, getEntity());
 			}
 			checkComponentState(getEntity());
 		}
 	}
 
-	/**
-	 * Callback method that fires when the new entity is being created
-	 *
-	 * @return
-	 */
-	protected T createEntity() {
-		return getService().createNewEntity();
-	}
-
 	public void doSave() {
 		this.editForm.doSave();
-	}
-
-//	/**
-//	 * Returns the parent group (which must be returned by the getParentGroupHeaders
-//	 * method) to which a certain child group belongs
-//	 *
-//	 * @param childGroup the name of the child group
-//	 * @return
-//	 */
-//	protected String getParentGroup(String childGroup) {
-//		// overwrite in subclasses if needed
-//		return null;
-//	}
-//
-//	/**
-//	 * Returns a list of additional group headers that can be used to add an extra
-//	 * nesting layer to the layout
-//	 *
-//	 * @return
-//	 */
-//	protected String[] getParentGroupHeaders() {
-//		// overwrite in subclasses if needed
-//		return null;
-//	}
-
-	/**
-	 *
-	 * @return
-	 */
-	protected boolean isEditAllowed() {
-		return true;
 	}
 
 	/**
@@ -244,26 +200,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		super.onAttach(attachEvent);
 		build();
 	}
-
-//	/**
-//	 * Callback method that can be used to add additional buttons to the button bar
-//	 * (at both the top and the bottom of the screen)
-//	 *
-//	 * @param buttonBar the button bar
-//	 * @param viewMode  the view mode
-//	 */
-//	protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-//		// overwrite in subclasses
-//	}
-
-//	/**
-//	 * Callback method that is called after the edit form has been constructed
-//	 * 
-//	 * @param editForm the edit form
-//	 */
-//	protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-//		// do nothing by default - override in subclasses
-//	}
 
 	/**
 	 * Method that is called after the entire layout has been constructed. Use this
@@ -308,11 +244,11 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public void setEntity(T entity) {
 		this.entity = entity;
 		if (this.entity == null) {
-			this.entity = createEntity();
+			this.entity = getCreateEntitySupplier().get();
 		}
 		editForm.setEntity(this.entity);
-		if (getAfterEntitySelected() != null) {
-			getAfterEntitySelected().accept(editForm, entity);
+		if (getComponentContext().getAfterEntitySelected() != null) {
+			getComponentContext().getAfterEntitySelected().accept(editForm, entity);
 		}
 
 		checkComponentState(getEntity());

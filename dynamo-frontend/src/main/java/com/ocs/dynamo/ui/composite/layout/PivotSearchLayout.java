@@ -155,51 +155,23 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		return wrapper;
 	}
 
-	/**
-	 * Constructs the search form
-	 * 
-	 * @return the search form
-	 */
 	@Override
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-		// by default, do not pass a searchable object, in order to prevent an
-		// unnecessary and
-		// potentially unfiltered search
-		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-				getComponentContext(), this.getDefaultFilters(), this.getFieldFilters()) {
+		ModelBasedSearchForm<ID, T> searchForm = new ModelBasedSearchForm<ID, T>(null, getEntityModel(),
+				getFormOptions(), getComponentContext(), this.getDefaultFilters(), this.getFieldFilters()) {
 
 			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected void afterSearchFieldToggle(boolean visible) {
-				PivotSearchLayout.this.afterSearchFieldToggle(visible);
-			}
-
-			@Override
-			protected void afterSearchPerformed() {
-				PivotSearchLayout.this.afterSearchPerformed();
-			}
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 				return PivotSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
 			}
 
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar) {
-				PivotSearchLayout.this.postProcessSearchButtonBar(buttonBar);
-			}
-
-			@Override
-			protected void validateBeforeSearch() {
-				PivotSearchLayout.this.validateBeforeSearch();
-			}
 		};
 
-		result.setComponentContext(getComponentContext());
-		result.setFieldEntityModels(getFieldEntityModels());
-		result.build();
-		return result;
+		initSearchForm(searchForm);
+		searchForm.build();
+		return searchForm;
 	}
 
 	@Override

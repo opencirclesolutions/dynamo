@@ -22,19 +22,21 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.UIHelper;
-import com.ocs.dynamo.ui.composite.type.GridEditMode;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridVariant;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
 
 /**
  * A Grid that bases its columns on the meta model of an entity
@@ -43,47 +45,74 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <ID> type of the primary key
  * @param <T>  type of the entity
  */
-public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T> {
+public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID>> extends Grid<T>
+		implements Buildable {
 
 	private static final long serialVersionUID = 6946260934644731038L;
 
 	/**
 	 * The entity model of the entities to display in the grid
 	 */
+	@Getter
 	private EntityModel<T> entityModel;
 
-	/**
-	 * The edit mode (row by row or all rows at once)
-	 */
-	private GridEditMode gridEditMode;
+//	/**
+//	 * The edit mode (row by row or all rows at once)
+//	 */
+//	@Getter
+//	private GridEditMode gridEditMode;
 
 	/**
 	 * The message service
 	 */
+	@Getter
 	private MessageService messageService;
 
-	/**
-	 * Whether to store sort orders for this grid
-	 */
-	private boolean storeSortOrders;
+//	/**
+//	 * Whether to store sort orders for this grid
+//	 */
+//	@Getter
+//	private boolean storeSortOrders;
+
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+//
+//	@Getter
+//	@Setter
+//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
+
+	private Map<String, SerializablePredicate<?>> fieldFilters;
+
+	// private boolean editable;
+
+	private boolean built;
+
+	private ComponentContext componentContext;
+
+	private FormOptions formOptions;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param dataProvider the data provider
-	 * @param model        the entity model of the entities to display
-	 * @param fieldFilters the field filters
-	 * @param editable     whether the grid is editable
-	 * @param gridEditMode
+	 * @param dataProvider   the data provider
+	 * @param model          the entity model of the entities to display
+	 * @param fieldFilters   the field filters
+	 * @param editable       whether the grid is editable
+	 * @param storeSortOrder whether to preserve the sort orders
+	 * @param gridEditMode   the grid edit mode
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
-			Map<String, SerializablePredicate<?>> fieldFilters, boolean editable, boolean storeSortOrders,
-			GridEditMode gridEditMode) {
+			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
+			ComponentContext componentContext) {
 		setDataProvider(dataProvider);
-		this.gridEditMode = gridEditMode;
+		this.componentContext = componentContext;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		this.storeSortOrders = storeSortOrders;
+		// this.storeSortOrders = storeSortOrders;
+		this.fieldFilters = fieldFilters;
+		this.formOptions = formOptions;
+		// this.editable = editable;
 		addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
 
 		setSizeFull();
@@ -95,65 +124,48 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		getEditor().setBinder(binder);
 		getEditor().setBuffered(false);
 
-		ModelBasedGridBuilder<ID, T> gridBuilder = new ModelBasedGridBuilder<ID, T>(this, entityModel, fieldFilters,
-				editable, gridEditMode) {
-
-			@Override
-			protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-				return ModelBasedGrid.this.constructCustomConverter(am);
-			}
-
-			@Override
-			protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-				return ModelBasedGrid.this.constructCustomValidator(am);
-			}
-
-			@Override
-			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				ModelBasedGrid.this.postProcessComponent(id, am, comp);
-			}
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return ModelBasedGrid.this.constructCustomField(entityModel, attributeModel);
-			}
-
-			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				return ModelBasedGrid.this.doBind(t, field, attributeName);
-			}
-
-		};
-		gridBuilder.generateColumnsRecursive(model.getAttributeModelsSortedForGrid());
-
-		addSortListener(event -> {
-			UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
-			if (helper != null && storeSortOrders) {
-				List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
-				helper.storeSortOrders(collect);
-			}
-		});
 	}
 
-	/**
-	 * Callback method for inserting custom converter
-	 * 
-	 * @param am the attribute model for the field for which to add a converter
-	 * @return
-	 */
-	protected <U, V> Converter<U, V> constructCustomConverter(AttributeModel am) {
-		return null;
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		build();
 	}
 
-	/**
-	 * Callback method for inserting a custom validator
-	 * 
-	 * @param <V>
-	 * @param am
-	 * @return
-	 */
-	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-		return null;
+	@Override
+	public void build() {
+		if (!built) {
+			ModelBasedGridBuilder<ID, T> gridBuilder = new ModelBasedGridBuilder<ID, T>(this, entityModel, fieldFilters,
+					formOptions, componentContext) {
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					ModelBasedGrid.this.postProcessComponent(id, am, comp);
+				}
+
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+					return ModelBasedGrid.this.constructCustomField(entityModel, attributeModel);
+				}
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					return ModelBasedGrid.this.doBind(t, field, attributeName);
+				}
+
+			};
+
+			gridBuilder.addColumns(entityModel.getAttributeModelsSortedForGrid());
+
+			addSortListener(event -> {
+				UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+				if (helper != null && formOptions.isPreserveSortOrders()) {
+					List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
+					helper.storeSortOrders(collect);
+				}
+			});
+		}
+		built = true;
 	}
 
 	/**
@@ -179,14 +191,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		return null;
 	}
 
-	public GridEditMode getGridEditMode() {
-		return gridEditMode;
-	}
-
-	public MessageService getMessageService() {
-		return messageService;
-	}
-
 	/**
 	 * Post process the component. Callback method that can be used from a component
 	 * that includes the grid
@@ -207,10 +211,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	public void setColumnVisible(String propertyId, boolean visible) {
 		getColumnByKey(propertyId).setVisible(visible);
-	}
-
-	public boolean isStoreSortOrders() {
-		return storeSortOrders;
 	}
 
 }

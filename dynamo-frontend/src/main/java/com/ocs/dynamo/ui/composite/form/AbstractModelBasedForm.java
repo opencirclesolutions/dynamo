@@ -46,10 +46,10 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	 */
 	private EntityModel<T> entityModel;
 
-	/**
-	 * Map for keeping track of custom entity models for certain fields
-	 */
-	private Map<String, String> fieldEntityModels = new HashMap<>();
+//	/**
+//	 * Map for keeping track of custom entity models for certain fields
+//	 */
+//	private Map<String, String> fieldEntityModels = new HashMap<>();
 
 	/**
 	 * Field filters for easily building filtered combo boxes
@@ -61,7 +61,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 
 	@Getter
 	@Setter
-	private ComponentContext componentContext = ComponentContext.builder().build();
+	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().build();
 
 	/**
 	 * Constructor
@@ -95,7 +95,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	}
 
 	public Map<String, String> getFieldEntityModels() {
-		return fieldEntityModels;
+		return getComponentContext().getFieldEntityModels();
 	}
 
 	public Map<String, SerializablePredicate<?>> getFieldFilters() {
@@ -106,9 +106,9 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 		this.entityModel = entityModel;
 	}
 
-	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
-		this.fieldEntityModels = fieldEntityModels;
-	}
+//	public void setFieldEntityModels(Map<String, String> fieldEntityModels) {
+//		this.fieldEntityModels = fieldEntityModels;
+//	}
 
 	public void setFieldFilters(Map<String, SerializablePredicate<?>> fieldFilters) {
 		this.fieldFilters = fieldFilters;

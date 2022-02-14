@@ -47,17 +47,13 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 	public void testCreateNewEntity() {
 		FormOptions fo = new FormOptions();
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-				null, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
-
-			private static final long serialVersionUID = 485491706786708563L;
-
-			@Override
-			protected TestEntity createEntity() {
-				TestEntity e1 = super.createEntity();
-				e1.setName("Pete");
-				return e1;
-			}
-		};
+				null, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo,
+				ComponentContext.builder().build());
+		dialog.setCreateEntitySupplier(() -> {
+			TestEntity e1 = new TestEntity();
+			e1.setName("Pete");
+			return e1;
+		});
 		dialog.build();
 		dialog.getLayout().build();
 
@@ -76,7 +72,8 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 	public void testUpdateExistingEntity() {
 		FormOptions fo = new FormOptions();
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
+				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo,
+				ComponentContext.builder().build()) {
 
 			private static final long serialVersionUID = 485491706786708563L;
 
@@ -98,7 +95,8 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 	public void testReadOnlyMode() {
 		FormOptions fo = new FormOptions().setReadOnly(true);
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
-				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo) {
+				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo,
+				ComponentContext.builder().build()) {
 
 			private static final long serialVersionUID = 485491706786708563L;
 

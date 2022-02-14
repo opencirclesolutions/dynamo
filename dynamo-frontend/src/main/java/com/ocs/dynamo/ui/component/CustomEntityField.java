@@ -24,6 +24,8 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * A custom field that can be used to edit an AbstractEntity or collection
  * thereof
@@ -40,14 +42,19 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 
 	private static final long serialVersionUID = 8898382056620026384L;
 
+	@Getter
 	private SerializablePredicate<T> filter;
 
+	@Getter
 	private final BaseService<ID, T> service;
 
+	@Getter
 	private final MessageService messageService;
 
+	@Getter
 	private final EntityModel<T> entityModel;
 
+	@Getter
 	private final AttributeModel attributeModel;
 
 	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
@@ -57,26 +64,6 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 		this.attributeModel = attributeModel;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		setFilter(filter);
-	}
-
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
-	}
-
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public SerializablePredicate<T> getFilter() {
-		return filter;
-	}
-
-	public MessageService getMessageService() {
-		return messageService;
-	}
-
-	public BaseService<ID, T> getService() {
-		return service;
 	}
 
 	/**

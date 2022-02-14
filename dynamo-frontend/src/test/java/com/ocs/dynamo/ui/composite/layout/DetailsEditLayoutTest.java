@@ -22,8 +22,6 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout.FormContainer;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class DetailsEditLayoutTest extends BaseMockitoTest {
 
@@ -111,24 +109,16 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 			AttributeModel am, boolean viewMode, FormOptions fo) {
 
 		DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> layout = new DetailsEditLayout<>(service, em, am,
-				viewMode, fo, Comparator.comparing(TestEntity::getName)) {
-
-			private static final long serialVersionUID = -4333833542380882076L;
-
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar) {
-				buttonBarPostconstruct = true;
-			}
-
-			@Override
-			protected void postProcessDetailButtonBar(int index, HorizontalLayout buttonBar, boolean viewMode) {
-				detailButtonBarPostconstruct = true;
-			}
-		};
+				viewMode, fo, Comparator.comparing(TestEntity::getName));
+		layout.setPostProcessButtonBar(buttonBar -> buttonBarPostconstruct = true);
+		layout.setPostProcessDetailButtonBar((index, buttonBar, vm) -> {
+			detailButtonBarPostconstruct = true;
+		});
 		layout.setCreateEntitySupplier(p -> new TestEntity());
-		layout.setRemoveEntityConsumer((p, t) -> {});
+		layout.setRemoveEntityConsumer((p, t) -> {
+		});
 
-		layout.initContent();
+		layout.build();
 		return layout;
 	}
 }
