@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -35,6 +36,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -74,10 +76,26 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	private boolean advancedSearchMode = false;
 
+	@Getter
+	@Setter
+	private Runnable afterAdvancedModeToggled;
+
+	@Getter
+	@Setter
+	public Runnable afterClear;
+
 	/**
 	 * Additional code to execute after the clear button is pressed
 	 */
 	private Consumer<ClickEvent<Button>> afterClearConsumer;
+
+	@Getter
+	@Setter
+	public Consumer<Boolean> afterSearchFieldToggle;
+
+	@Getter
+	@Setter
+	public Runnable afterSearchPerformed;
 
 	/**
 	 * The button bar
@@ -115,6 +133,18 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	private VerticalLayout main;
 
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> postProcessLayout;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> preProcessLayout;
+
 	/**
 	 * The component on which the search will be carried out after the user presses
 	 * the "search" button
@@ -124,11 +154,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Search any button
 	 */
+	@Getter
 	private Button searchAnyButton;
 
 	/**
 	 * The search button
 	 */
+	@Getter
 	private Button searchButton;
 
 	/**
@@ -141,42 +173,14 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	private Button toggleButton;
 
-	/**
-	 * The panel that wraps around the filter form
-	 */
-	private VerticalLayout wrapperPanel;
-
-	@Getter
-	@Setter
-	public Consumer<Boolean> afterSearchFieldToggle;
-
-	@Getter
-	@Setter
-	public Runnable afterClear;
-
-	@Getter
-	@Setter
-	public Runnable afterSearchPerformed;
-
-	@Getter
-	@Setter
-	private Consumer<VerticalLayout> postProcessLayout;
-
-	@Getter
-	@Setter
-	private Consumer<VerticalLayout> preProcessLayout;
-
-	@Getter
-	@Setter
-	private Consumer<FlexLayout> postProcessButtonBar;
-
 	@Getter
 	@Setter
 	private Runnable validateBeforeSearch;
 
-	@Getter
-	@Setter
-	private Runnable afterAdvancedModeToggled;
+	/**
+	 * The panel that wraps around the filter form
+	 */
+	private VerticalLayout wrapperPanel;
 
 	/**
 	 * Constructor
@@ -288,18 +292,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Creates a custom field - override in subclasses if needed
-	 *
-	 * @param entityModel    the entity model of the entity to search for
-	 * @param attributeModel the attribute model the attribute model of the property
-	 *                       that is bound to the field
-	 * @return
-	 */
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		return null;
-	}
-
-	/**
 	 * Constructs the layout that holds all the filter components
 	 *
 	 * @return
@@ -374,6 +366,23 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return null;
 	}
 
+	/**
+	 * Looks up and creates a custom field for the provided attributem odel
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @return
+	 */
+	protected Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel) {
+		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
+				.getCustomFieldCreator(attributeModel.getPath());
+		if (customFieldCreator != null) {
+			return customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
+					.attributeModel(attributeModel).searchMode(true).build());
+		}
+		return null;
+	}
+
 	public Consumer<ClickEvent<Button>> getAfterClearConsumer() {
 		return afterClearConsumer;
 	}
@@ -412,14 +421,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	public Searchable<T> getSearchable() {
 		return searchable;
-	}
-
-	public Button getSearchAnyButton() {
-		return searchAnyButton;
-	}
-
-	public Button getSearchButton() {
-		return searchButton;
 	}
 
 	public Button getToggleAdvancedModeButton() {

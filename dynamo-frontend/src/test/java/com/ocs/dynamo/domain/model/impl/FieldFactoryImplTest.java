@@ -37,6 +37,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
@@ -210,9 +211,18 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	 * Test the creation of a date field and verify the date format is correctly set
 	 */
 	@Test
-	public void testDateField() {
+	public void testLocalDateField() {
 		Component ac = constructField("birthDate", false);
 		assertTrue(ac instanceof DatePicker);
+	}
+
+	/**
+	 * Test the creation of a date field and verify the date format is correctly set
+	 */
+	@Test
+	public void testLocalDateTimeField() {
+		Component ac = constructField("lastLogin", false);
+		assertTrue(ac instanceof DateTimePicker);
 	}
 
 	/**
@@ -276,7 +286,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 		Component ac = constructField2("email", false, false);
 		assertTrue(ac instanceof EmailField);
 	}
-	
+
 	/**
 	 * E-mail field in search mode
 	 */

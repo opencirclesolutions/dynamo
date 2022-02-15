@@ -35,6 +35,7 @@ import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.MultiSelectMode;
+import com.ocs.dynamo.domain.model.NumberFieldMode;
 import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
@@ -139,6 +140,10 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean navigable;
 
 	private EntityModel<?> nestedEntityModel;
+
+	private NumberFieldMode numberFieldMode;
+
+	private Integer numberFieldStep;
 
 	private Integer order;
 

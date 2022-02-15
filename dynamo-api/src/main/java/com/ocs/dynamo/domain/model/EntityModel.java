@@ -233,6 +233,11 @@ public interface EntityModel<T> {
 	String NESTING_DEPTH = "nestingDepth";
 
 	/**
+	 * The number field mode
+	 */
+	String NUMBER_FIELD_MODE = "numberFieldMode";
+
+	/**
 	 * The paging type for selection components
 	 */
 	String PAGING_MODE = "pagingMode";

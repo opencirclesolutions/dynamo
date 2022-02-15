@@ -179,15 +179,7 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 	private SimpleEditLayout<Integer, TestEntity> createLayout(TestEntity entity, String reference, FormOptions fo) {
 		SimpleEditLayout<Integer, TestEntity> layout = new SimpleEditLayout<Integer, TestEntity>(entity,
 				testEntityService, entityModelFactory.getModel(reference, TestEntity.class), fo,
-				ComponentContext.builder().build()) {
-
-			private static final long serialVersionUID = 4568283356505463568L;
-
-//			@Override
-//			protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<Integer, TestEntity> editForm) {
-//				modeChanged = true;
-//			}
-		};
+				ComponentContext.<Integer, TestEntity>builder().build());
 		layout.setAfterModeChanged((editForm, viewMode) -> modeChanged = true);
 
 		return layout;

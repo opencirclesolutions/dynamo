@@ -59,32 +59,39 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * The main button bar that appears below the search results grid
 	 */
+	@Getter
 	private FlexLayout buttonBar = new DefaultFlexLayout();
 
 	/**
 	 * The relations to fetch when retrieving a single entity
 	 */
+	@Getter
 	private FetchJoinInformation[] detailJoins;
 
 	/**
 	 * The entity model to use when exporting to CSV or Excel. Defaults to the
 	 * regular model if not set
 	 */
+	@Getter
 	private EntityModel<T> exportEntityModel;
 
 	/**
 	 * The relations to fetch when doing an export with export mode FULL
 	 */
+	@Getter
 	private FetchJoinInformation[] exportJoins;
 
 	/**
 	 * The search filters to apply to the individual fields
 	 */
+	@Getter
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	/**
-	 * The default height of the grid in pixels
+	 * The default height of the grid
 	 */
+	@Getter
+	@Setter
 	private String gridHeight = SystemPropertyUtils.getDefaultGridHeight();
 
 	/**
@@ -95,21 +102,26 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * The joins to use when retrieving data for the grid
 	 */
+	@Getter
 	private FetchJoinInformation[] joins;
 
 	/**
 	 * The maximum number of search results
 	 */
+	@Getter
 	private Integer maxResults;
 
 	/**
 	 * The currently selected item (in the grid)
 	 */
+	@Getter
 	private T selectedItem;
 
 	/**
 	 * Whether the results grid can be sorted by clicking on the column headers
 	 */
+	@Getter
+	@Setter
 	private boolean sortEnabled = true;
 
 	/**
@@ -198,7 +210,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * Lazily constructs the grid wrapper - used by the framework in order to
 	 * construct the appropriate grid wrapper
 	 * 
-	 * @return
+	 * @return the grid wrapper
 	 */
 	protected abstract GridWrapper<ID, T, U> constructGridWrapper();
 
@@ -239,30 +251,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		detailsMode(getSelectedItem());
 	}
 
-	public FlexLayout getButtonBar() {
-		return buttonBar;
-	}
-
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
-	public EntityModel<T> getExportEntityModel() {
-		return exportEntityModel;
-	}
-
-	public FetchJoinInformation[] getExportJoins() {
-		return exportJoins;
-	}
-
-	public Map<String, SerializablePredicate<?>> getFieldFilters() {
-		return fieldFilters;
-	}
-
-	public String getGridHeight() {
-		return gridHeight;
-	}
-
 	/**
 	 * Returns the grid wrapper, lazily constructing it if needed
 	 * 
@@ -280,28 +268,12 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		return gridWrapper;
 	}
 
-	public FetchJoinInformation[] getJoins() {
-		return joins;
-	}
-
-	public Integer getMaxResults() {
-		return maxResults;
-	}
-
-	public T getSelectedItem() {
-		return selectedItem;
-	}
-
 	/**
 	 * 
 	 * @return the currently configured sort orders
 	 */
 	public final List<SortOrder<?>> getSortOrders() {
 		return Collections.unmodifiableList(sortOrders);
-	}
-
-	public boolean isSortEnabled() {
-		return sortEnabled;
 	}
 
 	/**
@@ -357,15 +329,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Sets the desired height of the search results grid
-	 * 
-	 * @param gridHeight the height, e.g. "600px"
-	 */
-	public void setGridHeight(String gridHeight) {
-		this.gridHeight = gridHeight;
-	}
-
-	/**
 	 * Sets the maximum number of search results. If a search results in more hits,
 	 * the result set will be truncated
 	 * 
@@ -383,15 +346,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public void setSelectedItem(T selectedItem) {
 		this.selectedItem = selectedItem;
 		checkComponentState(selectedItem);
-	}
-
-	/**
-	 * Specify whether sorting is enabled for the results grid
-	 * 
-	 * @param sortEnabled whether sorting is enabled
-	 */
-	public void setSortEnabled(boolean sortEnabled) {
-		this.sortEnabled = sortEnabled;
 	}
 
 	public void setSortOrders(List<SortOrder<?>> sortOrders) {

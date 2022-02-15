@@ -18,11 +18,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.google.common.base.Predicate;
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.OrPredicate;
@@ -30,6 +29,7 @@ import com.ocs.dynamo.filter.SimpleStringPredicate;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -59,10 +59,30 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 	private static final long serialVersionUID = 4410282343830892631L;
 
+	@Getter
+	@Setter
+	private Consumer<Class<? extends Domain>> afterDomainSelected;
+
+	@Getter
+	@Setter
+	private Supplier<Component> buildHeaderLayout;
+
+	private List<Component> componentsToRegister = new ArrayList<>();
+
+	private Map<String, Function<CustomFieldContext, Component>> customFields = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Predicate<Class<?>> deleteAllowed = clazz -> true;
+
 	/**
 	 * The classes of the domains that are managed by this screen
 	 */
 	private final List<Class<? extends Domain>> domainClasses;
+
+	@Getter
+	@Setter
+	private Supplier<Boolean> editAllowed = () -> true;
 
 	/**
 	 * Entity model overrides
@@ -78,6 +98,14 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 * The main layout
 	 */
 	private VerticalLayout mainLayout;
+
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> postProcessSplitLayout;
 
 	/**
 	 * The selected domain class
@@ -95,32 +123,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	@Getter
 	private ServiceBasedSplitLayout<?, ?> splitLayout;
 
-	private List<Component> componentsToRegister = new ArrayList<>();
-
-	@Getter
-	@Setter
-	private Supplier<Component> buildHeaderLayout;
-
-	@Getter
-	@Setter
-	private Consumer<Class<? extends Domain>> afterDomainSelected;
-
-	@Getter
-	@Setter
-	private Consumer<FlexLayout> postProcessButtonBar;
-
-	@Getter
-	@Setter
-	private Consumer<VerticalLayout> postProcessSplitLayout;
-
-	@Getter
-	@Setter
-	private Supplier<Boolean> editAllowed = () -> true;
-
-	@Getter
-	@Setter
-	private Predicate<Class<?>> deleteAllowed = clazz -> true;
-
 	/**
 	 * Constructor
 	 *
@@ -131,9 +133,15 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		this.formOptions = formOptions;
 		this.domainClasses = domainClasses;
 	}
-	
-	public boolean checkDeleteAllowed(Class<?> clazz) {
-		return deleteAllowed == null ? true : deleteAllowed.apply(clazz);
+
+	/**
+	 * Adds a custom field for a certain attribute
+	 * 
+	 * @param path     the path to the attribute
+	 * @param function the function used to construct the custom component
+	 */
+	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
+		customFields.put(path, function);
 	}
 
 	/**
@@ -144,12 +152,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 */
 	public void addEntityModelOverride(Class<?> clazz, String reference) {
 		entityModelOverrides.put(clazz, reference);
-	}
-
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		super.onAttach(attachEvent);
-		build();
 	}
 
 	@Override
@@ -184,19 +186,23 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		}
 	}
 
-	/**
-	 * Constructs a custom field
-	 * 
-	 * @param entityModel    the entity model
-	 * @param attributeModel the attribute mode
-	 * @param viewMode       whether the screen is in view mode
-	 * @return
-	 */
-	protected <R extends AbstractEntity<?>> Component constructCustomField(EntityModel<R> entityModel,
-			AttributeModel attributeModel, boolean viewMode) {
-		// overwrite in subclasses
-		return null;
+	public boolean checkDeleteAllowed(Class<?> clazz) {
+		return deleteAllowed == null ? true : deleteAllowed.apply(clazz);
 	}
+
+//	/**
+//	 * Constructs a custom field
+//	 * 
+//	 * @param entityModel    the entity model
+//	 * @param attributeModel the attribute mode
+//	 * @param viewMode       whether the screen is in view mode
+//	 * @return
+//	 */
+//	protected <R extends AbstractEntity<?>> Component constructCustomField(EntityModel<R> entityModel,
+//			AttributeModel attributeModel, boolean viewMode) {
+//		// overwrite in subclasses
+//		return null;
+//	}
 
 	/**
 	 * Construct a split layout for a certain domain
@@ -215,17 +221,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			componentsToRegister.clear();
 			ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<Integer, T>(baseService,
 					getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
-					new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING)) {
-
-				private static final long serialVersionUID = -6504072714662771230L;
-
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode, boolean searchMode) {
-					return MultiDomainEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
-				}
-
-			};
+					new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING));
 
 			layout.setPostProcessLayout(postProcessSplitLayout);
 			layout.setMustEnableComponent((component, t) -> {
@@ -241,6 +237,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
 
 			layout.setEditAllowed(getEditAllowed());
+			layout.addCustomField(null, null);
 
 			// register afterwards so that we actually register for the current layout
 			// rather than the previous one
@@ -283,6 +280,12 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 */
 	public Domain getSelectedItem() {
 		return (Domain) splitLayout.getSelectedItem();
+	}
+
+	@Override
+	protected void onAttach(AttachEvent attachEvent) {
+		super.onAttach(attachEvent);
+		build();
 	}
 
 	/**

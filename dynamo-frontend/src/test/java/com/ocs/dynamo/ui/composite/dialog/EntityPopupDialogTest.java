@@ -48,7 +48,7 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 		FormOptions fo = new FormOptions();
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
 				null, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo,
-				ComponentContext.builder().build());
+				ComponentContext.<Integer, TestEntity>builder().build());
 		dialog.setCreateEntitySupplier(() -> {
 			TestEntity e1 = new TestEntity();
 			e1.setName("Pete");
@@ -73,7 +73,7 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 		FormOptions fo = new FormOptions();
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
 				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo,
-				ComponentContext.builder().build()) {
+				ComponentContext.<Integer, TestEntity>builder().build()) {
 
 			private static final long serialVersionUID = 485491706786708563L;
 
@@ -96,11 +96,7 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 		FormOptions fo = new FormOptions().setReadOnly(true);
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
 				e1, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo,
-				ComponentContext.builder().build()) {
-
-			private static final long serialVersionUID = 485491706786708563L;
-
-		};
+				ComponentContext.<Integer, TestEntity>builder().build());
 		dialog.build();
 		dialog.getLayout().build();
 

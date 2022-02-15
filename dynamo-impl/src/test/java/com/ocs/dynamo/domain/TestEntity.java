@@ -15,6 +15,7 @@ package com.ocs.dynamo.domain;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
 import java.util.HashSet;
@@ -83,6 +84,8 @@ public class TestEntity extends AbstractEntity<Integer> {
 	private LocalDate birthDate;
 
 	private LocalTime registrationTime;
+	
+	private LocalDateTime lastLogin;
 
 	@Attribute(week = true)
 	private LocalDate birthWeek;

@@ -22,7 +22,6 @@ import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.CanAssignEntity;
@@ -32,7 +31,6 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -48,7 +46,6 @@ import lombok.Setter;
  * @param <ID> type of the primary key of the entity
  * @param <T>  type of the entity
  */
-@SuppressWarnings("serial")
 public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseServiceCustomComponent<ID, T> implements Reloadable, CanAssignEntity<ID, T> {
 
@@ -93,7 +90,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 *                    database
 	 */
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			ComponentContext context, FetchJoinInformation... joins) {
+			ComponentContext<ID, T> context, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
 		setComponentContext(context);
 		setMargin(false);
@@ -144,20 +141,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			// vertical
 			getFormOptions().setScreenMode(ScreenMode.VERTICAL);
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
-					fieldFilters) {
-
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode) {
-					return SimpleEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-				}
-
-//				@Override
-//				protected boolean isEditAllowed() {
-//					return SimpleEditLayout.this.isEditAllowed();
-//				}
-
-			};
+					fieldFilters);
 
 			initEditForm(editForm);
 			editForm.setPostProcessButtonBar(postProcessButtonBar);

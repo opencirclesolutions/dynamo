@@ -25,11 +25,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ComponentContext;
@@ -133,10 +133,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	@Getter
 	@Setter
-	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
-
-	@Getter
-	@Setter
 	private Supplier<Boolean> editAllowed = () -> true;
 
 	/**
@@ -236,21 +232,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Creates a custom field - override in subclass
-	 *
-	 * @param entityModel    the entity model of the entity to display
-	 * @param attributeModel the attribute model of the entity to display
-	 * @param viewMode       indicates whether the screen is in read only mode
-	 * @param searchMode     indicates whether the screen is in search mode
-	 * @return
-	 */
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode, boolean searchMode) {
-		// overwrite in subclass
-		return null;
-	}
-
-	/**
 	 * Returns all custom components that have been registered with the specified
 	 * key
 	 * 
@@ -260,14 +241,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public List<Component> getCustomComponents(String key) {
 		return customComponentMap.get(key);
 	}
-//
-//	/**
-//	 * @param path the path to the attribute
-//	 * @return the field entity model reference for the specified attribute model
-//	 */
-//	public String getFieldEntityModel(String path) {
-//		return componentContext.getFieldEntityModels.(path);
-//	}
 
 	/**
 	 * Copies component settings to the edit form
@@ -294,7 +267,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 //		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
 //		editForm.setAfterUploadCompleted(getAfterUploadCompleted());
 		editForm.setPostProcessEditFields(getPostProcessEditFields());
-		editForm.setCustomSaveExceptionHandler(getCustomSaveExceptionHandler());
+//		editForm.setCustomSaveExceptionHandler(getCustomSaveExceptionHandler());
 
 		editForm.setParentGroupHeaders(getParentGroupHeaders());
 		editForm.setFindParentGroup(getFindParentGroup());
@@ -337,15 +310,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 			componentsToUpdate.add(comp);
 		}
 	}
-
-//	/**
-//	 * Removes the custom field entity model for a certain attribute
-//	 *
-//	 * @param path the path to the attribute
-//	 */
-//	public final void removeFieldEntityModel(String path) {
-//		fieldEntityModels.remove(path);
-//	}
 
 	/**
 	 * Stores and registers a custom component
@@ -408,6 +372,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 	public void setAfterUploadCompleted(BiConsumer<String, byte[]> afterUploadCompleted) {
 		componentContext.setAfterUploadCompleted(afterUploadCompleted);
+	}
+
+	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
+		componentContext.addCustomField(path, function);
 	}
 
 }

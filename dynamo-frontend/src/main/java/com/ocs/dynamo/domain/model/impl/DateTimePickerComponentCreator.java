@@ -22,9 +22,10 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.component.DateTimePicker;
+//import com.ocs.dynamo.ui.component.DateTimePicker;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 
 /**
  * Component creator that is used for creating date/time picker components for
@@ -55,8 +56,8 @@ public class DateTimePickerComponentCreator implements SimpleComponentCreator {
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 		Locale dateLoc = VaadinUtils.getDateLocale();
-		DateTimePicker dateTimePicker = new DateTimePicker(dateLoc);
-		dateTimePicker.setI18n(getDatePickerLocalization(messageService, dateLoc));
+		DateTimePicker dateTimePicker = new DateTimePicker();
+		dateTimePicker.setDatePickerI18n(getDatePickerLocalization(messageService, dateLoc));
 		return dateTimePicker;
 	}
 }

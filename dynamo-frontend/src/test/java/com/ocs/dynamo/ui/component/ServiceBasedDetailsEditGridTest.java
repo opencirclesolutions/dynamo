@@ -61,6 +61,8 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 		assertFalse(grid.getSearchDialogButton().isVisible());
 
 		grid.setValue(parent);
+		
+		assertTrue(buttonBarProcessed);
 
 	}
 
@@ -112,7 +114,7 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 			buttonBarProcessed = true;
 		});
 
-		grid.build();
+		grid.postProcess();
 
 		return grid;
 	}

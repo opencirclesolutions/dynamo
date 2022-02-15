@@ -14,13 +14,11 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -62,11 +60,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * The edit button
 	 */
 	private Button editButton;
-
-//	/**
-//	 * Edit column width thresholds
-//	 */
-//	private List<String> editColumnThresholds = new ArrayList<>();
 
 	/**
 	 * The edit form for editing a single object
@@ -206,17 +199,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * @param entity  the currently selected entity
 	 * @param options the form options
 	 */
-	private void buildEditForm(T entity, FormOptions options, ComponentContext<ID,T> context) {
+	private void buildEditForm(T entity, FormOptions options, ComponentContext<ID, T> context) {
 		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
 
 			private static final long serialVersionUID = 6485097089659928131L;
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-					boolean viewMode) {
-				return AbstractModelSearchLayout.this.constructCustomField(entityModel, attributeModel, viewMode,
-						false);
-			}
 
 			@Override
 			protected T getNextEntity() {
@@ -237,11 +223,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			protected boolean hasPrevEntity() {
 				return AbstractModelSearchLayout.this.hasPrevEntity();
 			}
-
-//			@Override
-//			protected boolean isEditAllowed() {
-//				return AbstractModelSearchLayout.this.isEditAllowed();
-//			}
 
 		};
 

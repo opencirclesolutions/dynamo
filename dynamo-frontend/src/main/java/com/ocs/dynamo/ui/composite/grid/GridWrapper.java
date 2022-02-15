@@ -80,7 +80,7 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	private FormOptions formOptions;
 
 	@Getter
-	private ComponentContext componentContext;
+	private ComponentContext<ID, T> componentContext;
 
 	/**
 	 * The fetch joins to use when querying
@@ -111,7 +111,7 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
 	public GridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, ComponentContext componentContext, SerializablePredicate<T> filter,
+			FormOptions formOptions, ComponentContext<ID, T> componentContext, SerializablePredicate<T> filter,
 			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
 		setSpacing(false);
 		setPadding(false);

@@ -238,7 +238,8 @@ public class ModelBasedFlexibleSearchFormTest extends FrontendIntegrationTest {
 
 	private void build(EntityModel<TestEntity> em) {
 		wrapper = new ServiceBasedGridWrapper<>(testEntityService, em, QueryType.ID_BASED, new FormOptions(),
-				ComponentContext.builder().build(), null, new HashMap<String, SerializablePredicate<?>>(), null, true);
+				ComponentContext.<Integer, TestEntity>builder().build(), null,
+				new HashMap<String, SerializablePredicate<?>>(), null, true);
 		wrapper.build();
 
 		form = new ModelBasedFlexibleSearchForm<>(wrapper, em, new FormOptions());

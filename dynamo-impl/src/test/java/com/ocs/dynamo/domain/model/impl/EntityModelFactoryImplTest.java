@@ -59,6 +59,7 @@ import com.ocs.dynamo.domain.model.BooleanType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.NumberFieldMode;
 import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
@@ -147,6 +148,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals(AttributeType.BASIC, ageModel.getAttributeType());
 		assertTrue(ageModel.isRequired());
 		assertEquals(ThousandsGroupingMode.ALWAYS, ageModel.getThousandsGroupingMode());
+		assertEquals(NumberFieldMode.TEXTFIELD, ageModel.getNumberFieldMode());
 
 		AttributeModel birthDateModel = model.getAttributeModel("birthDate");
 		assertNull(birthDateModel.getDefaultValue());
@@ -260,6 +262,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertTrue(ageModel.isSearchCaseSensitive());
 		assertTrue(ageModel.isSearchPrefixOnly());
 		assertEquals(ThousandsGroupingMode.NEVER, ageModel.getThousandsGroupingMode());
+		assertEquals(NumberFieldMode.NUMBERFIELD, ageModel.getNumberFieldMode());
+		assertEquals(3, ageModel.getNumberFieldStep());
 
 		AttributeModel entityModel = model.getAttributeModel("entity2");
 		assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
@@ -332,6 +336,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel ageModel = model.getAttributeModel("age");
 		assertNotNull(ageModel);
 		assertTrue(ageModel.isPercentage());
+		assertEquals(NumberFieldMode.NUMBERFIELD, ageModel.getNumberFieldMode());
 	}
 
 	@Test
@@ -818,7 +823,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false)
 		private String name;
 
-		@Attribute(searchCaseSensitive = BooleanType.TRUE, searchPrefixOnly = BooleanType.TRUE, thousandsGrouping = ThousandsGroupingMode.NEVER, requiredForSearching = true, searchable = SearchMode.ALWAYS)
+		@Attribute(numberFieldStep = 3, searchCaseSensitive = BooleanType.TRUE, searchPrefixOnly = BooleanType.TRUE, thousandsGrouping = ThousandsGroupingMode.NEVER, requiredForSearching = true, searchable = SearchMode.ALWAYS, numberFieldMode = NumberFieldMode.NUMBERFIELD)
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")

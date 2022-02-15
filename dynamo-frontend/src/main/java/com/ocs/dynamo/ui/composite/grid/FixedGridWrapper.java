@@ -57,7 +57,7 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @param sortOrders   the sort orders
 	 */
 	public FixedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			ComponentContext context, Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items,
+			ComponentContext<ID, T> context, Map<String, SerializablePredicate<?>> fieldFilters, Collection<T> items,
 			List<SortOrder<?>> sortOrders) {
 		super(service, entityModel, QueryType.NONE, formOptions, context.toBuilder().editable(false).build(), null,
 				fieldFilters, sortOrders);

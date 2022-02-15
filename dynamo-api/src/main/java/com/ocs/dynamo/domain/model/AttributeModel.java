@@ -266,6 +266,18 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Class<?> getNormalizedType();
 
 	/**
+	 * 
+	 * @return the number field mode
+	 */
+	NumberFieldMode getNumberFieldMode();
+
+	/**
+	 * 
+	 * @return the number field step
+	 */
+	Integer getNumberFieldStep();
+
+	/**
 	 * @return The order number (used to internally order the attribute models)
 	 */
 	Integer getOrder();

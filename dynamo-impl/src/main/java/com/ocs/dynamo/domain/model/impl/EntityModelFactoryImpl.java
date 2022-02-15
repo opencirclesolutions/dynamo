@@ -67,6 +67,7 @@ import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.MultiSelectMode;
+import com.ocs.dynamo.domain.model.NumberFieldMode;
 import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
@@ -349,7 +350,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param <T>         the class of the entity model
 	 * @param descriptor  the property descriptor to base the attribute model on
 	 * @param entityModel the entity model
-	 * @param parentClass 
+	 * @param parentClass
 	 * @param prefix      the prefix of the attribute path (for nested attributes)
 	 * @param fieldName   the name of the field
 	 * @param model       the attribute model
@@ -382,6 +383,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setType(descriptor.getPropertyType());
 		model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(), fieldName));
 		model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(), model.getDateType()));
+		model.setNumberFieldMode(SystemPropertyUtils.getDefaultNumberFieldMode());
+		model.setNumberFieldStep(1);
 
 		setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
 	}
@@ -1188,6 +1191,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (!TrimType.INHERIT.equals(attribute.trimSpaces())) {
 				model.setTrimSpaces(TrimType.TRIM.equals(attribute.trimSpaces()));
 			}
+
+			if (!NumberFieldMode.INHERIT.equals(attribute.numberFieldMode())) {
+				model.setNumberFieldMode(attribute.numberFieldMode());
+			}
+
+			setIntSetting(attribute.numberFieldStep(), 0, model::setNumberFieldStep);
 		}
 	}
 
@@ -1321,10 +1330,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.GRID_SELECT_MODE),
 				AttributeSelectMode.class, value -> attributeModel.setGridSelectMode(value));
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MULTI_SELECT_MODE),
-				MultiSelectMode.class, value -> {
-					System.out.println("bert");
-					attributeModel.setMultiSelectMode(value);
-				});
+				MultiSelectMode.class, value -> attributeModel.setMultiSelectMode(value));
+
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE), AttributeDateType.class,
 				value -> attributeModel.setDateType(value));
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXTFIELD_MODE),
@@ -1358,28 +1365,19 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE),
 				ThousandsGroupingMode.class, attributeModel::setThousandsGroupingMode);
 
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setSearchForExactValue(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setNavigable(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setSearchDateOnly(Boolean.valueOf(msg));
-		}
-
-		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER);
-		if (!StringUtils.isEmpty(msg)) {
-			attributeModel.setIgnoreInSearchFilter(Boolean.valueOf(msg));
-		}
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE),
+				attributeModel::setSearchForExactValue);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE),
+				attributeModel::setNavigable);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY),
+				attributeModel::setSearchDateOnly);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER),
+				attributeModel::setIgnoreInSearchFilter);
 
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PAGING_MODE), PagingMode.class,
 				attributeModel::setPagingMode);
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_MODE),
+				NumberFieldMode.class, attributeModel::setNumberFieldMode);
 
 		setMessageBundleCascadeOverrides(entityModel, attributeModel);
 		setMessageBundleCustomOverrides(entityModel, attributeModel);
@@ -1493,10 +1491,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
+	 * Sets an integer value on the attribute model if the value is above the
+	 * specified limit
 	 * 
-	 * @param value
-	 * @param limit
-	 * @param receiver
+	 * @param value    the integer value
+	 * @param limit    the lower limit
+	 * @param receiver the receiver function
 	 */
 	private void setIntSetting(String value, int limit, Consumer<Integer> receiver) {
 		if (value == null) {

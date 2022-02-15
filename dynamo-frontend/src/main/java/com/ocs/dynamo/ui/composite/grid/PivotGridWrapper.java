@@ -155,7 +155,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public PivotGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, ComponentContext componentContext, SerializablePredicate<T> filter,
+			FormOptions formOptions, ComponentContext<ID, T> componentContext, SerializablePredicate<T> filter,
 			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, componentContext, filter, sortOrders, joins);
 	}

@@ -56,39 +56,17 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	@Getter
 	private EntityModel<T> entityModel;
 
-//	/**
-//	 * The edit mode (row by row or all rows at once)
-//	 */
-//	@Getter
-//	private GridEditMode gridEditMode;
-
 	/**
 	 * The message service
 	 */
 	@Getter
 	private MessageService messageService;
 
-//	/**
-//	 * Whether to store sort orders for this grid
-//	 */
-//	@Getter
-//	private boolean storeSortOrders;
-
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
-//
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
-
 	private Map<String, SerializablePredicate<?>> fieldFilters;
-
-	// private boolean editable;
 
 	private boolean built;
 
-	private ComponentContext componentContext;
+	private ComponentContext<ID, T> componentContext;
 
 	private FormOptions formOptions;
 
@@ -104,15 +82,13 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
-			ComponentContext componentContext) {
+			ComponentContext<ID, T> componentContext) {
 		setDataProvider(dataProvider);
 		this.componentContext = componentContext;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-		// this.storeSortOrders = storeSortOrders;
 		this.fieldFilters = fieldFilters;
 		this.formOptions = formOptions;
-		// this.editable = editable;
 		addThemeVariants(GridVariant.LUMO_COMPACT, GridVariant.LUMO_ROW_STRIPES);
 
 		setSizeFull();
@@ -123,6 +99,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		Binder<T> binder = new BeanValidationBinder<>(entityModel.getEntityClass());
 		getEditor().setBinder(binder);
 		getEditor().setBuffered(false);
+
+		build();
 
 	}
 
@@ -135,6 +113,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	@Override
 	public void build() {
 		if (!built) {
+
 			ModelBasedGridBuilder<ID, T> gridBuilder = new ModelBasedGridBuilder<ID, T>(this, entityModel, fieldFilters,
 					formOptions, componentContext) {
 

@@ -26,25 +26,18 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.grid.contextmenu.GridContextMenu;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * A grid component for the in-line editing of a one-to-many relation. It can
  * also be used to manage a many-to-many relation but in this case the
- * "setDetailsGridSearchMode" on the FormOptions must be set to true. You can
- * then use the setSearchXXX methods to configure the behaviour of the search
- * dialog that can be used to modify the values If you need a component like
- * this, you should override the constructCustomField method and use it to
- * construct a subclass of this component
- * 
- * Note that a separate instance of this component is generated for the view
- * mode and the edit mode of the form it appears in, so this component does not
- * contain logic for switching between the modes
+ * "setDetailsGridSearchMode" on the FormOptions must be set to true.
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
@@ -55,6 +48,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 	private static final long serialVersionUID = -1203245694503350276L;
 
+	@Getter
 	private Comparator<T> comparator;
 
 	private ListDataProvider<T> provider;
@@ -71,13 +65,6 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 			FormOptions formOptions) {
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
-
-	}
-
-	@Override
-	protected void onAttach(AttachEvent attachEvent) {
-		super.onAttach(attachEvent);
-		build();
 	}
 
 	/**
@@ -119,10 +106,6 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 				getAttributeModel());
 	}
 
-	public Comparator<T> getComparator() {
-		return comparator;
-	}
-
 	@Override
 	protected DataProvider<T, SerializablePredicate<T>> getDataProvider() {
 		return provider;
@@ -145,9 +128,9 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		}
 
 		// add to data provider
-		for (T t : selected) {
-			if (!provider.getItems().contains(t)) {
-				provider.getItems().add(t);
+		for (T entity : selected) {
+			if (!provider.getItems().contains(entity)) {
+				provider.getItems().add(entity);
 			}
 		}
 
@@ -186,6 +169,5 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 	protected boolean showDetailsPanelInEditMode() {
 		return false;
 	}
-	
-	
+
 }

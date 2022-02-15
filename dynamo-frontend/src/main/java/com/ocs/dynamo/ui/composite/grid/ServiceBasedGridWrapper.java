@@ -61,7 +61,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, ComponentContext componentContext, SerializablePredicate<T> filter,
+			FormOptions formOptions, ComponentContext<ID, T> componentContext, SerializablePredicate<T> filter,
 			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders, boolean editable,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, componentContext.toBuilder().editable(editable).build(),

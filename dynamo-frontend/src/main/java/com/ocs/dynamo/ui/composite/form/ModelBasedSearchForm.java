@@ -56,6 +56,7 @@ import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
+import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import lombok.Getter;
@@ -158,7 +159,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @return
 	 */
 	protected Component constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		Component field = constructCustomField(entityModel, attributeModel);
+		Component field = findCustomComponent(entityModel, attributeModel);
 		if (field == null) {
 			EntityModel<?> em = getFieldEntityModel(attributeModel);
 			FieldCreationContext ctx = FieldCreationContext.create().attributeModel(attributeModel).fieldEntityModel(em)
@@ -214,7 +215,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				String to = message("ocs.to");
 				VaadinUtils.setLabel(auxField, attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + to);
 				auxField.setVisible(true);
+
 				FlexLayout layout = new FlexLayout();
+				layout.setFlexWrap(FlexWrap.WRAP);
 				layout.setSizeFull();
 				layout.addClassName(DynamoConstants.CSS_DYNAMO_FLEX_ROW);
 				layout.add(field);

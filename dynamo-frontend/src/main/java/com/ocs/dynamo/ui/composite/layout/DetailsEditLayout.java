@@ -37,6 +37,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.UseInViewMode;
+import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
@@ -265,16 +266,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	private final MessageService messageService;
 
-	
-	
-	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
-		componentContext.setGroupTogetherMode(groupTogetherMode);
-	}
-
-	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
-		componentContext.setGroupTogetherWidth(groupTogetherWidth);
-	}
-
 	@Getter
 	@Setter
 	private Consumer<FlexLayout> postProcessButtonBar;
@@ -329,18 +320,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Adds an attribute entity model - this can be used to overwrite the default
-	 * entity model that is used for rendering complex selection components (e.g.
-	 * lookup dialogs)
-	 * 
-	 * @param path      the path to the field
-	 * @param reference the unique ID of the entity model
-	 */
-	public void addFieldEntityModel(String path, String reference) {
-		componentContext.addFieldEntityModel(path, reference);
-	}
-
-	/**
 	 * Adds a custom converter
 	 * 
 	 * @param path      the attribute model the attribute model for which to add a
@@ -349,6 +328,15 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	public void addCustomConverter(String path, Supplier<Converter<?, ?>> converter) {
 		componentContext.addCustomConverter(path, converter);
+	}
+
+	/**
+	 * 
+	 * @param path
+	 * @param function
+	 */
+	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
+		componentContext.addCustomField(path, function);
 	}
 
 	/**
@@ -382,18 +370,9 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	private void addDetailEditForm(int index, T entity) {
 
 		ModelBasedEditForm<ID, T> editForm = new ModelBasedEditForm<ID, T>(entity, service, entityModel, formOptions,
-				fieldFilters) {
+				fieldFilters);
 
-			private static final long serialVersionUID = -7229109969816505927L;
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-					boolean viewMode) {
-				return DetailsEditLayout.this.constructCustomField(entityModel, attributeModel, viewMode);
-			}
-
-		};
-
+		editForm.setComponentContext(componentContext);
 		editForm.setPostProcessEditFields(getPostProcessEditFields());
 //		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setFieldFilters(fieldFilters);
@@ -416,6 +395,18 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 		forms.add(formContainer);
 		mainFormContainer.add(formContainer);
+	}
+
+	/**
+	 * Adds an attribute entity model - this can be used to overwrite the default
+	 * entity model that is used for rendering complex selection components (e.g.
+	 * lookup dialogs)
+	 * 
+	 * @param path      the path to the field
+	 * @param reference the unique ID of the entity model
+	 */
+	public void addFieldEntityModel(String path, String reference) {
+		componentContext.addFieldEntityModel(path, reference);
 	}
 
 	/**
@@ -473,22 +464,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		}
 	}
 
-	/**
-	 * Method that is called to create a custom field. Override in subclasses if
-	 * needed
-	 * 
-	 * @param entityModel    the entity model of the entity that is displayed in the
-	 *                       component
-	 * @param attributeModel the attribute model of the attribute for which we are
-	 *                       constructing a field
-	 * @param viewMode       whether the form is in view mode
-	 * @return
-	 */
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode) {
-		return null;
-	}
-
 	@Override
 	protected Collection<T> generateModelValue() {
 		return ConvertUtils.convertCollection(items == null ? new ArrayList<>() : items, attributeModel);
@@ -506,6 +481,22 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		}
 		return null;
 	}
+
+//	/**
+//	 * Method that is called to create a custom field. Override in subclasses if
+//	 * needed
+//	 * 
+//	 * @param entityModel    the entity model of the entity that is displayed in the
+//	 *                       component
+//	 * @param attributeModel the attribute model of the attribute for which we are
+//	 *                       constructing a field
+//	 * @param viewMode       whether the form is in view mode
+//	 * @return
+//	 */
+//	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+//			boolean viewMode) {
+//		return null;
+//	}
 
 	public ModelBasedEditForm<ID, T> getForm(int index) {
 		return getFormContainer(index).getForm();
@@ -625,6 +616,14 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		if (index < this.forms.size()) {
 			this.forms.get(index).setFieldVisible(path, visible);
 		}
+	}
+
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		componentContext.setGroupTogetherMode(groupTogetherMode);
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		componentContext.setGroupTogetherWidth(groupTogetherWidth);
 	}
 
 	/**

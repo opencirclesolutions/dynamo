@@ -29,6 +29,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -179,7 +180,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			layout = new FlexLayout();
 			layout.setSizeFull();
 			layout.setFlexWrap(FlexWrap.WRAP);
-			layout.addClassName("dynamoFlexRow");
+			layout.addClassName(DynamoConstants.CSS_DYNAMO_FLEX_ROW);
 
 			removeButton = new Button("");
 			removeButton.setIcon(VaadinIcon.TRASH.create());
@@ -543,7 +544,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			Object oldAuxValue = auxValueComponent == null ? null : auxValueComponent.getValue();
 
 			// construct the field
-			Component custom = constructCustomField(getEntityModel(), am);
+			Component custom = findCustomComponent(getEntityModel(), am);
 
 			FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
 					.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(getFieldFilters()).viewMode(false)

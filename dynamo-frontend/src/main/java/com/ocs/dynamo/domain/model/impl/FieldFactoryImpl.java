@@ -206,7 +206,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 
 		// right alignment for text field
-		if (NumberUtils.isNumeric(am.getType()) && context.isEditableGrid()) {
+		if (NumberUtils.isNumeric(am.getType()) && context.isEditableGrid() && field instanceof TextField) {
 			TextField atf = (TextField) field;
 			atf.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
 		}

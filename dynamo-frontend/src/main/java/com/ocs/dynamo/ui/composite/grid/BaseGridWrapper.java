@@ -38,6 +38,8 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * A base class for objects that wrap around a ModelBasedTable
  * 
@@ -60,11 +62,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	private DataProvider<T, SerializablePredicate<T>> dataProvider;
 
-//	/**
-//	 * Whether the grid is editable using a row editor
-//	 */
-//	private boolean editable;
-
 	/**
 	 * Field filter map
 	 */
@@ -78,6 +75,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * The layout that contains the grid
 	 */
+	@Getter
 	private VerticalLayout layout;
 
 	/**
@@ -91,7 +89,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @param joins       the fetch joins to use when executing the query
 	 */
 	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, ComponentContext context, SerializablePredicate<T> filter,
+			FormOptions formOptions, ComponentContext<ID, T> context, SerializablePredicate<T> filter,
 			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, context, filter, sortOrders, joins);
@@ -212,10 +210,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 			grid = constructGrid();
 		}
 		return grid;
-	}
-
-	public VerticalLayout getLayout() {
-		return layout;
 	}
 
 	/**

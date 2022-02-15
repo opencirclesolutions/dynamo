@@ -21,6 +21,7 @@ import java.util.Properties;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
+import com.ocs.dynamo.domain.model.NumberFieldMode;
 import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 
@@ -281,11 +282,18 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * 
 	 * @return the default nesting depth for entity models
 	 */
 	public static int getDefaultNestingDepth() {
 		return getIntProperty(DynamoConstants.SP_DEFAULT_NESTING_DEPTH, 2);
+	}
+
+	/**
+	 * @return the default number field mode
+	 */
+	public static NumberFieldMode getDefaultNumberFieldMode() {
+		String s = getStringProperty(DynamoConstants.SP_DEFAULT_NUMBER_FIELD_MODE, "TEXTFIELD");
+		return NumberFieldMode.valueOf(s.toUpperCase());
 	}
 
 	/**
@@ -294,7 +302,7 @@ public final class SystemPropertyUtils {
 	 *         UI components that maintain a list of items like combo boxes
 	 */
 	public static PagingMode getDefaultPagingMode() {
-		String s = getStringProperty(DynamoConstants.SP_DEFAULT_PAGING_MODE, "non_paged");
+		String s = getStringProperty(DynamoConstants.SP_DEFAULT_PAGING_MODE, "NON_PAGED");
 		return PagingMode.valueOf(s.toUpperCase());
 	}
 

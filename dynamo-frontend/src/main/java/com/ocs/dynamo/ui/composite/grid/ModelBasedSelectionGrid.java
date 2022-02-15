@@ -53,18 +53,10 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	private boolean built;
 
 	@Getter
-	private ComponentContext componentContext;
+	private ComponentContext<ID, T> componentContext;
 
 	@Getter
 	private FormOptions formOptions;
-
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
-//
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
 
 	/**
 	 * Custom currency symbol to be used for this grid
@@ -72,31 +64,24 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 	@Getter
 	private String currencySymbol;
 
-	/**
-	 * The entity model of the entities to display in the grid
-	 */
 	private EntityModel<T> entityModel;
 
 	private Map<String, SerializablePredicate<?>> fieldFilters;
 
-	/**
-	 * The message service
-	 */
 	@Getter
 	private MessageService messageService;
 
 	/**
-	 * Constructor
 	 * 
-	 * @param dataProvider the data provider
-	 * @param model        the entity model of the entities to display
-	 * @param fieldFilters the field filters
-	 * @param editable     whether the grid is editable
-	 * @param gridEditMode
+	 * @param dataProvider
+	 * @param model
+	 * @param fieldFilters
+	 * @param formOptions
+	 * @param componentContext
 	 */
 	public ModelBasedSelectionGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
-			ComponentContext componentContext) {
+			ComponentContext<ID, T> componentContext) {
 		setDataProvider(dataProvider);
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
@@ -148,6 +133,7 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 					helper.storeSortOrders(collect);
 				}
 			});
+			built = true;
 		}
 	}
 

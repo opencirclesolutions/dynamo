@@ -26,8 +26,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.AbstractModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.form.ModelBasedFlexibleSearchForm;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 
 /**
@@ -78,16 +76,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	@Override
 	protected AbstractModelBasedSearchForm<ID, T> constructSearchForm() {
 		ModelBasedFlexibleSearchForm<ID, T> searchForm = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
-				getFormOptions(), this.getDefaultFilters(), this.getFieldFilters()) {
-
-			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return FlexibleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-			}
-
-		};
+				getFormOptions(), this.getDefaultFilters(), this.getFieldFilters());
 
 		initSearchForm(searchForm);
 		searchForm.setComponentContext(getComponentContext());

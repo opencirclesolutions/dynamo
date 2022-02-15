@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.BooleanType;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.MultiSelectMode;
+import com.ocs.dynamo.domain.model.NumberFieldMode;
 import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.domain.model.TrimType;
@@ -199,6 +200,18 @@ public @interface Attribute {
 	 * @return whether the attribute is navigable when inside a grid
 	 */
 	boolean navigable() default false;
+
+	/**
+	 * 
+	 * @return the number field mode
+	 */
+	NumberFieldMode numberFieldMode() default NumberFieldMode.INHERIT;
+
+	/**
+	 * 
+	 * @return the step size for a number field
+	 */
+	int numberFieldStep() default 1;
 
 	/**
 	 * 

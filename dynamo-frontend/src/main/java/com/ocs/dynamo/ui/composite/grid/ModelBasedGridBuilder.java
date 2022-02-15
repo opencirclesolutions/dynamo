@@ -59,13 +59,9 @@ import com.vaadin.flow.function.SerializablePredicate;
  */
 public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-	private Grid<T> grid;
+	private ComponentContext<ID, T> componentContext;
 
 	private EntityModel<T> entityModel;
-
-	// private boolean editable;
-
-	// private GridEditMode gridEditMode;
 
 	/**
 	 * The field factory
@@ -77,32 +73,24 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters;
 
+	private FormOptions formOptions;
+
+	private Grid<T> grid;
+
 	/**
 	 * Map from attribute path to "shared provider" that can be shared by all
 	 * components in the same column in a grid
 	 */
 	private Map<String, DataProvider<?, SerializablePredicate<?>>> sharedProviders = new HashMap<>();
 
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
-//
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
-
-	private ComponentContext<ID, T> componentContext;
-
-	private FormOptions formOptions;
-
 	/**
 	 * Constructor
 	 * 
-	 * @param grid
-	 * @param entityModel
-	 * @param fieldFilters
-	 * @param editable
-	 * @param gridEditMode
+	 * @param grid             the grid
+	 * @param entityModel      the entity model
+	 * @param fieldFilters     the field filters to apply to the separate fields
+	 * @param formOptions      the form options
+	 * @param componentContext the component context
 	 */
 	public ModelBasedGridBuilder(Grid<T> grid, EntityModel<T> entityModel,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
@@ -113,15 +101,6 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 		this.componentContext = componentContext;
 		this.fieldFilters = fieldFilters;
 		this.fieldFactory = FieldFactory.getInstance();
-	}
-
-	public void addColumns(List<AttributeModel> ams) {
-		for (AttributeModel am : ams) {
-			addColumn(am);
-			if (am.getNestedEntityModel() != null) {
-				addColumns(am.getNestedEntityModel().getAttributeModelsSortedForGrid());
-			}
-		}
 	}
 
 	/**
@@ -219,10 +198,18 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 
 	}
 
-	@SuppressWarnings("unchecked")
-	private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkField<ID2, S> generateInternalLinkField(
-			AttributeModel attributeModel, Object value) {
-		return new InternalLinkField<>(attributeModel, null, (S) value);
+	/**
+	 * Adds the columns to the grid based on the attribute models
+	 * 
+	 * @param attributeModels the attribute models
+	 */
+	public void addColumns(List<AttributeModel> attributeModels) {
+		for (AttributeModel am : attributeModels) {
+			addColumn(am);
+			if (am.getNestedEntityModel() != null) {
+				addColumns(am.getNestedEntityModel().getAttributeModelsSortedForGrid());
+			}
+		}
 	}
 
 	/**
@@ -240,12 +227,28 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 * Callback method for components that incorporate this grid component but do
 	 * the binding themselves
 	 * 
-	 * @param t     the entity
-	 * @param field the field to bind
+	 * @param entity the entity
+	 * @param field  the field to bind
 	 * @return
 	 */
-	protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+	protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
 		return null;
+	}
+
+	@SuppressWarnings("unchecked")
+	private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkField<ID2, S> generateInternalLinkField(
+			AttributeModel attributeModel, Object value) {
+		return new InternalLinkField<>(attributeModel, null, (S) value);
+	}
+
+	protected EntityModelFactory getEntityModelFactory() {
+		return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
+	}
+
+	protected final EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
+		String reference = componentContext.getFieldEntityModels().get(attributeModel.getPath());
+		return reference == null ? null
+				: getEntityModelFactory().getModel(reference, attributeModel.getNormalizedType());
 	}
 
 	/**
@@ -257,15 +260,5 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 */
 	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		// override in subclass
-	}
-
-	protected final EntityModel<?> getFieldEntityModel(AttributeModel attributeModel) {
-		String reference = componentContext.getFieldEntityModels().get(attributeModel.getPath());
-		return reference == null ? null
-				: getEntityModelFactory().getModel(reference, attributeModel.getNormalizedType());
-	}
-
-	protected EntityModelFactory getEntityModelFactory() {
-		return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 	}
 }

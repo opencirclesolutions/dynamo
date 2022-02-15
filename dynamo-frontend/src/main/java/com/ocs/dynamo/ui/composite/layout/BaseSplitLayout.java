@@ -19,7 +19,6 @@ import java.util.function.Supplier;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -275,11 +274,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 				private static final long serialVersionUID = 6642035999999009278L;
 
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode) {
-					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-				}
+//				@Override
+//				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
+//						boolean viewMode) {
+//					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
+//				}
 
 //				@Override
 //				protected boolean isEditAllowed() {
@@ -308,7 +307,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
 			editForm.setPostProcessEditFields(getPostProcessEditFields());
 			editForm.setDetailJoins(getDetailJoins());
-
 			editForm.build();
 
 			detailFormLayout.add(editForm);

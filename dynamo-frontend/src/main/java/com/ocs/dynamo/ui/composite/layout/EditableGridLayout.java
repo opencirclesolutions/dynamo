@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.google.common.collect.Lists;
@@ -34,6 +35,7 @@ import com.ocs.dynamo.exception.OCSValidationException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
@@ -308,7 +310,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				}
 			});
 		}
-		
+
 		// remove button at the end of the row
 		addRemoveColumn();
 		currentWrapper = wrapper;
@@ -339,6 +341,23 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	/**
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @param viewMode
+	 * @return
+	 */
+	private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
+		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
+				.getCustomFieldCreator(attributeModel.getPath());
+		if (customFieldCreator != null) {
+			return customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
+					.attributeModel(attributeModel).viewMode(viewMode).build());
+		}
+		return null;
+	}
+
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
 
@@ -356,7 +375,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 			@Override
 			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return EditableGridLayout.this.constructCustomField(entityModel, attributeModel, isViewmode(), false);
+				return findCustomComponent(entityModel, attributeModel, viewmode);
 			}
 
 			@Override
@@ -402,21 +421,12 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		addButton.addClickListener(event -> {
 			// create new entry by means of pop-up dialog
 			EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), null, getEntityModel(),
-					getFieldFilters(), new FormOptions(), getComponentContext()) {
-
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode, boolean searchMode) {
-					return EditableGridLayout.this.constructCustomField(entityModel, attributeModel, viewMode,
-							searchMode);
-				}
-			};
+					getFieldFilters(), new FormOptions(), getComponentContext());
 
 			dialog.setAfterEditDone((cancel, newEntity, ent) -> reload());
 			dialog.setCreateEntitySupplier(getCreateEntitySupplier());
 			dialog.setPostProcessEditFields(getPostProcessEditFields());
 			dialog.setPostProcessButtonBar(getPostProcessDetailButtonBar());
-			//dialog.setColumnThresholds(getColumnThresholds());
 			dialog.buildAndOpen();
 		});
 		getButtonBar().add(addButton);

@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -25,7 +24,6 @@ import java.util.function.Supplier;
 import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
@@ -35,7 +33,6 @@ import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -67,14 +64,14 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	private FormOptions formOptions;
 
-	private ComponentContext componentContext = ComponentContext.builder().popup(true).build();
+	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().popup(true).build();
 
+	@Getter
 	private SimpleEditLayout<ID, T> layout;
 
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-	private List<String> columnThresholds = new ArrayList<>();
-
+	@Getter
 	private Button okButton;
 
 	private BaseService<ID, T> service;
@@ -91,7 +88,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	@Getter
 	@Setter
-	private Supplier<T> createEntitySupplier;
+	private Supplier<T> createEntitySupplier = () -> service.createNewEntity();
 
 	@Getter
 	@Setter
@@ -109,7 +106,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	 */
 	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
-			ComponentContext componentContext, FetchJoinInformation... joins) {
+			ComponentContext<ID, T> componentContext, FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.formOptions = formOptions;
@@ -135,18 +132,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 			// cancel button makes no sense in a popup
 			formOptions.setHideCancelButton(false);
 
-			layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions, componentContext) {
-
-				private static final long serialVersionUID = -2965981316297118264L;
-
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-						boolean viewMode, boolean searchMode) {
-					return EntityPopupDialog.this.constructCustomField(entityModel, attributeModel, viewMode,
-							searchMode);
-				}
-
-			};
+			layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions, componentContext);
 			layout.setAfterEditDone((cancel, isNew, ent) -> {
 				if (getAfterEditDone() != null) {
 					getAfterEditDone().accept(cancel, isNew, ent);
@@ -158,7 +144,6 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 			layout.setPostProcessButtonBar(getPostProcessButtonBar());
 			layout.setPostProcessEditFields(getPostProcessEditFields());
 			layout.setFieldFilters(fieldFilters);
-			//layout.setEditColumnThresholds(columnThresholds);
 			layout.setJoins(joins);
 			parent.add(layout);
 		});
@@ -168,29 +153,12 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		return layout.getEntity();
 	}
 
-	public SimpleEditLayout<ID, T> getLayout() {
-		return layout;
-	}
-
-	public Button getOkButton() {
-		return okButton;
-	}
-
 	public List<Button> getSaveButtons() {
 		return layout.getEditForm().getSaveButtons();
 	}
 
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode, boolean searchMode) {
-		// overwrite in subclasses when needed
-		return null;
+	public void setColumnThresholds(List<String> thresholds) {
+		componentContext.setEditColumnThresholds(thresholds);
 	}
 
-	public List<String> getColumnThresholds() {
-		return columnThresholds;
-	}
-
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
-	}
 }

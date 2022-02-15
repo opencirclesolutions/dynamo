@@ -65,7 +65,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ComponentContext cc = ComponentContext.builder().editable(false).build();
+		ComponentContext<Integer, Person> cc = ComponentContext.<Integer, Person>builder().editable(false).build();
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
 
 		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc);
@@ -79,7 +79,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ComponentContext cc = ComponentContext.builder().editable(true).build();
+		ComponentContext<Integer, Person> cc = ComponentContext.<Integer, Person>builder().editable(true).build();
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SIMULTANEOUS);
 
 		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc);
@@ -91,8 +91,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model, new FormOptions(),
-				ComponentContext.builder().build(), new HashMap<String, SerializablePredicate<?>>(),
-				Lists.newArrayList(entity), new ArrayList<>());
+				ComponentContext.<Integer, TestEntity>builder().build(),
+				new HashMap<String, SerializablePredicate<?>>(), Lists.newArrayList(entity), new ArrayList<>());
 		wrapper.build();
 
 		Grid<TestEntity> grid = wrapper.getGrid();

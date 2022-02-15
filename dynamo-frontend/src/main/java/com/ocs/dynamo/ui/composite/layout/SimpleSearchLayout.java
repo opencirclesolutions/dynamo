@@ -20,7 +20,6 @@ import java.util.List;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
@@ -75,20 +74,9 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	@Override
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
 		ModelBasedSearchForm<ID, T> searchForm = new ModelBasedSearchForm<ID, T>(null, getEntityModel(),
-				getFormOptions(), getComponentContext(), getDefaultFilters(), getFieldFilters()) {
-
-			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-			}
-
-		};
+				getFormOptions(), getComponentContext(), getDefaultFilters(), getFieldFilters());
 
 		initSearchForm(searchForm);
-		// searchForm.setColumnThresholds(getSearchColumnThresholds());
-		// searchForm.setMaxFormWidth(getMaxSearchFormWidth());
 		searchForm.build();
 		return searchForm;
 	}

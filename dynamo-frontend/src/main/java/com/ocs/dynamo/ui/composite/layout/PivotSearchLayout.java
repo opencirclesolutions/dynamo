@@ -23,7 +23,6 @@ import java.util.function.Supplier;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
@@ -33,8 +32,6 @@ import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -158,16 +155,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
 		ModelBasedSearchForm<ID, T> searchForm = new ModelBasedSearchForm<ID, T>(null, getEntityModel(),
-				getFormOptions(), getComponentContext(), this.getDefaultFilters(), this.getFieldFilters()) {
-
-			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return PivotSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-			}
-
-		};
+				getFormOptions(), getComponentContext(), this.getDefaultFilters(), this.getFieldFilters());
 
 		initSearchForm(searchForm);
 		searchForm.build();

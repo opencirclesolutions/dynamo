@@ -57,6 +57,7 @@ import com.ocs.dynamo.ui.component.BaseDetailsEditGrid;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CollapsiblePanel;
 import com.ocs.dynamo.ui.component.CustomEntityField;
+import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
@@ -139,6 +140,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Getter
 	@Setter
 	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+
 //
 //	@Getter
 //	@Setter
@@ -211,9 +213,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //	@Setter
 //	private Consumer<T> customSaveConsumer;
 
-	@Getter
-	@Setter
-	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
+//	@Getter
+//	@Setter
+//	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
 
 //	@Getter
 //	@Setter
@@ -425,8 +427,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					parent.add(container);
 					previews.get(isViewMode()).put(attributeModel, c);
 				} else {
-					Component f = constructCustomField(entityModel, attributeModel, viewMode);
-					if (f instanceof UseInViewMode) {
+					Component comp = findCustomComponent(entityModel, attributeModel, viewMode);
+					if (comp instanceof UseInViewMode) {
 						constructField(parent, entityModel, attributeModel, true, tabIndex);
 					} else { // otherwise display a label
 						constructLabel(parent, entityModel, attributeModel, tabIndex);
@@ -443,6 +445,23 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 			alreadyBound.get(isViewMode()).add(attributeModel.getPath());
 		}
+	}
+
+	/**
+	 * 
+	 * @param entityModel
+	 * @param attributeModel
+	 * @param viewMode
+	 * @return
+	 */
+	private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
+		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
+				.getCustomFieldCreator(attributeModel.getPath());
+		if (customFieldCreator != null) {
+			return customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
+					.attributeModel(attributeModel).viewMode(viewMode).build());
+		}
+		return null;
 	}
 
 	/**
@@ -522,7 +541,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 
 				if (!fieldsProcessed) {
-					// postProcessEditFields();
 					if (postProcessEditFields != null) {
 						postProcessEditFields.accept(this);
 					}
@@ -727,8 +745,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Button backButton = new Button(message("ocs.back"));
 		backButton.setIcon(VaadinIcon.BACKWARDS.create());
 
-		if (onBackButtonClicked != null) {
-			backButton.addClickListener(event -> onBackButtonClicked.run());
+		if (getOnBackButtonClicked() != null) {
+			backButton.addClickListener(event -> getOnBackButtonClicked().run());
 		}
 		backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
 		buttonBar.add(backButton);
@@ -827,43 +845,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-//	/**
-//	 * Callback method that can be used to add a custom required validator
-//	 * 
-//	 * @param <V>
-//	 * @param am
-//	 * @return
-//	 */
-//	protected <V> Validator<V> constructCustomRequiredValidator(AttributeModel am) {
-//		return null;
-//	}
-
-//	/**
-//	 * Callback method that can be used to create a custom validator for a field
-//	 * 
-//	 * @param <V>
-//	 * @param am
-//	 * @return
-//	 */
-//	protected <V> Validator<V> constructCustomValidator(AttributeModel am) {
-//		return null;
-//	}
-
-	/**
-	 * Callback method that can be used to create a custom field
-	 *
-	 * @param entityModel    the entity model to base the field on
-	 * @param attributeModel the attribute model to base the field on
-	 * @param viewMode       whether the form is currently in view mode
-	 * @return
-	 */
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-			boolean viewMode) {
-		// by default, return null. override in subclasses in order to create
-		// specific fields
-		return null;
-	}
-
 	/**
 	 * Constructs a field or label for a certain attribute
 	 *
@@ -878,7 +859,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		EntityModel<?> fieldEntityModel = getFieldEntityModel(attributeModel);
 		// allow the user to override the construction of a field
-		Component field = constructCustomField(entityModel, attributeModel, viewMode);
+		Component field = findCustomComponent(entityModel, attributeModel, viewMode);
 		FieldCreationContext context = FieldCreationContext.create().attributeModel(attributeModel)
 				.fieldEntityModel(fieldEntityModel).fieldFilters(getFieldFilters()).viewMode(viewMode)
 				.parentEntity(entity).build();
@@ -1153,6 +1134,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					}
 				}
 			} catch (RuntimeException ex) {
+				Function<RuntimeException, Boolean> customSaveExceptionHandler = getComponentContext()
+						.getCustomSaveExceptionHandler();
 				if (customSaveExceptionHandler == null || !customSaveExceptionHandler.apply(ex)) {
 					handleSaveException(ex);
 				}
@@ -1804,15 +1787,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Hides/shows a group of components
 	 *
-	 * @param c       the parent component of the group
-	 * @param visible whether to set the component to visible
+	 * @param component the parent component of the group
+	 * @param visible   whether to set the component to visible
 	 */
-	private void setGroupVisible(Object c, boolean visible) {
-		if (c != null) {
-			if (c instanceof Component) {
-				((Component) c).setVisible(visible);
-			} else if (c instanceof Tab) {
-				((Tab) c).setVisible(visible);
+	private void setGroupVisible(Object component, boolean visible) {
+		if (component != null) {
+			if (component instanceof Component) {
+				((Component) component).setVisible(visible);
+			} else if (component instanceof Tab) {
+				((Tab) component).setVisible(visible);
 			}
 		}
 	}
@@ -1974,6 +1957,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 							doSave();
 						}
 					} catch (RuntimeException ex) {
+						Function<RuntimeException, Boolean> customSaveExceptionHandler = getComponentContext()
+								.getCustomSaveExceptionHandler();
 						if (customSaveExceptionHandler == null || !customSaveExceptionHandler.apply(ex)) {
 							handleSaveException(ex);
 						}
