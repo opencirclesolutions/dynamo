@@ -100,7 +100,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * Fetches a list of entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param order  the sort orders to apply
+	 * @param orders  the sort orders to apply
 	 * @param joins  the desired relations to fetch
 	 * @return
 	 */
@@ -169,7 +169,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * provided sort orders
 	 * 
 	 * @param filter the filter
-	 * @param orders the sort orders
+	 * @param sortOrders the sort orders
 	 * @return
 	 */
 	List<T> find(Filter filter, SortOrder... sortOrders);

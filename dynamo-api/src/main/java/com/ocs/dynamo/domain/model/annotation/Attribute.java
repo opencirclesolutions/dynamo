@@ -55,6 +55,12 @@ public @interface Attribute {
 	Cascade[] cascade() default {};
 
 	/**
+	 * 
+	 * @return whether a clear button will be visible for the component
+	 */
+	BooleanType clearButtonVisible() default BooleanType.INHERIT;
+
+	/**
 	 * @return whether the attribute will show up inside an edit form
 	 */
 	boolean complexEditable() default false;

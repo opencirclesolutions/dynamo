@@ -35,6 +35,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * Combo box for displaying a list of entities.
  */
@@ -46,8 +48,10 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * Additional filter for cascading
 	 */
+	@Getter
 	private SerializablePredicate<T> additionalFilter;
 
+	@Getter
 	private final AttributeModel attributeModel;
 
 	private final EntityModel<T> entityModel;
@@ -55,6 +59,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	/**
 	 * The current search filter (may include an additional filter)
 	 */
+	@Getter
 	private SerializablePredicate<T> filter;
 
 	/**
@@ -62,10 +67,13 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 */
 	private SerializablePredicate<T> originalFilter;
 
+	@Getter
 	private final SelectMode selectMode;
 
+	@Getter
 	private final BaseService<ID, T> service;
 
+	@Getter
 	private final SortOrder<?>[] sortOrders;
 
 	/**
@@ -175,27 +183,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
 				new SortOrders(SortUtils.translateSortOrders(sortOrders)));
-	}
-
-	@Override
-	public SerializablePredicate<T> getAdditionalFilter() {
-		return additionalFilter;
-	}
-
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
-	}
-
-	public SerializablePredicate<T> getFilter() {
-		return filter;
-	}
-
-	public SelectMode getSelectMode() {
-		return selectMode;
-	}
-
-	public SortOrder<?>[] getSortOrder() {
-		return sortOrders;
 	}
 
 	/**

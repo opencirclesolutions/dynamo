@@ -33,6 +33,7 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A grid component for the in-line editing of a one-to-many relation. It can
@@ -49,6 +50,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 	private static final long serialVersionUID = -1203245694503350276L;
 
 	@Getter
+	@Setter
 	private Comparator<T> comparator;
 
 	private ListDataProvider<T> provider;
@@ -65,6 +67,12 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 			FormOptions formOptions) {
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
+
+		setOnAdd(() -> {
+			T t = getCreateEntitySupplier().get();
+			provider.getItems().add(t);
+			provider.refreshAll();
+		});
 	}
 
 	/**
@@ -84,19 +92,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 	}
 
 	@Override
-	protected void applyFilter() {
-		// do nothing
-	}
-
-	@Override
-	protected void doAdd() {
-		T t = getCreateEntitySupplier().get();
-		provider.getItems().add(t);
-		provider.refreshAll();
-	}
-
-	@Override
-	protected void doEdit(T t) {
+	protected final void applyFilter() {
 		// do nothing
 	}
 
@@ -138,10 +134,6 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		for (T t : selected) {
 			getLinkEntityConsumer().accept(t);
 		}
-	}
-
-	public void setComparator(Comparator<T> comparator) {
-		this.comparator = comparator;
 	}
 
 	@Override

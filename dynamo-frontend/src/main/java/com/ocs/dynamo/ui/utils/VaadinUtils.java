@@ -25,13 +25,13 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.EntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddEntityField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.HasHelper;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -410,6 +410,32 @@ public final class VaadinUtils {
 			((EmailField) component).setLabel(label);
 		} else if (component instanceof DateTimePicker) {
 			((DateTimePicker) component).setLabel(label);
+		}
+	}
+
+	/**
+	 * Set the "clear button visible" setting for a component
+	 * 
+	 * @param component
+	 * @param visible
+	 */
+	public static void setClearButtonVisible(Component component, boolean visible) {
+		if (component instanceof TextField) {
+			((TextField) component).setClearButtonVisible(visible);
+		} else if (component instanceof IntegerField) {
+			((IntegerField) component).setClearButtonVisible(visible);
+		} else if (component instanceof ComboBox) {
+			((ComboBox<?>) component).setClearButtonVisible(visible);
+		} else if (component instanceof TextArea) {
+			((TextArea) component).setClearButtonVisible(visible);
+		} else if (component instanceof DatePicker) {
+			((DatePicker) component).setClearButtonVisible(visible);
+		} else if (component instanceof TimePicker) {
+			((TimePicker) component).setClearButtonVisible(visible);
+		} else if (component instanceof EmailField) {
+			((EmailField) component).setClearButtonVisible(visible);
+		} else if (component instanceof QuickAddEntityField) {
+			((QuickAddEntityField<?, ?, ?>) component).setClearButtonVisible(visible);
 		}
 	}
 

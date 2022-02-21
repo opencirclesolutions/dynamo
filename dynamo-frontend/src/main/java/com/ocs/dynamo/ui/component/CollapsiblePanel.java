@@ -20,6 +20,9 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A panel that can be collapsed for grouping attributes
  * 
@@ -30,12 +33,18 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 
 	private static final long serialVersionUID = -7979238391035057707L;
 
+	@Getter
+	@Setter
 	private Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
 
+	@Getter
 	private VerticalLayout contentWrapper = new DefaultVerticalLayout();
 
+	@Getter
+	@Setter
 	private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
 
+	@Getter
 	private Button toggle = new Button(openIcon);
 
 	public CollapsiblePanel() {
@@ -55,24 +64,8 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 		contentWrapper.add(content);
 	}
 
-	public Icon getClosedIcon() {
-		return closedIcon;
-	}
-
-	public VerticalLayout getContentWrapper() {
-		return contentWrapper;
-	}
-
-	public Icon getOpenIcon() {
-		return openIcon;
-	}
-
 	public boolean isOpen() {
 		return toggle.getIcon() == openIcon;
-	}
-
-	public void setClosedIcon(Icon closedIcon) {
-		this.closedIcon = closedIcon;
 	}
 
 	/**
@@ -98,10 +91,6 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 		contentWrapper.getChildren().forEach(c -> c.setVisible(open));
 		toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
 		return this;
-	}
-
-	public void setOpenIcon(Icon openIcon) {
-		this.openIcon = openIcon;
 	}
 
 }

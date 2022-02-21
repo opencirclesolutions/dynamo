@@ -23,7 +23,7 @@ import com.ocs.dynamo.filter.FlexibleFilterDefinition;
 import com.ocs.dynamo.filter.FlexibleFilterType;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;

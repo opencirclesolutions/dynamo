@@ -80,7 +80,7 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
 
     @Test
     public void testFlexibleSearchLayout_EditButton() {
-        FormOptions options = new FormOptions().setEditAllowed(true);
+        FormOptions options = new FormOptions().setShowEditButton(true);
 
         FlexibleSearchLayout<Integer, TestEntity> layout = createLayout(options);
         layout.build();

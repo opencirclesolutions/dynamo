@@ -164,4 +164,5 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 		}
 	}
 
+	public abstract void setClearButtonVisible(boolean visible);
 }

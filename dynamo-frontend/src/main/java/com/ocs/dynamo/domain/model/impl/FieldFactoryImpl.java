@@ -193,12 +193,21 @@ public class FieldFactoryImpl implements FieldFactory {
 		return field;
 	}
 
+	/**
+	 * Post-processes the component, adding any standard functionality like labels,
+	 * tool-tips
+	 * 
+	 * @param field   the component
+	 * @param am      the attribute model to base the component on
+	 * @param context the field creation context
+	 */
 	private void postProcessComponent(Component field, AttributeModel am, FieldCreationContext context) {
 		String displayName = am.getDisplayName(VaadinUtils.getLocale());
 
 		VaadinUtils.setLabel(field, context.isEditableGrid() ? "" : displayName);
 		VaadinUtils.setTooltip(field, am.getDescription(VaadinUtils.getLocale()));
 		VaadinUtils.setPlaceHolder(field, am.getPrompt(VaadinUtils.getLocale()));
+		VaadinUtils.setClearButtonVisible(field, am.isClearButtonVisible());
 
 		if (field instanceof AbstractField) {
 			AbstractField<?, ?> af = (AbstractField<?, ?>) field;

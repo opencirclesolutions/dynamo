@@ -5,8 +5,6 @@ import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
 
-import java.util.Collection;
-
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -20,7 +18,6 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 
@@ -66,15 +63,8 @@ public class FixedSplitLayoutTest extends FrontendIntegrationTest {
 		FormOptions fo = new FormOptions().setExportAllowed(true);
 		FixedSplitLayout<Integer, TestEntity> layout = new FixedSplitLayout<Integer, TestEntity>(testEntityService,
 				entityModelFactory.getModel(TestEntity.class), fo,
-				new SortOrder<String>("name", SortDirection.ASCENDING)) {
-
-			private static final long serialVersionUID = 6308563510081372500L;
-
-			@Override
-			protected Collection<TestEntity> loadItems() {
-				return Lists.newArrayList(e1, e2);
-			}
-		};
+				new SortOrder<String>("name", SortDirection.ASCENDING));
+		layout.setLoadItemSupplier(() -> Lists.newArrayList(e1, e2));
 		layout.build();
 
 		// layout must contain 2 items
@@ -102,16 +92,8 @@ public class FixedSplitLayoutTest extends FrontendIntegrationTest {
 	public void testCreateDetailLayout() {
 		FormOptions fo = new FormOptions();
 		FixedDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new FixedDetailLayout<Integer, TestEntity2, Integer, TestEntity>(
-				testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class), fo, null) {
-
-			private static final long serialVersionUID = 7009824287226683886L;
-
-			@Override
-			protected Collection<TestEntity2> loadItems() {
-				return Lists.newArrayList(child1);
-			}
-		};
-
+				testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class), fo, null);
+		layout.setLoadItemSupplier(() -> Lists.newArrayList(child1));
 		layout.build();
 
 		assertEquals(1, layout.getGridWrapper().getDataProviderSize());

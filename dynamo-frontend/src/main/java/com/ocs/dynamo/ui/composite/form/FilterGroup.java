@@ -44,6 +44,9 @@ import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Represents one or more search fields used to filter on a single property
  * 
@@ -59,6 +62,7 @@ public class FilterGroup<T> {
 	/**
 	 * The auxiliary UI component
 	 */
+	@Getter
 	private final Component auxField;
 
 	/**
@@ -69,6 +73,7 @@ public class FilterGroup<T> {
 	/**
 	 * The main UI component
 	 */
+	@Getter
 	private final Component field;
 
 	/**
@@ -79,16 +84,20 @@ public class FilterGroup<T> {
 	/**
 	 * The top level component that contains the filter UI components
 	 */
+	@Getter
 	private final Component filterComponent;
 
 	/**
 	 * The type of the filter
 	 */
+	@Getter
 	private final FilterType filterType;
 
 	/**
 	 * Filter listeners to fire when the input changes
 	 */
+	@Getter
+	@Setter
 	private List<FilterListener<T>> listeners = new ArrayList<>();
 
 	/**
@@ -99,6 +108,7 @@ public class FilterGroup<T> {
 	/**
 	 * The name of the property to filter on
 	 */
+	@Getter
 	private final String propertyId;
 
 	/**
@@ -162,26 +172,6 @@ public class FilterGroup<T> {
 		}
 	}
 
-	public Component getAuxField() {
-		return auxField;
-	}
-
-	public Component getField() {
-		return field;
-	}
-
-	public Component getFilterComponent() {
-		return filterComponent;
-	}
-
-	public List<FilterListener<T>> getListeners() {
-		return listeners;
-	}
-
-	public String getPropertyId() {
-		return propertyId;
-	}
-
 	/**
 	 * Resets the search filters for both fields
 	 */
@@ -214,10 +204,6 @@ public class FilterGroup<T> {
 		if (auxField instanceof HasEnabled) {
 			((HasEnabled) auxField).setEnabled(enabled);
 		}
-	}
-
-	public void setListeners(List<FilterListener<T>> listeners) {
-		this.listeners = listeners;
 	}
 
 	/**

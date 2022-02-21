@@ -53,17 +53,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
+	@Getter
 	private Button addButton;
 
 	private VerticalLayout detailFormLayout;
 
-	/**
-	 * The standard detail layout
-	 */
+	@Getter
 	private VerticalLayout detailLayout;
 
-	private VerticalLayout splitterLayout;
-
+	@Getter
 	private ModelBasedEditForm<ID, T> editForm;
 
 	/**
@@ -71,10 +69,19 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	private Component headerLayout;
 
+	/**
+	 * Supplier that is used to define a custom header layout
+	 */
+	@Getter
+	@Setter
+	private Supplier<Component> headerLayoutCreator;
+
 	private VerticalLayout mainLayout;
 
+	@Getter
 	private TextField quickSearchField;
 
+	@Getter
 	private Button removeButton;
 
 	/**
@@ -84,11 +91,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	private Component selectedDetailLayout;
 
 	/**
-	 * Supplier that is used to define a custom header layout
+	 * The grid layout that is used as the left part of the
 	 */
-	@Getter
-	@Setter
-	private Supplier<Component> buildHeaderLayout;
+	private VerticalLayout splitterGridLayout;
 
 	/**
 	 * Constructor
@@ -112,12 +117,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * @param entity
 	 */
 	protected void afterReload(T entity) {
-		// override in subclass
+		// override in subclasses
 	}
 
-	/**
-	 * Builds the component
-	 */
 	@Override
 	public void build() {
 		buildFilter();
@@ -126,9 +128,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			mainLayout.setSizeFull();
 
 			SplitLayout splitter = null;
-			splitterLayout = null;
+			splitterGridLayout = null;
 
-			detailLayout = new DefaultVerticalLayout(false, true);
+			detailLayout = new DefaultVerticalLayout(isHorizontalMode(), false);
+			detailLayout.addClassName("splitLayoutDetailLayout");
 			emptyDetailView();
 
 			// construct option quick search field
@@ -142,26 +145,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			// extra splitter (for horizontal mode)
 			if (isHorizontalMode()) {
-				splitter = new SplitLayout();
-
-				splitter.setSizeFull();
-				mainLayout.add(splitter);
-
-				splitterLayout = new DefaultVerticalLayout(false, true);
-				splitterLayout.setClassName(DynamoConstants.CSS_SPLIT_LAYOUT_LEFT);
-
-				// optional header layout
-				headerLayout = buildHeaderLayout == null ? null : buildHeaderLayout.get();
-				if (headerLayout != null) {
-					splitterLayout.add(headerLayout);
-				}
-
-				if (quickSearchField != null) {
-					splitterLayout.add(quickSearchField);
-				}
-
-				splitterLayout.add(getGridWrapper());
-				splitter.addToPrimary(splitterLayout);
+				splitter = constructSplitterLayout();
 
 			} else {
 				// vertical mode, just add component at bottom
@@ -169,14 +153,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			}
 
 			if (isHorizontalMode()) {
-				splitterLayout.add(getButtonBar());
+				splitterGridLayout.add(getButtonBar());
 			} else {
 				mainLayout.add(getButtonBar());
 			}
 
 			// create a panel to hold the edit form
-			VerticalLayout editPanel = new DefaultVerticalLayout(true, false);
+			VerticalLayout editPanel = new DefaultVerticalLayout(false, false);
 			editPanel.add(detailLayout);
+			editPanel.addClassName("splitLayoutEditPanel");
 
 			if (isHorizontalMode()) {
 				// create the layout that is the right part of the splitter
@@ -201,8 +186,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 				getPostProcessMainButtonBar().accept(getButtonBar());
 			}
 
-			if (getPostProcessLayout() != null) {
-				getPostProcessLayout().accept(mainLayout);
+			if (getAfterLayoutBuilt() != null) {
+				getAfterLayoutBuilt().accept(mainLayout);
 			}
 
 			checkComponentState(null);
@@ -222,7 +207,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected void checkMainButtons() {
 		if (getAddButton() != null) {
-			getAddButton().setVisible(!getFormOptions().isHideAddButton() && checkEditAllowed());
+			getAddButton().setVisible(getFormOptions().isShowAddButton() && checkEditAllowed());
 		}
 		if (getRemoveButton() != null) {
 			getRemoveButton().setVisible(getFormOptions().isShowRemoveButton() && checkEditAllowed());
@@ -247,6 +232,31 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected abstract TextField constructSearchField();
 
+	private SplitLayout constructSplitterLayout() {
+		SplitLayout splitter;
+		splitter = new SplitLayout();
+
+		splitter.setSizeFull();
+		mainLayout.add(splitter);
+
+		splitterGridLayout = new DefaultVerticalLayout(false, true);
+		splitterGridLayout.setClassName(DynamoConstants.CSS_SPLIT_LAYOUT_LEFT);
+
+		// optional header layout
+		headerLayout = headerLayoutCreator == null ? null : headerLayoutCreator.get();
+		if (headerLayout != null) {
+			splitterGridLayout.add(headerLayout);
+		}
+
+		if (quickSearchField != null) {
+			splitterGridLayout.add(quickSearchField);
+		}
+
+		splitterGridLayout.add(getGridWrapper());
+		splitter.addToPrimary(splitterGridLayout);
+		return splitter;
+	}
+
 	/**
 	 * Fills the detail part of the screen with a custom component
 	 *
@@ -265,27 +275,13 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	@Override
 	public void detailsMode(T entity) {
 		if (detailFormLayout == null) {
-			detailFormLayout = new DefaultVerticalLayout(false, false);
+			detailFormLayout = new DefaultVerticalLayout(!isHorizontalMode(), false);
+			detailFormLayout.addClassName("splitLayoutDetailForm");
 
 			// canceling is not needed in the in-line view
-			getFormOptions().setHideCancelButton(true).setPreserveSelectedTab(true);
+			getFormOptions().setShowCancelButton(false).setPreserveSelectedTab(true);
 			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
-					getFieldFilters()) {
-
-				private static final long serialVersionUID = 6642035999999009278L;
-
-//				@Override
-//				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-//						boolean viewMode) {
-//					return BaseSplitLayout.this.constructCustomField(entityModel, attributeModel, viewMode, false);
-//				}
-
-//				@Override
-//				protected boolean isEditAllowed() {
-//					return BaseSplitLayout.this.isEditAllowed();
-//				}
-
-			};
+					getFieldFilters());
 
 			initEditForm(editForm);
 			editForm.setAfterEditDone((cancel, isNew, ent) -> {
@@ -305,7 +301,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			});
 
 			editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
-			editForm.setPostProcessEditFields(getPostProcessEditFields());
 			editForm.setDetailJoins(getDetailJoins());
 			editForm.build();
 
@@ -342,30 +337,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Clears the detail view
 	 */
 	public void emptyDetailView() {
-		VerticalLayout vLayout = new VerticalLayout();
+		VerticalLayout vLayout = new DefaultVerticalLayout(true, false);
 		vLayout.add(new Span(message("ocs.select.item", getEntityModel().getDisplayName(VaadinUtils.getLocale()))));
 		detailLayout.replace(selectedDetailLayout, vLayout);
 		selectedDetailLayout = vLayout;
-	}
-
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	public VerticalLayout getDetailLayout() {
-		return detailLayout;
-	}
-
-	public ModelBasedEditForm<ID, T> getEditForm() {
-		return editForm;
-	}
-
-	public TextField getQuickSearchField() {
-		return quickSearchField;
-	}
-
-	public Button getRemoveButton() {
-		return removeButton;
 	}
 
 	/**
@@ -402,15 +377,15 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	@Override
 	public void reload() {
 		// replace the header layout (if there is one)
-		Component component = buildHeaderLayout == null ? null : buildHeaderLayout.get();
+		Component component = headerLayoutCreator == null ? null : headerLayoutCreator.get();
 		if (component != null) {
 			if (headerLayout != null) {
-				splitterLayout.replace(headerLayout, component);
+				splitterGridLayout.replace(headerLayout, component);
 			} else {
-				splitterLayout.add(component);
+				splitterGridLayout.add(component);
 			}
 		} else if (headerLayout != null) {
-			splitterLayout.remove(headerLayout);
+			splitterGridLayout.remove(headerLayout);
 		}
 		headerLayout = component;
 

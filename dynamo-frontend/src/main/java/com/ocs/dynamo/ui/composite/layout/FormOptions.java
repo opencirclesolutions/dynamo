@@ -91,7 +91,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to show an edit button when the screen is opened in view mode
 	 */
-	private boolean editAllowed = true;
+	private boolean showEditButton = true;
 
 	/**
 	 * Whether to enabled advanced search mode in a search layout
@@ -116,19 +116,19 @@ public class FormOptions implements Serializable {
 	private GridEditMode gridEditMode = GridEditMode.SINGLE_ROW;
 
 	/**
-	 * Whether to hide the add button
+	 * Whether to show the add button
 	 */
-	private boolean hideAddButton;
+	private boolean showAddButton = true;
 
 	/**
-	 * Whether to hide the cancel button (in an explicit detail view)
+	 * Whether to show the cancel button (in an explicit detail view)
 	 */
-	private boolean hideCancelButton;
+	private boolean showCancelButton = true;
 
 	/**
-	 * Whether to hide the clear button in the search form
+	 * Whether to show the clear button in the search form
 	 */
-	private boolean hideClearButton;
+	private boolean showClearButton = true;;
 
 	/**
 	 * 
@@ -196,7 +196,7 @@ public class FormOptions implements Serializable {
 	 * Whether to display a panel containing the item that is selected in a grid,
 	 * below that grid
 	 */
-	private boolean showGridDetailsPanel;
+	private boolean showDetailsGridDetailsPanel;
 
 	/**
 	 * Whether to display a "next" button inside an edit form
@@ -215,6 +215,11 @@ public class FormOptions implements Serializable {
 	private boolean showQuickSearchField;
 
 	/**
+	 * Whether to show a refresh button in an edit form
+	 */
+	private boolean showRefreshButton;
+
+	/**
 	 * Whether or not to add a "remove" button - by default this is disabled
 	 */
 	private boolean showRemoveButton;
@@ -225,12 +230,7 @@ public class FormOptions implements Serializable {
 	private boolean showSearchAnyButton;
 
 	/**
-	 * Whether to show a refresh button in an edit form
-	 */
-	private boolean showRefreshButton;
-
-	/**
-	 * Whether to display a button for toggling search fields
+	 * Whether to display a button for toggling
 	 */
 	private boolean showToggleButton;
 
@@ -246,10 +246,10 @@ public class FormOptions implements Serializable {
 		fo.setConfirmClear(isConfirmClear());
 		fo.setDetailsGridSearchMode(isDetailsGridSearchMode());
 		fo.setDoubleClickSelectAllowed(isDoubleClickSelectAllowed());
-		fo.setEditAllowed(isEditAllowed());
-		fo.setHideAddButton(isHideAddButton());
-		fo.setHideCancelButton(isHideCancelButton());
-		fo.setHideClearButton(isHideClearButton());
+		fo.setShowEditButton(isShowEditButton());
+		fo.setShowAddButton(isShowAddButton());
+		fo.setShowCancelButton(isShowCancelButton());
+		fo.setShowClearButton(isShowClearButton());
 		fo.setOpenInViewMode(isOpenInViewMode());
 		fo.setPlaceButtonBarAtTop(isPlaceButtonBarAtTop());
 		fo.setPreserveSelectedTab(isPreserveSelectedTab());
@@ -274,7 +274,7 @@ public class FormOptions implements Serializable {
 		fo.setShowEditFormCaption(isShowEditFormCaption());
 		fo.setDetailsEditLayoutButtonsOnSameRow(isDetailsEditLayoutButtonsOnSameRow());
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
-		fo.setShowGridDetailsPanel(isShowGridDetailsPanel());
+		fo.setShowDetailsGridDetailsPanel(isShowDetailsGridDetailsPanel());
 		return fo;
 	}
 
@@ -330,8 +330,8 @@ public class FormOptions implements Serializable {
 		return doubleClickSelectAllowed;
 	}
 
-	public boolean isEditAllowed() {
-		return editAllowed;
+	public boolean isShowEditButton() {
+		return showEditButton;
 	}
 
 	public boolean isEnableAdvancedSearchMode() {
@@ -342,16 +342,16 @@ public class FormOptions implements Serializable {
 		return exportAllowed;
 	}
 
-	public boolean isHideAddButton() {
-		return hideAddButton;
+	public boolean isShowAddButton() {
+		return showAddButton;
 	}
 
-	public boolean isHideCancelButton() {
-		return hideCancelButton;
+	public boolean isShowCancelButton() {
+		return showCancelButton;
 	}
 
-	public boolean isHideClearButton() {
-		return hideClearButton;
+	public boolean isShowClearButton() {
+		return showClearButton;
 	}
 
 	public boolean isOpenInViewMode() {
@@ -394,8 +394,8 @@ public class FormOptions implements Serializable {
 		return showEditFormCaption;
 	}
 
-	public boolean isShowGridDetailsPanel() {
-		return showGridDetailsPanel;
+	public boolean isShowDetailsGridDetailsPanel() {
+		return showDetailsGridDetailsPanel;
 	}
 
 	public boolean isShowNextButton() {
@@ -408,6 +408,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isShowQuickSearchField() {
 		return showQuickSearchField;
+	}
+
+	public boolean isShowRefreshButton() {
+		return showRefreshButton;
 	}
 
 	public boolean isShowRemoveButton() {
@@ -440,11 +444,8 @@ public class FormOptions implements Serializable {
 
 	/**
 	 * Specify whether complex details mode is enabled. In complex details mode,
-	 * instead of a single detail screen, the application will render a tab layout.
-	 * You can use the <code>getDetailModeTabCaptions</code> and
-	 * <code>initTab</code> methods to initialize these tabs
 	 * 
-	 * @param complexDetailsMode
+	 * @param complexDetailsMode whether to enable complexDetailsMode
 	 * @return
 	 */
 	public FormOptions setComplexDetailsMode(boolean complexDetailsMode) {
@@ -455,7 +456,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Specify whether to ask for confirmation before clearing the search form
 	 * 
-	 * @param confirmClear
+	 * @param confirmClear whether to ask for confirmation
 	 * @return
 	 */
 	public FormOptions setConfirmClear(boolean confirmClear) {
@@ -467,7 +468,7 @@ public class FormOptions implements Serializable {
 	 * Specify whether to ask for confirmation before saving changes after the Save
 	 * button has been clicked
 	 * 
-	 * @param confirmSave
+	 * @param confirmSave whether to ask for confirmation
 	 * @return
 	 */
 	public FormOptions setConfirmSave(boolean confirmSave) {
@@ -475,6 +476,13 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	/**
+	 * Specify whether to display the button bar on the same row as the input
+	 * components inside a DetailsEditLayout
+	 * 
+	 * @param detailsEditLayoutButtonsOnSameRow
+	 * @return
+	 */
 	public FormOptions setDetailsEditLayoutButtonsOnSameRow(boolean detailsEditLayoutButtonsOnSameRow) {
 		this.detailsEditLayoutButtonsOnSameRow = detailsEditLayoutButtonsOnSameRow;
 		return this;
@@ -484,7 +492,7 @@ public class FormOptions implements Serializable {
 	 * Specify whether a DetailsEditGrid behaves in read-only mode and includes a
 	 * search form for selecting values.
 	 * 
-	 * @param detailsGridSearchMode
+	 * @param detailsGridSearchMode whether to active search mode
 	 * @return
 	 */
 	public FormOptions setDetailsGridSearchMode(boolean detailsGridSearchMode) {
@@ -492,11 +500,23 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	/**
+	 * Specify the grid selection mode for a details grid
+	 * 
+	 * @param detailsGridSelectionMode the desired selection mode
+	 * @return
+	 */
 	public FormOptions setDetailsGridSelectionMode(SelectionMode detailsGridSelectionMode) {
 		this.detailsGridSelectionMode = detailsGridSelectionMode;
 		return this;
 	}
 
+	/**
+	 * Specify whether the rows in a DetailsGrid must be sortable
+	 * 
+	 * @param detailsGridSortable the desired sortable setting
+	 * @return
+	 */
 	public FormOptions setDetailsGridSortable(boolean detailsGridSortable) {
 		this.detailsGridSortable = detailsGridSortable;
 		return this;
@@ -505,7 +525,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Specify whether the details screen is enabled for a search layout
 	 * 
-	 * @param detailsModeEnabled
+	 * @param detailsModeEnabled whether the details screen is enabled
 	 * @return
 	 */
 	public FormOptions setDetailsModeEnabled(boolean detailsModeEnabled) {
@@ -515,9 +535,9 @@ public class FormOptions implements Serializable {
 
 	/**
 	 * Specify whether you can navigate to a detail screen by double clicking on a
-	 * row in the search results grid
+	 * row in the search results grid in a SearchLayout
 	 * 
-	 * @param doubleClickSelectAllowed
+	 * @param doubleClickSelectAllowed whether double click selection is allowed
 	 * @return
 	 */
 	public FormOptions setDoubleClickSelectAllowed(boolean doubleClickSelectAllowed) {
@@ -526,20 +546,21 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Specify whether editing existing entities is allowed
+	 * Specify whether editing existing entities is allowed. When set to "true" an
+	 * edit button will be rendered
 	 * 
-	 * @param editAllowed
+	 * @param showEditButton whether editing is allowed
 	 * @return
 	 */
-	public FormOptions setEditAllowed(boolean editAllowed) {
-		this.editAllowed = editAllowed;
+	public FormOptions setShowEditButton(boolean showEditButton) {
+		this.showEditButton = showEditButton;
 		return this;
 	}
 
 	/**
-	 * Whether to enable advanced search mode
+	 * Whether to enable advanced search mode for search layouts
 	 * 
-	 * @param enableAdvancedSearchMode
+	 * @param enableAdvancedSearchMode whether advanced search mode is enabled
 	 * @return
 	 */
 	public FormOptions setEnableAdvancedSearchMode(boolean enableAdvancedSearchMode) {
@@ -551,7 +572,7 @@ public class FormOptions implements Serializable {
 	 * Specify whether exporting the data inside results grids to Excel or CSV is
 	 * allowed
 	 * 
-	 * @param exportAllowed
+	 * @param exportAllowed the desired export setting
 	 * @return
 	 */
 	public FormOptions setExportAllowed(boolean exportAllowed) {
@@ -585,37 +606,36 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Specify whether to hide the Add buttonF
+	 * Specify whether to show the Add button
 	 * 
-	 * @param hideAddButton
+	 * @param showAddButton whether to show the add button
 	 * @return
 	 */
-	public FormOptions setHideAddButton(boolean hideAddButton) {
-		this.hideAddButton = hideAddButton;
+	public FormOptions setShowAddButton(boolean showAddButton) {
+		this.showAddButton = showAddButton;
 		return this;
 	}
 
 	/**
-	 * Specify whether to hide the Cancel button in places in which it would
+	 * Specify whether to show the Cancel button in places in which it would
 	 * normally appear
 	 * 
-	 * @param hideCancelButton
+	 * @param showCancelButton whether to show the cancel button
 	 * @return
 	 */
-	public FormOptions setHideCancelButton(boolean hideCancelButton) {
-		this.hideCancelButton = hideCancelButton;
+	public FormOptions setShowCancelButton(boolean showCancelButton) {
+		this.showCancelButton = showCancelButton;
 		return this;
 	}
 
 	/**
-	 * Specify whether to hide Clear button in search forms. This defaults to
-	 * <code>false</code>
+	 * Specify whether to show Clear button in search forms
 	 * 
-	 * @param hideClearButton
+	 * @param showClearButton whether to show the clear button
 	 * @return
 	 */
-	public FormOptions setHideClearButton(boolean hideClearButton) {
-		this.hideClearButton = hideClearButton;
+	public FormOptions setShowClearButton(boolean showClearButton) {
+		this.showClearButton = showClearButton;
 		return this;
 	}
 
@@ -623,7 +643,7 @@ public class FormOptions implements Serializable {
 	 * Specify whether to open details screens in view mode. This defaults to
 	 * <code>false</code>
 	 * 
-	 * @param openInViewMode
+	 * @param openInViewMode whether to open the edit screen in view mode
 	 * @return
 	 */
 	public FormOptions setOpenInViewMode(boolean openInViewMode) {
@@ -643,11 +663,25 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	/**
+	 * Whether to preserve the "advanced search" mode when navigating away from a
+	 * screen and then returning to it
+	 * 
+	 * @param preserveAdvancedMode
+	 * @return
+	 */
 	public FormOptions setPreserveAdvancedMode(boolean preserveAdvancedMode) {
 		this.preserveAdvancedMode = preserveAdvancedMode;
 		return this;
 	}
 
+	/**
+	 * Whether to preserve search terms when navigating away from a screen and then
+	 * returning to it
+	 * 
+	 * @param preserveSearchTerms
+	 * @return
+	 */
 	public FormOptions setPreserveSearchTerms(boolean preserveSearchTerms) {
 		this.preserveSearchTerms = preserveSearchTerms;
 		return this;
@@ -665,13 +699,20 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	/**
+	 * Whether to preserve the sort order when navigating away from a screen and
+	 * then returning to it
+	 * 
+	 * @param preserveSortOrders
+	 * @return
+	 */
 	public FormOptions setPreserveSortOrders(boolean preserveSortOrders) {
 		this.preserveSortOrders = preserveSortOrders;
 		return this;
 	}
 
 	/**
-	 * Sets the screen to strict read-only modus. Will hide any add buttons and set
+	 * Sets the screen to strict read-only modus. Will show any add buttons and set
 	 * the screen to read only
 	 *
 	 * @param readOnly
@@ -679,8 +720,8 @@ public class FormOptions implements Serializable {
 	public FormOptions setReadOnly(boolean readOnly) {
 		if (readOnly) {
 			this.setOpenInViewMode(true);
-			this.setEditAllowed(false);
-			this.setHideAddButton(true);
+			this.setShowEditButton(false);
+			this.setShowAddButton(false);
 			this.setShowRemoveButton(false);
 		}
 		this.readOnly = readOnly;
@@ -723,20 +764,33 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	/**
+	 * Specify whether to show a caption above an edit form
+	 * 
+	 * @param showEditFormCaption
+	 * @return
+	 */
 	public FormOptions setShowEditFormCaption(boolean showEditFormCaption) {
 		this.showEditFormCaption = showEditFormCaption;
 		return this;
 	}
 
-	public FormOptions setShowGridDetailsPanel(boolean showDetailsGridDetailPanel) {
-		this.showGridDetailsPanel = showDetailsGridDetailPanel;
+	/**
+	 * Specify whether to display a details panel below a DetailsGrid when a row is
+	 * selected
+	 * 
+	 * @param showDetailsGridDetailPanel
+	 * @return
+	 */
+	public FormOptions setShowDetailsGridDetailsPanel(boolean showDetailsGridDetailPanel) {
+		this.showDetailsGridDetailsPanel = showDetailsGridDetailPanel;
 		return this;
 	}
 
 	/**
 	 * Shorthand method for showing/hiding the previous and next buttons
 	 *
-	 * @param show
+	 * @param show whether to show the iteration buttons
 	 * @return
 	 */
 	public FormOptions setShowIterationButtons(boolean show) {
@@ -745,47 +799,94 @@ public class FormOptions implements Serializable {
 		return this;
 	}
 
+	/**
+	 * Specify whether to show the "next" button in the detail screen of a search
+	 * layout
+	 * 
+	 * @param showNextButton
+	 * @return
+	 */
 	public FormOptions setShowNextButton(boolean showNextButton) {
 		this.showNextButton = showNextButton;
 		return this;
 	}
 
+	/**
+	 * Specify whether to show the "previous" button in the detail screen of a
+	 * search layout
+	 * 
+	 * @param showNextButton
+	 * @return
+	 */
 	public FormOptions setShowPrevButton(boolean showPrevButton) {
 		this.showPrevButton = showPrevButton;
 		return this;
 	}
 
+	/**
+	 * Specify whether to show the "quick search" field in a split layout
+	 * 
+	 * @return
+	 */
 	public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
 		this.showQuickSearchField = showQuickSearchField;
 		return this;
 	}
 
+	/**
+	 * Specify whether to display a "refresh" button in the details screen of a
+	 * SearchLayout
+	 * 
+	 * @param showRefreshButton
+	 * @return
+	 */
+	public FormOptions setShowRefreshButton(boolean showRefreshButton) {
+		this.showRefreshButton = showRefreshButton;
+		return this;
+	}
+
+	/**
+	 * Specify whether to display a "remove" button
+	 * 
+	 * @param showRemoveButton
+	 * @return
+	 */
 	public FormOptions setShowRemoveButton(boolean showRemoveButton) {
 		this.showRemoveButton = showRemoveButton;
 		return this;
 	}
 
+	/**
+	 * Specify whether to display a "search any" button in a search form. This
+	 * allows the user to search on any criterion, rather than on the combination of
+	 * all criterions
+	 * 
+	 * @param showSearchAnyButton
+	 * @return
+	 */
 	public FormOptions setShowSearchAnyButton(boolean showSearchAnyButton) {
 		this.showSearchAnyButton = showSearchAnyButton;
 		return this;
 	}
 
+	/**
+	 * Specify whether to display a toggle button for showing/hiding the search form
+	 * 
+	 * @param showToggleButton
+	 * @return
+	 */
 	public FormOptions setShowToggleButton(boolean showToggleButton) {
 		this.showToggleButton = showToggleButton;
 		return this;
 	}
 
+	/**
+	 * 
+	 * @param startInAdvancedMode
+	 * @return
+	 */
 	public FormOptions setStartInAdvancedMode(boolean startInAdvancedMode) {
 		this.startInAdvancedMode = startInAdvancedMode;
-		return this;
-	}
-
-	public boolean isShowRefreshButton() {
-		return showRefreshButton;
-	}
-
-	public FormOptions setShowRefreshButton(boolean showRefreshButton) {
-		this.showRefreshButton = showRefreshButton;
 		return this;
 	}
 

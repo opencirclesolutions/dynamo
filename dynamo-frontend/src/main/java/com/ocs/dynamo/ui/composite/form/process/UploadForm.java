@@ -14,40 +14,44 @@
 package com.ocs.dynamo.ui.composite.form.process;
 
 import java.io.IOException;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 
 import elemental.json.Json;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A form that contains a file upload component and a progress bar
  * 
  * @author bas.rutten
  */
-public abstract class UploadForm extends ProgressForm<byte[]> {
+public class UploadForm extends ProgressForm<byte[]> {
 
 	private static final long serialVersionUID = -4717815709838453902L;
 
-	/**
-	 * Whether to display a cancel button
-	 */
+	@Getter
 	private boolean showCancelButton;
 
-	/**
-	 * The upload component
-	 */
+	@Getter
 	private Upload upload;
 
-	/**
-	 * The name of the uploaded file
-	 */
+	@Getter
 	private String fileName;
+
+	@Getter
+	@Setter
+	private Consumer<FormLayout> buildForm;
+
+	@Getter
+	@Setter
+	private Runnable onCancel;
 
 	/**
 	 * Constructor
@@ -58,71 +62,52 @@ public abstract class UploadForm extends ProgressForm<byte[]> {
 	public UploadForm(UI ui, ProgressMode progressMode, boolean showCancelButton) {
 		super(ui, progressMode);
 		this.showCancelButton = showCancelButton;
-	}
+		setBuildMain(main -> {
+			FormLayout form = new FormLayout();
+			main.add(form);
 
-	/**
-	 * The method that is executed after the cancel button is clicked
-	 */
-	protected void cancel() {
-		// override in subclass if needed
-	}
+			// add custom components
+			if (buildForm != null) {
+				buildForm.accept(form);
+			}
 
-	/**
-	 * Constructs the screen-specific form content
-	 * 
-	 * @param layout
-	 */
-	protected void doBuildForm(FormLayout layout) {
-		// override in subclass
-	}
+			// add file upload field
+			MemoryBuffer buffer = new MemoryBuffer();
+			upload = new Upload(buffer);
+			upload.setClassName("dynamoUpload");
+			upload.addFinishedListener(event -> {
+				this.fileName = event.getFileName();
+				if (event.getContentLength() > 0L) {
+					byte[] content = new byte[(int) event.getContentLength()];
+					try {
+						buffer.getInputStream().read(content);
+						startWork(content);
+					} catch (IOException e) {
+						// do nothing
+					}
 
-	@Override
-	protected void doBuildLayout(VerticalLayout main) {
-		FormLayout form = new FormLayout();
-		main.add(form);
-
-		// add custom components
-		doBuildForm(form);
-
-		// add file upload field
-		MemoryBuffer buffer = new MemoryBuffer();
-		upload = new Upload(buffer);
-		upload.setClassName("dynamoUpload");
-		upload.addFinishedListener(event -> {
-			this.fileName = event.getFileName();
-			if (event.getContentLength() > 0L) {
-				byte[] content = new byte[(int) event.getContentLength()];
-				try {
-					buffer.getInputStream().read(content);
-					startWork(content);
-				} catch (IOException e) {
-					// do nothing
+				} else {
+					showNotification(message("ocs.no.file.selected"));
 				}
+			});
+			form.add(upload);
 
-			} else {
-				showNotification(message("ocs.no.file.selected"));
+			if (showCancelButton) {
+				Button cancelButton = new Button(message("ocs.cancel"));
+				cancelButton.addClickListener(event -> {
+					if (onCancel != null) {
+						onCancel.run();
+					}
+				});
+				main.add(cancelButton);
 			}
 		});
-		form.add(upload);
-
-		if (showCancelButton) {
-			Button cancelButton = new Button(message("ocs.cancel"));
-			cancelButton.addClickListener(event -> cancel());
-			main.add(cancelButton);
-		}
-	}
-
-	public Upload getUpload() {
-		return upload;
-	}
-
-	public String getFileName() {
-		return fileName;
 	}
 
 	/**
+	 * Shows an error after file upload and clears the upload component
 	 * 
-	 * @param message
+	 * @param message the message to show
 	 */
 	protected void showErrorAndClear(String message) {
 		VaadinUtils.showErrorNotification(message);

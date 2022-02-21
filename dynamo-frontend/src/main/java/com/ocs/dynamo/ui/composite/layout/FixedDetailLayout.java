@@ -30,7 +30,7 @@ import com.vaadin.flow.data.provider.SortOrder;
  * @param <ID2> the type of the primary key of the parent entity
  * @param <Q>   the type of the parent entity
  */
-public abstract class FixedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
+public class FixedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
 		extends FixedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {
 
 	private static final long serialVersionUID = 4606800218149558500L;

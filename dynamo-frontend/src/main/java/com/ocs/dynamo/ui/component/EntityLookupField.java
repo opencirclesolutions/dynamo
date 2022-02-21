@@ -197,7 +197,8 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			Collection<T> col = (Collection<T>) newValue;
 			if (!col.isEmpty()) {
 				caption = EntityModelUtils.getDisplayPropertyValue(col, getEntityModel(),
-						SystemPropertyUtils.getDefaultLookupFieldMaxItems(), getMessageService(), VaadinUtils.getLocale());
+						SystemPropertyUtils.getDefaultLookupFieldMaxItems(), getMessageService(),
+						VaadinUtils.getLocale());
 			}
 		} else {
 			T t = (T) newValue;
@@ -418,6 +419,16 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 			String caption = constructLabelValue(newValue);
 			label.setText(caption);
 		}
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		setEnabled(!readOnly);
+	}
+
+	@Override
+	public void setClearButtonVisible(boolean visible) {
+		// do nothing
 	}
 
 }

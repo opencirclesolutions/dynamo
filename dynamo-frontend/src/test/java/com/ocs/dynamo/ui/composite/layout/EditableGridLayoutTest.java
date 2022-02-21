@@ -16,7 +16,7 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.Query;
@@ -149,7 +149,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
 	@Test
 	public void testCreateInViewMode() {
-		FormOptions fo = new FormOptions().setOpenInViewMode(true).setEditAllowed(true);
+		FormOptions fo = new FormOptions().setOpenInViewMode(true).setShowEditButton(true);
 		EditableGridLayout<Integer, TestEntity> layout = new EditableGridLayout<>(testEntityService,
 				entityModelFactory.getModel("TestEntityGrid", TestEntity.class), fo, null);
 		layout.build();

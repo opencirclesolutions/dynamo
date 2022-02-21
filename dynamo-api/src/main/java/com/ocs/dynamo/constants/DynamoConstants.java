@@ -169,6 +169,8 @@ public class DynamoConstants {
 
 	public static final String CSS_SPLIT_LAYOUT_RIGHT = "splitLayoutRight";
 
+	public static final String CSS_TAB_LAYOUT_DISPLAY_PAGE = "tabLayoutDisplayPage";
+
 	public static final String CSS_TAB_LAYOUT = "tabLayout";
 
 	/**
@@ -232,6 +234,12 @@ public class DynamoConstants {
 	 * symbol
 	 */
 	public static final String SP_DEFAULT_CURRENCY_SYMBOL = "ocs.default.currency.symbol";
+
+	/**
+	 * Name of the system property that is used to determine whether a clear button
+	 * is visible for a component
+	 */
+	public static final String SP_DEFAULT_CLEAR_BUTTON_VISIBLE = "ocs.default.clear.button.visible";
 
 	/**
 	 * Name of the system property that is used to determine the default date format

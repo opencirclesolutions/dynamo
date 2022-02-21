@@ -28,8 +28,8 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -53,9 +53,6 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = -2012972894321597214L;
 
-	/**
-	 * The entity to add/modify
-	 */
 	private T entity;
 
 	private EntityModel<T> entityModel;
@@ -81,10 +78,6 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	@Getter
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
-
-	@Getter
-	@Setter
-	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	@Getter
 	@Setter
@@ -129,10 +122,10 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	private void buildMain() {
 		setBuildMain(parent -> {
-			// cancel button makes no sense in a popup
-			formOptions.setHideCancelButton(false);
+			formOptions.setShowCancelButton(true);
 
-			layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions, componentContext);
+			layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions);
+			layout.setComponentContext(componentContext);
 			layout.setAfterEditDone((cancel, isNew, ent) -> {
 				if (getAfterEditDone() != null) {
 					getAfterEditDone().accept(cancel, isNew, ent);
@@ -142,7 +135,6 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 			});
 			layout.setCreateEntitySupplier(getCreateEntitySupplier());
 			layout.setPostProcessButtonBar(getPostProcessButtonBar());
-			layout.setPostProcessEditFields(getPostProcessEditFields());
 			layout.setFieldFilters(fieldFilters);
 			layout.setJoins(joins);
 			parent.add(layout);
@@ -159,6 +151,10 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	public void setColumnThresholds(List<String> thresholds) {
 		componentContext.setEditColumnThresholds(thresholds);
+	}
+
+	public void setPostProcessEditFields(Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields) {
+		componentContext.setPostProcessEditFields(postProcessEditFields);
 	}
 
 }

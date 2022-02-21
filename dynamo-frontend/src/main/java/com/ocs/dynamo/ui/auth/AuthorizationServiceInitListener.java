@@ -23,6 +23,12 @@ import com.vaadin.flow.server.VaadinServiceInitListener;
 
 import lombok.extern.slf4j.Slf4j;
 
+/**
+ * Service listener that will check whether the user has the correct permissions
+ * 
+ * @author BasRutten
+ *
+ */
 @Slf4j
 public class AuthorizationServiceInitListener implements VaadinServiceInitListener {
 

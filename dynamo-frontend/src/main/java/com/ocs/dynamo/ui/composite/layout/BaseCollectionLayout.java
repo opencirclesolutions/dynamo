@@ -73,6 +73,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * regular model if not set
 	 */
 	@Getter
+	@Setter
 	private EntityModel<T> exportEntityModel;
 
 	/**
@@ -109,7 +110,24 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The maximum number of search results
 	 */
 	@Getter
+	@Setter
 	private Integer maxResults;
+
+	@Getter
+	@Setter
+	private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<GridWrapper<ID, T, U>> postProcessGridWrapper;
+
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> afterLayoutBuilt;
+
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessMainButtonBar;
 
 	/**
 	 * The currently selected item (in the grid)
@@ -127,23 +145,15 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * The list of sort orders to apply by default
 	 */
+	@Setter
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
 	@Getter
 	@Setter
-	private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
-
-	@Getter
-	@Setter
-	private Consumer<FlexLayout> postProcessMainButtonBar;
-
-	@Getter
-	@Setter
-	private Consumer<VerticalLayout> postProcessLayout;
-
-	@Getter
-	@Setter
-	private Consumer<GridWrapper<ID, T, U>> postProcessGridWrapper;
+	private Runnable onAdd = () -> {
+		setSelectedItem(createEntity());
+		detailsMode(getSelectedItem());
+	};
 
 	/**
 	 * Constructor
@@ -200,9 +210,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		ab.setIcon(VaadinIcon.PLUS.create());
 		ab.addClickListener(e -> {
 			checkComponentState(null);
-			doAdd();
+			onAdd.run();
 		});
-		ab.setVisible(!getFormOptions().isHideAddButton() && checkEditAllowed());
+		ab.setVisible(getFormOptions().isShowAddButton() && checkEditAllowed());
 		return ab;
 	}
 
@@ -220,7 +230,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	protected T createEntity() {
-		return getService().createNewEntity();
+		return getCreateEntitySupplier() != null ? getCreateEntitySupplier().get() : getService().createNewEntity();
 	}
 
 	/**
@@ -240,15 +250,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 				c.setSortable(false);
 			}
 		}
-	}
-
-	/**
-	 * Callback method that is called when the Add button is clicked. Can be
-	 * overridden in order to perform your own custom logic
-	 */
-	public void doAdd() {
-		setSelectedItem(createEntity());
-		detailsMode(getSelectedItem());
 	}
 
 	/**
@@ -297,48 +298,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Sets the joins to use when retrieving a single object for use in a detail
-	 * form. If not set then the application will use the default joins defined in
-	 * the DAO. the joins passed to the constructor are the joins for fetching the
-	 * collection inside the grid and are NOT used when fetching a single object
-	 * 
-	 * @param detailJoins the desired detail joins
-	 */
-	public void setDetailJoins(FetchJoinInformation... detailJoins) {
-		this.detailJoins = detailJoins;
-	}
-
-	/**
-	 * Specifies the entity model to use when performing an export to Excel or CSV.
-	 * Use this method if you need to deviate from the regular export functionality
-	 * 
-	 * @param exportEntityModel the desired model
-	 */
-	public void setExportEntityModel(EntityModel<T> exportEntityModel) {
-		this.exportEntityModel = exportEntityModel;
-	}
-
-	/**
-	 * Specifies the joins to use when performing a data export. These will override
-	 * the default joins that are used when fetching data to fill the grid
-	 * 
-	 * @param exportJoins the desired joins
-	 */
-	public void setExportJoins(FetchJoinInformation... exportJoins) {
-		this.exportJoins = exportJoins;
-	}
-
-	/**
-	 * Sets the maximum number of search results. If a search results in more hits,
-	 * the result set will be truncated
-	 * 
-	 * @param maxResults the maximum results
-	 */
-	public void setMaxResults(Integer maxResults) {
-		this.maxResults = maxResults;
-	}
-
-	/**
 	 * Sets the provided item as the currently selected item in the grid
 	 * 
 	 * @param selectedItem the item that you want to become the selected item
@@ -348,8 +307,11 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		checkComponentState(selectedItem);
 	}
 
-	public void setSortOrders(List<SortOrder<?>> sortOrders) {
-		this.sortOrders = sortOrders;
+	public void setDetailJoins(FetchJoinInformation... detailJoins) {
+		this.detailJoins = detailJoins;
 	}
 
+	public void setExportJoins(FetchJoinInformation... exportJoins) {
+		this.exportJoins = exportJoins;
+	}
 }

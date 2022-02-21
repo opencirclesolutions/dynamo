@@ -59,13 +59,21 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 	private static final long serialVersionUID = 4410282343830892631L;
 
+	/**
+	 * Callback method that is executed after the user selects a domain using the
+	 * combo box
+	 */
 	@Getter
 	@Setter
 	private Consumer<Class<? extends Domain>> afterDomainSelected;
 
+	/**
+	 * Callback method that is executed to create a custom header layout that is
+	 * displayed above the search grid
+	 */
 	@Getter
 	@Setter
-	private Supplier<Component> buildHeaderLayout;
+	private Supplier<Component> headerLayoutCreator;
 
 	private List<Component> componentsToRegister = new ArrayList<>();
 
@@ -223,14 +231,14 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 					getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
 					new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING));
 
-			layout.setPostProcessLayout(postProcessSplitLayout);
+			layout.setAfterLayoutBuilt(postProcessSplitLayout);
 			layout.setMustEnableComponent((component, t) -> {
 				if (layout.getRemoveButton() == component) {
 					return deleteAllowed == null ? true : deleteAllowed.apply(getSelectedDomain());
 				}
 				return true;
 			});
-			layout.setBuildHeaderLayout(buildHeaderLayout);
+			layout.setHeaderLayoutCreator(headerLayoutCreator);
 			layout.setPostProcessMainButtonBar(postProcessButtonBar);
 			layout.setQuickSearchFilterSupplier(
 					value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),

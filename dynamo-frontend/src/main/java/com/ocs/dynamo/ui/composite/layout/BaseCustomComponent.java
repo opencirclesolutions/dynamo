@@ -50,10 +50,10 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 
 	private static final long serialVersionUID = -8982555842423738005L;
 
+	private UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+
 	@Getter
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-
-	private UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 
 	/**
 	 * Constructs a (formatted) label based on the attribute model
@@ -142,6 +142,11 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 		helper.navigate(viewName, mode);
 	}
 
+	/**
+	 * Shows an error message
+	 * 
+	 * @param message the message to show
+	 */
 	protected void showErrorNotification(String message) {
 		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
 	}
@@ -163,6 +168,20 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 		}
 	}
 
+	/**
+	 * Shows a success message
+	 * 
+	 * @param message the message to show
+	 */
+	protected void showSuccessNotification(String message) {
+		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_SUCCESS);
+	}
+
+	/**
+	 * Shows a tray message
+	 * 
+	 * @param message the message to show
+	 */
 	protected void showTrayNotification(String message) {
 		showNotifification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
 	}

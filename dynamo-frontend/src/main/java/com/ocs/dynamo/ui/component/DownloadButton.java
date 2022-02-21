@@ -25,6 +25,8 @@ import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 import com.vaadin.flow.server.StreamResource;
 
+import lombok.Getter;
+
 /**
  * A button that starts a file download when clicked.
  *
@@ -37,11 +39,13 @@ public class DownloadButton extends HorizontalLayout {
 	/**
 	 * The actual link
 	 */
+	@Getter
 	private Anchor anchor;
 
 	/**
 	 * Button wrapped inside of link
 	 */
+	@Getter
 	private Button button;
 
 	/**
@@ -90,14 +94,6 @@ public class DownloadButton extends HorizontalLayout {
 			}
 			return inputStream;
 		}));
-	}
-
-	public Anchor getAnchor() {
-		return anchor;
-	}
-
-	public Button getButton() {
-		return button;
 	}
 
 	@Override

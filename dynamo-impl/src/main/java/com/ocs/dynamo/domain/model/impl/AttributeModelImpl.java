@@ -66,6 +66,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
 
+	private boolean clearButtonVisible;
+
 	private String collectionTableFieldName;
 
 	private String collectionTableName;

@@ -16,6 +16,11 @@ package com.ocs.dynamo.ui.composite.layout;
 import lombok.Builder;
 import lombok.Getter;
 
+/**
+ * 
+ * @author BasRutten
+ *
+ */
 @Getter
 @Builder
 public class SearchOptions {

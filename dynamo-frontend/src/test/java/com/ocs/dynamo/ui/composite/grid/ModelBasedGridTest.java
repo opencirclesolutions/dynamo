@@ -35,6 +35,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.vaadin.flow.component.grid.Grid;
@@ -107,7 +108,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
 		provider.getItems().add(person);
 
-		ComponentContext cc = ComponentContext.builder().editable(false).build();
+		ComponentContext<Integer, Person> cc = ComponentContext.<Integer, Person>builder().editable(false).build();
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
 
 		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model,

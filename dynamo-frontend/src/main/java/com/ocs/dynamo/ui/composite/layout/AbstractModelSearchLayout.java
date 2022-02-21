@@ -25,8 +25,8 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
@@ -40,60 +40,53 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 public abstract class AbstractModelSearchLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends AbstractSearchLayout<ID, T, T> {
 
 	private static final long serialVersionUID = -2767171519143049029L;
 
-	/**
-	 * Button for adding new items. Displayed by default
-	 */
+	@Getter
 	private Button addButton;
 
 	/**
 	 * The back button that is displayed above the tab sheet in "complex details"
 	 * mode
 	 */
+	@Getter
 	private Button complexDetailModeBackButton;
 
 	/**
-	 * The edit button
+	 * The title to display above the tab sheet when in "complex details" mode
 	 */
+	@Getter
+	@Setter
+	private String detailsModeTabTitle;
+
+	@Getter
 	private Button editButton;
 
-	/**
-	 * The edit form for editing a single object
-	 */
+	@Getter
 	private ModelBasedEditForm<ID, T> editForm;
 
-	/**
-	 * The grid wrapper
-	 */
 	private ServiceBasedGridWrapper<ID, T> gridWrapper;
 
 	/**
-	 * The main layout (in edit mode)
+	 * The main layout while the component is in details mode
 	 */
 	private VerticalLayout mainEditLayout;
 
-	/**
-	 * Button for selecting the next item
-	 */
+	@Getter
 	private Button nextButton;
 
-	/**
-	 * Button for selecting the previous item
-	 */
+	@Getter
 	private Button prevButton;
 
-	/**
-	 * The remove button
-	 */
+	@Getter
 	private Button removeButton;
 
-	/**
-	 * The selected detail layout
-	 */
 	private Component selectedDetailLayout;
 
 	/**
@@ -110,138 +103,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	public AbstractModelSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, sortOrder, joins);
-	}
-
-	@Override
-	public void addManageDetailButtons() {
-		// add button
-		addButton = constructAddButton();
-		getButtonBar().add(addButton);
-
-		// edit/view button
-		editButton = constructEditButton();
-		registerComponent(editButton);
-		getButtonBar().add(editButton);
-
-		// remove button
-		removeButton = constructRemoveButton();
-		registerComponent(removeButton);
-		getButtonBar().add(removeButton);
-	}
-
-	/**
-	 * Builds a tab layout for the display view. The definition of the tabs has to
-	 * be done in the subclasses
-	 * 
-	 * @param entity the currently selected entity
-	 */
-	private void buildDetailsTabLayout(T entity, FormOptions formOptions) {
-		tabContainerLayout = new DefaultVerticalLayout(false, false);
-
-		HorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
-		tabContainerLayout.add(buttonBar);
-
-		complexDetailModeBackButton = new Button(message("ocs.back"));
-		complexDetailModeBackButton.setIcon(VaadinIcon.BACKWARDS.create());
-		complexDetailModeBackButton.addClickListener(e -> searchMode());
-		buttonBar.add(complexDetailModeBackButton);
-
-		if (getFormOptions().isShowPrevButton()) {
-			prevButton = new Button(message("ocs.previous"));
-			prevButton.setIcon(VaadinIcon.ARROW_LEFT.create());
-			prevButton.addClickListener(e -> {
-				T prev = getPreviousEntity();
-				if (prev != null) {
-					tabLayout.setEntity(prev, getFormOptions().isPreserveSelectedTab());
-					// tabLayout.reload();
-				} else {
-					prevButton.setEnabled(false);
-				}
-				if (nextButton != null) {
-					nextButton.setEnabled(true);
-				}
-			});
-			prevButton.setEnabled(hasPrevEntity());
-			buttonBar.add(prevButton);
-		}
-
-		if (getFormOptions().isShowNextButton()) {
-			nextButton = new Button(message("ocs.next"));
-			nextButton.setIcon(VaadinIcon.ARROW_RIGHT.create());
-			nextButton.addClickListener(e -> {
-				T next = getNextEntity();
-				if (next != null) {
-					tabLayout.setEntity(next, getFormOptions().isPreserveSelectedTab());
-				} else {
-					nextButton.setEnabled(false);
-				}
-				if (prevButton != null) {
-					prevButton.setEnabled(true);
-				}
-			});
-			nextButton.setEnabled(hasNextEntity());
-			buttonBar.add(nextButton);
-		}
-
-		tabLayout = new TabLayout<ID, T>(entity);
-
-		tabLayout.setTitleSupplier(() -> getDetailModeTabTitle());
-		tabLayout.setCaptions(getDetailModeTabCaptions());
-		tabLayout.setTabSupplier(index -> constructComplexDetailModeTab(index, formOptions, false));
-		tabLayout.setIconSupplier(index -> getIconForTab(index));
-		tabLayout.build();
-		tabContainerLayout.add(tabLayout);
-	}
-
-	/**
-	 * Builds the edit form
-	 * 
-	 * @param entity  the currently selected entity
-	 * @param options the form options
-	 */
-	private void buildEditForm(T entity, FormOptions options, ComponentContext<ID, T> context) {
-		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters()) {
-
-			private static final long serialVersionUID = 6485097089659928131L;
-
-			@Override
-			protected T getNextEntity() {
-				return AbstractModelSearchLayout.this.getNextEntity();
-			}
-
-			@Override
-			protected T getPreviousEntity() {
-				return AbstractModelSearchLayout.this.getPreviousEntity();
-			}
-
-			@Override
-			protected boolean hasNextEntity() {
-				return AbstractModelSearchLayout.this.hasNextEntity();
-			}
-
-			@Override
-			protected boolean hasPrevEntity() {
-				return AbstractModelSearchLayout.this.hasPrevEntity();
-			}
-
-		};
-
-		initEditForm(editForm);
-
-		editForm.setOnBackButtonClicked(() -> searchMode());
-		addAfterEditDone();
-
-		editForm.setSupportsIteration(true);
-		editForm.setDetailJoins(getDetailJoins());
-		editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
-
-		editForm.build();
-
-//		if (getAfterEntitySelected() != null) {
-//			editForm.setAfterEntitySelected(getAfterEntitySelected());
-//		}
-
-		editForm.setEntity(entity);
 	}
 
 	private void addAfterEditDone() {
@@ -262,6 +123,88 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 				}
 			}
 		});
+	}
+
+	@Override
+	public void addManageDetailButtons() {
+		addButton = constructAddButton();
+		getButtonBar().add(addButton);
+
+		editButton = constructEditButton();
+		registerComponent(editButton);
+		getButtonBar().add(editButton);
+
+		removeButton = constructRemoveButton();
+		registerComponent(removeButton);
+		getButtonBar().add(removeButton);
+	}
+
+	/**
+	 * Builds a tab layout for the complex details mode view.
+	 * 
+	 * @param entity      the currently selected entity
+	 * @param formOptions the form options
+	 */
+	private void buildDetailsTabLayout(T entity, FormOptions formOptions) {
+		tabContainerLayout = new DefaultVerticalLayout(false, false);
+
+		HorizontalLayout buttonBar = new DefaultHorizontalLayout(true, true);
+		tabContainerLayout.add(buttonBar);
+
+		complexDetailModeBackButton = new Button(message("ocs.back"));
+		complexDetailModeBackButton.setIcon(VaadinIcon.BACKWARDS.create());
+		complexDetailModeBackButton.addClickListener(e -> searchMode());
+		buttonBar.add(complexDetailModeBackButton);
+
+		if (getFormOptions().isShowPrevButton()) {
+			constructPrevButton(buttonBar);
+		}
+
+		if (getFormOptions().isShowNextButton()) {
+			constructNextButton(buttonBar);
+		}
+
+		tabLayout = new TabLayout<ID, T>(entity);
+		tabLayout.setTitleSupplier(() -> getDetailsModeTabTitle());
+		tabLayout.setCaptions(getDetailsModeTabCaptions());
+		tabLayout.setTabSupplier(index -> {
+			return getDetailTabCreators().get(index).apply(formOptions, entity.getId() == null);
+		});
+		tabLayout.setIconSupplier(index -> getIconForTab(index));
+		tabLayout.build();
+		tabContainerLayout.add(tabLayout);
+	}
+
+	/**
+	 * Builds the edit form
+	 * 
+	 * @param entity  the currently selected entity
+	 * @param options the form options
+	 * @param context the component context
+	 */
+	private void buildEditForm(T entity, FormOptions options, ComponentContext<ID, T> context) {
+		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters());
+
+		initEditForm(editForm);
+		editForm.setNextEntity(() -> this.getNextEntity());
+		editForm.setPreviousEntity(() -> this.getPreviousEntity());
+		editForm.setHasNextEntity(() -> this.hasNextEntity());
+		editForm.setHasPreviousEntity(() -> this.hasPrevEntity());
+		editForm.setOnBackButtonClicked(() -> searchMode());
+		addAfterEditDone();
+
+		editForm.setSupportsIteration(true);
+		editForm.setDetailJoins(getDetailJoins());
+		editForm.setPostProcessButtonBar(getPostProcessDetailButtonBar());
+
+		editForm.build();
+
+		// TODO: is this still needed or useful?
+//		if (getAfterEntitySelected() != null) {
+//			editForm.setAfterEntitySelected(getAfterEntitySelected());
+//		}
+
+		editForm.setEntity(entity);
 	}
 
 	/**
@@ -310,6 +253,53 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	}
 
 	/**
+	 * Constructs the button used to navigate to the next entity
+	 * 
+	 * @param buttonBar the button bar to which to add the button
+	 */
+	private void constructNextButton(HorizontalLayout buttonBar) {
+		nextButton = new Button(message("ocs.next"));
+		nextButton.setIcon(VaadinIcon.ARROW_RIGHT.create());
+		nextButton.addClickListener(e -> {
+			T next = getNextEntity();
+			if (next != null) {
+				tabLayout.setEntity(next, getFormOptions().isPreserveSelectedTab());
+			} else {
+				nextButton.setEnabled(false);
+			}
+			if (prevButton != null) {
+				prevButton.setEnabled(true);
+			}
+		});
+		nextButton.setEnabled(hasNextEntity());
+		buttonBar.add(nextButton);
+	}
+
+	/**
+	 * Constructs the button used to navigate to the previous entity
+	 * 
+	 * @param buttonBar the button bar to which to add the button
+	 */
+	private void constructPrevButton(HorizontalLayout buttonBar) {
+		prevButton = new Button(message("ocs.previous"));
+		prevButton.setIcon(VaadinIcon.ARROW_LEFT.create());
+		prevButton.addClickListener(e -> {
+			T prev = getPreviousEntity();
+			if (prev != null) {
+				tabLayout.setEntity(prev, getFormOptions().isPreserveSelectedTab());
+				// tabLayout.reload();
+			} else {
+				prevButton.setEnabled(false);
+			}
+			if (nextButton != null) {
+				nextButton.setEnabled(true);
+			}
+		});
+		prevButton.setEnabled(hasPrevEntity());
+		buttonBar.add(prevButton);
+	}
+
+	/**
 	 * Open the screen in details mode
 	 * 
 	 * @param entity the entity to display
@@ -330,16 +320,15 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		copy.setShowNextButton(getFormOptions().isShowNextButton());
 		copy.setShowPrevButton(getFormOptions().isShowPrevButton());
 		copy.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
-		// copy.setFormNested(true);
 		copy.setConfirmSave(getFormOptions().isConfirmSave());
 
 		// set the form options for the detail form
-		if (getFormOptions().isEditAllowed()) {
+		if (getFormOptions().isShowEditButton()) {
 			// editing in form must be possible
-			copy.setEditAllowed(true);
+			copy.setShowEditButton(true);
 		} else {
 			// read-only mode
-			copy.setOpenInViewMode(true).setEditAllowed(false);
+			copy.setOpenInViewMode(true).setShowEditButton(false);
 		}
 
 		if (copy.isOpenInViewMode() || !checkEditAllowed()) {
@@ -347,9 +336,9 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		}
 
 		if (getFormOptions().isComplexDetailsMode() && entity != null && entity.getId() != null) {
-			// complex tab layout, back button is placed separately
+			// complex tab layout, back button is placed separately above the tab layout
 			copy.setShowBackButton(false);
-			copy.setHideCancelButton(true);
+			copy.setShowCancelButton(false);
 
 			if (tabContainerLayout == null) {
 				buildDetailsTabLayout(entity, copy);
@@ -379,7 +368,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			selectedDetailLayout = editForm;
 		} else {
 			// complex details mode for creating a new entity, re-use the first tab
-			Component comp = constructComplexDetailModeTab(0, getFormOptions(), true);
+			Component comp = getDetailTabCreators().get(0).apply(getFormOptions(), entity.getId() == null);
 
 			if (selectedDetailLayout == null) {
 				mainEditLayout.add(comp);
@@ -417,32 +406,12 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 */
 	public final void edit(T entity, int initialTab) {
 		setSelectedItem(entity);
-		doEdit();
+		getOnEdit().run();
 		if (editForm != null) {
 			editForm.selectTab(initialTab);
 		} else {
 			tabLayout.selectTab(initialTab);
 		}
-	}
-
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	public Button getComplexDetailModeBackButton() {
-		return complexDetailModeBackButton;
-	}
-
-	public Button getEditButton() {
-		return editButton;
-	}
-
-//	public List<String> getEditColumnThresholds() {
-//		return editColumnThresholds;
-//	}
-
-	public ModelBasedEditForm<ID, T> getEditForm() {
-		return editForm;
 	}
 
 	@Override
@@ -485,10 +454,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			getGridWrapper().getGrid().select(prev);
 		}
 		return prev;
-	}
-
-	public Button getRemoveButton() {
-		return removeButton;
 	}
 
 	/**
@@ -539,10 +504,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			tabLayout.setTabVisible(index, visible);
 		}
 	}
-
-//	public void setEditColumnThresholds(List<String> editColumnThresholds) {
-//		this.editColumnThresholds = editColumnThresholds;
-//	}
 
 	/**
 	 * Refreshes the contents of a label inside the edit form

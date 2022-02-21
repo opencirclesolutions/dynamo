@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.BiConsumer;
+import java.util.function.Consumer;
 
 import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -28,7 +29,6 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
@@ -66,6 +66,13 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
 
 	/**
+	 * Callback method that is executed after the entire layout has been created
+	 */
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> afterLayoutBuilt;
+
+	/**
 	 * Specifies which relations to fetch. When specified this overrides the default
 	 * relations defined in the DAO
 	 */
@@ -90,16 +97,16 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	 *                    database
 	 */
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
-			ComponentContext<ID, T> context, FetchJoinInformation... joins) {
+			FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
-		setComponentContext(context);
+		// setComponentContext(context);
 		setMargin(false);
 		setClassName(DynamoConstants.CSS_SIMPLE_EDIT_LAYOUT);
 		this.entity = entity;
 		this.joins = joins;
 	}
 
-	protected final void handleEditDone(boolean cancel, boolean newEntity, T entity) {
+	public final void handleEditDone(boolean cancel, boolean newEntity, T entity) {
 		if (entity.getId() != null || getComponentContext().isPopup()) {
 			// reset to view mode
 			if (getFormOptions().isOpenInViewMode()) {
@@ -156,7 +163,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			main.add(editForm);
 
-			postProcessLayout(main);
+			if (afterLayoutBuilt != null) {
+				afterLayoutBuilt.accept(main);
+			}
 			add(main);
 
 			if (getComponentContext().getAfterEntitySelected() != null) {
@@ -183,16 +192,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	protected void onAttach(AttachEvent attachEvent) {
 		super.onAttach(attachEvent);
 		build();
-	}
-
-	/**
-	 * Method that is called after the entire layout has been constructed. Use this
-	 * to e.g. add additional components to the bottom of the layout
-	 *
-	 * @param main the main layout
-	 */
-	protected void postProcessLayout(VerticalLayout main) {
-		// overwrite in subclass
 	}
 
 	@Override

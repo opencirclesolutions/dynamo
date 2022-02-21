@@ -30,6 +30,7 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.GridFormatUtils;
@@ -185,7 +186,8 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 					if (am.isRequired()) {
 						builder.asRequired();
 					}
-					fieldFactory.addConvertersAndValidators(builder, am, context, null, null, null);
+					fieldFactory.addConvertersAndValidators(builder, am, context,
+							componentContext.findCustomConverter(am), componentContext.findCustomValidator(am), null);
 					builder.bind(am.getPath());
 				}
 				column.setEditorComponent(comp);

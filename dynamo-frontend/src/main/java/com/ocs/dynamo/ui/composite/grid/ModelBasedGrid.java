@@ -24,6 +24,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;

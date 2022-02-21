@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -27,6 +28,9 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A layout for displaying a fixed collection of items, that contains both a
  * grid view and a details view
@@ -36,15 +40,19 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <T>  the type of the entity
  */
 @SuppressWarnings("serial")
-public abstract class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseSplitLayout<ID, T> {
+public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
 
 	/**
 	 * The fixed collection of items that is displayed in the table
 	 */
+	@Getter
 	private Collection<T> items;
+
+	@Getter
+	@Setter
+	private Supplier<Collection<T>> loadItemSupplier;
 
 	/**
 	 * Constructor
@@ -77,7 +85,7 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 	 */
 	@Override
 	public void buildFilter() {
-		this.items = loadItems();
+		this.items = loadItemSupplier.get();
 	}
 
 	@Override
@@ -109,15 +117,6 @@ public abstract class FixedSplitLayout<ID extends Serializable, T extends Abstra
 		// do nothing - not supported for this component
 		return null;
 	}
-
-	public Collection<T> getItems() {
-		return items;
-	}
-
-	/**
-	 * Loads the items that are to be displayed
-	 */
-	protected abstract Collection<T> loadItems();
 
 	/**
 	 * Reloads the data after an update

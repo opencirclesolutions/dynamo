@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -58,6 +59,9 @@ import com.vaadin.flow.data.validator.LongRangeValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.function.ValueProvider;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A grid for editing a collection of simple values stored in a JPA collection
  * table
@@ -82,6 +86,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	private static final String VALUE_TOO_SHORT = "ocs.value.too.short";
 
+	@Getter
 	private Button addButton;
 
 	private final AttributeModel attributeModel;
@@ -96,10 +101,13 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 * needed but for some reason the normal binding mechanisms don't work so we
 	 * need to set the values ourselves
 	 */
+	@Getter
 	private U entity;
 
+	@Getter
 	private FormOptions formOptions;
 
+	@Getter
 	private Grid<ValueHolder<T>> grid;
 
 	private String gridHeight = SystemPropertyUtils.getDefaultEditGridHeight();
@@ -108,17 +116,29 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	private ListDataProvider<ValueHolder<T>> provider;
 
+	@Getter
+	@Setter
+	private Consumer<HorizontalLayout> postProcessButtonBar;
+
 	/**
 	 * The currently selected item in the grid
 	 */
+	@Getter
 	private T selectedItem;
 
 	/**
 	 * 
 	 * Whether the grid is in view mode. If this is the case, editing is not allowed
 	 */
+	@Getter
 	private boolean viewMode;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param attributeModel the attribute model
+	 * @param formOptions    the form options
+	 */
 	public ElementCollectionGrid(AttributeModel attributeModel, FormOptions formOptions) {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 		this.formOptions = formOptions;
@@ -168,12 +188,13 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 		parent.add(buttonBar);
 
-		// button for adding a row
-		if (!viewMode && !formOptions.isHideAddButton()) {
+		if (!viewMode && formOptions.isShowAddButton()) {
 			constructAddButton(buttonBar);
 		}
 
-		postProcessButtonBar(buttonBar);
+		if (postProcessButtonBar != null) {
+			postProcessButtonBar.accept(buttonBar);
+		}
 	}
 
 	/**
@@ -181,7 +202,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 */
 	private void constructRemoveColumn() {
 		if (!viewMode && formOptions.isShowRemoveButton()) {
-			final String removeMsg = message("ocs.detail.remove");
+			String removeMsg = message("ocs.detail.remove");
 			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) t -> {
 				Button remove = new Button();
 				remove.setIcon(VaadinIcon.TRASH.create());
@@ -205,22 +226,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		return converted;
 	}
 
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	public U getEntity() {
-		return entity;
-	}
-
-	public FormOptions getFormOptions() {
-		return formOptions;
-	}
-
-	public Grid<ValueHolder<T>> getGrid() {
-		return grid;
-	}
-
 	public Integer getMaxLength() {
 		return attributeModel.getMaxLength();
 	}
@@ -235,10 +240,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	public Long getMinValue() {
 		return attributeModel.getMinValue();
-	}
-
-	public Object getSelectedItem() {
-		return selectedItem;
 	}
 
 	@Override
@@ -281,60 +282,13 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 			builder.asRequired(notEmpty);
 
 			if (String.class.equals(attributeModel.getMemberType())) {
-				// string length validation
-				if (attributeModel.getMaxLength() != null) {
-					builder.withValidator(
-							new StringLengthValidator(message(VALUE_TOO_LONG, attributeModel.getMaxLength()), null,
-									attributeModel.getMaxLength()));
-				}
-				if (attributeModel.getMinLength() != null) {
-					builder.withValidator(
-							new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
-									attributeModel.getMinLength(), null));
-				}
-				if (attributeModel.isTrimSpaces()) {
-					builder.withConverter(new TrimSpacesConverter());
-				}
-
+				addStringConverters(builder);
 			} else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
-				BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder.withConverter(
-						ConverterFactory.createIntegerConverter(attributeModel.useThousandsGroupingInEditMode(),
-								attributeModel.isPercentage()));
-				if (attributeModel.getMaxValue() != null) {
-					iBuilder.withValidator(
-							new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
-									attributeModel.getMaxValue().intValue()));
-				}
-				if (attributeModel.getMinValue() != null) {
-					iBuilder.withValidator(
-							new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
-									attributeModel.getMinValue().intValue(), null));
-				}
+				addIntegerConverters(builder);
 			} else if (NumberUtils.isLong(attributeModel.getMemberType())) {
-				BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(
-						ConverterFactory.createLongConverter(attributeModel.useThousandsGroupingInEditMode(),
-								attributeModel.isPercentage()));
-				if (attributeModel.getMaxValue() != null) {
-					iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
-							null, attributeModel.getMaxValue()));
-				}
-				if (attributeModel.getMinValue() != null) {
-					iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
-							attributeModel.getMinValue(), null));
-				}
+				addLongConverters(builder);
 			} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
-				BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
-						.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
-								attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
-								attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
-				if (attributeModel.getMaxValue() != null) {
-					iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
-							BigDecimal.valueOf(attributeModel.getMaxValue())));
-				}
-				if (attributeModel.getMinValue() != null) {
-					iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_LOW),
-							BigDecimal.valueOf(attributeModel.getMinValue()), null));
-				}
+				addBigDecimalConverters(builder);
 			}
 			builder.bind("value");
 			tf.setSizeFull();
@@ -362,8 +316,61 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		add(main);
 	}
 
-	public boolean isViewMode() {
-		return viewMode;
+	private void addBigDecimalConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
+				.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
+						attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
+						attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
+					BigDecimal.valueOf(attributeModel.getMaxValue())));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_LOW),
+					BigDecimal.valueOf(attributeModel.getMinValue()), null));
+		}
+	}
+
+	private void addLongConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(ConverterFactory
+				.createLongConverter(attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
+					attributeModel.getMaxValue()));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+					attributeModel.getMinValue(), null));
+		}
+	}
+
+	private void addIntegerConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder
+				.withConverter(ConverterFactory.createIntegerConverter(attributeModel.useThousandsGroupingInEditMode(),
+						attributeModel.isPercentage()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
+					null, attributeModel.getMaxValue().intValue()));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+					attributeModel.getMinValue().intValue(), null));
+		}
+	}
+
+	private void addStringConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		// string length validation
+		if (attributeModel.getMaxLength() != null) {
+			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_LONG, attributeModel.getMaxLength()),
+					null, attributeModel.getMaxLength()));
+		}
+		if (attributeModel.getMinLength() != null) {
+			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
+					attributeModel.getMinLength(), null));
+		}
+		if (attributeModel.isTrimSpaces()) {
+			builder.withConverter(new TrimSpacesConverter());
+		}
 	}
 
 	private String message(String key, Object... values) {
@@ -374,16 +381,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 * Callback method that is executed after an item is selected in the grid
 	 */
 	protected void onSelect(T selected) {
-		// overwrite in subclass if needed
-	}
-
-	/**
-	 * Callback method that is executed after the button bar has been constructed.
-	 * Use this method to add extra buttons to the button bar
-	 *
-	 * @param buttonBar the button bar
-	 */
-	protected void postProcessButtonBar(HorizontalLayout buttonBar) {
 		// overwrite in subclass if needed
 	}
 

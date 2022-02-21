@@ -13,7 +13,6 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.CompositionLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
@@ -45,8 +44,7 @@ public class CompositionLayoutTest extends BaseMockitoTest {
 			@Override
 			protected void doBuildLayout(VerticalLayout main) {
 				nested1 = new SimpleEditLayout<Integer, TestEntity>(getEntity(), testEntityService,
-						factory.getModel(TestEntity.class), new FormOptions(),
-						ComponentContext.<Integer, TestEntity>builder().build());
+						factory.getModel(TestEntity.class), new FormOptions());
 				nested1.build();
 				addNestedComponent(nested1);
 			}

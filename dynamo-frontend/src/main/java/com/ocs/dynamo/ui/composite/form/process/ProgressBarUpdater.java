@@ -29,65 +29,61 @@ import com.vaadin.flow.component.UI;
  */
 public class ProgressBarUpdater implements Runnable {
 
-    // the component that hosts the long-running process
-    private Progressable progressable;
+	private Progressable progressable;
 
-    // the estimated size of the long-running process
-    private int estimatedSize;
+	private int estimatedSize;
 
-    // the current progress (fraction between 0 and 1)
-    private volatile float progress;
+	private volatile float progress;
 
-    // flag variable to indicate that the process is stopped
-    private volatile boolean stopped;
+	private volatile boolean stopped;
 
-    // the UI
-    private UI ui;
+	private UI ui;
 
-    /**
-     * Constructor
-     * 
-     * @param progressable  the component that must be updated
-     * @param estimatedSize the estimated size of the process
-     */
-    public ProgressBarUpdater(UI ui, Progressable progressable, int estimatedSize) {
-        this.ui = ui;
-        this.progressable = progressable;
-        this.progress = 0.0f;
-        this.estimatedSize = estimatedSize;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param progressable  the component that must be updated
+	 * @param estimatedSize the estimated size of the process
+	 */
+	public ProgressBarUpdater(UI ui, Progressable progressable, int estimatedSize) {
+		this.ui = ui;
+		this.progressable = progressable;
+		this.progress = 0.0f;
+		this.estimatedSize = estimatedSize;
+	}
 
-    public void setStopped(boolean stopped) {
-        this.stopped = stopped;
-    }
+	public void setStopped(boolean stopped) {
+		this.stopped = stopped;
+	}
 
-    @Override
-    public void run() {
-        while (!stopped && progress < 1.0) {
-            try {
-                Thread.sleep(ProgressForm.POLL_INTERVAL);
-            } catch (InterruptedException e) {
-                // do nothing
-            }
+	@Override
+	public void run() {
+		while (!stopped && progress < 1.0) {
+			try {
+				Thread.sleep(ProgressForm.POLL_INTERVAL);
+			} catch (InterruptedException e) {
+				// do nothing
+			}
 
-            ui.access(() -> {
-                if (estimatedSize > 0) {
-                    progress = (float) ((1. * progressable.estimateCurrentProgress()) / (1. * estimatedSize));
-                } else {
-                    progress = 1.0f;
-                }
-                if (progress > 1.0) {
-                    progress = 1.0f;
-                }
-                progressable.getProgressBar().setValue(progress);
+			ui.access(() -> {
+				if (estimatedSize > 0) {
+					progress = (float) ((1. * progressable.estimateCurrentProgress()) / (1. * estimatedSize));
+				} else {
+					progress = 1.0f;
+				}
+				if (progress > 1.0) {
+					progress = 1.0f;
+				}
+				progressable.getProgressBar().setValue(progress);
 
-                String progressString = VaadinUtils.bigDecimalToString(true, false,
-                        BigDecimal.valueOf(progress).multiply(MathUtils.HUNDRED));
+				String progressString = VaadinUtils.bigDecimalToString(true, false,
+						BigDecimal.valueOf(progress).multiply(MathUtils.HUNDRED));
 
-                MessageService ms = ServiceLocatorFactory.getServiceLocator().getMessageService();
-                progressable.getStatusLabel().setText(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
-            });
+				MessageService ms = ServiceLocatorFactory.getServiceLocator().getMessageService();
+				progressable.getStatusLabel()
+						.setText(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
+			});
 
-        }
-    }
+		}
+	}
 }

@@ -19,7 +19,6 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -78,7 +77,7 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 	@Test
 	public void testSimpleEditLayout_ViewMode() {
 		SimpleEditLayout<Integer, TestEntity> layout = createLayout(e1, "TestEntity",
-				new FormOptions().setOpenInViewMode(true).setEditAllowed(true));
+				new FormOptions().setOpenInViewMode(true).setShowEditButton(true));
 		layout.build();
 
 		assertNotNull(layout.getEditForm());
@@ -119,7 +118,7 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 	@Test
 	public void testSimpleEditLayout_TabLayout() {
 		SimpleEditLayout<Integer, TestEntity> layout = createLayout(e1, "TestEntityGroups",
-				new FormOptions().setEditAllowed(true).setAttributeGroupMode(AttributeGroupMode.TABSHEET));
+				new FormOptions().setShowEditButton(true).setAttributeGroupMode(AttributeGroupMode.TABSHEET));
 		layout.build();
 
 		// try hiding an attribute group
@@ -136,7 +135,7 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 	@Test
 	public void testSimpleEditLayout_PanelLayout() {
 		SimpleEditLayout<Integer, TestEntity> layout = createLayout(e1, "TestEntityGroups",
-				new FormOptions().setEditAllowed(true).setAttributeGroupMode(AttributeGroupMode.PANEL));
+				new FormOptions().setShowEditButton(true).setAttributeGroupMode(AttributeGroupMode.PANEL));
 		layout.build();
 
 		// try hiding an attribute group
@@ -178,8 +177,7 @@ public class SimpleEditLayoutTest extends FrontendIntegrationTest {
 
 	private SimpleEditLayout<Integer, TestEntity> createLayout(TestEntity entity, String reference, FormOptions fo) {
 		SimpleEditLayout<Integer, TestEntity> layout = new SimpleEditLayout<Integer, TestEntity>(entity,
-				testEntityService, entityModelFactory.getModel(reference, TestEntity.class), fo,
-				ComponentContext.<Integer, TestEntity>builder().build());
+				testEntityService, entityModelFactory.getModel(reference, TestEntity.class), fo);
 		layout.setAfterModeChanged((editForm, viewMode) -> modeChanged = true);
 
 		return layout;

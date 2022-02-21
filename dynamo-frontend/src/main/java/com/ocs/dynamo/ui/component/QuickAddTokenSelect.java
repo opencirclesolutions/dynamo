@@ -200,6 +200,13 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	}
 
 	@Override
+	public void setClearButtonVisible(boolean visible) {
+		if (tokenSelect != null) {
+			tokenSelect.setClearButtonVisible(visible);
+		}
+	}
+
+	@Override
 	public void setErrorMessage(String errorMessage) {
 		if (tokenSelect != null) {
 			tokenSelect.setErrorMessage(errorMessage);
@@ -228,6 +235,13 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 				value = Collections.emptyList();
 			}
 			tokenSelect.setValue(Sets.newHashSet(value));
+		}
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		if (tokenSelect != null) {
+			tokenSelect.setReadOnly(readOnly);
 		}
 	}
 

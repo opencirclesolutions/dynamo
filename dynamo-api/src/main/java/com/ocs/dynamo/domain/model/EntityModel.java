@@ -67,6 +67,11 @@ public interface EntityModel<T> {
 	String CASCADE_OFF = "cascadeOff";
 
 	/**
+	 * Whether the clear button is visible
+	 */
+	String CLEAR_BUTTON_VISIBLE = "clearButtonVisible";
+
+	/**
 	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
 	 * when inside an edit form
 	 */
@@ -212,14 +217,14 @@ public interface EntityModel<T> {
 	String MIN_VALUE = "minValue";
 
 	/**
-	 * Whether to allow searching for multiple values in case of a MASTER attribute
-	 */
-	String MULTIPLE_SEARCH = "multipleSearch";
-
-	/**
 	 * The multiple select mode to use inside a search dialog
 	 */
 	String MULTI_SELECT_MODE = "multiSelectMode";
+
+	/**
+	 * Whether to allow searching for multiple values in case of a MASTER attribute
+	 */
+	String MULTIPLE_SEARCH = "multipleSearch";
 
 	/**
 	 * Whether this property is navigable (in view mode or inside a grid, a link
@@ -236,6 +241,11 @@ public interface EntityModel<T> {
 	 * The number field mode
 	 */
 	String NUMBER_FIELD_MODE = "numberFieldMode";
+
+	/**
+	 * The number field step
+	 */
+	String NUMBER_FIELD_STEP = "numberFieldStep";
 
 	/**
 	 * The paging type for selection components
@@ -491,17 +501,17 @@ public interface EntityModel<T> {
 	String getDisplayProperty();
 
 	/**
+	 * @return The class of the entity that this model is based on
+	 */
+	Class<T> getEntityClass();
+
+	/**
 	 * The name of the property that is used to filter inside a combo box or token
 	 * component
 	 * 
 	 * @return
 	 */
 	String getFilterProperty();
-
-	/**
-	 * @return The class of the entity that this model is based on
-	 */
-	Class<T> getEntityClass();
 
 	/**
 	 * @return the main attribute for this entity model

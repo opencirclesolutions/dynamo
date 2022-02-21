@@ -42,7 +42,7 @@ import com.ocs.dynamo.ui.Searchable;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.Cascadable;
 import com.ocs.dynamo.ui.component.CustomEntityField;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -366,27 +366,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		}
 		return mustShow;
 	}
-
-//	/**
-//	 * Callback method that allows the developer to overwrite the filter groups
-//	 * after they have been created
-//	 * 
-//	 * @param groups the filter groups
-//	 */
-//	protected void postProcessFilterGroups(Map<String, FilterGroup<T>> groups) {
-//		// overwrite in subclasses
-//	}
-
-//	/**
-//	 * Callback method that is called once the processing of the layout is complete.
-//	 * Allows the developer to modify the layout or add extra components at the end
-//	 * 
-//	 * @param layout the main layout
-//	 */
-//	@Override
-//	protected void postProcessLayout(VerticalLayout layout) {
-//		postProcessFilterGroups(groups);
-//	}
 
 	/**
 	 * Refreshes any fields that are susceptible to this

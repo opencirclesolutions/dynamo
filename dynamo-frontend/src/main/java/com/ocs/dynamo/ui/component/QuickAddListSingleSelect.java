@@ -184,4 +184,17 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 		}
 	}
 
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		setEnabled(!readOnly);
+		if (listSelect != null) {
+			listSelect.setEnabled(!readOnly);
+		}
+	}
+
+	@Override
+	public void setClearButtonVisible(boolean visible) {
+		// do nothing
+	}
+
 }

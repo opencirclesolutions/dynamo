@@ -37,6 +37,8 @@ import com.vaadin.flow.router.BeforeLeaveEvent;
 import com.vaadin.flow.router.BeforeLeaveEvent.ContinueNavigationAction;
 import com.vaadin.flow.router.BeforeLeaveObserver;
 
+import lombok.Getter;
+
 /**
  * A base class for Views. Provides easy access to the entity model factory and
  * the navigator
@@ -51,9 +53,11 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	private static final long serialVersionUID = 8340448520371840427L;
 
 	@Autowired
+	@Getter
 	private EntityModelFactory modelFactory;
 
 	@Autowired
+	@Getter
 	private MessageService messageService;
 
 	@Autowired
@@ -117,13 +121,6 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 */
 	protected abstract void doInit(VerticalLayout main);
 
-	public MessageService getMessageService() {
-		return messageService;
-	}
-
-	public EntityModelFactory getModelFactory() {
-		return modelFactory;
-	}
 
 	public UIHelper getUiHelper() {
 		return uiHelper;

@@ -387,6 +387,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return whether the clear button is visible for the component
+	 */
+	boolean isClearButtonVisible();
+
+	/**
+	 * 
 	 * @return whether the property is present inside an edit form. By default this
 	 *         is switched off for complex (i.e. MASTER or DETAIL) objects
 	 */

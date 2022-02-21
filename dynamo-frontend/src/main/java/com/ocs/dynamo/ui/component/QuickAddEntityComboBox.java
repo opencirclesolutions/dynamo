@@ -180,9 +180,14 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (comboBox != null) {
-//			comboBox.refresh(
-//					getFilter() == null ? additionalFilter : new AndPredicate<T>(getFilter(), additionalFilter));
 			comboBox.setAdditionalFilter(additionalFilter);
+		}
+	}
+
+	@Override
+	public void setClearButtonVisible(boolean visible) {
+		if (comboBox != null) {
+			comboBox.setClearButtonVisible(visible);
 		}
 	}
 
@@ -209,6 +214,13 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	}
 
 	@Override
+	public void setReadOnly(boolean readOnly) {
+		if (comboBox != null) {
+			comboBox.setReadOnly(readOnly);
+		}
+	}
+
+	@Override
 	public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
 		super.setRequiredIndicatorVisible(requiredIndicatorVisible);
 		comboBox.setRequiredIndicatorVisible(requiredIndicatorVisible);
@@ -220,5 +232,4 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 			comboBox.setValue(newFieldValue);
 		}
 	}
-
 }

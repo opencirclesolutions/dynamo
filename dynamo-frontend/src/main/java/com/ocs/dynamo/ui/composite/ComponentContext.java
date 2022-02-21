@@ -1,4 +1,17 @@
-package com.ocs.dynamo.ui.composite.grid;
+/*
+   Licensed under the Apache License, Version 2.0 (the "License");
+   you may not use this file except in compliance with the License.
+   You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+   Unless required by applicable law or agreed to in writing, software
+   distributed under the License is distributed on an "AS IS" BASIS,
+   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+   See the License for the specific language governing permissions and
+   limitations under the License.
+ */
+package com.ocs.dynamo.ui.composite;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -41,7 +54,7 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	private Consumer<T> afterEntitySet;
 
-	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
+	private BiConsumer<HasComponents, Boolean> afterEditFormBuilt;
 
 	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
 
@@ -53,10 +66,10 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
 
 	@Builder.Default
-	private Map<String, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
+	private Map<String, Function<CustomFieldContext, Component>> customFields = new HashMap<>();
 
 	@Builder.Default
-	private Map<String, Function<CustomFieldContext, Component>> customFields = new HashMap<>();
+	private Map<String, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
 
 	private BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer;
 
@@ -67,13 +80,9 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	private boolean editable;
 
-	@Getter
-	@Setter
 	@Builder.Default
 	private List<String> editColumnThresholds = new ArrayList<>();
 
-	@Getter
-	@Setter
 	@Builder.Default
 	private Map<String, String> fieldEntityModels = new HashMap<>();
 
@@ -82,27 +91,23 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 	 */
 	private boolean formNested;
 
-	@Getter
-	@Setter
 	@Builder.Default
 	private GroupTogetherMode groupTogetherMode = SystemPropertyUtils.getDefaultGroupTogetherMode();
 
-	@Getter
-	@Setter
 	@Builder.Default
 	private Integer groupTogetherWidth = SystemPropertyUtils.getDefaultGroupTogetherWidth();
 
 	@Builder.Default
 	private String maxEditFormWidth = SystemPropertyUtils.getDefaultMaxEditFormWidth();
 
-	@Getter
-	@Setter
 	@Builder.Default
 	private String maxSearchFormWidth = SystemPropertyUtils.getDefaultMaxSearchFormWidth();
 
 	private boolean multiSelect;
 
 	private boolean popup;
+
+	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	@Getter
 	@Setter
@@ -117,6 +122,10 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	public void addCustomConverter(String path, Supplier<Converter<?, ?>> converter) {
 		customConverters.put(path, converter);
+	}
+
+	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
+		customFields.put(path, function);
 	}
 
 	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
@@ -149,7 +158,16 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	@SuppressWarnings("rawtypes")
 	public Validator findCustomRequiredValidator(AttributeModel attributeModel) {
-		Supplier<Validator<?>> supplier = customRequiredValidators.get(attributeModel.getPath());
+		return findValidator(attributeModel, customRequiredValidators);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public Validator findCustomValidator(AttributeModel attributeModel) {
+		return findValidator(attributeModel, customValidators);
+	}
+
+	private Validator<?> findValidator(AttributeModel attributeModel, Map<String, Supplier<Validator<?>>> map) {
+		Supplier<Validator<?>> supplier = map.get(attributeModel.getPath());
 		if (supplier != null) {
 			Validator<?> validator = supplier.get();
 			return validator;
@@ -157,25 +175,12 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 		return null;
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Validator findCustomValidator(AttributeModel attributeModel) {
-		Supplier<Validator<?>> supplier = customValidators.get(attributeModel.getPath());
-		if (supplier != null) {
-			Validator<?> validator = supplier.get();
-			return validator;
-		}
-		return null;
+	public Function<CustomFieldContext, Component> getCustomFieldCreator(String path) {
+		return customFields.get(path);
 	}
 
 	public String getFieldEntityModel(String path) {
 		return fieldEntityModels.get(path);
 	}
 
-	public void addCustomField(String path, Function<CustomFieldContext,Component> function) {
-		customFields.put(path, function);
-	}
-
-	public Function<CustomFieldContext, Component> getCustomFieldCreator(String path) {
-		return customFields.get(path);
-	}
 }

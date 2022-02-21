@@ -28,6 +28,9 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Helper class for the UI, mainly concerned with handling navigation and
  * storing state
@@ -42,21 +45,29 @@ public class UIHelper {
 	 */
 	private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
 
+	@Getter
+	@Setter
 	private MenuBar menuBar;
 
 	/**
 	 * The screen mode as specified in menu.properties
 	 */
+	@Getter
+	@Setter
 	private String screenMode;
 
 	/**
 	 * The selected entity
 	 */
+	@Getter
+	@Setter
 	private Object selectedEntity;
 
 	/**
 	 * The selected tab
 	 */
+	@Getter
+	@Setter
 	private Integer selectedTab;
 
 	/**
@@ -68,6 +79,8 @@ public class UIHelper {
 	 * The selected view. This is automatically stored by the framework and used to
 	 * store/restore search terms
 	 */
+	@Getter
+	@Setter
 	private Class<?> selectedView;
 
 	/**
@@ -133,26 +146,6 @@ public class UIHelper {
 	@SuppressWarnings("unchecked")
 	public <T> T getCurrentUI(Class<T> clazz) {
 		return (T) currentUI;
-	}
-
-	public MenuBar getMenuBar() {
-		return menuBar;
-	}
-
-	public String getScreenMode() {
-		return screenMode;
-	}
-
-	public Object getSelectedEntity() {
-		return selectedEntity;
-	}
-
-	public Integer getSelectedTab() {
-		return selectedTab;
-	}
-
-	public Class<?> getSelectedView() {
-		return selectedView;
 	}
 
 	/**
@@ -250,22 +243,6 @@ public class UIHelper {
 
 	public void setCurrentUI(Object currentUI) {
 		this.currentUI = currentUI;
-	}
-
-	public void setMenuBar(MenuBar menuBar) {
-		this.menuBar = menuBar;
-	}
-
-	public void setSelectedEntity(Object selectedEntity) {
-		this.selectedEntity = selectedEntity;
-	}
-
-	public void setSelectedTab(Integer selectedTab) {
-		this.selectedTab = selectedTab;
-	}
-
-	public void setSelectedView(Class<?> selectedView) {
-		this.selectedView = selectedView;
 	}
 
 	/**

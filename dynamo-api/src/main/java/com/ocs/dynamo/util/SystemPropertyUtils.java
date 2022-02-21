@@ -111,8 +111,6 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 *
-	 *
 	 * @return the default currency symbol to use for decimal fields that display a
 	 *         currency
 	 */
@@ -435,6 +433,14 @@ public final class SystemPropertyUtils {
 	 */
 	public static boolean isCapitalizeWords() {
 		return getBooleanProperty(DynamoConstants.SP_CAPITALIZE_WORDS, true);
+	}
+
+	/**
+	 * 
+	 * @return whether the clear button for a component is visible by default
+	 */
+	public static boolean isDefaultClearButtonVisible() {
+		return getBooleanProperty(DynamoConstants.SP_DEFAULT_CLEAR_BUTTON_VISIBLE, false);
 	}
 
 	/**

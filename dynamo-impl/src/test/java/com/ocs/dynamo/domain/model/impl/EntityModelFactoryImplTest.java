@@ -337,6 +337,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertNotNull(ageModel);
 		assertTrue(ageModel.isPercentage());
 		assertEquals(NumberFieldMode.NUMBERFIELD, ageModel.getNumberFieldMode());
+		assertEquals(5, ageModel.getNumberFieldStep());
 	}
 
 	@Test

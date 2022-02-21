@@ -31,8 +31,8 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DownloadButton;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -87,35 +87,11 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private static final long serialVersionUID = 6015180039863418544L;
 
 	@Getter
-	private BaseService<ID, T> service;
-
-//	@Getter
-//	@Setter
-//	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
-//
-//	@Getter
-//	@Setter
-//	private Consumer<T> afterEntitySet;
-//
-//	@Getter
-//	@Setter
-//	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-//
-//	@Getter
-//	@Setter
-//	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-//
-//	@Getter
-//	@Setter
-//	private Consumer<Integer> afterTabSelected;
-//
-//	@Getter
-//	@Setter
-//	private BiConsumer<String, byte[]> afterUploadCompleted;
-
-	@Getter
 	@Setter
 	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().build();
+
+	@Getter
+	private BaseService<ID, T> service;
 
 	/**
 	 * The list of components to update after an entity is selected
@@ -141,13 +117,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	private final EntityModel<T> entityModel;
 
-//	/**
-//	 * The entity models used for rendering the individual fields (mostly useful for
-//	 * lookup components)
-//	 */
-//	@Getter
-//	private Map<String, String> fieldEntityModels = new HashMap<>();
-
 	@Getter
 	@Setter
 	private Function<String, String> findParentGroup;
@@ -157,14 +126,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	@Getter
 	private FormOptions formOptions;
-
-//	@Getter
-//	@Setter
-//	private GroupTogetherMode groupTogetherMode;
-//
-//	@Getter
-//	@Setter
-//	private Integer groupTogetherWidth;
 
 	@Getter
 	@Setter
@@ -178,10 +139,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	@Setter
 	private String[] parentGroupHeaders;
-
-	@Getter
-	@Setter
-	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	/**
 	 * Constructor
@@ -200,12 +157,20 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		componentContext.addCustomConverter(path, converter);
 	}
 
+	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
+		componentContext.addCustomField(path, function);
+	}
+
 	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
 		componentContext.addCustomRequiredValidator(path, validator);
 	}
 
 	public void addCustomValidator(String path, Supplier<Validator<?>> validator) {
 		componentContext.addCustomValidator(path, validator);
+	}
+
+	public void addFieldEntityModel(String path, String reference) {
+		componentContext.addFieldEntityModel(path, reference);
 	}
 
 	/**
@@ -249,37 +214,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	protected void initEditForm(ModelBasedEditForm<ID, T> editForm) {
 		editForm.setComponentContext(componentContext);
-//		editForm.setCustomSaveConsumer(getCustomSaveConsumer());
-		// editForm.setFieldEntityModels(getFieldEntityModels());
-		// editForm.setColumnThresholds(getColumnThresholds());
-		// editForm.setMaxFormWidth(getMaxEditFormWidth());
-//		editForm.setGroupTogetherMode(getGroupTogetherMode());
-//		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
-//		editForm.setAfterEntitySet(getAfterEntitySet());
-//		editForm.setAfterEntitySelected(getAfterEntitySelected());
-//		editForm.setAfterLayoutBuilt(getAfterLayoutBuilt());
-//		editForm.setAfterModeChanged(getAfterModeChanged());
-//		editForm.setAfterTabSelected(getAfterTabSelected());
 		editForm.setOnBackButtonClicked(getOnBackButtonClicked());
-
-//		editForm.setCustomConverters(getCustomConverters());
-//		editForm.setCustomValidators(getCustomValidators());
-//		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
-//		editForm.setAfterUploadCompleted(getAfterUploadCompleted());
-		editForm.setPostProcessEditFields(getPostProcessEditFields());
-//		editForm.setCustomSaveExceptionHandler(getCustomSaveExceptionHandler());
-
 		editForm.setParentGroupHeaders(getParentGroupHeaders());
 		editForm.setFindParentGroup(getFindParentGroup());
 		editForm.setEditAllowed(getEditAllowed());
-	}
-
-	public void setMaxEditFormWidth(String maxEditFormWidth) {
-		componentContext.setMaxEditFormWidth(maxEditFormWidth);
-	}
-
-	public void setEditColumnThresholds(List<String> columnThresholds) {
-		componentContext.setEditColumnThresholds(columnThresholds);
 	}
 
 	/**
@@ -311,6 +249,58 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		}
 	}
 
+	public void setAfterEntitySelected(BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected) {
+		componentContext.setAfterEntitySelected(afterEntitySelected);
+	}
+
+	public void setAfterEntitySet(Consumer<T> afterEntitySet) {
+		componentContext.setAfterEntitySet(afterEntitySet);
+	}
+
+	/**
+	 * Specifies the code that will be carried out after the edit form has been
+	 * constructed
+	 */
+	public void setAfterEditFormBuilt(BiConsumer<HasComponents, Boolean> aFterEditFormBuilt) {
+		componentContext.setAfterEditFormBuilt(aFterEditFormBuilt);
+	}
+
+	public void setAfterModeChanged(BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged) {
+		componentContext.setAfterModeChanged(afterModeChanged);
+	}
+
+	public void setAfterTabSelected(Consumer<Integer> afterTabSelected) {
+		componentContext.setAfterTabSelected(afterTabSelected);
+	}
+
+	public void setAfterUploadCompleted(BiConsumer<String, byte[]> afterUploadCompleted) {
+		componentContext.setAfterUploadCompleted(afterUploadCompleted);
+	}
+
+	public void setCustomSaveConsumer(BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer) {
+		componentContext.setCustomSaveConsumer(customSaveConsumer);
+	}
+
+	public void setEditColumnThresholds(List<String> columnThresholds) {
+		componentContext.setEditColumnThresholds(columnThresholds);
+	}
+
+	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
+		componentContext.setGroupTogetherMode(groupTogetherMode);
+	}
+
+	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
+		componentContext.setGroupTogetherWidth(groupTogetherWidth);
+	}
+
+	public void setMaxEditFormWidth(String maxEditFormWidth) {
+		componentContext.setMaxEditFormWidth(maxEditFormWidth);
+	}
+
+	public void setPostProcessEditFields(Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields) {
+		componentContext.setPostProcessEditFields(postProcessEditFields);
+	}
+
 	/**
 	 * Stores and registers a custom component
 	 * 
@@ -332,50 +322,6 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	public void storeCustomComponent(String key, Component component) {
 		customComponentMap.putIfAbsent(key, new ArrayList<>());
 		customComponentMap.get(key).add(component);
-	}
-
-	public void setCustomSaveConsumer(BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer) {
-		componentContext.setCustomSaveConsumer(customSaveConsumer);
-	}
-
-	public void setGroupTogetherMode(GroupTogetherMode groupTogetherMode) {
-		componentContext.setGroupTogetherMode(groupTogetherMode);
-	}
-
-	public void setGroupTogetherWidth(Integer groupTogetherWidth) {
-		componentContext.setGroupTogetherWidth(groupTogetherWidth);
-	}
-
-	public void addFieldEntityModel(String path, String reference) {
-		componentContext.addFieldEntityModel(path, reference);
-	}
-
-	public void setAfterEntitySelected(BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected) {
-		componentContext.setAfterEntitySelected(afterEntitySelected);
-	}
-
-	public void setAfterEntitySet(Consumer<T> afterEntitySet) {
-		componentContext.setAfterEntitySet(afterEntitySet);
-	}
-
-	public void setAfterLayoutBuilt(BiConsumer<HasComponents, Boolean> afterLayoutBuilt) {
-		componentContext.setAfterLayoutBuilt(afterLayoutBuilt);
-	}
-
-	public void setAfterModeChanged(BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged) {
-		componentContext.setAfterModeChanged(afterModeChanged);
-	}
-
-	public void setAfterTabSelected(Consumer<Integer> afterTabSelected) {
-		componentContext.setAfterTabSelected(afterTabSelected);
-	}
-
-	public void setAfterUploadCompleted(BiConsumer<String, byte[]> afterUploadCompleted) {
-		componentContext.setAfterUploadCompleted(afterUploadCompleted);
-	}
-
-	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
-		componentContext.addCustomField(path, function);
 	}
 
 }

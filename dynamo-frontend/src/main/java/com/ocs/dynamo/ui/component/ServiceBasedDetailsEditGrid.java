@@ -100,7 +100,20 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		super(service, entityModel, attributeModel, viewMode, true, formOptions);
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
 		provider.setAfterCountCompleted(count -> updateCaption(count));
+
+		setOnAdd(() -> {
+			if (this.parent.getId() != null) {
+				showPopup(null);
+			} else {
+				// cannot add a new entity if the parent entity has not been saved yet
+				VaadinUtils.showErrorNotification(
+						getMessageService().getMessage("ocs.save.entity.first", VaadinUtils.getLocale()));
+			}
+		});
+		setOnEdit(ent -> showPopup(ent));
+
 		build();
+
 	}
 
 	protected void addDownloadMenu() {
@@ -147,24 +160,8 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		}
 
 		// hide add button for new entity
-		getAddButton().setVisible(!isViewMode() && !getFormOptions().isHideAddButton()
+		getAddButton().setVisible(!isViewMode() && getFormOptions().isShowAddButton()
 				&& !getFormOptions().isDetailsGridSearchMode() && this.parent.getId() != null);
-	}
-
-	@Override
-	protected void doAdd() {
-		if (this.parent.getId() != null) {
-			showPopup(null);
-		} else {
-			// cannot add a new entity if the parent entity has not been saved yet
-			VaadinUtils.showErrorNotification(
-					getMessageService().getMessage("ocs.save.entity.first", VaadinUtils.getLocale()));
-		}
-	}
-
-	@Override
-	protected void doEdit(T entity) {
-		showPopup(entity);
 	}
 
 	@Override

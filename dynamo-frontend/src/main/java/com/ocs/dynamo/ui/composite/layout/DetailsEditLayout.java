@@ -40,8 +40,8 @@ import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.AttachEvent;
@@ -274,9 +274,9 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Setter
 	private ITriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
 
-	@Getter
-	@Setter
-	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
+//	@Getter
+//	@Setter
+//	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	/**
 	 * Consumer for removing an entity
@@ -373,20 +373,9 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 				fieldFilters);
 
 		editForm.setComponentContext(componentContext);
-		editForm.setPostProcessEditFields(getPostProcessEditFields());
-//		editForm.setFieldEntityModels(getFieldEntityModels());
 		editForm.setFieldFilters(fieldFilters);
-//		editForm.setGroupTogetherMode(getGroupTogetherMode());
-//		editForm.setGroupTogetherWidth(getGroupTogetherWidth());
 		editForm.setNestedMode(true);
 		editForm.setViewMode(viewMode);
-//		editForm.setAfterLayoutBuilt(getAfterEditFormBuilt());
-//		editForm.setAfterModeChanged(getAfterModeChanged());
-
-//		editForm.setCustomConverters(getCustomConverters());
-//		editForm.setCustomValidators(getCustomValidators());
-//		editForm.setCustomRequiredValidators(getCustomRequiredValidators());
-
 		editForm.build();
 
 		FormContainer formContainer = new FormContainer(index, editForm);
@@ -443,7 +432,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			addDetailEditForm(getFormCount(), t);
 		});
 
-		addButton.setVisible(!viewMode && !formOptions.isHideAddButton());
+		addButton.setVisible(!viewMode && formOptions.isShowAddButton());
 		buttonBar.add(addButton);
 	}
 
@@ -539,8 +528,8 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		build();
 	}
 
-	public void setAfterEditFormBuilt(BiConsumer<HasComponents, Boolean> afterLayoutBuilt) {
-		componentContext.setAfterLayoutBuilt(afterLayoutBuilt);
+	public void setAfterEditFormBuilt(BiConsumer<HasComponents, Boolean> afterEditFormBuilt) {
+		componentContext.setAfterEditFormBuilt(afterEditFormBuilt);
 	}
 
 	public void setAfterModeChanged(BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged) {
@@ -675,6 +664,10 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 			error |= f.validateAllFields();
 		}
 		return error;
+	}
+
+	public void setPostProcessEditFields(Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields) {
+		componentContext.setPostProcessEditFields(postProcessEditFields);
 	}
 
 }

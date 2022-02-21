@@ -37,6 +37,8 @@ import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * Custom ListSelect component for selecting a single item from a list
  *
@@ -48,20 +50,26 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	private static final long serialVersionUID = 3041574615271340579L;
 
+	@Getter
 	private SerializablePredicate<T> additionalFilter;
 
+	@Getter
 	private final AttributeModel attributeModel;
 
 	private final EntityModel<T> entityModel;
 
+	@Getter
 	private SerializablePredicate<T> filter;
 
+	@Getter
 	private SerializablePredicate<T> originalFilter;
 
+	@Getter
 	private final SelectMode selectMode;
 
 	private final BaseService<ID, T> service;
 
+	@Getter
 	private final SortOrder<?>[] sortOrders;
 
 	@SafeVarargs
@@ -162,27 +170,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
 				new SortOrders(SortUtils.translateSortOrders(sortOrders)));
-	}
-
-	@Override
-	public SerializablePredicate<T> getAdditionalFilter() {
-		return additionalFilter;
-	}
-
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
-	}
-
-	public SerializablePredicate<T> getFilter() {
-		return filter;
-	}
-
-	public SelectMode getSelectMode() {
-		return selectMode;
-	}
-
-	public SortOrder<?>[] getSortOrders() {
-		return sortOrders;
 	}
 
 	/**

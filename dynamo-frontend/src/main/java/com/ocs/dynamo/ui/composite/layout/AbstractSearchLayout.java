@@ -15,8 +15,11 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
+import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import com.google.common.collect.Lists;
@@ -68,9 +71,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Runnable afterClear = () -> {
 	};
 
+	/**
+	 * 
+	 */
 	@Getter
 	@Setter
-	private Consumer<Boolean> afterSearchFieldToggle = b -> {
+	private Consumer<Boolean> afterSearchFormToggled = b -> {
 	};
 
 	@Getter
@@ -78,9 +84,26 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Runnable afterSearchPerformed = () -> {
 	};
 
+	@Getter
 	private List<SerializablePredicate<T>> defaultFilters;
 
+	@Getter
+	@Setter
+	private String[] detailsModeTabCaptions;
+
+	@Getter
+	private Map<Integer, BiFunction<FormOptions, Boolean, Component>> detailTabCreators = new HashMap<>();
+
+	@Getter
 	private VerticalLayout mainSearchLayout;
+
+	@Getter
+	@Setter
+	private Runnable onEdit = () -> detailsMode(getSelectedItem());
+
+	@Getter
+	@Setter
+	private Runnable onRemove = () -> getService().delete(getSelectedItem());
 
 	@Getter
 	@Setter
@@ -88,8 +111,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	@Getter
 	@Setter
-	private Consumer<VerticalLayout> postProcessSearchFormLayout;
+	private Consumer<VerticalLayout> afterSearchFormBuilt;
 
+	@Getter
 	private QueryType queryType;
 
 	private AbstractModelBasedSearchForm<ID, T> searchForm;
@@ -119,6 +143,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.queryType = queryType;
+	}
+
+	public void addDetailTabCreator(int index, BiFunction<FormOptions, Boolean, Component> creator) {
+		detailTabCreators.put(index, creator);
 	}
 
 	public void addManageDetailButtons() {
@@ -233,8 +261,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			checkComponentState(null);
 
-			if (getPostProcessLayout() != null) {
-				getPostProcessLayout().accept(mainSearchLayout);
+			if (getAfterLayoutBuilt() != null) {
+				getAfterLayoutBuilt().accept(mainSearchLayout);
 			}
 
 			// there is a small chance that the user navigates directly
@@ -265,36 +293,22 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Constructs a tab sheet for the tab component that is used in complex details
-	 * mode
-	 *
-	 * @param entity    the selected entity
-	 * @param index     the index of the selected tab sheet
-	 * @param fo        form options that specify how to construct the component
-	 * @param newEntity whether we are in the process of creating a new entity
-	 * @return
-	 */
-	protected Component constructComplexDetailModeTab(int index, FormOptions fo, boolean newEntity) {
-		// overwrite is subclasses
-		return null;
-	}
-
-	/**
 	 * Constructs the edit button
 	 * 
 	 * @return
 	 */
 	protected final Button constructEditButton() {
-		Button eb = new Button(
-				(!getFormOptions().isEditAllowed() || !checkEditAllowed()) ? message("ocs.view") : message("ocs.edit"));
-		eb.setIcon(VaadinIcon.PENCIL.create());
-		eb.addClickListener(e -> {
+		Button editButton = new Button(
+				(!getFormOptions().isShowEditButton() || !checkEditAllowed()) ? message("ocs.view")
+						: message("ocs.edit"));
+		editButton.setIcon(VaadinIcon.PENCIL.create());
+		editButton.addClickListener(e -> {
 			if (getSelectedItem() != null) {
-				doEdit();
+				onEdit.run();
 			}
 		});
-		eb.setVisible(getFormOptions().isDetailsModeEnabled());
-		return eb;
+		editButton.setVisible(getFormOptions().isDetailsModeEnabled());
+		return editButton;
 	}
 
 	public abstract GridWrapper<ID, T, U> constructGridWrapper();
@@ -367,10 +381,18 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		if (getFormOptions().isDetailsModeEnabled() && getFormOptions().isDoubleClickSelectAllowed()) {
 			getGridWrapper().getGrid().addItemDoubleClickListener(event -> {
 				select(event.getItem());
-				doEdit();
+				onEdit.run();
 			});
 		}
 	}
+
+//	/**
+//	 * Callback method that is called when the user presses the edit method. Will by
+//	 * default open the screen in edit mode. Overwrite in subclass if needed
+//	 */
+//	protected void doEdit() {
+//		detailsMode(getSelectedItem());
+//	}
 
 	/**
 	 * Sets the provided component as the current detail view
@@ -382,20 +404,12 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		add(root);
 	}
 
-	/**
-	 * Callback method that is called when the user presses the edit method. Will by
-	 * default open the screen in edit mode. Overwrite in subclass if needed
-	 */
-	protected void doEdit() {
-		detailsMode(getSelectedItem());
-	}
-
-	/**
-	 * Performs the actual remove functionality - overwrite in subclass if needed
-	 */
-	protected void doRemove() {
-		getService().delete(getSelectedItem());
-	}
+//	/**
+//	 * Performs the actual remove functionality - overwrite in subclass if needed
+//	 */
+//	protected void doRemove() {
+//		getService().delete(getSelectedItem());
+//	}
 
 	/**
 	 * Open the screen in edit mode for the provided entity
@@ -404,32 +418,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	public final void edit(T entity) {
 		setSelectedItem(entity);
-		doEdit();
-	}
-
-	protected List<SerializablePredicate<T>> getDefaultFilters() {
-		return defaultFilters;
-	}
-
-	/**
-	 * Returns the captions for the tab pages to display within the tab sheet, for a
-	 * search layout for which the complexDetailsEditMode has been set to true
-	 *
-	 * @return
-	 */
-	protected String[] getDetailModeTabCaptions() {
-		// overwrite in subclasses
-		return new String[0];
-	}
-
-	/**
-	 * Returns the caption to display above the tab sheet, for a search layout for
-	 * which the complexDetailsEditMode has been set to true
-	 *
-	 * @return
-	 */
-	protected String getDetailModeTabTitle() {
-		return null;
+		onEdit.run();
 	}
 
 	/**
@@ -450,14 +439,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	protected Icon getIconForTab(int index) {
 		// overwrite in subclasses
 		return null;
-	}
-
-	public VerticalLayout getMainSearchLayout() {
-		return mainSearchLayout;
-	}
-
-	public QueryType getQueryType() {
-		return queryType;
 	}
 
 	/**
@@ -483,10 +464,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	protected void initSearchForm(AbstractModelBasedSearchForm<ID, T> searchForm) {
 		searchForm.setComponentContext(getComponentContext());
 		searchForm.setAfterSearchPerformed(getAfterSearchPerformed());
-		searchForm.setAfterSearchFieldToggle(getAfterSearchFieldToggle());
+		searchForm.setAfterSearchFormToggled(getAfterSearchFormToggled());
 		searchForm.setValidateBeforeSearch(getValidateBeforeSearch());
 		searchForm.setPostProcessButtonBar(getPostProcessSearchButtonBar());
-		searchForm.setPostProcessLayout(getPostProcessSearchFormLayout());
+		searchForm.setAfterLayoutBuilt(getAfterSearchFormBuilt());
 		searchForm.setAfterAdvancedModeToggled(getAfterAdvancedModeToggled());
 	}
 
@@ -514,15 +495,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	protected void onAttach(AttachEvent attachEvent) {
 		super.onAttach(attachEvent);
 		build();
-	}
-
-	/**
-	 * Post-processes the button bar that appears below the search form
-	 * 
-	 * @param buttonBar the button bar
-	 */
-	public void postProcessSearchButtonBar(FlexLayout buttonBar) {
-		// overwrite in subclasses
 	}
 
 	/**
@@ -558,7 +530,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * Performs the actual delete action
 	 */
 	protected final void removeEntity() {
-		doRemove();
+		onRemove.run();
 		// refresh the results so that the deleted item is no longer
 		// there
 		searchForm.search(true);

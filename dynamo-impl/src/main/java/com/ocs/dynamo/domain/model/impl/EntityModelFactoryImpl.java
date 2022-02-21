@@ -386,6 +386,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setNumberFieldMode(SystemPropertyUtils.getDefaultNumberFieldMode());
 		model.setNumberFieldStep(1);
 
+		model.setClearButtonVisible(SystemPropertyUtils.isDefaultClearButtonVisible());
+
 		setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
 	}
 
@@ -412,7 +414,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (!skipAttribute(descriptor.getName())) {
 				List<AttributeModel> attributeModels = constructAttributeModel(descriptor, entityModel,
 						entityModel.getEntityClass(), nested, null);
-
 				for (AttributeModel attributeModel : attributeModels) {
 
 					// check if the main attribute has been found
@@ -431,7 +432,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			}
 		}
 
-		// set main attribute
 		if (!mainAttributeFound && !nested) {
 			if (firstStringAttribute != null) {
 				firstStringAttribute.setMainAttribute(true);
@@ -630,14 +630,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		explicit = !explicitAttributeNames.isEmpty();
 		List<String> result = new ArrayList<>(explicitAttributeNames);
 
-		// add missing attribute at the end (alphabetically)
-		for (AttributeModel am : attributeModels) {
-			String name = am.getName();
-			if (!skipAttribute(name) && !explicitAttributeNames.contains(name)) {
-				additionalNames.add(name);
-			}
-		}
-		// add the additional unmentioned attributes
+		addMissingAttributeNames(explicitAttributeNames, attributeModels, additionalNames);
 		result.addAll(additionalNames);
 
 		// loop over the attributes and set the orders
@@ -655,6 +648,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		return explicit;
+	}
+
+	private void addMissingAttributeNames(List<String> explicitAttributeNames, List<AttributeModel> attributeModels,
+			List<String> additionalNames) {
+		for (AttributeModel am : attributeModels) {
+			String name = am.getName();
+			if (!skipAttribute(name) && !explicitAttributeNames.contains(name)) {
+				additionalNames.add(name);
+			}
+		}
 	}
 
 	/**
@@ -1139,6 +1142,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				model.setSearchPrefixOnly(attribute.searchPrefixOnly().toBoolean());
 			}
 
+			if (!BooleanType.INHERIT.equals(attribute.clearButtonVisible())) {
+				model.setClearButtonVisible(attribute.clearButtonVisible().toBoolean());
+			}
+
 			if (attribute.textFieldMode() != null
 					&& !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {
 				model.setTextFieldMode(attribute.textFieldMode());
@@ -1373,11 +1380,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				attributeModel::setSearchDateOnly);
 		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER),
 				attributeModel::setIgnoreInSearchFilter);
+		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CLEAR_BUTTON_VISIBLE),
+				attributeModel::setClearButtonVisible);
 
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PAGING_MODE), PagingMode.class,
 				attributeModel::setPagingMode);
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_MODE),
 				NumberFieldMode.class, attributeModel::setNumberFieldMode);
+
+		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_STEP), -1,
+				attributeModel::setNumberFieldStep);
 
 		setMessageBundleCascadeOverrides(entityModel, attributeModel);
 		setMessageBundleCustomOverrides(entityModel, attributeModel);

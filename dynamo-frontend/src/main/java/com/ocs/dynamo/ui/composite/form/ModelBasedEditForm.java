@@ -121,8 +121,6 @@ import lombok.Setter;
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends AbstractModelBasedForm<ID, T> implements NestedComponent {
 
-	private static final long serialVersionUID = 2201140375797069148L;
-
 	private static final String BACK_BUTTON_DATA = "backButton";
 
 	private static final String CANCEL_BUTTON_DATA = "cancelButton";
@@ -137,37 +135,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private static final String SAVE_BUTTON_DATA = "saveButton";
 
+	private static final long serialVersionUID = 2201140375797069148L;
+
+	/**
+	 * Callback method that is executed after the user completes are cancels an edit
+	 * action
+	 */
 	@Getter
 	@Setter
 	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
-
-//
-//	@Getter
-//	@Setter
-//	private BiConsumer<ModelBasedEditForm<ID, T>, T> afterEntitySelected;
-//
-//	@Getter
-//	@Setter
-//	private Consumer<T> afterEntitySet;
-//
-//	@Getter
-//	@Setter
-//	private BiConsumer<HasComponents, Boolean> afterLayoutBuilt;
-//
-//	@Getter
-//	@Setter
-//	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
-//
-//	@Getter
-//	@Setter
-//	private Consumer<Integer> afterTabSelected;
-//
-//	/**
-//	 * The code to be carried out after a file has been successfully uploaded
-//	 */
-//	@Getter
-//	@Setter
-//	private BiConsumer<String, byte[]> afterUploadCompleted;
 
 	/**
 	 * Map for keeping track of which attributes have already been bound to a
@@ -187,39 +163,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private Map<Boolean, Map<String, Object>> attributeGroups = new HashMap<>();
 
 	/**
-	 * Buttons per viewmode and functions (save, edit, etc)
+	 * Buttons per view mode and functions (save, edit, etc)
 	 */
 	private Map<Boolean, Map<String, List<Button>>> buttons = new HashMap<>();
-
-//	/**
-//	 * The threshold values at which to start rendering extra columns
-//	 */
-//	@Getter
-//	@Setter
-//	private List<String> columnThresholds = new ArrayList<>();
-
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
-//
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
-
-//	/**
-//	 * Custom consumer that is to be called instead of the regular save behavior
-//	 */
-//	@Getter
-//	@Setter
-//	private Consumer<T> customSaveConsumer;
-
-//	@Getter
-//	@Setter
-//	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
-
-//	@Getter
-//	@Setter
-//	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
 
 	/**
 	 * Indicates whether all details tables for editing complex fields are valid
@@ -231,6 +177,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private FetchJoinInformation[] detailJoins;
 
+	/**
+	 * Callback method that is executed to check whether editing is allowed
+	 */
 	@Getter
 	@Setter
 	private Supplier<Boolean> editAllowed = () -> true;
@@ -238,6 +187,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * The selected entity
 	 */
+	@Getter
 	private T entity;
 
 	/**
@@ -250,6 +200,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private boolean fieldsProcessed;
 
+	/**
+	 * Method that is called to determine the parent group that an attribute group
+	 * belongs to
+	 */
 	@Getter
 	@Setter
 	private Function<String, String> findParentGroup;
@@ -270,15 +224,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	private Map<Boolean, Binder<T>> groups = new HashMap<>();
 
-//	/**
-//	 * The "group together" mode
-//	 */
-//	private GroupTogetherMode groupTogetherMode;
-//
-//	/**
-//	 * Threshold width (pixels) for every group together column
-//	 */
-//	private Integer groupTogetherWidth;
+	@Getter
+	@Setter
+	private Supplier<Boolean> hasNextEntity;
+
+	@Getter
+	@Setter
+	private Supplier<Boolean> hasPreviousEntity;
 
 	/**
 	 * A map containing all the labels that were added - used to replace the label
@@ -290,11 +242,17 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	private VerticalLayout mainViewLayout;
 
-	/**
-	 * Whether the form is in nested mode
-	 */
+	@Getter
+	@Setter
 	private boolean nestedMode;
 
+	@Getter
+	@Setter
+	private Supplier<T> nextEntity;
+
+	/**
+	 * Callback method that is executed when the "back" button is clicked
+	 */
 	@Getter
 	@Setter
 	private Runnable onBackButtonClicked = () -> {
@@ -308,17 +266,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
 
+	private Map<Boolean, Map<AttributeModel, Component>> previews = new HashMap<>();
+
 	@Getter
 	@Setter
-	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
-
-	private Map<Boolean, Map<AttributeModel, Component>> previews = new HashMap<>();
+	private Supplier<T> previousEntity;
 
 	private BaseService<ID, T> service;
 
 	/**
 	 * Whether the component supports iteration over the records
 	 */
+	@Getter
+	@Setter
 	private boolean supportsIteration;
 
 	private Map<Boolean, TabWrapper> tabs = new HashMap<>();
@@ -404,12 +364,27 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
+	@SuppressWarnings("unchecked")
+	private void addConvertersAndValidators(AttributeModel attributeModel, boolean viewMode, Component field,
+			FieldCreationContext context) {
+		if (!(field instanceof ServiceBasedDetailsEditGrid)) {
+			BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
+
+			fieldFactory.addConvertersAndValidators(builder, attributeModel, context,
+					getComponentContext().findCustomConverter(attributeModel),
+					getComponentContext().findCustomValidator(attributeModel),
+					getComponentContext().findCustomRequiredValidator(attributeModel));
+			builder.bind(attributeModel.getPath());
+		}
+	}
+
 	/**
 	 * Adds a field for a certain attribute
 	 *
 	 * @param parent         the layout to which to add the field
 	 * @param entityModel    the entity model
 	 * @param attributeModel the attribute model
+	 * @param tabIndex
 	 */
 	private void addField(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel,
 			int tabIndex) {
@@ -435,12 +410,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					}
 				}
 			} else {
-				// display an editable field
 				if (AttributeType.BASIC.equals(type) || AttributeType.MASTER.equals(type)
-						|| AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION.equals(type)) {
+						|| AttributeType.DETAIL.equals(type) || AttributeType.ELEMENT_COLLECTION.equals(type)
+						|| AttributeType.LOB.equals(type)) {
 					constructField(parent, entityModel, attributeModel, false, tabIndex);
-				} else if (AttributeType.LOB.equals(type)) {
-					constructField(parent, entityModel, attributeModel, viewMode, tabIndex);
 				}
 			}
 			alreadyBound.get(isViewMode()).add(attributeModel.getPath());
@@ -448,26 +421,105 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Adds multiple grouped together attributes
 	 * 
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param viewMode
-	 * @return
+	 * @param parent         the parent component
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model
+	 * @param tabIndex       the tab index
+	 * @param field          the component
 	 */
-	private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
-		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
-				.getCustomFieldCreator(attributeModel.getPath());
-		if (customFieldCreator != null) {
-			return customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
-					.attributeModel(attributeModel).viewMode(viewMode).build());
+	private void addGroupedAttributes(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel,
+			int tabIndex, Component field) {
+		// construct a separate layout for holding the fields that will be displayed
+		// together
+		FormLayout rowLayout = new FormLayout();
+		rowLayout.setWidth("100%");
+		rowLayout.addClassName(DynamoConstants.CSS_GROUPTOGETHER_LAYOUT);
+
+		List<ResponsiveStep> steps = new ArrayList<>();
+
+		GroupTogetherMode groupTogetherMode = getComponentContext().getGroupTogetherMode();
+		Integer groupTogetherWidth = getComponentContext().getGroupTogetherWidth();
+
+		GroupTogetherMode gtm = groupTogetherMode != null ? groupTogetherMode
+				: SystemPropertyUtils.getDefaultGroupTogetherMode();
+		Integer gtw = groupTogetherWidth != null ? groupTogetherWidth
+				: SystemPropertyUtils.getDefaultGroupTogetherWidth();
+
+		if (GroupTogetherMode.PERCENTAGE.equals(gtm)) {
+			int percentage = 100 / attributeModel.getGroupTogetherWith().size();
+			for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
+				steps.add(new ResponsiveStep(percentage + "%", i + 1));
+			}
+			rowLayout.setResponsiveSteps(steps);
+		} else {
+			for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
+				steps.add(new ResponsiveStep((i * gtw) + "px", i + 1));
+			}
+			rowLayout.setResponsiveSteps(steps);
 		}
-		return null;
+
+		// when in nested mode (e.g. DetailsEditLayout) stretch over entire width
+		if (nestedMode) {
+			rowLayout.getElement().setAttribute("colspan", "2");
+		}
+
+		parent.add(rowLayout);
+		rowLayout.add(field);
+
+		for (String path : attributeModel.getGroupTogetherWith()) {
+			AttributeModel nestedAm = getEntityModel().getAttributeModel(path);
+			if (nestedAm != null) {
+				addField(rowLayout, entityModel, nestedAm, tabIndex);
+			}
+		}
+	}
+
+	/**
+	 * Adds the component for a single attribute
+	 * 
+	 * @param parent         the parent layout to which to add the component
+	 * @param attributeModel the attribute model for the component
+	 * @param field          the component
+	 */
+	@SuppressWarnings("rawtypes")
+	private void addSingleAttribute(HasComponents parent, AttributeModel attributeModel, Component field) {
+		boolean colspan = field instanceof BaseDetailsEditGrid || field instanceof ElementCollectionGrid
+				|| field instanceof DetailsEditLayout;
+		if (parent instanceof FormLayout && colspan) {
+
+			FormLayout form = (FormLayout) parent;
+			int colSpan = form.getResponsiveSteps().size();
+
+			if (SystemPropertyUtils.mustIndentGrids()) {
+				// indent grids (default)
+				FormItem fi = form.addFormItem(field,
+						new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
+				fi.getElement().setAttribute("colspan", Integer.toString(colSpan));
+				formItems.get(isViewMode()).put(attributeModel, fi);
+			} else {
+				// do not indent grids (probably better)
+				if (field instanceof BaseDetailsEditGrid) {
+					((BaseDetailsEditGrid) field).setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+				} else if (field instanceof DetailsEditLayout) {
+					((DetailsEditLayout) field).setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+				} else if (field instanceof ElementCollectionGrid) {
+					((ElementCollectionGrid) field).setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+				}
+
+				field.getElement().setAttribute("colspan", Integer.toString(colSpan));
+				form.add(field);
+			}
+		} else {
+			parent.add((Component) field);
+		}
 	}
 
 	/**
 	 * Add a listener to respond to a tab change and focus the first available field
 	 *
-	 * @param wrapper
+	 * @param wrapper the tab wrapper to add the listener to
 	 */
 	private void addTabChangeListener(TabWrapper wrapper) {
 		wrapper.addSelectedChangeListener(event -> {
@@ -483,6 +535,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		});
 	}
 
+	/**
+	 * Adds listeners for responding to a file upload
+	 * 
+	 * @param attributeModel the attribute model for which the upload components is
+	 *                       meant
+	 * @param field          the upload component
+	 */
 	private void addUploadFieldListeners(AttributeModel attributeModel, Component field) {
 		if (field instanceof UploadComponent) {
 			UploadComponent upload = (UploadComponent) field;
@@ -541,6 +600,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				}
 
 				if (!fieldsProcessed) {
+					Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields = getComponentContext()
+							.getPostProcessEditFields();
 					if (postProcessEditFields != null) {
 						postProcessEditFields.accept(this);
 					}
@@ -606,39 +667,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 			if (getParentGroupHeaders() != null && getParentGroupHeaders().length > 0) {
 				// extra layer of grouping (always tabs)
-				int tabIndex = 0;
-				for (String parentGroupHeader : getParentGroupHeaders()) {
-					HasComponents innerForm = constructAttributeGroupLayout(form, useTabs, tabs.get(isViewMode()),
-							parentGroupHeader, false);
-
-					// add a tab sheet on the inner level if needed
-					TabWrapper innerTabs = null;
-					boolean useInnerTabs = !useTabs;
-					if (useInnerTabs) {
-						innerTabs = new TabWrapper();
-						innerForm.add(innerTabs);
-					}
-
-					// add all appropriate inner groups
-					processParentHeaderGroup(parentGroupHeader, innerForm, useInnerTabs, innerTabs, tabIndex);
-					tabIndex++;
-				}
+				processParentHeaderGroups(form, useTabs);
 			} else {
 				// just one layer of attribute groups
-				int tabIndex = 0;
-				for (String attributeGroup : entityModel.getAttributeGroups()) {
-
-					if (entityModel.isAttributeGroupVisible(attributeGroup, isViewMode())) {
-						HasComponents innerForm = constructAttributeGroupLayout(form, useTabs, tabs.get(isViewMode()),
-								attributeGroup, true);
-						for (AttributeModel attributeModel : entityModel.getAttributeModelsForGroup(attributeGroup)) {
-							addField(innerForm, entityModel, attributeModel, tabIndex);
-						}
-						if (AttributeGroupMode.TABSHEET.equals(getFormOptions().getAttributeGroupMode())) {
-							tabIndex++;
-						}
-					}
-				}
+				processAttributeGroups(entityModel, form, useTabs);
 			}
 		} else {
 			// iterate over the attributes and add them to the form (without any
@@ -664,8 +696,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		setDefaultValues();
 		disableCreateOnlyFields();
 
-		if (getComponentContext().getAfterLayoutBuilt() != null) {
-			getComponentContext().getAfterLayoutBuilt().accept(form, isViewMode());
+		if (getComponentContext().getAfterEditFormBuilt() != null) {
+			getComponentContext().getAfterEditFormBuilt().accept(form, isViewMode());
 		}
 
 		return layout;
@@ -701,19 +733,19 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructs a layout for grouping multiple attributes
+	 * Constructs a container for grouping multiple attributes
 	 * 
-	 * @param parent     the parent of the layout
-	 * @param useTabs    whether to use tabs
-	 * @param tabs       tab sheet component to add the new layout to
-	 * @param messageKey message key of the caption
-	 * @param lowest     whether we are at the lowest level
+	 * @param parent      the parent of the layout
+	 * @param useTabs     whether to use tabs
+	 * @param tabs        tab sheet component to add the new layout to
+	 * @param messageKey  message key of the caption
+	 * @param lowestLevel whether we are at the lowest level
 	 * @return
 	 */
 	private HasComponents constructAttributeGroupLayout(HasComponents parent, boolean useTabs, TabWrapper tabs,
-			String messageKey, boolean lowest) {
+			String messageKey, boolean lowestLevel) {
 		Component innerLayout = null;
-		if (lowest) {
+		if (lowestLevel) {
 			innerLayout = new FormLayout();
 			setResponsiveSteps((HasComponents) innerLayout);
 		} else {
@@ -733,15 +765,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructs the button bar
+	 * Constructs the button for navigating back
 	 * 
-	 * @param bottom whether this is the bottom button bar
-	 * @return
+	 * @param buttonBar the button bar to which to add the button
 	 */
-	private FlexLayout constructButtonBar(boolean bottom) {
-		FlexLayout buttonBar = new DefaultFlexLayout();
-
-		// button to go back to the main screen when in view mode
+	private void constructBackButton(FlexLayout buttonBar) {
 		Button backButton = new Button(message("ocs.back"));
 		backButton.setIcon(VaadinIcon.BACKWARDS.create());
 
@@ -751,6 +779,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		backButton.setVisible(isViewMode() && getFormOptions().isShowBackButton());
 		buttonBar.add(backButton);
 		storeButton(BACK_BUTTON_DATA, backButton);
+	}
+
+	/**
+	 * Constructs the button bar
+	 * 
+	 * @param bottom whether this is the bottom button bar
+	 * @return
+	 */
+	private FlexLayout constructButtonBar(boolean bottom) {
+		FlexLayout buttonBar = new DefaultFlexLayout();
+
+		constructBackButton(buttonBar);
 
 		// in edit mode, display a cancel button
 		Button cancelButton = new Button(message("ocs.cancel"));
@@ -767,7 +807,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// display button when in edit mode and explicitly specified, or when creating a
 		// new entity
 		// in nested mode
-		cancelButton.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
+		cancelButton.setVisible((!isViewMode() && getFormOptions().isShowCancelButton())
 				|| (getComponentContext().isFormNested() && entity.getId() == null));
 		cancelButton.setIcon(VaadinIcon.BAN.create());
 		buttonBar.add(cancelButton);
@@ -779,48 +819,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			storeButton(SAVE_BUTTON_DATA, saveButton);
 		}
 
-		// create the edit button
-		Button editButton = new Button(message("ocs.edit"));
-		editButton.setIcon(VaadinIcon.PENCIL.create());
-		editButton.addClickListener(event -> setViewMode(false));
-		buttonBar.add(editButton);
-		storeButton(EDIT_BUTTON_DATA, editButton);
-		editButton.setVisible(isViewMode() && getFormOptions().isEditAllowed() && checkEditAllowed());
+		constructEditButton(buttonBar);
 
 		if (isViewMode() && getFormOptions().isShowRefreshButton()) {
 			Button refreshButton = constructRefreshButton();
 			buttonBar.add(refreshButton);
 		}
 
-		// button for moving to the previous record
-		Button prevButton = new Button(message("ocs.previous"));
-		prevButton.setIcon(VaadinIcon.ARROW_LEFT.create());
-		prevButton.addClickListener(e -> {
-			T prev = getPreviousEntity();
-			if (prev != null) {
-				setEntity(prev, true);
-			}
-			getPreviousButtons().stream().forEach(b -> b.setEnabled(hasPrevEntity()));
-		});
-		storeButton(PREV_BUTTON_DATA, prevButton);
-		buttonBar.add(prevButton);
-		prevButton.setEnabled(hasPrevEntity());
-
-		// button for moving to the next record
-		Button nextButton = new Button(message("ocs.next"));
-		nextButton.setIcon(VaadinIcon.ARROW_RIGHT.create());
-		nextButton.addClickListener(e -> {
-			T next = getNextEntity();
-			if (next != null) {
-				setEntity(next, true);
-			}
-			getNextButtons().stream().forEach(b -> b.setEnabled(hasNextEntity()));
-
-		});
-		nextButton.setEnabled(hasNextEntity());
-		storeButton(NEXT_BUTTON_DATA, nextButton);
-
-		buttonBar.add(nextButton);
+		Button prevButton = constructPrevButton(buttonBar);
+		Button nextButton = constructNextButton(buttonBar);
 		prevButton.setVisible(isSupportsIteration() && getFormOptions().isShowPrevButton() && entity.getId() != null);
 		nextButton.setVisible(isSupportsIteration() && getFormOptions().isShowNextButton() && entity.getId() != null);
 
@@ -846,6 +853,20 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Constructs the button for opening the edit mode
+	 * 
+	 * @param buttonBar the button bar to which to add the button
+	 */
+	private void constructEditButton(FlexLayout buttonBar) {
+		Button editButton = new Button(message("ocs.edit"));
+		editButton.setIcon(VaadinIcon.PENCIL.create());
+		editButton.addClickListener(event -> setViewMode(false));
+		buttonBar.add(editButton);
+		storeButton(EDIT_BUTTON_DATA, editButton);
+		editButton.setVisible(isViewMode() && getFormOptions().isShowEditButton() && checkEditAllowed());
+	}
+
+	/**
 	 * Constructs a field or label for a certain attribute
 	 *
 	 * @param parent         the parent layout to which to add the field
@@ -853,7 +874,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param attributeModel the attribute model
 	 * @param viewMode       whether the screen is in view mode
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private void constructField(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, int tabIndex) {
 
@@ -877,17 +898,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				((HasSize) field).setSizeFull();
 			}
 
-			// add converters and validators
-			if (!(field instanceof ServiceBasedDetailsEditGrid)) {
-				BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
-
-				fieldFactory.addConvertersAndValidators(builder, attributeModel, context,
-						getComponentContext().findCustomConverter(attributeModel),
-						getComponentContext().findCustomValidator(attributeModel),
-						getComponentContext().findCustomRequiredValidator(attributeModel));
-				builder.bind(attributeModel.getPath());
-			}
-
+			addConvertersAndValidators(attributeModel, viewMode, field, context);
 			addUploadFieldListeners(attributeModel, field);
 
 			if (field instanceof DetailsEditLayout) {
@@ -896,82 +907,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			}
 
 			if (!attributeModel.getGroupTogetherWith().isEmpty()) {
-				// construct a separate layout for holding the fields that will be displayed
-				// together
-				FormLayout rowLayout = new FormLayout();
-				rowLayout.setWidth("100%");
-				rowLayout.addClassName(DynamoConstants.CSS_GROUPTOGETHER_LAYOUT);
-
-				List<ResponsiveStep> steps = new ArrayList<>();
-
-				GroupTogetherMode groupTogetherMode = getComponentContext().getGroupTogetherMode();
-				Integer groupTogetherWidth = getComponentContext().getGroupTogetherWidth();
-
-				GroupTogetherMode gtm = groupTogetherMode != null ? groupTogetherMode
-						: SystemPropertyUtils.getDefaultGroupTogetherMode();
-				Integer gtw = groupTogetherWidth != null ? groupTogetherWidth
-						: SystemPropertyUtils.getDefaultGroupTogetherWidth();
-
-				if (GroupTogetherMode.PERCENTAGE.equals(gtm)) {
-					int percentage = 100 / attributeModel.getGroupTogetherWith().size();
-					for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
-						steps.add(new ResponsiveStep(percentage + "%", i + 1));
-					}
-					rowLayout.setResponsiveSteps(steps);
-				} else {
-					for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
-						steps.add(new ResponsiveStep((i * gtw) + "px", i + 1));
-					}
-					rowLayout.setResponsiveSteps(steps);
-				}
-
-				// when in nested mode (e.g. DetailsEditLayout) stretch over entire width
-				if (nestedMode) {
-					rowLayout.getElement().setAttribute("colspan", "2");
-				}
-
-				parent.add(rowLayout);
-				rowLayout.add(field);
-
-				for (String path : attributeModel.getGroupTogetherWith()) {
-					AttributeModel nestedAm = getEntityModel().getAttributeModel(path);
-					if (nestedAm != null) {
-						addField(rowLayout, entityModel, nestedAm, tabIndex);
-					}
-				}
+				addGroupedAttributes(parent, entityModel, attributeModel, tabIndex, field);
 			} else {
-				boolean colspan = field instanceof BaseDetailsEditGrid || field instanceof ElementCollectionGrid
-						|| field instanceof DetailsEditLayout;
-				if (parent instanceof FormLayout && colspan) {
-
-					FormLayout form = (FormLayout) parent;
-
-					if (SystemPropertyUtils.mustIndentGrids()) {
-						// ident grids (default)
-						FormItem fi = form.addFormItem(field,
-								new Label(attributeModel.getDisplayName(VaadinUtils.getLocale())));
-						fi.getElement().setAttribute("colspan", "2");
-						formItems.get(isViewMode()).put(attributeModel, fi);
-					} else {
-						// do not indent grids (probably better)
-
-						if (field instanceof BaseDetailsEditGrid) {
-							((BaseDetailsEditGrid) field)
-									.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
-						} else if (field instanceof DetailsEditLayout) {
-							((DetailsEditLayout) field)
-									.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
-						} else if (field instanceof ElementCollectionGrid) {
-							((ElementCollectionGrid) field)
-									.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
-						}
-
-						field.getElement().setAttribute("colspan", "2");
-						form.add(field);
-					}
-				} else {
-					parent.add((Component) field);
-				}
+				addSingleAttribute(parent, attributeModel, field);
 			}
 
 			// store a reference to the first field so we can give it focus
@@ -1090,6 +1028,52 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Constructs the button for navigating to the next entity
+	 * 
+	 * @param buttonBar the button bar to which to add the button
+	 * @return
+	 */
+	private Button constructNextButton(FlexLayout buttonBar) {
+		Button nextButton = new Button(message("ocs.next"));
+		nextButton.setIcon(VaadinIcon.ARROW_RIGHT.create());
+		nextButton.addClickListener(e -> {
+			T next = nextEntity == null ? null : nextEntity.get();
+			if (next != null) {
+				setEntity(next, true);
+			}
+			getNextButtons().stream().forEach(but -> but.setEnabled(existsNextEntity()));
+
+		});
+		nextButton.setEnabled(existsNextEntity());
+		storeButton(NEXT_BUTTON_DATA, nextButton);
+
+		buttonBar.add(nextButton);
+		return nextButton;
+	}
+
+	/**
+	 * Constructs the button for navigating to the previous entity
+	 * 
+	 * @param buttonBar the button bar to which to add the button
+	 * @return
+	 */
+	private Button constructPrevButton(FlexLayout buttonBar) {
+		Button prevButton = new Button(message("ocs.previous"));
+		prevButton.setIcon(VaadinIcon.ARROW_LEFT.create());
+		prevButton.addClickListener(e -> {
+			T prev = previousEntity == null ? null : previousEntity.get();
+			if (prev != null) {
+				setEntity(prev, true);
+			}
+			getPreviousButtons().stream().forEach(but -> but.setEnabled(existsPreviousEntity()));
+		});
+		storeButton(PREV_BUTTON_DATA, prevButton);
+		buttonBar.add(prevButton);
+		prevButton.setEnabled(existsPreviousEntity());
+		return prevButton;
+	}
+
+	/**
 	 * Constructs a button that can be used to refresh the screen
 	 * 
 	 * @return the button
@@ -1197,6 +1181,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	}
 
+	private boolean existsNextEntity() {
+		return hasNextEntity == null ? false : hasNextEntity.get();
+	}
+
+	private boolean existsPreviousEntity() {
+		return hasPreviousEntity == null ? false : hasPreviousEntity.get();
+	}
+
 	/**
 	 * Filters the buttons and returns those that match the provided data string
 	 * 
@@ -1208,15 +1200,24 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return Collections.unmodifiableList(list == null ? new ArrayList<>() : list);
 	}
 
-//	@SuppressWarnings("rawtypes")
-//	private Validator findCustomValidator(AttributeModel attributeModel, Map<String, Supplier<Validator<?>>> map) {
-//		Supplier<Validator<?>> supplier = map.get(attributeModel.getPath());
-//		if (supplier != null) {
-//			Validator<?> validator = supplier.get();
-//			return validator;
-//		}
-//		return null;
-//	}
+	/**
+	 * Finds a custom component creator for an attribute model defined in the
+	 * component context
+	 * 
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model
+	 * @param viewMode       whether the form is in view mode
+	 * @return
+	 */
+	private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
+		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
+				.getCustomFieldCreator(attributeModel.getPath());
+		if (customFieldCreator != null) {
+			return customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
+					.attributeModel(attributeModel).viewMode(viewMode).build());
+		}
+		return null;
+	}
 
 	public CollapsiblePanel getAttributeGroupPanel(String key) {
 		Object c = attributeGroups.get(isViewMode()).get(key);
@@ -1248,6 +1249,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return filterButtons(CANCEL_BUTTON_DATA);
 	}
 
+	public FetchJoinInformation[] getDetailJoins() {
+		return detailJoins;
+	}
+
+	public List<Button> getEditButtons() {
+		return filterButtons(EDIT_BUTTON_DATA);
+	}
+
 //	@SuppressWarnings("rawtypes")
 //	private Converter findCustomConverter(AttributeModel attributeModel) {
 //		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel.getPath());
@@ -1267,18 +1276,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 //	private Validator getCustomValidator(AttributeModel attributeModel) {
 //		return findCustomValidator(attributeModel, customValidators);
 //	}
-
-	public FetchJoinInformation[] getDetailJoins() {
-		return detailJoins;
-	}
-
-	public List<Button> getEditButtons() {
-		return filterButtons(EDIT_BUTTON_DATA);
-	}
-
-	public T getEntity() {
-		return entity;
-	}
 
 	/**
 	 * Retrieves a field for a certain property
@@ -1372,16 +1369,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Returns the next entity from the encapsulating layout
-	 * 
-	 * @return
-	 */
-	protected T getNextEntity() {
-		// overwrite in subclass
-		return null;
-	}
-
-	/**
 	 * Calculates the default value for a numeric field
 	 * 
 	 * @param am           the attribute model for the field
@@ -1414,18 +1401,18 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return findParentGroup.apply(attributeGroup);
 	}
 
+//	/**
+//	 * Returns the next entity from the encapsulating layout
+//	 * 
+//	 * @return
+//	 */
+//	protected T getNextEntity() {
+//		// overwrite in subclass
+//		return null;
+//	}
+
 	public List<Button> getPreviousButtons() {
 		return filterButtons(PREV_BUTTON_DATA);
-	}
-
-	/**
-	 * Returns the previous entity from the encapsulating layout
-	 * 
-	 * @return
-	 */
-	protected T getPreviousEntity() {
-		// overwrite in subclass
-		return null;
 	}
 
 	public List<Button> getRefreshButtons() {
@@ -1437,13 +1424,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 //	/**
-//	 * Overwrite this method to add custom exception handling
+//	 * Returns the previous entity from the encapsulating layout
 //	 * 
-//	 * @param ex the exception to handle
 //	 * @return
 //	 */
-//	protected boolean handleCustomException(RuntimeException ex) {
-//		return false;
+//	protected T getPreviousEntity() {
+//		// overwrite in subclass
+//		return null;
 //	}
 
 	public int getSelectedTabIndex() {
@@ -1468,14 +1455,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	protected boolean hasNextEntity() {
-		return false;
-	}
-
-	protected boolean hasPrevEntity() {
-		return false;
-	}
-
 	/**
 	 * Check whether a certain attribute group is visible
 	 *
@@ -1486,15 +1465,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		Object c = attributeGroups.get(false).get(key);
 		return c != null && isGroupVisible(c);
 	}
-
-//	/**
-//	 * Indicates whether it is allowed to edit this component
-//	 *
-//	 * @return
-//	 */
-//	protected boolean isEditAllowed() {
-//		return true;
-//	}
 
 	/**
 	 * Check if a certain attribute group is visible
@@ -1513,14 +1483,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return false;
 	}
 
-	public boolean isNestedMode() {
-		return nestedMode;
-	}
-
-	public boolean isSupportsIteration() {
-		return supportsIteration;
-	}
-
 	/**
 	 * Check if the form is valid
 	 *
@@ -1534,6 +1496,31 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 	public boolean isViewMode() {
 		return viewMode;
+	}
+
+	/**
+	 * Processes the various attribute groups
+	 * 
+	 * @param entityModel the entity model
+	 * @param form        the form to add the attribute group container components
+	 *                    to
+	 * @param useTabs     whether to use tabs (as opposed to panels)
+	 */
+	private void processAttributeGroups(EntityModel<T> entityModel, HasComponents form, boolean useTabs) {
+		int tabIndex = 0;
+		for (String attributeGroup : entityModel.getAttributeGroups()) {
+
+			if (entityModel.isAttributeGroupVisible(attributeGroup, isViewMode())) {
+				HasComponents innerForm = constructAttributeGroupLayout(form, useTabs, tabs.get(isViewMode()),
+						attributeGroup, true);
+				for (AttributeModel attributeModel : entityModel.getAttributeModelsForGroup(attributeGroup)) {
+					addField(innerForm, entityModel, attributeModel, tabIndex);
+				}
+				if (AttributeGroupMode.TABSHEET.equals(getFormOptions().getAttributeGroupMode())) {
+					tabIndex++;
+				}
+			}
+		}
 	}
 
 	/**
@@ -1558,6 +1545,32 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					addField(innerLayout2, getEntityModel(), attributeModel, tabIndex);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Process the parent group headers
+	 * 
+	 * @param form    the form to which to add the containers for the parent groups
+	 * @param useTabs whether to use tabs (as opposed to panels)
+	 */
+	private void processParentHeaderGroups(HasComponents form, boolean useTabs) {
+		int tabIndex = 0;
+		for (String parentGroupHeader : getParentGroupHeaders()) {
+			HasComponents innerForm = constructAttributeGroupLayout(form, useTabs, tabs.get(isViewMode()),
+					parentGroupHeader, false);
+
+			// add a tab sheet on the inner level if needed
+			TabWrapper innerTabs = null;
+			boolean useInnerTabs = !useTabs;
+			if (useInnerTabs) {
+				innerTabs = new TabWrapper();
+				innerForm.add(innerTabs);
+			}
+
+			// add all appropriate inner groups
+			processParentHeaderGroup(parentGroupHeader, innerForm, useInnerTabs, innerTabs, tabIndex);
+			tabIndex++;
 		}
 	}
 
@@ -1772,7 +1785,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		updateSaveButtonCaptions();
 
 		for (Button b : getCancelButtons()) {
-			b.setVisible((!isViewMode() && !getFormOptions().isHideCancelButton())
+			b.setVisible((!isViewMode() && getFormOptions().isShowCancelButton())
 					|| (getComponentContext().isFormNested() && entity.getId() == null));
 		}
 
@@ -1832,10 +1845,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	public void setNestedMode(boolean nestedMode) {
-		this.nestedMode = nestedMode;
-	}
-
 	/**
 	 * Sets the responsive steps on the form layout. This determines when a second
 	 * column will be shown
@@ -1866,10 +1875,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				form.setResponsiveSteps(list);
 			}
 		}
-	}
-
-	public void setSupportsIteration(boolean supportsIteration) {
-		this.supportsIteration = supportsIteration;
 	}
 
 	/**
@@ -1911,7 +1916,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// if this is the first time in edit mode, post process the editable
 		// fields
 		if (!isViewMode() && !fieldsProcessed) {
-			// postProcessEditFields();
+			Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields = getComponentContext()
+					.getPostProcessEditFields();
 			if (postProcessEditFields != null) {
 				postProcessEditFields.accept(this);
 			}
@@ -2009,7 +2015,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Validates all fields and returns true if an error occurs
 	 *
-	 * @return
+	 * @return true when a validation error occurs
 	 */
 	@Override
 	public boolean validateAllFields() {

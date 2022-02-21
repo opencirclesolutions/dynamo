@@ -19,6 +19,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.utils.EntityModelUtils;
 
 import lombok.EqualsAndHashCode;
+import lombok.Getter;
 
 /**
  * 
@@ -30,9 +31,11 @@ import lombok.EqualsAndHashCode;
 public abstract class BaseIgnoreDiacriticsFilter<T> {
 
 	@EqualsAndHashCode.Include
+	@Getter
 	private final boolean ignoreCase;
 
 	@EqualsAndHashCode.Include
+	@Getter
 	private final boolean onlyMatchPrefix;
 
 	private final EntityModel<T> entityModel;
@@ -61,11 +64,4 @@ public abstract class BaseIgnoreDiacriticsFilter<T> {
 		return onlyMatchPrefix ? temp.startsWith(filterText) : temp.contains(filterText);
 	}
 
-	public boolean isIgnoreCase() {
-		return ignoreCase;
-	}
-
-	public boolean isOnlyMatchPrefix() {
-		return onlyMatchPrefix;
-	}
 }

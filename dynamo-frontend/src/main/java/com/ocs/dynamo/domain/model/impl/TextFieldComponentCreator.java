@@ -50,7 +50,8 @@ public class TextFieldComponentCreator implements SimpleComponentCreator {
 
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
-		return new TextField();
+		TextField tf = new TextField();
+		return tf;
 	}
 
 	@Override

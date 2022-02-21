@@ -26,29 +26,39 @@ import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A split layout that contains a reference to the parent object
  * 
  * @author bas.rutten
- * @param <ID> type of the primary key
- * @param <T> type of the entity
+ * @param <ID>  type of the primary key
+ * @param <T>   type of the entity
  * @param <ID2> type of the primary key of the parent
- * @param <Q> type of the parent entity
+ * @param <Q>   type of the parent entity
  */
 public class ServiceBasedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
 		extends ServiceBasedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {
 
 	private static final long serialVersionUID = 1068860513192819804L;
 
+	@Getter
 	private final BaseService<ID2, Q> parentService;
 
+	@Getter
+	@Setter
 	private Q parentEntity;
 
 	/**
 	 * The joins to use when refreshing the parent entity
 	 */
+	@Getter
+	@Setter
 	private FetchJoinInformation[] parentJoins;
 
+	@Getter
+	@Setter
 	private Function<Q, SerializablePredicate<T>> parentFilterSupplier;
 
 	/**
@@ -79,22 +89,6 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 		filter = parentFilterSupplier == null ? null : parentFilterSupplier.apply(getParentEntity());
 	}
 
-	public Q getParentEntity() {
-		return parentEntity;
-	}
-
-	public Function<Q, SerializablePredicate<T>> getParentFilterSupplier() {
-		return parentFilterSupplier;
-	}
-
-	public FetchJoinInformation[] getParentJoins() {
-		return parentJoins;
-	}
-
-	public BaseService<ID2, Q> getParentService() {
-		return parentService;
-	}
-
 	@Override
 	public void reload() {
 		setParentEntity(getParentService().fetchById(getParentEntity().getId(), getParentJoins()));
@@ -106,15 +100,4 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 		throw new UnsupportedOperationException("Use the setParentFilterSupplier method instead");
 	}
 
-	public void setParentEntity(Q parentEntity) {
-		this.parentEntity = parentEntity;
-	}
-	
-	public void setParentFilterSupplier(Function<Q, SerializablePredicate<T>> parentFilterSupplier) {
-		this.parentFilterSupplier = parentFilterSupplier;
-	}
-
-	public void setParentJoins(FetchJoinInformation[] parentJoins) {
-		this.parentJoins = parentJoins;
-	}
 }

@@ -26,6 +26,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -38,9 +39,9 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.UseInViewMode;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.export.ExportDelegate;
-import com.ocs.dynamo.ui.composite.grid.ComponentContext;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedSelectionGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -213,7 +214,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	@Getter
 	@Setter
-	private Runnable postProcessLayout;
+	private Runnable afterLayoutBuilt;
 
 	/**
 	 * Consumer that is used to remove an entity
@@ -283,7 +284,22 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Whether the component is in view mode. If this is the case, editing is not
 	 * allowed and no buttons will be displayed
 	 */
+	@Getter
 	private boolean viewMode;
+
+	@Getter
+	@Setter
+	private ITriConsumer<ID, AttributeModel, Component> postProcessComponent;
+
+	@Getter
+	@Setter
+	private Runnable onAdd = () -> {
+	};
+
+	@Getter
+	@Setter
+	private Consumer<T> onEdit = t -> {
+	};
 
 	/**
 	 * Constructor
@@ -310,6 +326,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		componentContext.addCustomConverter(path, converter);
 	}
 
+	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
+		componentContext.addCustomField(path, function);
+	}
+
 	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
 		componentContext.addCustomRequiredValidator(path, validator);
 	}
@@ -325,11 +345,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	private void addEditButtonToGrid() {
 		if (serviceBasedEditMode && !formOptions.isDetailsGridSearchMode() && !isViewMode()
-				&& formOptions.isEditAllowed()) {
+				&& formOptions.isShowEditButton()) {
 			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
 				Button edit = new Button();
 				edit.setIcon(VaadinIcon.PENCIL.create());
-				edit.addClickListener(event -> doEdit(getService().fetchById(t.getId(), getDetailJoins())));
+				edit.addClickListener(event -> onEdit.accept(getService().fetchById(t.getId(), getDetailJoins())));
 				return edit;
 			});
 		}
@@ -403,7 +423,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 					onSelect(selectedItem);
 					checkComponentState(selectedItem);
 
-					if (getFormOptions().isShowGridDetailsPanel()) {
+					if (getFormOptions().isShowDetailsGridDetailsPanel()) {
 						showInDetailsPanel(selectedItem);
 					}
 				}
@@ -417,7 +437,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			addDownloadMenu();
 		}
-
 	}
 
 	/**
@@ -446,11 +465,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(event -> {
 			hideSelectedDetailsPanel();
-			doAdd();
+			if (onAdd != null) {
+				onAdd.run();
+			}
 		});
 		addButton.setVisible((isGridEditEnabled()
 				|| (!isViewMode() && serviceBasedEditMode && !formOptions.isDetailsGridSearchMode()))
-				&& !formOptions.isHideAddButton());
+				&& formOptions.isShowAddButton());
 		buttonBar.add(addButton);
 	}
 
@@ -466,6 +487,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		constructSearchButton(buttonBar);
 	}
 
+	/**
+	 * Constructs the panel used to display the entity that is selected in the grid
+	 */
 	private void constructDetailsPanel() {
 		if (selectedDetailsPanel == null) {
 			selectedDetailsPanel = new DefaultVerticalLayout(true, false);
@@ -477,7 +501,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			selectedDetailsLayout = new SimpleEditLayout<>(
 					getCreateEntitySupplier() == null ? null : getCreateEntitySupplier().get(), service, em, cloned,
-					ComponentContext.<ID, T>builder().build(), getDetailJoins());
+					getDetailJoins());
 			selectedDetailsPanel.add(selectedDetailsLayout);
 
 			layout.add(selectedDetailsPanel);
@@ -548,7 +572,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			@Override
 			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
+				if (postProcessComponent != null) {
+					postProcessComponent.accept(id, am, comp);
+				}
 			}
 		};
 		((ModelBasedGrid<ID, T>) grid).build();
@@ -579,7 +605,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			@Override
 			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				BaseDetailsEditGrid.this.postProcessComponent(id, am, comp);
+				if (postProcessComponent != null) {
+					postProcessComponent.accept(id, am, comp);
+				}
 			}
 		};
 
@@ -595,20 +623,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Callback method that is carried out after a click on the Add button
-	 */
-	protected abstract void doAdd();
-
-	/**
-	 * Callback method that is carried out after a click on the Edit button
-	 */
-	protected abstract void doEdit(T t);
-
-	/**
+	 * Constructs a custom field for a specified entity model and attribute model
 	 * 
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param viewMode
+	 * @param entityModel    the entity model
+	 * @param attributeModel the attribute model
+	 * @param viewMode       whether the component is in view mode
 	 * @return
 	 */
 	private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
@@ -638,6 +657,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	protected abstract void handleDialogSelection(Collection<T> selected);
 
+	/**
+	 * Hides the panel that is used to show the details of the entity that is
+	 * selected in the grid
+	 */
 	private void hideSelectedDetailsPanel() {
 		if (selectedDetailsPanel != null) {
 			selectedDetailsPanel.setVisible(false);
@@ -666,10 +689,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 				&& !serviceBasedEditMode;
 	}
 
-	public boolean isViewMode() {
-		return viewMode;
-	}
-
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		super.onAttach(attachEvent);
@@ -688,8 +707,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	protected void postProcess() {
 		if (!postProcessed) {
-			if (postProcessLayout != null) {
-				postProcessLayout.run();
+			if (afterLayoutBuilt != null) {
+				afterLayoutBuilt.run();
 			}
 
 			if (postProcessButtonBar != null) {
@@ -698,18 +717,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			postProcessed = true;
 		}
-	}
-
-	/**
-	 * Callback method that is executed after a component in the grid has been
-	 * constructed
-	 * 
-	 * @param id   the primary key of the component
-	 * @param am   the attribute model for the component
-	 * @param comp the component
-	 */
-	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-		// overwrite in subclass if needed
 	}
 
 	/**
@@ -831,10 +838,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			error |= !status.isOk();
 		}
 		return error;
-	}
-
-	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
-		componentContext.addCustomField(path, function);
 	}
 
 }
