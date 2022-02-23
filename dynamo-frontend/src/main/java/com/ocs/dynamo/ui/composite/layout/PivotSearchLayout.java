@@ -62,6 +62,8 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
+
 	/**
 	 * Explicitly overridden header mapper used for exporting only
 	 */
@@ -134,6 +136,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setPivotedProperties(getPivotedProperties());
 		wrapper.setHiddenPivotedProperties(getHiddenPivotedProperties());
 		wrapper.setHeaderMapper(getHeaderMapper());
+		wrapper.setSubHeaderMapper(getSubHeaderMapper());
 		wrapper.setFixedHeaderMapper(getFixedHeaderMapper());
 		wrapper.setCustomFormatter(getCustomFormatter());
 		wrapper.setSizeSupplier(getSizeSupplier());
@@ -344,6 +347,14 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	public void setExportHeaderMapper(BiFunction<Object, Object, String> exportHeaderMapper) {
 		this.exportHeaderMapper = exportHeaderMapper;
+	}
+
+	public BiFunction<Object, Object, String> getSubHeaderMapper() {
+		return subHeaderMapper;
+	}
+
+	public void setSubHeaderMapper(BiFunction<Object, Object, String> subHeaderMapper) {
+		this.subHeaderMapper = subHeaderMapper;
 	}
 
 }

@@ -58,7 +58,7 @@ public class PivotGridIntegrationTest extends FrontendIntegrationTest {
 
 		PivotGrid<Integer, TestEntity> pg = new PivotGrid<Integer, TestEntity>(pivotProvider,
 				Lists.newArrayList(TestEnum.A, TestEnum.B, TestEnum.C), Function.identity(), (a, b) -> a.toString(),
-				null);
+				(a, b) -> b.toString(), null);
 		assertNotNull(pg.getColumnByKey("name"));
 		assertNotNull(pg.getColumnByKey("A_age"));
 		assertNotNull(pg.getColumnByKey("B_age"));

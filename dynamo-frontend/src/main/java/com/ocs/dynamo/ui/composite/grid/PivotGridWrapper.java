@@ -96,6 +96,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 */
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
+
 	/**
 	 * Bifunction used to map pivot column headers for export only
 	 */
@@ -202,7 +204,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @return
 	 */
 	protected PivotGrid<ID, T> constructGrid() {
-		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper, customFormatter);
+		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper, subHeaderMapper,
+				customFormatter);
 	}
 
 	public String getColumnKeyProperty() {
@@ -317,6 +320,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				pars.setAggregationMap(aggregationMap);
 				pars.setIncludeAggregateRow(includeAggregateRow);
 				pars.setAggregationClassMap(aggregationClassMap);
+				pars.setSubHeaderMapper(getSubHeaderMapper());
 
 				// use the fallback sort orders here
 				getExportDelegate().exportPivoted(
@@ -431,6 +435,14 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	public void setExportHeaderMapper(BiFunction<Object, Object, String> exportHeaderMapper) {
 		this.exportHeaderMapper = exportHeaderMapper;
+	}
+
+	public BiFunction<Object, Object, String> getSubHeaderMapper() {
+		return subHeaderMapper;
+	}
+
+	public void setSubHeaderMapper(BiFunction<Object, Object, String> subHeaderMapper) {
+		this.subHeaderMapper = subHeaderMapper;
 	}
 
 }

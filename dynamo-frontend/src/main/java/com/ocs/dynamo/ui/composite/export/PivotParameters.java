@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.export;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -40,7 +41,7 @@ public class PivotParameters {
 
 	private List<String> pivotedProperties;
 
-	private List<String> hiddenPivotedProperties;
+	private List<String> hiddenPivotedProperties = new ArrayList<>();
 
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
@@ -50,7 +51,7 @@ public class PivotParameters {
 
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
-	private Function<Object, String> subHeaderMapper = a -> a.toString();
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
 
 	private boolean includeAggregateRow;
 
@@ -144,12 +145,24 @@ public class PivotParameters {
 		this.aggregationClassMap = aggregationClassMap;
 	}
 
-	public Function<Object, String> getSubHeaderMapper() {
+	public BiFunction<Object, Object, String> getSubHeaderMapper() {
 		return subHeaderMapper;
 	}
 
-	public void setSubHeaderMapper(Function<Object, String> subHeaderMapper) {
+	public void setSubHeaderMapper(BiFunction<Object, Object, String> subHeaderMapper) {
 		this.subHeaderMapper = subHeaderMapper;
 	}
 
+	public List<String> getShownAndHiddenProperties() {
+		List<String> allProps = new ArrayList<>();
+		allProps.addAll(getPivotedProperties());
+		if (getHiddenPivotedProperties() != null) {
+			allProps.addAll(getHiddenPivotedProperties());
+		}
+		return allProps;
+	}
+
+	public int getTotalNumberOfVariableColumns() {
+		return possibleColumnKeys.size() * pivotedProperties.size();
+	}
 }

@@ -70,6 +70,30 @@ public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends
 		this.pivotParameters = pivotParameters;
 	}
 
+	/**
+	 * Adds empty column values for data that is missing
+	 * 
+	 * @param row the row to which to add the empty cells
+	 */
+	private void addEmtpyColumnValues(List<String> row) {
+		while (row.size() < pivotParameters.getFixedColumnKeys().size()
+				+ pivotParameters.getPivotedProperties().size() * pivotParameters.getPossibleColumnKeys().size()) {
+			row.add("");
+		}
+	}
+
+	/**
+	 * Checks whether the value of the column key matches the expected value
+	 * 
+	 * @param entity   the entity to check for the actual value
+	 * @param expected the expected value
+	 * @return
+	 */
+	private boolean columnValueMatches(T entity, Object expected) {
+		Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
+		return Objects.equals(actual, expected);
+	}
+
 	@Override
 	protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
 		try (ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -77,8 +101,6 @@ public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends
 						SystemPropertyUtils.getCsvSeparator().charAt(0),
 						SystemPropertyUtils.getCsvQuoteChar().charAt(0),
 						SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
-
-			// add header row
 
 			// add fixed columns
 			List<String> headers = new ArrayList<>();
@@ -90,7 +112,8 @@ public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends
 			for (Object fc : pivotParameters.getPossibleColumnKeys()) {
 				for (String property : pivotParameters.getPivotedProperties()) {
 					String value = pivotParameters.getHeaderMapper().apply(fc, property);
-					headers.add(value);
+					String subHeader = pivotParameters.getSubHeaderMapper().apply(fc, property);
+					headers.add(value + " - " + subHeader);
 				}
 			}
 			writer.writeNext(headers.toArray(new String[0]));
@@ -167,25 +190,6 @@ public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends
 
 			writer.flush();
 			return out.toByteArray();
-		}
-	}
-
-	/**
-	 * Checks whether the value of the column key matches the expected value
-	 * 
-	 * @param entity   the entity to check for the actual value
-	 * @param expected the expected value
-	 * @return
-	 */
-	private boolean columnValueMatches(T entity, Object expected) {
-		Object actual = ClassUtils.getFieldValue(entity, pivotParameters.getColumnKeyProperty());
-		return Objects.equals(actual, expected);
-	}
-
-	private void addEmtpyColumnValues(List<String> row) {
-		while (row.size() < pivotParameters.getFixedColumnKeys().size()
-				+ pivotParameters.getPivotedProperties().size() * pivotParameters.getPossibleColumnKeys().size()) {
-			row.add("");
 		}
 	}
 }
