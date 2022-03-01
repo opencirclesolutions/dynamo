@@ -284,6 +284,8 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					getFieldFilters());
 
 			initEditForm(editForm);
+			editForm.setEditAllowed(getEditAllowed());
+
 			editForm.setAfterEditDone((cancel, isNew, ent) -> {
 				if (!cancel) {
 					// update the selected item so master and detail are in sync
@@ -314,19 +316,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		setSelectedItem(entity);
 		checkComponentState(getSelectedItem());
 
+		detailLayout.replace(selectedDetailLayout, detailFormLayout);
+		selectedDetailLayout = detailFormLayout;
+
 		if (getComponentContext().getAfterEntitySelected() != null) {
 			getComponentContext().getAfterEntitySelected().accept(getEditForm(), entity);
 		}
-
-		detailLayout.replace(selectedDetailLayout, detailFormLayout);
-		selectedDetailLayout = detailFormLayout;
-	}
-
-	/**
-	 * Performs the actual remove functionality - overwrite in subclass if needed
-	 */
-	protected void doRemove() {
-		getService().delete(getSelectedItem());
 	}
 
 	public void doSave() {
@@ -415,7 +410,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * need to do some custom functionality
 	 */
 	protected final void removeEntity() {
-		doRemove();
+		if (getOnRemove() != null) {
+			getOnRemove().run();
+		}
 		setSelectedItem(null);
 		emptyDetailView();
 		reload();

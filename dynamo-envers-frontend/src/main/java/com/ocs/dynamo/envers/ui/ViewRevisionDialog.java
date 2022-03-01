@@ -99,7 +99,7 @@ public class ViewRevisionDialog<ID extends Serializable, T extends AbstractEntit
 
 	private void buildMain(BaseService<RevisionKey<ID>, U> service, EntityModel<U> entityModel, FormOptions formOptions,
 			ID id) {
-		setBuildMain(parent -> {
+		setBuildMainLayout(parent -> {
 			FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(formOptions.getScreenMode())
 					.setAttributeGroupMode(formOptions.getAttributeGroupMode()).setExportAllowed(true);
 			ServiceBasedSplitLayout<RevisionKey<ID>, U> layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(

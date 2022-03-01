@@ -42,6 +42,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Transient;
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -75,7 +76,6 @@ import com.ocs.dynamo.domain.model.annotation.GridAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.annotation.SearchAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
-import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;

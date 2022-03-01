@@ -30,6 +30,8 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.menubar.MenuBar;
+import com.vaadin.flow.component.notification.Notification.Position;
+import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.BeforeEnterEvent;
 import com.vaadin.flow.router.BeforeEnterObserver;
@@ -52,25 +54,25 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 
 	private static final long serialVersionUID = 8340448520371840427L;
 
+	/**
+	 * Indicates whether the application must ask for confirmation before navigating
+	 * to a different view
+	 */
+	private boolean confirmBeforeLeave;
+
 	@Autowired
-	@Getter
-	private EntityModelFactory modelFactory;
+	private MenuService menuService;
 
 	@Autowired
 	@Getter
 	private MessageService messageService;
 
 	@Autowired
-	private UIHelper uiHelper;
+	@Getter
+	private EntityModelFactory modelFactory;
 
 	@Autowired
-	private MenuService menuService;
-
-	/**
-	 * Indicates whether the application must ask for confirmation before navigating
-	 * to a different view
-	 */
-	private boolean confirmBeforeLeave;
+	private UIHelper uiHelper;
 
 	public BaseView() {
 		this(false, false);
@@ -120,7 +122,6 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	 * Performs the actual initialization
 	 */
 	protected abstract void doInit(VerticalLayout main);
-
 
 	public UIHelper getUiHelper() {
 		return uiHelper;
@@ -194,4 +195,32 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 		UI.getCurrent().navigate(viewId + "/" + mode);
 	}
 
+	/**
+	 * Shows an error message
+	 * 
+	 * @param message the message to show
+	 */
+	public void showErrorNotification(String message) {
+		VaadinUtils.showNotification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
+	}
+
+	/**
+	 * Shows a notification message
+	 * 
+	 * @param message  the message
+	 * @param position the desired position
+	 * @param variant  the variant (indicates the style, e.g. error or warning)
+	 */
+	public void showNotification(String message, Position position, NotificationVariant variant) {
+		VaadinUtils.showNotification(message, position, variant);
+	}
+
+	/**
+	 * Shows a tray message
+	 * 
+	 * @param message the message to show
+	 */
+	public void showTrayNotification(String message) {
+		VaadinUtils.showTrayNotification(message);
+	}
 }

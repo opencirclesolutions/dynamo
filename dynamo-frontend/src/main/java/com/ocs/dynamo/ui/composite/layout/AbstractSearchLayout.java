@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -62,23 +63,33 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	private static final long serialVersionUID = 366639924823921266L;
 
+	/**
+	 * Code that is executed after the advanced mode is switch on or off
+	 */
 	@Getter
 	@Setter
-	private Runnable afterAdvancedModeToggled;
+	private Consumer<Boolean> afterAdvancedModeToggled = b -> {
+	};
 
+	/**
+	 * Code that is executed
+	 */
 	@Getter
 	@Setter
 	private Runnable afterClear = () -> {
 	};
 
 	/**
-	 * 
+	 * Code that is executed after the search form is shown or hidden
 	 */
 	@Getter
 	@Setter
 	private Consumer<Boolean> afterSearchFormToggled = b -> {
 	};
 
+	/**
+	 * Code that is executed after a search is performed
+	 */
 	@Getter
 	@Setter
 	private Runnable afterSearchPerformed = () -> {
@@ -97,6 +108,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Getter
 	private VerticalLayout mainSearchLayout;
 
+	/**
+	 * Code that is executed when the edit button is clicked
+	 */
 	@Getter
 	@Setter
 	private Runnable onEdit = () -> detailsMode(getSelectedItem());
@@ -105,6 +119,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Setter
 	private Runnable onRemove = () -> getService().delete(getSelectedItem());
 
+	/**
+	 * Code that is carried out after the search button bar has been constructed
+	 */
 	@Getter
 	@Setter
 	private Consumer<FlexLayout> postProcessSearchButtonBar;
@@ -120,13 +137,27 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	private boolean searchLayoutConstructed;
 
+	@Getter
 	private VerticalLayout searchResultsLayout;
 
+	@Getter
 	private Collection<T> selectedItems;
 
+	/**
+	 * Code that is carried out to validate the search form before a search can be
+	 * carried out
+	 */
 	@Getter
 	@Setter
 	private Runnable validateBeforeSearch;
+
+	/**
+	 * Code that is carried out to construct an icon for a tab that is displayed in
+	 * the tab layout when in complex details mode
+	 */
+	@Getter
+	@Setter
+	private Function<Integer, Icon> tabIconSupplier;
 
 	/**
 	 * Constructor
@@ -145,6 +176,13 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		this.queryType = queryType;
 	}
 
+	/**
+	 * Registers a lambda functions for creating a details tab that is used when
+	 * "complexDetailsMode" is enab
+	 * 
+	 * @param index
+	 * @param creator
+	 */
 	public void addDetailTabCreator(int index, BiFunction<FormOptions, Boolean, Component> creator) {
 		detailTabCreators.put(index, creator);
 	}
@@ -272,7 +310,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			if (getComponentCount() == 0) {
 				add(mainSearchLayout);
 			}
-
 		}
 	}
 
@@ -386,14 +423,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
-//	/**
-//	 * Callback method that is called when the user presses the edit method. Will by
-//	 * default open the screen in edit mode. Overwrite in subclass if needed
-//	 */
-//	protected void doEdit() {
-//		detailsMode(getSelectedItem());
-//	}
-
 	/**
 	 * Sets the provided component as the current detail view
 	 * 
@@ -403,13 +432,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		removeAll();
 		add(root);
 	}
-
-//	/**
-//	 * Performs the actual remove functionality - overwrite in subclass if needed
-//	 */
-//	protected void doRemove() {
-//		getService().delete(getSelectedItem());
-//	}
 
 	/**
 	 * Open the screen in edit mode for the provided entity
@@ -430,18 +452,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Callback method that is used to set the icon for a tab if complex detail mode
-	 * is enabled
-	 * 
-	 * @param index the index of the tab
-	 * @return
-	 */
-	protected Icon getIconForTab(int index) {
-		// overwrite in subclasses
-		return null;
-	}
-
-	/**
 	 * Returns the search form (lazily constructing it when needed)
 	 * 
 	 * @return
@@ -451,14 +461,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			searchForm = constructSearchForm();
 		}
 		return searchForm;
-	}
-
-	public VerticalLayout getSearchResultsLayout() {
-		return searchResultsLayout;
-	}
-
-	public Collection<T> getSelectedItems() {
-		return selectedItems;
 	}
 
 	protected void initSearchForm(AbstractModelBasedSearchForm<ID, T> searchForm) {

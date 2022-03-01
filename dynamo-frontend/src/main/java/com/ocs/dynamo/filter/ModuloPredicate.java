@@ -15,12 +15,16 @@ package com.ocs.dynamo.filter;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
+import lombok.Getter;
+
 public class ModuloPredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = 6955667568104108931L;
 
+	@Getter
 	private final String modExpression;
 
+	@Getter
 	private final Integer modValue;
 
 	public ModuloPredicate(final String property, final String modExpression, final Number result) {
@@ -38,14 +42,6 @@ public class ModuloPredicate<T> extends PropertyPredicate<T> {
 	@Override
 	public Number getValue() {
 		return (Number) super.getValue();
-	}
-
-	public String getModExpression() {
-		return modExpression;
-	}
-
-	public Integer getModValue() {
-		return modValue;
 	}
 
 	@Override

@@ -215,7 +215,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Returns the IDS of the entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param orders the sort orders
+	 * @param sortOrders the sort orders
 	 * @return
 	 */
 	List<ID> findIds(Filter filter, SortOrder... sortOrders);

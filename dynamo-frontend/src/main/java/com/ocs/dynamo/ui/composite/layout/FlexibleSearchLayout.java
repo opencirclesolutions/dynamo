@@ -28,6 +28,8 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedFlexibleSearchForm;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.data.provider.SortOrder;
 
+import lombok.Getter;
+
 /**
  * A search layout that allows a user to dynamically add and remove search
  * criteria
@@ -46,6 +48,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	 * Paths of the properties for which to offer only basic String filter
 	 * functionality (equal, contains, and starts)
 	 */
+	@Getter
 	private Set<String> basicStringFilterProperties = new HashSet<>();
 
 	/**

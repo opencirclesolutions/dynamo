@@ -48,12 +48,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class ProgressForm<T> extends BaseCustomComponent implements Progressable {
 
-	/**
-	 * The screen mode
-	 * 
-	 * @author bas.rutten
-	 *
-	 */
 	public enum ProgressMode {
 		PROGRESSBAR, SIMPLE;
 	}
@@ -90,14 +84,26 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	@Getter
 	private ProgressCounter counter = new DefaultProgressCounter();
 
+	/**
+	 * Callback method that is used to estimate the total size of the data set to
+	 * process
+	 */
 	@Getter
 	@Setter
 	private Function<T, Integer> estimateSize = t -> 0;
 
+	/**
+	 * Callback method that is carried out to validate whether the form input is
+	 * valid
+	 */
+	@Getter
+	@Setter
+	private Predicate<T> isFormValid = t -> true;
+
 	private VerticalLayout mainLayout;
 
 	/**
-	 * Callback method that is called to start the actual processing
+	 * Callback method that is called to do the actual processing
 	 */
 	@Getter
 	@Setter
@@ -122,10 +128,6 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 
 	@Getter
 	private UI ui;
-
-	@Getter
-	@Setter
-	private Predicate<T> isFormValid = t -> true;
 
 	/**
 	 * Constructor
@@ -180,6 +182,63 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	@Override
 	public int estimateCurrentProgress() {
 		return counter.getCurrent();
+	}
+
+	/**
+	 * Executes the process, with periodic polling to determine the progress
+	 * 
+	 * @param input the input for the processing
+	 */
+	private void executeProcessWithPolling(T input) {
+		// switch to progress bar mode
+		progressMode();
+
+		// start a thread to update the progress
+		try {
+			int estimatedSize = estimateSize.apply(input);
+
+			counter.reset();
+			ui.setPollInterval(POLL_INTERVAL);
+
+			ProgressBarUpdater updater = new ProgressBarUpdater(ui, this, estimatedSize);
+
+			// the thread that updates the progress bar
+			Thread updateThread = new Thread(updater);
+			updateThread.start();
+
+			// the thread that performs the actual work
+			Thread worker = new Thread(() -> {
+				try {
+					processConsumer.accept(input, estimatedSize);
+				} finally {
+					updater.setStopped(true);
+					signalDone(false);
+				}
+			});
+			worker.start();
+		} catch (RuntimeException ex) {
+			log.error(ex.getMessage(), ex);
+			// exception during size estimation
+			showNotification(ex.getMessage());
+			signalDone(true);
+		}
+	}
+
+	/**
+	 * Executes the process without polling
+	 * 
+	 * @param input the input
+	 */
+	private void executeSimpleProcess(T input) {
+		try {
+			processConsumer.accept(input, 0);
+			done(false);
+		} catch (RuntimeException ex) {
+			log.error(ex.getMessage(), ex);
+			// exception during size estimation
+			showNotification(ex.getMessage());
+			signalDone(true);
+		}
 	}
 
 	/**
@@ -297,8 +356,8 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 * 
 	 * @param t the (optional) object that is being processed
 	 */
-	protected final void startWork(T t) {
-		if (isFormValid.test(t)) {
+	protected final void startWork(T input) {
+		if (isFormValid == null || isFormValid.test(input)) {
 
 			if (processConsumer == null) {
 				throw new IllegalStateException("You must define a ProcessConsumer");
@@ -306,48 +365,9 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 
 			if (ProgressMode.SIMPLE.equals(progressMode)) {
 				// simply execute the process (without displaying any feedback)
-				try {
-					processConsumer.accept(t, 0);
-					done(false);
-				} catch (RuntimeException ex) {
-					log.error(ex.getMessage(), ex);
-					// exception during size estimation
-					showNotification(ex.getMessage());
-					signalDone(true);
-				}
+				executeSimpleProcess(input);
 			} else {
-				// switch to progress bar mode
-				progressMode();
-
-				// start a thread to update the progress
-				try {
-					int estimatedSize = estimateSize.apply(t);
-
-					counter.reset();
-					ui.setPollInterval(POLL_INTERVAL);
-
-					ProgressBarUpdater updater = new ProgressBarUpdater(ui, this, estimatedSize);
-
-					// the thread that updates the progress bar
-					Thread updateThread = new Thread(updater);
-					updateThread.start();
-
-					// the thread that performs the actual work
-					Thread worker = new Thread(() -> {
-						try {
-							processConsumer.accept(t, estimatedSize);
-						} finally {
-							updater.setStopped(true);
-							signalDone(false);
-						}
-					});
-					worker.start();
-				} catch (RuntimeException ex) {
-					log.error(ex.getMessage(), ex);
-					// exception during size estimation
-					showNotification(ex.getMessage());
-					signalDone(true);
-				}
+				executeProcessWithPolling(input);
 			}
 		}
 	}

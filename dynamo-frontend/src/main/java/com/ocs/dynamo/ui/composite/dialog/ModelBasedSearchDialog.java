@@ -123,6 +123,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 		setTitle(message("ocs.search.title", entityModel.getDisplayNamePlural(VaadinUtils.getLocale())));
 		buildMain();
+		
 	}
 
 	/**
@@ -136,7 +137,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	}
 
 	private void buildMain() {
-		setBuildMain(parent -> {
+		setBuildMainLayout(parent -> {
 
 			ComponentContext<ID, T> context = ComponentContext.<ID, T>builder().popup(true)
 					.multiSelect(searchOptions.isMultiSelect())

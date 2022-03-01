@@ -46,6 +46,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.validation.constraints.AssertFalse;
 import javax.validation.constraints.AssertTrue;
+import javax.validation.constraints.Email;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
@@ -83,7 +84,6 @@ import com.ocs.dynamo.domain.model.annotation.GridAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.annotation.SearchAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
-import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -314,7 +314,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setSearchSelectMode(defaultMode);
 		model.setGridSelectMode(defaultMode);
 
-		Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Email.class);
+		Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
+				javax.validation.constraints.Email.class);
 		if (email != null) {
 			model.setEmail(true);
 		}
@@ -1229,28 +1230,28 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.FALSE_REPRESENTATION),
 				value -> attributeModel.setDefaultFalseRepresentation(value));
 
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAIN),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAIN),
 				attributeModel::setMainAttribute);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REQUIRED_FOR_SEARCHING),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REQUIRED_FOR_SEARCHING),
 				attributeModel::setRequiredForSearching);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),
 				attributeModel::setSortable);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.COMPLEX_EDITABLE),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.COMPLEX_EDITABLE),
 				attributeModel::setComplexEditable);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),
 				attributeModel::setImage);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_CASE_SENSITIVE),
+
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_CASE_SENSITIVE),
 				attributeModel::setSearchCaseSensitive);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_PREFIX_ONLY),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_PREFIX_ONLY),
 				attributeModel::setSearchPrefixOnly);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRIM_SPACES),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRIM_SPACES),
 				attributeModel::setTrimSpaces);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PERCENTAGE),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PERCENTAGE),
 				attributeModel::setPercentage);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY),
 				attributeModel::setCurrency);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.URL),
-				attributeModel::setUrl);
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.URL), attributeModel::setUrl);
 
 		// check for read only (convenience only, overwritten by "editable")
 		String msg = getAttributeMessage(entityModel, attributeModel, EntityModel.READ_ONLY);
@@ -1372,15 +1373,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE),
 				ThousandsGroupingMode.class, attributeModel::setThousandsGroupingMode);
 
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE),
 				attributeModel::setSearchForExactValue);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE),
 				attributeModel::setNavigable);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY),
 				attributeModel::setSearchDateOnly);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER),
 				attributeModel::setIgnoreInSearchFilter);
-		setBooleanTrueSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CLEAR_BUTTON_VISIBLE),
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CLEAR_BUTTON_VISIBLE),
 				attributeModel::setClearButtonVisible);
 
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PAGING_MODE), PagingMode.class,
@@ -1428,6 +1429,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 */
 	private void setBooleanTrueSetting(String value, Consumer<Boolean> receiver) {
 		setBooleanTrueSetting(Boolean.valueOf(value), receiver);
+	}
+
+	/**
+	 * Sets a boolean setting if it is non-null
+	 * 
+	 * @param value    the value
+	 * @param receiver the receiver function
+	 */
+	private void setBooleanSetting(String value, Consumer<Boolean> receiver) {
+		if (value != null) {
+			receiver.accept(Boolean.valueOf(value));
+		}
 	}
 
 	/**
@@ -1743,6 +1756,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (model.isSearchDateOnly() && !LocalDateTime.class.equals(model.getType())
 				&& !ZonedDateTime.class.equals(model.getType())) {
 			throw new OCSRuntimeException("SearchDateOnly is not allowed for attribute " + model.getName());
+		}
+
+		// field cannot be percentage and currency at the same time
+		if (model.isPercentage() && model.isCurrency()) {
+			throw new OCSRuntimeException(model.getName() + " is not allowed to be both a percentage and a currency");
 		}
 	}
 

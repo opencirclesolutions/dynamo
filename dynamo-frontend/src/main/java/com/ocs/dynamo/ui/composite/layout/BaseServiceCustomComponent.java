@@ -136,6 +136,10 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	private Runnable onBackButtonClicked = () -> {
 	};
 
+	/**
+	 * The headers for the additional layer of attribute grouping that can be added
+	 * to an edit form
+	 */
 	@Getter
 	@Setter
 	private String[] parentGroupHeaders;
@@ -228,13 +232,13 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param toCheck the component to check
 	 * @return
 	 */
-	public boolean isCustomComponent(String key, Component toCheck) {
+	public boolean isRegisteredComponent(String key, Component toCheck) {
 		return customComponentMap.get(key) != null && customComponentMap.get(key).contains(toCheck);
 	}
 
 	/**
 	 * Registers a component that must be enabled/disabled after an item is
-	 * selected. use the "mustEnableButton" callback method to impose additional
+	 * selected. use the "mustEnableComponent" callback method to impose additional
 	 * constraints on when the button must be enabled
 	 *
 	 * @param comp the component to register
@@ -302,12 +306,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	/**
-	 * Stores and registers a custom component
+	 * Registers a custom component under the specified key
 	 * 
 	 * @param key       the key under which to store the component
 	 * @param component the component
 	 */
-	public void storeAndRegisterCustomComponent(String key, Component component) {
+	public void registerComponent(String key, Component component) {
 		registerComponent(component);
 		storeCustomComponent(key, component);
 	}
@@ -319,7 +323,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param key       the key under which to store the custom component
 	 * @param component the component to store
 	 */
-	public void storeCustomComponent(String key, Component component) {
+	private void storeCustomComponent(String key, Component component) {
 		customComponentMap.putIfAbsent(key, new ArrayList<>());
 		customComponentMap.get(key).add(component);
 	}

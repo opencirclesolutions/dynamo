@@ -82,9 +82,4 @@ public class Country extends DomainChild<Country, Region> {
 		return super.getCode();
 	}
 
-//    @Override
-//    public String toString() {
-//        return ReflectionToStringBuilder.toStringExclude(this, "parent", "region");
-//    }
-	
 }

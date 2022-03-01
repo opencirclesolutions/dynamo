@@ -246,7 +246,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Filters to apply to the search dialog
 	 */
 	@Getter
-	private List<SerializablePredicate<T>> searchDialogFilters;
+	@Setter
+	private Function<U, List<SerializablePredicate<T>>> searchDialogFilters;
 
 	/**
 	 * Sort order to apply to the search dialog
@@ -272,6 +273,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * The service that is used to communicate with the database
 	 */
 	@Getter
+	@Setter
 	private BaseService<ID, T> service;
 
 	/**
@@ -527,9 +529,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			SearchOptions options = SearchOptions.builder().advancedSearchMode(false).multiSelect(true)
 					.searchImmediately(true).build();
+			List<SerializablePredicate<T>> filters = searchDialogFilters.apply(getValue());
 
 			searchDialog = new ModelBasedSearchDialog<ID, T>(service,
-					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, searchDialogFilters,
+					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, filters,
 					searchDialogSortOrder == null ? null : List.of(searchDialogSortOrder), options);
 
 			searchDialog.setOnClose(() -> {
@@ -668,14 +671,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	/**
-	 * Check whether the specified component is a custom component stored under the
-	 * provided key
+	 * Check whether the specified component is registered under the specified key
 	 * 
 	 * @param key     the key
 	 * @param toCheck the component to check
 	 * @return
 	 */
-	public boolean isCustomComponent(String key, Component toCheck) {
+	public boolean isRegisteredComponent(String key, Component toCheck) {
 		return customButtonMap.get(key) != null && customButtonMap.get(key).contains(toCheck);
 	}
 
@@ -739,20 +741,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		componentContext.setEditColumnThresholds(editColumnThresholds);
 	}
 
-	public void setSearchDialogFilters(List<SerializablePredicate<T>> searchDialogFilters) {
-		this.searchDialogFilters = searchDialogFilters;
-		if (searchDialog != null) {
-			searchDialog.setFilters(searchDialogFilters);
-		}
-	}
-
 	public void setSelectedItem(T selectedItem) {
 		this.selectedItem = selectedItem;
 		checkComponentState(selectedItem);
-	}
-
-	public void setService(BaseService<ID, T> service) {
-		this.service = service;
 	}
 
 	@Override
@@ -802,7 +793,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param key       the key
 	 * @param component the component
 	 */
-	public void storeAndRegisterCustomComponent(String key, Component component) {
+	public void registerComponent(String key, Component component) {
 		registerComponent(component);
 		storeCustomComponent(key, component);
 	}
@@ -814,7 +805,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param key       the key under which to store the custom component
 	 * @param component the component to store
 	 */
-	public void storeCustomComponent(String key, Component component) {
+	private void storeCustomComponent(String key, Component component) {
 		customButtonMap.putIfAbsent(key, new ArrayList<>());
 		customButtonMap.get(key).add(component);
 	}

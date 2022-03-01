@@ -59,7 +59,7 @@ public class AddNewValueDialog<ID extends Serializable, T extends AbstractEntity
 
 		setTitle(message("ocs.enter.new.value", entityModel.getDisplayName(VaadinUtils.getLocale()),
 				VaadinUtils.getLocale()));
-		setBuildMain(parent -> {
+		setBuildMainLayout(parent -> {
 			VerticalLayout container = new DefaultVerticalLayout(true, true);
 			parent.add(container);
 

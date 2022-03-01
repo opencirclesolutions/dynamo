@@ -80,7 +80,7 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
 		assertEquals("name", layout.getSortOrders().get(0).getSorted());
 
-		TestEntity entity = layout.createEntity();
+		TestEntity entity = layout.getCreateEntitySupplier().get();
 		assertNotNull(entity);
 
 		layout.getGridWrapper().forceSearch();

@@ -54,8 +54,10 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 	 */
 	private Map<String, List<String>> permissions = new HashMap<>();
 
-	// map indicating whether a certain view is an "edit only" view that may be
-	// hidden if the user has no edit rights
+	/**
+	 * Map indicating whether a certain view is an "edit only" view that may be
+	 * hidden if the user has no edit rights
+	 */
 	private Map<String, Boolean> editOnly = new HashMap<>();
 
 	/**

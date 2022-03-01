@@ -82,7 +82,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 *
 	 * @param ex the exception that occurred
 	 */
-	protected void handleSaveException(RuntimeException ex) {
+	public void handleSaveException(RuntimeException ex) {
 		if (ex instanceof OCSValidationException) {
 			// validation exception
 			log.warn(ex.getMessage(), ex);

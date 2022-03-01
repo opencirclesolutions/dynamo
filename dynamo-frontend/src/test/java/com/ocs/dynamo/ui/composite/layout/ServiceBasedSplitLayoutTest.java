@@ -21,7 +21,6 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.component.textfield.TextField;
@@ -145,21 +144,7 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 		FormOptions fo = new FormOptions().setOpenInViewMode(true);
 		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
-				new SortOrder<String>("name", SortDirection.ASCENDING)) {
-
-			private static final long serialVersionUID = 7323448065402690401L;
-
-//			@Override
-//			protected void afterModeChanged(boolean viewMode, ModelBasedEditForm<Integer, TestEntity> editForm) {
-//				modeChanged = true;
-//			}
-
-//            @Override
-//            protected void afterEntitySelected(ModelBasedEditForm<Integer, TestEntity> editForm, TestEntity entity) {
-//                entitySelected = true;
-//            }
-
-		};
+				new SortOrder<String>("name", SortDirection.ASCENDING));
 
 		layout.setAfterEntitySelected((form, entity) -> {
 			entitySelected = true;

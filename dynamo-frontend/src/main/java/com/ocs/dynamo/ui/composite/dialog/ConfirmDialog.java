@@ -34,7 +34,7 @@ public class ConfirmDialog extends BaseModalDialog {
 
 	public ConfirmDialog(String question, Runnable whenConfirmed, Runnable whenCancelled) {
 		setTitle(message("ocs.confirm"));
-		setBuildMain(parent -> {
+		setBuildMainLayout(parent -> {
 			Span questionSpan = new Span(question);
 			parent.add(questionSpan);
 		});

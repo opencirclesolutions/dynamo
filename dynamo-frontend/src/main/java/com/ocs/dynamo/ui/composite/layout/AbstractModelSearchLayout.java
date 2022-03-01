@@ -170,7 +170,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		tabLayout.setTabSupplier(index -> {
 			return getDetailTabCreators().get(index).apply(formOptions, entity.getId() == null);
 		});
-		tabLayout.setIconSupplier(index -> getIconForTab(index));
+		tabLayout.setIconSupplier(getTabIconSupplier());
 		tabLayout.build();
 		tabContainerLayout.add(tabLayout);
 	}

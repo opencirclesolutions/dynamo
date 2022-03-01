@@ -99,30 +99,22 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public SimpleEditLayout(T entity, BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
-		// setComponentContext(context);
 		setMargin(false);
 		setClassName(DynamoConstants.CSS_SIMPLE_EDIT_LAYOUT);
 		this.entity = entity;
 		this.joins = joins;
 	}
 
-	public final void handleEditDone(boolean cancel, boolean newEntity, T entity) {
-		if (entity.getId() != null || getComponentContext().isPopup()) {
-			// reset to view mode
-			if (getFormOptions().isOpenInViewMode()) {
-				editForm.setViewMode(true);
-				checkComponentState(getEntity());
-			}
-
-			if (afterEditDone != null) {
-				afterEditDone.accept(cancel, newEntity, entity);
-			}
-		} else {
-			// new entity
-			getOnBackButtonClicked().run();
-		}
+	/**
+	 * Adds a field filter
+	 * 
+	 * @param property the property for which to add a field filter
+	 * @param filter   the field filter
+	 */
+	public void addFieldFilter(String property, SerializablePredicate<?> filter) {
+		this.fieldFilters.put(property, filter);
 	}
-
+	
 	@Override
 	public void assignEntity(T t) {
 		this.entity = t;
@@ -130,6 +122,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			editForm.resetTabsheetIfNeeded();
 		}
 	}
+
 
 	/**
 	 * Constructs the screen - this method is called just once
@@ -177,6 +170,23 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	public void doSave() {
 		this.editForm.doSave();
+	}
+
+	public final void handleEditDone(boolean cancel, boolean newEntity, T entity) {
+		if (entity.getId() != null || getComponentContext().isPopup()) {
+			// reset to view mode
+			if (getFormOptions().isOpenInViewMode()) {
+				editForm.setViewMode(true);
+				checkComponentState(getEntity());
+			}
+
+			if (afterEditDone != null) {
+				afterEditDone.accept(cancel, newEntity, entity);
+			}
+		} else {
+			// new entity
+			getOnBackButtonClicked().run();
+		}
 	}
 
 	/**

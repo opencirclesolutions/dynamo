@@ -423,7 +423,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 
 			dialog.setAfterEditDone((cancel, newEntity, ent) -> reload());
 			dialog.setCreateEntitySupplier(getCreateEntitySupplier());
-			dialog.setPostProcessButtonBar(getPostProcessDetailButtonBar());
+			dialog.setPostProcessDetailButtonBar(getPostProcessDetailButtonBar());
 			dialog.buildAndOpen();
 		});
 		getButtonBar().add(addButton);

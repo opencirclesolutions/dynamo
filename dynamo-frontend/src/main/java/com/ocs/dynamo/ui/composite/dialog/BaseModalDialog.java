@@ -52,11 +52,13 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-	private Consumer<VerticalLayout> buildMain;
+	private Consumer<VerticalLayout> buildMainLayout;
 
 	private Consumer<HorizontalLayout> buildButtonBar;
 
 	private String className = DynamoConstants.CSS_DIALOG;
+
+	private Consumer<HorizontalLayout> postProcessButtonBar;
 
 	private String title;
 
@@ -97,14 +99,18 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 		VerticalLayout parent = new DefaultVerticalLayout(true, true);
 		main.add(parent);
 
-		if (buildMain != null) {
-			buildMain.accept(parent);
+		if (buildMainLayout != null) {
+			buildMainLayout.accept(parent);
 		}
 
 		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, false);
 		main.add(buttonBar);
 		if (buildButtonBar != null) {
 			buildButtonBar.accept(buttonBar);
+		}
+
+		if (postProcessButtonBar != null) {
+			postProcessButtonBar.accept(buttonBar);
 		}
 
 	}

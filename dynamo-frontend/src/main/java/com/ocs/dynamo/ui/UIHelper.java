@@ -279,4 +279,8 @@ public class UIHelper {
 			advancedModeCache.put(selectedView, advancedMode);
 		}
 	}
+
+	public <T> T getSelectedEntity(Class<T> clazz) {
+		return (T) selectedEntity;
+	}
 }

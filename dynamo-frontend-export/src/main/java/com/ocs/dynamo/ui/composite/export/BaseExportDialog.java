@@ -77,7 +77,7 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 		this.ui = UI.getCurrent();
 
 		setTitle(message("ocs.export"));
-		setBuildMain(parent -> {
+		setBuildMainLayout(parent -> {
 			progressBar = new ProgressBar();
 			progressBar.setIndeterminate(true);
 			progressBar.setVisible(false);

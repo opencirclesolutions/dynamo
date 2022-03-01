@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -25,6 +26,9 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A layout for nesting multiple other components. Each nested component must
@@ -36,16 +40,25 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * @param <ID> the type of the ID of the entity
  * @param <T>  the type of the entity
  */
-public abstract class CompositionLayout<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseCustomComponent implements Reloadable, CanAssignEntity<ID, T> {
+public class CompositionLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
+		implements Reloadable, CanAssignEntity<ID, T> {
 
 	private static final long serialVersionUID = 3696293073812817902L;
 
 	private List<Component> nestedComponents = new ArrayList<>();
 
+	@Getter
+	@Setter
 	private T entity;
 
 	private VerticalLayout main;
+
+	/**
+	 * The callback method
+	 */
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> buildMainLayout;
 
 	public CompositionLayout(T entity) {
 		this.entity = entity;
@@ -63,19 +76,12 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 	public void build() {
 		if (main == null) {
 			main = new DefaultVerticalLayout(false, true);
-			doBuildLayout(main);
+			if (buildMainLayout != null) {
+				buildMainLayout.accept(main);
+			}
 			add(main);
 		}
 	}
-
-	/**
-	 * Place the logic for constructing the nested components in this method. Do not
-	 * forget to call "addNestedComponent" for each component that you want to
-	 * update automatically
-	 * 
-	 * @param main the layout
-	 */
-	protected abstract void doBuildLayout(VerticalLayout main);
 
 	@Override
 	public void assignEntity(T entity) {
@@ -88,7 +94,7 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 	 * 
 	 * @param component the component to add
 	 */
-	protected void addNestedComponent(Component component) {
+	public void addNestedComponent(Component component) {
 		nestedComponents.add(component);
 	}
 
@@ -103,14 +109,6 @@ public abstract class CompositionLayout<ID extends Serializable, T extends Abstr
 				((Reloadable) c).reload();
 			}
 		}
-	}
-
-	public T getEntity() {
-		return entity;
-	}
-
-	public void setEntity(T entity) {
-		this.entity = entity;
 	}
 
 }

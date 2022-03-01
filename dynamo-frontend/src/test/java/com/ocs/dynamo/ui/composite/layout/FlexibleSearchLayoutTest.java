@@ -59,7 +59,7 @@ public class FlexibleSearchLayoutTest extends FrontendIntegrationTest {
         assertEquals("name", layout.getSortOrders().get(0).getSorted());
         assertEquals(SortDirection.ASCENDING, layout.getSortOrders().get(0).getDirection());
 
-        TestEntity entity = layout.createEntity();
+        TestEntity entity = layout.getCreateEntitySupplier().get();
         assertNotNull(entity);
 
         layout.getGridWrapper().forceSearch();

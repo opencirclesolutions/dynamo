@@ -308,9 +308,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		Class<T> clazz = service.getEntityClass();
 
-		// open in view mode when this is requested, and it is not a new object
-		this.viewMode = !checkEditAllowed() || (formOptions.isOpenInViewMode() && entity.getId() != null);
-
 		// set up a bean field group for automatic binding and validation
 		Binder<T> binder = new BeanValidationBinder<>(clazz);
 		binder.setBean(entity);
@@ -563,6 +560,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Override
 	public void build() {
+
+		// the first time the component is opened, determine the view mode
+		if (mainViewLayout == null && mainEditLayout == null) {
+			this.viewMode = !checkEditAllowed() || (getFormOptions().isOpenInViewMode() && entity.getId() != null);
+		}
 
 		if (entity != null && getComponentContext().getAfterEntitySet() != null) {
 			getComponentContext().getAfterEntitySet().accept(entity);

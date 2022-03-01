@@ -80,7 +80,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	@Getter
 	@Setter
-	private Runnable afterAdvancedModeToggled;
+	private Consumer<Boolean> afterAdvancedModeToggled;
 
 	/**
 	 * Callback method that is executed after the clear button is clicked
@@ -480,7 +480,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		} else if (event.getSource() == toggleAdvancedModeButton) {
 			toggleAdvancedMode();
 			if (afterAdvancedModeToggled != null) {
-				afterAdvancedModeToggled.run();
+				afterAdvancedModeToggled.accept(advancedSearchMode);
 			}
 		}
 	}

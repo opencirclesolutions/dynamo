@@ -53,15 +53,31 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = -2012972894321597214L;
 
+	@Getter
+	@Setter
+	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+
+	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().popup(true).build();
+
+	@Getter
+	private BaseService<ID, T> service;
+	
+	@Getter
+	@Setter
+	private Supplier<T> createEntitySupplier = () -> service.createNewEntity();
+
 	private T entity;
 
 	private EntityModel<T> entityModel;
 
+	@Getter
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
+	@Getter
 	private FormOptions formOptions;
 
-	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().popup(true).build();
+	@Getter
+	private FetchJoinInformation[] joins;
 
 	@Getter
 	private SimpleEditLayout<ID, T> layout;
@@ -71,31 +87,19 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	@Getter
 	private Button okButton;
 
-	private BaseService<ID, T> service;
-
-	private FetchJoinInformation[] joins;
-
 	@Getter
 	@Setter
-	private BiConsumer<FlexLayout, Boolean> postProcessButtonBar;
-
-	@Getter
-	@Setter
-	private Supplier<T> createEntitySupplier = () -> service.createNewEntity();
-
-	@Getter
-	@Setter
-	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+	private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
 
 	/**
 	 * 
-	 * @param service
-	 * @param entity
-	 * @param entityModel
-	 * @param fieldFilters
-	 * @param formOptions
-	 * @param componentContext
-	 * @param joins
+	 * @param service          the service used for communicating with the database
+	 * @param entity           the entity to display
+	 * @param entityModel      the entity model of the entity
+	 * @param fieldFilters     field filters to apply to the individual components
+	 * @param formOptions      the form options
+	 * @param componentContext the component context
+	 * @param joins            any joins to apply when querying the database
 	 */
 	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
@@ -120,8 +124,27 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 		buildMain();
 	}
 
+	/**
+	 * 
+	 * @param service          the service used for communicating with the database
+	 * @param entity           the entity to display
+	 * @param entityModel      the entity model of the entity
+	 * @param fieldFilters     field filters to apply to the individual components
+	 * @param formOptions      the form options
+	 * @param joins            any joins to apply when querying the database
+	 */
+	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
+			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
+			FetchJoinInformation... joins) {
+		this(service, entity, entityModel, fieldFilters, formOptions, ComponentContext.<ID, T>builder().build(), joins);
+	}
+
+	public void addFieldEntityModel(String path, String reference) {
+		componentContext.addFieldEntityModel(path, reference);
+	}
+
 	private void buildMain() {
-		setBuildMain(parent -> {
+		setBuildMainLayout(parent -> {
 			formOptions.setShowCancelButton(true);
 
 			layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions);
@@ -134,7 +157,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 				EntityPopupDialog.this.close();
 			});
 			layout.setCreateEntitySupplier(getCreateEntitySupplier());
-			layout.setPostProcessButtonBar(getPostProcessButtonBar());
+			layout.setPostProcessButtonBar(getPostProcessDetailButtonBar());
 			layout.setFieldFilters(fieldFilters);
 			layout.setJoins(joins);
 			parent.add(layout);
@@ -152,9 +175,10 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	public void setColumnThresholds(List<String> thresholds) {
 		componentContext.setEditColumnThresholds(thresholds);
 	}
-
+	
 	public void setPostProcessEditFields(Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields) {
 		componentContext.setPostProcessEditFields(postProcessEditFields);
 	}
+
 
 }

@@ -151,8 +151,14 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	@Getter
 	@Setter
 	private Runnable onAdd = () -> {
-		setSelectedItem(createEntity());
+		setSelectedItem(doCreateEntity());
 		detailsMode(getSelectedItem());
+	};
+
+	@Getter
+	@Setter
+	private Runnable onRemove = () -> {
+		getService().delete(getSelectedItem());
 	};
 
 	/**
@@ -229,7 +235,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @return
 	 */
-	protected T createEntity() {
+	protected final T doCreateEntity() {
 		return getCreateEntitySupplier() != null ? getCreateEntitySupplier().get() : getService().createNewEntity();
 	}
 
