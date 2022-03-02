@@ -79,27 +79,28 @@ public interface SimpleComponentCreator extends ComponentCreator {
 	 * 
 	 * @param <U>
 	 * @param <V>
-	 * @param am       the attribute model that is used to construct the component
-	 * @param sBuilder the binding builder that is used to bind the component
+	 * @param attributeModel the attribute model that is used to construct the
+	 *                       component
+	 * @param sBuilder       the binding builder that is used to bind the component
 	 */
-	default <U, V> void addTextFieldConverters(AttributeModel am, BindingBuilder<U, String> sBuilder) {
+	default <U, V> void addTextFieldConverters(AttributeModel attributeModel, BindingBuilder<U, String> sBuilder) {
 		sBuilder.withNullRepresentation("");
-		if (am.getType().equals(BigDecimal.class)) {
-			sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(am.isCurrency(), am.isPercentage(),
-					am.useThousandsGroupingInEditMode(), am.getPrecision(), VaadinUtils.getCurrencySymbol()));
-		} else if (NumberUtils.isInteger(am.getType())) {
-			sBuilder.withConverter(
-					ConverterFactory.createIntegerConverter(am.useThousandsGroupingInEditMode(), am.isPercentage()));
-		} else if (NumberUtils.isLong(am.getType())) {
-			sBuilder.withConverter(
-					ConverterFactory.createLongConverter(am.useThousandsGroupingInEditMode(), am.isPercentage()));
-		} else if (NumberUtils.isDouble(am.getType())) {
-			sBuilder.withConverter(
-					ConverterFactory.createDoubleConverter(am.isCurrency(), am.useThousandsGroupingInEditMode(),
-							am.isPercentage(), am.getPrecision(), VaadinUtils.getCurrencySymbol()));
-		} else if (String.class.equals(am.getType()) && am.isTrimSpaces()) {
+		if (attributeModel.getType().equals(BigDecimal.class)) {
+			sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
+					attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
+					attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+		} else if (NumberUtils.isInteger(attributeModel.getType())) {
+			sBuilder.withConverter(ConverterFactory.createIntegerConverter(
+					attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+		} else if (NumberUtils.isLong(attributeModel.getType())) {
+			sBuilder.withConverter(ConverterFactory.createLongConverter(attributeModel.useThousandsGroupingInEditMode(),
+					attributeModel.isPercentage()));
+		} else if (NumberUtils.isDouble(attributeModel.getType())) {
+			sBuilder.withConverter(ConverterFactory.createDoubleConverter(attributeModel.isCurrency(),
+					attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage(),
+					attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+		} else if (String.class.equals(attributeModel.getType()) && attributeModel.isTrimSpaces()) {
 			sBuilder.withConverter(new TrimSpacesConverter());
 		}
-
 	}
 }

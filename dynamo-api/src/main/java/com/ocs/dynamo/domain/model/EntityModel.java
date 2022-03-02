@@ -270,7 +270,7 @@ public interface EntityModel<T> {
 	/**
 	 * Indicates that quick add functionality is enabled
 	 */
-	String QUICK_ADD_PROPERTY = "quickAddProperty";
+	String QUICK_ADD_ALLOWED = "quickAddAllowed";
 
 	/**
 	 * Indicates whether the property is read-only. This is deprecated but left for
@@ -551,6 +551,12 @@ public interface EntityModel<T> {
 	 */
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
 
+	/**
+	 * Indicates whether this is the "base" entity model
+	 * @return 
+	 */
+	boolean isBaseEntityModel();
+	
 	/**
 	 * @return whether only the default attribute group is used
 	 */

@@ -39,6 +39,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -90,12 +91,8 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 		return fieldFactory.constructField(context);
 	}
 
-	/**
-	 * Test a text field
-	 */
 	@Test
 	public void testTextField() {
-
 		Component ac = constructField("name", false);
 		assertTrue(ac instanceof TextField);
 
@@ -103,9 +100,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 		assertEquals("Name", tf.getLabel());
 	}
 
-	/**
-	 * Test a URL field
-	 */
+	@Test
+	public void testPasswordField() {
+		Component ac = constructField("password", false);
+		assertTrue(ac instanceof PasswordField);
+
+		PasswordField tf = (PasswordField) ac;
+		assertEquals("Password", tf.getLabel());
+	}
+
 	@Test
 	public void testURLField() {
 		Component ac = constructField("url", false);

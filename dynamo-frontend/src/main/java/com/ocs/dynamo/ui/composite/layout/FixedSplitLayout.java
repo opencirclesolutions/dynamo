@@ -50,6 +50,9 @@ public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<
 	@Getter
 	private Collection<T> items;
 
+	/**
+	 * The code that is carried out to load the fixed collection of items
+	 */
 	@Getter
 	@Setter
 	private Supplier<Collection<T>> loadItemSupplier;

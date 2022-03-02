@@ -242,9 +242,9 @@ public @interface Attribute {
 	String prompt() default "";
 
 	/**
-	 * @return the name of the property to set when using "quick add" functionality
+	 * @return whether the "quick add" functionality is allowed
 	 */
-	String quickAddPropertyName() default "";
+	boolean quickAddAllowed() default false;
 
 	/**
 	 * @return the replacement search path to be used when the property does not

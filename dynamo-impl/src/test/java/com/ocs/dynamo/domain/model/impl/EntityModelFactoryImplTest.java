@@ -81,6 +81,9 @@ import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.utils.DateUtils;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
@@ -173,8 +176,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel urlModel = model.getAttributeModel("url");
 		assertTrue(urlModel.isUrl());
 
+		AttributeModel passwordModel = model.getAttributeModel("password");
+		assertEquals(AttributeTextFieldMode.PASSWORD, passwordModel.getTextFieldMode());
+
 		// test the total size
-		assertEquals(7, model.getAttributeModels().size());
+		assertEquals(8, model.getAttributeModels().size());
 	}
 
 	@Test
@@ -699,6 +705,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("field1", attributeModels.get(2).getName());
 	}
 
+	@Getter
+	@Setter
 	public class Entity1 {
 
 		@Size(max = 55)
@@ -721,64 +729,12 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Email
 		private String email;
 
+		@Attribute(textFieldMode = AttributeTextFieldMode.PASSWORD)
+		private String password;
+
 		@Attribute(url = true)
 		private String url;
 
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public Integer getAge() {
-			return age;
-		}
-
-		public void setAge(Integer age) {
-			this.age = age;
-		}
-
-		public LocalDate getBirthDate() {
-			return birthDate;
-		}
-
-		public void setBirthDate(LocalDate birthDate) {
-			this.birthDate = birthDate;
-		}
-
-		public BigDecimal getWeight() {
-			return weight;
-		}
-
-		public void setWeight(BigDecimal weight) {
-			this.weight = weight;
-		}
-
-		public Boolean getBool() {
-			return bool;
-		}
-
-		public void setBool(Boolean bool) {
-			this.bool = bool;
-		}
-
-		public String getEmail() {
-			return email;
-		}
-
-		public void setEmail(String email) {
-			this.email = email;
-		}
-
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
 	}
 
 	@AttributeOrder(attributeNames = { "name", "birthDate" })

@@ -45,6 +45,7 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.EmailField;
 import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -410,14 +411,16 @@ public final class VaadinUtils {
 			((EmailField) component).setLabel(label);
 		} else if (component instanceof DateTimePicker) {
 			((DateTimePicker) component).setLabel(label);
+		} else if (component instanceof PasswordField) {
+			((PasswordField) component).setLabel(label);
 		}
 	}
 
 	/**
 	 * Set the "clear button visible" setting for a component
 	 * 
-	 * @param component
-	 * @param visible
+	 * @param component the component
+	 * @param visible   the desired visibility
 	 */
 	public static void setClearButtonVisible(Component component, boolean visible) {
 		if (component instanceof TextField) {
@@ -436,6 +439,8 @@ public final class VaadinUtils {
 			((EmailField) component).setClearButtonVisible(visible);
 		} else if (component instanceof QuickAddEntityField) {
 			((QuickAddEntityField<?, ?, ?>) component).setClearButtonVisible(visible);
+		} else if (component instanceof PasswordField) {
+			((PasswordField) component).setClearButtonVisible(visible);
 		}
 	}
 

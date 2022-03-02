@@ -320,18 +320,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setEmail(true);
 		}
 
-//			model.setAttributeType(determineAttributeType(parentClass, model));
-//			Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);
-//			if (size != null && size.min() > 0 && AttributeType.DETAIL.equals(model.getAttributeType())) {
-//				model.setRequired(true);
-//			}
-//
-//			// minimum and maximum length based on the @Size annotation
-//			if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
-//				model.setMaxLength(size.max());
-//				model.setMinLength(size.min());
-//			}
-
 		setAttributeModelAnnotationOverrides(parentClass, model, descriptor, nested);
 		setAttributeModelMessageBundleOverrides(entityModel, model);
 
@@ -1162,10 +1150,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			setStringSetting(attribute.replacementSearchPath(), model::setReplacementSearchPath);
 			setStringSetting(attribute.replacementSortPath(), model::setReplacementSortPath);
-			setStringSetting(attribute.quickAddPropertyName(), name -> {
-				model.setQuickAddPropertyName(name);
-				model.setQuickAddAllowed(true);
-			});
+			setBooleanTrueSetting(attribute.quickAddAllowed(), model::setQuickAddAllowed);
 
 			if (!ThousandsGroupingMode.INHERIT.equals(attribute.thousandsGrouping())) {
 				model.setThousandsGroupingMode(attribute.thousandsGrouping());
@@ -1367,8 +1352,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				attributeModel::setReplacementSearchPath);
 		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SORT_PATH),
 				attributeModel::setReplacementSortPath);
-		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_PROPERTY),
-				attributeModel::setQuickAddPropertyName);
+		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_ALLOWED),
+				attributeModel::setQuickAddAllowed);
 
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE),
 				ThousandsGroupingMode.class, attributeModel::setThousandsGroupingMode);

@@ -63,6 +63,7 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 		e1.setRegistrationTime(DateUtils.createLocalTime("111213"));
 		e1.setZoned(ZonedDateTime.of(DateUtils.createLocalDateTime("14082015 111213"), ZoneId.of("CET")));
 		e1.setSomeDouble(44.44);
+		e1.setPassword("secret");
 
 		e2 = new TestEntity("Harry", 12L);
 		e2.setRate(BigDecimal.valueOf(3));
@@ -90,6 +91,7 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 			assertEquals("Discount", sheet.getRow(0).getCell(i++).getStringCellValue());
 			assertEquals("Last Login", sheet.getRow(0).getCell(i++).getStringCellValue());
 			assertEquals("Name", sheet.getRow(0).getCell(i++).getStringCellValue());
+			assertEquals("Password", sheet.getRow(0).getCell(i++).getStringCellValue());
 			assertEquals("Rate", sheet.getRow(0).getCell(i++).getStringCellValue());
 			assertEquals("Registration Time", sheet.getRow(0).getCell(i++).getStringCellValue());
 			assertEquals("Some Boolean", sheet.getRow(0).getCell(i++).getStringCellValue());
@@ -111,16 +113,17 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 			// assertEquals("2014-14", row.getCell(2).getStringCellValue());
 			assertEquals(34, row.getCell(3).getNumericCellValue(), 0.001);
 			assertEquals("Bob", row.getCell(5).getStringCellValue());
-			assertEquals(0.04, row.getCell(6).getNumericCellValue(), 0.001);
+			assertEquals("secret", row.getCell(6).getStringCellValue());
+			assertEquals(0.04, row.getCell(7).getNumericCellValue(), 0.001);
 
-			assertEquals("false", row.getCell(8).getStringCellValue());
-			assertEquals("On", row.getCell(9).getStringCellValue());
-			assertEquals(44.44, row.getCell(10).getNumericCellValue(), 0.001);
-			assertEquals("Value A", row.getCell(11).getStringCellValue());
-			assertEquals(1234, row.getCell(12).getNumericCellValue(), 0.001);
-			assertEquals("abab", row.getCell(14).getStringCellValue());
-			assertEquals("http://www.google.nl", row.getCell(16).getStringCellValue());
-			assertEquals("14-08-2015 11:12:13+0200", row.getCell(17).getStringCellValue());
+			assertEquals("false", row.getCell(9).getStringCellValue());
+			assertEquals("On", row.getCell(10).getStringCellValue());
+			assertEquals(44.44, row.getCell(11).getNumericCellValue(), 0.001);
+			assertEquals("Value A", row.getCell(12).getStringCellValue());
+			assertEquals(1234, row.getCell(13).getNumericCellValue(), 0.001);
+			assertEquals("abab", row.getCell(15).getStringCellValue());
+			assertEquals("http://www.google.nl", row.getCell(17).getStringCellValue());
+			assertEquals("14-08-2015 11:12:13+0200", row.getCell(18).getStringCellValue());
 		}
 
 	}
@@ -135,10 +138,10 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 		String[] lines = str.split("\n");
 
 		assertEquals(
-				"\"Age\";\"Birth Date\";\"Birth Week\";\"Discount\";\"Last Login\";\"Name\";\"Rate\";\"Registration Time\";\"Some Boolean\";\"Some Boolean2\";\"Some Double\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Url\";\"Zoned\"",
+				"\"Age\";\"Birth Date\";\"Birth Week\";\"Discount\";\"Last Login\";\"Name\";\"Password\";\"Rate\";\"Registration Time\";\"Some Boolean\";\"Some Boolean2\";\"Some Double\";\"Some Enum\";\"Some Int\";\"Some String\";\"Some Text Area\";\"Some Time\";\"Url\";\"Zoned\"",
 				lines[0].trim());
 		assertEquals(
-				"\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";;\"Bob\";\"4,00%\";\"11:12:13\";\"false\";\"On\";\"44,44\";\"Value A\";\"1.234\";\"some\";\"abab\";\"12:13:14\";\"http://www.google.nl\";\"14-08-2015 11:12:13+0200\"",
+				"\"11\";\"01/04/2014\";\"2014-14\";\"34,00\";;\"Bob\";\"secret\";\"4,00%\";\"11:12:13\";\"false\";\"On\";\"44,44\";\"Value A\";\"1.234\";\"some\";\"abab\";\"12:13:14\";\"http://www.google.nl\";\"14-08-2015 11:12:13+0200\"",
 				lines[1].trim());
 	}
 }

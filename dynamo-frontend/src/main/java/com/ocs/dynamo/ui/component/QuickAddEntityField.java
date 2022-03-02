@@ -23,9 +23,12 @@ import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
+import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.HasStyle;
 import com.vaadin.flow.component.button.Button;
@@ -47,6 +50,8 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 		extends CustomEntityField<ID, T, U> implements HasStyle {
 
 	private static final long serialVersionUID = 7118578276952170818L;
+
+	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
 	/**
 	 * The button that brings up the dialog for adding a new entity
@@ -101,12 +106,28 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 		VaadinUtils.setTooltip(addButton,
 				getMessageService().getMessage("ocs.new.value.button", VaadinUtils.getLocale()));
 		addButton.addClickListener(event -> {
-			AddNewValueDialog<ID, T> dialog = new AddNewValueDialog<ID, T>(getEntityModel(), getAttributeModel(),
-					getService());
-			dialog.setAfterNewEntityAdded(entity -> QuickAddEntityField.this.afterNewEntityAdded(entity));
+			EntityModel<T> actualModel = determineEntityModel();
+			EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<>(getService(), null, actualModel, null,
+					new FormOptions());
+			dialog.setAfterEditDone((cancel, isNew, ent) -> {
+				if (!cancel) {
+					this.afterNewEntityAdded(ent);
+				}
+			});
 			dialog.buildAndOpen();
 		});
 		return addButton;
+	}
+
+	@SuppressWarnings("unchecked")
+	private EntityModel<T> determineEntityModel() {
+		EntityModel<T> actualModel;
+		if (getEntityModel().isBaseEntityModel() || getEntityModel().getReference().indexOf(".") > 0) {
+			actualModel = (EntityModel<T>) entityModelFactory.getModel(getAttributeModel().getNormalizedType());
+		} else {
+			actualModel = getEntityModel();
+		}
+		return actualModel;
 	}
 
 	/**

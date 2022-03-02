@@ -63,7 +63,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 				new HashMap<String, SerializablePredicate<?>>(), fo, cc);
 		grid.build();
 
-		assertEquals(18, grid.getColumns().size());
+		assertEquals(19, grid.getColumns().size());
 		assertNotNull(grid.getDataProvider().getId(entity));
 	}
 
@@ -129,7 +129,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		wrapper.build();
 
 		assertTrue(wrapper.getDataProvider() instanceof PagingDataProvider);
-		assertEquals(18, wrapper.getGrid().getColumns().size());
+		assertEquals(19, wrapper.getGrid().getColumns().size());
 
 	}
 

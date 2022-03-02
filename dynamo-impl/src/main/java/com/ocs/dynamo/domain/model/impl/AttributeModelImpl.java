@@ -159,8 +159,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean quickAddAllowed;
 
-	private String quickAddPropertyName;
-
 	private String replacementSearchPath;
 
 	private String replacementSortPath;

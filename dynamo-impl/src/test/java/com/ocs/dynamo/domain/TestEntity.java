@@ -84,7 +84,7 @@ public class TestEntity extends AbstractEntity<Integer> {
 	private LocalDate birthDate;
 
 	private LocalTime registrationTime;
-	
+
 	private LocalDateTime lastLogin;
 
 	@Attribute(week = true)
@@ -122,7 +122,7 @@ public class TestEntity extends AbstractEntity<Integer> {
 	@Attribute(url = true)
 	private String url;
 
-	@Attribute(quickAddPropertyName = "name", navigable = true)
+	@Attribute(quickAddAllowed = true, navigable = true)
 	private TestDomain testDomain;
 
 	@ElementCollection
@@ -135,6 +135,9 @@ public class TestEntity extends AbstractEntity<Integer> {
 	private ZonedDateTime zoned;
 
 	private Double someDouble;
+
+	@Attribute(textFieldMode = AttributeTextFieldMode.PASSWORD)
+	private String password;
 
 	public TestEntity() {
 		// default constructor

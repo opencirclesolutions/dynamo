@@ -127,10 +127,17 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	private FormOptions formOptions;
 
+	/**
+	 * Code that is executed to determine when a component in a button bar must be
+	 * enabled
+	 */
 	@Getter
 	@Setter
 	private BiPredicate<Component, T> mustEnableComponent;
 
+	/**
+	 * Code that is executed when the user clicks the back button in an edit form
+	 */
 	@Getter
 	@Setter
 	private Runnable onBackButtonClicked = () -> {

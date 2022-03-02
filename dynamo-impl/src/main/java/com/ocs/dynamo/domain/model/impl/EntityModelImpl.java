@@ -302,4 +302,9 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 				&& attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);
 	}
 
+	@Override
+	public boolean isBaseEntityModel() {
+		return reference.equals(getEntityClass().getSimpleName());
+	}
+
 }

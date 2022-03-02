@@ -31,9 +31,10 @@ import com.ocs.dynamo.domain.model.impl.ElementCollectionComponentCreator;
 import com.ocs.dynamo.domain.model.impl.EmailFieldComponentCreator;
 import com.ocs.dynamo.domain.model.impl.EnumFieldComponentCreator;
 import com.ocs.dynamo.domain.model.impl.FieldFactoryImpl;
+import com.ocs.dynamo.domain.model.impl.IntegerFieldComponentCreator;
 import com.ocs.dynamo.domain.model.impl.ListBoxComponentCreator;
 import com.ocs.dynamo.domain.model.impl.LookupFieldComponentCreator;
-import com.ocs.dynamo.domain.model.impl.IntegerFieldComponentCreator;
+import com.ocs.dynamo.domain.model.impl.PasswordFieldComponentCreator;
 import com.ocs.dynamo.domain.model.impl.SimpleTokenFieldComponentCreator;
 import com.ocs.dynamo.domain.model.impl.TextAreaComponentCreator;
 import com.ocs.dynamo.domain.model.impl.TextFieldComponentCreator;
@@ -129,76 +130,83 @@ public class DynamoFrontendAutoConfigure {
 
 	@Bean
 	@Order(1090)
+	@ConditionalOnMissingBean(PasswordFieldComponentCreator.class)
+	public PasswordFieldComponentCreator passwordFieldComponentCreator() {
+		return new PasswordFieldComponentCreator();
+	}
+
+	@Bean
+	@Order(1100)
 	@ConditionalOnMissingBean(TextFieldComponentCreator.class)
 	public TextFieldComponentCreator textFieldComponentCreator() {
 		return new TextFieldComponentCreator();
 	}
 
 	@Bean
-	@Order(1100)
+	@Order(1110)
 	@ConditionalOnMissingBean(EnumFieldComponentCreator.class)
 	public EnumFieldComponentCreator enumFieldComponentCreator() {
 		return new EnumFieldComponentCreator();
 	}
 
 	@Bean
-	@Order(1110)
+	@Order(1120)
 	@ConditionalOnMissingBean(BooleanCheckboxCreator.class)
 	public BooleanCheckboxCreator booleanCheckboxCreator() {
 		return new BooleanCheckboxCreator();
 	}
 
 	@Bean
-	@Order(1120)
+	@Order(1130)
 	@ConditionalOnMissingBean(BooleanComboboxCreator.class)
 	public BooleanComboboxCreator BooleanComboboxCreator() {
 		return new BooleanComboboxCreator();
 	}
 
 	@Bean
-	@Order(1130)
+	@Order(1140)
 	@ConditionalOnMissingBean(DatePickerComponentCreator.class)
 	public DatePickerComponentCreator DatePickerComponentCreator() {
 		return new DatePickerComponentCreator();
 	}
 
 	@Bean
-	@Order(1140)
+	@Order(1150)
 	@ConditionalOnMissingBean(DateTimePickerComponentCreator.class)
 	public DateTimePickerComponentCreator dateTimePickerComponentCreator() {
 		return new DateTimePickerComponentCreator();
 	}
 
 	@Bean
-	@Order(1150)
+	@Order(1160)
 	@ConditionalOnMissingBean(ZonedDateTimePickerComponentCreator.class)
 	public ZonedDateTimePickerComponentCreator zonedDateTimePickerComponentCreator() {
 		return new ZonedDateTimePickerComponentCreator();
 	}
 
 	@Bean
-	@Order(1160)
+	@Order(1170)
 	@ConditionalOnMissingBean(TimePickerComponentCreator.class)
 	public TimePickerComponentCreator timePickerComponentCreator() {
 		return new TimePickerComponentCreator();
 	}
 
 	@Bean
-	@Order(1170)
+	@Order(1180)
 	@ConditionalOnMissingBean(UrlFieldComponentCreator.class)
 	public UrlFieldComponentCreator urlFieldComponentCreator() {
 		return new UrlFieldComponentCreator();
 	}
 
 	@Bean
-	@Order(1180)
+	@Order(1190)
 	@ConditionalOnMissingBean(WeekFieldComponentCreator.class)
 	public WeekFieldComponentCreator weekFieldComponentCreator() {
 		return new WeekFieldComponentCreator();
 	}
 
 	@Bean
-	@Order(1190)
+	@Order(1200)
 	@ConditionalOnMissingBean(UploadComponentCreator.class)
 	public UploadComponentCreator uploadComponentCreator() {
 		return new UploadComponentCreator();

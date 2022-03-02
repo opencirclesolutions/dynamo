@@ -17,6 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 /**
+ * Various options with regard to searching. Typically used for constructing a
+ * ModelBasedSearchDialog
  * 
  * @author BasRutten
  *

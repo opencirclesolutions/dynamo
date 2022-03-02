@@ -306,13 +306,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the name of the property to which to assign a value in case of a
-	 *         "quick addition"
-	 */
-	String getQuickAddPropertyName();
-
-	/**
-	 * 
 	 * @return the path by which to replace the actual path when carrying out a
 	 *         search. This is needed in very specific cases when an Entity has
 	 *         multiple detail relations that are mapped to the same table
