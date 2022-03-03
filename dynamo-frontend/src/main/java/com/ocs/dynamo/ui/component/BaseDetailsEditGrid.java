@@ -522,10 +522,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Constructs a button that opens a pop-up dialog for viewing the details of the
 	 * selected item
 	 * 
-	 * @param buttonBar
+	 * @param buttonBar the button bar
 	 */
 	private void constructPopupButton(HorizontalLayout buttonBar) {
-		if (getFormOptions().isShowDetailsGridPopup() && (isViewMode() || getFormOptions().isDetailsGridSearchMode())) {
+		if (getFormOptions().isShowDetailsGridPopup()
+				&& (isViewMode() || showDetailsPanelInEditMode() || getFormOptions().isDetailsGridSearchMode())) {
 			popupButton = new Button(messageService.getMessage("ocs.view", VaadinUtils.getLocale()));
 			popupButton.setIcon(VaadinIcon.CONNECT.create());
 			popupButton.addClickListener(event -> {
