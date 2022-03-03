@@ -65,7 +65,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		private static final long serialVersionUID = -942298948585447203L;
 
 		public RemoveButton(HasSelectedItem<T> hasSelectedItem, String message, Component icon, Runnable doDelete,
-				Function<T, String> itemDescriptionSupplier) {
+				Function<T, String> itemDescriptionCreator) {
 			super(message);
 			setIcon(icon);
 			this.addClickListener(event -> {
@@ -77,7 +77,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 					}
 				};
 				T selectedItem = hasSelectedItem.getSelectedItem();
-				String description = itemDescriptionSupplier.apply(selectedItem);
+				String description = itemDescriptionCreator.apply(selectedItem);
 				VaadinUtils.showConfirmDialog(message("ocs.delete.confirm", description), r);
 			});
 		}
@@ -98,9 +98,12 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	private List<Component> componentsToUpdate = new ArrayList<>();
 
+	/**
+	 * The code that is carried out to create a new entity
+	 */
 	@Getter
 	@Setter
-	private Supplier<T> createEntitySupplier = () -> service.createNewEntity();
+	private Supplier<T> createEntity = () -> service.createNewEntity();
 
 	/**
 	 * Mapping from custom component label to custom component
@@ -203,7 +206,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		}
 	}
 
-	protected boolean checkEditAllowed() {
+	public boolean checkEditAllowed() {
 		return getEditAllowed() == null ? true : getEditAllowed().get();
 	}
 
@@ -288,8 +291,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		componentContext.setAfterUploadCompleted(afterUploadCompleted);
 	}
 
-	public void setCustomSaveConsumer(BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer) {
-		componentContext.setCustomSaveConsumer(customSaveConsumer);
+	public void setCustomSaveAction(BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveAction) {
+		componentContext.setCustomSaveAction(customSaveAction);
 	}
 
 	public void setEditColumnThresholds(List<String> columnThresholds) {

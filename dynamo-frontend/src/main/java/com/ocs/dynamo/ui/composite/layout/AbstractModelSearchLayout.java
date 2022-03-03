@@ -165,12 +165,12 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		}
 
 		tabLayout = new TabLayout<ID, T>(entity);
-		tabLayout.setTitleSupplier(() -> getDetailsModeTabTitle());
+		tabLayout.setTitleCreator(() -> getDetailsModeTabTitle());
 		tabLayout.setCaptions(getDetailsModeTabCaptions());
-		tabLayout.setTabSupplier(index -> {
+		tabLayout.setTabCreator(index -> {
 			return getDetailTabCreators().get(index).apply(formOptions, entity.getId() == null);
 		});
-		tabLayout.setIconSupplier(getTabIconSupplier());
+		tabLayout.setIconCreator(getTabIconCreator());
 		tabLayout.build();
 		tabContainerLayout.add(tabLayout);
 	}

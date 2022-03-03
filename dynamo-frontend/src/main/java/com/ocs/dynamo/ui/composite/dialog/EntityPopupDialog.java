@@ -64,7 +64,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	
 	@Getter
 	@Setter
-	private Supplier<T> createEntitySupplier = () -> service.createNewEntity();
+	private Supplier<T> createEntity = () -> service.createNewEntity();
 
 	private T entity;
 
@@ -156,7 +156,7 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 				EntityPopupDialog.this.close();
 			});
-			layout.setCreateEntitySupplier(getCreateEntitySupplier());
+			layout.setCreateEntity(getCreateEntity());
 			layout.setPostProcessButtonBar(getPostProcessDetailButtonBar());
 			layout.setFieldFilters(fieldFilters);
 			layout.setJoins(joins);

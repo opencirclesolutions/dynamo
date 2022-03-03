@@ -72,7 +72,7 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 
 	@Getter
 	@Setter
-	private Function<Integer, String> descriptionsSupplier;
+	private Function<Integer, String> descriptionCreator;
 
 	/**
 	 * The entity that is being displayed
@@ -80,9 +80,12 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 	@Getter
 	private T entity;
 
+	/**
+	 * The code that is used to construct an icon for a tab
+	 */
 	@Getter
 	@Setter
-	private Function<Integer, Icon> iconSupplier;
+	private Function<Integer, Icon> iconCreator;
 
 	/**
 	 * The tab sheet component
@@ -91,11 +94,11 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 
 	@Getter
 	@Setter
-	private Function<Integer, Component> tabSupplier;
+	private Function<Integer, Component> tabCreator;
 
 	@Getter
 	@Setter
-	private Supplier<String> titleSupplier = () -> "";
+	private Supplier<String> titleCreator = () -> "";
 
 	/**
 	 * Constructor
@@ -115,7 +118,7 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 			VerticalLayout main = new DefaultVerticalLayout();
 			add(main);
 
-			String title = titleSupplier.get();
+			String title = titleCreator.get();
 			if (!StringUtils.isEmpty(title)) {
 				caption = new Span(title);
 				main.add(caption);
@@ -156,7 +159,7 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 		if (!constructedTabs.contains(index)) {
 			constructedTabs.add(index);
 			// paste the real tab into the placeholder
-			Component constructed = tabSupplier.apply(index);
+			Component constructed = tabCreator.apply(index);
 			tabs.setComponent(index, constructed);
 		} else {
 			// reload the tab if needed
@@ -214,7 +217,7 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 
 		// update title
 		if (caption != null) {
-			caption.setText(titleSupplier.get());
+			caption.setText(titleCreator.get());
 		}
 	}
 
@@ -241,13 +244,13 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 		int index = 0;
 		for (String cap : getCaptions()) {
 			VerticalLayout dummy = new DefaultVerticalLayout(false, false);
-			String description = descriptionsSupplier == null ? "" : descriptionsSupplier.apply(index);
-			tabs.addTab(cap, description, dummy, iconSupplier == null ? null : iconSupplier.apply(index));
+			String description = descriptionCreator == null ? "" : descriptionCreator.apply(index);
+			tabs.addTab(cap, description, dummy, iconCreator == null ? null : iconCreator.apply(index));
 			index++;
 		}
 
 		// construct first tab
-		Component component = tabSupplier.apply(0);
+		Component component = tabCreator.apply(0);
 		constructedTabs.add(0);
 		tabs.setComponent(0, component);
 

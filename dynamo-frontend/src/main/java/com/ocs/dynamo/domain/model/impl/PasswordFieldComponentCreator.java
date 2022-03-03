@@ -44,7 +44,7 @@ public class PasswordFieldComponentCreator implements SimpleComponentCreator {
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 		PasswordField field = new PasswordField();
-		field.setRevealButtonVisible(false);
+		field.setRevealButtonVisible(am.isShowPassword());
 		return field;
 	}
 

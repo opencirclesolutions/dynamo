@@ -32,7 +32,7 @@ public class UploadFormTest extends BaseMockitoTest {
 	public void testSimpleForm() throws IOException {
 		UploadForm form = new UploadForm(ui, ProgressMode.SIMPLE, false);
 		form.setTitle("title");
-		form.setProcessConsumer((t, estimatedSize) -> assertEquals(3, t.length));
+		form.setProcess((t, estimatedSize) -> assertEquals(3, t.length));
 		form.setEstimateSize(t -> 0);
 
 		MockUtil.injectUI(form, ui);

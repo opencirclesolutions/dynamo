@@ -118,9 +118,13 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	@Getter
 	protected SerializablePredicate<T> filter;
 
+	/**
+	 * The code that is carried out to create the filter for limiting the search
+	 * results
+	 */
 	@Getter
 	@Setter
-	private Supplier<SerializablePredicate<T>> filterSupplier;
+	private Supplier<SerializablePredicate<T>> filterCreator;
 
 	private VerticalLayout mainLayout;
 
@@ -255,7 +259,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	 * Constructs the filter that limits which records show up
 	 */
 	protected void buildFilter() {
-		this.filter = filterSupplier == null ? null : filterSupplier.get();
+		this.filter = filterCreator == null ? null : filterCreator.get();
 	}
 
 	/**
@@ -422,7 +426,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 					getFieldFilters(), new FormOptions(), getComponentContext());
 
 			dialog.setAfterEditDone((cancel, newEntity, ent) -> reload());
-			dialog.setCreateEntitySupplier(getCreateEntitySupplier());
+			dialog.setCreateEntity(getCreateEntity());
 			dialog.setPostProcessDetailButtonBar(getPostProcessDetailButtonBar());
 			dialog.buildAndOpen();
 		});

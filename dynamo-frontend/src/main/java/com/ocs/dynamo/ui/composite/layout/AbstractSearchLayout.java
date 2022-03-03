@@ -157,7 +157,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 */
 	@Getter
 	@Setter
-	private Function<Integer, Icon> tabIconSupplier;
+	private Function<Integer, Icon> tabIconCreator;
 
 	/**
 	 * Constructor

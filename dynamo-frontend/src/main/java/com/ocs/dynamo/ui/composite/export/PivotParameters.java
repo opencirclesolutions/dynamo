@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.export;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -45,7 +46,8 @@ public class PivotParameters {
 
 	private final List<String> pivotedProperties;
 
-	private final List<String> hiddenPivotedProperties;
+	@Builder.Default
+	private List<String> hiddenPivotedProperties = new ArrayList<>();
 
 	@Builder.Default
 	private final Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
@@ -58,13 +60,24 @@ public class PivotParameters {
 	@Builder.Default
 	private final BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
+	@Builder.Default
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
+
 	private final boolean includeAggregateRow;
 
 	@Builder.Default
 	private final Map<String, Class<?>> aggregationClassMap = new HashMap<>();
 
-	public String getRowKeyProperty() {
-		return rowKeyProperty;
+	public List<String> getShownAndHiddenProperties() {
+		List<String> allProps = new ArrayList<>();
+		allProps.addAll(getPivotedProperties());
+		if (getHiddenPivotedProperties() != null) {
+			allProps.addAll(getHiddenPivotedProperties());
+		}
+		return allProps;
 	}
 
+	public int getTotalNumberOfVariableColumns() {
+		return possibleColumnKeys.size() * pivotedProperties.size();
+	}
 }

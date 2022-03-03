@@ -183,6 +183,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private AttributeSelectMode selectMode;
 
+	private boolean showPassword;
+
 	private boolean sortable;
 
 	private AttributeTextFieldMode textFieldMode;

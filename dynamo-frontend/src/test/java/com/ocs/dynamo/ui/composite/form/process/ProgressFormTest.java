@@ -47,7 +47,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		afterWorkCalled = false;
 		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE);
 		pf.setEstimateSize(Object -> 100);
-		pf.setProcessConsumer((o, estimatedSize) -> {
+		pf.setProcess((o, estimatedSize) -> {
 			for (int i = 0; i < 100; i++) {
 				pf.getCounter().increment();
 			}
@@ -90,7 +90,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 			assertFalse(exceptionOccurred);
 			afterWorkCalled = true;
 		});
-		pf.setProcessConsumer((t, estimatedSize) -> {
+		pf.setProcess((t, estimatedSize) -> {
 			for (int i = 0; i < 100; i++) {
 				try {
 					Thread.sleep(20);
@@ -134,7 +134,7 @@ public class ProgressFormTest extends BaseMockitoTest {
 		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE);
 		MockUtil.injectUI(pf, ui);
 		pf.setEstimateSize(est -> 100);
-		pf.setProcessConsumer((t, estimatedSize) -> {
+		pf.setProcess((t, estimatedSize) -> {
 			throw new OCSRuntimeException("Test");
 		});
 		pf.setAfterWorkComplete(exceptionOccurred -> {

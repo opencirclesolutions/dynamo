@@ -108,13 +108,7 @@ public class MenuService {
 				command = new NavigateCommand(this, bar, destination, tabIndex, mode);
 			}
 
-			if (parent instanceof MenuBar) {
-				// main menu bar
-				menuItem = ((MenuBar) parent).addItem(caption, command);
-			} else {
-				// sub menu
-				menuItem = ((SubMenu) parent).addItem(caption, command);
-			}
+			menuItem = addMenuItem(parent, caption, command);
 
 			// set description
 			if (description != null) {
@@ -122,27 +116,50 @@ public class MenuService {
 			}
 
 			parent = menuItem.getSubMenu();
-
 			if (!StringUtils.isEmpty(destination)) {
 				destinationMap.put(destination + "#" + (mode != null ? mode : "nomode"), menuItem);
 			}
 
-			// add the child items
-			int index = 1;
-			String childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
+			addChildItems(bar, parent, key, menuItem, destination);
+		}
+		return menuItem;
+	}
+
+	private void addChildItems(MenuBar bar, Object parent, String key, MenuItem menuItem, String destination) {
+		// add the child items
+		int index = 1;
+		String childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
+				VaadinUtils.getLocale());
+
+		while (childKey != null) {
+			constructMenu(bar, parent, key + "." + index);
+			index++;
+			childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
 					VaadinUtils.getLocale());
+		}
 
-			while (childKey != null) {
-				constructMenu(bar, parent, key + "." + index);
-				index++;
-				childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
-						VaadinUtils.getLocale());
-			}
+		// hide menu item if user does not have permissions
+		if (checker != null && !checker.isAccessAllowed(destination)) {
+			menuItem.setVisible(false);
+		}
+	}
 
-			// hide menu item if user does not have permissions
-			if (checker != null && !checker.isAccessAllowed(destination)) {
-				menuItem.setVisible(false);
-			}
+	/**
+	 * Adds a menu item
+	 * 
+	 * @param parent  the parent to which to add the item
+	 * @param caption the caption of the item
+	 * @param command the navigation command to add to the item
+	 * @return
+	 */
+	private MenuItem addMenuItem(Object parent, String caption, NavigateCommand command) {
+		MenuItem menuItem;
+		if (parent instanceof MenuBar) {
+			// main menu bar
+			menuItem = ((MenuBar) parent).addItem(caption, command);
+		} else {
+			// sub menu
+			menuItem = ((SubMenu) parent).addItem(caption, command);
 		}
 		return menuItem;
 	}

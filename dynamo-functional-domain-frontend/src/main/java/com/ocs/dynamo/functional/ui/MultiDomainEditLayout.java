@@ -240,7 +240,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			});
 			layout.setHeaderLayoutCreator(headerLayoutCreator);
 			layout.setPostProcessMainButtonBar(postProcessButtonBar);
-			layout.setQuickSearchFilterSupplier(
+			layout.setQuickSearchFilterCreator(
 					value -> new OrPredicate<>(new SimpleStringPredicate<>(Domain.ATTRIBUTE_NAME, value, false, false),
 							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
 

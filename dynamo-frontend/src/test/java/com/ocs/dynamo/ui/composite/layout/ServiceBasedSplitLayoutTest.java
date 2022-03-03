@@ -76,7 +76,7 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
 				new SortOrder<String>("name", SortDirection.ASCENDING));
-		layout.setQuickSearchFilterSupplier(value -> new EqualsPredicate<TestEntity>("name", "%" + value + "%"));
+		layout.setQuickSearchFilterCreator(value -> new EqualsPredicate<TestEntity>("name", "%" + value + "%"));
 		layout.build();
 
 		assertNull(layout.getFilter());
@@ -130,7 +130,7 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 		ServiceBasedSplitLayout<Integer, TestEntity> layout = new ServiceBasedSplitLayout<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), QueryType.PAGING, fo,
 				new SortOrder<String>("name", SortDirection.ASCENDING));
-		layout.setFilterSupplier(() -> new EqualsPredicate<TestEntity>("name", "Bob"));
+		layout.setFilterCreator(() -> new EqualsPredicate<TestEntity>("name", "Bob"));
 		layout.build();
 
 		assertNotNull(layout.getFilter());
@@ -179,7 +179,7 @@ public class ServiceBasedSplitLayoutTest extends FrontendIntegrationTest {
 				testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class),
 				QueryType.ID_BASED, fo, null);
 
-		layout.setParentFilterSupplier(parent -> new EqualsPredicate<TestEntity2>("testEntity", parent));
+		layout.setParentFilterCreator(parent -> new EqualsPredicate<TestEntity2>("testEntity", parent));
 		layout.build();
 		layout.getGridWrapper().forceSearch();
 

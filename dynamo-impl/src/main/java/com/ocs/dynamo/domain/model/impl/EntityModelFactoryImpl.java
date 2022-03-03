@@ -1062,6 +1062,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			setBooleanTrueSetting(attribute.currency(), model::setCurrency);
 			setBooleanTrueSetting(attribute.url(), model::setUrl);
 			setBooleanFalseSetting(attribute.sortable(), model::setSortable);
+			setBooleanTrueSetting(attribute.showPassword(), model::setShowPassword);
+			setBooleanTrueSetting(attribute.quickAddAllowed(), model::setQuickAddAllowed);
 
 			if (attribute.week()) {
 				checkWeekSettingAllowed(model);
@@ -1150,7 +1152,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			setStringSetting(attribute.replacementSearchPath(), model::setReplacementSearchPath);
 			setStringSetting(attribute.replacementSortPath(), model::setReplacementSortPath);
-			setBooleanTrueSetting(attribute.quickAddAllowed(), model::setQuickAddAllowed);
 
 			if (!ThousandsGroupingMode.INHERIT.equals(attribute.thousandsGrouping())) {
 				model.setThousandsGroupingMode(attribute.thousandsGrouping());
@@ -1173,23 +1174,26 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
 			model.setSearchDateOnly(attribute.searchDateOnly());
 
-			if (!PagingMode.INHERIT.equals(attribute.pagingMode())) {
-				model.setPagingMode(attribute.pagingMode());
-			}
-
-			if (!MultiSelectMode.INHERIT.equals(attribute.multiSelectMode())) {
-				model.setMultiSelectMode(attribute.multiSelectMode());
-			}
-
-			if (!TrimType.INHERIT.equals(attribute.trimSpaces())) {
-				model.setTrimSpaces(TrimType.TRIM.equals(attribute.trimSpaces()));
-			}
-
-			if (!NumberFieldMode.INHERIT.equals(attribute.numberFieldMode())) {
-				model.setNumberFieldMode(attribute.numberFieldMode());
-			}
+			setEnumValueUnless(attribute.pagingMode(), PagingMode.INHERIT, model::setPagingMode);
+			setEnumValueUnless(attribute.multiSelectMode(), MultiSelectMode.INHERIT, model::setMultiSelectMode);
+			setEnumValueUnless(attribute.trimSpaces(), TrimType.INHERIT,
+					ts -> model.setTrimSpaces(TrimType.TRIM.equals(ts)));
+			setEnumValueUnless(attribute.numberFieldMode(), NumberFieldMode.INHERIT, model::setNumberFieldMode);
 
 			setIntSetting(attribute.numberFieldStep(), 0, model::setNumberFieldStep);
+		}
+	}
+
+	/**
+	 * 
+	 * @param <E>
+	 * @param value
+	 * @param exclude
+	 * @param consumer
+	 */
+	private <E extends Enum<?>> void setEnumValueUnless(E value, E exclude, Consumer<E> consumer) {
+		if (!exclude.equals(value)) {
+			consumer.accept(value);
 		}
 	}
 
@@ -1403,17 +1407,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (value) {
 			receiver.accept(value);
 		}
-	}
-
-	/**
-	 * Sets a value on the attribute model if the provided String value evaluates to
-	 * true
-	 * 
-	 * @param value    the string value to evaluate
-	 * @param receiver the code that is executed to set the value
-	 */
-	private void setBooleanTrueSetting(String value, Consumer<Boolean> receiver) {
-		setBooleanTrueSetting(Boolean.valueOf(value), receiver);
 	}
 
 	/**

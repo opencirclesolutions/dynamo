@@ -333,6 +333,11 @@ public interface EntityModel<T> {
 	 * selecting the component
 	 */
 	String SELECT_MODE = "selectMode";
+	
+	/**
+	 * Whether to show the password in a password field
+	 */
+	String SHOW_PASSWORD = "showPassword";
 
 	/**
 	 * Default sort order for an entity

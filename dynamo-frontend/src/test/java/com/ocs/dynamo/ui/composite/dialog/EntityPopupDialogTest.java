@@ -49,7 +49,7 @@ public class EntityPopupDialogTest extends FrontendIntegrationTest {
 		EntityPopupDialog<Integer, TestEntity> dialog = new EntityPopupDialog<Integer, TestEntity>(testEntityService,
 				null, entityModelFactory.getModel(TestEntity.class), new HashMap<>(), fo,
 				ComponentContext.<Integer, TestEntity>builder().build());
-		dialog.setCreateEntitySupplier(() -> {
+		dialog.setCreateEntity(() -> {
 			TestEntity e1 = new TestEntity();
 			e1.setName("Pete");
 			return e1;

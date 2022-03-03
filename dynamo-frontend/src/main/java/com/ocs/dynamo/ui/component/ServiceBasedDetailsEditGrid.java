@@ -71,12 +71,12 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	private SerializablePredicate<T> filter;
 
 	/**
-	 * The supplier for constructing the search filter used to restrict the
-	 * displayed items
+	 * The code that is carried out to create the filter that is used to limit the
+	 * results that show up in the grid
 	 */
 	@Getter
 	@Setter
-	private Function<U, SerializablePredicate<T>> filterSupplier;
+	private Function<U, SerializablePredicate<T>> filterCreator;
 
 	/**
 	 * The currently selected entity in the edit form that this component is part of
@@ -140,7 +140,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 */
 	@Override
 	protected void applyFilter() {
-		filter = (filterSupplier == null || parent == null) ? null : filterSupplier.apply(parent);
+		filter = (filterCreator == null || parent == null) ? null : filterCreator.apply(parent);
 
 		// for a new entity without ID you can't filter yet
 		if (parent != null && parent.getId() == null) {
@@ -185,10 +185,10 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 
 	@Override
 	protected void handleDialogSelection(Collection<T> selected) {
-		if (getLinkEntityConsumer() == null) {
-			throw new OCSRuntimeException("No linkEntityConsumer specified!");
+		if (getLinkEntity() == null) {
+			throw new OCSRuntimeException("No linkEntity specified. Please use the setLinkEntity method");
 		}
-		selected.forEach(t -> getLinkEntityConsumer().accept(t));
+		selected.forEach(t -> getLinkEntity().accept(t));
 	}
 
 	@Override
@@ -211,7 +211,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 		EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), entity, getEntityModel(),
 				getFieldFilters(), new FormOptions(), getComponentContext(), getDetailJoins());
 		dialog.setAfterEditDone((cancel, newEntity, ent) -> provider.refreshAll());
-		dialog.setCreateEntitySupplier(getCreateEntitySupplier());
+		dialog.setCreateEntity(getCreateEntity());
 		dialog.buildAndOpen();
 	}
 

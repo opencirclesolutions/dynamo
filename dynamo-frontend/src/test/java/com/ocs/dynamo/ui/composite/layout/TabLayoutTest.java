@@ -50,7 +50,7 @@ public class TabLayoutTest extends FrontendIntegrationTest {
 	public void test() {
 		TabLayout<Integer, TestEntity> layout = new TabLayout<Integer, TestEntity>(e1);
 
-		layout.setTabSupplier(index -> {
+		layout.setTabCreator(index -> {
 			switch (index) {
 			case 0:
 				return new MyLayout();
@@ -61,7 +61,7 @@ public class TabLayoutTest extends FrontendIntegrationTest {
 			}
 		});
 		layout.setCaptions(new String[] { "tab1", "tab2" });
-		layout.setTitleSupplier(() -> "Test Tab Layout");
+		layout.setTitleCreator(() -> "Test Tab Layout");
 		layout.build();
 
 		assertTrue(layout.getComponentAt(0) instanceof MyLayout);

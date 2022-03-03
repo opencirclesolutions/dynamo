@@ -20,16 +20,15 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.data.provider.SortOrder;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * 
  * @author Bas Rutten
  *
  */
+@UtilityClass
 public final class SortOrderUtil {
-
-	private SortOrderUtil() {
-		// hidden constructor
-	}
 
 	/**
 	 * Translates a list of sort orders from GridSortOrder to SortOrder

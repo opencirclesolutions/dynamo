@@ -224,6 +224,12 @@ public @interface Attribute {
 	 * @return the paging mode to use for selection components
 	 */
 	PagingMode pagingMode() default PagingMode.INHERIT;
+	
+	/**
+	 * 
+	 * @return whether the 
+	 */
+	boolean showPassword() default false;
 
 	/**
 	 * @return whether the attribute value is treated as a percentage

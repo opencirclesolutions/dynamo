@@ -37,6 +37,9 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A split layout - contains both a grid and a details view - that uses a
  * service to fetch data
@@ -54,22 +57,28 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	/**
 	 * The search filter to apply
 	 */
+	@Getter
 	protected SerializablePredicate<T> filter;
 
 	/**
 	 * Supplier for creating the filter when needed
 	 */
-	private Supplier<SerializablePredicate<T>> filterSupplier;
+	@Getter
+	@Setter
+	private Supplier<SerializablePredicate<T>> filterCreator;
 
 	/**
 	 * The query type (ID based or paging) used to query the database
 	 */
+	@Getter
 	private QueryType queryType;
 
 	/**
 	 * Supplier for creating the quick search filter
 	 */
-	private Function<String, SerializablePredicate<T>> quickSearchFilterSupplier;
+	@Getter
+	@Setter
+	private Function<String, SerializablePredicate<T>> quickSearchFilterCreator;
 
 	/**
 	 * Constructor
@@ -89,7 +98,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	protected void buildFilter() {
-		filter = filterSupplier == null ? null : filterSupplier.get();
+		filter = filterCreator == null ? null : filterCreator.get();
 	}
 
 	@Override
@@ -143,20 +152,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 			searchField.addValueChangeListener(event -> {
 				String text = event.getValue();
 				if (!StringUtils.isEmpty(text)) {
-					SerializablePredicate<T> quickFilter = quickSearchFilterSupplier == null ? null
-							: quickSearchFilterSupplier.apply(text);
-
-					// if no custom filter is defined, filter on main attribute
-					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-						quickFilter = new LikePredicate<>(getEntityModel().getMainAttributeModel().getPath(),
-								"%" + text + "%", false);
-					}
-
-					SerializablePredicate<T> temp = quickFilter;
-					if (getFilter() != null) {
-						temp = new AndPredicate<>(quickFilter, getFilter());
-					}
-					getGridWrapper().search(temp);
+					executeQuickSearch(text);
 				} else {
 					getGridWrapper().search(filter);
 				}
@@ -170,25 +166,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		return getGridWrapper().getDataProvider();
 	}
 
-	public SerializablePredicate<T> getFilter() {
-		return filter;
-	}
-
-	public Supplier<SerializablePredicate<T>> getFilterSupplier() {
-		return filterSupplier;
-	}
-
 	@Override
 	public ServiceBasedGridWrapper<ID, T> getGridWrapper() {
 		return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
-	}
-
-	public QueryType getQueryType() {
-		return queryType;
-	}
-
-	public Function<String, SerializablePredicate<T>> getQuickSearchFilterSupplier() {
-		return quickSearchFilterSupplier;
 	}
 
 	/**
@@ -201,25 +181,6 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		super.reload();
 		refresh();
 		getGridWrapper().setFilter(filter);
-	}
-
-	/**
-	 * Sets the function (supplier) used for constructing the default filter
-	 * 
-	 * @param filterSupplier
-	 */
-	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
-		this.filterSupplier = filterSupplier;
-	}
-
-	/**
-	 * Sets the function used for constructing the quick search filter. This will
-	 * override the default quick search filter that searches on the main attribute
-	 * 
-	 * @param quickSearchFilterSupplier
-	 */
-	public void setQuickSearchFilterSupplier(Function<String, SerializablePredicate<T>> quickSearchFilterSupplier) {
-		this.quickSearchFilterSupplier = quickSearchFilterSupplier;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -244,6 +205,28 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 			setSelectedItem(null);
 			emptyDetailView();
 		}
+	}
+
+	/**
+	 * Executes a quick search
+	 * 
+	 * @param text the text string to search form
+	 */
+	private void executeQuickSearch(String text) {
+		SerializablePredicate<T> quickFilter = quickSearchFilterCreator == null ? null
+				: quickSearchFilterCreator.apply(text);
+
+		// if no custom filter is defined, filter on main attribute
+		if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+			quickFilter = new LikePredicate<>(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%",
+					false);
+		}
+
+		SerializablePredicate<T> temp = quickFilter;
+		if (getFilter() != null) {
+			temp = new AndPredicate<>(quickFilter, getFilter());
+		}
+		getGridWrapper().search(temp);
 	}
 
 }

@@ -62,7 +62,7 @@ public class UploadForm extends ProgressForm<byte[]> {
 	public UploadForm(UI ui, ProgressMode progressMode, boolean showCancelButton) {
 		super(ui, progressMode);
 		this.showCancelButton = showCancelButton;
-		setBuildMain(main -> {
+		setBuildMainLayout(main -> {
 			FormLayout form = new FormLayout();
 			main.add(form);
 

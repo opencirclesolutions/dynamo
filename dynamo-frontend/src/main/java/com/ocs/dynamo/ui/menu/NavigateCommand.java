@@ -22,6 +22,8 @@ import com.vaadin.flow.component.ComponentEventListener;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.menubar.MenuBar;
 
+import lombok.Getter;
+
 /**
  * Command for navigating to a certain view
  * 
@@ -35,10 +37,13 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
 
 	private final MenuService menuService;
 
+	@Getter
 	private final String destination;
 
+	@Getter
 	private final String selectedTab;
 
+	@Getter
 	private final String mode;
 
 	/**
@@ -55,18 +60,6 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
 		this.selectedTab = selectedTab;
 		this.menuBar = menuBar;
 		this.mode = mode;
-	}
-
-	public String getDestination() {
-		return destination;
-	}
-
-	public String getSelectedTab() {
-		return selectedTab;
-	}
-
-	public String getMode() {
-		return mode;
 	}
 
 	@Override

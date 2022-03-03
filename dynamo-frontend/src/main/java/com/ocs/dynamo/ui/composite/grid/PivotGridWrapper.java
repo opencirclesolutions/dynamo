@@ -48,6 +48,9 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Wrapper around a pivot grid
  * 
@@ -61,6 +64,14 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	private static final long serialVersionUID = -4691108261565306844L;
 
+	@Getter
+	@Setter
+	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
+
 	/**
 	 * The label that displays the table caption
 	 */
@@ -70,7 +81,13 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * The name of the property that contains the values that lead to the pivoted
 	 * columns
 	 */
+	@Getter
+	@Setter
 	private String columnKeyProperty;
+
+	@Getter
+	@Setter
+	private BiFunction<String, Object, String> customFormatter = null;
 
 	/**
 	 * The data provider
@@ -78,13 +95,31 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	private PivotDataProvider<ID, T> dataProvider;
 
 	/**
+	 * Bifunction used to map pivot column headers for export only
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> exportHeaderMapper;
+
+	/**
+	 * Bifunction used to map pivot column subheaders for export only
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> exportSubHeaderMapper;
+
+	/**
 	 * The names of the fixed/frozen columns
 	 */
+	@Getter
+	@Setter
 	private List<String> fixedColumnKeys;
 
 	/**
 	 * Function for mapping for fixed property name to grid header
 	 */
+	@Getter
+	@Setter
 	private Function<String, String> fixedHeaderMapper = Function.identity();
 
 	/**
@@ -95,14 +130,23 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Bifunction used to map pivot column headers
 	 */
+	@Getter
+	@Setter
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
 	/**
-	 * Bifunction used to map pivot column headers for export only
+	 * The properties to display in the pivoted columns
 	 */
-	private BiFunction<Object, Object, String> exportHeaderMapper;
+	@Getter
+	@Setter
+	private List<String> hiddenPivotedProperties;
 
-	private BiFunction<String, Object, String> customFormatter = null;
+	/**
+	 * Whether to include an aggregate row at the bottom
+	 */
+	@Getter
+	@Setter
+	private boolean includeAggregateRow;
 
 	/**
 	 * The layout that contains the grid
@@ -112,41 +156,43 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * The properties to display in the pivoted columns
 	 */
+	@Getter
+	@Setter
 	private List<String> pivotedProperties;
-
-	/**
-	 * The properties to display in the pivoted columns
-	 */
-	private List<String> hiddenPivotedProperties;
 
 	/**
 	 * The possible values of the columnPropertyKey property.
 	 */
+	@Getter
+	@Setter
 	private List<Object> possibleColumnKeys;
 
 	/**
 	 * The property that is checked to determine whether a new row is reached
 	 */
+	@Getter
+	@Setter
 	private String rowKeyProperty;
 
 	/**
 	 * Supplier that is used to determine the number of rows in the pivot table
 	 */
+	@Getter
+	@Setter
 	private Supplier<Integer> sizeSupplier;
 
-	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
-
-	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
+	/**
+	 * Mapping function for determining the sub header from the column key value and
+	 * pivot property
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
 
 	/**
 	 * The wrapped data provider
 	 */
 	private BaseDataProvider<ID, T> wrappedProvider;
-
-	/**
-	 * Whether to include an aggregate row at the bottom
-	 */
-	private boolean includeAggregateRow;
 
 	/**
 	 * @param service     the service that is used for retrieving data
@@ -203,15 +249,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @return
 	 */
 	protected PivotGrid<ID, T> constructGrid() {
-		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper, customFormatter);
-	}
-
-	public String getColumnKeyProperty() {
-		return columnKeyProperty;
-	}
-
-	public BiFunction<String, Object, String> getCustomFormatter() {
-		return customFormatter;
+		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper, subHeaderMapper,
+				customFormatter);
 	}
 
 	public DataProvider<PivotedItem, SerializablePredicate<PivotedItem>> getDataProvider() {
@@ -221,14 +260,6 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public int getDataProviderSize() {
 		return dataProvider.getSize();
-	}
-
-	public List<String> getFixedColumnKeys() {
-		return fixedColumnKeys;
-	}
-
-	public Function<String, String> getFixedHeaderMapper() {
-		return fixedHeaderMapper;
 	}
 
 	/**
@@ -241,30 +272,6 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 			grid = constructGrid();
 		}
 		return grid;
-	}
-
-	public BiFunction<Object, Object, String> getHeaderMapper() {
-		return headerMapper;
-	}
-
-	public List<String> getHiddenPivotedProperties() {
-		return hiddenPivotedProperties;
-	}
-
-	public List<String> getPivotedProperties() {
-		return pivotedProperties;
-	}
-
-	public List<Object> getPossibleColumnKeys() {
-		return possibleColumnKeys;
-	}
-
-	public String getRowKeyProperty() {
-		return rowKeyProperty;
-	}
-
-	public Supplier<Integer> getSizeSupplier() {
-		return sizeSupplier;
 	}
 
 	/**
@@ -317,6 +324,9 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 						.aggregationMap(aggregationMap) //
 						.aggregationClassMap(aggregationClassMap) //
 						.includeAggregateRow(includeAggregateRow) //
+						.subHeaderMapper(subHeaderMapper) //
+						.headerMapper(exportHeaderMapper != null ? exportHeaderMapper : headerMapper) //
+						.subHeaderMapper(exportSubHeaderMapper != null ? exportSubHeaderMapper : subHeaderMapper)
 						.build();
 
 				// use the fallback sort orders here
@@ -352,46 +362,6 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 		// not needed
 	}
 
-	public void setColumnKeyProperty(String columnKeyProperty) {
-		this.columnKeyProperty = columnKeyProperty;
-	}
-
-	public void setCustomFormatter(BiFunction<String, Object, String> customFormatter) {
-		this.customFormatter = customFormatter;
-	}
-
-	public void setFixedColumnKeys(List<String> fixedColumnKeys) {
-		this.fixedColumnKeys = fixedColumnKeys;
-	}
-
-	public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
-		this.fixedHeaderMapper = fixedHeaderMapper;
-	}
-
-	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
-		this.headerMapper = headerMapper;
-	}
-
-	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
-		this.hiddenPivotedProperties = hiddenPivotedProperties;
-	}
-
-	public void setPivotedProperties(List<String> pivotedProperties) {
-		this.pivotedProperties = pivotedProperties;
-	}
-
-	public void setPossibleColumnKeys(List<Object> possibleColumnKeys) {
-		this.possibleColumnKeys = possibleColumnKeys;
-	}
-
-	public void setRowKeyProperty(String rowKeyProperty) {
-		this.rowKeyProperty = rowKeyProperty;
-	}
-
-	public void setSizeSupplier(Supplier<Integer> sizeSupplier) {
-		this.sizeSupplier = sizeSupplier;
-	}
-
 	/**
 	 * Updates the caption above the grid that shows the number of items
 	 * 
@@ -400,38 +370,6 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	protected void updateCaption(int size) {
 		caption.setText(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + " "
 				+ getMessageService().getMessage("ocs.showing.results", VaadinUtils.getLocale(), size));
-	}
-
-	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
-		this.aggregationMap = aggregationMap;
-	}
-
-	public boolean isIncludeAggregateRow() {
-		return includeAggregateRow;
-	}
-
-	public void setIncludeAggregateRow(boolean includeAggregateRow) {
-		this.includeAggregateRow = includeAggregateRow;
-	}
-
-	public Map<String, Class<?>> getAggregationClassMap() {
-		return aggregationClassMap;
-	}
-
-	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
-		this.aggregationClassMap = aggregationClassMap;
-	}
-
-	public Map<String, PivotAggregationType> getAggregationMap() {
-		return aggregationMap;
-	}
-
-	public BiFunction<Object, Object, String> getExportHeaderMapper() {
-		return exportHeaderMapper;
-	}
-
-	public void setExportHeaderMapper(BiFunction<Object, Object, String> exportHeaderMapper) {
-		this.exportHeaderMapper = exportHeaderMapper;
 	}
 
 }

@@ -451,6 +451,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isPercentage();
 
 	/**
+	 * 
+	 * @return whether the password reveal button is visible
+	 */
+	boolean isShowPassword();
+
+	/**
 	 * @ return whether "quick edit" functionality is allowed. Quick edit
 	 * functionality allows for the in-line addition of simple domain values
 	 */

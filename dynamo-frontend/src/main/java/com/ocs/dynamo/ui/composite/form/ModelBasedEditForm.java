@@ -1110,10 +1110,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 						service.validate(entity);
 						showSaveConfirmDialog();
 					} else {
-						BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer = getComponentContext()
-								.getCustomSaveConsumer();
-						if (customSaveConsumer != null) {
-							customSaveConsumer.accept(this, entity);
+						BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveAction = getComponentContext()
+								.getCustomSaveAction();
+						if (customSaveAction != null) {
+							customSaveAction.accept(this, entity);
 						} else {
 							doSave();
 						}
@@ -1957,10 +1957,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		VaadinUtils.showConfirmDialog(getMessageService().getMessage("ocs.confirm.save", VaadinUtils.getLocale(),
 				getEntityModel().getDisplayName(VaadinUtils.getLocale())), () -> {
 					try {
-						BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer = getComponentContext()
-								.getCustomSaveConsumer();
-						if (customSaveConsumer != null) {
-							customSaveConsumer.accept(this, entity);
+						BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveAction = getComponentContext()
+								.getCustomSaveAction();
+						if (customSaveAction != null) {
+							customSaveAction.accept(this, entity);
 						} else {
 							doSave();
 						}

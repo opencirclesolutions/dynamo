@@ -16,7 +16,6 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntity2Service;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.Query;
@@ -65,7 +64,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 		EditableGridDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new EditableGridDetailLayout<>(
 				testEntity2Service, e1, testEntityService,
 				entityModelFactory.getModel("TestEntityGrid2", TestEntity2.class), fo, null);
-		layout.setParentFilterSupplier(p -> new EqualsPredicate<>("testEntity", p));
+		layout.setParentFilterCreator(p -> new EqualsPredicate<>("testEntity", p));
 		layout.build();
 
 		layout.getGridWrapper().forceSearch();
@@ -140,7 +139,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 		FormOptions fo = new FormOptions();
 		EditableGridLayout<Integer, TestEntity> layout = new EditableGridLayout<Integer, TestEntity>(testEntityService,
 				entityModelFactory.getModel("TestEntityGrid", TestEntity.class), fo, null);
-		layout.setFilterSupplier(() -> new EqualsPredicate<>("name", "Bob"));
+		layout.setFilterCreator(() -> new EqualsPredicate<>("name", "Bob"));
 		layout.build();
 		layout.getGridWrapper().forceSearch();
 

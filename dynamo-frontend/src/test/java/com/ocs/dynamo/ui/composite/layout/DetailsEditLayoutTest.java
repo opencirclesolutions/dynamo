@@ -114,8 +114,8 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 		layout.setPostProcessDetailButtonBar((index, buttonBar, vm) -> {
 			detailButtonBarPostconstruct = true;
 		});
-		layout.setCreateEntitySupplier(p -> new TestEntity());
-		layout.setRemoveEntityConsumer((p, t) -> {
+		layout.setCreateEntity(p -> new TestEntity());
+		layout.setRemoveEntity((p, t) -> {
 		});
 
 		layout.build();

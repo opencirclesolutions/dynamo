@@ -89,11 +89,6 @@ public class FormOptions implements Serializable {
 	private boolean doubleClickSelectAllowed = true;
 
 	/**
-	 * Whether to show an edit button when the screen is opened in view mode
-	 */
-	private boolean showEditButton = true;
-
-	/**
 	 * Whether to enabled advanced search mode in a search layout
 	 */
 	private boolean enableAdvancedSearchMode;
@@ -116,21 +111,6 @@ public class FormOptions implements Serializable {
 	private GridEditMode gridEditMode = GridEditMode.SINGLE_ROW;
 
 	/**
-	 * Whether to show the add button
-	 */
-	private boolean showAddButton = true;
-
-	/**
-	 * Whether to show the cancel button (in an explicit detail view)
-	 */
-	private boolean showCancelButton = true;
-
-	/**
-	 * Whether to show the clear button in the search form
-	 */
-	private boolean showClearButton = true;;
-
-	/**
 	 * 
 	 * Whether to open the form in view (read-only) mode
 	 */
@@ -150,7 +130,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to preserve search terms when navigating away from the screen
 	 */
-	private boolean preserveSearchTerms = true;
+	private boolean preserveSearchTerms = true;;
 
 	/**
 	 * Whether to preserve the last selected tab when reopening a screen
@@ -182,21 +162,47 @@ public class FormOptions implements Serializable {
 	private boolean searchImmediately = true;
 
 	/**
+	 * Whether to show the add button
+	 */
+	private boolean showAddButton = true;
+
+	/**
 	 * Whether to display a back button inside an edit form. Usually managed by the
 	 * framework.
 	 */
 	private boolean showBackButton;
 
 	/**
-	 * Whether to show a caption above an edit form
+	 * Whether to show the cancel button (in an explicit detail view)
 	 */
-	private boolean showEditFormCaption = true;
+	private boolean showCancelButton = true;
+
+	/**
+	 * Whether to show the clear button in the search form
+	 */
+	private boolean showClearButton = true;
 
 	/**
 	 * Whether to display a panel containing the item that is selected in a grid,
 	 * below that grid
 	 */
 	private boolean showDetailsGridDetailsPanel;
+
+	/**
+	 * Whether to display a button for showing a popup of the selected entity in a
+	 * grid
+	 */
+	private boolean showDetailsGridPopup;
+
+	/**
+	 * Whether to show an edit button when the screen is opened in view mode
+	 */
+	private boolean showEditButton = true;
+
+	/**
+	 * Whether to show a caption above an edit form
+	 */
+	private boolean showEditFormCaption = true;
 
 	/**
 	 * Whether to display a "next" button inside an edit form
@@ -330,28 +336,12 @@ public class FormOptions implements Serializable {
 		return doubleClickSelectAllowed;
 	}
 
-	public boolean isShowEditButton() {
-		return showEditButton;
-	}
-
 	public boolean isEnableAdvancedSearchMode() {
 		return enableAdvancedSearchMode;
 	}
 
 	public boolean isExportAllowed() {
 		return exportAllowed;
-	}
-
-	public boolean isShowAddButton() {
-		return showAddButton;
-	}
-
-	public boolean isShowCancelButton() {
-		return showCancelButton;
-	}
-
-	public boolean isShowClearButton() {
-		return showClearButton;
 	}
 
 	public boolean isOpenInViewMode() {
@@ -386,16 +376,36 @@ public class FormOptions implements Serializable {
 		return searchImmediately;
 	}
 
+	public boolean isShowAddButton() {
+		return showAddButton;
+	}
+
 	public boolean isShowBackButton() {
 		return showBackButton;
 	}
 
-	public boolean isShowEditFormCaption() {
-		return showEditFormCaption;
+	public boolean isShowCancelButton() {
+		return showCancelButton;
+	}
+
+	public boolean isShowClearButton() {
+		return showClearButton;
 	}
 
 	public boolean isShowDetailsGridDetailsPanel() {
 		return showDetailsGridDetailsPanel;
+	}
+
+	public boolean isShowDetailsGridPopup() {
+		return showDetailsGridPopup;
+	}
+
+	public boolean isShowEditButton() {
+		return showEditButton;
+	}
+
+	public boolean isShowEditFormCaption() {
+		return showEditFormCaption;
 	}
 
 	public boolean isShowNextButton() {
@@ -546,18 +556,6 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Specify whether editing existing entities is allowed. When set to "true" an
-	 * edit button will be rendered
-	 * 
-	 * @param showEditButton whether editing is allowed
-	 * @return
-	 */
-	public FormOptions setShowEditButton(boolean showEditButton) {
-		this.showEditButton = showEditButton;
-		return this;
-	}
-
-	/**
 	 * Whether to enable advanced search mode for search layouts
 	 * 
 	 * @param enableAdvancedSearchMode whether advanced search mode is enabled
@@ -602,40 +600,6 @@ public class FormOptions implements Serializable {
 	 */
 	public FormOptions setGridEditMode(GridEditMode gridEditMode) {
 		this.gridEditMode = gridEditMode;
-		return this;
-	}
-
-	/**
-	 * Specify whether to show the Add button
-	 * 
-	 * @param showAddButton whether to show the add button
-	 * @return
-	 */
-	public FormOptions setShowAddButton(boolean showAddButton) {
-		this.showAddButton = showAddButton;
-		return this;
-	}
-
-	/**
-	 * Specify whether to show the Cancel button in places in which it would
-	 * normally appear
-	 * 
-	 * @param showCancelButton whether to show the cancel button
-	 * @return
-	 */
-	public FormOptions setShowCancelButton(boolean showCancelButton) {
-		this.showCancelButton = showCancelButton;
-		return this;
-	}
-
-	/**
-	 * Specify whether to show Clear button in search forms
-	 * 
-	 * @param showClearButton whether to show the clear button
-	 * @return
-	 */
-	public FormOptions setShowClearButton(boolean showClearButton) {
-		this.showClearButton = showClearButton;
 		return this;
 	}
 
@@ -753,6 +717,17 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
+	 * Specify whether to show the Add button
+	 * 
+	 * @param showAddButton whether to show the add button
+	 * @return
+	 */
+	public FormOptions setShowAddButton(boolean showAddButton) {
+		this.showAddButton = showAddButton;
+		return this;
+	}
+
+	/**
 	 * Specify whether a Back button occurs when it is appropriate, e.g. when in the
 	 * details mode of a SearchLayout
 	 * 
@@ -765,13 +740,25 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Specify whether to show a caption above an edit form
+	 * Specify whether to show the Cancel button in places in which it would
+	 * normally appear
 	 * 
-	 * @param showEditFormCaption
+	 * @param showCancelButton whether to show the cancel button
 	 * @return
 	 */
-	public FormOptions setShowEditFormCaption(boolean showEditFormCaption) {
-		this.showEditFormCaption = showEditFormCaption;
+	public FormOptions setShowCancelButton(boolean showCancelButton) {
+		this.showCancelButton = showCancelButton;
+		return this;
+	}
+
+	/**
+	 * Specify whether to show Clear button in search forms
+	 * 
+	 * @param showClearButton whether to show the clear button
+	 * @return
+	 */
+	public FormOptions setShowClearButton(boolean showClearButton) {
+		this.showClearButton = showClearButton;
 		return this;
 	}
 
@@ -784,6 +771,34 @@ public class FormOptions implements Serializable {
 	 */
 	public FormOptions setShowDetailsGridDetailsPanel(boolean showDetailsGridDetailPanel) {
 		this.showDetailsGridDetailsPanel = showDetailsGridDetailPanel;
+		return this;
+	}
+
+	public FormOptions setShowDetailsGridPopup(boolean showDetailsGridPopup) {
+		this.showDetailsGridPopup = showDetailsGridPopup;
+		return this;
+	}
+
+	/**
+	 * Specify whether editing existing entities is allowed. When set to "true" an
+	 * edit button will be rendered
+	 * 
+	 * @param showEditButton whether editing is allowed
+	 * @return
+	 */
+	public FormOptions setShowEditButton(boolean showEditButton) {
+		this.showEditButton = showEditButton;
+		return this;
+	}
+
+	/**
+	 * Specify whether to show a caption above an edit form
+	 * 
+	 * @param showEditFormCaption
+	 * @return
+	 */
+	public FormOptions setShowEditFormCaption(boolean showEditFormCaption) {
+		this.showEditFormCaption = showEditFormCaption;
 		return this;
 	}
 

@@ -236,7 +236,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @return
 	 */
 	protected final T doCreateEntity() {
-		return getCreateEntitySupplier() != null ? getCreateEntitySupplier().get() : getService().createNewEntity();
+		return getCreateEntity() != null ? getCreateEntity().get() : getService().createNewEntity();
 	}
 
 	/**

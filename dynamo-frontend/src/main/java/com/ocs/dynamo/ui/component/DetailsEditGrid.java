@@ -69,8 +69,8 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		this.provider = new ListDataProvider<>(new ArrayList<>());
 
 		setOnAdd(() -> {
-			T t = getCreateEntitySupplier().get();
-			provider.getItems().add(t);
+			T entity = getCreateEntity().get();
+			provider.getItems().add(entity);
 			provider.refreshAll();
 		});
 	}
@@ -119,8 +119,9 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 	@Override
 	protected void handleDialogSelection(Collection<T> selected) {
-		if (getLinkEntityConsumer() == null) {
-			throw new OCSRuntimeException("No linkEntityConsumer specified!");
+		if (getLinkEntity() == null) {
+			throw new OCSRuntimeException(
+					"linkEntity not set. Please use the setLinkEntity method to specify what to do with the selected items");
 		}
 
 		// add to data provider
@@ -132,7 +133,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 		// link to parent entity
 		for (T t : selected) {
-			getLinkEntityConsumer().accept(t);
+			getLinkEntity().accept(t);
 		}
 	}
 

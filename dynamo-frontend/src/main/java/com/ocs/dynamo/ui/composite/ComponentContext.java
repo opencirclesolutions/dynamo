@@ -71,7 +71,7 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 	@Builder.Default
 	private Map<String, Supplier<Validator<?>>> customRequiredValidators = new HashMap<>();
 
-	private BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveConsumer;
+	private BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveAction;
 
 	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
 

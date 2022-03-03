@@ -108,7 +108,7 @@ public class ModelBasedPivotExportTemplateTest extends FrontendIntegrationTest {
 			assertEquals("C", sheet.getRow(0).getCell(i++).getStringCellValue());
 
 			// check the data row
-			Row row = sheet.getRow(1);
+			Row row = sheet.getRow(2);
 			i = 0;
 			assertEquals("Bob", row.getCell(i++).getStringCellValue());
 			assertEquals("A", row.getCell(i++).getStringCellValue());
@@ -133,7 +133,7 @@ public class ModelBasedPivotExportTemplateTest extends FrontendIntegrationTest {
 		String str = new String(bytes);
 		String[] lines = str.split("\n");
 
-		assertEquals("\"name\";\"A\";\"B\";\"C\"", lines[0].trim());
+		assertEquals("\"name\";\"A - someEnum\";\"B - someEnum\";\"C - someEnum\"", lines[0].trim());
 		assertEquals("\"Bob\";\"A\";\"B\";\"\"", lines[1].trim());
 	}
 

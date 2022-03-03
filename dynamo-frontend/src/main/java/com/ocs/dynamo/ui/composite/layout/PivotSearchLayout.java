@@ -35,6 +35,9 @@ import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Layout for searching in a pivoted grid
  * 
@@ -48,40 +51,82 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = 9118254267715180544L;
 
+	@Getter
+	@Setter
 	private String columnKeyProperty;
 
+	@Getter
+	@Setter
 	private List<String> fixedColumnKeys;
 
 	private PivotGridWrapper<ID, T> pivotGridWrapper;
 
 	/**
-	 * Header mapping function. Excepts the column key and the property
+	 * Header mapping function. Expects the column key and the property
 	 */
+	@Getter
+	@Setter
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
+
+	/**
+	 * Sub header mapping function. Expects the column key and the property
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
 
 	/**
 	 * Explicitly overridden header mapper used for exporting only
 	 */
+	@Getter
+	@Setter
 	private BiFunction<Object, Object, String> exportHeaderMapper = null;
 
+	/**
+	 * Bifunction used to map pivot column subheaders for export only
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> exportSubHeaderMapper = null;
+
+	@Getter
+	@Setter
 	private Function<String, String> fixedHeaderMapper = Function.identity();
 
+	@Getter
+	@Setter
 	private BiFunction<String, Object, String> customFormatter;
 
+	@Getter
+	@Setter
 	private List<String> pivotedProperties;
 
+	@Getter
+	@Setter
 	private List<String> hiddenPivotedProperties;
 
+	@Getter
+	@Setter
 	private List<Object> possibleColumnKeys;
 
+	@Getter
+	@Setter
 	private String rowKeyProperty;
 
+	@Getter
+	@Setter
 	private Supplier<Integer> sizeSupplier;
 
+	@Getter
+	@Setter
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
+	@Getter
+	@Setter
 	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
 
+	@Getter
+	@Setter
 	private boolean includeAggregateRow;
 
 	/**
@@ -132,6 +177,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setPivotedProperties(getPivotedProperties());
 		wrapper.setHiddenPivotedProperties(getHiddenPivotedProperties());
 		wrapper.setHeaderMapper(getHeaderMapper());
+		wrapper.setSubHeaderMapper(getSubHeaderMapper());
 		wrapper.setFixedHeaderMapper(getFixedHeaderMapper());
 		wrapper.setCustomFormatter(getCustomFormatter());
 		wrapper.setSizeSupplier(getSizeSupplier());
@@ -141,6 +187,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setAggregationClassMap(aggregationClassMap);
 		wrapper.setIncludeAggregateRow(isIncludeAggregateRow());
 		wrapper.setExportHeaderMapper(getExportHeaderMapper());
+		wrapper.setExportSubHeaderMapper(getExportSubHeaderMapper());
 
 		postConfigureGridWrapper(wrapper);
 		wrapper.build();
@@ -167,22 +214,6 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		// not supported
 	}
 
-	public String getColumnKeyProperty() {
-		return columnKeyProperty;
-	}
-
-	public BiFunction<String, Object, String> getCustomFormatter() {
-		return customFormatter;
-	}
-
-	public List<String> getFixedColumnKeys() {
-		return fixedColumnKeys;
-	}
-
-	public Function<String, String> getFixedHeaderMapper() {
-		return fixedHeaderMapper;
-	}
-
 	@Override
 	public GridWrapper<ID, T, PivotedItem> getGridWrapper() {
 		if (pivotGridWrapper == null) {
@@ -191,37 +222,9 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		return pivotGridWrapper;
 	}
 
-	public BiFunction<Object, Object, String> getHeaderMapper() {
-		return headerMapper;
-	}
-
-	public List<String> getHiddenPivotedProperties() {
-		return hiddenPivotedProperties;
-	}
-
-	public List<String> getPivotedProperties() {
-		return pivotedProperties;
-	}
-
-	public List<Object> getPossibleColumnKeys() {
-		return possibleColumnKeys;
-	}
-
-	public String getRowKeyProperty() {
-		return rowKeyProperty;
-	}
-
 	@Override
 	public ModelBasedSearchForm<ID, T> getSearchForm() {
 		return (ModelBasedSearchForm<ID, T>) super.getSearchForm();
-	}
-
-	public Supplier<Integer> getSizeSupplier() {
-		return sizeSupplier;
-	}
-
-	public boolean isIncludeAggregateRow() {
-		return includeAggregateRow;
 	}
 
 	/**
@@ -232,46 +235,6 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	public void select(Object selectedItems) {
 		// do nothing (not supported)
-	}
-
-	public void setColumnKeyProperty(String columnKeyProperty) {
-		this.columnKeyProperty = columnKeyProperty;
-	}
-
-	public void setCustomFormatter(BiFunction<String, Object, String> customFormatter) {
-		this.customFormatter = customFormatter;
-	}
-
-	public void setFixedColumnKeys(List<String> fixedColumnKeys) {
-		this.fixedColumnKeys = fixedColumnKeys;
-	}
-
-	public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
-		this.fixedHeaderMapper = fixedHeaderMapper;
-	}
-
-	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
-		this.headerMapper = headerMapper;
-	}
-
-	public void setHiddenPivotedProperties(List<String> hiddenPivotedProperties) {
-		this.hiddenPivotedProperties = hiddenPivotedProperties;
-	}
-
-	public void setIncludeAggregateRow(boolean includeAggregateRow) {
-		this.includeAggregateRow = includeAggregateRow;
-	}
-
-	public void setPivotedProperties(List<String> pivotedProperties) {
-		this.pivotedProperties = pivotedProperties;
-	}
-
-	public void setPossibleColumnKeys(List<Object> possibleColumnKeys) {
-		this.possibleColumnKeys = possibleColumnKeys;
-	}
-
-	public void setRowKeyProperty(String rowKeyProperty) {
-		this.rowKeyProperty = rowKeyProperty;
 	}
 
 	/**
@@ -295,18 +258,6 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		getSearchForm().setSearchValue(propertyId, value, auxValue);
-	}
-
-	public void setSizeSupplier(Supplier<Integer> sizeSupplier) {
-		this.sizeSupplier = sizeSupplier;
-	}
-
-	public BiFunction<Object, Object, String> getExportHeaderMapper() {
-		return exportHeaderMapper;
-	}
-
-	public void setExportHeaderMapper(BiFunction<Object, Object, String> exportHeaderMapper) {
-		this.exportHeaderMapper = exportHeaderMapper;
 	}
 
 }

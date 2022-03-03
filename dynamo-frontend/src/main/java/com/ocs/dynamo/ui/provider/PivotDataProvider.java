@@ -302,8 +302,19 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
 		this.aggregationMap = aggregationMap;
 	}
-	
+
 	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
 		this.aggregationClassMap = aggregationClassMap;
+	}
+
+	public List<String> getHiddenPivotedProperties() {
+		return hiddenPivotedProperties;
+	}
+
+	public List<String> getAllPrivotProperties() {
+		List<String> allProps = new ArrayList<>();
+		allProps.addAll(getPivotedProperties());
+		allProps.addAll(getHiddenPivotedProperties());
+		return allProps;
 	}
 }

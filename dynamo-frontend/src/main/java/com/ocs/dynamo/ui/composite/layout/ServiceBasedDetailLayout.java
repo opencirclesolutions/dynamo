@@ -59,7 +59,7 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 
 	@Getter
 	@Setter
-	private Function<Q, SerializablePredicate<T>> parentFilterSupplier;
+	private Function<Q, SerializablePredicate<T>> parentFilterCreator;
 
 	/**
 	 * Constructor
@@ -86,7 +86,7 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 
 	@Override
 	protected void buildFilter() {
-		filter = parentFilterSupplier == null ? null : parentFilterSupplier.apply(getParentEntity());
+		filter = parentFilterCreator == null ? null : parentFilterCreator.apply(getParentEntity());
 	}
 
 	@Override
@@ -96,8 +96,8 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	@Override
-	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
-		throw new UnsupportedOperationException("Use the setParentFilterSupplier method instead");
+	public void setFilterCreator(Supplier<SerializablePredicate<T>> filterCreator) {
+		throw new UnsupportedOperationException("Use the setParentFilterCreator method instead");
 	}
 
 }

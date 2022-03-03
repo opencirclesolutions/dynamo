@@ -40,6 +40,7 @@ import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.composite.ComponentContext;
+import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
@@ -101,7 +102,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Button addButton;
 
 	/**
-	 * Consumer that is called after a value has been set
+	 * The code that is carried out directly after a value has been set
 	 */
 	@Getter
 	@Setter
@@ -124,12 +125,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private List<Component> componentsToUpdate = new ArrayList<>();
 
 	/**
-	 * The supplier that is used for creating a new entity in response to a click on
-	 * the Add button
+	 * The code that is carried out to create a new entity
 	 */
 	@Getter
 	@Setter
-	private Supplier<T> createEntitySupplier;
+	private Supplier<T> createEntity;
 
 	/**
 	 * Custom button mapping
@@ -148,6 +148,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	@Getter
 	@Setter
 	private EntityModel<T> detailsPanelEntityModel;
+
+	/**
+	 * The entity model to use when creating the pop-up dialog
+	 */
+	@Getter
+	@Setter
+	private EntityModel<T> popupEntityModel;
 
 	/**
 	 * The entity model of the entity to display
@@ -186,16 +193,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private VerticalLayout layout;
 
 	/**
-	 * Code to execute after selecting one or more items in the pop-up (link the
-	 * selected item to the parent)
+	 * The code that is carried out to link any
 	 */
 	@Getter
 	@Setter
-	private Consumer<T> linkEntityConsumer;
+	private Consumer<T> linkEntity;
 
-	/**
-	 * The message service
-	 */
 	@Getter
 	private final MessageService messageService;
 
@@ -217,11 +220,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Runnable afterLayoutBuilt;
 
 	/**
-	 * Consumer that is used to remove an entity
+	 * The code that is carried out to remove an existing entity
 	 */
 	@Getter
 	@Setter
-	private Consumer<T> removeEntityConsumer;
+	private Consumer<T> removeEntity;
 
 	/**
 	 * Search dialog
@@ -234,6 +237,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	@Getter
 	private Button searchDialogButton;
+
+	/**
+	 * Button used to open a popup that shows the details
+	 */
+	@Getter
+	private Button popupButton;
 
 	/**
 	 * Overridden entity model for the search dialog
@@ -374,10 +383,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 				remove.setIcon(VaadinIcon.TRASH.create());
 				remove.addClickListener(event -> {
 					binders.remove(t);
-					// callback method so the entity can be removed from its
-					// parent
-					if (removeEntityConsumer != null) {
-						removeEntityConsumer.accept(t);
+
+					if (removeEntity != null) {
+						removeEntity.accept(t);
 					}
 					if (getDataProvider() instanceof ListDataProvider) {
 						((ListDataProvider<T>) getDataProvider()).getItems().remove(t);
@@ -460,9 +468,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Constructs the button that is used for adding new items
 	 *
-	 * @param buttonBar the button bar
+	 * @param buttonBar the button bar to which to add the button
 	 */
-	protected void constructAddButton(HorizontalLayout buttonBar) {
+	private void constructAddButton(HorizontalLayout buttonBar) {
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(event -> {
@@ -482,11 +490,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 *
 	 * @param parent the layout to which to add the button bar
 	 */
-	protected void constructButtonBar(VerticalLayout parent) {
+	private void constructButtonBar(VerticalLayout parent) {
 		buttonBar = new DefaultHorizontalLayout();
 		parent.add(buttonBar);
 		constructAddButton(buttonBar);
 		constructSearchButton(buttonBar);
+		constructPopupButton(buttonBar);
 	}
 
 	/**
@@ -501,12 +510,32 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			EntityModel<T> em = detailsPanelEntityModel != null ? detailsPanelEntityModel : entityModel;
 
-			selectedDetailsLayout = new SimpleEditLayout<>(
-					getCreateEntitySupplier() == null ? null : getCreateEntitySupplier().get(), service, em, cloned,
-					getDetailJoins());
+			selectedDetailsLayout = new SimpleEditLayout<>(getCreateEntity() == null ? null : getCreateEntity().get(),
+					service, em, cloned, getDetailJoins());
 			selectedDetailsPanel.add(selectedDetailsLayout);
 
 			layout.add(selectedDetailsPanel);
+		}
+	}
+
+	/**
+	 * Constructs a button that opens a pop-up dialog for viewing the details of the
+	 * selected item
+	 * 
+	 * @param buttonBar
+	 */
+	private void constructPopupButton(HorizontalLayout buttonBar) {
+		if (getFormOptions().isShowDetailsGridPopup() && (isViewMode() || getFormOptions().isDetailsGridSearchMode())) {
+			popupButton = new Button(messageService.getMessage("ocs.view", VaadinUtils.getLocale()));
+			popupButton.setIcon(VaadinIcon.CONNECT.create());
+			popupButton.addClickListener(event -> {
+				EntityModel<T> em = popupEntityModel != null ? popupEntityModel : entityModel;
+				EntityPopupDialog<ID, T> popup = new EntityPopupDialog<>(service, selectedItem, em, fieldFilters,
+						formOptions.createCopy().setReadOnly(true), detailJoins);
+				popup.buildAndOpen();
+			});
+			buttonBar.add(popupButton);
+			registerComponent(popupButton);
 		}
 	}
 
@@ -515,7 +544,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 *
 	 * @param buttonBar the button bar to which to add the button
 	 */
-	protected void constructSearchButton(HorizontalLayout buttonBar) {
+	private void constructSearchButton(HorizontalLayout buttonBar) {
 
 		searchDialogButton = new Button(messageService.getMessage("ocs.search", VaadinUtils.getLocale()));
 		searchDialogButton.setIcon(VaadinIcon.SEARCH.create());

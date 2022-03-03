@@ -114,7 +114,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 				removeButton.addClassName(DynamoConstants.CSS_DETAIL_EDIT_LAYOUT_REMOVE_BUTTON);
 				removeButton.addClickListener(event -> {
 					ModelBasedEditForm<ID2, Q> enc = DetailsEditLayout.this.getEnclosingForm();
-					removeEntityConsumer.accept(enc == null ? null : enc.getEntity(), this.form.getEntity());
+					removeEntity.accept(enc == null ? null : enc.getEntity(), this.form.getEntity());
 					items.remove(this.form.getEntity());
 					mainFormContainer.remove(this);
 					forms.remove(this);
@@ -224,11 +224,11 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().build();
 
 	/**
-	 * Supplier for creating a new entity
+	 * The code that is carried out to create a new entity
 	 */
 	@Getter
 	@Setter
-	private Function<Q, T> createEntitySupplier;
+	private Function<Q, T> createEntity;
 
 	@Getter
 	@Setter
@@ -283,7 +283,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 */
 	@Getter
 	@Setter
-	private BiConsumer<Q, T> removeEntityConsumer;
+	private BiConsumer<Q, T> removeEntity;
 
 	/**
 	 * Service for interacting with the database
@@ -427,7 +427,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
 		addButton.setIcon(VaadinIcon.PLUS.create());
 		addButton.addClickListener(event -> {
-			T t = createEntitySupplier.apply(getEnclosingForm() == null ? null : getEnclosingForm().getEntity());
+			T t = createEntity.apply(getEnclosingForm() == null ? null : getEnclosingForm().getEntity());
 			items.add(t);
 			addDetailEditForm(getFormCount(), t);
 		});

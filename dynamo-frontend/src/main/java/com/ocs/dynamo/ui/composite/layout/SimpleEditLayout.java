@@ -134,7 +134,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 			// create new entity if it does not exist yet
 			if (entity == null) {
-				entity = getCreateEntitySupplier().get();
+				entity = getCreateEntity().get();
 			}
 
 			// there is just one component here, so the screen mode is always
@@ -237,7 +237,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public void setEntity(T entity) {
 		this.entity = entity;
 		if (this.entity == null) {
-			this.entity = getCreateEntitySupplier().get();
+			this.entity = getCreateEntity().get();
 		}
 		editForm.setEntity(this.entity);
 		if (getComponentContext().getAfterEntitySelected() != null) {

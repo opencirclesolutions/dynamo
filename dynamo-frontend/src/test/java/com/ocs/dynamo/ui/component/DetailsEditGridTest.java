@@ -109,7 +109,7 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 
         DetailsEditGrid<Integer, TestEntity> grid = new DetailsEditGrid<Integer, TestEntity>(em, am, viewMode, fo);
 
-        grid.setCreateEntitySupplier(() -> new TestEntity());
+        grid.setCreateEntity(() -> new TestEntity());
         grid.build();
         grid.setComparator(new AttributeComparator<>("name"));
         return grid;

@@ -29,6 +29,9 @@ import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Span;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A simple horizontal layout for read-only display of attributes (i.e. for a
  * header bar)
@@ -44,6 +47,8 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 
 	private T entity;
 
+	@Getter
+	@Setter
 	private List<String> columnThresholds = new ArrayList<>();
 
 	/**
@@ -90,7 +95,4 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 		add(layout);
 	}
 
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
-	}
 }

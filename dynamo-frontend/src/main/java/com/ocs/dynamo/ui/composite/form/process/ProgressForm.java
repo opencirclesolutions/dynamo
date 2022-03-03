@@ -78,7 +78,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 */
 	@Getter
 	@Setter
-	private Consumer<VerticalLayout> buildMain = layout -> {
+	private Consumer<VerticalLayout> buildMainLayout = layout -> {
 	};
 
 	@Getter
@@ -107,7 +107,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 */
 	@Getter
 	@Setter
-	private BiConsumer<T, Integer> processConsumer;
+	private BiConsumer<T, Integer> process;
 
 	@Getter
 	private ProgressBar progressBar;
@@ -209,7 +209,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 			// the thread that performs the actual work
 			Thread worker = new Thread(() -> {
 				try {
-					processConsumer.accept(input, estimatedSize);
+					process.accept(input, estimatedSize);
 				} finally {
 					updater.setStopped(true);
 					signalDone(false);
@@ -231,7 +231,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 */
 	private void executeSimpleProcess(T input) {
 		try {
-			processConsumer.accept(input, 0);
+			process.accept(input, 0);
 			done(false);
 		} catch (RuntimeException ex) {
 			log.error(ex.getMessage(), ex);
@@ -268,8 +268,8 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 			mainLayout.add(label);
 
 			// add the screen-specific content
-			if (buildMain != null) {
-				buildMain.accept(mainLayout);
+			if (buildMainLayout != null) {
+				buildMainLayout.accept(mainLayout);
 			}
 		}
 
@@ -359,8 +359,8 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	protected final void startWork(T input) {
 		if (isFormValid == null || isFormValid.test(input)) {
 
-			if (processConsumer == null) {
-				throw new IllegalStateException("You must define a ProcessConsumer");
+			if (process == null) {
+				throw new IllegalStateException("You must define the process. Please use the setProcess method");
 			}
 
 			if (ProgressMode.SIMPLE.equals(progressMode)) {

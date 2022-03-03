@@ -72,14 +72,12 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	private FormOptions formOptions;
 
 	/**
-	 * Constructor
 	 * 
-	 * @param dataProvider   the data provider
-	 * @param model          the entity model of the entities to display
-	 * @param fieldFilters   the field filters
-	 * @param editable       whether the grid is editable
-	 * @param storeSortOrder whether to preserve the sort orders
-	 * @param gridEditMode   the grid edit mode
+	 * @param dataProvider
+	 * @param model
+	 * @param fieldFilters
+	 * @param formOptions
+	 * @param componentContext
 	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
