@@ -17,6 +17,11 @@ import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+import org.apache.commons.lang3.function.TriFunction;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -24,6 +29,7 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.QuadConsumer;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.NumberUtils;
@@ -32,6 +38,9 @@ import com.vaadin.flow.component.grid.FooterRow;
 import com.vaadin.flow.component.treegrid.TreeGrid;
 import com.vaadin.flow.data.provider.hierarchy.TreeData;
 import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A custom tree grid for displaying a hierarchical data collection. This grid
@@ -46,25 +55,95 @@ import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
  * @param <V>   type of the parent entity
  */
 @SuppressWarnings({ "serial", "unchecked" })
-public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extends AbstractEntity<ID2>>
+public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extends AbstractEntity<ID2>>
 		extends TreeGrid<T> implements Buildable {
 
+	/**
+	 * The code that is carried out to collect the data that is used to create the
+	 * child rows for a specific parent
+	 */
+	@Getter
+	@Setter
+	private Function<P, List<C>> childCollector;
+
+	/**
+	 * The code that is carried out to create a child row
+	 */
+	@Getter
+	@Setter
+	private BiFunction<C, P, T> childRowCreator;
+
+	/**
+	 * The code that is carried out to create the columns of the grid
+	 */
+	@Getter
+	@Setter
+	private Runnable columnCreator = () -> {
+	};
+
+	@Getter
+	@Setter
+	private Function<T, String> customStyleCreator = row -> null;
+
+	@Getter
+	@Setter
+	private Function<String, Class<?>> editablePropertyClassCollector = prop -> Integer.class;
+
+	/**
+	 * Callback method that is executed to check whether editing is allowed
+	 */
+	@Getter
+	@Setter
+	private Supplier<Boolean> editAllowed = () -> true;
+
+	@Getter
+	@Setter
 	private String gridHeight = SystemPropertyUtils.getDefaultGridHeight();
 
-	private MessageService messageService;
-
+	@Getter
+	@Setter
 	private String lastClickedColumnKey;
 
+	@Getter
+	@Setter
 	private T lastClickedRow;
+
+	@Getter
+	private MessageService messageService;
+
+	/**
+	 * The code that is carried out to collect the data that is used to create the
+	 * parent rows
+	 */
+	@Getter
+	@Setter
+	private Supplier<List<P>> parentCollector;
+
+	/**
+	 * The code that is carried out to create a parent row
+	 */
+	@Getter
+	@Setter
+	private Function<P, T> parentRowCreator;
+
+	@Getter
+	@Setter
+	private TriFunction<T, Integer, String, Number> sumCellExtractor;
+
+	/**
+	 * 
+	 */
+	@Getter
+	@Setter
+	private QuadConsumer<T, Integer, String, BigDecimal> sumCellValueCreator;
+
+	@Getter
+	@Setter
+	private String[] sumColumns;
 
 	public InMemoryTreeGrid() {
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 	}
-
-	/**
-	 * Adds the necessary columns
-	 */
-	protected abstract void addColumns();
 
 	/**
 	 * Adds a read only column
@@ -112,30 +191,31 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 		TreeData<T> data = provider.getTreeData();
 
 		// retrieve the parent rows to display
-		final List<P> parentCollection = getParentCollection();
+		final List<P> parentCollection = parentCollector.get();
 		for (P parent : parentCollection) {
 
-			T t = createParentRow(parent);
-			data.addItem(null, t);
+			T parentRow = parentRowCreator.apply(parent);
+			data.addItem(null, parentRow);
 
-			List<C> children = getChildren(parent);
+			List<C> children = childCollector.apply(parent);
 			for (C child : children) {
-
-				T t2 = createChildRow(child, parent);
-				data.addItem(t, t2);
+				T childRow = childRowCreator.apply(child, parent);
+				data.addItem(parentRow, childRow);
 			}
-			expand(t);
+			expand(parentRow);
 		}
 
 		setClassNameGenerator(t -> {
 			if (data.getRootItems().contains(t)) {
-				// separate style for parent row
 				return DynamoConstants.CSS_PARENT_ROW;
 			}
-			return getCustomStyle(t);
+			return customStyleCreator.apply(t);
 		});
 
-		addColumns();
+		if (columnCreator != null) {
+			columnCreator.run();
+		}
+
 		updateSums();
 
 		this.addItemClickListener(event -> {
@@ -143,95 +223,11 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 			this.lastClickedRow = event.getItem();
 		});
 
-		setEnabled(isEditAllowed());
-
+		setEnabled(checkEditAllowed());
 	}
 
-	public void updateSums() {
-
-		TreeDataProvider<T> provider = (TreeDataProvider<T>) getDataProvider();
-		TreeData<T> data = provider.getTreeData();
-
-		String[] sumColumns = getSumColumns();
-		// update the sum columns on the parent level
-		// footer sums
-		Map<String, BigDecimal> totalSumMap = new HashMap<>();
-		if (sumColumns == null) {
-			sumColumns = new String[0];
-		}
-		for (String s : sumColumns) {
-			totalSumMap.put(s, BigDecimal.ZERO);
-		}
-
-		// update the sum columns on the parent level
-		int index = 0;
-		for (String column : sumColumns) {
-			for (T pRow : data.getRootItems()) {
-				List<T> cRows = data.getChildren(pRow);
-				int j = index;
-				BigDecimal sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
-						.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
-				BigDecimal ts = totalSumMap.get(column);
-				totalSumMap.put(column, ts.add(sum));
-				setSumCellValue(pRow, index, column, sum);
-				provider.refreshItem(pRow);
-			}
-			index++;
-		}
-
-		// update the footer sums
-		if (sumColumns.length > 0) {
-			FooterRow footerRow = null;
-			if (getFooterRows().isEmpty()) {
-				footerRow = appendFooterRow();
-			} else {
-				footerRow = getFooterRows().get(0);
-			}
-			for (String column : sumColumns) {
-				BigDecimal bd = totalSumMap.get(column);
-				Column<?> columnByKey = getColumnByKey(column);
-				if (columnByKey != null) {
-					footerRow.getCell(columnByKey).setText(convertToString(bd, column));
-				}
-			}
-		}
-	}
-
-	/**
-	 * Updates a single sum value
-	 * 
-	 * @param column the column for which to update the sum
-	 */
-	public void updateSum(String column) {
-
-		TreeDataProvider<T> provider = (TreeDataProvider<T>) getDataProvider();
-		TreeData<T> data = provider.getTreeData();
-		BigDecimal sum = null;
-
-		// update the sum columns on the parent level
-		int index = 0;
-		for (T pRow : data.getRootItems()) {
-			List<T> cRows = data.getChildren(pRow);
-			int j = index;
-			sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
-					.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
-			setSumCellValue(pRow, index, column, sum);
-			provider.refreshItem(pRow);
-		}
-		index++;
-
-		FooterRow footerRow = null;
-		if (getFooterRows().isEmpty()) {
-			footerRow = appendFooterRow();
-		} else {
-			footerRow = getFooterRows().get(0);
-		}
-
-		Column<?> columnByKey = getColumnByKey(column);
-		if (columnByKey != null) {
-			footerRow.getCell(columnByKey).setText(convertToString(sum, column));
-		}
-
+	public boolean checkEditAllowed() {
+		return editAllowed == null ? true : editAllowed.get();
 	}
 
 	/**
@@ -243,7 +239,7 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	 * @return
 	 */
 	protected Number convertNumber(BigDecimal value, String propertyId) {
-		Class<?> clazz = getEditablePropertyClass(propertyId);
+		Class<?> clazz = editablePropertyClassCollector.apply(propertyId);
 		if (NumberUtils.isInteger(clazz)) {
 			return value.intValue();
 		} else if (NumberUtils.isLong(clazz)) {
@@ -266,7 +262,7 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 			return null;
 		}
 
-		Class<?> clazz = getEditablePropertyClass(propertyName);
+		Class<?> clazz = editablePropertyClassCollector.apply(propertyName);
 		if (clazz.equals(Integer.class)) {
 			return VaadinUtils.integerToString(true, false, value.intValue());
 		} else if (clazz.equals(Long.class)) {
@@ -278,103 +274,24 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 	}
 
 	/**
-	 * Creates a child row
-	 * 
-	 * @param childEntity  the child entity used to fill the row
-	 * @param parentEntity the parent entity of the child entity
-	 * @return
-	 */
-	protected abstract T createChildRow(C childEntity, P parentEntity);
-
-	/**
-	 * Creates a parent row
-	 * 
-	 * @param entity the entity that is used to fill the parent row
-	 * @return
-	 */
-	protected abstract T createParentRow(P entity);
-
-	/**
 	 * Extracts the sum cell value
 	 * 
 	 * @param t
 	 * @param columnName
 	 * @return
 	 */
-	protected abstract Number extractSumCellValue(T t, int index, String columnName);
-
-	/**
-	 * Returns the children of the provided parent entity
-	 * 
-	 * @return
-	 */
-	protected abstract List<C> getChildren(P parent);
-
-	/**
-	 * Returns the custom style to use for a certain row
-	 * 
-	 * @param t the item that is displayed in the row
-	 * @return
-	 */
-	protected String getCustomStyle(T t) {
-		// overwrite in subclasses
-		return null;
+	private Number extractSumCellValue(T t, int index, String columnName) {
+		if (sumCellExtractor == null) {
+			return null;
+		}
+		return sumCellExtractor.apply(t, index, columnName);
 	}
-
-	/**
-	 * Returns the class for an editable property
-	 * 
-	 * @param propertyName the name of the property
-	 * @return
-	 */
-	protected abstract Class<?> getEditablePropertyClass(String propertyName);
-
-	public String getGridHeight() {
-		return gridHeight;
-	}
-
-	/**
-	 * 
-	 * @return
-	 */
-	public MessageService getMessageService() {
-		return messageService;
-	}
-
-	/**
-	 * Returns the entities used for filling the parent rows
-	 * 
-	 * @return
-	 */
-	protected abstract List<P> getParentCollection();
-
-	/**
-	 * Returns the property IDs of the columns for which a sum (on the parent level)
-	 * must be calculated
-	 * 
-	 * @return
-	 */
-	protected abstract String[] getSumColumns();
 
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
 		super.onAttach(attachEvent);
 		build();
 	}
-
-	public void setGridHeight(String gridHeight) {
-		this.gridHeight = gridHeight;
-	}
-
-	/**
-	 * Sets the sum cell value
-	 * 
-	 * @param t
-	 * @param index
-	 * @param columnName
-	 * @param value
-	 */
-	protected abstract void setSumCellValue(T t, int index, String columnName, BigDecimal value);
 
 	/**
 	 * Converts a numeric value to a BigDecimal
@@ -386,21 +303,88 @@ public abstract class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2,
 		return value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value.doubleValue());
 	}
 
-	public String getLastClickedColumnKey() {
-		return lastClickedColumnKey;
+	/**
+	 * Updates a single sum value
+	 * 
+	 * @param column the column for which to update the sum
+	 */
+	public void updateSum(String column) {
+
+		TreeDataProvider<T> provider = (TreeDataProvider<T>) getDataProvider();
+		TreeData<T> data = provider.getTreeData();
+		BigDecimal sum = null;
+
+		// update the sum columns on the parent level
+		int index = 0;
+		for (T pRow : data.getRootItems()) {
+			List<T> cRows = data.getChildren(pRow);
+			int j = index;
+			sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
+					.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+			sumCellValueCreator.accept(pRow, index, column, sum);
+			provider.refreshItem(pRow);
+		}
+		index++;
+
+		FooterRow footerRow = null;
+		if (getFooterRows().isEmpty()) {
+			footerRow = appendFooterRow();
+		} else {
+			footerRow = getFooterRows().get(0);
+		}
+
+		Column<?> columnByKey = getColumnByKey(column);
+		if (columnByKey != null) {
+			footerRow.getCell(columnByKey).setText(convertToString(sum, column));
+		}
+
 	}
 
-	public void setLastClickedColumnKey(String lastClickedColumnKey) {
-		this.lastClickedColumnKey = lastClickedColumnKey;
-	}
+	public void updateSums() {
 
-	public T getLastClickedRow() {
-		return lastClickedRow;
-	}
+		TreeDataProvider<T> provider = (TreeDataProvider<T>) getDataProvider();
+		TreeData<T> data = provider.getTreeData();
 
-	public void setLastClickedRow(T lastClickedRow) {
-		this.lastClickedRow = lastClickedRow;
-	}
+		String[] sumColumns = getSumColumns();
+		// update the sum columns on the parent level
+		// footer sums
+		Map<String, BigDecimal> totalSumMap = new HashMap<>();
+		if (sumColumns == null) {
+			sumColumns = new String[0];
+		}
 
-	protected abstract boolean isEditAllowed();
+		// update the sum columns on the parent level
+		int index = 0;
+		for (String column : sumColumns) {
+			for (T pRow : data.getRootItems()) {
+				List<T> cRows = data.getChildren(pRow);
+				int j = index;
+
+				BigDecimal sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
+						.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+				BigDecimal ts = totalSumMap.getOrDefault(column, BigDecimal.ZERO);
+				totalSumMap.put(column, ts.add(sum));
+				sumCellValueCreator.accept(pRow, index, column, sum);
+				provider.refreshItem(pRow);
+			}
+			index++;
+		}
+
+		// update the footer sums
+		if (sumColumns.length > 0) {
+			FooterRow footerRow = null;
+			if (getFooterRows().isEmpty()) {
+				footerRow = appendFooterRow();
+			} else {
+				footerRow = getFooterRows().get(0);
+			}
+			for (String column : sumColumns) {
+				BigDecimal bd = totalSumMap.get(column);
+				Column<?> columnByKey = getColumnByKey(column);
+				if (columnByKey != null) {
+					footerRow.getCell(columnByKey).setText(convertToString(bd, column));
+				}
+			}
+		}
+	}
 }

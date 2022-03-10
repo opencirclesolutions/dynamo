@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
-import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -30,6 +29,7 @@ import com.ocs.dynamo.ui.Reloadable;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
+import com.ocs.dynamo.util.TriConsumer;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -82,7 +82,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 
 	@Getter
 	@Setter
-	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+	private TriConsumer<Boolean, Boolean, T> afterEditDone;
 
 	private VerticalLayout main;
 
@@ -114,7 +114,7 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	public void addFieldFilter(String property, SerializablePredicate<?> filter) {
 		this.fieldFilters.put(property, filter);
 	}
-	
+
 	@Override
 	public void assignEntity(T t) {
 		this.entity = t;
@@ -122,7 +122,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			editForm.resetTabsheetIfNeeded();
 		}
 	}
-
 
 	/**
 	 * Constructs the screen - this method is called just once

@@ -90,6 +90,20 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	private Map<String, FilterGroup<T>> groups = new HashMap<>();
 
 	/**
+	 * 
+	 * @param searchable
+	 * @param entityModel
+	 * @param formOptions
+	 * @param defaultFilters
+	 * @param fieldFilters
+	 */
+	public ModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
+			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
+		this(searchable, entityModel, formOptions, ComponentContext.<ID, T>builder().build(), defaultFilters,
+				fieldFilters);
+	}
+
+	/**
 	 * Constructor
 	 * 
 	 * @param searchable     the component on which to carry out the search

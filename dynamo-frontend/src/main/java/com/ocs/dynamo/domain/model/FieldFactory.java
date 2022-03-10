@@ -54,6 +54,17 @@ public interface FieldFactory {
 			Validator<V> customRequiredValidator);
 
 	/**
+	 * Convenience method for adding converters and validators, assumes no custom
+	 * converters or validators
+	 * 
+	 * @param <U>
+	 * @param <V>
+	 * @param builder the binding builder
+	 * @param am      the atttribute mode
+	 */
+	<U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am);
+
+	/**
 	 * Constructs a field based on the provided attribute model (given the default
 	 * context)
 	 * 

@@ -33,7 +33,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -72,6 +71,7 @@ import com.ocs.dynamo.ui.composite.layout.TabWrapper;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.util.TriConsumer;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.ocs.dynamo.utils.FormatUtils;
@@ -143,7 +143,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Getter
 	@Setter
-	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+	private TriConsumer<Boolean, Boolean, T> afterEditDone;
 
 	/**
 	 * Map for keeping track of which attributes have already been bound to a

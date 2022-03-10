@@ -277,4 +277,9 @@ public class FieldFactoryImpl implements FieldFactory {
 		return entityModel;
 	}
 
+	@Override
+	public <U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am) {
+		addConvertersAndValidators(builder, am, FieldCreationContext.create().build(), null, null, null);
+	}
+
 }

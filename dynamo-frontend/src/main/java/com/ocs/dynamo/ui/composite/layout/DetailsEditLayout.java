@@ -25,7 +25,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -44,6 +43,7 @@ import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.TriConsumer;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
@@ -91,7 +91,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 		@Getter
 		@Setter
-		private ITriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
+		private TriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
 
 		private Button removeButton;
 
@@ -272,7 +272,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	@Getter
 	@Setter
-	private ITriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
+	private TriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
 
 //	@Getter
 //	@Setter

@@ -221,9 +221,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		if (main == null) {
 			main = new DefaultVerticalLayout(false, true);
 			main.addClassName(DynamoConstants.CSS_SEARCH_FORM_LAYOUT);
-//			if (preProcessLayout != null) {
-//				preProcessLayout.accept(main);
-//			}
 
 			filterLayout = constructFilterLayout();
 			if (((Component) filterLayout).isVisible()) {

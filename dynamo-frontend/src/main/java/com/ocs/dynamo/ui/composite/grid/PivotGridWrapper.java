@@ -237,7 +237,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 				columnKeyProperty, fixedColumnKeys, pivotedProperties, hiddenPivotedProperties, sizeSupplier);
 		pivotDataProvider.setAggregationMap(aggregationMap);
 		pivotDataProvider.setAggregationClassMap(aggregationClassMap);
-		pivotDataProvider.setAfterCountCompleted(x -> updateCaption(x));
+		pivotDataProvider.setAfterCountCompleted(count -> updateCaption(count));
 		postProcessDataProvider(pivotDataProvider);
 		return pivotDataProvider;
 	}

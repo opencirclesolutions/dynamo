@@ -32,6 +32,9 @@ import com.vaadin.flow.data.provider.AbstractDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A pivoting data provider that acts as a wrapper around a regular data
  * provider.
@@ -55,11 +58,14 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Code to carry out after the count query completes
 	 */
+	@Getter
+	@Setter
 	private Consumer<Integer> afterCountCompleted;
 
 	/**
 	 * The name of the property that contains the identifying value for a column
 	 */
+	@Getter
 	private String columnKeyProperty;
 
 	/**
@@ -67,6 +73,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	 */
 	private Queue<T> dataCache = new LinkedList<>();
 
+	@Getter
 	private List<String> fixedColumnKeys;
 
 	/**
@@ -97,11 +104,13 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The list of pivoted properties
 	 */
+	@Getter
 	private List<String> pivotedProperties;
 
 	/**
 	 * The list of hidden pivoted properties
 	 */
+	@Getter
 	private List<String> hiddenPivotedProperties;
 
 	/**
@@ -127,12 +136,14 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
 	/**
 	 * 
-	 * @param provider          the wrapped data provider
-	 * @param rowKeyProperty    the property to check for unique row values
-	 * @param columnKeyProperty the property to check for the column key
-	 * @param fixedColumnKeys   the fixed columns
-	 * @param pivotedProperties the pivoted properties
-	 * @param sizeSupplier
+	 * @param provider                the wrapped data provider
+	 * @param rowKeyProperty          the property to check for unique row values
+	 * @param columnKeyProperty       the property to check for the column key
+	 * @param fixedColumnKeys         the fixed columns
+	 * @param pivotedProperties       the pivoted properties
+	 * @param hiddenPivotedProperties the hidden pivoted properties
+	 * @param sizeSupplier            supplier that is called to determine the
+	 *                                number of rows in the result set
 	 */
 	public PivotDataProvider(BaseDataProvider<ID, T> provider, String rowKeyProperty, String columnKeyProperty,
 			List<String> fixedColumnKeys, List<String> pivotedProperties, List<String> hiddenPivotedProperties,
@@ -162,6 +173,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 			if (requestedOffset < lastRequestedOffset && offsetMap.containsKey(requestedOffset)) {
 				dataCache.clear();
 				lastPivotOffset = offsetMap.get(requestedOffset);
+				pivotedItem = null;
 			}
 
 			lastRequestedOffset = requestedOffset;
@@ -230,22 +242,6 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 		return result.stream();
 	}
 
-	public Consumer<Integer> getAfterCountCompleted() {
-		return afterCountCompleted;
-	}
-
-	public String getColumnKeyProperty() {
-		return columnKeyProperty;
-	}
-
-	public List<String> getFixedColumnKeys() {
-		return fixedColumnKeys;
-	}
-
-	public List<String> getPivotedProperties() {
-		return pivotedProperties;
-	}
-
 	public String getRowKeyProperty() {
 		return rowKeyProperty;
 	}
@@ -257,10 +253,6 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	@Override
 	public boolean isInMemory() {
 		return false;
-	}
-
-	public void setAfterCountCompleted(Consumer<Integer> afterCountCompleted) {
-		this.afterCountCompleted = afterCountCompleted;
 	}
 
 	@Override
@@ -305,10 +297,6 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
 	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
 		this.aggregationClassMap = aggregationClassMap;
-	}
-
-	public List<String> getHiddenPivotedProperties() {
-		return hiddenPivotedProperties;
 	}
 
 	public List<String> getAllPrivotProperties() {

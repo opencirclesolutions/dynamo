@@ -206,6 +206,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				value -> builder.defaultDescription(value));
 		setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_PROPERTY),
 				value -> builder.displayProperty(value));
+		setStringSetting(getEntityMessage(reference, EntityModel.FILTER_PROPERTY),
+				value -> builder.filterProperty(value));
 		setIntSetting(getEntityMessage(reference, EntityModel.NESTING_DEPTH), -1, value -> builder.nestingDepth(value));
 	}
 

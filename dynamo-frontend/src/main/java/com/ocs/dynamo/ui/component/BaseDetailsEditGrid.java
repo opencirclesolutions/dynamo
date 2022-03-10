@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -51,6 +50,7 @@ import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.util.TriConsumer;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
@@ -300,7 +300,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	@Getter
 	@Setter
-	private ITriConsumer<ID, AttributeModel, Component> postProcessComponent;
+	private TriConsumer<ID, AttributeModel, Component> postProcessComponent;
 
 	@Getter
 	@Setter

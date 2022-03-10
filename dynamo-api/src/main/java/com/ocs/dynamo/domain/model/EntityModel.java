@@ -155,6 +155,11 @@ public interface EntityModel<T> {
 	String FALSE_REPRESENTATION = "falseRepresentation";
 
 	/**
+	 * The property to use for filtering when using paged mode for lookup
+	 */
+	String FILTER_PROPERTY = "filterProperty";
+
+	/**
 	 * Attribute order in grid
 	 */
 	String GRID_ATTRIBUTE_ORDER = "gridAttributeOrder";
@@ -333,7 +338,7 @@ public interface EntityModel<T> {
 	 * selecting the component
 	 */
 	String SELECT_MODE = "selectMode";
-	
+
 	/**
 	 * Whether to show the password in a password field
 	 */
@@ -558,10 +563,11 @@ public interface EntityModel<T> {
 
 	/**
 	 * Indicates whether this is the "base" entity model
-	 * @return 
+	 * 
+	 * @return
 	 */
 	boolean isBaseEntityModel();
-	
+
 	/**
 	 * @return whether only the default attribute group is used
 	 */

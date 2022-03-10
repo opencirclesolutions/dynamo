@@ -21,7 +21,6 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
-import com.helger.commons.functional.ITriConsumer;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -33,6 +32,7 @@ import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.TriConsumer;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -55,13 +55,13 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	@Getter
 	@Setter
-	private ITriConsumer<Boolean, Boolean, T> afterEditDone;
+	private TriConsumer<Boolean, Boolean, T> afterEditDone;
 
 	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().popup(true).build();
 
 	@Getter
 	private BaseService<ID, T> service;
-	
+
 	@Getter
 	@Setter
 	private Supplier<T> createEntity = () -> service.createNewEntity();
@@ -126,12 +126,12 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 
 	/**
 	 * 
-	 * @param service          the service used for communicating with the database
-	 * @param entity           the entity to display
-	 * @param entityModel      the entity model of the entity
-	 * @param fieldFilters     field filters to apply to the individual components
-	 * @param formOptions      the form options
-	 * @param joins            any joins to apply when querying the database
+	 * @param service      the service used for communicating with the database
+	 * @param entity       the entity to display
+	 * @param entityModel  the entity model of the entity
+	 * @param fieldFilters field filters to apply to the individual components
+	 * @param formOptions  the form options
+	 * @param joins        any joins to apply when querying the database
 	 */
 	public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
@@ -175,10 +175,9 @@ public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity
 	public void setColumnThresholds(List<String> thresholds) {
 		componentContext.setEditColumnThresholds(thresholds);
 	}
-	
+
 	public void setPostProcessEditFields(Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields) {
 		componentContext.setPostProcessEditFields(postProcessEditFields);
 	}
-
 
 }
