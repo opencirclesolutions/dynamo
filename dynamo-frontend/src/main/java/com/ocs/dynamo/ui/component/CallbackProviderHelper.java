@@ -24,6 +24,7 @@ import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.filter.LikePredicate;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -60,8 +61,13 @@ public class CallbackProviderHelper {
 			SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
 			return service.fetch(converter.convert(pred), page, query.getLimit(), sortOrders).stream();
 		}, query -> {
-			SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
-			return (int) service.count(converter.convert(pred), true);
+			try {
+				SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
+				return (int) service.count(converter.convert(pred), true);
+			} catch (Exception ex) {
+				VaadinUtils.showErrorNotification(ex.getMessage());
+				return 0;
+			}
 		});
 		return callbackProvider;
 	}

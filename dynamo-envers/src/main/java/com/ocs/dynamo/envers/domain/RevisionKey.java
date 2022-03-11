@@ -16,6 +16,10 @@ package com.ocs.dynamo.envers.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
  * Primary key object for versioned entities - key consists of the key of the
  * original entity plus the revision number
@@ -24,6 +28,9 @@ import java.util.Objects;
  *
  * @param <ID>
  */
+@ToString
+@Getter
+@Setter
 public class RevisionKey<ID> implements Serializable {
 
 	private static final long serialVersionUID = -1151671376478031983L;
@@ -35,30 +42,12 @@ public class RevisionKey<ID> implements Serializable {
 	/**
 	 * Constructor
 	 * 
-	 * @param id
-	 *            the ID of the original entity
-	 * @param revision
-	 *            the revision number
+	 * @param id       the ID of the original entity
+	 * @param revision the revision number
 	 */
 	public RevisionKey(ID id, int revision) {
 		this.id = id;
 		this.revision = revision;
-	}
-
-	public int getRevision() {
-		return revision;
-	}
-
-	public void setRevision(int revision) {
-		this.revision = revision;
-	}
-
-	public ID getId() {
-		return id;
-	}
-
-	public void setId(ID id) {
-		this.id = id;
 	}
 
 	@Override

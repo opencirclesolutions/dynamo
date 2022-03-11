@@ -13,13 +13,18 @@
  */
 package com.ocs.dynamo.envers.domain;
 
-import com.ocs.dynamo.envers.listener.DynamoRevisionListener;
-import com.querydsl.core.annotations.QueryExclude;
-import org.hibernate.envers.DefaultRevisionEntity;
+import java.time.Instant;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
-import java.time.Instant;
+
+import org.hibernate.envers.DefaultRevisionEntity;
+
+import com.ocs.dynamo.envers.listener.DynamoRevisionListener;
+import com.querydsl.core.annotations.QueryExclude;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Custom revision entity for use with Envers - stores user name in addition to
@@ -33,15 +38,9 @@ public class DynamoRevisionEntity extends DefaultRevisionEntity {
 
 	private static final long serialVersionUID = -5069794800046313271L;
 
+	@Getter
+	@Setter
 	private String username;
-
-	public String getUsername() {
-		return username;
-	}
-
-	public void setUsername(final String username) {
-		this.username = username;
-	}
 
 	@Override
 	public String toString() {

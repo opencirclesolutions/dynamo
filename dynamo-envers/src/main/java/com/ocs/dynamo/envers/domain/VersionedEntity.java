@@ -21,6 +21,9 @@ import org.apache.commons.lang3.builder.ToStringStyle;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A versioned entity. This is a wrapper around the snapshot of the original
  * entity and adds some additional properties related to auditing (e.g. revision
@@ -29,8 +32,10 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
  * @author bas.rutten
  *
  * @param <ID> the type of the ID of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
+@Getter
+@Setter
 public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends AbstractEntity<RevisionKey<ID>> {
 
 	private static final long serialVersionUID = 4784364096429184957L;
@@ -76,58 +81,9 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 		this.id = new RevisionKey<>(entity.getId(), revision);
 	}
 
-	public T getEntity() {
-		return entity;
-	}
-
 	@Override
-	public RevisionKey<ID> getId() {
-		return id;
-	}
-
-	public int getRevision() {
-		return revision;
-	}
-
-	public ZonedDateTime getRevisionTimeStamp() {
-		return revisionTimeStamp;
-	}
-
-	public String getUser() {
-		return user;
-	}
-
-	public void setEntity(T entity) {
-		this.entity = entity;
-	}
-
-	@Override
-	public void setId(RevisionKey<ID> id) {
-		this.id = id;
-	}
-
-	public void setRevision(int revision) {
-		this.revision = revision;
-	}
-
-	public void setRevisionTimeStamp(ZonedDateTime revisionTimeStamp) {
-		this.revisionTimeStamp = revisionTimeStamp;
-	}
-
-	public void setUser(String user) {
-		this.user = user;
-	}
-
 	public String toString() {
 		return ReflectionToStringBuilder.reflectionToString(this, ToStringStyle.SHORT_PREFIX_STYLE);
-	}
-
-	public RevisionType getRevisionType() {
-		return revisionType;
-	}
-
-	public void setRevisionType(RevisionType revisionType) {
-		this.revisionType = revisionType;
 	}
 
 }

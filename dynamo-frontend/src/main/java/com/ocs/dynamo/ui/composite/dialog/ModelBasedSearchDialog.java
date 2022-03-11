@@ -149,7 +149,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 			searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
 			searchLayout.setComponentContext(context);
-			searchLayout.setPadding(true);
+			//searchLayout.setPadding(true);
 			searchLayout.setDefaultFilters(filters);
 
 			searchLayout.setGridHeight(SystemPropertyUtils.getDefaultSearchDialogGridHeight());

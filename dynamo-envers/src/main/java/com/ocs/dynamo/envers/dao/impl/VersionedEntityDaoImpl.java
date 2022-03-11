@@ -18,9 +18,11 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 import javax.persistence.NoResultException;
@@ -47,7 +49,6 @@ import com.ocs.dynamo.envers.domain.DynamoRevisionEntity;
 import com.ocs.dynamo.envers.domain.RevisionKey;
 import com.ocs.dynamo.envers.domain.RevisionType;
 import com.ocs.dynamo.envers.domain.VersionedEntity;
-import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Contains;
@@ -66,296 +67,415 @@ import com.querydsl.core.types.dsl.EntityPathBase;
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key
- * @param <T> the type of the original entity
- * @param <U> the type of the versioned entity
+ * @param <T>  the type of the original entity
+ * @param <U>  the type of the versioned entity
  */
 public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U extends VersionedEntity<ID, T>>
-        extends BaseDaoImpl<RevisionKey<ID>, U> implements VersionedEntityDao<ID, T, U> {
+		extends BaseDaoImpl<RevisionKey<ID>, U> implements VersionedEntityDao<ID, T, U> {
 
-    private static final String ENTITY_STRING = "entity.";
+	private static final String ENTITY_STRING = "entity.";
 
-    private static final Map<String, String> REVISION_PROPS = new ConcurrentHashMap<>();
+	private static final Map<String, String> REVISION_PROPS = new ConcurrentHashMap<>();
 
-    /**
-     * Adds any additional filters to an AuditQuery
-     * 
-     * @param aq     the AuditQuery to which to add the filters
-     * @param filter the filter to translate
-     */
-    private void addAdditionalFilters(AuditQuery aq, Filter filter) {
-        AuditCriterion ac = createAuditCriterion(filter);
-        if (ac != null) {
-            aq.add(ac);
-        }
-    }
+	/**
+	 * Adds any additional filters to an AuditQuery
+	 * 
+	 * @param aq     the AuditQuery to which to add the filters
+	 * @param filter the filter to translate
+	 */
+	private void addAdditionalFilters(AuditQuery aq, Filter filter) {
+		AuditCriterion ac = createAuditCriterion(aq, filter);
+		if (ac != null) {
+			aq.add(ac);
+		}
+	}
 
-    /**
-     * Adds a filter on the ID field to an audit query
-     * 
-     * @param aq     the audit query
-     * @param filter the overall filter
-     */
-    @SuppressWarnings("unchecked")
-    private void addIdFilter(AuditQuery aq, Filter filter) {
-        if (filter != null) {
-            Filter idFilter = DynamoFilterUtil.extractFilter(filter, DynamoConstants.ID);
-            if (idFilter != null) {
-                Compare.Equal comp = (Compare.Equal) idFilter;
-                ID id = (ID) comp.getValue();
-                aq.add(AuditEntity.id().eq(id));
-            }
-        }
-    }
+	/**
+	 * Adds a search criteria for matching any of the provided keys
+	 * 
+	 * @param ids the IDs to match on
+	 * @param aq  the audit query to which to add the criterion
+	 */
+	private void addIdCriteria(List<RevisionKey<ID>> ids, AuditQuery aq) {
+		AuditCriterion crit = null;
+		for (RevisionKey<ID> id : ids) {
+			AuditCriterion and = AuditEntity.and(AuditEntity.id().eq(id.getId()),
+					AuditEntity.revisionNumber().eq(id.getRevision()));
+			if (crit == null) {
+				crit = and;
+			} else {
+				crit = AuditEntity.or(crit, and);
+			}
+		}
 
-    /**
-     * Overwrite count method to query the revision tables
-     */
-    @Override
-    @Transactional
-    public long count(Filter filter, boolean distinct) {
-        // filter on ID (this should always be there)
-        AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
-        addIdFilter(aq, filter);
-        addAdditionalFilters(aq, filter);
-        return aq.getResultList().size();
-    }
+		if (crit != null) {
+			aq.add(crit);
+		}
+	}
 
-    /**
-     * Translates a filter to an AuditCriterion
-     * 
-     * @param filter
-     * @return
-     */
-    private AuditCriterion createAuditCriterion(Filter filter) {
-        if (filter instanceof Compare.Equal) {
-            Compare.Equal eq = (Compare.Equal) filter;
-            return createAuditProperty(eq.getPropertyId()).eq(eq.getValue());
-        } else if (filter instanceof Like) {
-            Like like = (Like) filter;
-            return createAuditProperty(like.getPropertyId()).like(like.getValue());
-        } else if (filter instanceof Compare.Greater) {
-            Compare.Greater gt = (Compare.Greater) filter;
-            return createAuditProperty(gt.getPropertyId()).gt(gt.getValue());
-        } else if (filter instanceof Compare.GreaterOrEqual) {
-            Compare.GreaterOrEqual ge = (Compare.GreaterOrEqual) filter;
-            return createAuditProperty(ge.getPropertyId()).ge(ge.getValue());
-        } else if (filter instanceof Compare.Less) {
-            Compare.Less lt = (Compare.Less) filter;
-            return createAuditProperty(lt.getPropertyId()).lt(lt.getValue());
-        } else if (filter instanceof Compare.LessOrEqual) {
-            Compare.LessOrEqual le = (Compare.LessOrEqual) filter;
-            return createAuditProperty(le.getPropertyId()).le(le.getValue());
-        } else if (filter instanceof And) {
-            And and = (And) filter;
-            AuditConjunction ac = AuditEntity.conjunction();
-            for (Filter f : and.getFilters()) {
-                AuditCriterion ct = createAuditCriterion(f);
-                if (ct != null) {
-                    ac.add(ct);
-                }
-            }
-            return ac;
-        } else if (filter instanceof Or) {
-            Or or = (Or) filter;
-            AuditDisjunction ad = AuditEntity.disjunction();
-            for (Filter f : or.getFilters()) {
-                AuditCriterion ct = createAuditCriterion(f);
-                if (ct != null) {
-                    ad.add(ct);
-                }
-            }
-            return ad;
-        } else if (filter instanceof Not) {
-            Not not = (Not) filter;
-            AuditCriterion ct = createAuditCriterion(not.getFilter());
-            if (ct != null) {
-                return AuditEntity.not(ct);
-            }
-        } else if (filter instanceof In) {
-            In in = (In) filter;
-            return AuditEntity.property(in.getPropertyId()).in(in.getValues());
-        } else if (filter instanceof Contains) {
-            Contains c = (Contains) filter;
-            throw new OCSRuntimeException("Contains filter is not supported for property " + c.getPropertyId());
-        }
-        return null;
-    }
+	/**
+	 * Adds a filter on the ID field to an audit query
+	 * 
+	 * @param aq     the audit query
+	 * @param filter the overall filter
+	 */
+	@SuppressWarnings("unchecked")
+	private void addIdFilter(AuditQuery aq, Filter filter) {
+		if (filter != null) {
+			Filter idFilter = DynamoFilterUtil.extractFilter(filter, DynamoConstants.ID);
+			if (idFilter != null) {
+				Compare.Equal comp = (Compare.Equal) idFilter;
+				ID id = (ID) comp.getValue();
+				aq.add(AuditEntity.id().eq(id));
+			}
+		}
+	}
 
-    /**
-     * Translates a property name to an AuditProperty
-     * 
-     * @param prop the name of the property
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private <X> AuditProperty<X> createAuditProperty(String prop) {
-        if ("revisionType".equals(prop)) {
-            return (AuditProperty<X>) AuditEntity.revisionType();
-        } else if (REVISION_PROPS.containsKey(prop)) {
-            prop = REVISION_PROPS.get(prop);
-            return (AuditProperty<X>) AuditEntity.revisionProperty(prop);
-        } else {
-            int index = prop.indexOf(ENTITY_STRING);
-            if (index >= 0) {
-                prop = prop.substring(index + ENTITY_STRING.length());
-            }
-            return (AuditProperty<X>) AuditEntity.property(prop);
-        }
-    }
+	/**
+	 * Add a sort order to an audit query
+	 * 
+	 * @param aq the audit query
+	 * @param so the sort orders to add
+	 */
+	private void addSortOrder(AuditQuery aq, SortOrder so) {
+		String prop = so.getProperty();
+		AuditProperty<?> ap = createAuditProperty(aq, prop, false);
+		if (so.isAscending()) {
+			aq.addOrder(ap.asc());
+		} else {
+			aq.addOrder(ap.desc());
+		}
+	}
 
-    /**
-     * Creates a new instance of the versioned entity
-     * 
-     * @return
-     */
-    protected abstract U createVersionedEntity(T t, int revision);
+	/**
+	 * Adds multiple sort orders
+	 * 
+	 * @param aq         the audit query
+	 * @param sortOrders the sort orders
+	 */
+	private void addSortOrders(AuditQuery aq, SortOrder[] sortOrders) {
+		for (SortOrder so : sortOrders) {
+			addSortOrder(aq, so);
+		}
+	}
 
-    protected void doMap(U u) {
-        // overwrite in subclasses
-    }
+	/**
+	 * Overwrite count method to query the revision tables
+	 */
+	@Override
+	@Transactional
+	public long count(Filter filter, boolean distinct) {
+		// filter on ID (this should always be there)
+		AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
+		addIdFilter(aq, filter);
+		addAdditionalFilters(aq, filter);
+		return aq.getResultList().size();
+	}
 
-    @Override
-    @Transactional
-    public List<U> fetch(Filter filter, FetchJoinInformation... joins) {
-        return fetch(filter, (Pageable) null, joins);
-    }
+	/**
+	 * Translates a filter to an AuditCriterion
+	 * 
+	 * @param filter the filter to translate
+	 * @return
+	 */
+	private AuditCriterion createAuditCriterion(AuditQuery aq, Filter filter) {
+		if (filter instanceof Compare.Equal) {
+			Compare.Equal eq = (Compare.Equal) filter;
+			return createAuditProperty(aq, eq.getPropertyId(), eq.getValue()).eq(eq.getValue());
+		} else if (filter instanceof Like) {
+			Like like = (Like) filter;
+			return createAuditProperty(aq, like.getPropertyId(), like.getValue()).ilike(like.getValue());
+		} else if (filter instanceof Compare.Greater) {
+			Compare.Greater gt = (Compare.Greater) filter;
+			return createAuditProperty(aq, gt.getPropertyId(), gt.getValue()).gt(gt.getValue());
+		} else if (filter instanceof Compare.GreaterOrEqual) {
+			Compare.GreaterOrEqual ge = (Compare.GreaterOrEqual) filter;
+			return createAuditProperty(aq, ge.getPropertyId(), ge.getValue()).ge(ge.getValue());
+		} else if (filter instanceof Compare.Less) {
+			Compare.Less lt = (Compare.Less) filter;
+			return createAuditProperty(aq, lt.getPropertyId(), lt.getValue()).lt(lt.getValue());
+		} else if (filter instanceof Compare.LessOrEqual) {
+			Compare.LessOrEqual le = (Compare.LessOrEqual) filter;
+			return createAuditProperty(aq, le.getPropertyId(), le.getValue()).le(le.getValue());
+		} else if (filter instanceof And) {
+			And and = (And) filter;
+			AuditConjunction ac = AuditEntity.conjunction();
+			for (Filter f : and.getFilters()) {
+				AuditCriterion ct = createAuditCriterion(aq, f);
+				if (ct != null) {
+					ac.add(ct);
+				}
+			}
+			return ac;
+		} else if (filter instanceof Or) {
+			Or or = (Or) filter;
+			AuditDisjunction ad = AuditEntity.disjunction();
+			for (Filter f : or.getFilters()) {
+				AuditCriterion ct = createAuditCriterion(aq, f);
+				if (ct != null) {
+					ad.add(ct);
+				}
+			}
+			return ad;
+		} else if (filter instanceof Not) {
+			Not not = (Not) filter;
+			AuditCriterion ct = createAuditCriterion(aq, not.getFilter());
+			if (ct != null) {
+				return AuditEntity.not(ct);
+			}
+		} else if (filter instanceof In) {
+			In in = (In) filter;
+			return createAuditProperty(aq, in.getPropertyId(), in.getValues()).in(in.getValues());
+		} else if (filter instanceof Contains) {
+			Contains c = (Contains) filter;
+			throw new UnsupportedOperationException(
+					"Contains filter is not supported for property " + c.getPropertyId());
+		}
+		return null;
+	}
 
-    @Override
-    @Transactional
-    @SuppressWarnings("unchecked")
-    public List<U> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins) {
+	/**
+	 * Translates a property name to an AuditProperty
+	 * 
+	 * @param aq    the audit query
+	 * @param prop  the name of the property
+	 * @param value the value of the property
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private <X> AuditProperty<X> createAuditProperty(AuditQuery aq, String prop, Object value) {
+		if ("revisionType".equals(prop)) {
+			return (AuditProperty<X>) AuditEntity.revisionType();
+		} else if (REVISION_PROPS.containsKey(prop)) {
+			prop = REVISION_PROPS.get(prop);
+			return (AuditProperty<X>) AuditEntity.revisionProperty(prop);
+		} else {
 
-        AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
-        addIdFilter(aq, filter);
-        addAdditionalFilters(aq, filter);
+			int index = prop.indexOf(ENTITY_STRING);
+			if (index >= 0) {
+				prop = prop.substring(index + ENTITY_STRING.length());
+			}
 
-        if (pageable != null) {
-            aq.setFirstResult(pageable.getOffset());
-            aq.setMaxResults(pageable.getPageSize());
-            if (pageable.getSortOrders() != null) {
-                for (SortOrder so : pageable.getSortOrders().toArray()) {
-                    String prop = so.getProperty();
-                    AuditProperty<?> ap = createAuditProperty(prop);
-                    if (so.isAscending()) {
-                        aq.addOrder(ap.asc());
-                    } else {
-                        aq.addOrder(ap.desc());
-                    }
-                }
-            }
-        }
+			boolean isEntity = isEntity(value);
+			if (isEntity) {
+				throw new UnsupportedOperationException("Querying for complex properties is not supported yet");
+			}
 
-        List<U> resultList = new ArrayList<>();
-        List<Object[]> revs = aq.getResultList();
+			return (AuditProperty<X>) AuditEntity.property(prop);
+		}
+	}
 
-        for (Object[] rev : revs) {
-            // first comes the actual snapshot of the entity
-            U u = map(rev);
-            resultList.add(u);
-        }
+	/**
+	 * Creates a new instance of the versioned entity
+	 * 
+	 * @return
+	 */
+	protected abstract U createVersionedEntity(T t, int revision);
 
-        return resultList;
-    }
+	/**
+	 * Perform mapping from the Envers revision entity to the full entity
+	 * 
+	 * @param u the Envers revision entity to map
+	 */
+	protected void doMap(U u) {
+		// overwrite in subclasses
+	}
 
-    @Override
-    @Transactional
-    public U fetchById(RevisionKey<ID> id, FetchJoinInformation... joins) {
-        try {
-            AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
-            aq.add(AuditEntity.id().eq(id.getId()));
-            aq.add(AuditEntity.revisionNumber().eq(id.getRevision()));
-            Object[] rev = (Object[]) aq.getSingleResult();
-            return map(rev);
-        } catch (NoResultException ex) {
-            // nothing found
-            return null;
-        }
-    }
+	@Override
+	@Transactional
+	public List<U> fetch(Filter filter, FetchJoinInformation... joins) {
+		return fetch(filter, (Pageable) null, joins);
+	}
 
-    @Override
-    public List<U> fetchByIds(List<RevisionKey<ID>> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
-        // only paging access is supported
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	@Transactional
+	@SuppressWarnings("unchecked")
+	public List<U> fetch(Filter filter, Pageable pageable, FetchJoinInformation... joins) {
 
-    @Override
-    public List<RevisionKey<ID>> findIds(Filter filter, SortOrder... sortOrders) {
-        // only paging access is supported
-        throw new UnsupportedOperationException();
-    }
+		AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
 
-    @Override
-    public Number findRevisionNumber(LocalDateTime ldt) {
-        return getAuditReader().getRevisionNumberForDate(DateUtils.toLegacyDate(ldt));
-    }
+		addIdFilter(aq, filter);
+		addAdditionalFilters(aq, filter);
 
-    @Override
-    @SuppressWarnings("unchecked")
-    @Transactional
-    public List<U> findRevisions(ID id) {
-        List<Object[]> revs = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true)
-                .add(AuditEntity.id().eq(id)).getResultList();
-        List<U> resultList = new ArrayList<>();
+		if (pageable != null) {
+			aq.setFirstResult(pageable.getOffset());
+			aq.setMaxResults(pageable.getPageSize());
+			if (pageable.getSortOrders() != null) {
+				addSortOrders(aq, pageable.getSortOrders().toArray());
+			}
+		}
 
-        for (Object[] rev : revs) {
-            resultList.add(map(rev));
-        }
-        return resultList;
-    }
+		List<U> resultList = new ArrayList<>();
+		List<Object[]> revs = aq.getResultList();
 
-    private AuditReader getAuditReader() {
-        return AuditReaderFactory.get(getEntityManager());
-    }
+		for (Object[] rev : revs) {
+			// first comes the actual snapshot of the entity
+			U u = mapRevision(rev);
+			resultList.add(u);
+		}
 
-    /**
-     * Returns the class of the "base entity" (i.e. the non-versioned class)
-     * 
-     * @return
-     */
-    public abstract Class<T> getBaseEntityClass();
+		return resultList;
+	}
 
-    /**
-     * Returns the Query DSL root. This is not supported for versioned entities
-     */
-    @Override
-    protected EntityPathBase<U> getDslRoot() {
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	@Transactional
+	public U fetchById(RevisionKey<ID> id, FetchJoinInformation... joins) {
+		try {
+			AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
+			aq.add(AuditEntity.id().eq(id.getId()));
+			aq.add(AuditEntity.revisionNumber().eq(id.getRevision()));
+			Object[] rev = (Object[]) aq.getSingleResult();
+			return mapRevision(rev);
+		} catch (NoResultException ex) {
+			// nothing found
+			return null;
+		}
+	}
 
-    @PostConstruct
-    public void init() {
-        // add mapping from versioned entity properties to RevisionEntity
-        // properties
-        REVISION_PROPS.put("revision", "id");
-        REVISION_PROPS.put("revisionTimeStamp", "timestamp");
-        REVISION_PROPS.put("user", "username");
-    }
+	@Override
+	@Transactional
+	public List<U> fetchByIds(List<RevisionKey<ID>> ids, Filter additionalFilter, SortOrders sortOrders,
+			FetchJoinInformation... joins) {
+		AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
 
-    /**
-     * Maps the data structure returned by Envers to a VersionedEntity. This
-     * structure contains of the snapshot data (position 0), the revision data
-     * (position 1) and the modification type (position 2)
-     * 
-     * @param rev the data structure to map
-     * @return
-     */
-    @SuppressWarnings("unchecked")
-    private U map(Object[] rev) {
-        if (rev == null) {
-            return null;
-        }
+		addIdCriteria(ids, aq);
 
-        T t = (T) rev[0];
-        DynamoRevisionEntity revisionData = (DynamoRevisionEntity) rev[1];
-        U u = createVersionedEntity(t, revisionData.getId());
+		if (sortOrders != null) {
+			addSortOrders(aq, sortOrders.toArray());
+		}
 
-        Instant i = Instant.ofEpochMilli(revisionData.getTimestamp());
-        u.setRevisionTimeStamp(ZonedDateTime.ofInstant(i, ZoneId.systemDefault()));
-        u.setUser(revisionData.getUsername());
-        u.setRevisionType(RevisionType.fromInternal((org.hibernate.envers.RevisionType) rev[2]));
-        if (u.getEntity() != null) {
-            doMap(u);
-        }
-        return u;
-    }
+		@SuppressWarnings("unchecked")
+		List<Object[]> revs = aq.getResultList();
+		return revs.stream().map(rev -> mapRevision(rev)).collect(Collectors.toList());
+	}
+
+	@Override
+	@Transactional
+	public List<U> fetchByIds(List<RevisionKey<ID>> ids, SortOrders sortOrders, FetchJoinInformation... joins) {
+		return fetchByIds(ids, null, sortOrders, joins);
+	}
+
+	@Override
+	@Transactional
+	public List<RevisionKey<ID>> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders) {
+		AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true)
+				.addProjection(AuditEntity.id()).addProjection(AuditEntity.revisionNumber());
+		addIdFilter(aq, filter);
+		addAdditionalFilters(aq, filter);
+
+		aq.setFirstResult(0);
+		if (maxResults != null) {
+			aq.setMaxResults(maxResults);
+		}
+		if (sortOrders != null) {
+			addSortOrders(aq, sortOrders);
+		}
+
+		return findRevisionKeys(aq);
+	}
+
+	@Override
+	public List<RevisionKey<ID>> findIds(Filter filter, SortOrder... sortOrders) {
+		return findIds(filter, null, sortOrders);
+	}
+
+	@SuppressWarnings("unchecked")
+	private List<RevisionKey<ID>> findRevisionKeys(AuditQuery aq) {
+		List<Object[]> revs = aq.getResultList();
+		List<RevisionKey<ID>> ids = revs.stream().map(rev -> mapRevisionKey(rev)).collect(Collectors.toList());
+		return ids;
+	}
+
+	@Override
+	public Number findRevisionNumber(LocalDateTime ldt) {
+		return getAuditReader().getRevisionNumberForDate(DateUtils.toLegacyDate(ldt));
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	@Transactional
+	public List<U> findRevisions(ID id) {
+		List<Object[]> revs = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true)
+				.add(AuditEntity.id().eq(id)).getResultList();
+		return revs.stream().map(rev -> mapRevision(rev)).collect(Collectors.toList());
+	}
+
+	private AuditReader getAuditReader() {
+		return AuditReaderFactory.get(getEntityManager());
+	}
+
+	/**
+	 * Returns the class of the "base entity" (i.e. the non-versioned class)
+	 * 
+	 * @return
+	 */
+	public abstract Class<T> getBaseEntityClass();
+
+	/**
+	 * Returns the Query DSL root. This is not supported for versioned entities
+	 */
+	@Override
+	protected EntityPathBase<U> getDslRoot() {
+		throw new UnsupportedOperationException();
+	}
+
+	@PostConstruct
+	public void init() {
+		// add mapping from versioned entity properties to RevisionEntity
+		// properties
+		REVISION_PROPS.put("revision", "id");
+		REVISION_PROPS.put("revisionTimeStamp", "timestamp");
+		REVISION_PROPS.put("user", "username");
+	}
+
+	/**
+	 * Determine whether a property value is an entity (or a collection of entities)
+	 * 
+	 * @param value the value for which to determine this
+	 * @return
+	 */
+	private boolean isEntity(Object value) {
+		if (value instanceof AbstractEntity) {
+			return true;
+		}
+		if (value instanceof Collection) {
+			Collection<?> col = (Collection<?>) value;
+			return !col.isEmpty() && col.iterator().next() instanceof AbstractEntity;
+		}
+		return false;
+	}
+
+	/**
+	 * Maps the data structure returned by Envers to a VersionedEntity. This
+	 * structure contains of the snapshot data (position 0), the revision data
+	 * (position 1) and the modification type (position 2)
+	 * 
+	 * @param rev the data structure to map
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private U mapRevision(Object[] rev) {
+		if (rev == null) {
+			return null;
+		}
+
+		T t = (T) rev[0];
+		DynamoRevisionEntity revisionData = (DynamoRevisionEntity) rev[1];
+		U u = createVersionedEntity(t, revisionData.getId());
+
+		Instant i = Instant.ofEpochMilli(revisionData.getTimestamp());
+		u.setRevisionTimeStamp(ZonedDateTime.ofInstant(i, ZoneId.systemDefault()));
+		u.setUser(revisionData.getUsername());
+		u.setRevisionType(RevisionType.fromInternal((org.hibernate.envers.RevisionType) rev[2]));
+		if (u.getEntity() != null) {
+			doMap(u);
+		}
+		return u;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private RevisionKey<ID> mapRevisionKey(Object[] rev) {
+		Object[] obj = (Object[]) rev;
+		return new RevisionKey((Integer) obj[0], (Integer) obj[1]);
+	}
 }

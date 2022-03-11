@@ -96,7 +96,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 		titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
 		main.add(titleLayout);
 
-		VerticalLayout parent = new DefaultVerticalLayout(true, true);
+		VerticalLayout parent = new DefaultVerticalLayout(true, false);
 		main.add(parent);
 
 		if (buildMainLayout != null) {
