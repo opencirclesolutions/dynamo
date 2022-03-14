@@ -80,7 +80,8 @@ public final class ConvertUtils {
 			return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(),
 					(BigDecimal) input, locale);
 		} else if (am.isSearchDateOnly()) {
-			// special case, in case of "search date only" we need to convert to a local date
+			// special case, in case of "search date only" we need to convert to a local
+			// date
 			if (input instanceof ZonedDateTime) {
 				ZonedDateTime zdt = (ZonedDateTime) input;
 				return zdt.toLocalDate();

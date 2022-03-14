@@ -124,7 +124,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	 * @param sheet    the sheet to add the headers to
 	 * @param resize   whether to resize the columns
 	 * @param titleRow the title row to which to add the header
-	 * @param i the row index
+	 * @param i        the row index
 	 * @return
 	 */
 	private int addFixedColumnHeaders(Sheet sheet, boolean resize, Row titleRow, int i) {
@@ -142,7 +142,8 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 	/**
 	 * Adds the fixed columns at the start of a row
-	 * @param row the row 
+	 * 
+	 * @param row    the row
 	 * @param entity the entity currently being processed
 	 */
 	private void addFixedColumns(Row row, T entity) {
@@ -187,9 +188,11 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	}
 
 	/**
-	 * Adds a cell at the bottom of a sheet that serves as the header for the aggregations row
+	 * Adds a cell at the bottom of a sheet that serves as the header for the
+	 * aggregations row
+	 * 
 	 * @param nrOfFixedCols the number of fixed columns
-	 * @param sheet the sheet to which to add the cells
+	 * @param sheet         the sheet to which to add the cells
 	 * @param type
 	 * @param totalsRow
 	 */
@@ -397,6 +400,12 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		}
 	}
 
+	/**
+	 * Updates the totals for any hidden properties
+	 * 
+	 * @param rowTotals the current set of row totals
+	 * @param entity
+	 */
 	private void updateHiddenPropertyAggregates(Map<String, BigDecimal> rowTotals, T entity) {
 		// add aggregates for hidden props
 		for (String hiddenProp : pivotParameters.getHiddenPivotedProperties()) {

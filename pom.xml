@@ -1,5 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
@@ -106,10 +108,10 @@
 		<org.jacoco.maven.plugins.version>0.8.7</org.jacoco.maven.plugins.version>
 		<github-release-plugin.version>1.4.0</github-release-plugin.version>
 		<org.sonatype.plugins.version>1.6.8</org.sonatype.plugins.version>
-		<javax.el-api.version>3.0.1-b06</javax.el-api.version>
 		<junit.version>5.8.2</junit.version>
 		<spotbugs.version>4.5.3.0</spotbugs.version>
 		<guava.version>31.0-jre</guava.version>
+		<camel.version>3.15.0</camel.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -193,7 +195,7 @@
 				<scope>test</scope>
 			</dependency>
 			<dependency>
-				<groupId>org.apache.camel</groupId>
+				<groupId>org.apache.camel.springboot</groupId>
 				<artifactId>camel-spring-boot-starter</artifactId>
 				<version>${camel.version}</version>
 			</dependency>

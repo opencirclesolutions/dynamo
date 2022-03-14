@@ -21,9 +21,6 @@
 			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
-	<properties>
-		<camel.version>2.25.4</camel.version>
-	</properties>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
@@ -35,8 +32,6 @@
 			<artifactId>dynamo-test</artifactId>
 			<version>${project.version}</version>
 		</dependency>
-
-		<!-- Spring Framework -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
@@ -49,8 +44,8 @@
 		</dependency>
 		<!-- Camel -->
 		<dependency>
-			<groupId>org.apache.camel</groupId>
-			<artifactId>camel-spring-boot-starter</artifactId>
+		    <groupId>org.apache.camel.springboot</groupId>
+		    <artifactId>camel-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.mockito</groupId>

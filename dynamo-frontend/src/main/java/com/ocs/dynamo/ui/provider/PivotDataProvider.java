@@ -162,6 +162,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 			if (requestedOffset < lastRequestedOffset && offsetMap.containsKey(requestedOffset)) {
 				dataCache.clear();
 				lastPivotOffset = offsetMap.get(requestedOffset);
+				pivotedItem = null;
 			}
 
 			lastRequestedOffset = requestedOffset;
@@ -314,7 +315,9 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	public List<String> getAllPrivotProperties() {
 		List<String> allProps = new ArrayList<>();
 		allProps.addAll(getPivotedProperties());
-		allProps.addAll(getHiddenPivotedProperties());
+		if (getHiddenPivotedProperties() != null) {
+			allProps.addAll(getHiddenPivotedProperties());
+		}
 		return allProps;
 	}
 }
