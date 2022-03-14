@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -99,11 +100,11 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	@Getter
 	@Setter
-	private List<String> pivotedProperties;
+	private List<String> pivotedProperties = new ArrayList<>();
 
 	@Getter
 	@Setter
-	private List<String> hiddenPivotedProperties;
+	private List<String> hiddenPivotedProperties = new ArrayList<>();
 
 	@Getter
 	@Setter

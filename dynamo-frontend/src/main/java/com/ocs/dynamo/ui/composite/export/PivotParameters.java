@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.composite.export;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -79,5 +80,9 @@ public class PivotParameters {
 
 	public int getTotalNumberOfVariableColumns() {
 		return possibleColumnKeys.size() * pivotedProperties.size();
+	}
+
+	public List<String> getHiddenPivotProperties() {
+		return hiddenPivotedProperties == null ? Collections.emptyList() : hiddenPivotedProperties;
 	}
 }

@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.provider;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -111,7 +112,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	 * The list of hidden pivoted properties
 	 */
 	@Getter
-	private List<String> hiddenPivotedProperties;
+	private List<String> hiddenPivotedProperties = new ArrayList<>();
 
 	/**
 	 * The data provider that is being wrapped
@@ -153,7 +154,8 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 		this.rowKeyProperty = rowKeyProperty;
 		this.fixedColumnKeys = fixedColumnKeys;
 		this.pivotedProperties = pivotedProperties;
-		this.hiddenPivotedProperties = hiddenPivotedProperties;
+		this.hiddenPivotedProperties = hiddenPivotedProperties == null ? Collections.emptyList()
+				: hiddenPivotedProperties;
 		this.sizeSupplier = sizeSupplier;
 	}
 

@@ -81,11 +81,14 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 		}
 
 		addColumns(provider, possibleColumnKeys, headerMapper, subHeaderMapper, customFormatter, headerRow);
-		List<String> allTotals = provider.getAllPrivotProperties();
+		List<String> allProperties = provider.getAllPrivotProperties();
 
-		for (String property : allTotals) {
+		long totalsColumns = allProperties.stream().filter(a -> provider.getAggregation(a) != null).count();
+
+		for (String property : allProperties) {
 			// add aggregate column
 			PivotAggregationType type = provider.getAggregation(property);
+
 			if (type != null) {
 				String header = getAggregateHeader(type);
 				String colId = "aggregate_" + type.toString().toLowerCase() + "_" + property;
@@ -103,7 +106,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 
 				}).setHeader(header).setKey(colId).setResizable(true).setId(colId);
 
-				if (headerRow != null) {
+				if (headerRow != null && totalsColumns > 1) {
 					headerRow.getCell(getColumnByKey(colId)).setText(subHeaderMapper.apply("", property));
 				}
 			}
