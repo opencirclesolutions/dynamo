@@ -1,23 +1,21 @@
 package com.ocs.dynamo.ui.component;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
-import java.util.Collection;
 import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -31,7 +29,6 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.UIHelper;
 
-@Disabled
 public class QuickAddTokenSelectTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
@@ -56,12 +53,19 @@ public class QuickAddTokenSelectTest extends BaseMockitoTest {
 
 		when(service.find(isNull(), (SortOrder[]) any())).thenReturn(Lists.newArrayList(t1, t2, t3));
 		when(service.find(isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
+		when(service.findAll(isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
 
 		Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
 		when(service.find(eq(f))).thenReturn(Lists.newArrayList(t1));
 
+		when(service.fetch(isNull(), any(Integer.class), any(Integer.class), any(SortOrders.class)))
+				.thenReturn(Lists.newArrayList(t1, t2, t3));
+		when(service.fetch(eq(f), any(Integer.class), any(Integer.class), any(SortOrders.class)))
+				.thenReturn(Lists.newArrayList(t1));
+
 		when(service.createNewEntity()).thenReturn(new TestEntity());
 		MockUtil.mockServiceSave(service, TestEntity.class);
+
 	}
 
 	/**
@@ -75,9 +79,6 @@ public class QuickAddTokenSelectTest extends BaseMockitoTest {
 		QuickAddTokenSelect<Integer, TestEntity> select = new QuickAddTokenSelect<>(em, am, service, SelectMode.ALL,
 				null, null, false);
 		select.initContent();
-
-		// list must contain 3 items
-		// assertEquals(3, select.getTokenSelect().getDataProviderSize());
 
 		// test propagation of the value
 		select.getTokenSelect().select(t1);
@@ -97,8 +98,13 @@ public class QuickAddTokenSelectTest extends BaseMockitoTest {
 				null, null, false);
 		select.initContent();
 
+		ComponentTestUtil.query(select.getTokenSelect().getDataProvider());
+
+		assertEquals(3, select.getTokenSelect().getDataProviderSize());
+
 		select.setValue(null);
 		assertEquals(Collections.emptySet(), select.getValue());
+
 	}
 
 	@Test
@@ -107,30 +113,16 @@ public class QuickAddTokenSelectTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 		AttributeModel am = em.getAttributeModel("testDomain");
 
-		QuickAddTokenSelect<Integer, TestEntity> select = new QuickAddTokenSelect<>(em, am, service, SelectMode.ALL,
-				null, null, false);
+		QuickAddTokenSelect<Integer, TestEntity> select = new QuickAddTokenSelect<>(em, am, service,
+				SelectMode.FILTERED_PAGED, null, null, false);
 		select.initContent();
 
-		// list must contain 3 items
-		// assertEquals(3, select.getTokenSelect().getDataProviderSize());
+		ComponentTestUtil.query(select.getTokenSelect().getDataProvider());
+		assertEquals(3, select.getTokenSelect().getDataProviderSize());
 
 		select.setAdditionalFilter(new EqualsPredicate<TestEntity>("name", "Kevin"));
+		ComponentTestUtil.query(select.getTokenSelect().getDataProvider());
 
-		// after filter there must be 1 item left
-		// assertEquals(1, select.getTokenSelect().getDataProviderSize());
-
-		// clear filter again
-		select.clearAdditionalFilter();
-		// assertEquals(3, select.getTokenSelect().getDataProviderSize());
-
-		select.setValue(Lists.newArrayList(t2));
-
-		Collection<TestEntity> value = select.getValue();
-		assertTrue(value.contains(t2));
-
-		select.refresh();
-
-		select.refresh(new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertNotNull(select.getFilter());
+		assertEquals(1, select.getTokenSelect().getDataProviderSize());
 	}
 }

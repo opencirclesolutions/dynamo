@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -73,6 +74,8 @@ public class UIHelper {
 	/**
 	 * The UI that is tied to this UIHelper
 	 */
+	@Setter
+	@Getter
 	private Object currentUI;
 
 	/**
@@ -94,7 +97,7 @@ public class UIHelper {
 	private Map<Class<?>, List<FlexibleFilterDefinition>> searchFilterDefinitionCache = new HashMap<>();
 
 	/**
-	 * 
+	 * Sort order cache
 	 */
 	private Map<Class<?>, List<SortOrder<?>>> sortOrderCache = new HashMap<>();
 
@@ -117,6 +120,9 @@ public class UIHelper {
 		this.screenMode = null;
 	}
 
+	/**
+	 * Clears the currently selected search terms
+	 */
 	public void clearSearchTerms() {
 		if (this.selectedView != null) {
 			searchValueCache.remove(selectedView);
@@ -124,6 +130,9 @@ public class UIHelper {
 		}
 	}
 
+	/**
+	 * Clears the currently selected sort orders
+	 */
 	public void clearSortOrders() {
 		if (this.selectedView != null) {
 			sortOrderCache.remove(selectedView);
@@ -139,13 +148,14 @@ public class UIHelper {
 		setSelectedTab(null);
 	}
 
-	public Object getCurrentUI() {
-		return currentUI;
-	}
-
 	@SuppressWarnings("unchecked")
 	public <T> T getCurrentUI(Class<T> clazz) {
 		return (T) currentUI;
+	}
+
+	@SuppressWarnings("unchecked")
+	public <T> T getSelectedEntity(Class<T> clazz) {
+		return (T) selectedEntity;
 	}
 
 	/**
@@ -196,39 +206,9 @@ public class UIHelper {
 	}
 
 	/**
-	 * Retrieves previously stored search terms
 	 * 
-	 * @return
+	 * @return whether the advanced search mode is active for athe current view
 	 */
-	public List<SerializablePredicate<?>> retrieveSearchTerms() {
-		if (this.selectedView != null) {
-			List<SerializablePredicate<?>> list = searchValueCache.get(this.selectedView);
-			return list != null ? list : new ArrayList<>();
-		}
-		return new ArrayList<>();
-	}
-
-	/**
-	 * Retrieves previously stored sort orders
-	 * 
-	 * @return
-	 */
-	public List<SortOrder<?>> retrieveSortOrders() {
-		if (this.selectedView != null) {
-			List<SortOrder<?>> list = sortOrderCache.get(this.selectedView);
-			return list != null ? list : new ArrayList<>();
-		}
-		return new ArrayList<>();
-	}
-
-	public List<FlexibleFilterDefinition> retrieveSearchFilterDefinitions() {
-		if (this.selectedView != null) {
-			List<FlexibleFilterDefinition> list = searchFilterDefinitionCache.get(this.selectedView);
-			return list != null ? list : new ArrayList<>();
-		}
-		return new ArrayList<>();
-	}
-
 	public Boolean retrieveAdvancedMode() {
 		if (this.selectedView != null) {
 			return advancedModeCache.getOrDefault(this.selectedView, Boolean.FALSE);
@@ -236,13 +216,73 @@ public class UIHelper {
 		return false;
 	}
 
+	/**
+	 * 
+	 * @return whether the stored search filters for the current view
+	 */
+	public List<FlexibleFilterDefinition> retrieveSearchFilterDefinitions() {
+		if (this.selectedView != null) {
+			List<FlexibleFilterDefinition> list = searchFilterDefinitionCache.get(this.selectedView);
+			return list != null ? list : new ArrayList<>();
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * @return the stored search terms for the current view
+	 */
+	public List<SerializablePredicate<?>> retrieveSearchTerms() {
+		if (this.selectedView != null) {
+			List<SerializablePredicate<?>> list = searchValueCache.get(this.selectedView);
+			return list != null ? list : new ArrayList<>();
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * 
+	 * 
+	 * @return the stored sort orders for the current view
+	 */
+	public List<SortOrder<?>> retrieveSortOrders() {
+		if (this.selectedView != null) {
+			List<SortOrder<?>> list = sortOrderCache.get(this.selectedView);
+			return list != null ? list : new ArrayList<>();
+		}
+		return Collections.emptyList();
+	}
+
+	/**
+	 * Selects an entity an then navigates to the screen to display it
+	 * 
+	 * @param selectedEntity the selected entity
+	 * @param viewName       the name of the view to navigate to
+	 */
 	public void selectAndNavigate(Object selectedEntity, String viewName) {
 		setSelectedEntity(selectedEntity);
 		navigate(viewName);
 	}
 
-	public void setCurrentUI(Object currentUI) {
-		this.currentUI = currentUI;
+	/**
+	 * Stores whether advanced search mode is active for the current view
+	 * 
+	 * @param advancedMode whether advanced search mode is active
+	 */
+	public void storeAdvancedMode(boolean advancedMode) {
+		if (this.selectedView != null) {
+			advancedModeCache.put(selectedView, advancedMode);
+		}
+	}
+
+	/**
+	 * Stores the search filters that are selected in the current screen
+	 * 
+	 * @param filters the search filters
+	 */
+	public void storeSearchFilterDefinitions(List<FlexibleFilterDefinition> filters) {
+		if (this.selectedView != null) {
+			searchFilterDefinitionCache.put(selectedView, filters);
+		}
 	}
 
 	/**
@@ -266,21 +306,5 @@ public class UIHelper {
 		if (this.selectedView != null) {
 			sortOrderCache.put(selectedView, sortOrder);
 		}
-	}
-
-	public void storeSearchFilterDefinitions(List<FlexibleFilterDefinition> filters) {
-		if (this.selectedView != null) {
-			searchFilterDefinitionCache.put(selectedView, filters);
-		}
-	}
-
-	public void storeAdvancedMode(boolean advancedMode) {
-		if (this.selectedView != null) {
-			advancedModeCache.put(selectedView, advancedMode);
-		}
-	}
-
-	public <T> T getSelectedEntity(Class<T> clazz) {
-		return (T) selectedEntity;
 	}
 }

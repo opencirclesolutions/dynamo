@@ -72,6 +72,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	@Getter
 	private final SortOrder<?>[] sortOrders;
 
+	private int count;
+
 	@SafeVarargs
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode mode, SerializablePredicate<T> filter, List<T> items,
@@ -169,7 +171,11 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)));
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> setCount(count));
+	}
+
+	private int setCount(Integer count) {
+		return this.count = count;
 	}
 
 	/**
@@ -194,7 +200,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
 						SortUtils.translateSortOrders(sortOrders));
 				setDataProvider(new ListDataProvider<>(items));
-
 			} else if (SelectMode.FIXED.equals(mode)) {
 				setDataProvider(new ListDataProvider<>(items));
 			}
@@ -250,6 +255,15 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}
+	}
+
+	public int getDataProviderSize() {
+		if (getDataProvider() instanceof ListDataProvider) {
+			return ((ListDataProvider) getDataProvider()).getItems().size();
+		} else if (getDataProvider() instanceof CallbackDataProvider) {
+			return count;
+		}
+		return 0;
 	}
 
 }

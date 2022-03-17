@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
+import static java.util.stream.Collectors.toList;
+
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -25,7 +27,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -354,7 +355,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					.compareToIgnoreCase(o2.getDisplayName(VaadinUtils.getLocale())));
 			// add any attribute models that are not required
 			attributeFilterComboBox.setItems(filteredModels.stream()
-					.filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).collect(Collectors.toList()));
+					.filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).collect(toList()));
 			attributeFilterComboBox.setItemLabelGenerator(item -> item.getDisplayName(VaadinUtils.getLocale()));
 
 			// add a value change listener that fills the filter type combo box
@@ -885,7 +886,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * filters
 	 */
 	public List<FlexibleFilterDefinition> extractFilterDefinitions() {
-		return regions.stream().map(FilterRegion::toDefinition).filter(Objects::nonNull).collect(Collectors.toList());
+		return regions.stream().map(FilterRegion::toDefinition).filter(Objects::nonNull).collect(toList());
 	}
 
 	/**

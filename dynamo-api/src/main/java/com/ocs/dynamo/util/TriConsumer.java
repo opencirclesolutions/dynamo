@@ -18,5 +18,5 @@ import java.io.Serializable;
 @FunctionalInterface
 public interface TriConsumer<T, U, V> extends Serializable {
 
-	public void accept(T t, U u, V v);
+	void accept(T t, U u, V v);
 }

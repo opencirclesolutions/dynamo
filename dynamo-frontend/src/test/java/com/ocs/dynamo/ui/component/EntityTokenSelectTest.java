@@ -16,16 +16,17 @@ package com.ocs.dynamo.ui.component;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.isNull;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.ocs.dynamo.dao.SortOrder;
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.SelectMode;
@@ -34,7 +35,6 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 
-@Disabled
 public class EntityTokenSelectTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
@@ -65,7 +65,10 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 				null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
-		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
+		ComponentTestUtil.query(select.getDataProvider());
+
+		verify(service, times(1)).fetch(any(com.ocs.dynamo.filter.Filter.class), any(Integer.class), any(Integer.class),
+				any(SortOrders.class));
 	}
 
 	@Test
@@ -74,21 +77,26 @@ public class EntityTokenSelectTest extends BaseMockitoTest {
 		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class),
 				null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
+		ComponentTestUtil.query(select.getDataProvider());
 
 		select.refresh();
 
-		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
+		verify(service, times(1)).fetch(any(com.ocs.dynamo.filter.Filter.class), any(Integer.class), any(Integer.class),
+				any(SortOrders.class));
 	}
 
 	@Test
-	public void testRefreshAll() {
+	public void testRefreshNonPaged() {
 
-		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(factory.getModel(TestEntity.class),
-				null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
+		EntityTokenSelect<Integer, TestEntity> select = new EntityTokenSelect<>(
+				factory.getModel("TestEntityNonPaged", TestEntity.class), null, service, SelectMode.FILTERED_ALL,
+				new EqualsPredicate<TestEntity>("name", "Bob"), null, null);
+
+		assertEquals(SelectMode.FILTERED_ALL, select.getSelectMode());
+		ComponentTestUtil.query(select.getDataProvider());
 
 		select.refresh();
 
-		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
+		verify(service, times(2)).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
 	}
 }

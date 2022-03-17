@@ -14,6 +14,8 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
+import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -52,18 +54,26 @@ public class CallbackProviderHelper {
 	 */
 	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, String> createCallbackProvider(
 			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
-			SortOrders sortOrders) {
+			SortOrders sortOrders, Consumer<Integer> afterCountDone) {
 		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
 		CallbackDataProvider<T, String> callbackProvider = new CallbackDataProvider<>(query -> {
 			int offset = query.getOffset();
 			int page = offset / query.getLimit();
 
 			SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
-			return service.fetch(converter.convert(pred), page, query.getLimit(), sortOrders).stream();
+			List<T> list = service.fetch(converter.convert(pred), page, query.getLimit(), sortOrders);
+			if (afterCountDone != null) {
+				afterCountDone.accept(list.size());
+			}
+			return list.stream();
 		}, query -> {
 			try {
 				SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
-				return (int) service.count(converter.convert(pred), true);
+				int count = (int) service.count(converter.convert(pred), true);
+				if (afterCountDone != null) {
+					afterCountDone.accept(count);
+				}
+				return count;
 			} catch (Exception ex) {
 				VaadinUtils.showErrorNotification(ex.getMessage());
 				return 0;

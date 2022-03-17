@@ -13,20 +13,16 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ocs.dynamo.constants.DynamoConstants;
-import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.ui.auth.PermissionChecker;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
 import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.menubar.MenuBar;
@@ -37,111 +33,29 @@ import com.vaadin.flow.component.menubar.MenuBar;
  * 
  * @author bas.rutten
  */
-public class MenuService {
+public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 
 	/**
-	 * The last visited menu item
-	 */
-	private String lastVisited;
-
-	/**
-	 * Optional tool tip that appears for the menu item
-	 */
-	public static final String DESCRIPTION = "description";
-
-	/**
-	 * The destination (name of the view) to navigate to
-	 */
-	public static final String DESTINATION = "destination";
-
-	/**
-	 * The display name
-	 */
-	public static final String DISPLAY_NAME = "displayName";
-
-	/**
-	 * The screen mode. Optional, is stored on the BaseUI
-	 */
-	public static final String MODE = "mode";
-
-	/**
-	 * The tab index of the tab to display. Optional, is stored on the BaseUI and
-	 * can be retrieved from there
-	 */
-	public static final String TAB_INDEX = "tabIndex";
-
-	/**
-	 * Permission checker used for determining if users are allowed to access a page
-	 */
-	@Autowired(required = false)
-	private PermissionChecker checker;
-
-	private Map<String, MenuItem> destinationMap = new HashMap<>();
-
-	@Autowired
-	private MessageService messageService;
-
-	/**
-	 * Constructs a menu item and its children
 	 * 
-	 * @param bar    the main menu bar
-	 * @param parent the parent component (either a menu bar or menu item) to add
-	 *               the menu to
-	 * @param key    the message key
-	 * @return the constructed menu item
+	 * @param bar
+	 * @param parent
+	 * @param key
+	 * @param menuItem
+	 * @param destination
 	 */
-	private MenuItem constructMenu(MenuBar bar, Object parent, String key) {
-		String caption = messageService.getMessageNoDefault(key + "." + DISPLAY_NAME, VaadinUtils.getLocale());
-
-		MenuItem menuItem = null;
-		// When no caption exists, return no instance of menuItem (null)
-		if (!StringUtils.isEmpty(caption)) {
-			// look up the messages
-			String destination = messageService.getMessageNoDefault(key + "." + DESTINATION, VaadinUtils.getLocale());
-			String tabIndex = messageService.getMessageNoDefault(key + "." + TAB_INDEX, VaadinUtils.getLocale());
-			String mode = messageService.getMessageNoDefault(key + "." + MODE, VaadinUtils.getLocale());
-			String description = messageService.getMessageNoDefault(key + "." + DESCRIPTION, VaadinUtils.getLocale());
-
-			// create navigation command
-			NavigateCommand command = null;
-			if (!StringUtils.isEmpty(destination)) {
-				command = new NavigateCommand(this, bar, destination, tabIndex, mode);
-			}
-
-			menuItem = addMenuItem(parent, caption, command);
-
-			// set description
-			if (description != null) {
-				VaadinUtils.setTooltip(menuItem, description);
-			}
-
-			parent = menuItem.getSubMenu();
-			if (!StringUtils.isEmpty(destination)) {
-				destinationMap.put(destination + "#" + (mode != null ? mode : "nomode"), menuItem);
-			}
-
-			addChildItems(bar, parent, key, menuItem, destination);
-		}
-		return menuItem;
-	}
-
-	private void addChildItems(MenuBar bar, Object parent, String key, MenuItem menuItem, String destination) {
+	private void addChildItems(MenuBar bar, HasMenuItems item, String key, String destination) {
 		// add the child items
 		int index = 1;
-		String childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
+		String childKey = getMessageService().getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
 				VaadinUtils.getLocale());
 
 		while (childKey != null) {
-			constructMenu(bar, parent, key + "." + index);
+			constructMenu(bar, item, key + "." + index);
 			index++;
-			childKey = messageService.getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
+			childKey = getMessageService().getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
 					VaadinUtils.getLocale());
 		}
 
-		// hide menu item if user does not have permissions
-		if (checker != null && !checker.isAccessAllowed(destination)) {
-			menuItem.setVisible(false);
-		}
 	}
 
 	/**
@@ -152,14 +66,61 @@ public class MenuService {
 	 * @param command the navigation command to add to the item
 	 * @return
 	 */
-	private MenuItem addMenuItem(Object parent, String caption, NavigateCommand command) {
+	private MenuItem addMenuItem(HasMenuItems parent, String caption, NavigateCommand<MenuItem, MenuBar> command) {
 		MenuItem menuItem;
 		if (parent instanceof MenuBar) {
 			// main menu bar
 			menuItem = ((MenuBar) parent).addItem(caption, command);
+			return menuItem;
 		} else {
 			// sub menu
 			menuItem = ((SubMenu) parent).addItem(caption, command);
+		}
+		return menuItem;
+	}
+
+	/**
+	 * Constructs a menu item and its children
+	 * 
+	 * @param root   the root component
+	 * @param parent the parent component (either a menu bar or menu item) to add
+	 *               the menu to
+	 * @param key    the message key
+	 * @return the constructed menu item
+	 */
+	private MenuItem constructMenu(MenuBar root, HasMenuItems parent, String key) {
+		String caption = getMessageService().getMessageNoDefault(key + "." + DISPLAY_NAME, VaadinUtils.getLocale());
+
+		MenuItem menuItem = null;
+		// When no caption exists, return no instance of menuItem (null)
+		if (!StringUtils.isEmpty(caption)) {
+			// look up the messages
+			String destination = getMessageService().getMessageNoDefault(key + "." + DESTINATION,
+					VaadinUtils.getLocale());
+			String tabIndex = getMessageService().getMessageNoDefault(key + "." + TAB_INDEX, VaadinUtils.getLocale());
+			String mode = getMessageService().getMessageNoDefault(key + "." + MODE, VaadinUtils.getLocale());
+			String description = getMessageService().getMessageNoDefault(key + "." + DESCRIPTION,
+					VaadinUtils.getLocale());
+
+			// create navigation command
+			NavigateCommand<MenuItem, MenuBar> command = createNavigationCommand(root, destination, tabIndex, mode);
+
+			menuItem = addMenuItem(parent, caption, command);
+
+			// set description
+			if (description != null) {
+				VaadinUtils.setTooltip(menuItem, description);
+			}
+
+			if (!StringUtils.isEmpty(destination)) {
+				addDestination(destination, mode, menuItem);
+			}
+
+			parent = menuItem.getSubMenu();
+			addChildItems(root, parent, key, destination);
+
+			// hide menu item if user does not have permissions
+			hideIfNoPermission(menuItem, destination);
 		}
 		return menuItem;
 	}
@@ -189,6 +150,10 @@ public class MenuService {
 		return mainMenu;
 	}
 
+	public String getLastVisited() {
+		return lastVisited;
+	}
+
 	/**
 	 * Checks whether the provided item has a sub menu item with the provided
 	 * destination
@@ -202,8 +167,7 @@ public class MenuService {
 			return item.getSubMenu().getItems().stream().anyMatch(it -> hasChildWithDestination(it, destination));
 		} else {
 			// look in the destination map for any match
-			Set<Entry<String, MenuItem>> possibleDestinations = destinationMap.entrySet().stream()
-					.filter(e -> e.getKey().startsWith(destination)).collect(Collectors.toSet());
+			Set<Entry<String, MenuItem>> possibleDestinations = findDestinations(destination);
 			return possibleDestinations.stream().anyMatch(e -> e.getValue().equals(item));
 		}
 	}
@@ -241,7 +205,7 @@ public class MenuService {
 	 * 
 	 * @param bar the menu bar
 	 */
-	private void hideRecursively(MenuBar bar) {
+	protected void hideRecursively(MenuBar bar) {
 		for (MenuItem item : bar.getItems()) {
 			hideIfAllChildrenHidden(item);
 		}
@@ -263,53 +227,56 @@ public class MenuService {
 		}
 	}
 
-	public String getLastVisited() {
-		return lastVisited;
+//	/**
+//	 * Sets the visibility of a certain item item based on its destination (and
+//	 * regardless of screen mode)
+//	 * 
+//	 * @param menu        the menu
+//	 * @param destination the logical name of the destination
+//	 * @param visible     whether to set the item to visible
+//	 */
+//	public void setVisible(MenuBar menu, String destination, boolean visible) {
+//		setVisible(menu, destination, null, visible);
+//	}
+//
+//	/**
+//	 * Sets the visibility of a certain item identified by its destination and mode
+//	 * 
+//	 * @param menu        the menu bar
+//	 * @param destination the destination
+//	 * @param mode        the screen mode
+//	 * 
+//	 * @param visible     the desired visibility
+//	 */
+//	public void setVisible(MenuBar menu, String destination, String mode, boolean visible) {
+//
+//		List<MenuItem> items = menu.getItems();
+//		for (MenuItem item : items) {
+//			setVisible(item, destination, mode, visible);
+//		}
+//		hideRecursively(menu);
+//	}
+//
+//	/**
+//	 * Sets the visibility of a certain menu item if its destination matches the
+//	 * specified destination
+//	 * 
+//	 * @param menu        the main menu bar
+//	 * @param destination the destination
+//	 * @param mode        the screen mode
+//	 * @param visible     the desired visibility of the item
+//	 */
+//	private void setVisible(MenuItem item, String destination, String mode, boolean visible) {
+//		MenuItem mi = getDestination(destination, mode);
+//		if (mi != null) {
+//			mi.setVisible(visible);
+//		}
+//	}
+
+	@Override
+	public List<? extends Component> getRootChildren(MenuBar root) {
+		return root.getItems();
+
 	}
 
-	/**
-	 * Sets the visibility of a certain item item based on its destination (and
-	 * regardless of screen mode)
-	 * 
-	 * @param menu        the menu
-	 * @param destination the logical name of the destination
-	 * @param visible     whether to set the item to visible
-	 */
-	public void setVisible(MenuBar menu, String destination, boolean visible) {
-		setVisible(menu, destination, null, visible);
-	}
-
-	/**
-	 * Sets the visibility of a certain item identified by its destination and mode
-	 * 
-	 * @param menu        the menu bar
-	 * @param destination the destination
-	 * @param mode        the screen mode
-	 * 
-	 * @param visible     the desired visibility
-	 */
-	public void setVisible(MenuBar menu, String destination, String mode, boolean visible) {
-
-		List<MenuItem> items = menu.getItems();
-		for (MenuItem item : items) {
-			setVisible(item, destination, mode, visible);
-		}
-		hideRecursively(menu);
-	}
-
-	/**
-	 * Sets the visibility of a certain menu item if its destination matches the
-	 * specified destination
-	 * 
-	 * @param menu        the main menu bar
-	 * @param destination the destination
-	 * @param mode        the screen mode
-	 * @param visible     the desired visibility of the item
-	 */
-	private void setVisible(MenuItem item, String destination, String mode, boolean visible) {
-		MenuItem mi = destinationMap.get(destination + "#" + (mode != null ? mode : "nomode"));
-		if (mi != null) {
-			mi.setVisible(visible);
-		}
-	}
 }

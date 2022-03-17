@@ -50,6 +50,7 @@ import com.ocs.dynamo.ui.auth.AuthorizationServiceInitListener;
 import com.ocs.dynamo.ui.auth.PermissionChecker;
 import com.ocs.dynamo.ui.auth.impl.DefaultPermissionCheckerImpl;
 import com.ocs.dynamo.ui.menu.MenuService;
+import com.ocs.dynamo.ui.menu.VerticalMenuService;
 
 /**
  * Spring Boot auto configuration for the UI module
@@ -222,6 +223,12 @@ public class DynamoFrontendAutoConfigure {
 	@ConditionalOnMissingBean(value = MenuService.class)
 	public MenuService menuService() {
 		return new MenuService();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(value = VerticalMenuService.class)
+	public VerticalMenuService verticalMenuService() {
+		return new VerticalMenuService();
 	}
 
 	@Bean

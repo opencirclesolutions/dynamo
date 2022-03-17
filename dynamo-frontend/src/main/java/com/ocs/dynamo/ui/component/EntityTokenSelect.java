@@ -37,6 +37,8 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * Custom ListSelect component for displaying a collection of entities from
  * which multiple items can be selected
@@ -53,11 +55,13 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The addition search filter for cascading
 	 */
+	@Getter
 	private SerializablePredicate<T> additionalFilter;
 
 	/**
 	 * The attribute model that governs how to build the component
 	 */
+	@Getter
 	private final AttributeModel attributeModel;
 
 	private final EntityModel<T> entityModel;
@@ -65,6 +69,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The search filter to use in filtered mode
 	 */
+	@Getter
 	private SerializablePredicate<T> filter;
 
 	/**
@@ -75,6 +80,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The select mode (filtered, all, or fixed)
 	 */
+	@Getter
 	private final SelectMode selectMode;
 
 	private final BaseService<ID, T> service;
@@ -82,7 +88,10 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The sort orders
 	 */
+	@Getter
 	private final SortOrder<?>[] sortOrders;
+
+	private int count;
 
 	/**
 	 * Constructor
@@ -197,37 +206,12 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)));
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> setCount(count));
 	}
 
-	@Override
-	public SerializablePredicate<T> getAdditionalFilter() {
-		return additionalFilter;
-	}
-
-	public AttributeModel getAttributeModel() {
-		return attributeModel;
-	}
-
-//	@SuppressWarnings("unchecked")
-//	public int getDataProviderSize() {
-//		if (this.getDataProvider() instanceof ListDataProvider) {
-//			ListDataProvider<T> bic = (ListDataProvider<T>) this.getDataProvider();
-//			return bic.getItems().size();
-//		}
-//		return -1;
-//	}
-
-	public SerializablePredicate<T> getFilter() {
-		return filter;
-	}
-
-	public SelectMode getSelectMode() {
-		return selectMode;
-	}
-
-	public SortOrder<?>[] getSortOrders() {
-		return sortOrders;
+	private void setCount(int count) {
+		System.out.println("Setting count to: " + count);
+		this.count = count;
 	}
 
 	/**
@@ -269,6 +253,16 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		DataProvider<T, ?> provider = getDataProvider();
 		updateProvider((DataProvider<T, SerializablePredicate<T>>) provider);
 		setValue(stored);
+	}
+
+	@SuppressWarnings("rawtypes")
+	public int getDataProviderSize() {
+		if (getDataProvider() instanceof ListDataProvider) {
+			return ((ListDataProvider) getDataProvider()).getItems().size();
+		} else if (getDataProvider() instanceof CallbackDataProvider) {
+			return count;
+		}
+		return 0;
 	}
 
 	public void refresh(SerializablePredicate<T> filter) {

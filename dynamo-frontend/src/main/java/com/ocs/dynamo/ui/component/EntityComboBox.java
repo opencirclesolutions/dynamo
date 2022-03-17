@@ -45,9 +45,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private static final long serialVersionUID = 3041574615271340579L;
 
-	/**
-	 * Additional filter for cascading
-	 */
 	@Getter
 	private SerializablePredicate<T> additionalFilter;
 
@@ -56,15 +53,9 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private final EntityModel<T> entityModel;
 
-	/**
-	 * The current search filter (may include an additional filter)
-	 */
 	@Getter
 	private SerializablePredicate<T> filter;
 
-	/**
-	 * The original search filter (without additional filter for cascading)
-	 */
 	private SerializablePredicate<T> originalFilter;
 
 	@Getter
@@ -75,6 +66,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	@Getter
 	private final SortOrder<?>[] sortOrders;
+
+	private int count;
 
 	/**
 	 * Constructor
@@ -182,7 +175,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)));
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> this.count = count);
 	}
 
 	/**

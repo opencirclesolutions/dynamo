@@ -21,7 +21,6 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
 
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -36,7 +35,6 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 
-@Disabled
 public class EntityComboBoxTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
@@ -69,12 +67,9 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 				service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
-		select.refresh();
-
-		// data must have been retrieved twice - once during creation and once during
-		// request
-		verify(service, times(1)).fetch(any(com.ocs.dynamo.filter.Filter.class), any(Integer.class),
-				any(Integer.class));
+		ComponentTestUtil.query(select.getDataProvider());
+		verify(service, times(1)).fetch(any(com.ocs.dynamo.filter.Filter.class), any(Integer.class), any(Integer.class),
+				any(SortOrders.class));
 	}
 
 	@Test
@@ -84,7 +79,7 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
 		select.setAdditionalFilter(new EqualsPredicate<TestEntity>("name", "Henk"));
-		select.getDataProvider().refreshAll();
+		ComponentTestUtil.query(select.getDataProvider());
 
 		// data must have been retrieved twice - once during creation and once during
 		// request
