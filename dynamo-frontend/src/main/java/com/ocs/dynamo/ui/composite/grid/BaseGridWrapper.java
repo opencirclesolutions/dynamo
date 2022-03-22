@@ -231,13 +231,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	@Override
 	protected List<SortOrder<?>> initSortingAndFiltering() {
 
-		List<SortOrder<?>> fallBackOrders = super.initSortingAndFiltering();
+		List<SortOrder<?>> fallbackOrders = super.initSortingAndFiltering();
 
 		// set fall back sort orders
 		if (dataProvider instanceof BaseDataProvider) {
-			((BaseDataProvider<ID, T>) dataProvider).setFallBackSortOrders(fallBackOrders);
+			((BaseDataProvider<ID, T>) dataProvider).setFallbackSortOrders(fallbackOrders);
 		}
-		return fallBackOrders;
+		return fallbackOrders;
 	}
 
 	/**

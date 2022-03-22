@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -69,7 +70,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		ComponentContext<Integer, Person> cc = ComponentContext.<Integer, Person>builder().editable(false).build();
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
 
-		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc);
+		assertDoesNotThrow(
+				() -> new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc));
 	}
 
 	@Test
@@ -83,7 +85,8 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		ComponentContext<Integer, Person> cc = ComponentContext.<Integer, Person>builder().editable(true).build();
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SIMULTANEOUS);
 
-		new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc);
+		assertDoesNotThrow(
+				() -> new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc));
 	}
 
 	@Test

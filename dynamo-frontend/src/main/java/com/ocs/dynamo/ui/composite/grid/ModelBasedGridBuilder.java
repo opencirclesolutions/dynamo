@@ -109,65 +109,18 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 * 
 	 * @param am the attribute model on which to base the column
 	 */
-	@SuppressWarnings("unchecked")
 	private void addColumn(AttributeModel am) {
 		if (am.isVisibleInGrid()) {
 			Column<T> column;
 			if (am.isUrl()) {
-				column = grid.addComponentColumn(t -> {
-					URLField urlField = new URLField(
-							new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")), am,
-							componentContext.isEditable()
-									&& GridEditMode.SIMULTANEOUS.equals(formOptions.getGridEditMode()));
-					urlField.setValue(ClassUtils.getFieldValueAsString(t, am.getPath(), ""));
-					return urlField;
-				});
+				column = addUrlColumn(am);
 			} else if (am.isNavigable() && AttributeType.MASTER.equals(am.getAttributeType())) {
-				// generate internal link field
 				column = grid.addComponentColumn(
 						t -> generateInternalLinkField(am, ClassUtils.getFieldValue(t, am.getPath())));
 			} else {
-				if (componentContext.isEditable() && GridEditMode.SIMULTANEOUS.equals(formOptions.getGridEditMode())
-						&& EditableType.EDITABLE.equals(am.getEditableType())) {
+				if (isSimultaneousEditMode(am)) {
 					// edit all columns at once
-					column = grid.addComponentColumn(t -> {
-						Component comp = constructCustomField(entityModel, am);
-						FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
-								.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(fieldFilters).viewMode(false)
-								.sharedProviders(sharedProviders).editableGrid(true).build();
-
-						if (comp == null) {
-							comp = fieldFactory.constructField(context);
-						}
-
-						// always hide label inside grid
-						VaadinUtils.setLabel(comp, "");
-
-						// store shared date provider so it can be used by multiple components
-						if (comp instanceof SharedProvider) {
-							DataProvider<?, ?> sharedProvider = ((SharedProvider<?>) comp).getSharedProvider();
-							if (sharedProvider instanceof ListDataProvider) {
-								sharedProviders.put(am.getPath(),
-										(DataProvider<?, SerializablePredicate<?>>) sharedProvider);
-							}
-						}
-
-						if (comp instanceof HasSize) {
-							((HasSize) comp).setSizeFull();
-						}
-
-						// delegate the binding to the enveloping component
-						BindingBuilder<T, ?> builder = doBind(t, comp, am.getPath());
-						if (builder != null) {
-							fieldFactory.addConvertersAndValidators(builder, am, context,
-									componentContext.findCustomConverter(am), componentContext.findCustomValidator(am),
-									null);
-							builder.bind(am.getPath());
-						}
-						postProcessComponent(t.getId(), am, comp);
-
-						return comp;
-					});
+					column = addEditableColumn(am);
 				} else {
 					column = grid.addColumn(t -> GridFormatUtils.extractAndFormat(am, t, VaadinUtils.getLocale(),
 							VaadinUtils.getTimeZoneId(), VaadinUtils.getCurrencySymbol()));
@@ -175,22 +128,8 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 			}
 
 			// edit row-by-row, create in-line edit component using binder
-			if (componentContext.isEditable() && GridEditMode.SINGLE_ROW.equals(formOptions.getGridEditMode())
-					&& EditableType.EDITABLE.equals(am.getEditableType())) {
-				Binder<T> binder = grid.getEditor().getBinder();
-				FieldCreationContext context = FieldCreationContext.create().attributeModel(am).viewMode(false)
-						.fieldFilters(fieldFilters).editableGrid(true).build();
-				Component comp = fieldFactory.constructField(context);
-				if (comp != null) {
-					Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?, ?>) comp);
-					if (am.isRequired()) {
-						builder.asRequired();
-					}
-					fieldFactory.addConvertersAndValidators(builder, am, context,
-							componentContext.findCustomConverter(am), componentContext.findCustomValidator(am), null);
-					builder.bind(am.getPath());
-				}
-				column.setEditorComponent(comp);
+			if (isSingleRowEditMode(am)) {
+				setEditorComponent(am, column);
 			}
 
 			column.setHeader(am.getDisplayName(VaadinUtils.getLocale())).setSortProperty(am.getActualSortPath())
@@ -198,6 +137,101 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 					.setKey(am.getPath()).setAutoWidth(true).setResizable(true).setId(am.getPath());
 		}
 
+	}
+
+	/**
+	 * Indicates whether the attribute is editable using a single row at a time
+	 * editor
+	 * 
+	 * @param am
+	 * @return
+	 */
+	private boolean isSingleRowEditMode(AttributeModel am) {
+		return componentContext.isEditable() && GridEditMode.SINGLE_ROW.equals(formOptions.getGridEditMode())
+				&& EditableType.EDITABLE.equals(am.getEditableType());
+	}
+
+	/**
+	 * Creates the editor component for the provided attribute model and column
+	 * 
+	 * @param am
+	 * @param column
+	 */
+	@SuppressWarnings("unchecked")
+	private void setEditorComponent(AttributeModel am, Column<T> column) {
+		Binder<T> binder = grid.getEditor().getBinder();
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(am).viewMode(false)
+				.fieldFilters(fieldFilters).editableGrid(true).build();
+		Component comp = fieldFactory.constructField(context);
+		if (comp != null) {
+			Binder.BindingBuilder<T, ?> builder = binder.forField((HasValue<?, ?>) comp);
+			if (am.isRequired()) {
+				builder.asRequired();
+			}
+			fieldFactory.addConvertersAndValidators(builder, am, context, componentContext.findCustomConverter(am),
+					componentContext.findCustomValidator(am), null);
+			builder.bind(am.getPath());
+		}
+		column.setEditorComponent(comp);
+	}
+
+	private boolean isSimultaneousEditMode(AttributeModel am) {
+		return componentContext.isEditable() && GridEditMode.SIMULTANEOUS.equals(formOptions.getGridEditMode())
+				&& EditableType.EDITABLE.equals(am.getEditableType());
+	}
+
+	@SuppressWarnings("unchecked")
+	private Column<T> addEditableColumn(AttributeModel am) {
+		return grid.addComponentColumn(t -> {
+			Component comp = constructCustomField(entityModel, am);
+			FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
+					.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(fieldFilters).viewMode(false)
+					.sharedProviders(sharedProviders).editableGrid(true).build();
+
+			if (comp == null) {
+				comp = fieldFactory.constructField(context);
+			}
+
+			// always hide label inside grid
+			VaadinUtils.setLabel(comp, "");
+
+			// store shared date provider so it can be used by multiple components
+			storeSharedProvider(am, comp);
+
+			if (comp instanceof HasSize) {
+				((HasSize) comp).setSizeFull();
+			}
+
+			// delegate the binding to the enveloping component
+			BindingBuilder<T, ?> builder = doBind(t, comp, am.getPath());
+			if (builder != null) {
+				fieldFactory.addConvertersAndValidators(builder, am, context, componentContext.findCustomConverter(am),
+						componentContext.findCustomValidator(am), null);
+				builder.bind(am.getPath());
+			}
+			postProcessComponent(t.getId(), am, comp);
+
+			return comp;
+		});
+	}
+
+	private void storeSharedProvider(AttributeModel am, Component comp) {
+		if (comp instanceof SharedProvider) {
+			DataProvider<?, ?> sharedProvider = ((SharedProvider<?>) comp).getSharedProvider();
+			if (sharedProvider instanceof ListDataProvider) {
+				sharedProviders.put(am.getPath(), (DataProvider<?, SerializablePredicate<?>>) sharedProvider);
+			}
+		}
+	}
+
+	private Column<T> addUrlColumn(AttributeModel am) {
+		return grid.addComponentColumn(t -> {
+			URLField urlField = new URLField(new TextField("", ClassUtils.getFieldValueAsString(t, am.getPath(), "")),
+					am,
+					componentContext.isEditable() && GridEditMode.SIMULTANEOUS.equals(formOptions.getGridEditMode()));
+			urlField.setValue(ClassUtils.getFieldValueAsString(t, am.getPath(), ""));
+			return urlField;
+		});
 	}
 
 	/**

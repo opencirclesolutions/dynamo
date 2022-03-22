@@ -36,6 +36,7 @@ public interface ExportService {
 	 * Exports to CSV
 	 * 
 	 * @param entityModel the entity model of the entity to export
+	 * @param mode        the desired export mode
 	 * @param predicate   the predicate
 	 * @param sortOrders  the list of sort orders
 	 * @param joins       the joins to use when fetching data
@@ -46,10 +47,10 @@ public interface ExportService {
 			FetchJoinInformation... joins);
 
 	/**
-	 * Exports a fixed set to CSV
+	 * Exports a fixed set of data to CSV
 	 * 
 	 * @param entityModel the entity model
-	 * @param mode        the export mode
+	 * @param mode        the desired export mode
 	 * @param items       the set of items to export
 	 * @return
 	 */
@@ -100,6 +101,7 @@ public interface ExportService {
 			ExportMode mode, Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, List<T> items);
 
 	/**
+	 * Exports pivoted data to Excel
 	 * 
 	 * @param <ID>
 	 * @param <T>

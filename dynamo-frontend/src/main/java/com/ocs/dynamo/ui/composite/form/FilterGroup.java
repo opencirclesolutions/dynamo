@@ -173,6 +173,77 @@ public class FilterGroup<T> {
 	}
 
 	/**
+	 * Handles a change of the filter value for a BETWEEN filter
+	 * 
+	 * @param field
+	 * @param value
+	 * @return
+	 */
+	private SerializablePredicate<T> handleBetweenFilterChange(Component field, Object value) {
+		SerializablePredicate<T> filter;
+		value = translateDateOnlyFilterValue(field, value);
+
+		// construct new filter for the selected field (or clear it)
+		if (field == this.auxField) {
+			// filter for the auxiliary field
+			if (value != null) {
+				auxFieldFilter = new LessOrEqualPredicate<>(propertyId, value);
+			} else {
+				auxFieldFilter = null;
+			}
+		} else {
+			// filter for the main field
+			if (value != null) {
+				mainFilter = new GreaterOrEqualPredicate<>(propertyId, value);
+			} else {
+				mainFilter = null;
+			}
+		}
+
+		// construct the aggregate filter
+		if (auxFieldFilter != null && mainFilter != null) {
+			filter = new AndPredicate<>(mainFilter, auxFieldFilter);
+		} else if (auxFieldFilter != null) {
+			filter = auxFieldFilter;
+		} else {
+			filter = mainFilter;
+		}
+		return filter;
+	}
+
+	private SerializablePredicate<T> handleFilterValueDefault(Object value, SerializablePredicate<T> filter) {
+		if (attributeModel.isSearchDateOnly() && value != null) {
+			LocalDate ldt = (LocalDate) value;
+			if (LocalDateTime.class.equals(attributeModel.getType())) {
+				filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(),
+						ldt.atStartOfDay().plusDays(1).minusNanos(1));
+			} else {
+				// zoned date time
+				filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(VaadinUtils.getTimeZoneId()),
+						ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1));
+			}
+		} else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
+			filter = new EqualsPredicate<>(propertyId, value);
+		}
+		return filter;
+	}
+
+	private SerializablePredicate<T> handleLikeFilterValue(Object value, SerializablePredicate<T> filter) {
+		if (value != null) {
+			if (value instanceof Collection<?>) {
+				filter = new EqualsPredicate<>(propertyId, value);
+			} else {
+				String valueStr = value.toString();
+				if (StringUtils.isNotEmpty(valueStr)) {
+					filter = new SimpleStringPredicate<>(propertyId, valueStr, attributeModel.isSearchPrefixOnly(),
+							attributeModel.isSearchCaseSensitive());
+				}
+			}
+		}
+		return filter;
+	}
+
+	/**
 	 * Resets the search filters for both fields
 	 */
 	public void reset() {
@@ -206,6 +277,31 @@ public class FilterGroup<T> {
 		}
 	}
 
+	private Object translateDateOnlyFilterValue(Component field, Object value) {
+		if (attributeModel.isSearchDateOnly()) {
+			if (value != null) {
+				if (LocalDateTime.class.equals(attributeModel.getType())) {
+					if (field == this.auxField) {
+						LocalDate ldt = (LocalDate) value;
+						value = ldt.atStartOfDay().plusDays(1).minus(1, ChronoUnit.MILLIS);
+					} else {
+						LocalDate ldt = (LocalDate) value;
+						value = ldt.atStartOfDay();
+					}
+				} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
+					if (field == this.auxField) {
+						LocalDate ldt = (LocalDate) value;
+						value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minus(1, ChronoUnit.MILLIS);
+					} else {
+						LocalDate ldt = (LocalDate) value;
+						value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
+					}
+				}
+			}
+		}
+		return value;
+	}
+
 	/**
 	 * Respond to a value change
 	 * 
@@ -220,86 +316,16 @@ public class FilterGroup<T> {
 
 		switch (filterType) {
 		case BETWEEN:
-			if (attributeModel.isSearchDateOnly()) {
-				if (value != null) {
-					if (LocalDateTime.class.equals(attributeModel.getType())) {
-						if (field == this.auxField) {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay().plusDays(1).minus(1, ChronoUnit.MILLIS);
-						} else {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay();
-						}
-					} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
-						if (field == this.auxField) {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minus(1,
-									ChronoUnit.MILLIS);
-						} else {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
-						}
-					}
-				}
-			}
-
-			// construct new filter for the selected field (or clear it)
-			if (field == this.auxField) {
-				// filter for the auxiliary field
-				if (value != null) {
-					auxFieldFilter = new LessOrEqualPredicate<>(propertyId, value);
-				} else {
-					auxFieldFilter = null;
-				}
-			} else {
-				// filter for the main field
-				if (value != null) {
-					mainFilter = new GreaterOrEqualPredicate<>(propertyId, value);
-				} else {
-					mainFilter = null;
-				}
-			}
-
-			// construct the aggregate filter
-			if (auxFieldFilter != null && mainFilter != null) {
-				filter = new AndPredicate<>(mainFilter, auxFieldFilter);
-			} else if (auxFieldFilter != null) {
-				filter = auxFieldFilter;
-			} else {
-				filter = mainFilter;
-			}
-
+			filter = handleBetweenFilterChange(field, value);
 			break;
 		case LIKE:
 			// like filter for comparing string fields
-			if (value != null) {
-				if (value instanceof Collection<?>) {
-					filter = new EqualsPredicate<>(propertyId, value);
-				} else {
-					String valueStr = value.toString();
-					if (StringUtils.isNotEmpty(valueStr)) {
-						filter = new SimpleStringPredicate<>(propertyId, valueStr, attributeModel.isSearchPrefixOnly(),
-								attributeModel.isSearchCaseSensitive());
-					}
-				}
-			}
+			filter = handleLikeFilterValue(value, filter);
 			break;
 		default:
 			// in case of exact search on a date, translate to an interval covering all
 			// times within that date
-			if (attributeModel.isSearchDateOnly() && value != null) {
-				LocalDate ldt = (LocalDate) value;
-				if (LocalDateTime.class.equals(attributeModel.getType())) {
-					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(),
-							ldt.atStartOfDay().plusDays(1).minusNanos(1));
-				} else {
-					// zoned date time
-					filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(VaadinUtils.getTimeZoneId()),
-							ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1));
-				}
-			} else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
-				filter = new EqualsPredicate<>(propertyId, value);
-			}
+			filter = handleFilterValueDefault(value, filter);
 		}
 
 		// store the current filter

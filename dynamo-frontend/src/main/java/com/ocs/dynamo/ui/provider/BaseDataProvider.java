@@ -41,6 +41,9 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Abstract class for data providers
  * 
@@ -54,37 +57,47 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 
 	private static final long serialVersionUID = 7409567551591729117L;
 
+	@Getter
 	private final EntityModel<T> entityModel;
 
 	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
+	@Getter
 	private final FetchJoinInformation[] joins;
 
 	/**
 	 * The maximum number of search results to include in the results table
 	 */
+	@Getter
+	@Setter
 	private Integer maxResults;
 
 	/**
 	 * The message service
 	 */
+	@Getter
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * The service used to query the DB
 	 */
+	@Getter
 	private final BaseService<ID, T> service;
 
 	/**
 	 * ID of the currently selected item
 	 */
+	@Getter
+	@Setter
 	private ID currentlySelectedId;
 
 	/**
 	 * Sort orders to fall back to when no sort orders are defined directly on the
 	 * grid
 	 */
-	private List<com.vaadin.flow.data.provider.SortOrder<?>> fallBackSortOrders;
+	@Getter
+	@Setter
+	private List<com.vaadin.flow.data.provider.SortOrder<?>> fallbackSortOrders;
 
 	/**
 	 * The IDs of the entities to display
@@ -94,6 +107,8 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	/**
 	 * Code to carry out after the count query completes
 	 */
+	@Getter
+	@Setter
 	private Consumer<Integer> afterCountCompleted;
 
 	/**
@@ -120,40 +135,9 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		SortOrders so = new SortOrders();
 
 		if (!orders.isEmpty()) {
-			for (QuerySortOrder order : orders) {
-				String sorted = order.getSorted();
-				AttributeModel am = entityModel.getAttributeModel(sorted);
-				if (am != null && am.isSortable()) {
-					sorted = am.getActualSortPath();
-				} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
-					// it is possible that a sort order was preserved that is not valid for this
-					// provider. In that case,
-					// do not sort
-					sorted = null;
-				}
-				if (sorted != null) {
-					so.addSortOrder(new SortOrder(sorted,
-							SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
-				}
-			}
-		} else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {
-			for (com.vaadin.flow.data.provider.SortOrder<?> order : fallBackSortOrders) {
-				String sorted = order.getSorted().toString();
-				AttributeModel am = entityModel.getAttributeModel(sorted);
-				if (am != null && am.isSortable()) {
-					sorted = am.getActualSortPath();
-				} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
-					// it is possible that a sort order was preserved that is not valid for this
-					// provider. In that case,
-					// do not sort
-					sorted = null;
-				}
-
-				if (sorted != null) {
-					so.addSortOrder(new SortOrder(sorted,
-							SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
-				}
-			}
+			addExplicitSortOrders(orders, so);
+		} else if (fallbackSortOrders != null && !fallbackSortOrders.isEmpty()) {
+			addFallbackSortOrders(so);
 		}
 
 		// if no sort order defined, order descending on ID
@@ -164,23 +148,46 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 		return so;
 	}
 
+	private void addFallbackSortOrders(SortOrders so) {
+		for (com.vaadin.flow.data.provider.SortOrder<?> order : fallbackSortOrders) {
+			String sorted = order.getSorted().toString();
+			AttributeModel am = entityModel.getAttributeModel(sorted);
+			if (am != null && am.isSortable()) {
+				sorted = am.getActualSortPath();
+			} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
+				// it is possible that a sort order was preserved that is not valid for this
+				// provider. In that case,
+				// do not sort
+				sorted = null;
+			}
+
+			if (sorted != null) {
+				so.addSortOrder(new SortOrder(sorted,
+						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+			}
+		}
+	}
+
+	private void addExplicitSortOrders(List<QuerySortOrder> orders, SortOrders so) {
+		for (QuerySortOrder order : orders) {
+			String sorted = order.getSorted();
+			AttributeModel am = entityModel.getAttributeModel(sorted);
+			if (am != null && am.isSortable()) {
+				sorted = am.getActualSortPath();
+			} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
+				// it is possible that a sort order was preserved that is not valid for this
+				// provider. In that case,
+				// do not sort
+				sorted = null;
+			}
+			if (sorted != null) {
+				so.addSortOrder(new SortOrder(sorted,
+						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+			}
+		}
+	}
+
 	public abstract ID firstItemId();
-
-	public Consumer<Integer> getAfterCountCompleted() {
-		return afterCountCompleted;
-	}
-
-	protected ID getCurrentlySelectedId() {
-		return currentlySelectedId;
-	}
-
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public List<com.vaadin.flow.data.provider.SortOrder<?>> getFallBackSortOrders() {
-		return fallBackSortOrders;
-	}
 
 	protected FilterConverter<T> getFilterConverter() {
 		EntityModel<T> em = getEntityModel();
@@ -188,18 +195,6 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 			em = entityModelFactory.getModel(getService().getEntityClass());
 		}
 		return new FilterConverter<>(em);
-	}
-
-	public FetchJoinInformation[] getJoins() {
-		return joins;
-	}
-
-	public Integer getMaxResults() {
-		return maxResults;
-	}
-
-	public MessageService getMessageService() {
-		return messageService;
 	}
 
 	public ID getNextItemId() {
@@ -218,10 +213,6 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 			return currentlySelectedId;
 		}
 		return null;
-	}
-
-	public BaseService<ID, T> getService() {
-		return service;
 	}
 
 	/**
@@ -266,22 +257,6 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	@Override
 	public boolean isInMemory() {
 		return false;
-	}
-
-	public void setAfterCountCompleted(Consumer<Integer> afterCountCompleted) {
-		this.afterCountCompleted = afterCountCompleted;
-	}
-
-	public void setCurrentlySelectedId(ID id) {
-		this.currentlySelectedId = id;
-	}
-
-	public void setFallBackSortOrders(List<com.vaadin.flow.data.provider.SortOrder<?>> fallBackSortOrders) {
-		this.fallBackSortOrders = fallBackSortOrders;
-	}
-
-	public void setMaxResults(final Integer maxResults) {
-		this.maxResults = maxResults;
 	}
 
 	/**

@@ -192,36 +192,9 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 		boolean missing = false;
 
 		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-			for (SortOrder<?> o : getSortOrders()) {
-				if (getGrid().getColumnByKey((String) o.getSorted()) != null) {
-					// only include column in sort order if it is present in the grid
-					if (SortDirection.ASCENDING.equals(o.getDirection())) {
-						builder.thenAsc(getGrid().getColumnByKey(o.getSorted().toString()));
-					} else {
-						builder.thenDesc(getGrid().getColumnByKey(o.getSorted().toString()));
-					}
-				} else {
-					missing = true;
-				}
-				fallBackOrders.add(o);
-			}
+			missing = initExplicitSortOrders(fallBackOrders, builder);
 		} else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
-			// sort based on the entity model
-
-			for (AttributeModel am : getEntityModel().getSortOrder().keySet()) {
-				boolean asc = getEntityModel().getSortOrder().get(am);
-				if (getGrid().getColumnByKey(am.getPath()) != null) {
-					if (asc) {
-						builder.thenAsc(getGrid().getColumnByKey(am.getPath()));
-					} else {
-						builder.thenDesc(getGrid().getColumnByKey(am.getPath()));
-					}
-				} else {
-					missing = true;
-				}
-				fallBackOrders.add(new SortOrder<String>(am.getActualSortPath(),
-						asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
-			}
+			missing = initDefaultSortOrders(fallBackOrders, builder);
 		}
 
 		// use grid sorting only if all columns are present. otherwise use fallback
@@ -231,6 +204,43 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 
 		return fallBackOrders;
 
+	}
+
+	private boolean initDefaultSortOrders(List<SortOrder<?>> fallBackOrders, GridSortOrderBuilder<U> builder) {
+		boolean missing = false;
+		for (AttributeModel am : getEntityModel().getSortOrder().keySet()) {
+			boolean asc = getEntityModel().getSortOrder().get(am);
+			if (getGrid().getColumnByKey(am.getPath()) != null) {
+				if (asc) {
+					builder.thenAsc(getGrid().getColumnByKey(am.getPath()));
+				} else {
+					builder.thenDesc(getGrid().getColumnByKey(am.getPath()));
+				}
+			} else {
+				missing = true;
+			}
+			fallBackOrders.add(new SortOrder<String>(am.getActualSortPath(),
+					asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
+		}
+		return missing;
+	}
+
+	private boolean initExplicitSortOrders(List<SortOrder<?>> fallBackOrders, GridSortOrderBuilder<U> builder) {
+		boolean missing = false;
+		for (SortOrder<?> o : getSortOrders()) {
+			if (getGrid().getColumnByKey((String) o.getSorted()) != null) {
+				// only include column in sort order if it is present in the grid
+				if (SortDirection.ASCENDING.equals(o.getDirection())) {
+					builder.thenAsc(getGrid().getColumnByKey(o.getSorted().toString()));
+				} else {
+					builder.thenDesc(getGrid().getColumnByKey(o.getSorted().toString()));
+				}
+			} else {
+				missing = true;
+			}
+			fallBackOrders.add(o);
+		}
+		return missing;
 	}
 
 	public abstract void reloadDataProvider();

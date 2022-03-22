@@ -1,5 +1,7 @@
 package com.ocs.dynamo.ui.composite.dialog;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -46,8 +48,10 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
 				.advancedSearchMode(false).build();
 		ModelBasedSearchDialog<Integer, TestEntity> dialog = new ModelBasedSearchDialog<>(testEntityService,
 				entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, options);
-		dialog.build();
-		dialog.select(e1);
+		assertDoesNotThrow(() -> {
+			dialog.build();
+			dialog.select(e1);
+		});
 	}
 
 	@Test
@@ -60,7 +64,9 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
 
 		ModelBasedSearchDialog<Integer, TestEntity> dialog = new ModelBasedSearchDialog<>(testEntityService,
 				entityModelFactory.getModel(TestEntity.class), filters, null, options);
-		dialog.build();
+		assertDoesNotThrow(() -> {
+			dialog.build();
+		});
 	}
 
 	@Test
@@ -71,6 +77,11 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
 				entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, options);
 		dialog.build();
 		dialog.select(Lists.newArrayList(e1, e2));
+
+		assertDoesNotThrow(() -> {
+			dialog.build();
+			dialog.select(Lists.newArrayList(e1, e2));
+		});
 	}
 
 }

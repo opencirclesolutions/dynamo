@@ -1,5 +1,6 @@
 package com.ocs.dynamo.ui.composite.export.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -39,8 +40,7 @@ public class PivotExportDialogTest extends BaseMockitoTest {
 
 		PivotedExportDialog<Integer, TestEntity> dialog = new PivotedExportDialog<>(exportService, em, null, null, null,
 				pars);
-		dialog.build();
-		dialog.open();
+		assertDoesNotThrow(() -> dialog.buildAndOpen());
 
 	}
 }

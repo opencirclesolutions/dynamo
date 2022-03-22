@@ -1,5 +1,6 @@
 package com.ocs.dynamo.envers.dao.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
@@ -154,34 +155,35 @@ public class PersonRevisionDaoImplTest extends BackendIntegrationTest {
 		assertEquals(0, findIds.size());
 
 		status = startTransaction();
-		
+
 		Person person2 = new Person();
 		person2.setName("Boris");
 		person2 = personDao.save(person2);
-		
+
 		commitTransaction(status);
 
 		findIds = personRevisionDao.findIds(new Like("name", "%Bo%"));
 		assertEquals(2, findIds.size());
-		
+
 		list = personRevisionDao.fetchByIds(findIds, null);
 		assertEquals(2, findIds.size());
 	}
 
 	@Test
 	public void testFiltering() {
-		// no filter
-		personRevisionDao.fetch(null, (Pageable) null);
-		personRevisionDao.fetch(new Compare.Equal("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.GreaterOrEqual("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.Greater("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.LessOrEqual("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Compare.Less("name", "Kevin"), (Pageable) null);
-		personRevisionDao.fetch(new Not(new Compare.Equal("name", "Kevin")), (Pageable) null);
-		personRevisionDao.fetch(new And(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
-				(Pageable) null);
-		personRevisionDao.fetch(new Or(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
-				(Pageable) null);
+		assertDoesNotThrow(() -> {
+			personRevisionDao.fetch(null, (Pageable) null);
+			personRevisionDao.fetch(new Compare.Equal("name", "Kevin"), (Pageable) null);
+			personRevisionDao.fetch(new Compare.GreaterOrEqual("name", "Kevin"), (Pageable) null);
+			personRevisionDao.fetch(new Compare.Greater("name", "Kevin"), (Pageable) null);
+			personRevisionDao.fetch(new Compare.LessOrEqual("name", "Kevin"), (Pageable) null);
+			personRevisionDao.fetch(new Compare.Less("name", "Kevin"), (Pageable) null);
+			personRevisionDao.fetch(new Not(new Compare.Equal("name", "Kevin")), (Pageable) null);
+			personRevisionDao.fetch(new And(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
+					(Pageable) null);
+			personRevisionDao.fetch(new Or(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
+					(Pageable) null);
+		});
 	}
 
 }

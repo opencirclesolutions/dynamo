@@ -91,7 +91,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 			// any other OCS runtime exception
 			log.error(ex.getMessage(), ex);
 			showErrorNotification(ex.getMessage());
-		} else if (ex instanceof OptimisticLockException | ex instanceof ObjectOptimisticLockingFailureException) {
+		} else if (ex instanceof OptimisticLockException || ex instanceof ObjectOptimisticLockingFailureException) {
 			// optimistic lock
 			log.error(ex.getMessage(), ex);
 			showErrorNotification(message("ocs.optimistic.lock"));

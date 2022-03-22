@@ -375,6 +375,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	}
 
 	@Override
+	@Transactional
 	public List<RevisionKey<ID>> findIds(Filter filter, SortOrder... sortOrders) {
 		return findIds(filter, null, sortOrders);
 	}

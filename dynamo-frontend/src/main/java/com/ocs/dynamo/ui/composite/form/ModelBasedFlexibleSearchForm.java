@@ -264,28 +264,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private SerializablePredicate<T> constructFilter(HasValue<?, ?> field, Object value) {
 			SerializablePredicate<T> filter = null;
 
-			// convert "date only" search fields
-			if (am.isSearchDateOnly() && !am.isSearchForExactValue()) {
-				if (value != null) {
-					if (LocalDateTime.class.equals(am.getType())) {
-						if (field == this.auxValueComponent) {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay().plusDays(1).minusNanos(1);
-						} else {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay();
-						}
-					} else if (ZonedDateTime.class.equals(am.getType())) {
-						if (field == this.auxValueComponent) {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1);
-						} else {
-							LocalDate ldt = (LocalDate) value;
-							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
-						}
-					}
-				}
-			}
+			value = convertDateOnlyFilter(field, value);
 
 			switch (this.filterType) {
 			case BETWEEN:
@@ -321,24 +300,74 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 				filter = new NotPredicate<>(createStringFilter(value, true));
 				break;
 			default:
-				if (value != null && am.isSearchDateOnly() && am.isSearchForExactValue()) {
-					LocalDate ldt = (LocalDate) value;
-					if (LocalDateTime.class.equals(am.getType())) {
-						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(),
-								ldt.atStartOfDay().plusDays(1).minusNanos(1));
-					} else {
-						// zoned date time
-						filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(VaadinUtils.getTimeZoneId()),
-								ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1));
-					}
-				}
-				// default case (simple comparison or non-empty collection)
-				else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
-					filter = new EqualsPredicate<>(am.getPath(), value);
-				}
+				filter = convertFilterDefault(value, filter);
 				break;
 			}
 			return filter;
+		}
+
+		/**
+		 * default conversion of search filter value.
+		 * 
+		 * @param value
+		 * @param filter
+		 * @return
+		 */
+		private SerializablePredicate<T> convertFilterDefault(Object value, SerializablePredicate<T> filter) {
+			if (value != null && am.isSearchDateOnly() && am.isSearchForExactValue()) {
+				filter = convertDateOnlyExactMatchFilter(value);
+			}
+			// default case (simple comparison or non-empty collection)
+			else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+				filter = new EqualsPredicate<>(am.getPath(), value);
+			}
+			return filter;
+		}
+
+		private SerializablePredicate<T> convertDateOnlyExactMatchFilter(Object value) {
+			SerializablePredicate<T> filter;
+			LocalDate ldt = (LocalDate) value;
+			if (LocalDateTime.class.equals(am.getType())) {
+				filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(),
+						ldt.atStartOfDay().plusDays(1).minusNanos(1));
+			} else {
+				// zoned date time
+				filter = new BetweenPredicate<>(am.getPath(), ldt.atStartOfDay(VaadinUtils.getTimeZoneId()),
+						ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1));
+			}
+			return filter;
+		}
+
+		/**
+		 * Converts a "date only" filter value by adding the time stamp. 
+		 * 
+		 * @param field
+		 * @param value
+		 * @return
+		 */
+		private Object convertDateOnlyFilter(HasValue<?, ?> field, Object value) {
+			if (am.isSearchDateOnly() && !am.isSearchForExactValue()) {
+				if (value != null) {
+					if (LocalDateTime.class.equals(am.getType())) {
+						if (field == this.auxValueComponent) {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay().plusDays(1).minusNanos(1);
+						} else {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay();
+						}
+					} else if (ZonedDateTime.class.equals(am.getType())) {
+						if (field == this.auxValueComponent) {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1);
+						} else {
+							LocalDate ldt = (LocalDate) value;
+							value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
+						}
+					}
+				}
+			}
+			return value;
 		}
 
 		/**
@@ -632,6 +661,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 
 		/**
 		 * Rebuild any currently selected filters
+		 * 
 		 * @param restoring whether we are restoring an existing set of filters
 		 */
 		private void replaceFilters(boolean restoring) {

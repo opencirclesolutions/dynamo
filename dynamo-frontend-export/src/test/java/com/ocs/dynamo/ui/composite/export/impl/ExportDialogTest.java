@@ -1,5 +1,6 @@
 package com.ocs.dynamo.ui.composite.export.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -18,26 +19,25 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
 
 public class ExportDialogTest extends BaseMockitoTest {
 
-    @Mock
-    private ExportService exportService;
+	@Mock
+	private ExportService exportService;
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
+	private EntityModelFactory emf = new EntityModelFactoryImpl();
 
-    @BeforeEach
-    public void setup() {
-        MockVaadin.setup();
-    }
+	@BeforeEach
+	public void setup() {
+		MockVaadin.setup();
+	}
 
-    @Test
-    public void test() {
-        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+	@Test
+	public void test() {
+		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
 
-        when(exportService.exportCsv(em, ExportMode.FULL, null, null)).thenReturn(new byte[] { 1, 2, 3 });
-        when(exportService.exportExcel(em, ExportMode.FULL, null, null, null)).thenReturn(new byte[] { 1, 2, 3 });
+		when(exportService.exportCsv(em, ExportMode.FULL, null, null)).thenReturn(new byte[] { 1, 2, 3 });
+		when(exportService.exportExcel(em, ExportMode.FULL, null, null, null)).thenReturn(new byte[] { 1, 2, 3 });
 
-        ExportDialog<Integer, TestEntity> dialog = new ExportDialog<>(exportService, em, ExportMode.FULL, null, null, null);
-        dialog.build();
-        dialog.open();
-
-    }
+		ExportDialog<Integer, TestEntity> dialog = new ExportDialog<>(exportService, em, ExportMode.FULL, null, null,
+				null);
+		assertDoesNotThrow(() -> dialog.buildAndOpen());
+	}
 }

@@ -196,11 +196,11 @@ public final class JpaQueryBuilder {
 			value = ((String) value).replace('%', ' ').trim();
 
 			String str = (String) value;
-			if (StringUtils.isNumeric(str.replaceAll("\\.", "").replaceAll(",", ""))) {
+			if (StringUtils.isNumeric(str.replace(".", "").replace(",", ""))) {
 				// first remove all periods (which may be used as
 				// thousand
 				// separators), then replace comma by period
-				str = str.replaceAll("\\.", "").replace(',', '.');
+				str = str.replace(".", "").replace(',', '.');
 				value = str;
 			}
 		}

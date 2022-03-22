@@ -122,7 +122,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	@SuppressWarnings("unchecked")
 	private EntityModel<T> determineEntityModel() {
 		EntityModel<T> actualModel;
-		if (getEntityModel().isBaseEntityModel() || getEntityModel().getReference().indexOf(".") > 0) {
+		if (getEntityModel().isBaseEntityModel() || getEntityModel().getReference().indexOf(".") >= 0) {
 			actualModel = (EntityModel<T>) entityModelFactory.getModel(getAttributeModel().getNormalizedType());
 		} else {
 			actualModel = getEntityModel();

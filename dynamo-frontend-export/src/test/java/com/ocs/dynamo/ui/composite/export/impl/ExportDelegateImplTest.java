@@ -1,9 +1,10 @@
 package com.ocs.dynamo.ui.composite.export.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+
 import java.util.ArrayList;
 
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -16,30 +17,29 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.composite.export.ExportService;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 
-@Disabled
 public class ExportDelegateImplTest extends BaseMockitoTest {
 
-    @BeforeEach
-    public void setup() {
-        MockVaadin.setup();
-    }
+	@BeforeEach
+	public void setup() {
+		MockVaadin.setup();
+	}
 
-    @Mock
-    private ExportService exportService;
+	@Mock
+	private ExportService exportService;
 
-    private ExportDelegateImpl delegate = new ExportDelegateImpl();
+	private ExportDelegateImpl delegate = new ExportDelegateImpl();
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    @Test
-    public void testExport() {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-        delegate.export(em, ExportMode.FULL, null, null);
-    }
+	@Test
+	public void testExport() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		assertDoesNotThrow(() -> delegate.export(em, ExportMode.FULL, null, null));
+	}
 
-    @Test
-    public void testExportFixed() {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-        delegate.exportFixed(em, ExportMode.FULL, new ArrayList<>());
-    }
+	@Test
+	public void testExportFixed() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		assertDoesNotThrow(() -> delegate.exportFixed(em, ExportMode.FULL, new ArrayList<>()));
+	}
 }

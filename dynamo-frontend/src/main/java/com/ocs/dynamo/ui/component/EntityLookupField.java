@@ -213,61 +213,64 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		selectButton = new Button("");
 		selectButton.setIcon(VaadinIcon.SEARCH.create());
 		VaadinUtils.setTooltip(selectButton, getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
-		selectButton.addClickListener(event -> {
-			List<SerializablePredicate<T>> filterList = new ArrayList<>();
-			if (getFilter() != null) {
-				filterList.add(getFilter());
-			}
-			if (getAdditionalFilter() != null) {
-				filterList.add(getAdditionalFilter());
-			}
-
-			dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(), filterList, sortOrders,
-					searchOptions, getJoins());
-			dialog.setOnClose(() -> {
-				if (searchOptions.isMultiSelect()) {
-					if (EntityLookupField.this.getValue() == null) {
-						EntityLookupField.this.setValue(dialog.getSelectedItems());
-					} else {
-						// add selected items to already selected items
-						@SuppressWarnings("unchecked")
-						Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
-
-						for (T selectedItem : dialog.getSelectedItems()) {
-							if (!cumulative.contains(selectedItem)) {
-								cumulative.add(selectedItem);
-							}
-						}
-
-						EntityLookupField.this.setValue(cumulative);
-					}
-				} else {
-					// single value select
-					EntityLookupField.this.setValue(dialog.getSelectedItem());
-				}
-				return true;
-			});
-
-			dialog.setAfterOpen(() -> {
-				if (searchOptions.isMultiSelect()) {
-					Runnable run = () -> {
-						try {
-							Thread.sleep(200);
-							ui.access(() -> selectValuesInDialog(dialog));
-						} catch (Exception e) {
-							// do nothing
-						}
-
-					};
-					new Thread(run).start();
-				}
-			});
-
-			dialog.buildAndOpen();
-
-		});
+		selectButton.addClickListener(event -> showSearchDialog());
 		bar.add(selectButton);
 
+	}
+
+	private void showSearchDialog() {
+		List<SerializablePredicate<T>> filterList = new ArrayList<>();
+		if (getFilter() != null) {
+			filterList.add(getFilter());
+		}
+		if (getAdditionalFilter() != null) {
+			filterList.add(getAdditionalFilter());
+		}
+
+		dialog = new ModelBasedSearchDialog<ID, T>(getService(), getEntityModel(), filterList, sortOrders,
+				searchOptions, getJoins());
+		dialog.setOnClose(() -> onDialogClose());
+		dialog.setAfterOpen(() -> afterOpen());
+		dialog.buildAndOpen();
+	}
+
+	private Boolean onDialogClose() {
+		if (searchOptions.isMultiSelect()) {
+			if (EntityLookupField.this.getValue() == null) {
+				EntityLookupField.this.setValue(dialog.getSelectedItems());
+			} else {
+				// add selected items to already selected items
+				@SuppressWarnings("unchecked")
+				Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
+
+				for (T selectedItem : dialog.getSelectedItems()) {
+					if (!cumulative.contains(selectedItem)) {
+						cumulative.add(selectedItem);
+					}
+				}
+
+				EntityLookupField.this.setValue(cumulative);
+			}
+		} else {
+			// single value select
+			EntityLookupField.this.setValue(dialog.getSelectedItem());
+		}
+		return true;
+	}
+
+	private void afterOpen() {
+		if (searchOptions.isMultiSelect()) {
+			Runnable run = () -> {
+				try {
+					Thread.sleep(200);
+					ui.access(() -> selectValuesInDialog(dialog));
+				} catch (Exception e) {
+					// do nothing
+				}
+
+			};
+			new Thread(run).start();
+		}
 	}
 
 	@Override
