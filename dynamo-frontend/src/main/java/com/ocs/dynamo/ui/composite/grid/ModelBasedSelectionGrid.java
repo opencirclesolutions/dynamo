@@ -130,7 +130,7 @@ public class ModelBasedSelectionGrid<ID extends Serializable, T extends Abstract
 			addSortListener(event -> {
 				UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 				if (helper != null && formOptions.isPreserveSortOrders()) {
-					List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(entityModel, event.getSortOrder());
+					List<SortOrder<?>> collect = SortOrderUtil.restoreSortOrder(event.getSortOrder());
 					helper.storeSortOrders(collect);
 				}
 			});

@@ -20,7 +20,9 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -34,6 +36,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
 		implements Serializable {
 
@@ -43,16 +46,8 @@ public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainP
 	@JoinColumn(name = "parent")
 	private P parent;
 
-	public DomainChild() {
-	}
-
-	public DomainChild(String code, String name) {
+	protected DomainChild(String code, String name) {
 		super(code, name);
 	}
-	
-//    @Override
-//    public String toString() {
-//        return ReflectionToStringBuilder.toStringExclude(this, "parent", "region");
-//    }
 
 }

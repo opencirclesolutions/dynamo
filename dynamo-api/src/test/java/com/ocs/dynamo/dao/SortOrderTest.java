@@ -1,7 +1,6 @@
 package com.ocs.dynamo.dao;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -48,8 +47,8 @@ public class SortOrderTest {
 		SortOrder order2 = new SortOrder("test");
 		SortOrder order3 = new SortOrder("test", Direction.DESC);
 
-		assertFalse(order1.equals(null));
-		assertFalse(order1.equals(new Object()));
+		assertNotEquals(null, order1);
+		assertNotEquals(new Object(), order1);
 
 		assertEquals(order1, order1);
 		assertEquals(order1, order2);

@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.composite.grid;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import com.ocs.dynamo.domain.model.EntityModel;
 import com.vaadin.flow.component.grid.GridSortOrder;
 import com.vaadin.flow.data.provider.SortOrder;
 
@@ -31,18 +30,15 @@ import lombok.experimental.UtilityClass;
 public final class SortOrderUtil {
 
 	/**
-	 * Translates a list of sort orders from GridSortOrder to SortOrder
-	 * 
+	 * Translates a list of grid sort orders to a list of SortOrders
 	 * @param <T>
-	 * @param entityModel
 	 * @param gridSort
 	 * @return
 	 */
-	public static <T> List<SortOrder<?>> restoreSortOrder(EntityModel<T> entityModel, List<GridSortOrder<T>> gridSort) {
-		List<SortOrder<?>> collect = gridSort.stream().map(s -> {
+	public static <T> List<SortOrder<?>> restoreSortOrder(List<GridSortOrder<T>> gridSort) {
+		return gridSort.stream().map(s -> {
 			String prop = s.getSorted().getKey();
 			return new SortOrder<>(prop, s.getDirection());
 		}).collect(Collectors.toList());
-		return collect;
 	}
 }

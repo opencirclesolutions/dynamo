@@ -25,26 +25,29 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
 
 /**
  * Base class for CSV exports
+ * 
  * @author Bas Rutten
  *
  * @param <ID> the type of the primary key of the entity to export
- * @param <T> the type of the entity to export
+ * @param <T>  the type of the entity to export
  */
-public abstract class BaseCsvExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseExportTemplate<ID, T> {
+public abstract class BaseCsvExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
+		extends BaseExportTemplate<ID, T> {
 
-    /**
-     * Constructor
-     * @param service
-     * @param entityModel
-     * @param exportMode
-     * @param sortOrders
-     * @param filter
-     * @param title
-     * @param joins
-     */
-    public BaseCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode, SortOrder[] sortOrders,
-            Filter filter, String title, FetchJoinInformation[] joins) {
-        super(service, entityModel, exportMode, sortOrders, filter, title, joins);
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service
+	 * @param entityModel
+	 * @param exportMode
+	 * @param sortOrders
+	 * @param filter
+	 * @param title
+	 * @param joins
+	 */
+	protected BaseCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+			SortOrder[] sortOrders, Filter filter, String title, FetchJoinInformation[] joins) {
+		super(service, entityModel, exportMode, sortOrders, filter, title, joins);
+	}
 
 }

@@ -339,7 +339,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		}
 
 		/**
-		 * Converts a "date only" filter value by adding the time stamp. 
+		 * Converts a "date only" filter value by adding the time stamp.
 		 * 
 		 * @param field
 		 * @param value
@@ -668,7 +668,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			ComboBox<FlexibleFilterType> newTypeFilterCombo = new ComboBox<>(message("ocs.type"));
 			newTypeFilterCombo.setWidth("250px");
 			ValueChangeListener<ValueChangeEvent<FlexibleFilterType>> ccl = event -> handleFilterTypeChange(
-					(FlexibleFilterType) event.getValue());
+					event.getValue());
 			newTypeFilterCombo.addValueChangeListener(ccl);
 			newTypeFilterCombo.setItems(getFilterTypes(am));
 			newTypeFilterCombo.setItemLabelGenerator(item -> getMessageService()

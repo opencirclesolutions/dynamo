@@ -131,7 +131,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		DataProvider<?, SerializablePredicate<?>> sharedProvider = context.getSharedProvider(am.getPath());
 
 		// for read-only attributes, do not render a field unless it's a link field or
-		// unless the component is inside a search form
+		// the component is inside a search form
 		if (EditableType.READ_ONLY.equals(am.getEditableType()) && !AttributeType.DETAIL.equals(am.getAttributeType())
 				&& !context.isSearch()) {
 			return null;
@@ -159,9 +159,9 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @param fieldFilter    the field filter to apply
 	 * @return
 	 */
-	private <ID extends Serializable, T extends AbstractEntity<ID>> Component findAndInvokeComponentCreator(
-			FieldCreationContext context, AttributeModel attributeModel, EntityModel<?> entityModel,
-			DataProvider<?, SerializablePredicate<?>> sharedProvider, SerializablePredicate<?> fieldFilter) {
+	private Component findAndInvokeComponentCreator(FieldCreationContext context, AttributeModel attributeModel,
+			EntityModel<?> entityModel, DataProvider<?, SerializablePredicate<?>> sharedProvider,
+			SerializablePredicate<?> fieldFilter) {
 
 		ComponentCreator creator = componentCreators.stream().filter(c -> c.supports(attributeModel, context))
 				.findFirst().orElse(null);
@@ -184,7 +184,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			ComponentCreator creator) {
 		Component field;
 		EntityComponentCreator<ID, T> entityCreator = (EntityComponentCreator<ID, T>) creator;
-		entityModel = (EntityModel<T>) resolveEntityModel(entityModel, am, context);
+		entityModel = resolveEntityModel(entityModel, am, context);
 		BaseService<ID, T> service = (BaseService<ID, T>) serviceLocator
 				.getServiceForEntity(entityModel.getEntityClass());
 

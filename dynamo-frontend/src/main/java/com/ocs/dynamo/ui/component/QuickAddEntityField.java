@@ -35,6 +35,9 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Base class for components that display an Entity or collection of entities
  * and that allow the user to easily add new values on the fly
@@ -53,19 +56,14 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 
 	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
-	/**
-	 * The button that brings up the dialog for adding a new entity
-	 */
+	@Getter
 	private Button addButton;
 
-	/**
-	 * The button that navigates directly to detail screen of the selected entity
-	 */
+	@Getter
 	private Button directNavigationButton;
 
-	/**
-	 * Additional filter for cascading
-	 */
+	@Getter
+	@Setter
 	private SerializablePredicate<T> additionalFilter;
 
 	/**
@@ -76,7 +74,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 * @param attributeModel the attribute model
 	 * @param filter         the search filter
 	 */
-	public QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+	protected QuickAddEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter) {
 		super(service, entityModel, attributeModel, filter);
 	}
@@ -144,24 +142,6 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 		directNavigationButton.addClickListener(event -> helper.navigateToEntityScreen(getValue()));
 		return directNavigationButton;
-	}
-
-	public Button getAddButton() {
-		return addButton;
-	}
-
-	@Override
-	public SerializablePredicate<T> getAdditionalFilter() {
-		return additionalFilter;
-	}
-
-	public Button getDirectNavigationButton() {
-		return directNavigationButton;
-	}
-
-	@Override
-	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
-		this.additionalFilter = additionalFilter;
 	}
 
 	/**

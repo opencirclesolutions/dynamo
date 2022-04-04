@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -73,7 +74,7 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	private BiConsumer<ModelBasedEditForm<ID, T>, T> customSaveAction;
 
-	private Function<RuntimeException, Boolean> customSaveExceptionHandler;
+	private Predicate<RuntimeException> customSaveExceptionHandler;
 
 	@Builder.Default
 	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();

@@ -38,7 +38,7 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 
 	private final Object value;
 
-	public PropertyPredicate(String property, Object value) {
+	protected PropertyPredicate(String property, Object value) {
 		this.property = property;
 		this.value = value;
 	}

@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
@@ -139,10 +140,12 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 	@Test
 	public void testHandleSaveException() {
-		component.handleSaveException(new OCSValidationException("Some error"));
-		component.handleSaveException(new OCSRuntimeException("Some error"));
-		component.handleSaveException(new OptimisticLockException());
-		component.handleSaveException(new RuntimeException());
+		assertDoesNotThrow(() -> {
+			component.handleSaveException(new OCSValidationException("Some error"));
+			component.handleSaveException(new OCSRuntimeException("Some error"));
+			component.handleSaveException(new OptimisticLockException());
+			component.handleSaveException(new RuntimeException());
+		});
 	}
 
 }

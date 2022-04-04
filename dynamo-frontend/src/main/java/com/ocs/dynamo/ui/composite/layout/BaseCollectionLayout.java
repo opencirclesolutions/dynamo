@@ -95,9 +95,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	@Setter
 	private String gridHeight = SystemPropertyUtils.getDefaultGridHeight();
 
-	/**
-	 * The grid wrapper
-	 */
 	private GridWrapper<ID, T, U> gridWrapper;
 
 	/**
@@ -113,18 +110,32 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	@Setter
 	private Integer maxResults;
 
+	/**
+	 * The code that is carried out to add additional buttons to the button bar of
+	 * the edit form
+	 */
 	@Getter
 	@Setter
 	private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
 
+	/**
+	 * The code that is carried out to post process the grid wrapper
+	 */
 	@Getter
 	@Setter
 	private Consumer<GridWrapper<ID, T, U>> postProcessGridWrapper;
 
+	/**
+	 * The code that is carried out after the entire layout has been built
+	 */
 	@Getter
 	@Setter
 	private Consumer<VerticalLayout> afterLayoutBuilt;
 
+	/**
+	 * The code that is carried out to add additional buttons to the main button bar
+	 * (below the search results)
+	 */
 	@Getter
 	@Setter
 	private Consumer<FlexLayout> postProcessMainButtonBar;
@@ -170,7 +181,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * @param sortOrder   the sort order
 	 * @param joins       the joins to use when fetching data
 	 */
-	public BaseCollectionLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+	protected BaseCollectionLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions);
 		this.joins = joins;
@@ -270,7 +281,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 			if (postProcessGridWrapper != null) {
 				postProcessGridWrapper.accept(gridWrapper);
 			}
-
 		}
 		return gridWrapper;
 	}
@@ -320,4 +330,5 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	public void setExportJoins(FetchJoinInformation... exportJoins) {
 		this.exportJoins = exportJoins;
 	}
+
 }

@@ -276,8 +276,8 @@ public final class VaadinUtils {
 	@SuppressWarnings("unchecked")
 	public static <T> T getParentOfClass(Component component, Class<T> clazz) {
 		while (component.getParent().isPresent()) {
-			component = component.getParent().orElse(null);
-			if (component != null && clazz.isAssignableFrom(component.getClass())) {
+			component = component.getParent().get();
+			if (clazz.isAssignableFrom(component.getClass())) {
 				return (T) component;
 			}
 		}
@@ -506,7 +506,7 @@ public final class VaadinUtils {
 	public static void showConfirmDialog(String question, Runnable whenConfirmed, Runnable whenCanceled) {
 		if (UI.getCurrent() != null) {
 			com.ocs.dynamo.ui.composite.dialog.ConfirmDialog dialog = new com.ocs.dynamo.ui.composite.dialog.ConfirmDialog(
-					question, whenConfirmed, null);
+					question, whenConfirmed, whenCanceled);
 			dialog.buildAndOpen();
 		} else {
 			whenConfirmed.run();

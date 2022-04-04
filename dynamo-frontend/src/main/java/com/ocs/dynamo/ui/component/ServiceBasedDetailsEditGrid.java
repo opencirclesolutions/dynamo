@@ -124,7 +124,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 				List<SortOrder<?>> orders = new ArrayList<>();
 				List<GridSortOrder<T>> so = getGrid().getSortOrder();
 				for (GridSortOrder<T> gso : so) {
-					orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
+					orders.add(new SortOrder<>(gso.getSorted().getKey(), gso.getDirection()));
 				}
 				applyFilter();
 				EntityModel<T> em = getExportEntityModel() != null ? getExportEntityModel() : getEntityModel();
@@ -208,7 +208,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 *               created
 	 */
 	private void showPopup(T entity) {
-		EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<ID, T>(getService(), entity, getEntityModel(),
+		EntityPopupDialog<ID, T> dialog = new EntityPopupDialog<>(getService(), entity, getEntityModel(),
 				getFieldFilters(), new FormOptions(), getComponentContext(), getDetailJoins());
 		dialog.setAfterEditDone((cancel, newEntity, ent) -> provider.refreshAll());
 		dialog.setCreateEntity(getCreateEntity());

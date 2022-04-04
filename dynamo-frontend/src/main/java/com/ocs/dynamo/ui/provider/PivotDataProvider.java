@@ -122,8 +122,10 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * The property that is checked to see if a new row has been reached
 	 */
+	@Getter
 	private String rowKeyProperty;
 
+	@Getter
 	private int size;
 
 	/**
@@ -131,8 +133,10 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	 */
 	private Supplier<Integer> sizeSupplier;
 
+	@Setter
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
+	@Setter
 	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
 
 	/**
@@ -169,7 +173,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 		List<PivotedItem> result = new ArrayList<>();
 		while (result.size() < query.getLimit()) {
 
-			Optional<SerializablePredicate<T>> sp = (Optional) query.getFilter();
+			Optional<SerializablePredicate<T>> predicate = (Optional) query.getFilter();
 
 			// re-load earlier page
 			if (requestedOffset < lastRequestedOffset && offsetMap.containsKey(requestedOffset)) {
@@ -181,58 +185,13 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 			lastRequestedOffset = requestedOffset;
 
 			// fetch next page
-			if (dataCache.isEmpty()) {
-				offsetMap.put(requestedOffset, lastPivotOffset);
-				Query<T, SerializablePredicate<T>> newQuery = new Query<>(lastPivotOffset, PAGE_SIZE,
-						query.getSortOrders(), null, sp.orElse(null));
-				provider.fetch(newQuery).forEach(t -> dataCache.add(t));
-				lastPivotOffset = lastPivotOffset + PAGE_SIZE;
-			}
+			fetchNextPage(query, requestedOffset, predicate);
 
 			if (dataCache.isEmpty()) {
 				// no more records left before end of page, abort
 				break;
 			} else {
-				T t = dataCache.poll();
-
-				// get the row value to determine if we need a new row
-				Object rowPropertyValue = ClassUtils.getFieldValue(t, rowKeyProperty);
-
-				// create new pivoted item if needed and add existing one to result set
-				if (lastRowPropertyValue == null || !Objects.equals(rowPropertyValue, lastRowPropertyValue)) {
-					// add previous item
-					if (pivotedItem != null) {
-						result.add(pivotedItem);
-					}
-					// create new item
-					pivotedItem = new PivotedItem(rowPropertyValue);
-					lastRowPropertyValue = rowPropertyValue;
-				}
-
-				// add fixed columns
-				for (int i = 0; i < fixedColumnKeys.size(); i++) {
-					String fk = fixedColumnKeys.get(i);
-					Object value = ClassUtils.getFieldValue(t, fk);
-					pivotedItem.setFixedValue(fk, value);
-				}
-
-				// extract the useful values from this row
-				Object colKeyValue = ClassUtils.getFieldValue(t, columnKeyProperty);
-				for (int i = 0; i < pivotedProperties.size(); i++) {
-					String key = pivotedProperties.get(i);
-					Object value = ClassUtils.getFieldValue(t, key);
-					pivotedItem.setValue(colKeyValue, key, value);
-				}
-
-				// extract additional useful (but not visible) values
-				if (hiddenPivotedProperties != null) {
-					for (int i = 0; i < hiddenPivotedProperties.size(); i++) {
-						String key = hiddenPivotedProperties.get(i);
-						Object value = ClassUtils.getFieldValue(t, key);
-						pivotedItem.setValue(colKeyValue, key, value);
-					}
-				}
-
+				handleRow(result);
 			}
 		}
 
@@ -244,12 +203,69 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 		return result.stream();
 	}
 
-	public String getRowKeyProperty() {
-		return rowKeyProperty;
+	/**
+	 * Handles a single row from the underlying result set
+	 * 
+	 * @param result
+	 */
+	private void handleRow(List<PivotedItem> result) {
+		T t = dataCache.poll();
+
+		// get the row value to determine if we need a new row
+		Object rowPropertyValue = ClassUtils.getFieldValue(t, rowKeyProperty);
+
+		// create new pivoted item if needed and add existing one to result set
+		if (lastRowPropertyValue == null || !Objects.equals(rowPropertyValue, lastRowPropertyValue)) {
+			// add previous item
+			if (pivotedItem != null) {
+				result.add(pivotedItem);
+			}
+			// create new item
+			pivotedItem = new PivotedItem(rowPropertyValue);
+			lastRowPropertyValue = rowPropertyValue;
+		}
+
+		// add fixed columns
+		for (int i = 0; i < fixedColumnKeys.size(); i++) {
+			String fixedColumnKey = fixedColumnKeys.get(i);
+			Object value = ClassUtils.getFieldValue(t, fixedColumnKey);
+			pivotedItem.setFixedValue(fixedColumnKey, value);
+		}
+
+		// extract the useful values from this row
+		Object colKeyValue = ClassUtils.getFieldValue(t, columnKeyProperty);
+		for (int i = 0; i < pivotedProperties.size(); i++) {
+			String key = pivotedProperties.get(i);
+			Object value = ClassUtils.getFieldValue(t, key);
+			pivotedItem.setValue(colKeyValue, key, value);
+		}
+
+		// extract additional useful (but invisible) value
+		if (hiddenPivotedProperties != null) {
+			for (int i = 0; i < hiddenPivotedProperties.size(); i++) {
+				String key = hiddenPivotedProperties.get(i);
+				Object value = ClassUtils.getFieldValue(t, key);
+				pivotedItem.setValue(colKeyValue, key, value);
+			}
+		}
 	}
 
-	public int getSize() {
-		return size;
+	/**
+	 * Fetches the next page of data from the underlying provider
+	 * 
+	 * @param query           the incoming query object
+	 * @param requestedOffset the requested offset
+	 * @param predicate       the filter predicate
+	 */
+	private void fetchNextPage(Query<PivotedItem, SerializablePredicate<PivotedItem>> query, int requestedOffset,
+			Optional<SerializablePredicate<T>> predicate) {
+		if (dataCache.isEmpty()) {
+			offsetMap.put(requestedOffset, lastPivotOffset);
+			Query<T, SerializablePredicate<T>> newQuery = new Query<>(lastPivotOffset, PAGE_SIZE, query.getSortOrders(),
+					null, predicate.orElse(null));
+			provider.fetch(newQuery).forEach(t -> dataCache.add(t));
+			lastPivotOffset = lastPivotOffset + PAGE_SIZE;
+		}
 	}
 
 	@Override
@@ -291,14 +307,6 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
 	public Class<?> getAggregationClass(String pivotProperty) {
 		return aggregationClassMap.get(pivotProperty);
-	}
-
-	public void setAggregationMap(Map<String, PivotAggregationType> aggregationMap) {
-		this.aggregationMap = aggregationMap;
-	}
-
-	public void setAggregationClassMap(Map<String, Class<?>> aggregationClassMap) {
-		this.aggregationClassMap = aggregationClassMap;
 	}
 
 	public List<String> getAllPrivotProperties() {

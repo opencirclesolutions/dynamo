@@ -33,11 +33,16 @@ import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.ocs.dynamo.utils.FormatUtils;
 
-public final class CompareUtils {
+import lombok.experimental.UtilityClass;
 
-	private CompareUtils() {
-		// hidden constructor
-	}
+/**
+ * Utility methods for comparing two entities
+ * 
+ * @author BasRutten
+ *
+ */
+@UtilityClass
+public final class CompareUtils {
 
 	/**
 	 * Compares two entities based on the entity model and reports a list of the
@@ -81,38 +86,54 @@ public final class CompareUtils {
 							newValue == null ? noValue : newValueStr));
 				}
 			} else if (AttributeType.DETAIL.equals(am.getAttributeType())) {
-				Collection<?> ocol = (Collection<?>) ClassUtils.getFieldValue(oldEntity, am.getName());
-				Collection<?> ncol = (Collection<?>) ClassUtils.getFieldValue(newEntity, am.getName());
-
-				for (Object o : ncol) {
-					if (!ocol.contains(o)) {
-						results.add(messageService.getMessage("ocs.value.added", VaadinUtils.getLocale(),
-								getDescription(o, am.getNestedEntityModel()),
-								am.getDisplayName(VaadinUtils.getLocale())));
-					}
-				}
-
-				for (Object o : ocol) {
-					if (!ncol.contains(o)) {
-						results.add(messageService.getMessage("ocs.value.removed", VaadinUtils.getLocale(),
-								getDescription(o, am.getNestedEntityModel()),
-								am.getDisplayName(VaadinUtils.getLocale())));
-					}
-				}
-
-				for (Object o : ocol) {
-					for (Object o2 : ncol) {
-						if (o.equals(o2)) {
-							List<String> nested = compare(o, o2, am.getNestedEntityModel(), entityModelFactory,
-									messageService, ignore);
-							results.addAll(nested);
-						}
-					}
-				}
-
+				compareCollections(oldEntity, newEntity, entityModelFactory, messageService, results, am, ignore);
 			}
 		}
 		return results;
+	}
+
+	/**
+	 * Compares two collections and reports a list of differences
+	 * 
+	 * @param oldEntity          the old entity
+	 * @param newEntity          the new entity
+	 * @param entityModelFactory the entity model factory
+	 * @param messageService     the message service
+	 * @param results            the list of results
+	 * @param am                 the attribute model of the collection property
+	 * @param ignore             names of the properties to ignore
+	 */
+	private static void compareCollections(Object oldEntity, Object newEntity, EntityModelFactory entityModelFactory,
+			MessageService messageService, List<String> results, AttributeModel am, String... ignore) {
+		Collection<?> ocol = (Collection<?>) ClassUtils.getFieldValue(oldEntity, am.getName());
+		Collection<?> ncol = (Collection<?>) ClassUtils.getFieldValue(newEntity, am.getName());
+
+		// check for added values
+		for (Object o : ncol) {
+			if (!ocol.contains(o)) {
+				results.add(messageService.getMessage("ocs.value.added", VaadinUtils.getLocale(),
+						getDescription(o, am.getNestedEntityModel()), am.getDisplayName(VaadinUtils.getLocale())));
+			}
+		}
+
+		// check for removed values
+		for (Object o : ocol) {
+			if (!ncol.contains(o)) {
+				results.add(messageService.getMessage("ocs.value.removed", VaadinUtils.getLocale(),
+						getDescription(o, am.getNestedEntityModel()), am.getDisplayName(VaadinUtils.getLocale())));
+			}
+		}
+
+		// check for changes to entities that are present in old and new situation
+		for (Object o : ocol) {
+			for (Object o2 : ncol) {
+				if (o.equals(o2)) {
+					List<String> nested = compare(o, o2, am.getNestedEntityModel(), entityModelFactory, messageService,
+							ignore);
+					results.addAll(nested);
+				}
+			}
+		}
 	}
 
 	/**

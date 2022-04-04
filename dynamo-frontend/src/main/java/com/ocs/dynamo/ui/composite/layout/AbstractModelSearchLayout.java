@@ -25,7 +25,6 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
@@ -100,7 +99,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 */
 	private TabLayout<ID, T> tabLayout;
 
-	public AbstractModelSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	protected AbstractModelSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, sortOrder, joins);
 	}
@@ -182,7 +181,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * @param options the form options
 	 * @param context the component context
 	 */
-	private void buildEditForm(T entity, FormOptions options, ComponentContext<ID, T> context) {
+	private void buildEditForm(T entity, FormOptions options) {
 		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters());
 
 		initEditForm(editForm);
@@ -354,7 +353,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		} else if (!getFormOptions().isComplexDetailsMode()) {
 			// simple edit form
 			if (editForm == null) {
-				buildEditForm(entity, copy, getComponentContext().toBuilder().formNested(true).build());
+				buildEditForm(entity, copy);
 			} else {
 				editForm.setViewMode(copy.isOpenInViewMode());
 				editForm.setEntity(entity);

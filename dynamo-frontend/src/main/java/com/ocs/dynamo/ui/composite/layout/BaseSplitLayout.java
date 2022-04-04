@@ -21,6 +21,7 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.type.ScreenMode;
@@ -31,6 +32,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.splitlayout.SplitLayout;
 import com.vaadin.flow.component.textfield.TextField;
@@ -82,6 +84,12 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	private TextField quickSearchField;
 
 	@Getter
+	private Button popupSearchButton;
+
+	@Getter
+	private Button popupClearButton;
+
+	@Getter
 	private Button removeButton;
 
 	/**
@@ -95,6 +103,10 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	private VerticalLayout splitterGridLayout;
 
+	@Getter
+	@Setter
+	private double initialSplitterPosition = 50.0;
+
 	/**
 	 * Constructor
 	 *
@@ -104,7 +116,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * @param sortOrder   the sort order
 	 * @param joins       the joins used to query the database
 	 */
-	public BaseSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+	protected BaseSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		setMargin(false);
@@ -134,10 +146,25 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			detailLayout.addClassName("splitLayoutDetailLayout");
 			emptyDetailView();
 
-			// construct option quick search field
 			quickSearchField = constructSearchField();
-			if (!isHorizontalMode() && quickSearchField != null) {
-				mainLayout.add(quickSearchField);
+			popupSearchButton = constructPopupSearchButton();
+			popupClearButton = constructPopupClearButton();
+
+			if (!isHorizontalMode()) {
+				if (quickSearchField != null || popupSearchButton != null) {
+					FlexLayout extraButtonBar = new DefaultFlexLayout();
+					mainLayout.add(extraButtonBar);
+
+					if (quickSearchField != null) {
+						quickSearchField.setLabel("");
+						extraButtonBar.add(quickSearchField);
+					}
+
+					if (popupSearchButton != null) {
+						extraButtonBar.add(popupSearchButton);
+						extraButtonBar.add(popupClearButton);
+					}
+				}
 			}
 
 			getGridWrapper().getGrid().setHeight(getGridHeight());
@@ -232,9 +259,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	protected abstract TextField constructSearchField();
 
+	protected abstract Button constructPopupSearchButton();
+
+	protected abstract Button constructPopupClearButton();
+
 	private SplitLayout constructSplitterLayout() {
 		SplitLayout splitter;
 		splitter = new SplitLayout();
+		splitter.setSplitterPosition(initialSplitterPosition);
 
 		splitter.setSizeFull();
 		mainLayout.add(splitter);
@@ -248,8 +280,19 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			splitterGridLayout.add(headerLayout);
 		}
 
-		if (quickSearchField != null) {
-			splitterGridLayout.add(quickSearchField);
+		if (popupSearchButton != null || quickSearchField != null) {
+			FlexLayout buttonBar = new DefaultFlexLayout();
+			splitterGridLayout.add(buttonBar);
+
+			if (quickSearchField != null) {
+				quickSearchField.setLabel("");
+				buttonBar.add(quickSearchField);
+			}
+
+			if (popupSearchButton != null) {
+				buttonBar.add(popupSearchButton);
+				buttonBar.add(popupClearButton);
+			}
 		}
 
 		splitterGridLayout.add(getGridWrapper());
@@ -385,7 +428,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		headerLayout = component;
 
 		if (quickSearchField != null) {
-			quickSearchField.setValue("");
+			quickSearchField.clear();
 		}
 
 		getGridWrapper().reloadDataProvider();

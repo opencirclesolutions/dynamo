@@ -156,6 +156,8 @@ public abstract class BaseMenuService<T extends Component, U> {
 	protected abstract void hideRecursively(U root);
 
 	/**
+	 * Additional code to be carried out after changing the visibility of a
+	 * component
 	 * 
 	 * @param comp
 	 * @param visible

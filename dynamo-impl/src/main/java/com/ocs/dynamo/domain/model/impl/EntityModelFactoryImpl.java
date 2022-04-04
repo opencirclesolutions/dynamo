@@ -211,6 +211,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		setIntSetting(getEntityMessage(reference, EntityModel.NESTING_DEPTH), -1, value -> builder.nestingDepth(value));
 	}
 
+	private void addMissingAttributeNames(List<String> explicitAttributeNames, List<AttributeModel> attributeModels,
+			List<String> additionalNames) {
+		for (AttributeModel am : attributeModels) {
+			String name = am.getName();
+			if (!skipAttribute(name) && !explicitAttributeNames.contains(name)) {
+				additionalNames.add(name);
+			}
+		}
+	}
+
 	/**
 	 * Indicates whether this factory can provide the model for the specified
 	 * combination of reference and entity class
@@ -333,53 +343,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		validateAttributeModel(model);
 
 		return result;
-	}
-
-	/**
-	 * Sets the default values for an attribute model
-	 * 
-	 * @param <T>         the class of the entity model
-	 * @param descriptor  the property descriptor to base the attribute model on
-	 * @param entityModel the entity model
-	 * @param parentClass
-	 * @param prefix      the prefix of the attribute path (for nested attributes)
-	 * @param fieldName   the name of the field
-	 * @param model       the attribute model
-	 */
-	private <T> void setAttributeModelDefaults(PropertyDescriptor descriptor, EntityModelImpl<T> entityModel,
-			Class<?> parentClass, String prefix, String fieldName, AttributeModelImpl model) {
-		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
-				SystemPropertyUtils.isCapitalizeWords());
-		model.setDefaultDisplayName(displayName);
-		model.setDefaultDescription(displayName);
-		model.setDefaultPrompt(displayName);
-		model.setMainAttribute(descriptor.isPreferred());
-		model.setSearchMode(SearchMode.NONE);
-		model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
-		model.setImage(false);
-		model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
-		model.setSortable(true);
-		model.setComplexEditable(false);
-		model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
-		model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
-		model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
-		model.setUrl(false);
-		model.setThousandsGroupingMode(SystemPropertyUtils.getDefaultThousandsGroupingMode());
-		model.setTrimSpaces(SystemPropertyUtils.isDefaultTrimSpaces());
-		model.setMultiSelectMode(SystemPropertyUtils.useGridSelectionCheckBoxes() ? MultiSelectMode.CHECKBOX
-				: MultiSelectMode.ROWSELECT);
-		model.setPagingMode(SystemPropertyUtils.getDefaultPagingMode());
-
-		setIdAttribute(entityModel, model, fieldName);
-		model.setType(descriptor.getPropertyType());
-		model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(), fieldName));
-		model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(), model.getDateType()));
-		model.setNumberFieldMode(SystemPropertyUtils.getDefaultNumberFieldMode());
-		model.setNumberFieldStep(1);
-
-		model.setClearButtonVisible(SystemPropertyUtils.isDefaultClearButtonVisible());
-
-		setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
 	}
 
 	/**
@@ -639,16 +602,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		return explicit;
-	}
-
-	private void addMissingAttributeNames(List<String> explicitAttributeNames, List<AttributeModel> attributeModels,
-			List<String> additionalNames) {
-		for (AttributeModel am : attributeModels) {
-			String name = am.getName();
-			if (!skipAttribute(name) && !explicitAttributeNames.contains(name)) {
-				additionalNames.add(name);
-			}
-		}
 	}
 
 	/**
@@ -1114,7 +1067,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 			if (!AttributeSelectMode.INHERIT.equals(attribute.searchSelectMode())) {
 				model.setSearchSelectMode(attribute.searchSelectMode());
-
 				// for a basic attribute, automatically set multiple search when a token field
 				// is selected
 				if (AttributeType.BASIC.equals(model.getAttributeType())
@@ -1123,21 +1075,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				}
 			}
 
-			if (!AttributeSelectMode.INHERIT.equals(attribute.gridSelectMode())) {
-				model.setGridSelectMode(attribute.gridSelectMode());
-			}
-
-			if (!BooleanType.INHERIT.equals(attribute.searchCaseSensitive())) {
-				model.setSearchCaseSensitive(attribute.searchCaseSensitive().toBoolean());
-			}
-
-			if (!BooleanType.INHERIT.equals(attribute.searchPrefixOnly())) {
-				model.setSearchPrefixOnly(attribute.searchPrefixOnly().toBoolean());
-			}
-
-			if (!BooleanType.INHERIT.equals(attribute.clearButtonVisible())) {
-				model.setClearButtonVisible(attribute.clearButtonVisible().toBoolean());
-			}
+			setEnumValueUnless(attribute.gridSelectMode(), AttributeSelectMode.INHERIT, model::setGridSelectMode);
+			setEnumValueUnless(attribute.searchCaseSensitive(), BooleanType.INHERIT,
+					value -> model.setSearchCaseSensitive(value.toBoolean()));
+			setEnumValueUnless(attribute.searchPrefixOnly(), BooleanType.INHERIT,
+					value -> model.setSearchPrefixOnly(value.toBoolean()));
+			setEnumValueUnless(attribute.clearButtonVisible(), BooleanType.INHERIT,
+					value -> model.setClearButtonVisible(value.toBoolean()));
+			setEnumValueUnless(attribute.thousandsGrouping(), ThousandsGroupingMode.INHERIT,
+					model::setThousandsGroupingMode);
 
 			if (attribute.textFieldMode() != null
 					&& !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {
@@ -1155,22 +1101,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			setStringSetting(attribute.replacementSearchPath(), model::setReplacementSearchPath);
 			setStringSetting(attribute.replacementSortPath(), model::setReplacementSortPath);
 
-			if (!ThousandsGroupingMode.INHERIT.equals(attribute.thousandsGrouping())) {
-				model.setThousandsGroupingMode(attribute.thousandsGrouping());
-			}
-
 			setBooleanTrueSetting(attribute.searchForExactValue(), model::setSearchForExactValue);
 			setStringSetting(attribute.fileNameProperty(), model::setFileNameProperty);
 
-			if (!StringUtils.isEmpty(attribute.defaultValue())) {
-				if (!AttributeType.BASIC.equals(model.getAttributeType())) {
-					throw new OCSRuntimeException(
-							model.getName() + ": setting a default value is only allowed for BASIC attributes");
-				}
-
-				String defaultValue = attribute.defaultValue();
-				setDefaultValue(model, defaultValue);
-			}
+			setDefaulValue(model, attribute);
 
 			model.setNavigable(attribute.navigable());
 			model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
@@ -1187,16 +1121,50 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
+	 * Sets the default values for an attribute model
 	 * 
-	 * @param <E>
-	 * @param value
-	 * @param exclude
-	 * @param consumer
+	 * @param <T>         the class of the entity model
+	 * @param descriptor  the property descriptor to base the attribute model on
+	 * @param entityModel the entity model
+	 * @param parentClass
+	 * @param prefix      the prefix of the attribute path (for nested attributes)
+	 * @param fieldName   the name of the field
+	 * @param model       the attribute model
 	 */
-	private <E extends Enum<?>> void setEnumValueUnless(E value, E exclude, Consumer<E> consumer) {
-		if (!exclude.equals(value)) {
-			consumer.accept(value);
-		}
+	private <T> void setAttributeModelDefaults(PropertyDescriptor descriptor, EntityModelImpl<T> entityModel,
+			Class<?> parentClass, String prefix, String fieldName, AttributeModelImpl model) {
+		String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
+				SystemPropertyUtils.isCapitalizeWords());
+		model.setDefaultDisplayName(displayName);
+		model.setDefaultDescription(displayName);
+		model.setDefaultPrompt(displayName);
+		model.setMainAttribute(descriptor.isPreferred());
+		model.setSearchMode(SearchMode.NONE);
+		model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
+		model.setImage(false);
+		model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
+		model.setSortable(true);
+		model.setComplexEditable(false);
+		model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
+		model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
+		model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
+		model.setUrl(false);
+		model.setThousandsGroupingMode(SystemPropertyUtils.getDefaultThousandsGroupingMode());
+		model.setTrimSpaces(SystemPropertyUtils.isDefaultTrimSpaces());
+		model.setMultiSelectMode(SystemPropertyUtils.useGridSelectionCheckBoxes() ? MultiSelectMode.CHECKBOX
+				: MultiSelectMode.ROWSELECT);
+		model.setPagingMode(SystemPropertyUtils.getDefaultPagingMode());
+
+		setIdAttribute(entityModel, model, fieldName);
+		model.setType(descriptor.getPropertyType());
+		model.setDateType(determineDateType(model.getType(), entityModel.getEntityClass(), fieldName));
+		model.setDisplayFormat(determineDefaultDisplayFormat(model.getType(), model.getDateType()));
+		model.setNumberFieldMode(SystemPropertyUtils.getDefaultNumberFieldMode());
+		model.setNumberFieldStep(1);
+
+		model.setClearButtonVisible(SystemPropertyUtils.isDefaultClearButtonVisible());
+
+		setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
 	}
 
 	/**
@@ -1400,18 +1368,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * Sets a value on the attribute model if the provided boolean value is true
-	 * 
-	 * @param value    the boolean value
-	 * @param receiver the code that is executed to set the value
-	 */
-	private void setBooleanTrueSetting(Boolean value, Consumer<Boolean> receiver) {
-		if (value) {
-			receiver.accept(value);
-		}
-	}
-
-	/**
 	 * Sets a boolean setting if it is non-null
 	 * 
 	 * @param value    the value
@@ -1420,6 +1376,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private void setBooleanSetting(String value, Consumer<Boolean> receiver) {
 		if (value != null) {
 			receiver.accept(Boolean.valueOf(value));
+		}
+	}
+
+	/**
+	 * Sets a value on the attribute model if the provided boolean value is true
+	 * 
+	 * @param value    the boolean value
+	 * @param receiver the code that is executed to set the value
+	 */
+	private void setBooleanTrueSetting(Boolean value, Consumer<Boolean> receiver) {
+		if (value) {
+			receiver.accept(value);
 		}
 	}
 
@@ -1446,6 +1414,24 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
+	 * Sets the default value of an attribute based on the annotation
+	 * 
+	 * @param model     the attribute model
+	 * @param attribute the annotation
+	 */
+	private void setDefaulValue(AttributeModelImpl model, Attribute attribute) {
+		if (!StringUtils.isEmpty(attribute.defaultValue())) {
+			if (!AttributeType.BASIC.equals(model.getAttributeType())) {
+				throw new OCSRuntimeException(
+						model.getName() + ": setting a default value is only allowed for BASIC attributes");
+			}
+
+			String defaultValue = attribute.defaultValue();
+			setDefaultValue(model, defaultValue);
+		}
+	}
+
+	/**
 	 * Sets an enum field based on a string value from a message bundle
 	 * 
 	 * @param <E>
@@ -1459,6 +1445,22 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (!StringUtils.isEmpty(value)) {
 			E enumValue = (E) Enum.valueOf(enumClass, value);
 			receiver.accept(enumValue);
+		}
+	}
+
+	/**
+	 * Sets an enum value on the attribute model, unless the value is the specified
+	 * excluded value
+	 * 
+	 * @param <E>
+	 * @param value    the value
+	 * @param exclude  the value to exclude
+	 * @param consumer consumer to call when the value is not equal to the excluded
+	 *                 value
+	 */
+	private <E extends Enum<?>> void setEnumValueUnless(E value, E exclude, Consumer<E> consumer) {
+		if (!exclude.equals(value)) {
+			consumer.accept(value);
 		}
 	}
 

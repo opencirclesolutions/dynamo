@@ -473,5 +473,10 @@ public class DynamoConstants {
 	 * Whether to use thousands grouping in XLS files
 	 */
 	public static final String SP_XLS_THOUSANDS_GROUPING = "ocs.xls.thousands.grouping";
+	
+	/**
+	 * The name of the database function used to replace accents
+	 */
+	public static final String SP_UNACCENT_FUNCTION_NAME = "ocs.unaccent.function.name";
 
 }

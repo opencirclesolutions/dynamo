@@ -59,6 +59,7 @@ import com.ocs.dynamo.filter.Like;
 import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 
 /**
  * @author patrick.deenen
@@ -98,6 +99,21 @@ public final class JpaQueryBuilder {
 
 	/**
 	 * Adds the "order by" clause to a criteria query
+	 * 
+	 * @param builder    the criteria builder
+	 * @param cq         the criteria query
+	 * @param root       the query root
+	 * @param distinct   whether a "distinct" is applied to the query
+	 * @param sortOrders the sort orders
+	 * @return
+	 */
+	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
+			Root<T> root, boolean distinct, SortOrder... sortOrders) {
+		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, distinct, sortOrders);
+	}
+
+	/**
+	 * Adds the "order by" clause to a criteria query
 	 *
 	 * @param builder     the criteria builder
 	 * @param cq          the criteria query
@@ -131,21 +147,6 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Adds the "order by" clause to a criteria query
-	 * 
-	 * @param builder    the criteria builder
-	 * @param cq         the criteria query
-	 * @param root       the query root
-	 * @param distinct   whether a "distinct" is applied to the query
-	 * @param sortOrders the sort orders
-	 * @return
-	 */
-	private static <T, R> CriteriaQuery<R> addSortInformation(CriteriaBuilder builder, CriteriaQuery<R> cq,
-			Root<T> root, boolean distinct, SortOrder... sortOrders) {
-		return addSortInformation(builder, cq, root, (List<Selection<?>>) null, distinct, sortOrders);
-	}
-
-	/**
 	 * Creates a predicate based on an "And" filter
 	 * 
 	 * @param builder    the criteria builder
@@ -170,6 +171,20 @@ public final class JpaQueryBuilder {
 			}
 		}
 		return predicate;
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static Predicate createCaseInsensitiveLikePredicate(CriteriaBuilder builder, Root<?> root, Like like) {
+		String unaccentName = SystemPropertyUtils.getUnAccentFunctionName();
+		if (!StringUtils.isEmpty(unaccentName)) {
+			return builder.like(
+					builder.function(unaccentName, String.class,
+							builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true))),
+					removeAccents(like.getValue().toLowerCase()));
+		}
+
+		return builder.like(builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true)),
+				like.getValue().toLowerCase());
 	}
 
 	/**
@@ -293,7 +308,7 @@ public final class JpaQueryBuilder {
 	 * @param entityManager the entity manager
 	 * @param entityClass   the entity class
 	 * @param ids           the IDs of the desired entities
-	 * @param sortOrders    the wort orders
+	 * @param sortOrders    the sort orders
 	 * @param fetchJoins    the desired fetch joins
 	 * @return
 	 */
@@ -417,15 +432,26 @@ public final class JpaQueryBuilder {
 		return query;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createLikePredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
 		Like like = (Like) filter;
 		if (like.isCaseSensitive()) {
-			return builder.like((Expression) getPropertyPath(root, like.getPropertyId(), true), like.getValue());
+			return createLikePredicate(builder, root, like);
 		} else {
-			return builder.like(builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true)),
-					like.getValue().toLowerCase());
+			return createCaseInsensitiveLikePredicate(builder, root, like);
 		}
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private static Predicate createLikePredicate(CriteriaBuilder builder, Root<?> root, Like like) {
+		String unaccentName = SystemPropertyUtils.getUnAccentFunctionName();
+		if (!StringUtils.isEmpty(unaccentName)) {
+			return builder.like(
+					builder.function(unaccentName, String.class,
+							(Expression) getPropertyPath(root, like.getPropertyId(), true)),
+					removeAccents(like.getValue()));
+		}
+
+		return builder.like((Expression) getPropertyPath(root, like.getPropertyId(), true), like.getValue());
 	}
 
 	/**
@@ -718,57 +744,6 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Adds a property path specifically for sorting
-	 * 
-	 * @param root
-	 * @param propertyId
-	 * @return
-	 */
-	@SuppressWarnings("unchecked")
-	private static Expression<?> getPropertyPathForSort(Root<?> root, Object propertyId) {
-		String[] propertyIdParts = ((String) propertyId).split("\\.");
-
-		Path<?> path = null;
-		Join<?, ?> curJoin = null;
-		for (int i = 0; i < propertyIdParts.length; i++) {
-			String part = propertyIdParts[i];
-			if (path == null) {
-				path = root.get(part);
-			} else {
-				path = path.get(part);
-			}
-
-			if (AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
-					|| Collection.class.isAssignableFrom(path.type().getJavaType())) {
-				// Reuse existing join
-				Join<?, ?> detailJoin = null;
-				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
-						: curJoin.getJoins());
-				if (joins != null) {
-					for (Join<?, ?> j : joins) {
-						if (propertyIdParts[i].equals(j.getAttribute().getName())) {
-							path = j;
-							detailJoin = j;
-							break;
-						}
-					}
-				}
-				// when no existing join then add new
-				if (detailJoin == null) {
-					if (curJoin == null) {
-						curJoin = root.join(propertyIdParts[i], JoinType.LEFT);
-					} else {
-						curJoin = curJoin.join(propertyIdParts[i], JoinType.LEFT);
-					}
-					path = curJoin;
-				}
-			}
-
-		}
-		return path;
-	}
-
-	/**
 	 * Gets property path.
 	 * 
 	 * @param root       the root where path starts form
@@ -820,6 +795,57 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
+	 * Adds a property path specifically for sorting
+	 * 
+	 * @param root
+	 * @param propertyId
+	 * @return
+	 */
+	@SuppressWarnings("unchecked")
+	private static Expression<?> getPropertyPathForSort(Root<?> root, Object propertyId) {
+		String[] propertyIdParts = ((String) propertyId).split("\\.");
+
+		Path<?> path = null;
+		Join<?, ?> curJoin = null;
+		for (int i = 0; i < propertyIdParts.length; i++) {
+			String part = propertyIdParts[i];
+			if (path == null) {
+				path = root.get(part);
+			} else {
+				path = path.get(part);
+			}
+
+			if (AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
+					|| Collection.class.isAssignableFrom(path.type().getJavaType())) {
+				// Reuse existing join
+				Join<?, ?> detailJoin = null;
+				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
+						: curJoin.getJoins());
+				if (joins != null) {
+					for (Join<?, ?> j : joins) {
+						if (propertyIdParts[i].equals(j.getAttribute().getName())) {
+							path = j;
+							detailJoin = j;
+							break;
+						}
+					}
+				}
+				// when no existing join then add new
+				if (detailJoin == null) {
+					if (curJoin == null) {
+						curJoin = root.join(propertyIdParts[i], JoinType.LEFT);
+					} else {
+						curJoin = curJoin.join(propertyIdParts[i], JoinType.LEFT);
+					}
+					path = curJoin;
+				}
+			}
+
+		}
+		return path;
+	}
+
+	/**
 	 * Indicates whether at least one of the specified fetches is a fetch that
 	 * fetches a collection
 	 * 
@@ -836,6 +862,10 @@ public final class JpaQueryBuilder {
 			result = result || attribute.isCollection() || nested;
 		}
 		return result;
+	}
+
+	private static String removeAccents(String input) {
+		return com.ocs.dynamo.utils.StringUtils.removeAccents(input);
 	}
 
 	/**

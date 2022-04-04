@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.BiConsumer;
 import java.util.function.BiPredicate;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -110,9 +111,13 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 */
 	private Map<String, List<Component>> customComponentMap = new HashMap<>();
 
+	/**
+	 * Code that is carried out to determine whether the current user is allowed to
+	 * edit
+	 */
 	@Getter
 	@Setter
-	private Supplier<Boolean> editAllowed = () -> true;
+	private BooleanSupplier editAllowed = () -> true;
 
 	/**
 	 * The entity model of the entity or entities to display
@@ -120,6 +125,9 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	@Getter
 	private final EntityModel<T> entityModel;
 
+	/**
+	 * The function used to determine the parent group of an attribute group
+	 */
 	@Getter
 	@Setter
 	private Function<String, String> findParentGroup;
@@ -161,7 +169,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * @param entityModel the entity model
 	 * @param formOptions the form options that govern how the component behaves
 	 */
-	public BaseServiceCustomComponent(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions) {
+	protected BaseServiceCustomComponent(BaseService<ID, T> service, EntityModel<T> entityModel,
+			FormOptions formOptions) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.formOptions = formOptions;
@@ -207,7 +216,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	public boolean checkEditAllowed() {
-		return getEditAllowed() == null ? true : getEditAllowed().get();
+		return getEditAllowed() == null ? true : getEditAllowed().getAsBoolean();
 	}
 
 	/**

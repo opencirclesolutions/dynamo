@@ -72,7 +72,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	};
 
 	/**
-	 * Code that is executed
+	 * Code that is executed after the clear button is pressed
 	 */
 	@Getter
 	@Setter
@@ -98,10 +98,18 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Getter
 	private List<SerializablePredicate<T>> defaultFilters;
 
+	/**
+	 * The tab captions to use for the tab sheet when the component is in "advanced
+	 * details" mode
+	 */
 	@Getter
 	@Setter
 	private String[] detailsModeTabCaptions;
 
+	/**
+	 * The code that is executed to create each of the tabs used in advanced details
+	 * mode
+	 */
 	@Getter
 	private Map<Integer, BiFunction<FormOptions, Boolean, Component>> detailTabCreators = new HashMap<>();
 
@@ -115,6 +123,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Setter
 	private Runnable onEdit = () -> detailsMode(getSelectedItem());
 
+	/**
+	 * Code that is executed when the remove button is clicked
+	 */
 	@Getter
 	@Setter
 	private Runnable onRemove = () -> getService().delete(getSelectedItem());
@@ -126,6 +137,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@Setter
 	private Consumer<FlexLayout> postProcessSearchButtonBar;
 
+	/**
+	 * Code that is carried out after the search form has been built
+	 */
 	@Getter
 	@Setter
 	private Consumer<VerticalLayout> afterSearchFormBuilt;
@@ -170,7 +184,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * @param sortOrder   the default sort order
 	 * @param joins       the joins to include in the query
 	 */
-	public AbstractSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	protected AbstractSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, formOptions, sortOrder, joins);
 		this.queryType = queryType;
@@ -223,40 +237,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 			mainSearchLayout.add(getSearchForm());
 			if (getSearchForm().getClearButton() != null) {
-				if (!getFormOptions().isSearchImmediately()) {
-
-					// use a consumer since the action might have to be deferred until after the
-					// user confirms the clear
-					if (getFormOptions().isConfirmClear()) {
-						getSearchForm().setAfterClearConsumer(e -> clearIfNotSearchingImmediately());
-					} else {
-						// clear right away
-						getSearchForm().getClearButton().addClickListener(e -> clearIfNotSearchingImmediately());
-					}
-				} else {
-					// clear current selection and update buttons
-					if (getFormOptions().isConfirmClear()) {
-						getSearchForm().setAfterClearConsumer(e -> {
-							setSelectedItem(null);
-							checkComponentState(getSelectedItem());
-							// afterClear();
-
-							if (afterClear != null) {
-								afterClear.run();
-							}
-						});
-					} else {
-						getSearchForm().getClearButton().addClickListener(e -> {
-							setSelectedItem(null);
-							checkComponentState(getSelectedItem());
-							// afterClear();
-
-							if (afterClear != null) {
-								afterClear.run();
-							}
-						});
-					}
-				}
+				constructAfterClearListeners();
 			}
 
 			searchResultsLayout = new DefaultVerticalLayout(false, false);
@@ -268,18 +249,9 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				searchResultsLayout.add(getGridWrapper());
 			} else {
 				// do not construct the search results grid yet
-				Text noSearchYetLabel = new Text(message("ocs.no.search.yet"));
-				searchResultsLayout.add(noSearchYetLabel);
-
-				// click listener that will construct search results grid on demand
-				if (getSearchForm().getSearchButton() != null) {
-					getSearchForm().getSearchButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
-				}
-				if (getSearchForm().getSearchAnyButton() != null) {
-					getSearchForm().getSearchAnyButton()
-							.addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
-				}
+				constructLazySearchFunctionality();
 			}
+			
 			// clear currently selected item and update buttons
 			if (getSearchForm().getSearchButton() != null) {
 				getSearchForm().getSearchButton().addClickListener(e -> {
@@ -309,6 +281,55 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			// search layout is not appended below the detail layout
 			if (getComponentCount() == 0) {
 				add(mainSearchLayout);
+			}
+		}
+	}
+
+	/**
+	 * Sets up the listeners for constructing the search results grid after the 
+	 */
+	private void constructLazySearchFunctionality() {
+		Text noSearchYetLabel = new Text(message("ocs.no.search.yet"));
+		searchResultsLayout.add(noSearchYetLabel);
+
+		// click listener that will construct search results grid on demand
+		if (getSearchForm().getSearchButton() != null) {
+			getSearchForm().getSearchButton().addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
+		}
+		if (getSearchForm().getSearchAnyButton() != null) {
+			getSearchForm().getSearchAnyButton()
+					.addClickListener(e -> constructLayoutIfNeeded(noSearchYetLabel));
+		}
+	}
+
+	private void constructAfterClearListeners() {
+		if (!getFormOptions().isSearchImmediately()) {
+			// use a consumer since the action might have to be deferred until after the
+			// user confirms the clear
+			if (getFormOptions().isConfirmClear()) {
+				getSearchForm().setAfterClearConsumer(e -> clearIfNotSearchingImmediately());
+			} else {
+				// clear right away
+				getSearchForm().getClearButton().addClickListener(e -> clearIfNotSearchingImmediately());
+			}
+		} else {
+			// clear current selection and update buttons
+			if (getFormOptions().isConfirmClear()) {
+				getSearchForm().setAfterClearConsumer(e -> {
+					setSelectedItem(null);
+					checkComponentState(getSelectedItem());
+					if (afterClear != null) {
+						afterClear.run();
+					}
+				});
+			} else {
+				getSearchForm().getClearButton().addClickListener(e -> {
+					setSelectedItem(null);
+					checkComponentState(getSelectedItem());
+					if (afterClear != null) {
+						afterClear.run();
+					}
+				});
 			}
 		}
 	}
@@ -372,7 +393,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				getSearchForm().setSearchable(getGridWrapper());
 				searchResultsLayout.remove(noSearchYetLabel);
 				searchLayoutConstructed = true;
-				// afterSearchPerformed();
 
 				if (afterSearchPerformed != null) {
 					afterSearchPerformed.run();

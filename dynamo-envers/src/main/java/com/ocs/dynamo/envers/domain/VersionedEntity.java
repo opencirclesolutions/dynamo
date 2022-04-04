@@ -75,7 +75,7 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 	 * @param entity   the original entity
 	 * @param revision the revision number
 	 */
-	public VersionedEntity(T entity, int revision) {
+	protected VersionedEntity(T entity, int revision) {
 		this.entity = entity;
 		this.revision = revision;
 		this.id = new RevisionKey<>(entity.getId(), revision);

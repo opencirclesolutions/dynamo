@@ -101,10 +101,9 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		this.elementCollection = elementCollection;
 		this.attributeModel = attributeModel;
 
-		setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
-
 		multiComboBox = new MultiselectComboBox<>();
 		if (attributeModel != null) {
+			setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 			String prompt = attributeModel.getPrompt(VaadinUtils.getLocale());
 			if (prompt != null) {
 				multiComboBox.setPlaceholder(prompt);

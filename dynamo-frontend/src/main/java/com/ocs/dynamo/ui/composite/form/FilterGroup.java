@@ -254,12 +254,10 @@ public class FilterGroup<T> {
 			}
 		}
 
-		if (auxField != null) {
-			if (auxField instanceof HasValue) {
-				((HasValue<?, ?>) auxField).clear();
-				if (auxField instanceof HasValidation) {
-					((HasValidation) auxField).setErrorMessage(null);
-				}
+		if (auxField instanceof HasValue) {
+			((HasValue<?, ?>) auxField).clear();
+			if (auxField instanceof HasValidation) {
+				((HasValidation) auxField).setErrorMessage(null);
 			}
 		}
 	}
@@ -278,24 +276,22 @@ public class FilterGroup<T> {
 	}
 
 	private Object translateDateOnlyFilterValue(Component field, Object value) {
-		if (attributeModel.isSearchDateOnly()) {
-			if (value != null) {
-				if (LocalDateTime.class.equals(attributeModel.getType())) {
-					if (field == this.auxField) {
-						LocalDate ldt = (LocalDate) value;
-						value = ldt.atStartOfDay().plusDays(1).minus(1, ChronoUnit.MILLIS);
-					} else {
-						LocalDate ldt = (LocalDate) value;
-						value = ldt.atStartOfDay();
-					}
-				} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
-					if (field == this.auxField) {
-						LocalDate ldt = (LocalDate) value;
-						value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minus(1, ChronoUnit.MILLIS);
-					} else {
-						LocalDate ldt = (LocalDate) value;
-						value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
-					}
+		if (attributeModel.isSearchDateOnly() && value != null) {
+			if (LocalDateTime.class.equals(attributeModel.getType())) {
+				if (field == this.auxField) {
+					LocalDate ldt = (LocalDate) value;
+					value = ldt.atStartOfDay().plusDays(1).minus(1, ChronoUnit.MILLIS);
+				} else {
+					LocalDate ldt = (LocalDate) value;
+					value = ldt.atStartOfDay();
+				}
+			} else if (ZonedDateTime.class.equals(attributeModel.getType())) {
+				if (field == this.auxField) {
+					LocalDate ldt = (LocalDate) value;
+					value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minus(1, ChronoUnit.MILLIS);
+				} else {
+					LocalDate ldt = (LocalDate) value;
+					value = ldt.atStartOfDay(VaadinUtils.getTimeZoneId());
 				}
 			}
 		}

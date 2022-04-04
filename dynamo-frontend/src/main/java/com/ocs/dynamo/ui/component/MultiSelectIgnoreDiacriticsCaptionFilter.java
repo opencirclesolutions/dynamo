@@ -53,12 +53,12 @@ public class MultiSelectIgnoreDiacriticsCaptionFilter<T> extends BaseIgnoreDiacr
 			return true;
 		}
 
-		if (!(obj instanceof IgnoreDiacriticsCaptionFilter)) {
+		if (!(obj instanceof MultiSelectIgnoreDiacriticsCaptionFilter)) {
 			return false;
 		}
-		MultiSelectIgnoreDiacriticsCaptionFilter<T> o = (MultiSelectIgnoreDiacriticsCaptionFilter<T>) obj;
-		return Objects.equals(isIgnoreCase(), o.isIgnoreCase())
-				&& Objects.equals(isOnlyMatchPrefix(), o.isOnlyMatchPrefix());
+		MultiSelectIgnoreDiacriticsCaptionFilter<T> other = (MultiSelectIgnoreDiacriticsCaptionFilter<T>) obj;
+		return Objects.equals(isIgnoreCase(), other.isIgnoreCase())
+				&& Objects.equals(isOnlyMatchPrefix(), other.isOnlyMatchPrefix());
 	}
 
 }

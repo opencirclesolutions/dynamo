@@ -36,6 +36,9 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+
 /**
  * Base class for entity model based exports to Excel or CSV
  * 
@@ -46,74 +49,49 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
  */
 public abstract class BaseExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-	/**
-	 * The width for a fixed with column
-	 */
 	protected static final int FIXED_COLUMN_WIDTH = 20 * 256;
 
-	/**
-	 * The height of the title row in pixels
-	 */
 	protected static final int TITLE_ROW_HEIGHT = 40;
 
-
-	/**
-	 * The page size
-	 */
 	protected static final int PAGE_SIZE = 1000;
 
-	/**
-	 * Entity model factory
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
 			.getEntityModelFactory();
 
-	/**
-	 * The filter to use to restrict the search results
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final Filter filter;
 
-	/**
-	 * Custom joins to use
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final FetchJoinInformation[] joins;
 
-	/**
-	 * Service used to retrieve search results
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final BaseService<ID, T> service;
 
-	/**
-	 * Sort orders to apply
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final SortOrder[] sortOrders;
 
-	/**
-	 * The title of the export
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final String title;
 
-	/**
-	 * The entity model
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final EntityModel<T> entityModel;
 
-	/**
-	 * The desired export mode
-	 */
+	@Getter(AccessLevel.PROTECTED)
 	private final ExportMode exportMode;
 
 	/**
 	 * Constructor
-	 *
-	 * @param service         the service used to retrieve the data
-	 * @param sortOrders      the sort order
-	 * @param filter          the filter used to limit the data
-	 * @param title           the title of the sheet
-	 * @param customGenerator custom generator used to apply extra styling
-	 * @param joins
+	 * 
+	 * @param service     the service used for contacting the database
+	 * @param entityModel the entity model of the entity to export
+	 * @param exportMode  the desired export mode
+	 * @param sortOrders  the sort orders to apply
+	 * @param filter      the filter used to restrict the result set
+	 * @param title       the title of the sheet
+	 * @param joins       the joins to use when retrieving data
 	 */
-	public BaseExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+	protected BaseExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
 			SortOrder[] sortOrders, Filter filter, String title, FetchJoinInformation... joins) {
 		this.service = service;
 		this.exportMode = exportMode;
@@ -135,14 +113,6 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 */
 	protected abstract byte[] generate(DataSetIterator<ID, T> iterator) throws IOException;
 
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public EntityModelFactory getEntityModelFactory() {
-		return entityModelFactory;
-	}
-
 	/**
 	 * Check whether a certain attribute model must be included in the export
 	 *
@@ -158,38 +128,16 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 
 	}
 
-	public Filter getFilter() {
-		return filter;
-	}
-
-	public FetchJoinInformation[] getJoins() {
-		return joins;
-	}
-
-	public BaseService<ID, T> getService() {
-		return service;
-	}
-
-	public SortOrder[] getSortOrders() {
-		return sortOrders;
-	}
-
-	public String getTitle() {
-		return title;
-	}
-
 	/**
-	 * Processes the input and creates a file
-	 *
-	 * @param xls whether to export to Excel (xlsx)
-	 * @return
-	 * @throws IOException
+	 * Carries out the export
+	 * 
+	 * @return the byte representation of the export
 	 */
 	public final byte[] process() {
 		try {
 			// retrieve all store series based on the IDs
 			List<ID> ids = service.findIds(getFilter(), sortOrders);
-			PagingDataSetIterator<ID, T> iterator = new PagingDataSetIterator<ID, T>(ids,
+			PagingDataSetIterator<ID, T> iterator = new PagingDataSetIterator<>(ids,
 					page -> service.fetchByIds(page, new SortOrders(sortOrders), joins), PAGE_SIZE);
 
 			return generate(iterator);

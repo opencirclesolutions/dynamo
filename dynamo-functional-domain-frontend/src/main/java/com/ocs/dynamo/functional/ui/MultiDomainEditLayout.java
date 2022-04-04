@@ -17,11 +17,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 
-import com.google.common.base.Predicate;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.OrPredicate;
@@ -90,7 +91,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 	@Getter
 	@Setter
-	private Supplier<Boolean> editAllowed = () -> true;
+	private BooleanSupplier editAllowed = () -> true;
 
 	/**
 	 * Entity model overrides
@@ -179,7 +180,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			domainCombo.setSizeFull();
 
 			// respond to a change by displaying the correct domain
-			domainCombo.addValueChangeListener(event -> selectDomain((Class<? extends Domain>) event.getValue()));
+			domainCombo.addValueChangeListener(event -> selectDomain(event.getValue()));
 
 			form.add(domainCombo);
 
@@ -195,22 +196,8 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	}
 
 	public boolean checkDeleteAllowed(Class<?> clazz) {
-		return deleteAllowed == null ? true : deleteAllowed.apply(clazz);
+		return deleteAllowed == null ? true : deleteAllowed.test(clazz);
 	}
-
-//	/**
-//	 * Constructs a custom field
-//	 * 
-//	 * @param entityModel    the entity model
-//	 * @param attributeModel the attribute mode
-//	 * @param viewMode       whether the screen is in view mode
-//	 * @return
-//	 */
-//	protected <R extends AbstractEntity<?>> Component constructCustomField(EntityModel<R> entityModel,
-//			AttributeModel attributeModel, boolean viewMode) {
-//		// overwrite in subclasses
-//		return null;
-//	}
 
 	/**
 	 * Construct a split layout for a certain domain
@@ -234,7 +221,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			layout.setAfterLayoutBuilt(postProcessSplitLayout);
 			layout.setMustEnableComponent((component, t) -> {
 				if (layout.getRemoveButton() == component) {
-					return deleteAllowed == null ? true : deleteAllowed.apply(getSelectedDomain());
+					return deleteAllowed == null ? true : deleteAllowed.test(getSelectedDomain());
 				}
 				return true;
 			});

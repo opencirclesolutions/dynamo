@@ -23,6 +23,7 @@ import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 /**
@@ -36,6 +37,7 @@ import lombok.Setter;
 @Entity
 @Getter
 @Setter
+@NoArgsConstructor
 public abstract class DomainParent<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
 		implements Serializable {
 
@@ -44,10 +46,7 @@ public abstract class DomainParent<C extends DomainChild<C, P>, P extends Domain
 	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = DomainChild.class)
 	private Set<C> children = new HashSet<>();
 
-	public DomainParent() {
-	}
-
-	public DomainParent(String code, String name) {
+	protected DomainParent(String code, String name) {
 		super(code, name);
 	}
 
@@ -61,7 +60,6 @@ public abstract class DomainParent<C extends DomainChild<C, P>, P extends Domain
 	public C removeChild(C child) {
 		getChildren().remove(child);
 		child.setParent(null);
-
 		return child;
 	}
 }

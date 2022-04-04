@@ -50,7 +50,7 @@ public final class GridFormatUtils {
 	 * @param currencySymbol the currency symbol
 	 * @return
 	 */
-	public static <T> String extractAndFormat(AttributeModel am, Object obj, Locale locale, ZoneId zoneId,
+	public static String extractAndFormat(AttributeModel am, Object obj, Locale locale, ZoneId zoneId,
 			String currencySymbol) {
 		Object value = ClassUtils.getFieldValue(obj, am.getPath());
 		String result = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am, value, ", ", locale,
@@ -60,18 +60,19 @@ public final class GridFormatUtils {
 
 	/**
 	 * Formats a property value
-	 *
-	 * @param entityModelFactory the entity model factory
-	 * @param entityModel        the entity model
-	 * @param model              the attribute model
-	 * @param value              the property value
-	 * @param locale             the locale to use
+	 * 
+	 * @param am             the attribute model of the property
+	 * @param value          the value of the property
+	 * @param separator      the separator to use to separate items in a collection
+	 * @param locale         the locale used for the formatting
+	 * @param zoneId         the zoneId used for formatting time zone
+	 * @param currencySymbol the currency symbol to use
 	 * @return
 	 */
-	public static <T> String formatPropertyValue(AttributeModel am, Object value, String separator, Locale locale,
+	public static String formatPropertyValue(AttributeModel am, Object value, String separator, Locale locale,
 			ZoneId zoneId, String currencySymbol) {
 		String result = FormatUtils.formatPropertyValue(entityModelFactory, messageService, am, value, separator,
-				locale, zoneId);
+				locale, zoneId, currencySymbol);
 		return restrictToMaxLength(result, am);
 	}
 

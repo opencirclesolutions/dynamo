@@ -22,7 +22,6 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.service.MessageService;
-//import com.ocs.dynamo.ui.component.DateTimePicker;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.datetimepicker.DateTimePicker;

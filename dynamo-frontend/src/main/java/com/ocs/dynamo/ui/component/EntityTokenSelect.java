@@ -206,12 +206,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> setCount(count));
-	}
-
-	private void setCount(int count) {
-		System.out.println("Setting count to: " + count);
-		this.count = count;
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
 	/**

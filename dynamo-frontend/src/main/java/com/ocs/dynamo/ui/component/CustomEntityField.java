@@ -57,7 +57,7 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	@Getter
 	private final AttributeModel attributeModel;
 
-	public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+	protected CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<T> filter) {
 		this.service = service;
 		this.entityModel = entityModel;

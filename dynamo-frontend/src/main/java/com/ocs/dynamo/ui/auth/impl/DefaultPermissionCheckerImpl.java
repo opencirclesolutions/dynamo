@@ -123,9 +123,9 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 		provider.addIncludeFilter(new AnnotationTypeFilter(Route.class));
 
 		Set<BeanDefinition> views = provider.findCandidateComponents(basePackage);
-		for (BeanDefinition d : views) {
+		for (BeanDefinition definition : views) {
 			try {
-				final String beanClassName = d.getBeanClassName();
+				String beanClassName = definition.getBeanClassName();
 				Class<?> clazz = Class.forName(beanClassName);
 
 				Route route = clazz.getAnnotation(Route.class);

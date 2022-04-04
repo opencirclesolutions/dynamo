@@ -118,7 +118,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 * @param entityModel the entity model
 	 * @param joins       the join data to use
 	 */
-	public BaseDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
+	protected BaseDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
 		this.service = service;
 		this.entityModel = entityModel;
 		this.joins = joins;

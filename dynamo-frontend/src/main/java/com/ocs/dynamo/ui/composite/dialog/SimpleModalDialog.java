@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
-import java.util.function.Supplier;
+import java.util.function.BooleanSupplier;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.vaadin.flow.component.button.Button;
@@ -43,7 +43,9 @@ public class SimpleModalDialog extends BaseModalDialog {
 
 	private Runnable onCancel;
 
-	private Supplier<Boolean> onClose = () -> true;
+	private BooleanSupplier onClose = () -> true;
+
+	private Runnable postProcessDialog;
 
 	public SimpleModalDialog(boolean showCancelButton) {
 		this(showCancelButton, DynamoConstants.CSS_DIALOG);
@@ -74,12 +76,16 @@ public class SimpleModalDialog extends BaseModalDialog {
 			okButton = new Button(message("ocs.ok"));
 			okButton.setIcon(VaadinIcon.CHECK.create());
 			okButton.addClickListener(event -> {
-				if (onClose.get()) {
+				if (onClose.getAsBoolean()) {
 					SimpleModalDialog.this.close();
 				}
 			});
 			buttonBar.add(okButton);
 		});
+
+		if (postProcessDialog != null) {
+			postProcessDialog.run();
+		}
 	}
 
 }

@@ -47,11 +47,10 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 	/**
 	 * Adds child menu items to a parent item
 	 * 
-	 * @param parent      the parent menu item
-	 * @param key         the message key
-	 * @param destination the view to which to navigate
+	 * @param parent the parent menu item
+	 * @param key    the message key
 	 */
-	private void addChildItems(Accordion parent, Accordion root, String key, String destination) {
+	private void addChildItems(Accordion parent, Accordion root, String key) {
 		// add the child items
 		int index = 1;
 		String childKey = getMessageService().getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
@@ -155,14 +154,13 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 			String description = getMessageService().getMessageNoDefault(key + "." + DESCRIPTION,
 					VaadinUtils.getLocale());
 
-			// create navigation command
 			NavigateCommand<Button, Accordion> command = createNavigationCommand(root, destination, tabIndex, mode);
 			boolean hasChildren = hasChildren(key);
 
 			menuItem = addMenuItem(parent, caption, hasChildren, mode, destination, description, command);
 
 			if (hasChildren) {
-				addChildItems(menuItem, root, key, destination);
+				addChildItems(menuItem, root, key);
 			}
 
 		}
@@ -240,7 +238,7 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 			List<Component> children = getChildren(item);
 			if (item instanceof AccordionPanel) {
 				AccordionPanel panel = (AccordionPanel) item;
-				Component child = (Component) panel.getSummary();
+				Component child = panel.getSummary();
 				return hasChildWithDestination(child, destination);
 			} else {
 				return children.stream().anyMatch(it -> hasChildWithDestination(it, destination));

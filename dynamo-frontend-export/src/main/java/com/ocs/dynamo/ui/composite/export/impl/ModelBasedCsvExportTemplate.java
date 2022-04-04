@@ -29,7 +29,6 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.query.DataSetIterator;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.service.BaseService;
-import com.ocs.dynamo.ui.composite.export.CustomXlsStyleGenerator;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
 import com.ocs.dynamo.ui.utils.GridFormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -59,8 +58,7 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 	 * @param joins
 	 */
 	public ModelBasedCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
-			SortOrder[] sortOrders, Filter filter, CustomXlsStyleGenerator<ID, T> customGenerator,
-			FetchJoinInformation... joins) {
+			SortOrder[] sortOrders, Filter filter, FetchJoinInformation... joins) {
 		super(service, entityModel, exportMode, sortOrders, filter, "", joins);
 	}
 

@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -29,9 +30,11 @@ import com.ocs.dynamo.filter.LikePredicate;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -147,6 +150,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	protected final TextField constructSearchField() {
 		if (getFormOptions().isShowQuickSearchField()) {
 			TextField searchField = new TextField(message("ocs.search"));
+			searchField.addClassName("quickSearchField");
 
 			// respond to the user entering a search term
 			searchField.addValueChangeListener(event -> {
@@ -226,7 +230,66 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		if (getFilter() != null) {
 			temp = new AndPredicate<>(quickFilter, getFilter());
 		}
+		emptyDetailView();
 		getGridWrapper().search(temp);
 	}
 
+	protected List<SerializablePredicate<T>> createSearchDialogFilter() {
+		return filterCreator == null ? Collections.emptyList() : List.of(filterCreator.get());
+	}
+
+	@Override
+	protected Button constructPopupSearchButton() {
+		if (getFormOptions().isSplitLayoutSearchButton()) {
+			Button button = new Button(message("ocs.search"));
+			button.addClickListener(event -> {
+				ModelBasedSearchDialog<ID, T> searchDialog = new ModelBasedSearchDialog<>(getService(),
+						getEntityModel(), createSearchDialogFilter(), getSortOrders(),
+						SearchOptions.builder().multiSelect(false).advancedSearchMode(false).build(), getDetailJoins());
+				searchDialog.setOnClose(() -> onSearchDialogClose(searchDialog));
+				searchDialog.buildAndOpen();
+			});
+
+			return button;
+		}
+		return null;
+	}
+
+	@Override
+	protected Button constructPopupClearButton() {
+		if (getFormOptions().isSplitLayoutSearchButton()) {
+			Button button = new Button(message("ocs.clear"));
+			button.addClickListener(event -> {
+				if (getQuickSearchField() != null) {
+					getQuickSearchField().clear();
+				}
+				reload();
+			});
+
+			return button;
+		}
+		return null;
+	}
+
+	/**
+	 * Respond to the user closing the search dialog by applying the search filters
+	 * from the dialog to the grid
+	 * 
+	 * @param dialog
+	 * @return
+	 */
+	private Boolean onSearchDialogClose(ModelBasedSearchDialog<ID, T> dialog) {
+
+		if (getQuickSearchField() != null) {
+			getQuickSearchField().clear();
+		}
+
+		SerializablePredicate<T> filter = dialog.getSearchLayout().getSearchForm().extractFilter();
+		this.filter = filter;
+		refresh();
+		getGridWrapper().setFilter(filter);
+		emptyDetailView();
+
+		return true;
+	}
 }

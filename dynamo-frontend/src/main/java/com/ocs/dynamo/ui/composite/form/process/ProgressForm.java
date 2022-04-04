@@ -15,8 +15,8 @@ package com.ocs.dynamo.ui.composite.form.process;
 
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.function.ToIntFunction;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
@@ -90,7 +90,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 */
 	@Getter
 	@Setter
-	private Function<T, Integer> estimateSize = t -> 0;
+	private ToIntFunction<T> estimateSize = t -> 0;
 
 	/**
 	 * Callback method that is carried out to validate whether the form input is
@@ -195,7 +195,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 
 		// start a thread to update the progress
 		try {
-			int estimatedSize = estimateSize.apply(input);
+			int estimatedSize = estimateSize.applyAsInt(input);
 
 			counter.reset();
 			ui.setPollInterval(POLL_INTERVAL);

@@ -133,7 +133,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 						.setKey(calculateColumnKey(columnKey, property)).setResizable(true)
 						.setId(calculateColumnKey(columnKey, property));
 
-				addSubHeaderRow(provider, subHeaderMapper, headerRow, columnKey, property);
+				addSubHeaderRow(subHeaderMapper, headerRow, columnKey, property);
 			}
 		}
 	}
@@ -152,14 +152,13 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 	/**
 	 * Adds a sub header row
 	 * 
-	 * @param provider        the data provider
 	 * @param subHeaderMapper the sub header mapper
 	 * @param headerRow       the row to which to add the columns
 	 * @param columnKey       the column key
 	 * @param property        the pivoted property
 	 */
-	private void addSubHeaderRow(PivotDataProvider<ID, T> provider, BiFunction<Object, Object, String> subHeaderMapper,
-			HeaderRow headerRow, Object columnKey, String property) {
+	private void addSubHeaderRow(BiFunction<Object, Object, String> subHeaderMapper, HeaderRow headerRow,
+			Object columnKey, String property) {
 		headerRow.getCell(getColumnByKey(columnKey.toString() + "_" + property))
 				.setText(subHeaderMapper.apply(columnKey, property));
 	}

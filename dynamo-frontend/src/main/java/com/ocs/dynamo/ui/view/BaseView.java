@@ -74,13 +74,13 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 	@Autowired
 	private UIHelper uiHelper;
 
-	public BaseView() {
+	protected BaseView() {
 		this(false, false);
 		setPadding(false);
 		setClassName("baseView");
 	}
 
-	public BaseView(boolean confirmBeforeLeave, boolean spacing) {
+	protected BaseView(boolean confirmBeforeLeave, boolean spacing) {
 		this.confirmBeforeLeave = confirmBeforeLeave;
 		setSpacing(spacing);
 	}

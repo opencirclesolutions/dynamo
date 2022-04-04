@@ -22,6 +22,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.grid.FixedGridWrapper;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -155,5 +156,17 @@ public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<
 			setSelectedItem(null);
 			emptyDetailView();
 		}
+	}
+
+	@Override
+	protected Button constructPopupSearchButton() {
+		// not needed
+		return null;
+	}
+
+	@Override
+	protected Button constructPopupClearButton() {
+		// not needed
+		return null;
 	}
 }

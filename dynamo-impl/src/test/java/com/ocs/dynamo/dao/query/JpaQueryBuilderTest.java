@@ -149,7 +149,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testCreateCountQuery_LikeCaseInsensitiveInfx() {
+	public void testCreateCountQuery_LikeCaseInsensitiveInfix() {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
 				new Like("name", "%a%", false), false);
 		long count = tQuery.getSingleResult();
@@ -157,6 +157,16 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		assertEquals(1, count);
 	}
 
+	
+	@Test
+	public void testCreateCountQuery_LikeCaseInsensitiveInfix2() {
+		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
+				new Like("name", "%a%", false), false);
+		long count = tQuery.getSingleResult();
+		// "Sally" should match
+		assertEquals(1, count);
+	}
+	
 	@Test
 	public void testCreateCountQuery_Between() {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,

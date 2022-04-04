@@ -116,6 +116,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			ComponentContext<ID, T> context, List<SerializablePredicate<T>> defaultFilters,
 			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(searchable, entityModel, formOptions, defaultFilters, fieldFilters);
+		setComponentContext(context);
+
 		boolean advancedModeSaved = false;
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 		if (helper != null && formOptions.isPreserveAdvancedMode()) {
@@ -460,13 +462,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	@SuppressWarnings("unchecked")
 	public <R> void setSearchAuxValue(String propertyId, R auxValue) {
 		FilterGroup<T> group = groups.get(propertyId);
-		if (group != null) {
-			if (group.getAuxField() != null) {
-				if (auxValue != null) {
-					((HasValue<?, R>) group.getAuxField()).setValue(auxValue);
-				} else {
-					((HasValue<?, R>) group.getAuxField()).clear();
-				}
+		if (group != null && group.getAuxField() != null) {
+			if (auxValue != null) {
+				((HasValue<?, R>) group.getAuxField()).setValue(auxValue);
+			} else {
+				((HasValue<?, R>) group.getAuxField()).clear();
 			}
 		}
 	}
@@ -481,17 +481,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 		Map<String, Object> oldValues = new HashMap<>();
 
-		// store groups
-		for (Entry<String, FilterGroup<T>> fg : groups.entrySet()) {
-			HasValue<?, ?> hv = (HasValue<?, ?>) fg.getValue().getField();
-			if (hv.getValue() != null) {
-				boolean emptyCollection = hv.getValue() instanceof Collection
-						&& ((Collection<?>) hv.getValue()).isEmpty();
-				if (!emptyCollection) {
-					oldValues.put(fg.getKey(), hv.getValue());
-				}
-			}
-		}
+		storeSearchTerms(oldValues);
 
 		clear();
 		setAdvancedSearchMode(!isAdvancedSearchMode());
@@ -517,6 +507,19 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			FilterGroup<T> filterGroup = groups.get(entry.getKey());
 			if (filterGroup != null) {
 				setSearchValue(entry.getKey(), entry.getValue());
+			}
+		}
+	}
+
+	private void storeSearchTerms(Map<String, Object> oldValues) {
+		for (Entry<String, FilterGroup<T>> fg : groups.entrySet()) {
+			HasValue<?, ?> hv = (HasValue<?, ?>) fg.getValue().getField();
+			if (hv.getValue() != null) {
+				boolean emptyCollection = hv.getValue() instanceof Collection
+						&& ((Collection<?>) hv.getValue()).isEmpty();
+				if (!emptyCollection) {
+					oldValues.put(fg.getKey(), hv.getValue());
+				}
 			}
 		}
 	}

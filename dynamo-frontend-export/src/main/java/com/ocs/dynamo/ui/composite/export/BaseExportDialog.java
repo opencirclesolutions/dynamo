@@ -27,8 +27,10 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.progressbar.ProgressBar;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -48,18 +50,25 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
 	private static final long serialVersionUID = 2066899457738401866L;
 
+	@Getter
 	private final EntityModel<T> entityModel;
 
+	@Getter
 	private DownloadButton exportCsvButton;
 
+	@Getter
 	private DownloadButton exportExcelButton;
 
+	@Getter
 	private final ExportMode exportMode;
 
+	@Getter
 	private final ExportService exportService;
 
+	@Getter
 	private ProgressBar progressBar;
 
+	@Getter
 	private UI ui;
 
 	/**
@@ -69,7 +78,7 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 	 * @param entityModel   the entity model of the entity to export
 	 * @param exportMode    the export mode
 	 */
-	public BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
+	protected BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
 		super("ocsDownloadDialog");
 		this.entityModel = entityModel;
 		this.exportService = exportService;
@@ -77,20 +86,7 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 		this.ui = UI.getCurrent();
 
 		setTitle(message("ocs.export"));
-		setBuildMainLayout(parent -> {
-			progressBar = new ProgressBar();
-			progressBar.setIndeterminate(true);
-			progressBar.setVisible(false);
-
-			exportExcelButton = createDownloadExcelButton();
-			parent.add(exportExcelButton);
-
-			exportCsvButton = createDownloadCSVButton();
-			parent.add(exportCsvButton);
-
-			UI.getCurrent().setPollInterval(100);
-			parent.add(progressBar);
-		});
+		setBuildMainLayout(parent -> buildMainLayout(parent));
 
 		setBuildButtonBar(buttonBar -> {
 			Button cancelButton = new Button(message("ocs.cancel"));
@@ -98,6 +94,21 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 			cancelButton.setIcon(VaadinIcon.BAN.create());
 			buttonBar.add(cancelButton);
 		});
+	}
+
+	private void buildMainLayout(VerticalLayout parent) {
+		progressBar = new ProgressBar();
+		progressBar.setIndeterminate(true);
+		progressBar.setVisible(false);
+
+		exportExcelButton = createDownloadExcelButton();
+		parent.add(exportExcelButton);
+
+		exportCsvButton = createDownloadCSVButton();
+		parent.add(exportCsvButton);
+
+		UI.getCurrent().setPollInterval(100);
+		parent.add(progressBar);
 	}
 
 	protected abstract DownloadButton createDownloadCSVButton();
@@ -123,33 +134,5 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 		} finally {
 			this.close();
 		}
-	}
-
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public DownloadButton getExportCsvButton() {
-		return exportCsvButton;
-	}
-
-	public DownloadButton getExportExcelButton() {
-		return exportExcelButton;
-	}
-
-	public ExportMode getExportMode() {
-		return exportMode;
-	}
-
-	public ExportService getExportService() {
-		return exportService;
-	}
-
-	public ProgressBar getProgressBar() {
-		return progressBar;
-	}
-
-	public UI getUi() {
-		return ui;
 	}
 }

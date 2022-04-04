@@ -102,8 +102,8 @@ public class ViewRevisionDialog<ID extends Serializable, T extends AbstractEntit
 		setBuildMainLayout(parent -> {
 			FormOptions fo = new FormOptions().setReadOnly(true).setScreenMode(formOptions.getScreenMode())
 					.setAttributeGroupMode(formOptions.getAttributeGroupMode()).setExportAllowed(true);
-			ServiceBasedSplitLayout<RevisionKey<ID>, U> layout = new ServiceBasedSplitLayout<RevisionKey<ID>, U>(
-					service, entityModel, QueryType.PAGING, fo, null);
+			ServiceBasedSplitLayout<RevisionKey<ID>, U> layout = new ServiceBasedSplitLayout<>(service, entityModel,
+					QueryType.PAGING, fo, null);
 			layout.setFilterCreator(() -> new EqualsPredicate<>(DynamoConstants.ID, id));
 			parent.add(layout);
 		});

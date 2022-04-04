@@ -124,7 +124,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	 * @param sheet    the sheet to add the headers to
 	 * @param resize   whether to resize the columns
 	 * @param titleRow the title row to which to add the header
-	 * @param i the row index
+	 * @param i        the row index
 	 * @return
 	 */
 	private int addFixedColumnHeaders(Sheet sheet, boolean resize, Row titleRow, int i) {
@@ -142,7 +142,8 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 
 	/**
 	 * Adds the fixed columns at the start of a row
-	 * @param row the row 
+	 * 
+	 * @param row    the row
 	 * @param entity the entity currently being processed
 	 */
 	private void addFixedColumns(Row row, T entity) {
@@ -187,9 +188,11 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	}
 
 	/**
-	 * Adds a cell at the bottom of a sheet that serves as the header for the aggregations row
+	 * Adds a cell at the bottom of a sheet that serves as the header for the
+	 * aggregations row
+	 * 
 	 * @param nrOfFixedCols the number of fixed columns
-	 * @param sheet the sheet to which to add the cells
+	 * @param sheet         the sheet to which to add the cells
 	 * @param type
 	 * @param totalsRow
 	 */
@@ -204,48 +207,67 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 		sheet.addMergedRegion(new CellRangeAddress(sheet.getLastRowNum(), sheet.getLastRowNum(), 0, nrOfFixedCols - 1));
 	}
 
-	private int addPivotColumnHeader(Sheet sheet, boolean resize, Row titleRow, int nrOfPivotProps, int i) {
+	/**
+	 * Adds the primary header for a pivoted column
+	 * 
+	 * @param sheet          the sheet to which to add the header
+	 * @param resize         whether resize the columns
+	 * @param titleRow       the title row to which to add the header
+	 * @param nrOfPivotProps the number of pivot properties
+	 * @param colIndex       the column index
+	 * @return
+	 */
+	private int addPivotColumnHeader(Sheet sheet, boolean resize, Row titleRow, int nrOfPivotProps, int colIndex) {
 		for (Object fc : pivotParameters.getPossibleColumnKeys()) {
-			int mergeStart = i;
+			int mergeStart = colIndex;
 			for (String property : pivotParameters.getPivotedProperties()) {
-				Cell cell = titleRow.createCell(i);
+				Cell cell = titleRow.createCell(colIndex);
 				if (!resize) {
-					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+					sheet.setColumnWidth(colIndex, FIXED_COLUMN_WIDTH);
 				}
 
-				cell.setCellStyle(getGenerator().getHeaderStyle(i));
+				cell.setCellStyle(getGenerator().getHeaderStyle(colIndex));
 				String value = pivotParameters.getHeaderMapper().apply(fc, property);
 				if (value != null) {
 					cell.setCellValue(value);
 				}
-				i++;
+				colIndex++;
 			}
 
 			if (nrOfPivotProps > 1) {
 				sheet.addMergedRegion(
-						new CellRangeAddress(titleRow.getRowNum(), titleRow.getRowNum(), mergeStart, i - 1));
+						new CellRangeAddress(titleRow.getRowNum(), titleRow.getRowNum(), mergeStart, colIndex - 1));
 			}
 		}
-		return i;
+		return colIndex;
 	}
 
-	private int addPivotColumnSubHeader(Sheet sheet, boolean resize, Row subtitleRow, int i) {
+	/**
+	 * Adds a sub header to a pivoted column
+	 * 
+	 * @param sheet       the sheet to which to add the sub header
+	 * @param resize      whether to resize the column
+	 * @param subtitleRow the row to which to add the sub header
+	 * @param colIndex    the column index
+	 * @return
+	 */
+	private int addPivotColumnSubHeader(Sheet sheet, boolean resize, Row subtitleRow, int colIndex) {
 		for (Object fc : pivotParameters.getPossibleColumnKeys()) {
 			for (String property : pivotParameters.getPivotedProperties()) {
-				Cell cell = subtitleRow.createCell(i);
+				Cell cell = subtitleRow.createCell(colIndex);
 				if (!resize) {
-					sheet.setColumnWidth(i, FIXED_COLUMN_WIDTH);
+					sheet.setColumnWidth(colIndex, FIXED_COLUMN_WIDTH);
 				}
 
-				cell.setCellStyle(getGenerator().getHeaderStyle(i));
+				cell.setCellStyle(getGenerator().getHeaderStyle(colIndex));
 				String value = pivotParameters.getSubHeaderMapper().apply(fc, property);
 				if (value != null) {
 					cell.setCellValue(value);
 				}
-				i++;
+				colIndex++;
 			}
 		}
-		return i;
+		return colIndex;
 	}
 
 	/**

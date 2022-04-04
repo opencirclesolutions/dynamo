@@ -36,14 +36,12 @@ import com.vaadin.flow.component.menubar.MenuBar;
 public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 
 	/**
-	 * 
-	 * @param bar
-	 * @param parent
-	 * @param key
-	 * @param menuItem
-	 * @param destination
+	 * Adds the child items for the specified key
+	 * @param bar the menu bar (root)
+	 * @param menuItem the menu item to add the children to
+	 * @param key the key of the menu item
 	 */
-	private void addChildItems(MenuBar bar, HasMenuItems item, String key, String destination) {
+	private void addChildItems(MenuBar bar, HasMenuItems item, String key) {
 		// add the child items
 		int index = 1;
 		String childKey = getMessageService().getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
@@ -55,7 +53,6 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 			childKey = getMessageService().getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
 					VaadinUtils.getLocale());
 		}
-
 	}
 
 	/**
@@ -117,7 +114,7 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 			}
 
 			parent = menuItem.getSubMenu();
-			addChildItems(root, parent, key, destination);
+			addChildItems(root, parent, key);
 
 			// hide menu item if user does not have permissions
 			hideIfNoPermission(menuItem, destination);
@@ -227,56 +224,9 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 		}
 	}
 
-//	/**
-//	 * Sets the visibility of a certain item item based on its destination (and
-//	 * regardless of screen mode)
-//	 * 
-//	 * @param menu        the menu
-//	 * @param destination the logical name of the destination
-//	 * @param visible     whether to set the item to visible
-//	 */
-//	public void setVisible(MenuBar menu, String destination, boolean visible) {
-//		setVisible(menu, destination, null, visible);
-//	}
-//
-//	/**
-//	 * Sets the visibility of a certain item identified by its destination and mode
-//	 * 
-//	 * @param menu        the menu bar
-//	 * @param destination the destination
-//	 * @param mode        the screen mode
-//	 * 
-//	 * @param visible     the desired visibility
-//	 */
-//	public void setVisible(MenuBar menu, String destination, String mode, boolean visible) {
-//
-//		List<MenuItem> items = menu.getItems();
-//		for (MenuItem item : items) {
-//			setVisible(item, destination, mode, visible);
-//		}
-//		hideRecursively(menu);
-//	}
-//
-//	/**
-//	 * Sets the visibility of a certain menu item if its destination matches the
-//	 * specified destination
-//	 * 
-//	 * @param menu        the main menu bar
-//	 * @param destination the destination
-//	 * @param mode        the screen mode
-//	 * @param visible     the desired visibility of the item
-//	 */
-//	private void setVisible(MenuItem item, String destination, String mode, boolean visible) {
-//		MenuItem mi = getDestination(destination, mode);
-//		if (mi != null) {
-//			mi.setVisible(visible);
-//		}
-//	}
-
 	@Override
 	public List<? extends Component> getRootChildren(MenuBar root) {
 		return root.getItems();
-
 	}
 
 }

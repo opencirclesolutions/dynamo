@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -40,6 +41,9 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 
 	@BeforeEach
 	public void setUp() {
+		
+		MockVaadin.setup();
+		
 		e1 = new TestEntity(1, "Kevin", 12L);
 		e1.setId(1);
 		e2 = new TestEntity(2, "Bob", 14L);
@@ -56,13 +60,16 @@ public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
 		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em,
-				em.getAttributeModel("testEntities"), false, false, new FormOptions().setShowRemoveButton(true));
+				em.getAttributeModel("testEntities"), false, false,
+				new FormOptions().setShowRemoveButton(true));
 		assertTrue(grid.getAddButton().isVisible());
 		assertFalse(grid.getSearchDialogButton().isVisible());
 
 		grid.setValue(parent);
 
 		assertTrue(buttonBarProcessed);
+		
+		grid.getAddButton().click();
 
 	}
 

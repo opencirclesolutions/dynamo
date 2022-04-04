@@ -31,7 +31,7 @@ public abstract class ComparePredicate<T> extends PropertyPredicate<T> {
 	 * @param property the property to compare
 	 * @param value    the property value to compare to
 	 */
-	public ComparePredicate(String property, Object value) {
+	protected ComparePredicate(String property, Object value) {
 		super(property, value);
 	}
 

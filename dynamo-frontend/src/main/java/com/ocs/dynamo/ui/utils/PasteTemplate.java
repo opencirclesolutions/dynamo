@@ -18,6 +18,7 @@ import java.util.Locale;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
 
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -36,15 +37,20 @@ public abstract class PasteTemplate<T> {
 
 	private Locale locale;
 
+	@Getter
 	private Grid<T> grid;
 
 	private String value;
 
 	/**
-	 * @param locale
-	 * @param event
+	 * Constructor
+	 * 
+	 * @param locale the locale used for the formatting
+	 * @param grid   the grid to which to apply the pasting
+	 * @param event  the value change event
+	 * @param value  the value
 	 */
-	public PasteTemplate(Locale locale, Grid<T> grid, ValueChangeEvent<String> event, String value) {
+	protected PasteTemplate(Locale locale, Grid<T> grid, ValueChangeEvent<String> event, String value) {
 		this.locale = locale;
 		this.event = event;
 		this.grid = grid;
@@ -92,8 +98,5 @@ public abstract class PasteTemplate<T> {
 	 */
 	protected abstract void clearSourceField(ValueChangeEvent<String> event);
 
-	public Grid<T> getGrid() {
-		return grid;
-	}
 
 }

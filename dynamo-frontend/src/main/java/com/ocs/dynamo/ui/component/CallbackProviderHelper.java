@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.component;
 import java.io.Serializable;
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.IntConsumer;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -54,8 +55,8 @@ public class CallbackProviderHelper {
 	 */
 	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, String> createCallbackProvider(
 			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
-			SortOrders sortOrders, Consumer<Integer> afterCountDone) {
-		FilterConverter<T> converter = new FilterConverter<T>(entityModel);
+			SortOrders sortOrders, IntConsumer afterCountDone) {
+		FilterConverter<T> converter = new FilterConverter<>(entityModel);
 		CallbackDataProvider<T, String> callbackProvider = new CallbackDataProvider<>(query -> {
 			int offset = query.getOffset();
 			int page = offset / query.getLimit();
@@ -107,7 +108,7 @@ public class CallbackProviderHelper {
 			}
 		} else {
 			if (!StringUtils.isEmpty(searchString)) {
-				pred = new AndPredicate<T>(filter, like);
+				pred = new AndPredicate<>(filter, like);
 			} else {
 				pred = filter;
 			}

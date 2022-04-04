@@ -18,6 +18,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
+import java.util.function.BooleanSupplier;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -94,7 +95,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	 */
 	@Getter
 	@Setter
-	private Supplier<Boolean> editAllowed = () -> true;
+	private BooleanSupplier editAllowed = () -> true;
 
 	@Getter
 	@Setter
@@ -227,7 +228,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	}
 
 	public boolean checkEditAllowed() {
-		return editAllowed == null ? true : editAllowed.get();
+		return editAllowed == null ? true : editAllowed.getAsBoolean();
 	}
 
 	/**
@@ -345,17 +346,17 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 		TreeDataProvider<T> provider = (TreeDataProvider<T>) getDataProvider();
 		TreeData<T> data = provider.getTreeData();
 
-		String[] sumColumns = getSumColumns();
+		String[] sumCols = getSumColumns();
 		// update the sum columns on the parent level
 		// footer sums
 		Map<String, BigDecimal> totalSumMap = new HashMap<>();
-		if (sumColumns == null) {
-			sumColumns = new String[0];
+		if (sumCols == null) {
+			sumCols = new String[0];
 		}
 
 		// update the sum columns on the parent level
 		int index = 0;
-		for (String column : sumColumns) {
+		for (String column : sumCols) {
 			for (T pRow : data.getRootItems()) {
 				List<T> cRows = data.getChildren(pRow);
 				int j = index;
@@ -371,14 +372,14 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 		}
 
 		// update the footer sums
-		if (sumColumns.length > 0) {
+		if (sumCols.length > 0) {
 			FooterRow footerRow = null;
 			if (getFooterRows().isEmpty()) {
 				footerRow = appendFooterRow();
 			} else {
 				footerRow = getFooterRows().get(0);
 			}
-			for (String column : sumColumns) {
+			for (String column : sumCols) {
 				BigDecimal bd = totalSumMap.get(column);
 				Column<?> columnByKey = getColumnByKey(column);
 				if (columnByKey != null) {

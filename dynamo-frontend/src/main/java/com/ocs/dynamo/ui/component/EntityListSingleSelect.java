@@ -153,12 +153,9 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		setValue(entity);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-		if (provider instanceof CallbackDataProvider) {
-			setDataProvider((CallbackDataProvider) provider);
-		} else if (provider instanceof ListDataProvider) {
-			setDataProvider((ListDataProvider) provider);
+		if (provider instanceof CallbackDataProvider || provider instanceof ListDataProvider) {
+			setDataProvider(provider);
 		}
 	}
 
@@ -171,11 +168,16 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> setCount(count));
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
-	private int setCount(Integer count) {
-		return this.count = count;
+	public int getDataProviderSize() {
+		if (getDataProvider() instanceof ListDataProvider) {
+			return ((ListDataProvider<?>) getDataProvider()).getItems().size();
+		} else if (getDataProvider() instanceof CallbackDataProvider) {
+			return count;
+		}
+		return 0;
 	}
 
 	/**
@@ -255,15 +257,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}
-	}
-
-	public int getDataProviderSize() {
-		if (getDataProvider() instanceof ListDataProvider) {
-			return ((ListDataProvider) getDataProvider()).getItems().size();
-		} else if (getDataProvider() instanceof CallbackDataProvider) {
-			return count;
-		}
-		return 0;
 	}
 
 }

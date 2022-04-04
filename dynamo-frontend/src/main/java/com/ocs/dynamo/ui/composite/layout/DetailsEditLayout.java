@@ -247,14 +247,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 	private List<FormContainer> forms = new ArrayList<>();
 
-//	@Getter
-//	@Setter
-//	private GroupTogetherMode groupTogetherMode;
-//
-//	@Getter
-//	@Setter
-//	private Integer groupTogetherWidth;
-
 	private List<T> items;
 
 	private VerticalLayout layout;
@@ -273,10 +265,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	@Getter
 	@Setter
 	private TriConsumer<Integer, HorizontalLayout, Boolean> postProcessDetailButtonBar;
-
-//	@Getter
-//	@Setter
-//	private Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields;
 
 	/**
 	 * Consumer for removing an entity
@@ -470,22 +458,6 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 		}
 		return null;
 	}
-
-//	/**
-//	 * Method that is called to create a custom field. Override in subclasses if
-//	 * needed
-//	 * 
-//	 * @param entityModel    the entity model of the entity that is displayed in the
-//	 *                       component
-//	 * @param attributeModel the attribute model of the attribute for which we are
-//	 *                       constructing a field
-//	 * @param viewMode       whether the form is in view mode
-//	 * @return
-//	 */
-//	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel,
-//			boolean viewMode) {
-//		return null;
-//	}
 
 	public ModelBasedEditForm<ID, T> getForm(int index) {
 		return getFormContainer(index).getForm();

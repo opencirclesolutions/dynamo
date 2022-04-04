@@ -111,7 +111,7 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
-	public GridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	protected GridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, ComponentContext<ID, T> componentContext, SerializablePredicate<T> filter,
 			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
 		setSpacing(false);

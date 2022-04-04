@@ -16,7 +16,7 @@ package com.ocs.dynamo.service;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 
 /**
@@ -25,7 +25,7 @@ import lombok.extern.slf4j.Slf4j;
  * @author bas.rutten
  *
  */
-@NoArgsConstructor
+@UtilityClass
 @Slf4j
 public final class ServiceLocatorFactory {
 

@@ -34,10 +34,8 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the key of the DTO
- * @param <T>
- *            the type of the DTO
+ * @param <ID> the type of the key of the DTO
+ * @param <T>  the type of the DTO
  */
 public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 
@@ -99,28 +97,19 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 	/**
 	 * Constructor
 	 * 
-	 * @param importer
-	 *            the XLS importer that is used to do the actual reading from
-	 *            the file
+	 * @param importer           the XLS importer that is used to do the actual
+	 *                           reading from the file
 	 * @param messageService
-	 * @param bytes
-	 *            the raw content to process
-	 * @param errors
-	 *            list of errors
-	 * @param clazz
-	 *            the class
-	 * @param sheetIndex
-	 *            the index of the sheet to read from
-	 * @param firstRowNumber
-	 *            the index of the first row to read from
-	 * @param colIndex
-	 *            the index of the column to read from
-	 * @param recordLength
-	 *            the length (number of lines) of a single record
-	 * @param checkForDuplicates
-	 *            whether to check for duplicates
+	 * @param bytes              the raw content to process
+	 * @param errors             list of errors
+	 * @param clazz              the class
+	 * @param sheetIndex         the index of the sheet to read from
+	 * @param firstRowNumber     the index of the first row to read from
+	 * @param colIndex           the index of the column to read from
+	 * @param recordLength       the length (number of lines) of a single record
+	 * @param checkForDuplicates whether to check for duplicates
 	 */
-	public XlsRowImportTemplate(BaseXlsImporter importer, MessageService messageService, byte[] bytes,
+	protected XlsRowImportTemplate(BaseXlsImporter importer, MessageService messageService, byte[] bytes,
 			List<String> errors, Class<T> clazz, int sheetIndex, int firstRowNumber, int colIndex, int recordLength,
 			boolean checkForDuplicates) {
 		this.messageService = messageService;
@@ -196,8 +185,7 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
 	/**
 	 * Retrieves the key value from a record (used for duplicate checking)
 	 * 
-	 * @param record
-	 *            the record
+	 * @param record the record
 	 * @return the value of the key
 	 */
 	protected abstract ID extractKey(T record);

@@ -114,6 +114,11 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 		results = dao.fetch(null, new SortOrders(new SortOrder("name")), new FetchJoinInformation("testEntities"));
 		assertEquals(3, results.size());
 		assertEquals("Bob", results.get(0).getName());
+
+		// with a sort order, fetch and page
+		results = dao.fetch(null, new PageableImpl(0, 1, new SortOrders(new SortOrder("name"))));
+		assertEquals(1, results.size());
+		assertEquals("Bob", results.get(0).getName());
 	}
 
 	@Test

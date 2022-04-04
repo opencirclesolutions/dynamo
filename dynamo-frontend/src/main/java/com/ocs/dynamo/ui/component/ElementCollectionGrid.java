@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
@@ -124,6 +126,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 * The currently selected item in the grid
 	 */
 	@Getter
+	@Setter
 	private T selectedItem;
 
 	/**
@@ -148,9 +151,62 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		initContent();
 	}
 
-	/**
-	 * Assigns the parent entity
-	 */
+	private void addBigDecimalConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
+				.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
+						attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
+						attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
+					BigDecimal.valueOf(attributeModel.getMaxValue())));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_LOW),
+					BigDecimal.valueOf(attributeModel.getMinValue()), null));
+		}
+	}
+
+	private void addIntegerConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder
+				.withConverter(ConverterFactory.createIntegerConverter(attributeModel.useThousandsGroupingInEditMode(),
+						attributeModel.isPercentage()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
+					null, attributeModel.getMaxValue().intValue()));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+					attributeModel.getMinValue().intValue(), null));
+		}
+	}
+
+	private void addLongConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(ConverterFactory
+				.createLongConverter(attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
+					attributeModel.getMaxValue()));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+					attributeModel.getMinValue(), null));
+		}
+	}
+
+	private void addStringConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		if (attributeModel.getMaxLength() != null) {
+			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_LONG, attributeModel.getMaxLength()),
+					null, attributeModel.getMaxLength()));
+		}
+		if (attributeModel.getMinLength() != null) {
+			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
+					attributeModel.getMinLength(), null));
+		}
+		if (attributeModel.isTrimSpaces()) {
+			builder.withConverter(new TrimSpacesConverter());
+		}
+	}
+
 	@Override
 	public void assignEntity(U entity) {
 		this.entity = entity;
@@ -218,12 +274,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	@Override
 	protected Collection<T> generateModelValue() {
-		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
-		Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
-		if (entity != null) {
-			ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
-		}
-		return converted;
+		return getValueInner();
 	}
 
 	public Integer getMaxLength() {
@@ -244,6 +295,10 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	@Override
 	public Collection<T> getValue() {
+		return getValueInner();
+	}
+
+	private Collection<T> getValueInner() {
 		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
 		Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
 		if (entity != null) {
@@ -271,15 +326,15 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 			builder.withNullRepresentation("");
 
 			// custom validator since the normal one apparently doesn't work properly here
-			// (note: add this before the converter!)
-			Validator<String> notEmpty = (String value, ValueContext v) -> {
-				if (value == null || "".equals(value)) {
+			// (must be added before the converters)
+			Validator<String> notEmptyValidator = (String value, ValueContext v) -> {
+				if (StringUtils.isEmpty(value)) {
 					return ValidationResult
 							.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
 				}
 				return ValidationResult.ok();
 			};
-			builder.asRequired(notEmpty);
+			builder.asRequired(notEmptyValidator);
 
 			if (String.class.equals(attributeModel.getMemberType())) {
 				addStringConverters(builder);
@@ -316,63 +371,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		add(main);
 	}
 
-	private void addBigDecimalConverters(BindingBuilder<ValueHolder<T>, String> builder) {
-		BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
-				.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
-						attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
-						attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
-		if (attributeModel.getMaxValue() != null) {
-			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
-					BigDecimal.valueOf(attributeModel.getMaxValue())));
-		}
-		if (attributeModel.getMinValue() != null) {
-			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_LOW),
-					BigDecimal.valueOf(attributeModel.getMinValue()), null));
-		}
-	}
-
-	private void addLongConverters(BindingBuilder<ValueHolder<T>, String> builder) {
-		BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(ConverterFactory
-				.createLongConverter(attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
-		if (attributeModel.getMaxValue() != null) {
-			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
-					attributeModel.getMaxValue()));
-		}
-		if (attributeModel.getMinValue() != null) {
-			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
-					attributeModel.getMinValue(), null));
-		}
-	}
-
-	private void addIntegerConverters(BindingBuilder<ValueHolder<T>, String> builder) {
-		BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder
-				.withConverter(ConverterFactory.createIntegerConverter(attributeModel.useThousandsGroupingInEditMode(),
-						attributeModel.isPercentage()));
-		if (attributeModel.getMaxValue() != null) {
-			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
-					null, attributeModel.getMaxValue().intValue()));
-		}
-		if (attributeModel.getMinValue() != null) {
-			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
-					attributeModel.getMinValue().intValue(), null));
-		}
-	}
-
-	private void addStringConverters(BindingBuilder<ValueHolder<T>, String> builder) {
-		// string length validation
-		if (attributeModel.getMaxLength() != null) {
-			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_LONG, attributeModel.getMaxLength()),
-					null, attributeModel.getMaxLength()));
-		}
-		if (attributeModel.getMinLength() != null) {
-			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
-					attributeModel.getMinLength(), null));
-		}
-		if (attributeModel.isTrimSpaces()) {
-			builder.withConverter(new TrimSpacesConverter());
-		}
-	}
-
 	private String message(String key, Object... values) {
 		return messageService.getMessage(key, VaadinUtils.getLocale(), values);
 	}
@@ -388,9 +386,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		this.entity = entity;
 	}
 
-	public void setFormOptions(final FormOptions formOptions) {
-		this.formOptions = formOptions;
-	}
 
 	@Override
 	protected void setPresentationValue(Collection<T> value) {
@@ -405,14 +400,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 			binder.setBean(vh);
 			binders.put(vh, binder);
 		}
-	}
-
-	public void setSelectedItem(T selectedItem) {
-		this.selectedItem = selectedItem;
-	}
-
-	public void setViewMode(boolean viewMode) {
-		this.viewMode = viewMode;
 	}
 
 	@Override

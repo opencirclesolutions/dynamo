@@ -30,6 +30,8 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * 
  * Utilities for formatting property values
@@ -37,28 +39,32 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
  * @author bas.rutten
  *
  */
+@UtilityClass
 public final class FormatUtils {
 
 	/**
-	 * Extracts a field value from an object and formats it
+	 * Extracts ands formats a value
 	 * 
-	 * @param am             the attribute model
-	 * @param obj            the object from which to extract the value
-	 * @param local          the locale
-	 * @param currencySymbol the currency symbol
+	 * @param entityModelFactory the entity model factory
+	 * @param messageService     the message service
+	 * @param am                 the attribute model
+	 * @param obj                the object from which to extract the value
+	 * @param locale             the locale used for the formatting
+	 * @param zoneId             the zone ID
+	 * @param currencySymbol     the currency symbol
 	 * @return
 	 */
-	public static <T> String extractAndFormat(EntityModelFactory entityModelFactory, MessageService messageService,
+	public static String extractAndFormat(EntityModelFactory entityModelFactory, MessageService messageService,
 			AttributeModel am, Object obj, Locale locale, ZoneId zoneId, String currencySymbol) {
 		Object value = ClassUtils.getFieldValue(obj, am.getPath());
 		return formatPropertyValue(entityModelFactory, messageService, am, value, ", ", locale, zoneId, currencySymbol);
 	}
 
 	/**
-	 * Formats and entity
+	 * Formats an entity (translates it to a String based on the displayProperty)
 	 * 
-	 * @param entityModel the entity model for the entity
-	 * @param value       the entity
+	 * @param entityModel the entity model
+	 * @param value       the value (the entity)
 	 * @return
 	 */
 	public static String formatEntity(EntityModel<?> entityModel, Object value) {
@@ -74,11 +80,16 @@ public final class FormatUtils {
 	}
 
 	/**
-	 * Formats a collection of entities (turns it into a comma-separated string
-	 * based on the value of the "displayProperty")
-	 *
+	 * Formats a collection of entities (translates them to string based on the
+	 * value of the displayProperty)
+	 * 
 	 * @param entityModelFactory the entity model factory
-	 * @param collection         the collection of entities to format
+	 * @param attributeModel     the attribute model
+	 * @param collection         the collection of entities to translate
+	 * @param separator          the string that is used to separate the string
+	 *                           representations
+	 * @param locale             the locale used for the formatting
+	 * @param currencySymbol     the currency symbol used for the formatting
 	 * @return
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
@@ -106,32 +117,42 @@ public final class FormatUtils {
 	/**
 	 * Formats a property value
 	 * 
-	 * @param <T>
-	 * @param entityModelFactory
-	 * @param model
-	 * @param value
-	 * @param separator
-	 * @param locale
+	 * @param entityModelFactory the entity model factory
+	 * @param messageService     the message service
+	 * @param attributeModel     the attribute model for the property that must be
+	 *                           formatted
+	 * @param value              the value of the property
+	 * @param separator          the string that is used to separate the string
+	 *                           representations
+	 * @param locale             the locale used for the formatting
+	 * @param zoneId             the zone ID of the time zone used for time stamp
+	 *                           formatting
 	 * @return
 	 */
-	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
-			AttributeModel model, Object value, String separator, Locale locale, ZoneId zoneId) {
-		return formatPropertyValue(entityModelFactory, messageService, model, value, separator, locale, zoneId,
+	public static String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
+			AttributeModel attributeModel, Object value, String separator, Locale locale, ZoneId zoneId) {
+		return formatPropertyValue(entityModelFactory, messageService, attributeModel, value, separator, locale, zoneId,
 				SystemPropertyUtils.getDefaultCurrencySymbol());
 	}
 
 	/**
 	 * Formats a property value
-	 *
+	 * 
 	 * @param entityModelFactory the entity model factory
-	 * @param entityModel        the entity model
-	 * @param am              the attribute model
-	 * @param value              the property value
-	 * @param locale             the locale to use
+	 * @param messageService     the message service
+	 * @param attributeModel     the attribute model for the property that must be
+	 *                           formatted
+	 * @param value              the value of the property
+	 * @param separator          the string that is used to separate the string
+	 *                           representations
+	 * @param locale             the locale used for the formatting
+	 * @param zoneId             the zone ID of the time zone used for time stamp
+	 *                           formatting
+	 * @param currencySymbol     the currency symbol used for the formatting
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static <T> String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
+	public static String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
 			AttributeModel am, Object value, String separator, Locale locale, ZoneId zoneId, String currencySymbol) {
 		if (am != null && value != null) {
 			if (am.isWeek()) {
@@ -140,17 +161,13 @@ public final class FormatUtils {
 				}
 			} else if (Boolean.class.equals(am.getType()) || boolean.class.equals(am.getType())) {
 				// translate boolean to String representation
-				if (!StringUtils.isEmpty(am.getTrueRepresentation(locale)) && Boolean.TRUE.equals(value)) {
-					return am.getTrueRepresentation(locale);
-				} else if (!StringUtils.isEmpty(am.getFalseRepresentation(locale)) && Boolean.FALSE.equals(value)) {
-					return am.getFalseRepresentation(locale);
-				}
-				return Boolean.toString(Boolean.TRUE.equals(value));
+				return formatBooleanProperty(am, value, locale);
 			} else if (DateUtils.isJava8DateType(am.getType())) {
 				// other Java 8 dates
 				return DateUtils.formatJava8Date(am.getType(), value, am.getDisplayFormat(), zoneId);
 			} else if (NumberUtils.isNumeric(am.getType())) {
-				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInEditMode(), locale, currencySymbol);
+				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInEditMode(), locale,
+						currencySymbol);
 			} else if (am.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message
 				// bundle
@@ -162,31 +179,68 @@ public final class FormatUtils {
 				return formatEntityCollection(entityModelFactory, am, value, separator, locale, currencySymbol);
 			} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
 				// entity -> translate using the "displayProperty"
-				EntityModel<?> detailEntityModel = am.getNestedEntityModel();
-				if (detailEntityModel == null) {
-					detailEntityModel = entityModelFactory.getModel(am.getType());
-				}
-				String displayProperty = detailEntityModel.getDisplayProperty();
-				if (displayProperty == null) {
-					throw new OCSRuntimeException(
-							"No displayProperty set for entity " + detailEntityModel.getEntityClass());
-				}
-				AttributeModel detailModel = detailEntityModel.getAttributeModel(displayProperty);
-				return formatPropertyValue(entityModelFactory, messageService, detailModel,
-						ClassUtils.getFieldValue(value, displayProperty), separator, locale, zoneId, currencySymbol);
+				return formatEntityWithCheck(entityModelFactory, messageService, am, value, separator, locale, zoneId,
+						currencySymbol);
 			} else if (value instanceof AbstractEntity) {
 				// single entity
 				Object result = ClassUtils.getFieldValue(value, am.getPath());
 				return result == null ? null : result.toString();
 			} else {
-				// just use the String value
+				// as the ultimate fallback, just call toString()
 				return value.toString();
 			}
 		}
 		return null;
 	}
 
-	private FormatUtils() {
-		// private constructor
+	/**
+	 * Format a boolean property
+	 * 
+	 * @param am     the attribute model for the property
+	 * @param value  the value
+	 * @param locale the locale
+	 * @return
+	 */
+	private static String formatBooleanProperty(AttributeModel am, Object value, Locale locale) {
+		if (!StringUtils.isEmpty(am.getTrueRepresentation(locale)) && Boolean.TRUE.equals(value)) {
+			return am.getTrueRepresentation(locale);
+		} else if (!StringUtils.isEmpty(am.getFalseRepresentation(locale)) && Boolean.FALSE.equals(value)) {
+			return am.getFalseRepresentation(locale);
+		}
+		return Boolean.toString(Boolean.TRUE.equals(value));
 	}
+
+	/**
+	 * 
+	 * Formats an entity (with a check to see if a display property has bene set)
+	 * 
+	 * @param entityModelFactory the entity model factory
+	 * @param messageService     the message service
+	 * @param attributeModel     the attribute model for the property that must be
+	 *                           formatted
+	 * @param value              the value of the property
+	 * @param separator          the string that is used to separate the string
+	 *                           representations
+	 * @param locale             the locale used for the formatting
+	 * @param zoneId             the zone ID of the time zone used for time stamp
+	 *                           formatting
+	 * @param currencySymbol     the currency symbol used for the formatting
+	 * @return
+	 */
+	private static String formatEntityWithCheck(EntityModelFactory entityModelFactory, MessageService messageService,
+			AttributeModel attributeModel, Object value, String separator, Locale locale, ZoneId zoneId,
+			String currencySymbol) {
+		EntityModel<?> detailEntityModel = attributeModel.getNestedEntityModel();
+		if (detailEntityModel == null) {
+			detailEntityModel = entityModelFactory.getModel(attributeModel.getType());
+		}
+		String displayProperty = detailEntityModel.getDisplayProperty();
+		if (displayProperty == null) {
+			throw new OCSRuntimeException("No displayProperty set for entity " + detailEntityModel.getEntityClass());
+		}
+		AttributeModel detailModel = detailEntityModel.getAttributeModel(displayProperty);
+		return formatPropertyValue(entityModelFactory, messageService, detailModel,
+				ClassUtils.getFieldValue(value, displayProperty), separator, locale, zoneId, currencySymbol);
+	}
+
 }

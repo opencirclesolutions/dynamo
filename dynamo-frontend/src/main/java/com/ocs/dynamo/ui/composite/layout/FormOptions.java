@@ -130,7 +130,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to preserve search terms when navigating away from the screen
 	 */
-	private boolean preserveSearchTerms = true;;
+	private boolean preserveSearchTerms = true;
 
 	/**
 	 * Whether to preserve the last selected tab when reopening a screen
@@ -221,6 +221,11 @@ public class FormOptions implements Serializable {
 	private boolean showQuickSearchField;
 
 	/**
+	 * Whether to include a search button in the split layouts
+	 */
+	private boolean splitLayoutSearchButton;
+
+	/**
 	 * Whether to show a refresh button in an edit form
 	 */
 	private boolean showRefreshButton;
@@ -281,6 +286,7 @@ public class FormOptions implements Serializable {
 		fo.setDetailsEditLayoutButtonsOnSameRow(isDetailsEditLayoutButtonsOnSameRow());
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
 		fo.setShowDetailsGridDetailsPanel(isShowDetailsGridDetailsPanel());
+		fo.setSplitLayoutSearchButton(isSplitLayoutSearchButton());
 		return fo;
 	}
 
@@ -434,6 +440,10 @@ public class FormOptions implements Serializable {
 
 	public boolean isShowToggleButton() {
 		return showToggleButton;
+	}
+
+	public boolean isSplitLayoutSearchButton() {
+		return splitLayoutSearchButton;
 	}
 
 	public boolean isStartInAdvancedMode() {
@@ -861,7 +871,7 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Specify whether to display a "remove" button
+	 * Specify whether to display a "remove" button below the search results grid
 	 * 
 	 * @param showRemoveButton
 	 * @return
@@ -874,7 +884,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Specify whether to display a "search any" button in a search form. This
 	 * allows the user to search on any criterion, rather than on the combination of
-	 * all criterions
+	 * all criteria
 	 * 
 	 * @param showSearchAnyButton
 	 * @return
@@ -896,7 +906,17 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * 
+	 * Specify whether to display a search button above a split layout
+	 * @param splitLayoutSearchButton
+	 * @return
+	 */
+	public FormOptions setSplitLayoutSearchButton(boolean splitLayoutSearchButton) {
+		this.splitLayoutSearchButton = splitLayoutSearchButton;
+		return this;
+	}
+
+	/**
+	 * Specify whether to open the searcn form in advanced mode
 	 * @param startInAdvancedMode
 	 * @return
 	 */

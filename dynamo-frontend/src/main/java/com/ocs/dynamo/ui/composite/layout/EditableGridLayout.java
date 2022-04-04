@@ -280,7 +280,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		Editor<T> editor = wrapper.getGrid().getEditor();
 		editor.addSaveListener(event -> {
 			try {
-				T t = getService().save((T) event.getItem());
+				T t = getService().save(event.getItem());
 				// reassign to avoid optimistic locking exception
 				wrapper.getGrid().getEditor().getBinder().setBean(t);
 				wrapper.getGrid().getDataProvider().refreshAll();

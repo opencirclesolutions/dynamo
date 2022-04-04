@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.component;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -193,7 +194,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private VerticalLayout layout;
 
 	/**
-	 * The code that is carried out to link any
+	 * The code that is carried out to link an item selected in the search dialog to
+	 * the parent entity
 	 */
 	@Getter
 	@Setter
@@ -256,7 +258,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	@Getter
 	@Setter
-	private Function<U, List<SerializablePredicate<T>>> searchDialogFilters;
+	private Function<U, List<SerializablePredicate<T>>> searchDialogFilters = u -> Collections.emptyList();
 
 	/**
 	 * Sort order to apply to the search dialog
@@ -322,7 +324,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param serviceBasedEditMode
 	 * @param formOptions
 	 */
-	public BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+	protected BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean serviceBasedEditMode, FormOptions formOptions) {
 		this.service = service;
 		this.entityModel = entityModel;
@@ -561,7 +563,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 					.searchImmediately(true).build();
 			List<SerializablePredicate<T>> filters = searchDialogFilters.apply(getValue());
 
-			searchDialog = new ModelBasedSearchDialog<ID, T>(service,
+			searchDialog = new ModelBasedSearchDialog<>(service,
 					searchDialogEntityModel != null ? searchDialogEntityModel : entityModel, filters,
 					searchDialogSortOrder == null ? null : List.of(searchDialogSortOrder), options);
 
@@ -595,10 +597,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			@Override
 			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				if (!binders.containsKey(t)) {
-					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
-					binders.get(t).setBean(t);
-				}
+				binders.computeIfAbsent(t, ent -> {
+					BeanValidationBinder<T> val = new BeanValidationBinder<>(entityModel.getEntityClass());
+					val.setBean(ent);
+					return val;
+				});
+
 				Binder<T> binder = binders.get(t);
 				return binder.forField((HasValue<?, ?>) field);
 			}
@@ -628,10 +632,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			@Override
 			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				if (!binders.containsKey(t)) {
-					binders.put(t, new BeanValidationBinder<>(entityModel.getEntityClass()));
-					binders.get(t).setBean(t);
-				}
+				binders.computeIfAbsent(t, ent -> {
+					BeanValidationBinder<T> val = new BeanValidationBinder<>(entityModel.getEntityClass());
+					val.setBean(ent);
+					return val;
+				});
+
 				Binder<T> binder = binders.get(t);
 				return binder.forField((HasValue<?, ?>) field);
 			}

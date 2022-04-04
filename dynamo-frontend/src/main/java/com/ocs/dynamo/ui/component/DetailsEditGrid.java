@@ -83,9 +83,9 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 			GridContextMenu<T> contextMenu = getGrid().addContextMenu();
 			Button downloadButton = new Button(getMessageService().getMessage("ocs.download", VaadinUtils.getLocale()));
 			downloadButton.addClickListener(event -> {
-				ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
+				ListDataProvider<T> prov = (ListDataProvider<T>) getDataProvider();
 				EntityModel<T> em = getExportEntityModel() != null ? getExportEntityModel() : getEntityModel();
-				getExportDelegate().exportFixed(em, getFormOptions().getExportMode(), provider.getItems());
+				getExportDelegate().exportFixed(em, getFormOptions().getExportMode(), prov.getItems());
 			});
 			contextMenu.add(downloadButton);
 		}

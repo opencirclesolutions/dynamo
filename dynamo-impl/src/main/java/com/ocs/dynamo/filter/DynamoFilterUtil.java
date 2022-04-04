@@ -23,14 +23,14 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 
-import lombok.NoArgsConstructor;
+import lombok.experimental.UtilityClass;
 
 /**
  * 
  * @author Bas Rutten
  *
  */
-@NoArgsConstructor
+@UtilityClass
 public final class DynamoFilterUtil {
 
 	/**
@@ -237,44 +237,69 @@ public final class DynamoFilterUtil {
 				Compare.Equal equal = (Compare.Equal) detailFilter;
 				if (AttributeType.DETAIL.equals(am.getAttributeType())
 						|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
-					if (equal.getValue() instanceof Collection) {
-						// multiple values supplied - construct an OR filter
-
-						Collection<?> col = (Collection<?>) equal.getValue();
-						if (!col.isEmpty()) {
-							Or or = new Or();
-							for (Object o : col) {
-								or.or(new Contains(prop, o));
-							}
-							replaceFilter(filter, or, am.getPath(), false);
-						} else {
-							// filtering on an empty collection is a bad idea
-							removeFilters(filter, am.getPath());
-						}
-					} else {
-						// just a single value - construct a single contains filter
-						replaceFilter(filter, new Contains(prop, equal.getValue()), am.getPath(), false);
-					}
+					replaceDetailOrElementCollectionFilter(filter, am, prop, equal);
 				} else {
 					// master attribute - translate to an "in" filter
-					if (equal.getValue() instanceof Collection) {
-						// multiple values supplied - construct an OR filter
-						Collection<?> col = (Collection<?>) equal.getValue();
-						if (!col.isEmpty()) {
-							In in = new In(prop, col);
-							replaceFilter(null, filter, in, am.getPath(), false);
-						} else {
-							// filtering on an empty collection is a bad idea
-							removeFilters(filter, am.getPath());
-						}
-					} else if (am.getReplacementSearchPath() != null) {
-						// single value property implemented by means of a collection
-						Object o = equal.getValue();
-						Compare.Equal equals = new Compare.Equal(prop, o);
-						replaceFilter(null, filter, equals, am.getPath(), false);
-					}
+					replaceMasterFilter(filter, am, prop, equal);
 				}
 			}
+		}
+	}
+
+	/**
+	 * Replaces a filter on a master attribute
+	 * 
+	 * @param filter the overall filter
+	 * @param am     the attribute model
+	 * @param prop   the name of the property
+	 * @param equal  the "equal" filter to replace
+	 */
+	private static void replaceMasterFilter(Filter filter, AttributeModel am, String prop, Compare.Equal equal) {
+		if (equal.getValue() instanceof Collection) {
+			// multiple values supplied - construct an OR filter
+			Collection<?> col = (Collection<?>) equal.getValue();
+			if (!col.isEmpty()) {
+				In in = new In(prop, col);
+				replaceFilter(null, filter, in, am.getPath(), false);
+			} else {
+				// filtering on an empty collection is a bad idea
+				removeFilters(filter, am.getPath());
+			}
+		} else if (am.getReplacementSearchPath() != null) {
+			// single value property implemented by means of a collection
+			Object o = equal.getValue();
+			Compare.Equal equals = new Compare.Equal(prop, o);
+			replaceFilter(null, filter, equals, am.getPath(), false);
+		}
+	}
+
+	/**
+	 * Replaces a filter on a detail or element collection
+	 * 
+	 * @param filter the overall filter
+	 * @param am     the attribute model
+	 * @param prop   the property
+	 * @param equal  the "equal" filter to replace
+	 */
+	private static void replaceDetailOrElementCollectionFilter(Filter filter, AttributeModel am, String prop,
+			Compare.Equal equal) {
+		if (equal.getValue() instanceof Collection) {
+			// multiple values supplied - construct an OR filter
+
+			Collection<?> col = (Collection<?>) equal.getValue();
+			if (!col.isEmpty()) {
+				Or or = new Or();
+				for (Object o : col) {
+					or.or(new Contains(prop, o));
+				}
+				replaceFilter(filter, or, am.getPath(), false);
+			} else {
+				// filtering on an empty collection is a bad idea
+				removeFilters(filter, am.getPath());
+			}
+		} else {
+			// just a single value - construct a single contains filter
+			replaceFilter(filter, new Contains(prop, equal.getValue()), am.getPath(), false);
 		}
 	}
 

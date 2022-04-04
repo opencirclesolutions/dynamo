@@ -55,7 +55,7 @@ public class ExportServiceImpl implements ExportService {
 		Filter filter = converter.convert(predicate);
 
 		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(service, entityModel, mode,
-				SortUtils.translateSortOrders(sortOrders), filter, null, joins);
+				SortUtils.translateSortOrders(sortOrders), filter, joins);
 		return template.process();
 	}
 
@@ -63,7 +63,7 @@ public class ExportServiceImpl implements ExportService {
 	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
 			ExportMode mode, List<T> items) {
 		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(null, entityModel, mode, null,
-				null, null);
+				null);
 		return template.processFixed(items);
 	}
 

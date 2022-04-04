@@ -73,7 +73,7 @@ public final class MockUtil {
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaveList(BaseDao<ID, X> dao) {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 		verify(dao).save(captor.capture());
-		return (List<X>) captor.getValue();
+		return captor.getValue();
 	}
 
 	/**
@@ -110,7 +110,7 @@ public final class MockUtil {
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(BaseService<ID, X> service) {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 		verify(service).save(captor.capture());
-		return (List<X>) captor.getValue();
+		return captor.getValue();
 	}
 
 	/**
@@ -168,17 +168,14 @@ public final class MockUtil {
 	 */
 	public static void mockMessageService(MessageService messageService) {
 		// method with varargs
-		lenient()
-				.when(messageService.getMessage(anyString(), nullable(Locale.class), any()))
+		lenient().when(messageService.getMessage(anyString(), nullable(Locale.class), any()))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
 		lenient().when(messageService.getMessage(anyString(), nullable(Locale.class)))
 				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
 
 		// method for retrieving enum message
-		lenient()
-				.when(messageService.getEnumMessage(any(), any(Enum.class),
-						nullable(Locale.class)))
+		lenient().when(messageService.getEnumMessage(any(), any(Enum.class), nullable(Locale.class)))
 				.thenAnswer(invocation -> invocation.getArguments()[1].toString());
 	}
 

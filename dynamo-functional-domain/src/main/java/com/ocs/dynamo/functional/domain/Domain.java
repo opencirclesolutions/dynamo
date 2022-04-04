@@ -31,7 +31,9 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.functional.DomainConstants;
 
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
@@ -48,6 +50,7 @@ import lombok.ToString;
 @Entity(name = "domain")
 @ToString(onlyExplicitlyIncluded = true)
 @Model(displayProperty = "name", sortOrder = "name asc")
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Domain extends AbstractEntity<Integer> {
 
 	public static final String ATTRIBUTE_NAME = "name";
@@ -78,14 +81,11 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	@ToString.Include
 	private String name;
 
-	public Domain() {
-	}
-
-	public Domain(final String code, final String name) {
+	protected Domain(String code, String name) {
 		this.code = code;
 		this.name = name;
 	}
-	
+
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(id);

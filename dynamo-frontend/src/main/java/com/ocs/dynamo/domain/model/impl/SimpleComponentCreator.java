@@ -77,13 +77,12 @@ public interface SimpleComponentCreator extends ComponentCreator {
 	/**
 	 * Adds converters for a TextField
 	 * 
-	 * @param <U>
-	 * @param <V>
+	 * @param <U>            the of the value to convert to
 	 * @param attributeModel the attribute model that is used to construct the
 	 *                       component
 	 * @param sBuilder       the binding builder that is used to bind the component
 	 */
-	default <U, V> void addTextFieldConverters(AttributeModel attributeModel, BindingBuilder<U, String> sBuilder) {
+	default <U> void addTextFieldConverters(AttributeModel attributeModel, BindingBuilder<U, String> sBuilder) {
 		sBuilder.withNullRepresentation("");
 		if (attributeModel.getType().equals(BigDecimal.class)) {
 			sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),

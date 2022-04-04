@@ -139,7 +139,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 */
 	private void addSortOrder(AuditQuery aq, SortOrder so) {
 		String prop = so.getProperty();
-		AuditProperty<?> ap = createAuditProperty(aq, prop, false);
+		AuditProperty<?> ap = createAuditProperty(prop, false);
 		if (so.isAscending()) {
 			aq.addOrder(ap.asc());
 		} else {
@@ -181,22 +181,22 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	private AuditCriterion createAuditCriterion(AuditQuery aq, Filter filter) {
 		if (filter instanceof Compare.Equal) {
 			Compare.Equal eq = (Compare.Equal) filter;
-			return createAuditProperty(aq, eq.getPropertyId(), eq.getValue()).eq(eq.getValue());
+			return createAuditProperty(eq.getPropertyId(), eq.getValue()).eq(eq.getValue());
 		} else if (filter instanceof Like) {
 			Like like = (Like) filter;
-			return createAuditProperty(aq, like.getPropertyId(), like.getValue()).ilike(like.getValue());
+			return createAuditProperty(like.getPropertyId(), like.getValue()).ilike(like.getValue());
 		} else if (filter instanceof Compare.Greater) {
 			Compare.Greater gt = (Compare.Greater) filter;
-			return createAuditProperty(aq, gt.getPropertyId(), gt.getValue()).gt(gt.getValue());
+			return createAuditProperty(gt.getPropertyId(), gt.getValue()).gt(gt.getValue());
 		} else if (filter instanceof Compare.GreaterOrEqual) {
 			Compare.GreaterOrEqual ge = (Compare.GreaterOrEqual) filter;
-			return createAuditProperty(aq, ge.getPropertyId(), ge.getValue()).ge(ge.getValue());
+			return createAuditProperty(ge.getPropertyId(), ge.getValue()).ge(ge.getValue());
 		} else if (filter instanceof Compare.Less) {
 			Compare.Less lt = (Compare.Less) filter;
-			return createAuditProperty(aq, lt.getPropertyId(), lt.getValue()).lt(lt.getValue());
+			return createAuditProperty(lt.getPropertyId(), lt.getValue()).lt(lt.getValue());
 		} else if (filter instanceof Compare.LessOrEqual) {
 			Compare.LessOrEqual le = (Compare.LessOrEqual) filter;
-			return createAuditProperty(aq, le.getPropertyId(), le.getValue()).le(le.getValue());
+			return createAuditProperty(le.getPropertyId(), le.getValue()).le(le.getValue());
 		} else if (filter instanceof And) {
 			And and = (And) filter;
 			AuditConjunction ac = AuditEntity.conjunction();
@@ -225,7 +225,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 			}
 		} else if (filter instanceof In) {
 			In in = (In) filter;
-			return createAuditProperty(aq, in.getPropertyId(), in.getValues()).in(in.getValues());
+			return createAuditProperty(in.getPropertyId(), in.getValues()).in(in.getValues());
 		} else if (filter instanceof Contains) {
 			Contains c = (Contains) filter;
 			throw new UnsupportedOperationException(
@@ -243,7 +243,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	private <X> AuditProperty<X> createAuditProperty(AuditQuery aq, String prop, Object value) {
+	private <X> AuditProperty<X> createAuditProperty(String prop, Object value) {
 		if ("revisionType".equals(prop)) {
 			return (AuditProperty<X>) AuditEntity.revisionType();
 		} else if (REVISION_PROPS.containsKey(prop)) {
@@ -476,7 +476,6 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private RevisionKey<ID> mapRevisionKey(Object[] rev) {
-		Object[] obj = (Object[]) rev;
-		return new RevisionKey((Integer) obj[0], (Integer) obj[1]);
+		return new RevisionKey((Integer) rev[0], (Integer) rev[1]);
 	}
 }

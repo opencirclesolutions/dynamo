@@ -486,6 +486,10 @@ public final class SystemPropertyUtils {
 	public static boolean useXlsThousandsGrouping() {
 		return getBooleanProperty(DynamoConstants.SP_XLS_THOUSANDS_GROUPING, false);
 	}
+	
+	public static String getUnAccentFunctionName() {
+		return getStringProperty(DynamoConstants.SP_UNACCENT_FUNCTION_NAME, "");
+	}
 
 	private SystemPropertyUtils() {
 		// default constructor

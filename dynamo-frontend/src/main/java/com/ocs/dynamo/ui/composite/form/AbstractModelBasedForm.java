@@ -62,7 +62,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	 * @param fieldFilters the field filter map
 	 * @param entityModel  the entity model
 	 */
-	public AbstractModelBasedForm(FormOptions formOptions, Map<String, SerializablePredicate<?>> fieldFilters,
+	protected AbstractModelBasedForm(FormOptions formOptions, Map<String, SerializablePredicate<?>> fieldFilters,
 			EntityModel<T> entityModel) {
 		this.formOptions = formOptions;
 		this.fieldFilters = fieldFilters == null ? new HashMap<>() : fieldFilters;

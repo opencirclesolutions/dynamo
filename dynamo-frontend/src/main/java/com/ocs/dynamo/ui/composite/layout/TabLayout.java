@@ -168,7 +168,6 @@ public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> ex
 				if (component instanceof CanAssignEntity) {
 					((CanAssignEntity<?, T>) component).assignEntity(getEntity());
 				}
-				// beforeReload(index, component);
 
 				if (beforeReload != null) {
 					beforeReload.accept(index, component);

@@ -47,31 +47,48 @@ import com.ocs.dynamo.utils.DateUtils;
 import com.ocs.dynamo.utils.MathUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 
+import lombok.Getter;
+import lombok.Setter;
+
+/**
+ * Base class for Excel exports based on the entity model
+ * 
+ * @author BasRutten
+ *
+ * @param <ID>
+ * @param <T>
+ */
 public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseExportTemplate<ID, T> {
 
+	@Getter
+	@Setter
 	private XlsStyleGenerator<ID, T> generator;
 
+	@Getter
+	@Setter
 	private CustomXlsStyleGenerator<ID, T> customGenerator;
 
-	/**
-	 * The Excel workbook
-	 */
+	@Getter
+	@Setter
 	private Workbook workbook;
 
-	public BaseExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+	/**
+	 * 
+	 * @param service
+	 * @param entityModel
+	 * @param exportMode
+	 * @param sortOrders
+	 * @param filter
+	 * @param title
+	 * @param customGenerator
+	 * @param joins
+	 */
+	protected BaseExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
 			SortOrder[] sortOrders, Filter filter, String title,
 			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, FetchJoinInformation... joins) {
 		super(service, entityModel, exportMode, sortOrders, filter, title, joins);
 		this.customGenerator = customGenerator == null ? null : customGenerator.get();
-	}
-
-	protected Workbook getWorkbook() {
-		return workbook;
-	}
-
-	public void setWorkbook(Workbook workbook) {
-		this.workbook = workbook;
 	}
 
 	/**
@@ -102,6 +119,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	 * @param entity         the entity that is represented in the row
 	 * @param value          the cell value
 	 * @param attributeModel the attribute model used to determine the style
+	 * @param pivotColumnKey the column key (for pivot export)
 	 * @return
 	 */
 	protected Cell createCell(Row row, int colIndex, T entity, Object value, AttributeModel attributeModel,
@@ -119,13 +137,11 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 		return cell;
 	}
 
-	/*
-	 * Creates an appropriate work book - if the size is below the threshold then a
-	 * normal workbook is created. Otherwise a streaming workbook is created. This
-	 * is much faster and more efficient, but you cannot auto resize the columns
-	 *
-	 * @param size the number of rows
+	/**
+	 * Creates a workbook. This will use a different type of work book depending on
+	 * the size of the export set
 	 * 
+	 * @param size the size of the export
 	 * @return
 	 */
 	protected Workbook createWorkbook(int size) {
@@ -133,14 +149,6 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 			return new SXSSFWorkbook();
 		}
 		return new XSSFWorkbook();
-	}
-
-	public XlsStyleGenerator<ID, T> getGenerator() {
-		return generator;
-	}
-
-	public void setGenerator(XlsStyleGenerator<ID, T> generator) {
-		this.generator = generator;
 	}
 
 	/**
@@ -168,26 +176,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 		} else if (value instanceof LocalDateTime) {
 			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
 		} else if (value instanceof BigDecimal || NumberUtils.isDouble(value)) {
-			if (value instanceof Double) {
-				value = BigDecimal.valueOf((Double) value);
-			}
-			boolean isPercentage = (am != null && am.isPercentage()) || forcePercentage;
-
-			int defaultPrecision = SystemPropertyUtils.getDefaultDecimalPrecision();
-			int precision = (am == null ? defaultPrecision : am.getPrecision()) + 2;
-			if (isPercentage) {
-				// percentages in the application are just numbers,
-				// but in Excel they are fractions that
-				// are displayed as percentages -> so, divide by 100
-				double temp = ((BigDecimal) value)
-						.divide(MathUtils.HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
-						.setScale(precision, RoundingMode.HALF_UP).doubleValue();
-				cell.setCellValue(temp);
-			} else {
-				cell.setCellValue(((BigDecimal) value)
-						.setScale(am == null ? defaultPrecision : am.getPrecision(), RoundingMode.HALF_UP)
-						.doubleValue());
-			}
+			writeDecimalCellValue(cell, value, am, forcePercentage);
 		} else if (am != null) {
 			// use the attribute model
 			String str = GridFormatUtils.formatPropertyValue(am, value, ", ", VaadinUtils.getLocale(),
@@ -196,6 +185,36 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 		} else if (value != null) {
 			// fall back - just call toSTring
 			cell.setCellValue(value.toString());
+		}
+	}
+
+	/**
+	 * Writes a cell value for a decimal value
+	 * 
+	 * @param cell            the cell to which to write the value
+	 * @param value           the value
+	 * @param am              the attribute model for the property
+	 * @param forcePercentage whether to force the value to a percentage
+	 */
+	private void writeDecimalCellValue(Cell cell, Object value, AttributeModel am, boolean forcePercentage) {
+		if (value instanceof Double) {
+			value = BigDecimal.valueOf((Double) value);
+		}
+		boolean isPercentage = (am != null && am.isPercentage()) || forcePercentage;
+
+		int defaultPrecision = SystemPropertyUtils.getDefaultDecimalPrecision();
+		int precision = (am == null ? defaultPrecision : am.getPrecision()) + 2;
+		if (isPercentage) {
+			// percentages in the application are just numbers,
+			// but in Excel they are fractions that
+			// are displayed as percentages -> so, divide by 100
+			double temp = ((BigDecimal) value)
+					.divide(MathUtils.HUNDRED, DynamoConstants.INTERMEDIATE_PRECISION, RoundingMode.HALF_UP)
+					.setScale(precision, RoundingMode.HALF_UP).doubleValue();
+			cell.setCellValue(temp);
+		} else {
+			cell.setCellValue(((BigDecimal) value)
+					.setScale(am == null ? defaultPrecision : am.getPrecision(), RoundingMode.HALF_UP).doubleValue());
 		}
 	}
 

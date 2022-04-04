@@ -15,6 +15,7 @@ package com.ocs.dynamo.domain.query;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
 
@@ -77,7 +78,21 @@ public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEn
 			return null;
 		}
 
-		// lazily load the next page if needed
+		loadNextPage();
+
+		if (indexInPage < page.size()) {
+			T t = page.get(indexInPage);
+			index++;
+			indexInPage++;
+			return t;
+		}
+		return null;
+	}
+
+	/**
+	 * Loads the next page of data when needed
+	 */
+	private void loadNextPage() {
 		if (index >= lastRead) {
 			List<ID> ids = new ArrayList<>();
 			for (int i = 0; i < pageSize && index + i < idList.size(); i++) {
@@ -87,20 +102,12 @@ public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEn
 			if (!ids.isEmpty()) {
 				page = mapper.apply(ids);
 			} else {
-				page = new ArrayList<>();
+				page = Collections.emptyList();
 			}
 
 			lastRead = index + ids.size();
 			indexInPage = 0;
 		}
-
-		if (indexInPage < page.size()) {
-			T t = page.get(indexInPage);
-			index++;
-			indexInPage++;
-			return t;
-		}
-		return null;
 	}
 
 	/**

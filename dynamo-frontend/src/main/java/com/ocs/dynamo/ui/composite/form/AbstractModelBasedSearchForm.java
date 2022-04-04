@@ -162,14 +162,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	@Setter
 	private Consumer<VerticalLayout> afterLayoutBuilt;
 
-//	/**
-//	 * Callback method that is executed before the search fields are added to the
-//	 * search layout
-//	 */
-//	@Getter
-//	@Setter
-//	private Consumer<VerticalLayout> preProcessLayout;
-
 	/**
 	 * The component on which the search will be carried out after the user clicks
 	 * the "search" button
@@ -207,8 +199,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @param defaultFilters
 	 * @param fieldFilters
 	 */
-	public AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
-			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
+	protected AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel,
+			FormOptions formOptions, List<SerializablePredicate<T>> defaultFilters,
+			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
 		this.advancedSearchMode = formOptions.isStartInAdvancedMode();
 		this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
@@ -344,7 +337,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	protected final Button constructToggleButton() {
 		toggleButton = new Button(message("ocs.hide"));
-		toggleButton.setIcon(VaadinIcon.ARROWS.create());
+		toggleButton.setIcon(VaadinIcon.ARROW_CIRCLE_UP.create());
 		toggleButton.addClickListener(this);
 		toggleButton.setVisible(getFormOptions().isShowToggleButton());
 		return toggleButton;
@@ -474,6 +467,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			}
 		} else if (event.getSource() == toggleButton) {
 			toggle(!wrapperPanel.isVisible());
+			
 		} else if (event.getSource() == toggleAdvancedModeButton) {
 			toggleAdvancedMode();
 			if (afterAdvancedModeToggled != null) {
@@ -513,16 +507,6 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		}
 		searchButton.setEnabled(isSearchAllowed());
 	}
-
-//	/**
-//	 * Pre-process the layout - this method is called directly after the main layout
-//	 * has been created
-//	 *
-//	 * @param main the layout
-//	 */
-//	protected void preProcessLayout(VerticalLayout layout) {
-//		// override in subclass
-//	}
 
 	/**
 	 * Restores any previously cached search values
@@ -579,13 +563,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 			searchable.search(extractFilter(matchAny));
 
-			// store search filters for later user
+			// store search filters for later use
 			storeSearchFilters();
 
-			if (!skipValidation) {
-				if (afterSearchPerformed != null) {
-					afterSearchPerformed.run();
-				}
+			if (!skipValidation && afterSearchPerformed != null) {
+				afterSearchPerformed.run();
 			}
 
 			return true;
@@ -620,8 +602,10 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	protected void toggle(boolean show) {
 		if (!show) {
 			toggleButton.setText(message("ocs.show.search.fields"));
+			toggleButton.setIcon(VaadinIcon.ARROW_CIRCLE_DOWN.create());
 		} else {
 			toggleButton.setText(message("ocs.hide.search.fields"));
+			toggleButton.setIcon(VaadinIcon.ARROW_CIRCLE_UP.create());
 		}
 		wrapperPanel.setVisible(show);
 

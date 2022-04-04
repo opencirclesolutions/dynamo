@@ -13,10 +13,9 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.text.Normalizer;
-
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.ocs.dynamo.utils.StringUtils;
 
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -40,7 +39,14 @@ public abstract class BaseIgnoreDiacriticsFilter<T> {
 
 	private final EntityModel<T> entityModel;
 
-	public BaseIgnoreDiacriticsFilter(EntityModel<T> entityModel, boolean ignoreCase, boolean onlyMatchPrefix) {
+	/**
+	 * Constructor
+	 * 
+	 * @param entityModel
+	 * @param ignoreCase
+	 * @param onlyMatchPrefix
+	 */
+	protected BaseIgnoreDiacriticsFilter(EntityModel<T> entityModel, boolean ignoreCase, boolean onlyMatchPrefix) {
 		this.ignoreCase = ignoreCase;
 		this.onlyMatchPrefix = onlyMatchPrefix;
 		this.entityModel = entityModel;
@@ -58,8 +64,7 @@ public abstract class BaseIgnoreDiacriticsFilter<T> {
 		temp = ignoreCase ? temp.toLowerCase() : temp;
 		filterText = ignoreCase ? filterText.toLowerCase() : filterText;
 
-		temp = Normalizer.normalize(temp, Normalizer.Form.NFD);
-		temp = temp.replaceAll("[^\\p{ASCII}]", "");
+		temp = StringUtils.removeAccents(temp);
 
 		return onlyMatchPrefix ? temp.startsWith(filterText) : temp.contains(filterText);
 	}

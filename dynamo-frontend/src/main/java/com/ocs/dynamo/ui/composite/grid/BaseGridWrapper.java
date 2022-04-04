@@ -40,6 +40,7 @@ import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A base class for objects that wrap around a ModelBasedTable
@@ -61,6 +62,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * The data provider
 	 */
+	@Setter
 	private DataProvider<T, SerializablePredicate<T>> dataProvider;
 
 	/**
@@ -71,6 +73,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * The wrapped grid component
 	 */
+	@Setter
 	private Grid<T> grid;
 
 	/**
@@ -89,11 +92,12 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @param sortOrders  the sort order
 	 * @param joins       the fetch joins to use when executing the query
 	 */
-	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+	protected BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, ComponentContext<ID, T> context, SerializablePredicate<T> filter,
 			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
 			FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, context, filter, sortOrders, joins);
+		this.fieldFilters = fieldFilters;
 		setSpacing(false);
 	}
 
@@ -135,7 +139,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected Grid<T> constructGrid() {
 		if (getComponentContext().isUseCheckboxesForMultiSelect()) {
 
-			ModelBasedGrid<ID, T> grid = new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters,
+			ModelBasedGrid<ID, T> newGrid = new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters,
 					getFormOptions(), getComponentContext()) {
 
 				private static final long serialVersionUID = -4559181057050230055L;
@@ -157,12 +161,11 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 			};
 
-			grid.build();
-
-			return grid;
+			newGrid.build();
+			return newGrid;
 
 		} else {
-			ModelBasedSelectionGrid<ID, T> grid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
+			ModelBasedSelectionGrid<ID, T> newGrid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
 					fieldFilters, getFormOptions(), getComponentContext()) {
 
 				private static final long serialVersionUID = -4559181057050230055L;
@@ -183,8 +186,8 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 				}
 
 			};
-			grid.build();
-			return grid;
+			newGrid.build();
+			return newGrid;
 		}
 	}
 
@@ -264,14 +267,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * Reloads the data in the container
 	 */
 	public abstract void reloadDataProvider();
-
-	public void setDataProvider(DataProvider<T, SerializablePredicate<T>> dataProvider) {
-		this.dataProvider = dataProvider;
-	}
-
-	protected void setGrid(ModelBasedGrid<ID, T> grid) {
-		this.grid = grid;
-	}
 
 	/**
 	 * Updates the caption above the grid that shows the number of items

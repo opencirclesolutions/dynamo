@@ -299,7 +299,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 		// set fall back sort orders
 		if (wrappedProvider instanceof BaseDataProvider) {
-			((BaseDataProvider<ID, T>) wrappedProvider).setFallbackSortOrders(fallbackOrders);
+			wrappedProvider.setFallbackSortOrders(fallbackOrders);
 		}
 
 		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {

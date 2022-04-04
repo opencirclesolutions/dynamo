@@ -13,15 +13,20 @@
  */
 package com.ocs.dynamo.utils;
 
+import java.text.Normalizer;
 import java.util.Arrays;
 import java.util.Locale;
 import java.util.stream.Collectors;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * String utility functions
+ * 
  * @author Bas Rutten
  *
  */
+@UtilityClass
 public final class StringUtils {
 
 	private static final String EMAIL_PATTERN = "([\\w-\\.]+)@(?:[\\w]+\\.)(\\w){2,4}";
@@ -30,19 +35,13 @@ public final class StringUtils {
 
 	public static final String HTML_LINE_BREAK = "<br/>";
 
-	private StringUtils() {
-		// private constructor
-	}
-
 	/**
 	 * Converts CamelCase string to human friendly
 	 *
-	 * @param camelCaseString
-	 *            the Camel Case string to convert
-	 * @param capitalize
-	 *            indicates whether to capitalize every word (if set to
-	 *            <code>false</code> then only the first word will be
-	 *            capitalized
+	 * @param camelCaseString the Camel Case string to convert
+	 * @param capitalize      indicates whether to capitalize every word (if set to
+	 *                        <code>false</code> then only the first word will be
+	 *                        capitalized
 	 * @return
 	 */
 	public static String camelCaseToHumanFriendly(String camelCaseString, boolean capitalize) {
@@ -64,8 +63,7 @@ public final class StringUtils {
 	/**
 	 * Capitalize a String
 	 *
-	 * @param string
-	 *            the String to capitalize
+	 * @param string the String to capitalize
 	 * @return
 	 */
 	private static String capitalize(String string) {
@@ -85,12 +83,10 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Checks if an value is a valid email address - this is actually a very
-	 * simple
+	 * Checks if an value is a valid email address - this is actually a very simple
 	 * check that only checks for the @-sign
 	 *
-	 * @param value
-	 *            the value to check
+	 * @param value the value to check
 	 */
 	public static boolean isValidEmail(String value) {
 		if (value == null) {
@@ -102,8 +98,7 @@ public final class StringUtils {
 	/**
 	 * Indicates whether a word ends at position i in the string
 	 *
-	 * @param camelCaseString
-	 *            the string
+	 * @param camelCaseString the string
 	 * @param i
 	 * @return
 	 */
@@ -123,11 +118,9 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Prepends the default protocol ("http://") to a value that represents a
-	 * URL
+	 * Prepends the default protocol ("http://") to a value that represents a URL
 	 *
-	 * @param value
-	 *            the value
+	 * @param value the value
 	 * @return
 	 */
 	public static String prependProtocol(String value) {
@@ -144,8 +137,7 @@ public final class StringUtils {
 	/**
 	 * Converts a propertyId to a
 	 *
-	 * @param propertyId
-	 *            the ID of the property
+	 * @param propertyId the ID of the property
 	 * @return
 	 */
 	public static String propertyIdToHumanFriendly(Object propertyId, boolean capitalize) {
@@ -186,8 +178,7 @@ public final class StringUtils {
 	/**
 	 * Splits a CamelCase String into words
 	 *
-	 * @param camelCaseString
-	 *            the String to split
+	 * @param camelCaseString the String to split
 	 * @return
 	 */
 	private static String[] splitCamelCase(String camelCaseString) {
@@ -200,6 +191,15 @@ public final class StringUtils {
 			sb.append(c);
 		}
 		return sb.toString().split(" ");
+	}
+
+	public static String removeAccents(String input) {
+		if (input == null) {
+			return null;
+		}
+
+		String temp = Normalizer.normalize(input, Normalizer.Form.NFD);
+		return temp.replaceAll("[^\\p{ASCII}]", "");
 	}
 
 }

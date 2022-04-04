@@ -32,6 +32,8 @@ import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
 
+import lombok.Getter;
+
 /**
  * A component that contains a combo box for selecting an entity, plus the
  * option to add new values on the fly
@@ -49,6 +51,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	/**
 	 * The combo box that holds the actual values
 	 */
+	@Getter
 	private EntityComboBox<ID, T> comboBox;
 
 	/**
@@ -118,10 +121,6 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	@Override
 	protected T generateModelValue() {
 		return comboBox.getValue();
-	}
-
-	public EntityComboBox<ID, T> getComboBox() {
-		return comboBox;
 	}
 
 	@Override

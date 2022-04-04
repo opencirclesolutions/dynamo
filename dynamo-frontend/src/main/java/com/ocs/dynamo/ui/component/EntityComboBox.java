@@ -175,7 +175,16 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> this.count = count);
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
+	}
+
+	public int getDataProviderSize() {
+		if (getDataProvider() instanceof ListDataProvider) {
+			return ((ListDataProvider<?>) getDataProvider()).getItems().size();
+		} else if (getDataProvider() instanceof CallbackDataProvider) {
+			return count;
+		}
+		return 0;
 	}
 
 	/**
@@ -238,7 +247,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
-
+	
 	/**
 	 * Updates the data provider after a refresh
 	 * 

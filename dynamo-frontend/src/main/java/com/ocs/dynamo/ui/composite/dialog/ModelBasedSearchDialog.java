@@ -19,6 +19,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -31,6 +32,7 @@ import com.ocs.dynamo.ui.composite.layout.SimpleSearchLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -92,9 +94,15 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 	private Runnable afterOpen;
 
-	private Runnable postProcessDialog;
-
 	private SearchOptions searchOptions;
+
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessSearchButtonBar;
+
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessMainButtonBar;
 
 	/**
 	 * Constructor
@@ -123,7 +131,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 		setTitle(message("ocs.search.title", entityModel.getDisplayNamePlural(VaadinUtils.getLocale())));
 		buildMain();
-		
+
 	}
 
 	/**
@@ -149,7 +157,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 			searchLayout = new SimpleSearchLayout<>(service, entityModel, QueryType.ID_BASED, formOptions, null, joins);
 			searchLayout.setComponentContext(context);
-			//searchLayout.setPadding(true);
 			searchLayout.setDefaultFilters(filters);
 
 			searchLayout.setGridHeight(SystemPropertyUtils.getDefaultSearchDialogGridHeight());
@@ -158,6 +165,8 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 			}
 
 			searchLayout.setSearchColumnThresholds(getColumnThresholds());
+			searchLayout.setPostProcessSearchButtonBar(postProcessSearchButtonBar);
+			searchLayout.setPostProcessMainButtonBar(postProcessMainButtonBar);
 
 			this.fieldFilters.entrySet().forEach(c -> searchLayout.addFieldFilter(c.getKey(), c.getValue()));
 
@@ -168,10 +177,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 				getOkButton().click();
 			});
 			parent.add(searchLayout);
-
-			if (postProcessDialog != null) {
-				postProcessDialog.run();
-			}
 		});
 	}
 

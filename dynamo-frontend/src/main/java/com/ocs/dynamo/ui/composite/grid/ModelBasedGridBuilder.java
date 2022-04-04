@@ -93,7 +93,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 	 * @param formOptions      the form options
 	 * @param componentContext the component context
 	 */
-	public ModelBasedGridBuilder(Grid<T> grid, EntityModel<T> entityModel,
+	protected ModelBasedGridBuilder(Grid<T> grid, EntityModel<T> entityModel,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
 			ComponentContext<ID, T> componentContext) {
 		this.grid = grid;
@@ -114,7 +114,8 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 			Column<T> column;
 			if (am.isUrl()) {
 				column = addUrlColumn(am);
-			} else if (am.isNavigable() && AttributeType.MASTER.equals(am.getAttributeType())) {
+			} else if (!componentContext.isPopup() && am.isNavigable()
+					&& AttributeType.MASTER.equals(am.getAttributeType())) {
 				column = grid.addComponentColumn(
 						t -> generateInternalLinkField(am, ClassUtils.getFieldValue(t, am.getPath())));
 			} else {
@@ -215,6 +216,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 		});
 	}
 
+	@SuppressWarnings("unchecked")
 	private void storeSharedProvider(AttributeModel am, Component comp) {
 		if (comp instanceof SharedProvider) {
 			DataProvider<?, ?> sharedProvider = ((SharedProvider<?>) comp).getSharedProvider();

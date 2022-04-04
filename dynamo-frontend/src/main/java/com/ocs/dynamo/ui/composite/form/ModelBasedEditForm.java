@@ -28,8 +28,10 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.function.BiConsumer;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Predicate;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
@@ -100,6 +102,7 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
+import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.data.binder.BeanValidationBinder;
 import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.binder.Binder.Binding;
@@ -182,7 +185,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Getter
 	@Setter
-	private Supplier<Boolean> editAllowed = () -> true;
+	private BooleanSupplier editAllowed = () -> true;
 
 	/**
 	 * The selected entity
@@ -509,7 +512,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				form.add(field);
 			}
 		} else {
-			parent.add((Component) field);
+			parent.add(field);
 		}
 	}
 
@@ -706,7 +709,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	}
 
 	private boolean checkEditAllowed() {
-		return editAllowed == null ? true : editAllowed.get();
+		return editAllowed == null ? true : editAllowed.getAsBoolean();
 	}
 
 	/**
@@ -896,7 +899,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		}
 
 		if (field != null) {
-			if (field instanceof HasSize) {
+			if (field instanceof HasSize && !(field instanceof TextArea)) {
 				((HasSize) field).setSizeFull();
 			}
 
@@ -1120,9 +1123,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 					}
 				}
 			} catch (RuntimeException ex) {
-				Function<RuntimeException, Boolean> customSaveExceptionHandler = getComponentContext()
+				Predicate<RuntimeException> customSaveExceptionHandler = getComponentContext()
 						.getCustomSaveExceptionHandler();
-				if (customSaveExceptionHandler == null || !customSaveExceptionHandler.apply(ex)) {
+				if (customSaveExceptionHandler == null || !customSaveExceptionHandler.test(ex)) {
 					handleSaveException(ex);
 				}
 			}
@@ -1259,26 +1262,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return filterButtons(EDIT_BUTTON_DATA);
 	}
 
-//	@SuppressWarnings("rawtypes")
-//	private Converter findCustomConverter(AttributeModel attributeModel) {
-//		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel.getPath());
-//		if (supplier != null) {
-//			Converter<?, ?> converter = supplier.get();
-//			return converter;
-//		}
-//		return null;
-//	}
-
-//	@SuppressWarnings("rawtypes")
-//	private Validator getCustomRequiredValidator(AttributeModel attributeModel) {
-//		return findCustomValidator(attributeModel, customRequiredValidators);
-//	}
-//
-//	@SuppressWarnings("rawtypes")
-//	private Validator getCustomValidator(AttributeModel attributeModel) {
-//		return findCustomValidator(attributeModel, customValidators);
-//	}
-
 	/**
 	 * Retrieves a field for a certain property
 	 * 
@@ -1403,16 +1386,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		return findParentGroup.apply(attributeGroup);
 	}
 
-//	/**
-//	 * Returns the next entity from the encapsulating layout
-//	 * 
-//	 * @return
-//	 */
-//	protected T getNextEntity() {
-//		// overwrite in subclass
-//		return null;
-//	}
-
 	public List<Button> getPreviousButtons() {
 		return filterButtons(PREV_BUTTON_DATA);
 	}
@@ -1424,16 +1397,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	public List<Button> getSaveButtons() {
 		return filterButtons(SAVE_BUTTON_DATA);
 	}
-
-//	/**
-//	 * Returns the previous entity from the encapsulating layout
-//	 * 
-//	 * @return
-//	 */
-//	protected T getPreviousEntity() {
-//		// overwrite in subclass
-//		return null;
-//	}
 
 	public int getSelectedTabIndex() {
 		return tabs.get(isViewMode()).getSelectedIndex();
@@ -1965,9 +1928,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 							doSave();
 						}
 					} catch (RuntimeException ex) {
-						Function<RuntimeException, Boolean> customSaveExceptionHandler = getComponentContext()
+						Predicate<RuntimeException> customSaveExceptionHandler = getComponentContext()
 								.getCustomSaveExceptionHandler();
-						if (customSaveExceptionHandler == null || !customSaveExceptionHandler.apply(ex)) {
+						if (customSaveExceptionHandler == null || !customSaveExceptionHandler.test(ex)) {
 							handleSaveException(ex);
 						}
 					}
