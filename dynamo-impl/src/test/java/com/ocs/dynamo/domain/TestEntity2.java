@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
@@ -41,6 +42,7 @@ public class TestEntity2 extends AbstractEntity<Integer> {
 
     private String name;
 
+    @Column(name = "value_")
     private Integer value;
 
     private Integer value2;

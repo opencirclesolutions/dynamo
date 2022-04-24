@@ -223,7 +223,7 @@ public class FormOptions implements Serializable {
 	/**
 	 * Whether to include a search button in the split layouts
 	 */
-	private boolean splitLayoutSearchButton;
+	private boolean showSplitLayoutSearchButton;
 
 	/**
 	 * Whether to show a refresh button in an edit form
@@ -286,7 +286,7 @@ public class FormOptions implements Serializable {
 		fo.setDetailsEditLayoutButtonsOnSameRow(isDetailsEditLayoutButtonsOnSameRow());
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
 		fo.setShowDetailsGridDetailsPanel(isShowDetailsGridDetailsPanel());
-		fo.setSplitLayoutSearchButton(isSplitLayoutSearchButton());
+		fo.setShowSplitLayoutSearchButton(isShowSplitLayoutSearchButton());
 		return fo;
 	}
 
@@ -438,12 +438,12 @@ public class FormOptions implements Serializable {
 		return showSearchAnyButton;
 	}
 
-	public boolean isShowToggleButton() {
-		return showToggleButton;
+	public boolean isShowSplitLayoutSearchButton() {
+		return showSplitLayoutSearchButton;
 	}
 
-	public boolean isSplitLayoutSearchButton() {
-		return splitLayoutSearchButton;
+	public boolean isShowToggleButton() {
+		return showToggleButton;
 	}
 
 	public boolean isStartInAdvancedMode() {
@@ -895,6 +895,17 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
+	 * Specify whether to display a search button above a split layout
+	 * 
+	 * @param splitLayoutSearchButton
+	 * @return
+	 */
+	public FormOptions setShowSplitLayoutSearchButton(boolean showSplitLayoutSearchButton) {
+		this.showSplitLayoutSearchButton = showSplitLayoutSearchButton;
+		return this;
+	}
+
+	/**
 	 * Specify whether to display a toggle button for showing/hiding the search form
 	 * 
 	 * @param showToggleButton
@@ -906,17 +917,8 @@ public class FormOptions implements Serializable {
 	}
 
 	/**
-	 * Specify whether to display a search button above a split layout
-	 * @param splitLayoutSearchButton
-	 * @return
-	 */
-	public FormOptions setSplitLayoutSearchButton(boolean splitLayoutSearchButton) {
-		this.splitLayoutSearchButton = splitLayoutSearchButton;
-		return this;
-	}
-
-	/**
-	 * Specify whether to open the searcn form in advanced mode
+	 * Specify whether to open the search form in advanced mode
+	 * 
 	 * @param startInAdvancedMode
 	 * @return
 	 */

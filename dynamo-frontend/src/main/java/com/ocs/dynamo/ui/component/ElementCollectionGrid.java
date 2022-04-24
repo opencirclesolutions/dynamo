@@ -155,7 +155,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
 				.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
 						attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
-						attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
+						attributeModel.getPrecision(), attributeModel.getCurrencySymbol()));
 		if (attributeModel.getMaxValue() != null) {
 			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
 					BigDecimal.valueOf(attributeModel.getMaxValue())));
@@ -385,7 +385,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	public void setEntity(U entity) {
 		this.entity = entity;
 	}
-
 
 	@Override
 	protected void setPresentationValue(Collection<T> value) {

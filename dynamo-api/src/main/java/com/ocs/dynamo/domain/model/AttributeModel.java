@@ -110,6 +110,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getCollectionTableName();
 
 	/**
+	 * 
+	 * @return the currency symbol to use
+	 */
+	String getCurrencySymbol();
+
+	/**
 	 * Returns the value for a custom setting
 	 * 
 	 * @param name the name of the custom setting
@@ -344,6 +350,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return the height of a text area
+	 */
+	String getTextAreaHeight();
+
+	/**
+	 * 
 	 * @return The text field mode (text field or text area)
 	 */
 	AttributeTextFieldMode getTextFieldMode();
@@ -451,12 +463,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isPercentage();
 
 	/**
-	 * 
-	 * @return whether the password reveal button is visible
-	 */
-	boolean isShowPassword();
-
-	/**
 	 * @ return whether "quick edit" functionality is allowed. Quick edit
 	 * functionality allows for the in-line addition of simple domain values
 	 */
@@ -506,6 +512,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 *         substring occurring anywhere
 	 */
 	boolean isSearchPrefixOnly();
+
+	/**
+	 * 
+	 * @return whether the password reveal button is visible
+	 */
+	boolean isShowPassword();
 
 	/**
 	 * @return whether the attribute is sortable

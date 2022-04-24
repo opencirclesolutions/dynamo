@@ -78,7 +78,7 @@ public final class ConvertUtils {
 					(Double) input, locale);
 		} else if (BigDecimal.class.equals(am.getType())) {
 			return VaadinUtils.bigDecimalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(),
-					(BigDecimal) input, locale);
+					(BigDecimal) input, am.getCurrencySymbol(), locale);
 		} else if (am.isSearchDateOnly()) {
 			// special case, in case of "search date only" we need to convert to a local
 			// date
@@ -127,12 +127,12 @@ public final class ConvertUtils {
 			}
 		} else if (NumberUtils.isDouble(am.getType())) {
 			StringToDoubleConverter converter = ConverterFactory.createDoubleConverter(am.isCurrency(),
-					am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+					am.isPercentage(), grouping, am.getPrecision(), am.getCurrencySymbol());
 			return converter.convertToModel((String) value, new ValueContext(locale));
 
 		} else if (BigDecimal.class.equals(am.getType())) {
 			BigDecimalConverter converter = ConverterFactory.createBigDecimalConverter(am.isCurrency(),
-					am.isPercentage(), grouping, am.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol());
+					am.isPercentage(), grouping, am.getPrecision(), am.getCurrencySymbol());
 			return converter.convertToModel((String) value, new ValueContext(locale));
 		}
 		return Result.ok(value);

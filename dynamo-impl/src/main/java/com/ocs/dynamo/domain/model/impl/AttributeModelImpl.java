@@ -76,6 +76,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean currency;
 
+	private String currencySymbol;
+
 	private Map<String, Object> customSettings = new HashMap<>();
 
 	private AttributeDateType dateType;
@@ -186,6 +188,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean showPassword;
 
 	private boolean sortable;
+
+	private String textAreaHeight;
 
 	private AttributeTextFieldMode textFieldMode;
 

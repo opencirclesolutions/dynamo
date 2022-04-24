@@ -124,7 +124,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 					column = addEditableColumn(am);
 				} else {
 					column = grid.addColumn(t -> GridFormatUtils.extractAndFormat(am, t, VaadinUtils.getLocale(),
-							VaadinUtils.getTimeZoneId(), VaadinUtils.getCurrencySymbol()));
+							VaadinUtils.getTimeZoneId(), am.getCurrencySymbol()));
 				}
 			}
 

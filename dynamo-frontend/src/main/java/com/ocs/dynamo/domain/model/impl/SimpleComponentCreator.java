@@ -22,7 +22,6 @@ import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.TrimSpacesConverter;
-import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.datepicker.DatePicker.DatePickerI18n;
@@ -87,7 +86,7 @@ public interface SimpleComponentCreator extends ComponentCreator {
 		if (attributeModel.getType().equals(BigDecimal.class)) {
 			sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
 					attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
-					attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+					attributeModel.getPrecision(), attributeModel.getCurrencySymbol()));
 		} else if (NumberUtils.isInteger(attributeModel.getType())) {
 			sBuilder.withConverter(ConverterFactory.createIntegerConverter(
 					attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
@@ -97,7 +96,7 @@ public interface SimpleComponentCreator extends ComponentCreator {
 		} else if (NumberUtils.isDouble(attributeModel.getType())) {
 			sBuilder.withConverter(ConverterFactory.createDoubleConverter(attributeModel.isCurrency(),
 					attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage(),
-					attributeModel.getPrecision(), VaadinUtils.getCurrencySymbol()));
+					attributeModel.getPrecision(), attributeModel.getCurrencySymbol()));
 		} else if (String.class.equals(attributeModel.getType()) && attributeModel.isTrimSpaces()) {
 			sBuilder.withConverter(new TrimSpacesConverter());
 		}

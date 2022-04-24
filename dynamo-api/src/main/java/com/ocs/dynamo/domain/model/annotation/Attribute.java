@@ -41,7 +41,7 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface Attribute {
 
-	public static boolean CASE_SENSITIVE = SystemPropertyUtils.getDefaultSearchCaseSensitive();
+	boolean CASE_SENSITIVE = SystemPropertyUtils.getDefaultSearchCaseSensitive();
 
 	/**
 	 * @return the allowed extensions for a file upload component
@@ -69,6 +69,11 @@ public @interface Attribute {
 	 * @return whether a currency symbol will be prepended to the value
 	 */
 	boolean currency() default false;
+
+	/**
+	 * @return
+	 */
+	String currencySymbol() default "";
 
 	/**
 	 * @return the custom settings that are defined for the attribute model
@@ -224,10 +229,10 @@ public @interface Attribute {
 	 * @return the paging mode to use for selection components
 	 */
 	PagingMode pagingMode() default PagingMode.INHERIT;
-	
+
 	/**
 	 * 
-	 * @return whether the 
+	 * @return whether the
 	 */
 	boolean showPassword() default false;
 
@@ -312,6 +317,13 @@ public @interface Attribute {
 	 * @return whether the results inside a grid can be sorted on this attribute
 	 */
 	boolean sortable() default true;
+
+	/**
+	 * The height of a text area (e.g. "200px")
+	 * 
+	 * @return
+	 */
+	String textAreaHeight() default "";
 
 	/**
 	 * @return whether to display a text attribute as a text field or a text area

@@ -183,7 +183,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			});
 			return editButton;
 		});
-		editColumn.setHeader(message("ocs.edit")).setKey("edit");
+		editColumn.setHeader(message("ocs.edit")).setAutoWidth(false).setWidth("100px").setKey("edit");
 	}
 
 	/**
@@ -342,7 +342,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 				return button;
 			});
 
-			removeColumn.setHeader(defaultMsg).setId("remove");
+			removeColumn.setHeader(defaultMsg).setAutoWidth(false).setWidth("100px").setId("remove");
 		}
 	}
 

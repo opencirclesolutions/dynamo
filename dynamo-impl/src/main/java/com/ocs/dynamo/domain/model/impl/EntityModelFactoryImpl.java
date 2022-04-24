@@ -993,6 +993,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			setStringSetting(attribute.displayFormat(), model::setDisplayFormat);
 			setStringSetting(attribute.trueRepresentation(), model::setDefaultTrueRepresentation);
 			setStringSetting(attribute.falseRepresentation(), model::setDefaultFalseRepresentation);
+			setStringSetting(attribute.textAreaHeight(), model::setTextAreaHeight);
+			setStringSetting(attribute.currencySymbol(), model::setCurrencySymbol);
 
 			model.setEditableType(attribute.editable());
 
@@ -1163,6 +1165,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setNumberFieldStep(1);
 
 		model.setClearButtonVisible(SystemPropertyUtils.isDefaultClearButtonVisible());
+		model.setTextAreaHeight(SystemPropertyUtils.getDefaultTextAreaHeight());
+		model.setCurrencySymbol(SystemPropertyUtils.getDefaultCurrencySymbol());
 
 		setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
 	}
@@ -1188,6 +1192,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 				value -> attributeModel.setDefaultTrueRepresentation(value));
 		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.FALSE_REPRESENTATION),
 				value -> attributeModel.setDefaultFalseRepresentation(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXT_AREA_HEIGHT),
+				value -> attributeModel.setTextAreaHeight(value));
+		setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY_SYMBOL),
+				value -> attributeModel.setCurrencySymbol(value));
 
 		setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAIN),
 				attributeModel::setMainAttribute);

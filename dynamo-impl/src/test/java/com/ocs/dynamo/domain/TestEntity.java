@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -94,6 +95,7 @@ public class TestEntity extends AbstractEntity<Integer> {
 	private TestEnum someEnum;
 
 	@Lob
+	@Column(columnDefinition = "varbinary")
 	private byte[] someBytes;
 
 	private Boolean someBoolean;

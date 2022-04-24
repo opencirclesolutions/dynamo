@@ -215,10 +215,10 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 
 		// right alignment for text field
-		if (NumberUtils.isNumeric(am.getType()) && context.isEditableGrid() && field instanceof TextField) {
-			TextField atf = (TextField) field;
-			atf.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
-		}
+//		if (NumberUtils.isNumeric(am.getType()) && context.isEditableGrid() && field instanceof TextField) {
+//			TextField atf = (TextField) field;
+//			atf.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
+//		}
 
 		// add percentage sign
 		if (am.isPercentage() && field instanceof TextField) {
@@ -237,8 +237,8 @@ public class FieldFactoryImpl implements FieldFactory {
 			TextField atf = (TextField) field;
 			atf.addBlurListener(event -> {
 				String value = atf.getValue();
-				if (value != null && value.indexOf(VaadinUtils.getCurrencySymbol()) < 0) {
-					value = VaadinUtils.getCurrencySymbol() + " " + value.trim();
+				if (value != null && value.indexOf(am.getCurrencySymbol()) < 0) {
+					value = am.getCurrencySymbol() + " " + value.trim();
 					atf.setValue(value);
 				}
 			});

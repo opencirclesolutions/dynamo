@@ -44,7 +44,7 @@ public class TextAreaComponentCreator implements SimpleComponentCreator {
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 		TextArea area = new TextArea();
-		area.setHeight(SystemPropertyUtils.getDefaultTextAreaHeight());
+		area.setHeight(am.getTextAreaHeight());
 		return area;
 	}
 }

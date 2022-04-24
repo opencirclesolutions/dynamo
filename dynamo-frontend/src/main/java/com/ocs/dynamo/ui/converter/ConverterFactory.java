@@ -32,7 +32,7 @@ public final class ConverterFactory {
 	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	private static final String CANNOT_CONVERT = "ocs.cannot.convert";
-	
+
 	private ConverterFactory() {
 		// hidden constructor
 	}
@@ -75,12 +75,11 @@ public final class ConverterFactory {
 			return (Converter<String, T>) createLongConverter(grouping, attributeModel.isPercentage());
 		} else if (NumberUtils.isDouble(attributeModel.getType())) {
 			return (Converter<String, T>) createDoubleConverter(attributeModel.isCurrency(), grouping,
-					attributeModel.isPercentage(), attributeModel.getPrecision(),
-					SystemPropertyUtils.getDefaultCurrencySymbol());
+					attributeModel.isPercentage(), attributeModel.getPrecision(), attributeModel.getCurrencySymbol());
 		} else if (clazz.equals(BigDecimal.class)) {
 			return (Converter<String, T>) createBigDecimalConverter(attributeModel.isCurrency(),
 					attributeModel.isPercentage(), grouping, attributeModel.getPrecision(),
-					SystemPropertyUtils.getDefaultCurrencySymbol());
+					attributeModel.getCurrencySymbol());
 		}
 		return null;
 	}

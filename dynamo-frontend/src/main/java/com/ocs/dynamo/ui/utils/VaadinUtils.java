@@ -80,7 +80,8 @@ public final class VaadinUtils {
 	 *
 	 * Converts a BigDecimal value to a String (shortcut for values that are not
 	 * currency and not percentage)
-	 *
+	 * 
+	 * @param currency    whether the value represents a currency
 	 * @param percentage  whether the value represents a percentage
 	 * @param useGrouping whether to use a thousand grouping
 	 * @param value       the value
@@ -123,6 +124,11 @@ public final class VaadinUtils {
 			BigDecimal value, String currencySymbol, Locale locale) {
 		return NumberUtils.bigDecimalToString(currency, percentage, useGrouping, precision, value, locale,
 				currencySymbol);
+	}
+
+	public static String bigDecimalToString(AttributeModel am, BigDecimal value) {
+		return bigDecimalToString(am.isCurrency(), am.isPercentage(), am.useThousandsGroupingInViewMode(),
+				am.getPrecision(), value, am.getCurrencySymbol(), getDateLocale());
 	}
 
 	/**
@@ -191,13 +197,13 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static String getCurrencySymbol() {
-		String cs = SystemPropertyUtils.getDefaultCurrencySymbol();
+		String currencySymbol = SystemPropertyUtils.getDefaultCurrencySymbol();
 
 		VaadinSession vs = VaadinSession.getCurrent();
 		if (vs != null && vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL) != null) {
-			cs = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
+			currencySymbol = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
 		}
-		return cs;
+		return currencySymbol;
 	}
 
 	/**

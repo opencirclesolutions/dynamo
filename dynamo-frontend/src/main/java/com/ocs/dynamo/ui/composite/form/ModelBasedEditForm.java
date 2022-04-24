@@ -812,8 +812,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// display button when in edit mode and explicitly specified, or when creating a
 		// new entity
 		// in nested mode
-		cancelButton.setVisible((!isViewMode() && getFormOptions().isShowCancelButton())
-				|| (getComponentContext().isFormNested() && entity.getId() == null));
+		cancelButton.setVisible((!isViewMode() && getFormOptions().isShowCancelButton()));
 		cancelButton.setIcon(VaadinIcon.BAN.create());
 		buttonBar.add(cancelButton);
 		storeButton(CANCEL_BUTTON_DATA, cancelButton);
@@ -1586,8 +1585,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			Component comp = labels.get(isViewMode()).get(am);
 			Object value = ClassUtils.getFieldValue(entity, propertyName);
 			String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), getMessageService(), am, value,
-					", ", VaadinUtils.getLocale(), VaadinUtils.getTimeZoneId(),
-					SystemPropertyUtils.getDefaultCurrencySymbol());
+					", ", VaadinUtils.getLocale(), VaadinUtils.getTimeZoneId(), am.getCurrencySymbol());
 			if (comp instanceof Span) {
 				((Span) comp).setText(formatted == null ? "" : formatted);
 			} else if (comp instanceof Anchor) {
@@ -1749,9 +1747,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		// change caption depending on entity state
 		updateSaveButtonCaptions();
 
-		for (Button b : getCancelButtons()) {
-			b.setVisible((!isViewMode() && getFormOptions().isShowCancelButton())
-					|| (getComponentContext().isFormNested() && entity.getId() == null));
+		for (Button cancelButton : getCancelButtons()) {
+			cancelButton.setVisible((!isViewMode() && getFormOptions().isShowCancelButton()));
 		}
 
 		triggerCascadeListeners();
@@ -1991,9 +1988,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 		error = !status.isOk();
 
 		// validate nested form and components
-		error |= groups.get(isViewMode()).getFields().anyMatch(f -> {
-			if (f instanceof NestedComponent) {
-				return ((NestedComponent) f).validateAllFields();
+		error |= groups.get(isViewMode()).getFields().anyMatch(field -> {
+			if (field instanceof NestedComponent) {
+				return ((NestedComponent) field).validateAllFields();
 			}
 			return false;
 		});

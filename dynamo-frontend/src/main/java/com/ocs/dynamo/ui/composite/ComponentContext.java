@@ -87,11 +87,6 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 	@Builder.Default
 	private Map<String, String> fieldEntityModels = new HashMap<>();
 
-	/**
-	 * Whether the edit form is nested within another form
-	 */
-	private boolean formNested;
-
 	@Builder.Default
 	private GroupTogetherMode groupTogetherMode = SystemPropertyUtils.getDefaultGroupTogetherMode();
 

@@ -21,9 +21,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.List;
 
-import javax.inject.Inject;
-
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
@@ -47,8 +46,8 @@ import com.ocs.dynamo.utils.DateUtils;
  */
 public class TestEntityDaoTest extends BackendIntegrationTest {
 
-	@Inject
-	TestEntityDao dao;
+	@Autowired
+	private TestEntityDao dao;
 
 	private TestEntity save(String name, long age) {
 		TestEntity entity = new TestEntity();

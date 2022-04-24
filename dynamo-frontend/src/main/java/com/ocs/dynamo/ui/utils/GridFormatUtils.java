@@ -41,11 +41,11 @@ public final class GridFormatUtils {
 	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
-	 * Extracts a field value from an object and formats it
+	 * local Extracts a field value from an object and formats it
 	 * 
 	 * @param am             the attribute model
 	 * @param obj            the object from which to extract the value
-	 * @param local          the locale
+	 * @param locale         the locale
 	 * @param zoneId         the time zone ID
 	 * @param currencySymbol the currency symbol
 	 * @return

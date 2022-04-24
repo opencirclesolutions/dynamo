@@ -83,6 +83,11 @@ public interface EntityModel<T> {
 	String CURRENCY = "currency";
 
 	/**
+	 * The currency symbol to use
+	 */
+	String CURRENCY_SYMBOL = "currencySymbol";
+
+	/**
 	 * Custom setting
 	 */
 	String CUSTOM = "custom";
@@ -353,6 +358,11 @@ public interface EntityModel<T> {
 	 * Whether it is possible to sort on an attribute
 	 */
 	String SORTABLE = "sortable";
+
+	/**
+	 * Text area height
+	 */
+	String TEXT_AREA_HEIGHT = "textAreaHeight";
 
 	/**
 	 * The text field mode - indicates whether to use a text field or text area for

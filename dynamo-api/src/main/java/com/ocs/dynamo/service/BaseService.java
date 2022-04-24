@@ -184,7 +184,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns a list of all entities, sorted according to the provided sort orders
 	 * 
-	 * @param sort the desired sort orders
+	 * @param sortOrders the desired sort orders
 	 * @return
 	 */
 	List<T> findAll(SortOrder... sortOrders);
@@ -244,7 +244,7 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * Returns the IDs of the entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @param orders the sort orders
+	 * @param sortOrders the sort orders
 	 * @return
 	 */
 	List<ID> findIds(Filter filter, SortOrder... sortOrders);

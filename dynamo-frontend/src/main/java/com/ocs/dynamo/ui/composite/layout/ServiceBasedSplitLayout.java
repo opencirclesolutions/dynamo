@@ -35,6 +35,7 @@ import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
@@ -240,8 +241,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	protected Button constructPopupSearchButton() {
-		if (getFormOptions().isSplitLayoutSearchButton()) {
+		if (getFormOptions().isShowSplitLayoutSearchButton()) {
 			Button button = new Button(message("ocs.search"));
+			button.setIcon(VaadinIcon.SEARCH.create());
 			button.addClickListener(event -> {
 				ModelBasedSearchDialog<ID, T> searchDialog = new ModelBasedSearchDialog<>(getService(),
 						getEntityModel(), createSearchDialogFilter(), getSortOrders(),
@@ -257,8 +259,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	protected Button constructPopupClearButton() {
-		if (getFormOptions().isSplitLayoutSearchButton()) {
+		if (getFormOptions().isShowSplitLayoutSearchButton()) {
 			Button button = new Button(message("ocs.clear"));
+			button.setIcon(VaadinIcon.ERASER.create());
 			button.addClickListener(event -> {
 				if (getQuickSearchField() != null) {
 					getQuickSearchField().clear();
