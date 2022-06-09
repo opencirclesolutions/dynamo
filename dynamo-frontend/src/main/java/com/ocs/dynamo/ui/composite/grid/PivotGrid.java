@@ -18,6 +18,7 @@ import java.math.BigDecimal;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -67,6 +68,8 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 			Function<String, String> fixedHeaderMapper, BiFunction<Object, Object, String> headerMapper,
 			BiFunction<Object, Object, String> subHeaderMapper, BiFunction<String, Object, String> customFormatter) {
 		setDataProvider(provider);
+		// https://vaadin.com/api/platform/23.0.10/deprecated-list.html
+		// setItems((Stream<PivotedItem>) provider);
 		addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_COMPACT);
 
 		for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {

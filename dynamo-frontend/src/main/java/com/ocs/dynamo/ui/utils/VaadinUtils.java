@@ -53,6 +53,7 @@ import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
+import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -139,8 +140,9 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static Image createImage(String imageName) {
-		String resolvedImage = VaadinServletService.getCurrent().resolveResource("frontend://images/" + imageName,
-				VaadinSession.getCurrent().getBrowser());
+		String resolvedImage = VaadinService.getCurrent().resolveResource("frontend://images/" + imageName);
+//		String resolvedImage = VaadinServletService.getCurrent().resolveResource("frontend://images/" + imageName,
+//				VaadinSession.getCurrent().getBrowser());
 		return new Image(resolvedImage, "");
 	}
 

@@ -39,7 +39,7 @@ public class BooleanComboboxCreator implements SimpleComponentCreator {
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 		ComboBox<Boolean> cb = new ComboBox<>();
 		ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
-		cb.setDataProvider(provider);
+		cb.setItems(provider);
 		cb.setItemLabelGenerator(b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation(VaadinUtils.getLocale())
 				: am.getFalseRepresentation(VaadinUtils.getLocale()));
 		cb.setRequiredIndicatorVisible(context.isSearch() ? am.isRequiredForSearching() : am.isRequired());

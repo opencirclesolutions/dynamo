@@ -315,7 +315,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		VerticalLayout main = new VerticalLayout();
 
 		grid = new Grid<>();
-		grid.setDataProvider(provider);
+		grid.setItems(provider);
 		main.add(grid);
 
 		Column<ValueHolder<T>> column = grid.addComponentColumn(vh -> {

@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Stream;
 
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -156,6 +157,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider || provider instanceof ListDataProvider) {
 			setDataProvider(provider);
+			// https://vaadin.com/api/platform/23.0.10/deprecated-list.html
+			//setItems((Stream<T>) provider);
 		}
 	}
 

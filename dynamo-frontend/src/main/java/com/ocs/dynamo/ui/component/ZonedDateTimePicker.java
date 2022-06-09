@@ -56,7 +56,7 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 
 		timeZone = new ComboBox<>();
 		ListDataProvider<String> provider = new ListDataProvider<>(Lists.newArrayList(TimeZone.getAvailableIDs()));
-		timeZone.setDataProvider(provider);
+		timeZone.setItems(provider);
 		timeZone.setValue(VaadinUtils.getTimeZoneId().toString());
 
 		FlexLayout flexLayout = new FlexLayout();

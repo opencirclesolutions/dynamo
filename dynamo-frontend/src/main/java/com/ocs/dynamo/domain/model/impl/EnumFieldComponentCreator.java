@@ -60,7 +60,7 @@ public class EnumFieldComponentCreator implements SimpleComponentCreator {
 
 		});
 
-		cb.setDataProvider(new ListDataProvider<>(list));
+		cb.setItems(new ListDataProvider<>(list));
 		cb.setItemLabelGenerator(e -> messageService.getEnumMessage(enumClass, e, VaadinUtils.getLocale()));
 		return cb;
 	}

@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.grid;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -83,6 +84,8 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
 			ComponentContext<ID, T> componentContext) {
 		setDataProvider(dataProvider);
+		// https://vaadin.com/api/platform/23.0.10/deprecated-list.html
+		// setItems((Stream<T>) dataProvider);
 		this.componentContext = componentContext;
 		this.entityModel = model;
 		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
