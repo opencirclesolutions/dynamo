@@ -79,6 +79,7 @@ import com.ocs.dynamo.utils.EntityModelUtils;
 import com.ocs.dynamo.utils.FormatUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.ocs.dynamo.utils.StringUtils;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Focusable;
 import com.vaadin.flow.component.HasComponents;
@@ -396,7 +397,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 				if (AttributeType.LOB.equals(type)) {
 					// image preview (or label if no preview is available)
 					Component c = constructImagePreview(attributeModel);
-					FormLayout container = new FormLayout();
+					EnhancedFormLayout container = new EnhancedFormLayout();
 					FormItem fi = container.addFormItem(c, attributeModel.getDisplayName(VaadinUtils.getLocale()));
 					formItems.get(isViewMode()).put(attributeModel, fi);
 					parent.add(container);
@@ -433,7 +434,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			int tabIndex, Component field) {
 		// construct a separate layout for holding the fields that will be displayed
 		// together
-		FormLayout rowLayout = new FormLayout();
+		EnhancedFormLayout rowLayout = new EnhancedFormLayout();
 		rowLayout.setWidth("100%");
 		rowLayout.addClassName(DynamoConstants.CSS_GROUPTOGETHER_LAYOUT);
 
@@ -487,9 +488,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	private void addSingleAttribute(HasComponents parent, AttributeModel attributeModel, Component field) {
 		boolean colspan = field instanceof BaseDetailsEditGrid || field instanceof ElementCollectionGrid
 				|| field instanceof DetailsEditLayout;
-		if (parent instanceof FormLayout && colspan) {
+		if (parent instanceof EnhancedFormLayout && colspan) {
 
-			FormLayout form = (FormLayout) parent;
+			EnhancedFormLayout form = (EnhancedFormLayout) parent;
 			int colSpan = form.getResponsiveSteps().size();
 
 			if (SystemPropertyUtils.mustIndentGrids()) {
@@ -652,7 +653,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		HasComponents form = null;
 		if (entityModel.usesDefaultGroupOnly()) {
-			form = new FormLayout();
+			form = new EnhancedFormLayout();
 			setResponsiveSteps(form);
 		} else {
 			form = new DefaultVerticalLayout(false, false);
@@ -751,7 +752,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 			String messageKey, boolean lowestLevel) {
 		Component innerLayout = null;
 		if (lowestLevel) {
-			innerLayout = new FormLayout();
+			innerLayout = new EnhancedFormLayout();
 			setResponsiveSteps((HasComponents) innerLayout);
 		} else {
 			innerLayout = new DefaultVerticalLayout(false, false);
@@ -1001,7 +1002,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 
 		if (!attributeModel.getGroupTogetherWith().isEmpty()) {
 			// group multiple labels on the same line
-			FormLayout rowLayout = new FormLayout();
+			EnhancedFormLayout rowLayout = new EnhancedFormLayout();
 
 			List<ResponsiveStep> steps = new ArrayList<>();
 			for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
@@ -1814,8 +1815,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * @param comp the component
 	 */
 	private void setResponsiveSteps(HasComponents comp) {
-		if (comp instanceof FormLayout) {
-			FormLayout form = (FormLayout) comp;
+		if (comp instanceof EnhancedFormLayout) {
+			EnhancedFormLayout form = (EnhancedFormLayout) comp;
 			if (getComponentContext().getMaxEditFormWidth() != null) {
 				form.setMaxWidth(getComponentContext().getMaxEditFormWidth());
 			}

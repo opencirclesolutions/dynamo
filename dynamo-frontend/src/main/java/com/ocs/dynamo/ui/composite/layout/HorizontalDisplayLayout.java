@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
@@ -73,7 +74,7 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	public void build() {
-		FormLayout layout = new FormLayout();
+		EnhancedFormLayout layout = new EnhancedFormLayout();
 
 		if (columnThresholds == null || columnThresholds.isEmpty()) {
 			layout.setResponsiveSteps(List.of(new ResponsiveStep("0px", 1), new ResponsiveStep("300px", 2),

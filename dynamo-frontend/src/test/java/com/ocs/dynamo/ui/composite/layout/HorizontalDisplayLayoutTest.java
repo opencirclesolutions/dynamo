@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.inject.Inject;
 
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -37,7 +38,7 @@ public class HorizontalDisplayLayoutTest extends FrontendIntegrationTest {
 		layout.build();
 
 		Component comp = layout.getChildren().iterator().next();
-		assertTrue(comp instanceof FormLayout);
+		assertTrue(comp instanceof EnhancedFormLayout);
 	}
 
 }

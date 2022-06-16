@@ -47,6 +47,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.component.HasEnabled;
@@ -81,7 +82,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * The main form layout
 	 */
-	private FormLayout form;
+	private EnhancedFormLayout form;
 
 	/**
 	 * The various filter groups
@@ -253,7 +254,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 */
 	@Override
 	protected HasComponents constructFilterLayout() {
-		form = new FormLayout();
+		form = new EnhancedFormLayout();
 		form.setWidth(getComponentContext().getMaxSearchFormWidth());
 
 		List<String> columnThresholds = getComponentContext().getSearchColumnThresholds();

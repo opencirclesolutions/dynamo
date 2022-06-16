@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.util.function.Consumer;
 
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.formlayout.FormLayout;
@@ -47,7 +48,7 @@ public class UploadForm extends ProgressForm<byte[]> {
 
 	@Getter
 	@Setter
-	private Consumer<FormLayout> buildForm;
+	private Consumer<EnhancedFormLayout> buildForm;
 
 	@Getter
 	@Setter
@@ -63,7 +64,7 @@ public class UploadForm extends ProgressForm<byte[]> {
 		super(ui, progressMode);
 		this.showCancelButton = showCancelButton;
 		setBuildMainLayout(main -> {
-			FormLayout form = new FormLayout();
+			EnhancedFormLayout form = new EnhancedFormLayout();
 			main.add(form);
 
 			// add custom components

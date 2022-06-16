@@ -37,6 +37,7 @@ import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.ServiceBasedSplitLayout;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -170,7 +171,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 			mainLayout = new DefaultVerticalLayout(true, true);
 
 			// form that contains the combo box
-			FormLayout form = new FormLayout();
+			EnhancedFormLayout form = new EnhancedFormLayout();
 			mainLayout.add(form);
 
 			// combo box for selecting domain

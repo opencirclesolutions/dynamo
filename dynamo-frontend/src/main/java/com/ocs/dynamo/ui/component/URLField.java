@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -34,7 +35,7 @@ public class URLField extends CustomField<String> {
 
     private AttributeModel attributeModel;
 
-    private FormLayout bar;
+    private EnhancedFormLayout bar;
 
     private boolean editable;
 
@@ -76,7 +77,7 @@ public class URLField extends CustomField<String> {
         main = new DefaultHorizontalLayout(false, false);
         main.setSizeFull();
 
-        bar = new FormLayout();
+        bar = new EnhancedFormLayout();
         bar.setSizeFull();
         updateLink(getValue());
         setMode();

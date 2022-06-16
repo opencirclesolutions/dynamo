@@ -53,8 +53,8 @@
 	</scm>
 	<distributionManagement>
 		<snapshotRepository>
-			<id>ocs-maven-snapshot</id>
-			<url>https://maven.square.opencirclesolutions.nl/snapshots/</url>
+			<id>gitlab-maven-dynamo</id>
+			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/307/packages/maven</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
@@ -127,6 +127,11 @@
 				<groupId>org.vaadin.gatanaso</groupId>
 				<artifactId>multiselect-combo-box-flow</artifactId>
 				<version>4.0.0-rc2</version>
+			</dependency>
+			<dependency>
+				<groupId>com.vaadin.componentfactory</groupId>
+				<artifactId>enhancedformlayout</artifactId>
+				<version>1.5.1</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
