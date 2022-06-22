@@ -218,12 +218,8 @@ public final class VaadinUtils {
 	public static Locale getDateLocale() {
 		if (VaadinSession.getCurrent() != null
 				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
-			var vaadinloc = (Locale) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE);
-			System.out.println(" ######## vaadin locale: " + vaadinloc);
 			return (Locale) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE);
 		}
-		var locale = new Locale(SystemPropertyUtils.getDefaultDateLocale());
-		System.out.println(" ######## no vaadin locale, system default " + locale);
 		return new Locale(SystemPropertyUtils.getDefaultDateLocale());
 	}
 
