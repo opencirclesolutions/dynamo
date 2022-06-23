@@ -47,7 +47,7 @@
 	</developers>
 	<scm>
 		<connection>scm:git:https://github.com/opencirclesolutions/dynamo</connection>
-		<developerConnection>scm:git:https://github.com/opencirclesolutions/dynamo</developerConnection>
+		<developerConnection>scm:git:git@github.com:opencirclesolutions/dynamo.git</developerConnection>
 		<url>https://github.com/opencirclesolutions/dynamo</url>
 		<tag>dynamo-parent-2.8.5-SNAPSHOT</tag>
 	</scm>
