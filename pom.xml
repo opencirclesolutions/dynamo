@@ -86,7 +86,7 @@
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<commons.io.version>2.6</commons.io.version>
 		<commons.lang.version>3.8.1</commons.lang.version>
-		<poi.version>4.0.0</poi.version>
+		<poi.version>4.1.1</poi.version>
 		<xlsx-streamer.version>2.1.0</xlsx-streamer.version>
 		<opencsv.version>5.0</opencsv.version>
 		<javax.validation.api.version>2.0.1.Final</javax.validation.api.version>
