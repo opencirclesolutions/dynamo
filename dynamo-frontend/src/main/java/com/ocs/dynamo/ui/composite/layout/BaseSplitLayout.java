@@ -434,7 +434,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 		getGridWrapper().reloadDataProvider();
 
 		// clear the details
-		setSelectedItem(null);
 		emptyDetailView();
 		checkMainButtons();
 	}
