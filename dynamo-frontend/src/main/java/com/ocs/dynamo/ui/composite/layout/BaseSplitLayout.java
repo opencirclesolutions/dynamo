@@ -156,7 +156,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 					mainLayout.add(extraButtonBar);
 
 					if (quickSearchField != null) {
-						quickSearchField.setLabel("");
 						extraButtonBar.add(quickSearchField);
 					}
 
@@ -285,7 +284,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			splitterGridLayout.add(buttonBar);
 
 			if (quickSearchField != null) {
-				quickSearchField.setLabel("");
 				buttonBar.add(quickSearchField);
 			}
 
