@@ -210,7 +210,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 	}
 
 	private void constructSelectButton(HorizontalLayout bar) {
-		selectButton = new Button("");
+		selectButton = new Button(getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
 		selectButton.setIcon(VaadinIcon.SEARCH.create());
 		VaadinUtils.setTooltip(selectButton, getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
 		selectButton.addClickListener(event -> showSearchDialog());
@@ -315,7 +315,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
 		constructSelectButton(bar);
 
 		if (clearAllowed) {
-			clearButton = new Button("");
+			clearButton = new Button(getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
 			VaadinUtils.setTooltip(bar, getMessageService().getMessage("ocs.clear", VaadinUtils.getLocale()));
 			clearButton.setIcon(VaadinIcon.ERASER.create());
 			clearButton.addClickListener(event -> clearValue());

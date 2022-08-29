@@ -56,6 +56,7 @@ public class DateTimePickerComponentCreator implements SimpleComponentCreator {
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 		Locale dateLoc = VaadinUtils.getDateLocale();
 		DateTimePicker dateTimePicker = new DateTimePicker();
+		dateTimePicker.setLocale(dateLoc);
 		dateTimePicker.setDatePickerI18n(getDatePickerLocalization(messageService, dateLoc));
 		return dateTimePicker;
 	}

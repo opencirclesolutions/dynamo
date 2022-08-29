@@ -76,7 +76,7 @@ public abstract class BaseView extends VerticalLayout implements BeforeLeaveObse
 
 	protected BaseView() {
 		this(false, false);
-		setPadding(false);
+		setPadding(true);
 		setClassName("baseView");
 	}
 
