@@ -316,9 +316,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private SerializablePredicate<T> convertFilterDefault(Object value, SerializablePredicate<T> filter) {
 			if (value != null && am.isSearchDateOnly() && am.isSearchForExactValue()) {
 				filter = convertDateOnlyExactMatchFilter(value);
-			}
-			// default case (simple comparison or non-empty collection)
-			else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+			} else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+				// default case (simple comparison or non-empty collection)
 				filter = new EqualsPredicate<>(am.getPath(), value);
 			}
 			return filter;

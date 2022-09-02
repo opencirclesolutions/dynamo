@@ -480,8 +480,9 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	public void toggleAdvancedMode() {
 
 		Map<String, Object> oldValues = new HashMap<>();
+		Map<String, Object> oldAuxValues = new HashMap<>();
 
-		storeSearchTerms(oldValues);
+		storeSearchTerms(oldValues, oldAuxValues);
 
 		clear();
 		setAdvancedSearchMode(!isAdvancedSearchMode());
@@ -507,20 +508,32 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 			FilterGroup<T> filterGroup = groups.get(entry.getKey());
 			if (filterGroup != null) {
 				setSearchValue(entry.getKey(), entry.getValue());
+				
+				if (oldAuxValues.containsKey(entry.getKey())) {
+					setSearchAuxValue(entry.getKey(), oldAuxValues.get(entry.getKey()));
+				}
 			}
 		}
 	}
 
-	private void storeSearchTerms(Map<String, Object> oldValues) {
-		for (Entry<String, FilterGroup<T>> fg : groups.entrySet()) {
-			HasValue<?, ?> hv = (HasValue<?, ?>) fg.getValue().getField();
+	private void storeSearchTerms(Map<String, Object> oldValues, Map<String, Object> oldAuxValues) {
+		for (Entry<String, FilterGroup<T>> filterGroup : groups.entrySet()) {
+			HasValue<?, ?> hv = (HasValue<?, ?>) filterGroup.getValue().getField();
 			if (hv.getValue() != null) {
-				boolean emptyCollection = hv.getValue() instanceof Collection
-						&& ((Collection<?>) hv.getValue()).isEmpty();
-				if (!emptyCollection) {
-					oldValues.put(fg.getKey(), hv.getValue());
-				}
+				storeSearchTerm(oldValues, filterGroup, hv);
 			}
+			if (filterGroup.getValue().getAuxField() != null) {
+				HasValue<?, ?> hvAux = (HasValue<?, ?>) filterGroup.getValue().getAuxField();
+				storeSearchTerm(oldAuxValues, filterGroup, hvAux);
+			}
+		}
+	}
+
+	private void storeSearchTerm(Map<String, Object> values, Entry<String, FilterGroup<T>> filterGroup,
+			HasValue<?, ?> hv) {
+		boolean emptyCollection = hv.getValue() instanceof Collection && ((Collection<?>) hv.getValue()).isEmpty();
+		if (!emptyCollection) {
+			values.put(filterGroup.getKey(), hv.getValue());
 		}
 	}
 

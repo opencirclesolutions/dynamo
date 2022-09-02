@@ -57,7 +57,6 @@ public class PivotedExportDialog<ID extends Serializable, T extends AbstractEnti
 	 * 
 	 * @param exportService   the export service
 	 * @param entityModel     the entity model of the entity to export
-	 * @param exportMode      the export mode
 	 * @param predicate       predicated used to filter the results
 	 * @param sortOrders      sort orders to apply to the results
 	 * @param customGenerator custom style generator
