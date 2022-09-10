@@ -146,7 +146,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 	 * 
 	 * @param columnKey the column key
 	 * @param property  the property
-	 * @return
+	 * @return the calculate column key
 	 */
 	private String calculateColumnKey(Object columnKey, String property) {
 		return columnKey + "_" + property;
@@ -167,9 +167,10 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 	}
 
 	/**
+	 * Returns the header to use for a column containing an aggregation
 	 * 
-	 * @param type
-	 * @return
+	 * @param type the type of the aggregation
+	 * @return the header
 	 */
 	private String getAggregateHeader(PivotAggregationType type) {
 		switch (type) {
