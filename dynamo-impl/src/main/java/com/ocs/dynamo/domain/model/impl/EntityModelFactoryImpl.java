@@ -36,19 +36,19 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.ManyToMany;
-import javax.persistence.OneToMany;
-import javax.validation.constraints.AssertFalse;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.Email;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
@@ -93,6 +93,7 @@ import com.ocs.dynamo.utils.DateUtils;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 /**
  * Implementation of the entity model factory - creates models that hold
@@ -327,7 +328,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setGridSelectMode(defaultMode);
 
 		Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
-				javax.validation.constraints.Email.class);
+				jakarta.validation.constraints.Email.class);
 		if (email != null) {
 			model.setEmail(true);
 		}
@@ -756,16 +757,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @return
 	 */
 	protected <T> EntityModelFactory findModelFactory(String reference, Class<T> entityClass) {
-		EntityModelFactory emf = this;
+		EntityModelFactory entityModelFactory = this;
 		if (delegatedModelFactories != null) {
 			for (EntityModelFactory delegate : delegatedModelFactories) {
 				if (delegate.canProvideModel(reference, entityClass)) {
-					emf = delegate;
+					entityModelFactory = delegate;
 					break;
 				}
 			}
 		}
-		return emf;
+		return entityModelFactory;
 	}
 
 	/**

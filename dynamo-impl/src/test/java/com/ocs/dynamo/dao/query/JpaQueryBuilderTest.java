@@ -20,10 +20,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -157,7 +157,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		assertEquals(1, count);
 	}
 
-	
+
 	@Test
 	public void testCreateCountQuery_LikeCaseInsensitiveInfix2() {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
@@ -166,7 +166,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		// "Sally" should match
 		assertEquals(1, count);
 	}
-	
+
 	@Test
 	public void testCreateCountQuery_Between() {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,

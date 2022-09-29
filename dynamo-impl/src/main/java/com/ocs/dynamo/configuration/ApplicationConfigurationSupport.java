@@ -15,7 +15,7 @@ package com.ocs.dynamo.configuration;
 
 import java.nio.charset.StandardCharsets;
 
-import javax.validation.ValidatorFactory;
+import jakarta.validation.ValidatorFactory;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

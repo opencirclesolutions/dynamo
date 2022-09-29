@@ -22,7 +22,7 @@ public class PivotExportDialogTest extends BaseMockitoTest {
 	@Mock
 	private ExportService exportService;
 
-	private EntityModelFactory emf = new EntityModelFactoryImpl();
+	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
 	@BeforeEach
 	public void setup() {
@@ -31,7 +31,7 @@ public class PivotExportDialogTest extends BaseMockitoTest {
 
 	@Test
 	public void test() {
-		EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+		EntityModel<TestEntity> em = entityModelFactory.getModel(TestEntity.class);
 
 		PivotParameters pars = PivotParameters.builder().build();
 

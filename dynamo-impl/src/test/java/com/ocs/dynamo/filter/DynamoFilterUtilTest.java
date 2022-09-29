@@ -17,7 +17,7 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 
 public class DynamoFilterUtilTest {
 
-	private EntityModelFactoryImpl emf = new EntityModelFactoryImpl();
+	private EntityModelFactoryImpl entityModelFactory = new EntityModelFactoryImpl();
 
 	@Test
 	public void testReplaceFilter() {
@@ -235,7 +235,7 @@ public class DynamoFilterUtilTest {
 	 */
 	@Test
 	public void testReplaceMasterAndDetailFilters1() {
-		EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
+		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
 		And and = new And(new Compare.Equal("tags", Lists.newArrayList("abc")));
 
@@ -267,7 +267,7 @@ public class DynamoFilterUtilTest {
 	 */
 	@Test
 	public void testReplaceMasterAndDetailFilters2() {
-		EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);
+		EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
 
 		And and = new And(new Compare.Equal("testEntity", Lists.newArrayList(new TestEntity(), new TestEntity())));
 
@@ -287,7 +287,7 @@ public class DynamoFilterUtilTest {
 
 	@Test
 	public void testReplaceMasterAndDetailFilters3() {
-		EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);
+		EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
 
 		And and = new And(new Compare.Equal("testEntity", Lists.newArrayList(new TestEntity(), new TestEntity())));
 

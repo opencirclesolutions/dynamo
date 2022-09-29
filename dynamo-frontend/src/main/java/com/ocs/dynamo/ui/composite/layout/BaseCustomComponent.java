@@ -13,7 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import javax.persistence.OptimisticLockException;
+import jakarta.persistence.OptimisticLockException;
 
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 

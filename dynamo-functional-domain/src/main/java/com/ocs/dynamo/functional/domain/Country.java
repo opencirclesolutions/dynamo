@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.annotation.Nullable;
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
-import javax.validation.constraints.NotNull;
+//import jakarta.annotation.Nullable;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.Hibernate;
 
 /**
  * A Country identified by an ISO country code
@@ -65,11 +66,11 @@ public class Country extends DomainChild<Country, Region> {
 	/**
 	 * Overridden so we can modify the attribute model
 	 */
-	@Nullable
+//	@Nullable
 	@Override
 	@Attribute(complexEditable = true, displayName = "Region", visibleInGrid = VisibilityType.SHOW)
 	public Region getParent() {
-		return super.getParent();
+		return (Region) Hibernate.unproxy(super.getParent());
 	}
 
 	/**

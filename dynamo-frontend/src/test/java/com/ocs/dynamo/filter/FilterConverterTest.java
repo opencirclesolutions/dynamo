@@ -31,7 +31,7 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 
 public class FilterConverterTest extends BaseMockitoTest {
 
-	private EntityModelFactory emf = new EntityModelFactoryImpl();
+	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
 	private FilterConverter<TestEntity> converter = new FilterConverter<TestEntity>(null);
 
@@ -43,7 +43,7 @@ public class FilterConverterTest extends BaseMockitoTest {
 
 	@BeforeEach
 	public void setUp() {
-		modelConverter = new FilterConverter<TestEntity>(emf.getModel(TestEntity.class));
+		modelConverter = new FilterConverter<TestEntity>(entityModelFactory.getModel(TestEntity.class));
 	}
 
 	@Test

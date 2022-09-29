@@ -21,7 +21,7 @@ import java.text.DecimalFormatSymbols;
 import java.time.LocalTime;
 import java.util.Locale;
 
-import javax.persistence.OptimisticLockException;
+import jakarta.persistence.OptimisticLockException;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import org.junit.jupiter.api.BeforeEach;

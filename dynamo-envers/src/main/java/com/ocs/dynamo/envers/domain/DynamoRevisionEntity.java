@@ -15,10 +15,11 @@ package com.ocs.dynamo.envers.domain;
 
 import java.time.Instant;
 
-import javax.persistence.Entity;
-import javax.persistence.Table;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Table;
 
 import org.hibernate.envers.DefaultRevisionEntity;
+import org.hibernate.envers.RevisionEntity;
 
 import com.ocs.dynamo.envers.listener.DynamoRevisionListener;
 import com.querydsl.core.annotations.QueryExclude;
@@ -32,7 +33,7 @@ import lombok.Setter;
  */
 @Table(name = "RevisionEntity")
 @Entity
-@org.hibernate.envers.RevisionEntity(DynamoRevisionListener.class)
+@RevisionEntity(DynamoRevisionListener.class)
 @QueryExclude
 public class DynamoRevisionEntity extends DefaultRevisionEntity {
 

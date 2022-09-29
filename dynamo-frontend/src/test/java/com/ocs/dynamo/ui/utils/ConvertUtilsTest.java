@@ -25,7 +25,7 @@ import com.vaadin.flow.data.binder.Result;
 @Disabled
 public class ConvertUtilsTest extends BaseMockitoTest {
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
+    private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
     @BeforeAll
     public static void beforeClass() {
@@ -35,7 +35,7 @@ public class ConvertUtilsTest extends BaseMockitoTest {
 
     @Test
     public void testConvertSearchValue() {
-        EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
+        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
         Result<?> result = ConvertUtils.convertToModelValue(model.getAttributeModel("age"), "12");
         Object obj = result.getOrThrow(r -> new OCSRuntimeException());
@@ -60,7 +60,7 @@ public class ConvertUtilsTest extends BaseMockitoTest {
 
     @Test
     public void testConvertToPresentationValue() {
-        EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
+        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
         Object s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("age"), 12L);
         assertEquals("12", s);
@@ -80,7 +80,7 @@ public class ConvertUtilsTest extends BaseMockitoTest {
 
     @Test
     public void testConvertToPresentationDates() {
-        EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
+        EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
         // LocalDate
         Object s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("birthDate"), LocalDate.of(2014, 1, 1));

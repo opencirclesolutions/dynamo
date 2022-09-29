@@ -15,8 +15,8 @@ package com.ocs.dynamo.test;
 
 import static org.junit.jupiter.api.Assertions.fail;
 
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;

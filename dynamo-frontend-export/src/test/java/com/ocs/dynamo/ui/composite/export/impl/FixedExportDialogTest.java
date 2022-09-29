@@ -22,7 +22,7 @@ public class FixedExportDialogTest extends BaseMockitoTest {
     @Mock
     private ExportService exportService;
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
+    private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
     @BeforeEach
     public void setup() {
@@ -31,7 +31,7 @@ public class FixedExportDialogTest extends BaseMockitoTest {
 
     @Test
     public void test() {
-        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+        EntityModel<TestEntity> em = entityModelFactory.getModel(TestEntity.class);
 
         when(exportService.exportCsvFixed(em, ExportMode.FULL, null)).thenReturn(new byte[] { 1, 2, 3 });
         when(exportService.exportExcelFixed(em, ExportMode.FULL, null, null)).thenReturn(new byte[] { 1, 2, 3 });

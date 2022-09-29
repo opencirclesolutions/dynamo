@@ -21,22 +21,22 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
-import javax.persistence.criteria.FetchParent;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.persistence.metamodel.Attribute;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.FetchParent;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.metamodel.Attribute;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -131,7 +131,7 @@ public final class JpaQueryBuilder {
 			ms.addAll(multiSelect);
 		}
 		if (sortOrders != null && sortOrders.length > 0) {
-			List<javax.persistence.criteria.Order> orders = new ArrayList<>();
+			List<jakarta.persistence.criteria.Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
 				Expression<?> property = distinct ? getPropertyPath(root, sortOrder.getProperty(), true)
 						: getPropertyPathForSort(root, sortOrder.getProperty());
@@ -538,7 +538,7 @@ public final class JpaQueryBuilder {
 		} else if (filter instanceof IsNull) {
 			IsNull isNull = (IsNull) filter;
 			Path path = getPropertyPath(root, isNull.getPropertyId(), true);
-			if (path.type() != null && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
+			if (path.type() != null && java.util.Collection.class.isAssignableFrom(path.getJavaType())) {
 				return builder.isEmpty(path);
 			}
 			return builder.isNull(path);
@@ -766,7 +766,7 @@ public final class JpaQueryBuilder {
 				path = path.get(part);
 			}
 			// Check collection join
-			if (join && Collection.class.isAssignableFrom(path.type().getJavaType())) {
+			if (join && Collection.class.isAssignableFrom(path.getJavaType())) {
 				// Reuse existing join
 				Join<?, ?> detailJoin = null;
 				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
@@ -815,8 +815,8 @@ public final class JpaQueryBuilder {
 				path = path.get(part);
 			}
 
-			if (AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
-					|| Collection.class.isAssignableFrom(path.type().getJavaType())) {
+			if (AbstractEntity.class.isAssignableFrom(path.getJavaType())
+					|| Collection.class.isAssignableFrom(path.getJavaType())) {
 				// Reuse existing join
 				Join<?, ?> detailJoin = null;
 				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()

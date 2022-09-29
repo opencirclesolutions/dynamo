@@ -16,8 +16,8 @@ package com.ocs.dynamo.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
 
 import lombok.Data;
 

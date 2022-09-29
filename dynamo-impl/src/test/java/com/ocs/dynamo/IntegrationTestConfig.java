@@ -1,12 +1,13 @@
 package com.ocs.dynamo;
 
-import javax.persistence.EntityManagerFactory;
+import jakarta.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -25,8 +26,8 @@ import com.ocs.dynamo.test.BaseIntegrationTestConfig;
  *
  */
 @TestConfiguration
-@ComponentScan(basePackages = "com.ocs.dynamo")
 @SpringBootApplication
+@EnableJpaRepositories(basePackages = "com.ocs.dynamo", entityManagerFactoryRef = "entityManager")
 public class IntegrationTestConfig extends BaseIntegrationTestConfig {
 
     @Bean

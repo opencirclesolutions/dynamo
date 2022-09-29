@@ -15,10 +15,10 @@ package com.ocs.dynamo.functional.domain;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -42,7 +42,7 @@ public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainP
 
 	private static final long serialVersionUID = 2615942460028599211L;
 
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = DomainParent.class)
+	@ManyToOne(fetch = FetchType.EAGER, targetEntity = DomainParent.class)
 	@JoinColumn(name = "parent")
 	private P parent;
 

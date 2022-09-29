@@ -41,7 +41,7 @@ import com.ocs.dynamo.utils.DateUtils;
 
 /**
  * A basic integration test for testing the functionality of a DAO
- * 
+ *
  * @author bas.rutten
  */
 public class TestEntityDaoTest extends BackendIntegrationTest {

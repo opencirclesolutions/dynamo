@@ -15,8 +15,8 @@ package com.ocs.dynamo.functional.domain;
 
 import java.util.Set;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
 
 import com.ocs.dynamo.domain.model.annotation.Model;
 
