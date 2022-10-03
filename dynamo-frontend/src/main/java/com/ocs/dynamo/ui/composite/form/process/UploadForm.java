@@ -81,6 +81,8 @@ public class UploadForm extends ProgressForm<byte[]> {
 				if (event.getContentLength() > 0L) {
 					byte[] content = new byte[(int) event.getContentLength()];
 					try {
+						upload.clearFileList();
+
 						buffer.getInputStream().read(content);
 						startWork(content);
 					} catch (IOException e) {
