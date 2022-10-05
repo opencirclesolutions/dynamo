@@ -17,8 +17,6 @@ import java.io.Serializable;
 import java.util.List;
 import java.util.Set;
 
-import org.vaadin.gatanaso.MultiselectComboBox;
-
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -31,6 +29,7 @@ import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
@@ -47,7 +46,7 @@ import lombok.Getter;
  * @param <ID> type of the primary key of the entity
  * @param <T>  type of the entity
  */
-public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends MultiselectComboBox<T>
+public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends MultiSelectComboBox<T>
 		implements Refreshable, Cascadable<T> {
 
 	private static final long serialVersionUID = 3041574615271340579L;
@@ -70,7 +69,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 * The search filter to use in filtered mode
 	 */
 	@Getter
-	private SerializablePredicate<T> filter;
+	private SerializablePredicate<T> optionalFilter;
 
 	/**
 	 * The original search filter
@@ -114,7 +113,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		this.selectMode = selectMode;
 		this.sortOrders = sortOrders;
 		this.attributeModel = attributeModel;
-		this.filter = filter;
+		this.optionalFilter = filter;
 
 		if (attributeModel != null) {
 			this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
@@ -128,7 +127,6 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			return value == null ? "" : value;
 		});
 
-		setOrdered(true);
 	}
 
 	/**
@@ -140,7 +138,6 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 *                          to this component
 	 * @param service           the service used to retrieve the entities
 	 * @param filter            the filter used to filter the entities
-	 * @param sortOrder         the sort order used to sort the entities
 	 */
 	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
@@ -199,14 +196,14 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public void clearAdditionalFilter() {
-		this.additionalFilter = filter;
-		this.filter = originalFilter;
+		this.additionalFilter = optionalFilter;
+		this.optionalFilter = originalFilter;
 		refresh();
 	}
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
-		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
+		return CallbackProviderHelper.createCallbackProvider(service, entityModel, optionalFilter,
+															 new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
 	/**
@@ -227,7 +224,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setDataProvider(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
-				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+				items = service.find(new FilterConverter<T>(entityModel).convert(optionalFilter),
 						SortUtils.translateSortOrders(sortOrders));
 				setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 						new ListDataProvider<>(items));
@@ -262,7 +259,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	public void refresh(SerializablePredicate<T> filter) {
 		this.originalFilter = filter;
-		this.filter = filter;
+		this.optionalFilter = filter;
 		refresh();
 	}
 
@@ -276,7 +273,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		clear();
 		this.additionalFilter = additionalFilter;
-		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
+		this.optionalFilter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
 
@@ -296,7 +293,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			setDataProvider(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(optionalFilter),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

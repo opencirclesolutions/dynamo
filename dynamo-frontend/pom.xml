@@ -72,10 +72,6 @@
 			<artifactId>vaadin-core</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>org.vaadin.gatanaso</groupId>
-			<artifactId>multiselect-combo-box-flow</artifactId>
-		</dependency>
-		<dependency>
 			<groupId>com.vaadin.componentfactory</groupId>
 			<artifactId>enhancedformlayout</artifactId>
 		</dependency>

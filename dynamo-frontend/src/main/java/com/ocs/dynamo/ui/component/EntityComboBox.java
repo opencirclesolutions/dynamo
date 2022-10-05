@@ -54,7 +54,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	private final EntityModel<T> entityModel;
 
 	@Getter
-	private SerializablePredicate<T> filter;
+	private SerializablePredicate<T> optionalFilter;
 
 	private SerializablePredicate<T> originalFilter;
 
@@ -91,7 +91,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		this.selectMode = mode;
 		this.sortOrders = sortOrders;
 		this.attributeModel = attributeModel;
-		this.filter = filter;
+		this.optionalFilter = filter;
 		this.entityModel = entityModel;
 		if (attributeModel != null) {
 			this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
@@ -169,13 +169,13 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	@Override
 	public void clearAdditionalFilter() {
 		this.additionalFilter = null;
-		this.filter = originalFilter;
+		this.optionalFilter = originalFilter;
 		refresh();
 	}
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
-		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
+		return CallbackProviderHelper.createCallbackProvider(service, entityModel, optionalFilter,
+															 new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
 	public int getDataProviderSize() {
@@ -205,7 +205,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
-				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+				items = service.find(new FilterConverter<T>(entityModel).convert(optionalFilter),
 						SortUtils.translateSortOrders(sortOrders));
 				setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 						new ListDataProvider<>(items));
@@ -230,7 +230,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	public void refresh(SerializablePredicate<T> filter) {
 		this.originalFilter = filter;
-		this.filter = filter;
+		this.optionalFilter = filter;
 		refresh();
 	}
 
@@ -244,7 +244,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		clear();
 		this.additionalFilter = additionalFilter;
-		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
+		this.optionalFilter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
 	
@@ -261,7 +261,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(optionalFilter),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

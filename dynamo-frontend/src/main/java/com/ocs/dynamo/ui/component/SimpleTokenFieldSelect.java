@@ -21,8 +21,6 @@ import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import org.vaadin.gatanaso.MultiselectComboBox;
-
 import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -31,6 +29,7 @@ import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
@@ -83,7 +82,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	/**
 	 * The token field
 	 */
-	private final MultiselectComboBox<T> multiComboBox;
+	private final MultiSelectComboBox<T> multiComboBox;
 
 	/**
 	 * Service for querying the database
@@ -101,7 +100,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		this.elementCollection = elementCollection;
 		this.attributeModel = attributeModel;
 
-		multiComboBox = new MultiselectComboBox<>();
+		multiComboBox = new MultiSelectComboBox<>();
 		if (attributeModel != null) {
 			setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 			String prompt = attributeModel.getPrompt(VaadinUtils.getLocale());

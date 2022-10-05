@@ -15,9 +15,8 @@ package com.ocs.dynamo.ui.component;
 
 import java.util.Objects;
 
-import org.vaadin.gatanaso.MultiselectComboBox.ItemFilter;
-
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.vaadin.flow.component.combobox.ComboBox;
 
 /**
  * A caption filter that ignores diacritical characters when comparing. 
@@ -26,7 +25,7 @@ import com.ocs.dynamo.domain.model.EntityModel;
  *
  */
 public class MultiSelectIgnoreDiacriticsCaptionFilter<T> extends BaseIgnoreDiacriticsFilter<T>
-		implements ItemFilter<T> {
+		implements ComboBox.ItemFilter<T> {
 
 	private static final long serialVersionUID = -8965855020406086688L;
 
