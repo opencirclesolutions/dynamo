@@ -270,7 +270,12 @@ public final class VaadinUtils {
 		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getLocale() != null) {
 			return VaadinSession.getCurrent().getLocale();
 		}
-		return new Locale(SystemPropertyUtils.getDefaultLocale());
+		String locale = SystemPropertyUtils.getDefaultLocale();
+		if (locale.contains("_")) {
+			String[] languageAndCountry = locale.split("_");
+			return new Locale(languageAndCountry[0], languageAndCountry[1]);
+		}
+		return new Locale(locale);
 	}
 
 	/**
@@ -662,7 +667,7 @@ public final class VaadinUtils {
 	 */
 	public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
 		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
-		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
+		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException(r));
 	}
 
 	/**
