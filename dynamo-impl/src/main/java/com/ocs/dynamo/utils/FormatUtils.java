@@ -166,7 +166,7 @@ public final class FormatUtils {
 				// other Java 8 dates
 				return DateUtils.formatJava8Date(am.getType(), value, am.getDisplayFormat(), zoneId);
 			} else if (NumberUtils.isNumeric(am.getType())) {
-				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInEditMode(), locale,
+				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInViewMode(), locale,
 						currencySymbol);
 			} else if (am.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message
