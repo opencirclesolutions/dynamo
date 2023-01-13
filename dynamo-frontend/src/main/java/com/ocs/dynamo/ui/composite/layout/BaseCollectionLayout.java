@@ -256,7 +256,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * 
 	 * @param entity the entity to display
 	 */
-	protected abstract void detailsMode(T entity);
+	public abstract void detailsMode(T entity);
 
 	/**
 	 * Disables sorting for the grid if needed

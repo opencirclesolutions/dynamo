@@ -211,7 +211,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	}
 
 	@Override
-	protected void detailsMode(T entity) {
+	public void detailsMode(T entity) {
 		// not supported
 	}
 

@@ -510,7 +510,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	@Override
-	protected void detailsMode(T entity) {
+	public void detailsMode(T entity) {
 		// not needed
 	}
 
