@@ -372,6 +372,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 
 		forms.add(formContainer);
 		mainFormContainer.add(formContainer);
+
 	}
 
 	/**

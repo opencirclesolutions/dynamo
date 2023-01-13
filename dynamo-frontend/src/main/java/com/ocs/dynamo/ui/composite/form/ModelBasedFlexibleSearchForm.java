@@ -13,43 +13,11 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import static java.util.stream.Collectors.toList;
-
-import java.io.Serializable;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.FieldCreationContext;
-import com.ocs.dynamo.domain.model.FieldFactory;
+import com.ocs.dynamo.domain.model.*;
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.filter.BetweenPredicate;
-import com.ocs.dynamo.filter.EqualsPredicate;
-import com.ocs.dynamo.filter.FlexibleFilterDefinition;
-import com.ocs.dynamo.filter.FlexibleFilterType;
-import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
-import com.ocs.dynamo.filter.GreaterThanPredicate;
-import com.ocs.dynamo.filter.InPredicate;
-import com.ocs.dynamo.filter.LessOrEqualPredicate;
-import com.ocs.dynamo.filter.LessThanPredicate;
-import com.ocs.dynamo.filter.NotPredicate;
-import com.ocs.dynamo.filter.SimpleStringPredicate;
+import com.ocs.dynamo.filter.*;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
@@ -76,9 +44,15 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.function.SerializablePredicate;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
+import java.util.*;
 
 /**
  *
@@ -316,9 +290,8 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 		private SerializablePredicate<T> convertFilterDefault(Object value, SerializablePredicate<T> filter) {
 			if (value != null && am.isSearchDateOnly() && am.isSearchForExactValue()) {
 				filter = convertDateOnlyExactMatchFilter(value);
-			}
-			// default case (simple comparison or non-empty collection)
-			else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+			} else if (value != null && !(value instanceof Collection && ((Collection<?>) value).isEmpty())) {
+				// default case (simple comparison or non-empty collection)
 				filter = new EqualsPredicate<>(am.getPath(), value);
 			}
 			return filter;
@@ -384,7 +357,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 					.compareToIgnoreCase(o2.getDisplayName(VaadinUtils.getLocale())));
 			// add any attribute models that are not required
 			attributeFilterComboBox.setItems(filteredModels.stream()
-					.filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).collect(toList()));
+					.filter(a -> !a.isRequiredForSearching() || !hasFilter(a)).toList());
 			attributeFilterComboBox.setItemLabelGenerator(item -> item.getDisplayName(VaadinUtils.getLocale()));
 
 			// add a value change listener that fills the filter type combo box
@@ -799,7 +772,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * present yet. Otherwise, set the value(s) of the already present filter to the
 	 * provided values
 	 *
-	 * @param attributeModel the attribute model to base the filter on
+	 * @param am the attribute model to base the filter on
 	 * @param filterType     the type of the filter
 	 * @param value          the value of the filter
 	 * @param auxValue       the auxiliary value
@@ -916,7 +889,7 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 	 * filters
 	 */
 	public List<FlexibleFilterDefinition> extractFilterDefinitions() {
-		return regions.stream().map(FilterRegion::toDefinition).filter(Objects::nonNull).collect(toList());
+		return regions.stream().map(FilterRegion::toDefinition).filter(Objects::nonNull).toList();
 	}
 
 	/**

@@ -13,13 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.function.Consumer;
-import java.util.function.IntConsumer;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -31,8 +24,12 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.Query;
 import com.vaadin.flow.function.SerializablePredicate;
-
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.function.IntConsumer;
 
 /**
  * Utility class for creating callback providers
@@ -51,26 +48,26 @@ public class CallbackProviderHelper {
 	 * @param service     the service that is used to retrieve entities
 	 * @param entityModel the entity model
 	 * @param filter      search filter to apply (in addition to the search term)
-	 * @return
+	 * @return the constructed provider
 	 */
 	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, String> createCallbackProvider(
 			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
 			SortOrders sortOrders, IntConsumer afterCountDone) {
 		FilterConverter<T> converter = new FilterConverter<>(entityModel);
-		CallbackDataProvider<T, String> callbackProvider = new CallbackDataProvider<>(query -> {
+		return new CallbackDataProvider<>(query -> {
 			int offset = query.getOffset();
 			int page = offset / query.getLimit();
 
-			SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
-			List<T> list = service.fetch(converter.convert(pred), page, query.getLimit(), sortOrders);
+			SerializablePredicate<T> predicate = constructFilterPredicate(query, entityModel, filter);
+			List<T> list = service.fetch(converter.convert(predicate), page, query.getLimit(), sortOrders);
 			if (afterCountDone != null) {
 				afterCountDone.accept(list.size());
 			}
 			return list.stream();
 		}, query -> {
 			try {
-				SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
-				int count = (int) service.count(converter.convert(pred), true);
+				SerializablePredicate<T> predicate = constructFilterPredicate(query, entityModel, filter);
+				int count = (int) service.count(converter.convert(predicate), true);
 				if (afterCountDone != null) {
 					afterCountDone.accept(count);
 				}
@@ -80,7 +77,6 @@ public class CallbackProviderHelper {
 				return 0;
 			}
 		});
-		return callbackProvider;
 	}
 
 	/**
@@ -92,28 +88,33 @@ public class CallbackProviderHelper {
 	 * @param query       the query
 	 * @param entityModel the entity model
 	 * @param filter      the field filter
-	 * @return
+	 * @return the constructed predicate
 	 */
 	private static <ID extends Serializable, T extends AbstractEntity<ID>> SerializablePredicate<T> constructFilterPredicate(
 			Query<T, String> query, EntityModel<T> entityModel, SerializablePredicate<T> filter) {
 		String searchString = query.getFilter().orElse(null);
+		
+		// escape any actual percentage signs
+		if (searchString != null) {
+			searchString = searchString.replace("%", "\\%");
+		}
 
-		SerializablePredicate<T> pred = null;
+		SerializablePredicate<T> predicate = null;
 		SerializablePredicate<T> like = new LikePredicate<>(entityModel.getFilterProperty(), "%" + searchString + "%",
 				false);
 
 		if (filter == null) {
 			if (!StringUtils.isEmpty(searchString)) {
-				pred = like;
+				predicate = like;
 			}
 		} else {
 			if (!StringUtils.isEmpty(searchString)) {
-				pred = new AndPredicate<>(filter, like);
+				predicate = new AndPredicate<>(filter, like);
 			} else {
-				pred = filter;
+				predicate = filter;
 			}
 		}
 
-		return pred;
+		return predicate;
 	}
 }

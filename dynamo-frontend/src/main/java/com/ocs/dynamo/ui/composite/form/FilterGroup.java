@@ -181,7 +181,7 @@ public class FilterGroup<T> {
 	 */
 	private SerializablePredicate<T> handleBetweenFilterChange(Component field, Object value) {
 		SerializablePredicate<T> filter;
-		value = translateDateOnlyFilterValue(field, value);
+		value = translateDateOnlyFilterValue(value);
 
 		// construct new filter for the selected field (or clear it)
 		if (field == this.auxField) {
@@ -233,7 +233,7 @@ public class FilterGroup<T> {
 			if (value instanceof Collection<?>) {
 				filter = new EqualsPredicate<>(propertyId, value);
 			} else {
-				String valueStr = value.toString();
+				String valueStr = value.toString().replace("%", "\\%");
 				if (StringUtils.isNotEmpty(valueStr)) {
 					filter = new SimpleStringPredicate<>(propertyId, valueStr, attributeModel.isSearchPrefixOnly(),
 							attributeModel.isSearchCaseSensitive());
@@ -275,8 +275,15 @@ public class FilterGroup<T> {
 		}
 	}
 
-	private Object translateDateOnlyFilterValue(Component field, Object value) {
-		if (attributeModel.isSearchDateOnly() && value != null) {
+	/**
+	 * Translates a search value from a date to a time stamp if needed
+	 * @param value the value to convert
+	 * @return
+	 */
+	private Object translateDateOnlyFilterValue(Object value) {
+		boolean convertToDate = ZonedDateTime.class.equals(attributeModel.getType())
+				|| LocalDateTime.class.equals(attributeModel.getType());
+		if (convertToDate && value != null) {
 			if (LocalDateTime.class.equals(attributeModel.getType())) {
 				if (field == this.auxField) {
 					LocalDate ldt = (LocalDate) value;

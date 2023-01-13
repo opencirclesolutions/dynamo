@@ -25,7 +25,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
 /**
  * Default configuration for Dynamo applications. Adds a message source and a
- * validator factory
+ * validator factory to the Spring context
  * 
  * @author Bas Rutten
  *

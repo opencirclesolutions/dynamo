@@ -74,12 +74,16 @@ public abstract class CustomEntityField<ID extends Serializable, T extends Abstr
 	 */
 	public abstract void refresh(SerializablePredicate<T> filter);
 
+	/**
+	 * Sets the filter to apply to the component
+	 * @param filter the filter to set
+	 */
 	public void setFilter(SerializablePredicate<T> filter) {
 		this.filter = filter;
 	}
 
 	public void setPlaceholder(String placeholder) {
-		// do nothing - override when subclass if needed
+		// override in subclass
 	}
 
 }

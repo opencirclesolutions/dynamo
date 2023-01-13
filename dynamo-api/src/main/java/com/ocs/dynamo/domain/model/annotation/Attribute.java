@@ -71,7 +71,7 @@ public @interface Attribute {
 	boolean currency() default false;
 
 	/**
-	 * @return
+	 * @return the currency symbol to use when formatting
 	 */
 	String currencySymbol() default "";
 
@@ -151,6 +151,12 @@ public @interface Attribute {
 	 * @return whether the attribute is a BLOB that represents an image
 	 */
 	boolean image() default false;
+	
+	/**
+	 * 
+	 * @return whether to show captions on the button in lookup field
+	 */
+	VisibilityType lookupFieldCaptions() default VisibilityType.INHERIT;
 
 	/**
 	 * @return whether the attribute is the main attribute
@@ -280,8 +286,7 @@ public @interface Attribute {
 	SearchMode searchable() default SearchMode.NONE;
 
 	/**
-	 * 
-	 * @return whether string based search is case sensitive
+	 * @return whether string based search is case-sensitive
 	 */
 	BooleanType searchCaseSensitive() default BooleanType.INHERIT;
 
@@ -319,9 +324,7 @@ public @interface Attribute {
 	boolean sortable() default true;
 
 	/**
-	 * The height of a text area (e.g. "200px")
-	 * 
-	 * @return
+	 * @return the height of a text area (e.g. "200px")
 	 */
 	String textAreaHeight() default "";
 

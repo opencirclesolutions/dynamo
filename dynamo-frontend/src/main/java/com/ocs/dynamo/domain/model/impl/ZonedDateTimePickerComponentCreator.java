@@ -54,9 +54,9 @@ public class ZonedDateTimePickerComponentCreator implements SimpleComponentCreat
 
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
-		Locale dateLoc = VaadinUtils.getDateLocale();
-		ZonedDateTimePicker zonedPicker = new ZonedDateTimePicker(dateLoc);
-		zonedPicker.setI18n(getDatePickerLocalization(messageService, dateLoc));
+		Locale dateLocale = VaadinUtils.getDateLocale();
+		ZonedDateTimePicker zonedPicker = new ZonedDateTimePicker(dateLocale);
+		zonedPicker.setI18n(getDatePickerLocalization(messageService, dateLocale));
 		return zonedPicker;
 	}
 }

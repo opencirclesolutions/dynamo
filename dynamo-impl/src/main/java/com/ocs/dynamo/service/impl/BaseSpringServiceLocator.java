@@ -35,9 +35,6 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 
 	protected abstract ApplicationContext loadCtx();
 
-	/**
-	 * @return
-	 */
 	private ApplicationContext getContext() {
 		if (ctx == null) {
 			ctx = loadCtx();
@@ -49,7 +46,7 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	 * Retrieves a service of a certain type
 	 * 
 	 * @param clazz the class of the service
-	 * @return
+	 * @return the service
 	 */
 	@Override
 	public <T> T getService(Class<T> clazz) {
@@ -76,7 +73,7 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	/**
 	 * Retrieves the message service from the context
 	 * 
-	 * @return
+	 * @return the message service
 	 */
 	@Override
 	public MessageService getMessageService() {
@@ -86,7 +83,7 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	/**
 	 * Retrieves the entity model factory from the context
 	 * 
-	 * @return
+	 * @return the entity model factory
 	 */
 	@Override
 	public EntityModelFactory getEntityModelFactory() {
@@ -97,7 +94,7 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	 * Returns a service that is used to manage a certain type of entity
 	 * 
 	 * @param entityClass the entity class
-	 * @return
+	 * @return the service
 	 */
 	@Override
 	@SuppressWarnings("rawtypes")
@@ -111,17 +108,4 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 		return null;
 	}
 
-	/*
-	 * (non-Javadoc)
-	 *
-	 * @see com.ocs.dynamo.service.ServiceLocator#getServices(java.lang.Class)
-	 */
-	@Override
-	public <T> Collection<T> getServices(Class<T> clazz) {
-		Map<String, T> beans = getContext().getBeansOfType(clazz);
-		if (beans != null && !beans.isEmpty()) {
-			return beans.values();
-		}
-		return null;
-	}
 }

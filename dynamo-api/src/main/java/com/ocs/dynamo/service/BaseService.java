@@ -216,9 +216,9 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @param distinctField the field for which to return the distinct values
 	 * @param resultType    the type of the distinct values
 	 * @param sortOrders    the sort orders
-	 * @return
+	 * @return the list of distinct values
 	 */
-	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> resultType, SortOrder... sortOrders);
+	<S> List<S> findDistinctValues(Filter filter, String distinctField, Class<S> resultType, SortOrder... sortOrders);
 
 	/**
 	 * Finds distinct elements in a collection table
@@ -250,26 +250,26 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	List<ID> findIds(Filter filter, SortOrder... sortOrders);
 
 	/**
-	 * Finds and sorts properties (NOT ENTITIES) that match the provided filter
-	 * 
+	 * Selects the values of the specified properties of the entities that match the provided filter
+	 *
 	 * @param filter           the filter
 	 * @param selectProperties the properties to use in the selection
 	 * @param pageNumber       the page number of the page to fetch
 	 * @param pageSize         the page size
 	 * @param sortOrders       the sort order
-	 * @return
+	 * @return the list of properties
 	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize, SortOrders sortOrders);
+	List<?> findProperties(Filter filter, String[] selectProperties, int pageNumber, int pageSize, SortOrders sortOrders);
 
 	/**
-	 * Finds and sorts properties (NOT ENTITIES) that match the provided filter
-	 * 
+	 * Selects the values of the specified properties of the entities that match the provided filter
+	 *
 	 * @param filter           the filter
 	 * @param selectProperties the properties to use in the selection
 	 * @param sortOrders       the sort order
-	 * @return
+	 * @return the list of properties
 	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders);
+	List<?> findProperties(Filter filter, String[] selectProperties, SortOrders sortOrders);
 
 	/**
 	 * Returns the class of the entity managed by this DAO

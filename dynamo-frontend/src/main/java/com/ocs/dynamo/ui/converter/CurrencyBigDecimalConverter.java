@@ -67,7 +67,7 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 	@Override
 	protected DecimalFormat constructFormat(Locale locale) {
 		DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
-		nf.applyPattern("¤####,###,###,###.##");
+		nf.applyPattern("¤####,###,###,###.##;¤-####,###,###,###.##");
 
 		DecimalFormatSymbols s = nf.getDecimalFormatSymbols();
 		s.setCurrencySymbol(currencySymbol);

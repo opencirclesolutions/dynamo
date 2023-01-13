@@ -29,7 +29,8 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.datepicker.DatePicker;
 
 /**
- * Component creator used for creating DatePicker components
+ * Component creator used for creating DatePicker components. Typically used
+ * for managing LocalDates, and for searching on ZonedDateTime or LocalDateTime
  * 
  * @author BasRutten
  *
@@ -49,6 +50,7 @@ public class DatePickerComponentCreator implements SimpleComponentCreator {
 			return true;
 		}
 
+		// now, always use a "date only" field when searching for zoned date time
 		return context.isSearch() && (LocalDateTime.class.equals(attributeModel.getType())
 				|| ZonedDateTime.class.equals(attributeModel.getType()));
 	}

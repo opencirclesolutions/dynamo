@@ -103,9 +103,8 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 * @param filter         the field filter
 	 * @param items          the fixed collection on entities to display
 	 * @param sharedProvider the shared data provider
-	 * @param sortOrders     the sort orders to apply
+	 * @param sortOrders     the sort orders
 	 */
-	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode selectMode, SerializablePredicate<T> filter, List<T> items,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, SortOrder<?>... sortOrders) {
@@ -140,7 +139,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 *                          to this component
 	 * @param service           the service used to retrieve the entities
 	 * @param filter            the filter used to filter the entities
-	 * @param sortOrder         the sort order used to sort the entities
+	 * @param sortOrders        the sort orders used to sort the entities
 	 */
 	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,

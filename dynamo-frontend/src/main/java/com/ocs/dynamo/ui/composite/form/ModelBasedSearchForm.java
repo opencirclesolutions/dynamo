@@ -54,7 +54,6 @@ import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
@@ -79,24 +78,19 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 
 	private static final long serialVersionUID = -7226808613882934559L;
 
-	/**
-	 * The main form layout
-	 */
 	private EnhancedFormLayout form;
 
-	/**
-	 * The various filter groups
-	 */
 	@Getter
 	private Map<String, FilterGroup<T>> groups = new HashMap<>();
 
 	/**
+	 * Constructor
 	 * 
-	 * @param searchable
-	 * @param entityModel
-	 * @param formOptions
-	 * @param defaultFilters
-	 * @param fieldFilters
+	 * @param searchable     the component that will display the search results
+	 * @param entityModel    the entity model
+	 * @param formOptions    the form options
+	 * @param defaultFilters the additional filters to apply to every search action
+	 * @param fieldFilters   the filters to apply to the individual search fields
 	 */
 	public ModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
 			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
@@ -107,9 +101,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * Constructor
 	 * 
-	 * @param searchable     the component on which to carry out the search
+	 * @param searchable     the component that will display the search results
 	 * @param entityModel    the entity model
 	 * @param formOptions    the form options
+	 * @param context        the component context
 	 * @param defaultFilters the additional filters to apply to every search action
 	 * @param fieldFilters   the filters to apply to the individual search fields
 	 */
@@ -149,7 +144,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	/**
-	 * Adds any value change listeners for taking care of cascading search
+	 * Adds the value change listeners for taking care of cascading search
 	 */
 	protected void constructCascadeListeners() {
 		for (AttributeModel am : getEntityModel().getCascadeAttributeModels()) {
@@ -173,7 +168,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @param entityModel    the entity model of the entity to search for
 	 * @param attributeModel the attribute model the attribute model of the property
 	 *                       that is bound to the field
-	 * @return
+	 * @return the component that was created
 	 */
 	protected Component constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 		Component field = findCustomComponent(entityModel, attributeModel);
@@ -185,7 +180,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		}
 
 		if (field == null) {
-			throw new OCSRuntimeException("No field could be constructed for " + attributeModel.getPath());
+			throw new OCSRuntimeException("No field could be constructed for %s".formatted(attributeModel.getPath()));
 		}
 
 		return field;
@@ -196,7 +191,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * 
 	 * @param entityModel    the entity model
 	 * @param attributeModel the attribute model
-	 * @return
+	 * @return the constructed filter group
 	 */
 	protected FilterGroup<T> constructFilterGroup(EntityModel<T> entityModel, AttributeModel attributeModel) {
 		Component field = this.constructField(entityModel, attributeModel);
@@ -226,11 +221,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				// lower
 				// and upper bounds
 				String from = message("ocs.from");
-				VaadinUtils.setLabel(field, attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + from);
+				setLabelAndPlaceHolder(attributeModel, field, from);
 
 				auxField = constructField(entityModel, attributeModel);
 				String to = message("ocs.to");
-				VaadinUtils.setLabel(auxField, attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + to);
+				setLabelAndPlaceHolder(attributeModel, auxField, to);
 				auxField.setVisible(true);
 
 				FlexLayout layout = new FlexLayout();
@@ -239,6 +234,10 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				layout.addClassName(DynamoConstants.CSS_DYNAMO_FLEX_ROW);
 				layout.add(field);
 				layout.add(auxField);
+
+				layout.setFlexGrow(1, field);
+				layout.setFlexGrow(1, auxField);
+
 				comp = layout;
 			}
 			return new FilterGroup<>(attributeModel, filterType, comp, field, auxField);
@@ -247,10 +246,24 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	/**
+	 * Sets modified label and placeholder in case there is an auxiliary search
+	 * field
+	 * 
+	 * @param attributeModel the attribute model
+	 * @param component      the component to modify
+	 * @param postFix        the post fix to add to the label/placeholder
+	 */
+	private void setLabelAndPlaceHolder(AttributeModel attributeModel, Component component, String postFix) {
+		String message = attributeModel.getDisplayName(VaadinUtils.getLocale()) + " " + postFix;
+		VaadinUtils.setLabel(component, message);
+		VaadinUtils.setPlaceHolder(component, message);
+	}
+
+	/**
 	 * Builds the layout that contains the various search filters
 	 * 
 	 * @param entityModel the entity model
-	 * @return
+	 * @return the constructed filter layout
 	 */
 	@Override
 	protected HasComponents constructFilterLayout() {
@@ -370,7 +383,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * Indicates whether a search field for the attribute model must be shown
 	 * 
 	 * @param attributeModel the attribute model
-	 * @return
+	 * @return whether the search field for the attribute model must be shown
 	 */
 	private boolean mustShowSearchField(AttributeModel attributeModel) {
 		boolean mustShow = false;
@@ -412,6 +425,12 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		}
 	}
 
+	/**
+	 * Explicitly enable or disable a search field
+	 * 
+	 * @param property the property for which to enable or disable the field
+	 * @param enabled  the desired enabled setting
+	 */
 	public void setSearchFieldEnabled(String property, boolean enabled) {
 		FilterGroup<T> filterGroup = getGroups().get(property);
 		if (filterGroup != null) {
@@ -481,8 +500,8 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	public void toggleAdvancedMode() {
 
 		Map<String, Object> oldValues = new HashMap<>();
-
-		storeSearchTerms(oldValues);
+		Map<String, Object> oldAuxValues = new HashMap<>();
+		storeSearchTerms(oldValues, oldAuxValues);
 
 		clear();
 		setAdvancedSearchMode(!isAdvancedSearchMode());
@@ -503,25 +522,37 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		groups.clear();
 		iterate(getEntityModel().getAttributeModelsSortedForSearch());
 
-		// restore search values (note that maybe not all fields are there)
+		// restore search values (some fields might not be there any more)
 		for (Entry<String, Object> entry : oldValues.entrySet()) {
 			FilterGroup<T> filterGroup = groups.get(entry.getKey());
 			if (filterGroup != null) {
 				setSearchValue(entry.getKey(), entry.getValue());
+
+				if (oldAuxValues.containsKey(entry.getKey())) {
+					setSearchAuxValue(entry.getKey(), oldAuxValues.get(entry.getKey()));
+				}
 			}
 		}
 	}
 
-	private void storeSearchTerms(Map<String, Object> oldValues) {
-		for (Entry<String, FilterGroup<T>> fg : groups.entrySet()) {
-			HasValue<?, ?> hv = (HasValue<?, ?>) fg.getValue().getField();
+	private void storeSearchTerms(Map<String, Object> oldValues, Map<String, Object> oldAuxValues) {
+		for (Entry<String, FilterGroup<T>> filterGroup : groups.entrySet()) {
+			HasValue<?, ?> hv = (HasValue<?, ?>) filterGroup.getValue().getField();
 			if (hv.getValue() != null) {
-				boolean emptyCollection = hv.getValue() instanceof Collection
-						&& ((Collection<?>) hv.getValue()).isEmpty();
-				if (!emptyCollection) {
-					oldValues.put(fg.getKey(), hv.getValue());
-				}
+				storeSearchTerm(oldValues, filterGroup, hv);
 			}
+			if (filterGroup.getValue().getAuxField() != null) {
+				HasValue<?, ?> hvAux = (HasValue<?, ?>) filterGroup.getValue().getAuxField();
+				storeSearchTerm(oldAuxValues, filterGroup, hvAux);
+			}
+		}
+	}
+
+	private void storeSearchTerm(Map<String, Object> values, Entry<String, FilterGroup<T>> filterGroup,
+			HasValue<?, ?> hv) {
+		boolean emptyCollection = hv.getValue() instanceof Collection && ((Collection<?>) hv.getValue()).isEmpty();
+		if (!emptyCollection) {
+			values.put(filterGroup.getKey(), hv.getValue());
 		}
 	}
 

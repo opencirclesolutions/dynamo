@@ -34,9 +34,9 @@ public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEn
 
 	private static final int PAGE_SIZE = 2000;
 
-	private Function<List<ID>, List<T>> mapper;
+	private final Function<List<ID>, List<T>> mapper;
 
-	private List<ID> idList;
+	private final List<ID> idList;
 
 	private List<T> page;
 

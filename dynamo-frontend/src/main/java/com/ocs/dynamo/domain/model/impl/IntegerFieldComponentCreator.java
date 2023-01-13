@@ -37,6 +37,7 @@ public class IntegerFieldComponentCreator implements SimpleComponentCreator {
 			return false;
 		}
 
+		// only use for NUMBER fields, and when NOT dealing with percentages
 		return NumberFieldMode.NUMBERFIELD.equals(attributeModel.getNumberFieldMode()) && !attributeModel.isPercentage()
 				&& NumberUtils.isInteger(attributeModel.getType());
 	}

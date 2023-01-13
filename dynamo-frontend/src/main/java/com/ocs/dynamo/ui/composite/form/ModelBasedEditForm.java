@@ -153,13 +153,13 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Map for keeping track of which attributes have already been bound to a
 	 * component
 	 */
-	private Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
+	private final Map<Boolean, Set<String>> alreadyBound = new HashMap<>();
 
 	/**
 	 * The fields to which to assign the currently selected entity after the
 	 * selected entity changes
 	 */
-	private List<CanAssignEntity<ID, T>> assignEntityToFields = new ArrayList<>();
+	private final List<CanAssignEntity<ID, T>> assignEntityToFields = new ArrayList<>();
 
 	/**
 	 * For keeping track of attribute groups per view mode
@@ -958,7 +958,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	 * Constructs an internal link button. This is used for displaying a clickable
 	 * link in view mode
 	 * 
-	 * @param entityModel    the entity model
 	 * @param attributeModel the attribute model
 	 * @return
 	 */
@@ -1280,8 +1279,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Returns the field for the given property
 	 * 
-	 * @param path the path of the property
-	 * @return
+	 * @param path the path to the property
+	 * @return the component
 	 */
 	public Component getField(String path) {
 		return getField(isViewMode(), path);
@@ -1290,10 +1289,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
 	/**
 	 * Returns the field for the given path and casts it to the provided type
 	 * 
-	 * @param <T>
-	 * @param path
-	 * @param clazz
-	 * @return
+	 * @param <C> the type to cast to
+	 * @param path the path to the attribute
+	 * @param clazz the class to cast to
+	 * @return the component, cast to the requested type
 	 */
 	@SuppressWarnings("unchecked")
 	public <C extends Component> C getField(String path, Class<C> clazz) {

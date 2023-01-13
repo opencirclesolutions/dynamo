@@ -237,7 +237,6 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	/**
 	 * Translates a property name to an AuditProperty
 	 * 
-	 * @param aq    the audit query
 	 * @param prop  the name of the property
 	 * @param value the value of the property
 	 * @return
@@ -346,7 +345,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> revs = aq.getResultList();
-		return revs.stream().map(rev -> mapRevision(rev)).collect(Collectors.toList());
+		return revs.stream().map(rev -> mapRevision(rev)).toList();
 	}
 
 	@Override

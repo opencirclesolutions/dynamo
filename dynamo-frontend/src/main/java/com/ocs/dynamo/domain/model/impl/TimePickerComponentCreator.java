@@ -34,7 +34,6 @@ public class TimePickerComponentCreator implements SimpleComponentCreator {
 
 	@Override
 	public boolean supports(AttributeModel attributeModel, FieldCreationContext context) {
-
 		return AttributeType.BASIC.equals(attributeModel.getAttributeType())
 				&& LocalTime.class.equals(attributeModel.getType());
 	}

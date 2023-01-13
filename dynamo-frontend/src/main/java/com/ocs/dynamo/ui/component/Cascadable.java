@@ -21,7 +21,7 @@ import com.vaadin.flow.function.SerializablePredicate;
  * field)
  * 
  * @author bas.rutten
- * @param <T> the type of the object
+ * @param <T> the type of the entity managed by the component
  */
 public interface Cascadable<T> {
 
@@ -39,7 +39,6 @@ public interface Cascadable<T> {
     void clearAdditionalFilter();
 
     /**
-     * 
      * @return the additional filter
      */
     SerializablePredicate<T> getAdditionalFilter();

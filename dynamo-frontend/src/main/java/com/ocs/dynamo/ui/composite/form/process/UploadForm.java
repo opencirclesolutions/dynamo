@@ -20,7 +20,7 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.formlayout.FormLayout;
+import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.upload.Upload;
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer;
 
@@ -50,6 +50,9 @@ public class UploadForm extends ProgressForm<byte[]> {
 	@Setter
 	private Consumer<EnhancedFormLayout> buildForm;
 
+	/**
+	 * The code to execute when the user clicks the Cancel button
+	 */
 	@Getter
 	@Setter
 	private Runnable onCancel;
@@ -73,36 +76,46 @@ public class UploadForm extends ProgressForm<byte[]> {
 			}
 
 			// add file upload field
-			MemoryBuffer buffer = new MemoryBuffer();
-			upload = new Upload(buffer);
-			upload.setClassName("dynamoUpload");
-			upload.addFinishedListener(event -> {
-				this.fileName = event.getFileName();
-				if (event.getContentLength() > 0L) {
-					byte[] content = new byte[(int) event.getContentLength()];
-					try {
-						buffer.getInputStream().read(content);
-						startWork(content);
-					} catch (IOException e) {
-						// do nothing
-					}
-
-				} else {
-					showNotification(message("ocs.no.file.selected"));
-				}
-			});
+			upload = createFileUpload();
 			form.add(upload);
 
 			if (showCancelButton) {
-				Button cancelButton = new Button(message("ocs.cancel"));
-				cancelButton.addClickListener(event -> {
-					if (onCancel != null) {
-						onCancel.run();
-					}
-				});
-				main.add(cancelButton);
+				addCancelButton(main);
 			}
 		});
+	}
+
+	private void addCancelButton(VerticalLayout main) {
+		Button cancelButton = new Button(message("ocs.cancel"));
+		cancelButton.addClickListener(event -> {
+			if (onCancel != null) {
+				onCancel.run();
+			}
+		});
+		main.add(cancelButton);
+	}
+
+	private Upload createFileUpload() {
+		MemoryBuffer buffer = new MemoryBuffer();
+		Upload upload = new Upload(buffer);
+		upload.setClassName("dynamoUpload");
+		upload.addFinishedListener(event -> {
+			this.fileName = event.getFileName();
+			if (event.getContentLength() > 0L) {
+				byte[] content = new byte[(int) event.getContentLength()];
+				try {
+					upload.clearFileList();
+
+					buffer.getInputStream().read(content);
+					startWork(content);
+				} catch (IOException e) {
+					// do nothing
+				}
+			} else {
+				showNotification(message("ocs.no.file.selected"));
+			}
+		});
+		return upload;
 	}
 
 	/**

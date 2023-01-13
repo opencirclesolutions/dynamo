@@ -28,10 +28,10 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
     private TestEntityService service;
 
     @Test
-    public void testCreate() {
+    public void create() {
 
         List<String> items = List.of("Kevin", "Stuart", "Bob");
-        when(service.findDistinct(isNull(), eq("name"), eq(String.class))).thenReturn(items);
+        when(service.findDistinctValues(isNull(), eq("name"), eq(String.class))).thenReturn(items);
 
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("name");
@@ -49,7 +49,7 @@ public class SimpleTokenFieldSelectTest extends BaseMockitoTest {
     public void testCreateAndOrder() {
 
         List<String> items = List.of("Kevin", "Stuart", "Bob");
-        when(service.findDistinct(isNull(), eq("name"), eq(String.class))).thenReturn(items);
+        when(service.findDistinctValues(isNull(), eq("name"), eq(String.class))).thenReturn(items);
 
         EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
         AttributeModel am = em.getAttributeModel("name");

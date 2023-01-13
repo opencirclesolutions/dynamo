@@ -147,7 +147,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 					attributeModel.getCollectionTableFieldName(), elementType);
 		} else {
 			// search field in regular table
-			items = service.findDistinct(new FilterConverter<S>(entityModel).convert(fieldFilter), distinctField,
+			items = service.findDistinctValues(new FilterConverter<S>(entityModel).convert(fieldFilter), distinctField,
 					elementType);
 		}
 

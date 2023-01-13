@@ -512,27 +512,23 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 	 * @param row              the current row
 	 * @param type             the aggregation type
 	 * @param aggregateClass   the class of the aggregate object
-	 * @param nrOfVariableCols the number of variable columns
 	 * @param nrOfFixedCols    the number of fixed columns
+	 * @param nrOfVariableCols the number of variable columns
+	 * @param rowTotals        the row totals per property
+	 * @param aggregateIndex   the index of the aggregate column
 	 */
 	private void writeRowAggregate(Row row, String property, PivotAggregationType type, Class<?> aggregateClass,
-			int nrOfVariableCols, Map<String, BigDecimal> rowTotals, int nrOfFixedCols, int aggregateIndex) {
+			int nrOfFixedCols, int nrOfVariableCols, Map<String, BigDecimal> rowTotals, int aggregateIndex) {
 
-		int ci = nrOfFixedCols + nrOfVariableCols + aggregateIndex;
-		Cell totalsCell = row.createCell(ci);
+		int columnIndex = nrOfFixedCols + nrOfVariableCols + aggregateIndex;
+		Cell totalsCell = row.createCell(columnIndex);
 
 		double rowTotal = rowTotals.get(property).doubleValue();
 		double cellValue = 0;
 		switch (type) {
-		case SUM:
-			cellValue = rowTotal;
-			break;
-		case COUNT:
-			cellValue = nrOfFixedCols;
-			break;
-		case AVERAGE:
-			cellValue = nrOfFixedCols == 0 ? 0 : rowTotal / nrOfFixedCols;
-			break;
+		case SUM -> cellValue = rowTotal;
+		case COUNT -> cellValue = nrOfFixedCols;
+		case AVERAGE -> cellValue = nrOfFixedCols == 0 ? 0 : rowTotal / nrOfFixedCols;
 		}
 
 		totalsCell.setCellStyle(getGenerator().getTotalsStyle(aggregateClass, null));
@@ -554,7 +550,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
 			PivotAggregationType type = pivotParameters.getAggregationMap().get(prop);
 			Class<?> clazz = pivotParameters.getAggregationClassMap().get(prop);
 			if (type != null) {
-				writeRowAggregate(row, prop, type, clazz, variableCols, rowTotals, nrOfFixedCols, aggregateIndex);
+				writeRowAggregate(row, prop, type, clazz, nrOfFixedCols, variableCols, rowTotals, aggregateIndex);
 				aggregateIndex++;
 			}
 		}

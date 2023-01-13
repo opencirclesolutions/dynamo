@@ -97,7 +97,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Implementation of the entity model factory - creates models that hold
  * metadata about an entity
- *
+ *ó
  * @author bas.rutten
  */
 @Slf4j
@@ -1086,6 +1086,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 					value -> model.setClearButtonVisible(value.toBoolean()));
 			setEnumValueUnless(attribute.thousandsGrouping(), ThousandsGroupingMode.INHERIT,
 					model::setThousandsGroupingMode);
+			setEnumValueUnless(attribute.lookupFieldCaptions(), VisibilityType.INHERIT, model::setLookupFieldCaptions);
 
 			if (attribute.textFieldMode() != null
 					&& !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {
@@ -1167,6 +1168,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setClearButtonVisible(SystemPropertyUtils.isDefaultClearButtonVisible());
 		model.setTextAreaHeight(SystemPropertyUtils.getDefaultTextAreaHeight());
 		model.setCurrencySymbol(SystemPropertyUtils.getDefaultCurrencySymbol());
+		model.setLookupFieldCaptions(SystemPropertyUtils.getDefaultLookupFieldCaptions());
 
 		setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
 	}
@@ -1301,25 +1303,25 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_SELECT_MODE),
-				AttributeSelectMode.class, value -> attributeModel.setSearchSelectMode(value));
+				AttributeSelectMode.class, attributeModel::setSearchSelectMode);
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.GRID_SELECT_MODE),
-				AttributeSelectMode.class, value -> attributeModel.setGridSelectMode(value));
+				AttributeSelectMode.class, attributeModel::setGridSelectMode);
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MULTI_SELECT_MODE),
-				MultiSelectMode.class, value -> attributeModel.setMultiSelectMode(value));
-
+				MultiSelectMode.class, attributeModel::setMultiSelectMode);
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE), AttributeDateType.class,
-				value -> attributeModel.setDateType(value));
+				attributeModel::setDateType);
 		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXTFIELD_MODE),
-				AttributeTextFieldMode.class, value -> attributeModel.setTextFieldMode(value));
-
-		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH), -1,
-				attributeModel::setMinLength);
+				AttributeTextFieldMode.class, attributeModel::setTextFieldMode);
+		setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.LOOKUP_FIELD_CAPTIONS),
+				VisibilityType.class, attributeModel::setLookupFieldCaptions);
 
 		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_VALUE);
 		if (!StringUtils.isEmpty(msg)) {
 			attributeModel.setMinValue(Long.parseLong(msg));
 		}
 
+		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH), -1,
+				attributeModel::setMinLength);
 		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH), -1,
 				value -> attributeModel.setMaxLength(value));
 		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH_IN_GRID), -1,
@@ -1460,7 +1462,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * Sets an enum value on the attribute model, unless the value is the specified
 	 * excluded value
 	 * 
-	 * @param <E>
+	 * @param <E>      enum type parameter
 	 * @param value    the value
 	 * @param exclude  the value to exclude
 	 * @param consumer consumer to call when the value is not equal to the excluded

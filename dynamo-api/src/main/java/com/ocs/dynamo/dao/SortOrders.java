@@ -75,11 +75,10 @@ public class SortOrders {
 			return true;
 		}
 
-		if (!(obj instanceof SortOrders)) {
+		if (!(obj instanceof SortOrders other)) {
 			return false;
 		}
 
-		SortOrders other = (SortOrders) obj;
 		if (other.toArray().length != this.toArray().length) {
 			return false;
 		}

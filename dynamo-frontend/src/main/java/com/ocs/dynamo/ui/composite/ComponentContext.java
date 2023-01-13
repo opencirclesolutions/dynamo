@@ -55,6 +55,10 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	private Consumer<T> afterEntitySet;
 
+	/**
+	 * Consumer that runs after the edit form has been built in a composite layout
+	 * Takes as its arguments the parent component and whether the component is in view mode
+	 */
 	private BiConsumer<HasComponents, Boolean> afterEditFormBuilt;
 
 	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;

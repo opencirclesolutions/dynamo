@@ -13,10 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Stream;
-
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -37,11 +33,13 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.function.SerializablePredicate;
-
 import lombok.Getter;
 
+import java.io.Serializable;
+import java.util.List;
+
 /**
- * Custom ListSelect component for selecting a single item from a list
+ * Custom ListSelect component for selecting a single item from a list of options
  *
  * @param <ID> type of the primary key of the entity
  * @param <T>  type of the entity
@@ -75,7 +73,17 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	private int count;
 
-	@SafeVarargs
+	/**
+	 * Constructor
+	 * @param entityModel the entity model
+	 * @param attributeModel the attribute model
+	 * @param service the service used for contacting the database
+	 * @param mode the selection mode
+	 * @param filter the filter used to limit the results
+	 * @param items fixed set of items to display
+	 * @param sharedProvider optional shared data provider
+	 * @param sortOrders the sort orders to apply
+	 */
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode mode, SerializablePredicate<T> filter, List<T> items,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, SortOrder<?>... sortOrders) {
@@ -87,11 +95,10 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		this.filter = filter;
 		setHeight(SystemPropertyUtils.getDefaultListSelectHeight());
 
-		DataProvider<T, SerializablePredicate<T>> provider = sharedProvider;
-		initProvider(provider, items, mode);
+		initProvider(sharedProvider, items, mode);
 
 		// non-standard way of setting captions
-		setRenderer(new ComponentRenderer<Text, T>(t -> {
+		setRenderer(new ComponentRenderer<>(t -> {
 			String label = EntityModelUtils.getDisplayPropertyValue(t, entityModel);
 			return new Text(label == null ? "" : label);
 		}));
@@ -108,7 +115,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param filter         the filter used to filter the entities
 	 * @param sortOrder      the sort order used to sort the entities
 	 */
-	@SafeVarargs
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
 		this(entityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrder);
@@ -124,7 +130,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param service        the service used to retrieve entities
 	 * @param sortOrder      the sort order
 	 */
-	@SafeVarargs
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SortOrder<?>... sortOrder) {
 		this(entityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
@@ -157,8 +162,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider || provider instanceof ListDataProvider) {
 			setDataProvider(provider);
-			// https://vaadin.com/api/platform/23.0.10/deprecated-list.html
-			//setItems((Stream<T>) provider);
 		}
 	}
 
@@ -189,7 +192,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param provider already existing provider (in case of shared provider)
 	 * @param items    fixed list of items to display
 	 * @param mode     the desired mode
-	 * @return
 	 */
 	private void initProvider(DataProvider<T, SerializablePredicate<T>> provider, List<T> items, SelectMode mode) {
 		if (provider == null) {
@@ -201,8 +203,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setDataProvider(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
-				// add a filtered selection of items
-				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+				items = service.find(new FilterConverter<>(entityModel).convert(filter),
 						SortUtils.translateSortOrders(sortOrders));
 				setDataProvider(new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
@@ -246,7 +247,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	/**
 	 * Updates the data provider after a refresh
 	 * 
-	 * @param provider
+	 * @param provider the data provider
 	 */
 	private void updateProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (SelectMode.ALL.equals(selectMode)) {
@@ -256,7 +257,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 			setDataProvider(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(filter),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

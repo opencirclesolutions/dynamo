@@ -16,7 +16,6 @@ package com.ocs.dynamo.ui.composite.grid;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;

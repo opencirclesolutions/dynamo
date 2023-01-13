@@ -36,7 +36,6 @@ import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.component.textfield.TextFieldVariant;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
@@ -150,8 +149,6 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * Finds the appropriate component creator for this attribute model and context
 	 * and uses it to create a component
 	 * 
-	 * @param <ID>
-	 * @param <T>
 	 * @param context        the component context
 	 * @param attributeModel the attribute model
 	 * @param entityModel    the entity model

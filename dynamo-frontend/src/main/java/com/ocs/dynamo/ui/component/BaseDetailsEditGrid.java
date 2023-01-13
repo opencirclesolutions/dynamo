@@ -13,20 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.function.BiConsumer;
-import java.util.function.BiPredicate;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -74,9 +60,13 @@ import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.function.ValueProvider;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.*;
 
 /**
  * Base class for grid components that are displayed inside an edit form. These
@@ -110,20 +100,20 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Consumer<U> afterValueSet;
 
 	@Getter
-	private AttributeModel attributeModel;
+	private final AttributeModel attributeModel;
 
 	@Getter
-	private Map<T, Binder<T>> binders = new HashMap<>();
+	private final Map<T, Binder<T>> binders = new HashMap<>();
 
 	private HorizontalLayout buttonBar;
 
 	@Getter
-	private ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().build();
+	private final ComponentContext<ID, T> componentContext = ComponentContext.<ID, T>builder().build();
 
 	/**
 	 * List of components to update after a row is selected in the grid
 	 */
-	private List<Component> componentsToUpdate = new ArrayList<>();
+	private final List<Component> componentsToUpdate = new ArrayList<>();
 
 	/**
 	 * The code that is carried out to create a new entity
@@ -135,12 +125,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Custom button mapping
 	 */
-	private Map<String, List<Component>> customButtonMap = new HashMap<>();
+	private final Map<String, List<Component>> customButtonMap = new HashMap<>();
 
 	/**
 	 * Joins to apply when fetching a single entity for display in a pop-up
 	 */
 	@Getter
+	@Setter
 	private FetchJoinInformation[] detailJoins;
 
 	/**
@@ -164,7 +155,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private final EntityModel<T> entityModel;
 
 	@Getter
-	private ExportDelegate exportDelegate = ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);
+	private final ExportDelegate exportDelegate = ServiceLocatorFactory.getServiceLocator().getService(ExportDelegate.class);
 
 	/**
 	 * The entity model to use when exporting
@@ -177,13 +168,13 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Optional field filters for restricting the contents of combo boxes
 	 */
 	@Getter
-	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+	private final Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	/**
 	 * Form options that determine which buttons and functionalities are available
 	 */
 	@Getter
-	private FormOptions formOptions;
+	private final FormOptions formOptions;
 
 	private Grid<T> grid;
 
@@ -291,14 +282,14 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Indicates whether the component is used in service-based mode, in this case
 	 * the values in the grid cannot be edited directly
 	 */
-	private boolean serviceBasedEditMode;
+	private final boolean serviceBasedEditMode;
 
 	/**
 	 * Whether the component is in view mode. If this is the case, editing is not
 	 * allowed and no buttons will be displayed
 	 */
 	@Getter
-	private boolean viewMode;
+	private final boolean viewMode;
 
 	@Getter
 	@Setter
@@ -317,12 +308,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Constructor
 	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param viewMode
-	 * @param serviceBasedEditMode
-	 * @param formOptions
+	 * @param service the service used to access the database
+	 * @param entityModel the entity model
+	 * @param attributeModel the attribute model
+	 * @param viewMode whether to open in view mode
+	 * @param serviceBasedEditMode whether "service based edit mode" is active
+	 * @param formOptions the form options
 	 */
 	protected BaseDetailsEditGrid(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
 			boolean viewMode, boolean serviceBasedEditMode, FormOptions formOptions) {
@@ -581,10 +572,9 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		buttonBar.add(searchDialogButton);
 	}
 
-	@SuppressWarnings("unchecked")
 	private void createCheckboxSelectGrid() {
 
-		grid = new ModelBasedGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
+		grid = new ModelBasedGrid<>(getDataProvider(), entityModel, getFieldFilters(),
 				formOptions.createCopy().setGridEditMode(GridEditMode.SIMULTANEOUS),
 				componentContext.toBuilder().editable(isGridEditEnabled()).build()) {
 
@@ -617,9 +607,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		((ModelBasedGrid<ID, T>) grid).build();
 	}
 
-	@SuppressWarnings("unchecked")
 	private void createMultiSelectGrid() {
-		grid = new ModelBasedSelectionGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
+		grid = new ModelBasedSelectionGrid<>(getDataProvider(), entityModel, getFieldFilters(),
 				formOptions.createCopy().setGridEditMode(GridEditMode.SIMULTANEOUS),
 				componentContext.toBuilder().editable(isGridEditEnabled()).build()) {
 
@@ -667,7 +656,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * @param entityModel    the entity model
 	 * @param attributeModel the attribute model
 	 * @param viewMode       whether the component is in view mode
-	 * @return
+	 * @return the component
 	 */
 	private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
 		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
@@ -711,7 +700,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * 
 	 * @param key     the key
 	 * @param toCheck the component to check
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	public boolean isRegisteredComponent(String key, Component toCheck) {
 		return customButtonMap.get(key) != null && customButtonMap.get(key).contains(toCheck);
@@ -720,7 +709,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	/**
 	 * Indicates whether it is possible to add/modify items directly via the grid
 	 *
-	 * @return
+	 * @return true if editing in the grid is allowed, false otherwise
 	 */
 	private boolean isGridEditEnabled() {
 		return !viewMode && !formOptions.isDetailsGridSearchMode() && !formOptions.isReadOnly()

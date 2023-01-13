@@ -27,7 +27,7 @@ import lombok.Getter;
  * @author bas.rutten
  */
 @Getter
-public class FilterChangeEvent<T> implements Serializable {
+public final class FilterChangeEvent<T> implements Serializable {
 
 	private static final long serialVersionUID = 7833584773075924736L;
 

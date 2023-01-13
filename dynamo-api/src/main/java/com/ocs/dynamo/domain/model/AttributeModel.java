@@ -206,6 +206,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
+	 * @return whether to display captions in the lookup field buttons
+	 */
+	VisibilityType getLookupFieldCaptions();
+
+	/**
+	 * 
 	 * @return The maximum allowed length of the attribute (inside a collection
 	 *         grid)
 	 */
@@ -427,7 +433,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 *         the attribute is there only for cascading)
 	 */
 	boolean isIgnoreInSearchFilter();
-
+	
 	/**
 	 * @return whether this attribute represents an image
 	 */
@@ -518,6 +524,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return whether the password reveal button is visible
 	 */
 	boolean isShowPassword();
+	
 
 	/**
 	 * @return whether the attribute is sortable

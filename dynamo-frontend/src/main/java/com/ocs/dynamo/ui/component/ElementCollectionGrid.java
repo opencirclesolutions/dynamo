@@ -96,7 +96,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	/**
 	 * Map of bindings. Contains one binding for each row
 	 */
-	private Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
+	private final Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
 
 	/**
 	 * The entity on to which to store the values. This should not normally be
@@ -107,12 +107,12 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	private U entity;
 
 	@Getter
-	private FormOptions formOptions;
+	private final FormOptions formOptions;
 
 	@Getter
 	private Grid<ValueHolder<T>> grid;
 
-	private String gridHeight = SystemPropertyUtils.getDefaultEditGridHeight();
+	private final String gridHeight = SystemPropertyUtils.getDefaultEditGridHeight();
 
 	private final MessageService messageService;
 

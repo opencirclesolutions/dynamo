@@ -14,7 +14,6 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -24,7 +23,6 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.provider.SortOrder;
 
 /**
@@ -55,15 +53,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, sortOrder, joins);
 		addClassName(DynamoConstants.CSS_SIMPLE_SEARCH_LAYOUT);
-	}
-
-	/**
-	 * Method that is used to construct any extra search fields. These will be added
-	 * at the front of the search form
-	 */
-	protected List<Component> constructExtraSearchFields() {
-		// overwrite in subclasses
-		return new ArrayList<>();
 	}
 
 	/**

@@ -58,7 +58,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testByUniqueProperty() {
+	public void findByUniqueProperty() {
 		save("Jan", 11L);
 
 		TestEntity t = dao.findByUniqueProperty("name", "Jan", false);
@@ -82,7 +82,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testDelete() {
+	public void delete() {
 
 		TestEntity entity = save("Piet", 12L);
 		Integer id = entity.getId();
@@ -93,7 +93,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testFetch() {
+	public void fetch() {
 		save("Kevin", 11L);
 		save("Stuart", 12L);
 		save("Bob", 13L);
@@ -122,7 +122,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	public void testFetchSelect() {
+	public void fetchSelect() {
 		save("Pete", 1L);
 		save("Bob", 2L);
 		save("Isaac", 3L);
@@ -133,7 +133,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 
 		SortOrder sortName = new SortOrder("name");
 		Filter filter = new In("name", Lists.newArrayList(e1.getName(), e2.getName()));
-		List<Object[]> result = (List<Object[]>) dao.findSelect(filter, new String[] { "name", "age" },
+		List<Object[]> result = (List<Object[]>) dao.findProperties(filter, new String[] { "name", "age" },
 				new SortOrders(sortName));
 
 		assertEquals(2, result.size());
@@ -143,7 +143,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 		assertEquals(e2.getAge(), result.get(1)[1]);
 	}
 
-	public void testFindByBirthDateLocal() {
+	public void findByBirthDateLocal() {
 		List<TestEntity> result = dao.findByBirthDate();
 		assertEquals(0, result.size());
 
@@ -156,23 +156,23 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testFindDistinct() {
+	public void findDistinctValues() {
 		save("Kevin", 11L);
 		save("Bob", 11L);
 		save("Bob", 11L);
 
-		List<?> names = dao.findDistinct(null, "name", String.class, new SortOrder("name"));
+		List<?> names = dao.findDistinctValues(null, "name", String.class, new SortOrder("name"));
 		assertEquals(2, names.size());
 		assertEquals("Bob", names.get(0));
 		assertEquals("Kevin", names.get(1));
 
-		List<?> ages = dao.findDistinct(null, "age", String.class, new SortOrder("age"));
+		List<?> ages = dao.findDistinctValues(null, "age", String.class, new SortOrder("age"));
 		assertEquals(1, ages.size());
 		assertEquals(11L, ages.get(0));
 	}
 
 	@Test
-	public void testFindDistinctForCollectionTable() {
+	public void findDistinctForCollectionTable() {
 		save("Kevin", 11L);
 		save("Bob", 11L);
 		save("Bob", 11L);
@@ -185,7 +185,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testFindFilter() {
+	public void findFilter() {
 		TestEntity jan = save("Jan", 11L);
 		save("Piet", 12L);
 		save("Klaas", 13L);
@@ -217,7 +217,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	 * Test filtering by IDs
 	 */
 	@Test
-	public void testFindIdsAndFetch() {
+	public void findIdsAndFetch() {
 		save("Jan", 11L);
 		save("Piet", 12L);
 		save("Klaas", 13L);
@@ -242,12 +242,12 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testFindSelect() {
+	public void findSelect() {
 		save("Pete", 1L);
 		save("Bob", 2L);
 		save("Isaac", 3L);
 
-		List<?> found = dao.findSelect(null, new String[] { "name", "age" }, new SortOrders(new SortOrder("name")));
+		List<?> found = dao.findProperties(null, new String[] { "name", "age" }, new SortOrders(new SortOrder("name")));
 		assertEquals(3, found.size());
 
 		Object[] obj = (Object[]) found.get(0);
@@ -257,7 +257,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 
 	@Test
 	@Transactional
-	public void testFindSelect2() {
+	public void findSelect2() {
 		save("Pete", 1L);
 		save("Bob", 2L);
 		save("Isaac", 3L);
@@ -265,7 +265,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 		SortOrders so = new SortOrders(new SortOrder("name"));
 		PageableImpl pag = new PageableImpl(0, 10, so);
 
-		List<?> found = dao.findSelect(null, new String[] { "name", "age" }, pag);
+		List<?> found = dao.findProperties(null, new String[] { "name", "age" }, pag);
 		assertEquals(3, found.size());
 
 		Object[] obj = (Object[]) found.get(0);
@@ -275,7 +275,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 
 	@Test
 	@Transactional
-	public void testFlushAndClear() {
+	public void flushAndClear() {
 		TestEntity entity = save("Jan", 11L);
 
 		assertTrue(getEntityManager().contains(entity));
@@ -286,7 +286,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testSaveAndFind() {
+	public void saveAndFind() {
 
 		TestEntity entity = save("Piet", 12L);
 
@@ -305,7 +305,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	public void testSaveBulk() {
+	public void saveBulk() {
 		TestEntity entity1 = new TestEntity("Bob", 1L);
 		TestEntity entity2 = new TestEntity("Bob", 2L);
 		TestEntity entity3 = new TestEntity("Bob", 3L);

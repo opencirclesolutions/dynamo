@@ -140,7 +140,7 @@ public final class FormatUtils {
 	 * 
 	 * @param entityModelFactory the entity model factory
 	 * @param messageService     the message service
-	 * @param attributeModel     the attribute model for the property that must be
+	 * @param am                 the attribute model for the property that must be
 	 *                           formatted
 	 * @param value              the value of the property
 	 * @param separator          the string that is used to separate the string
@@ -149,7 +149,7 @@ public final class FormatUtils {
 	 * @param zoneId             the zone ID of the time zone used for time stamp
 	 *                           formatting
 	 * @param currencySymbol     the currency symbol used for the formatting
-	 * @return
+	 * @return the formatted value
 	 */
 	@SuppressWarnings("unchecked")
 	public static String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
@@ -166,7 +166,7 @@ public final class FormatUtils {
 				// other Java 8 dates
 				return DateUtils.formatJava8Date(am.getType(), value, am.getDisplayFormat(), zoneId);
 			} else if (NumberUtils.isNumeric(am.getType())) {
-				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInEditMode(), locale,
+				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInViewMode(), locale,
 						currencySymbol);
 			} else if (am.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message

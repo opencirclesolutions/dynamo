@@ -29,12 +29,12 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Component creator that is used to create a token field for searching on
- * simple values
+ * simple values (e.g. element collections or string fields containing a limited number of values)
  * 
  * @author BasRutten
  *
- * @param <ID>
- * @param <T>
+ * @param <ID> the primary key of the entity
+ * @param <T>  the type of the entity
  */
 public class SimpleTokenFieldComponentCreator<ID extends Serializable, T extends AbstractEntity<ID>>
 		implements EntityComponentCreator<ID, T> {

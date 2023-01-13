@@ -38,12 +38,17 @@ public class CurrencyBigDecimalConverterTest extends BaseConverterTest {
         CurrencyBigDecimalConverter cv = new CurrencyBigDecimalConverter("message", 2, true, "€");
 
         String result = cv.convertToPresentation(new BigDecimal(123456), createContext());
-        assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(new Locale("nl")).getPositivePrefix(),
+        assertEquals("%s123%s456%s00".formatted(cv.getDecimalFormat(new Locale("nl")).getPositivePrefix(),
                 symbols.getGroupingSeparator(), symbols.getMonetaryDecimalSeparator()), result);
 
         cv = new CurrencyBigDecimalConverter("message", 2, true, "$");
         result = cv.convertToPresentation(new BigDecimal(123456), createContext());
-        assertEquals(String.format("%s123%s456%s00", cv.getDecimalFormat(null).getPositivePrefix(), symbols.getGroupingSeparator(),
+        assertEquals("%s123%s456%s00".formatted(cv.getDecimalFormat(null).getPositivePrefix(), symbols.getGroupingSeparator(),
+                symbols.getMonetaryDecimalSeparator()), result);
+        
+
+        result = cv.convertToPresentation(new BigDecimal(-123456), createContext());
+        assertEquals("%s-123%s456%s00".formatted(cv.getDecimalFormat(null).getPositivePrefix(), symbols.getGroupingSeparator(),
                 symbols.getMonetaryDecimalSeparator()), result);
     }
 
@@ -62,7 +67,7 @@ public class CurrencyBigDecimalConverterTest extends BaseConverterTest {
         assertEquals(123456, cv.convertToModel("€ 123456", createContext()).getOrThrow(r -> new OCSRuntimeException()).doubleValue(),
                 0.001);
 
-        assertEquals(123456.12, cv.convertToModel("€ 123456" + symbols.getDecimalSeparator() + "12", createContext())
+        assertEquals(-123456.12, cv.convertToModel("€ -123456" + symbols.getDecimalSeparator() + "12", createContext())
                 .getOrThrow(r -> new OCSRuntimeException()).doubleValue(), 0.001);
     }
 

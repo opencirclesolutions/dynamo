@@ -17,13 +17,12 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextArea;
 
 /**
  * Component creator that is used for creating a text area component used for
- * managing String attributes. Never used in search or grid mode
+ * managing String attributes. Never used in search mode or grid mode
  * 
  * @author BasRutten
  *

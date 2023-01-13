@@ -34,18 +34,17 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 	private static final long serialVersionUID = -7979238391035057707L;
 
 	@Getter
-	@Setter
-	private Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
+	private final Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
 
 	@Getter
-	private VerticalLayout contentWrapper = new DefaultVerticalLayout();
+	private final VerticalLayout contentWrapper = new DefaultVerticalLayout();
 
 	@Getter
 	@Setter
 	private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
 
 	@Getter
-	private Button toggle = new Button(openIcon);
+	private final Button toggle = new Button(openIcon);
 
 	public CollapsiblePanel() {
 
@@ -72,25 +71,21 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 	 * Sets the desired content for the panel
 	 * 
 	 * @param content the component that is to serve as the new content
-	 * @return
 	 */
-	public CollapsiblePanel setContent(Component content) {
+	public void setContent(Component content) {
 		this.contentWrapper.removeAll();
 		this.contentWrapper.add(content);
-		return this;
 	}
 
 	/**
 	 * Sets the opened status of the panel
 	 * 
 	 * @param open the desired status
-	 * @return
 	 */
-	public CollapsiblePanel setOpen(boolean open) {
+	public void setOpen(boolean open) {
 		contentWrapper.setVisible(open);
 		contentWrapper.getChildren().forEach(c -> c.setVisible(open));
 		toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
-		return this;
 	}
 
 }

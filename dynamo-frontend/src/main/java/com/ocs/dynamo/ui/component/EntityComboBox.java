@@ -77,11 +77,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param attributeModel the attribute model for the attribute to which the
 	 *                       selected value will be assigned
 	 * @param service        the service used to retrieve entities
-	 * @param mode           the select mode
+	 * @param mode           the selection mode
 	 * @param filter         optional filters to apply to the search
-	 * @param sharedProvider shared data provider when using component inside grid
+	 * @param sharedProvider shared data provider when using the component inside a grid
 	 * @param items          the items to display (in fixed mode)
-	 * @param sortOrder      the sort order(s) to apply
+	 * @param sortOrders      the sort order(s) to apply
 	 * 
 	 */
 	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -97,9 +97,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 		}
 
-		DataProvider<T, SerializablePredicate<T>> provider = sharedProvider;
-		initProvider(provider, items, mode);
-
+		initProvider(sharedProvider, items, mode);
 		setItemLabelGenerator(t -> EntityModelUtils.getDisplayPropertyValue(t, entityModel));
 		setSizeFull();
 	}
@@ -112,9 +110,8 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param attributeModel the attribute model
 	 * @param service        the service for querying the database
 	 * @param filter         the filter to apply when searching
-	 * @param sortOrder      the sort orders to apply when searching
+	 * @param sortOrders      the sort orders that will be used
 	 */
-	@SafeVarargs
 	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {
 		this(entityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrders);
@@ -128,7 +125,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 *                       this component
 	 * @param service        the service used to retrieve the entities
 	 */
-	@SafeVarargs
 	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SortOrder<?>... sortOrders) {
 		this(entityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrders);
@@ -175,7 +171,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> this.count = count);
 	}
 
 	public int getDataProviderSize() {
@@ -193,7 +189,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param provider already existing provider (in case of shared provider)
 	 * @param items    fixed list of items to display
 	 * @param mode     the desired mode
-	 * @return
 	 */
 	private void initProvider(DataProvider<T, SerializablePredicate<T>> provider, List<T> items, SelectMode mode) {
 		if (provider == null) {
@@ -205,7 +200,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
-				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+				items = service.find(new FilterConverter<>(entityModel).convert(filter),
 						SortUtils.translateSortOrders(sortOrders));
 				setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 						new ListDataProvider<>(items));
@@ -261,7 +256,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(filter),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

@@ -36,39 +36,45 @@ import com.vaadin.flow.data.binder.Binder.BindingBuilder;
  */
 public interface SimpleComponentCreator extends ComponentCreator {
 
+	/**
+	 * Creates a component based on an attribute model and context
+	 * @param am the attribute model
+	 * @param context the context
+	 * @return the component
+	 */
 	Component createComponent(AttributeModel am, FieldCreationContext context);
 
 	/**
 	 * Adds date picker localization to a component
 	 * 
-	 * @param messageService
-	 * @param dateLoc
-	 * @return
+	 * @param messageService the message service used for localization
+	 * @param dateLocale the locale to us
+	 * @return the date picker localization object
 	 */
-	default DatePickerI18n getDatePickerLocalization(MessageService messageService, Locale dateLoc) {
+	default DatePickerI18n getDatePickerLocalization(MessageService messageService, Locale dateLocale) {
 		DatePickerI18n dpi = new DatePickerI18n();
-		dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLoc));
+		dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLocale));
 
-		String weekdays = messageService.getMessage("ocs.calendar.days", dateLoc);
+		String weekdays = messageService.getMessage("ocs.calendar.days", dateLocale);
 		if (weekdays != null) {
 			dpi.setWeekdays(Lists.newArrayList(weekdays.split(",")));
 		}
 
-		String weekdaysShort = messageService.getMessage("ocs.calendar.days.short", dateLoc);
+		String weekdaysShort = messageService.getMessage("ocs.calendar.days.short", dateLocale);
 		if (weekdaysShort != null) {
 			dpi.setWeekdaysShort(Lists.newArrayList(weekdaysShort.split(",")));
 		}
 
-		String months = messageService.getMessage("ocs.calendar.months", dateLoc);
+		String months = messageService.getMessage("ocs.calendar.months", dateLocale);
 		if (months != null) {
 			dpi.setMonthNames(Lists.newArrayList(months.split(",")));
 		}
 
-		dpi.setCancel(messageService.getMessage("ocs.calendar.cancel", dateLoc));
-		dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLoc));
-		dpi.setFirstDayOfWeek(Integer.parseInt(messageService.getMessage("ocs.calendar.first", dateLoc)));
-		dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLoc));
-		dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLoc));
+		dpi.setCancel(messageService.getMessage("ocs.calendar.cancel", dateLocale));
+		dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLocale));
+		dpi.setFirstDayOfWeek(Integer.parseInt(messageService.getMessage("ocs.calendar.first", dateLocale)));
+		dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLocale));
+		dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLocale));
 
 		return dpi;
 	}
@@ -76,7 +82,7 @@ public interface SimpleComponentCreator extends ComponentCreator {
 	/**
 	 * Adds converters for a TextField
 	 * 
-	 * @param <U>            the of the value to convert to
+	 * @param <U>            the type of the value to convert to
 	 * @param attributeModel the attribute model that is used to construct the
 	 *                       component
 	 * @param sBuilder       the binding builder that is used to bind the component

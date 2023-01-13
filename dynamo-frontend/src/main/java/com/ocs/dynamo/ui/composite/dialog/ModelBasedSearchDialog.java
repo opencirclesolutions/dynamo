@@ -208,13 +208,13 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	@SuppressWarnings("unchecked")
 	public void select(Object selectedItems) {
 		if (selectedItems instanceof Collection) {
-			Collection<T> col = (Collection<T>) selectedItems;
-			for (T t : col) {
-				searchLayout.getGridWrapper().getGrid().select(t);
+			Collection<T> collection = (Collection<T>) selectedItems;
+			for (T entity : collection) {
+				searchLayout.getGridWrapper().getGrid().select(entity);
 			}
 		} else {
-			T t = (T) selectedItems;
-			searchLayout.getGridWrapper().getGrid().select(t);
+			T entity = (T) selectedItems;
+			searchLayout.getGridWrapper().getGrid().select(entity);
 		}
 	}
 

@@ -24,6 +24,7 @@ import com.ocs.dynamo.domain.model.GroupTogetherMode;
 import com.ocs.dynamo.domain.model.NumberFieldMode;
 import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
+import com.ocs.dynamo.domain.model.VisibilityType;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -252,6 +253,15 @@ public final class SystemPropertyUtils {
 	 */
 	public static int getDefaultLookupFieldMaxItems() {
 		return getIntProperty(DynamoConstants.SP_LOOKUP_FIELD_MAX_ITEMS, DEFAULT_LOOKUP_FIELD_MAX_ITEMS);
+	}
+	
+	/**
+	 * 
+	 * @return the default setting for displaying button captions in lookup fields 
+	 */
+	public static VisibilityType getDefaultLookupFieldCaptions() {
+		String s = getStringProperty(DynamoConstants.SP_LOOKUP_FIELD_CAPTIONS, "HIDE");
+		return VisibilityType.valueOf(s);
 	}
 
 	/**
