@@ -31,9 +31,9 @@ public final class SortOrderUtil {
 
 	/**
 	 * Translates a list of grid sort orders to a list of SortOrders
-	 * @param <T>
-	 * @param gridSort
-	 * @return
+	 * @param <T> the type
+	 * @param gridSort the sort order
+	 * @return the resulting list of sort orders
 	 */
 	public static <T> List<SortOrder<?>> restoreSortOrder(List<GridSortOrder<T>> gridSort) {
 		return gridSort.stream().map(s -> {

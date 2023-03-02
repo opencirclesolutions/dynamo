@@ -45,10 +45,7 @@ public class DateTimePickerComponentCreator implements SimpleComponentCreator {
 		}
 
 		boolean searchDateOnly = context.isSearch() && attributeModel.isSearchDateOnly();
-		if (LocalDateTime.class.equals(attributeModel.getType()) && !searchDateOnly) {
-			return true;
-		}
-		return false;
+		return LocalDateTime.class.equals(attributeModel.getType()) && !searchDateOnly;
 	}
 
 	@Override

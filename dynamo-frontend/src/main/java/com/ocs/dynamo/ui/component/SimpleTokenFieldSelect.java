@@ -53,12 +53,12 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	/**
 	 * The attribute model
 	 */
-	private AttributeModel attributeModel;
+	private final AttributeModel attributeModel;
 
 	/**
 	 * The name of the field for which to list the distinct values
 	 */
-	private String distinctField;
+	private final String distinctField;
 
 	/**
 	 * Whether to take the values from an element collection grid
@@ -68,17 +68,17 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	/**
 	 * The type of the element that is being displayed, e.g. String
 	 */
-	private Class<T> elementType;
+	private final Class<T> elementType;
 
 	/**
 	 * The entity model
 	 */
-	private EntityModel<S> entityModel;
+	private final EntityModel<S> entityModel;
 
 	/**
 	 * The field filter
 	 */
-	private SerializablePredicate<S> fieldFilter;
+	private final SerializablePredicate<S> fieldFilter;
 
 	/**
 	 * The token field
@@ -88,7 +88,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	/**
 	 * Service for querying the database
 	 */
-	private BaseService<ID, S> service;
+	private final BaseService<ID, S> service;
 
 	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel, AttributeModel attributeModel,
 			SerializablePredicate<S> fieldFilter, String distinctField, Class<T> elementType,
@@ -140,19 +140,19 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	 * @param elementCollection whether to query an element collection
 	 */
 	private void retrieveValues(boolean elementCollection) {
-		List<T> items = null;
+		List<T> items;
 		if (elementCollection) {
 			// search element collection table
 			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
 					attributeModel.getCollectionTableFieldName(), elementType);
 		} else {
 			// search field in regular table
-			items = service.findDistinctValues(new FilterConverter<S>(entityModel).convert(fieldFilter), distinctField,
+			items = service.findDistinctValues(new FilterConverter<>(entityModel).convert(fieldFilter), distinctField,
 					elementType);
 		}
 
 		items = items.stream().filter(Objects::nonNull).collect(Collectors.toList());
-		Collections.sort(items, Comparator.naturalOrder());
+		items.sort(Comparator.naturalOrder());
 		ListDataProvider<T> provider = new ListDataProvider<>(items);
 
 		multiComboBox.setDataProvider(provider);

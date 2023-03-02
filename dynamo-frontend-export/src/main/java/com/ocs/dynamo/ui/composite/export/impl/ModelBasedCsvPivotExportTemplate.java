@@ -49,15 +49,13 @@ import com.opencsv.CSVWriter;
 public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseCsvExportTemplate<ID, T> {
 
-	private PivotParameters pivotParameters;
+	private final PivotParameters pivotParameters;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param service         the service
-	 * @param entityModel     the entity model
-	 * @param exportMode      the export mode
-	 * @param sortOrders      the sort orders to apply to the data
+	 * @param service the service used to contact the databse
+	 * @param entityModel the entity model
+	 * @param sortOrders the sort orders
 	 * @param filter
 	 * @param title
 	 * @param pivotParameters
@@ -159,8 +157,8 @@ public class ModelBasedCsvPivotExportTemplate<ID extends Serializable, T extends
 					String prop = pivotParameters.getPivotedProperties().get(propIndex);
 					Object value = ClassUtils.getFieldValue(entity, prop);
 
-					if (value instanceof BigDecimal) {
-						String format = NumberUtils.bigDecimalToString(false, false, false, 2, (BigDecimal) value,
+					if (value instanceof BigDecimal bd) {
+						String format = NumberUtils.bigDecimalToString(false, false, false, 2, bd,
 								VaadinUtils.getLocale(), "");
 						row.add(format);
 					} else {

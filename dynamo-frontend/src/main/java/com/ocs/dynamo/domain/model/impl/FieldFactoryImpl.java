@@ -59,7 +59,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	@Autowired
 	private List<ComponentCreator> componentCreators;
 
-	private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
+	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
 	@SuppressWarnings("unchecked")
 	public <U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
@@ -108,7 +108,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * Constructs a field - shortcut method that used the default context
 	 * 
 	 * @param am the attribute model to base the field on
-	 * @return
+	 * @return the created component
 	 */
 	@Override
 	public Component constructField(AttributeModel am) {
@@ -154,7 +154,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @param entityModel    the entity model
 	 * @param sharedProvider shared data provider for use
 	 * @param fieldFilter    the field filter to apply
-	 * @return
+	 * @return the created component
 	 */
 	private Component findAndInvokeComponentCreator(FieldCreationContext context, AttributeModel attributeModel,
 			EntityModel<?> entityModel, DataProvider<?, SerializablePredicate<?>> sharedProvider,
@@ -206,9 +206,8 @@ public class FieldFactoryImpl implements FieldFactory {
 		VaadinUtils.setPlaceHolder(field, am.getPrompt(VaadinUtils.getLocale()));
 		VaadinUtils.setClearButtonVisible(field, am.isClearButtonVisible());
 
-		if (field instanceof AbstractField) {
-			AbstractField<?, ?> af = (AbstractField<?, ?>) field;
-			af.setRequiredIndicatorVisible(context.isSearch() ? am.isRequiredForSearching() : am.isRequired());
+		if (field instanceof AbstractField<?, ?> abstractField) {
+			abstractField.setRequiredIndicatorVisible(context.isSearch() ? am.isRequiredForSearching() : am.isRequired());
 		}
 
 		// right alignment for text field
@@ -217,26 +216,29 @@ public class FieldFactoryImpl implements FieldFactory {
 //			atf.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
 //		}
 
-		// add percentage sign
-		if (am.isPercentage() && field instanceof TextField) {
-			TextField atf = (TextField) field;
-			atf.addBlurListener(event -> {
-				String value = atf.getValue();
-				if (!StringUtils.isEmpty(value) && value.indexOf('%') < 0) {
-					value = value.trim() + "%";
-					atf.setValue(value);
+		addPercentageSignListener(field, am);
+		addCurrencySymbolListener(field, am);
+	}
+
+	private void addCurrencySymbolListener(Component field, AttributeModel am) {
+		if (am.isCurrency() && field instanceof TextField textField) {
+			textField.addBlurListener(event -> {
+				String value = textField.getValue();
+				if (value != null && !value.contains(am.getCurrencySymbol())) {
+					value = am.getCurrencySymbol() + " " + value.trim();
+					textField.setValue(value);
 				}
 			});
 		}
+	}
 
-		// add currency sign
-		if (am.isCurrency() && field instanceof TextField) {
-			TextField atf = (TextField) field;
-			atf.addBlurListener(event -> {
-				String value = atf.getValue();
-				if (value != null && value.indexOf(am.getCurrencySymbol()) < 0) {
-					value = am.getCurrencySymbol() + " " + value.trim();
-					atf.setValue(value);
+	private void addPercentageSignListener(Component field, AttributeModel am) {
+		if (am.isPercentage() && field instanceof TextField tf) {
+			tf.addBlurListener(event -> {
+				String value = tf.getValue();
+				if (!StringUtils.isEmpty(value) && value.indexOf('%') < 0) {
+					value = value.trim() + "%";
+					tf.setValue(value);
 				}
 			});
 		}
@@ -248,7 +250,7 @@ public class FieldFactoryImpl implements FieldFactory {
 	 * @param entityModel    the base entity model
 	 * @param attributeModel the attribute model to use for the file
 	 * @param context        the field creation context
-	 * @return
+	 * @return the entity model
 	 */
 	private EntityModel<?> resolveEntityModel(EntityModel<?> entityModel, AttributeModel attributeModel,
 			FieldCreationContext context) {

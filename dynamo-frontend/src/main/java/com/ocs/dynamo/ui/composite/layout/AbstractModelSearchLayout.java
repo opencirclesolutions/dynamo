@@ -105,18 +105,17 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	}
 
 	private void addAfterEditDone() {
-		editForm.setAfterEditDone((cancel, isNew, ent) -> {
+		editForm.setAfterEditDone((cancel, isNew, entity) -> {
 			if (getFormOptions().isOpenInViewMode()) {
 				if (isNew) {
 					searchMode();
 				} else {
 					// if details screen opens in view mode, simply switch
 					// to view mode
-					// editForm.setViewMode(true);
-					detailsMode(ent);
+					detailsMode(entity);
 				}
 			} else {
-				// otherwise go back to the main screen
+				// otherwise, go back to the main screen
 				if (cancel || isNew || (!getFormOptions().isShowNextButton() && !getFormOptions().isShowPrevButton())) {
 					searchMode();
 				}
@@ -163,12 +162,10 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			constructNextButton(buttonBar);
 		}
 
-		tabLayout = new TabLayout<ID, T>(entity);
-		tabLayout.setTitleCreator(() -> getDetailsModeTabTitle());
+		tabLayout = new TabLayout<>(entity);
+		tabLayout.setTitleCreator(this::getDetailsModeTabTitle);
 		tabLayout.setCaptions(getDetailsModeTabCaptions());
-		tabLayout.setTabCreator(index -> {
-			return getDetailTabCreators().get(index).apply(formOptions, entity.getId() == null);
-		});
+		tabLayout.setTabCreator(index -> getDetailTabCreators().get(index).apply(formOptions, entity.getId() == null));
 		tabLayout.setIconCreator(getTabIconCreator());
 		tabLayout.build();
 		tabContainerLayout.add(tabLayout);
@@ -179,17 +176,16 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * 
 	 * @param entity  the currently selected entity
 	 * @param options the form options
-	 * @param context the component context
 	 */
 	private void buildEditForm(T entity, FormOptions options) {
-		editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), options, getFieldFilters());
+		editForm = new ModelBasedEditForm<>(entity, getService(), getEntityModel(), options, getFieldFilters());
 
 		initEditForm(editForm);
-		editForm.setNextEntity(() -> this.getNextEntity());
-		editForm.setPreviousEntity(() -> this.getPreviousEntity());
-		editForm.setHasNextEntity(() -> this.hasNextEntity());
-		editForm.setHasPreviousEntity(() -> this.hasPrevEntity());
-		editForm.setOnBackButtonClicked(() -> searchMode());
+		editForm.setNextEntity(this::getNextEntity);
+		editForm.setPreviousEntity(this::getPreviousEntity);
+		editForm.setHasNextEntity(this::hasNextEntity);
+		editForm.setHasPreviousEntity(this::hasPrevEntity);
+		editForm.setOnBackButtonClicked(this::searchMode);
 		addAfterEditDone();
 
 		editForm.setSupportsIteration(true);
@@ -222,7 +218,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 			}
 		}
 
-		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(this.getService(), getEntityModel(),
+		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<>(this.getService(), getEntityModel(),
 				getQueryType(), getFormOptions(), getComponentContext(), getSearchForm().extractFilter(),
 				getFieldFilters(), getSortOrders(), false, getJoins()) {
 
@@ -386,7 +382,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * Opens the screen in details mode and selects a certain tab
 	 *
 	 * @param entity      the entity to display
-	 * @param selectedTab the currently selected tab
+	 * @param selectedTabIndex the index of currently selected tab
 	 */
 	protected void detailsMode(T entity, int selectedTabIndex) {
 		detailsMode(entity);
@@ -422,11 +418,8 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	}
 
 	/**
-	 * Returns the next item that is available in the data provider
-	 * 
-	 * @return
+	 * @return the next item that is available in the data provider
 	 */
-	@SuppressWarnings("unchecked")
 	protected final T getNextEntity() {
 		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
 		ID nextId = provider.getNextItemId();
@@ -439,11 +432,8 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	}
 
 	/**
-	 * Returns the previous entity that is available in the data provider
-	 * 
-	 * @return
+	 * @return the previous entity that is available in the data provider
 	 */
-	@SuppressWarnings("unchecked")
 	protected final T getPreviousEntity() {
 		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
 		ID prevId = provider.getPreviousItemId();
@@ -456,29 +446,22 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	}
 
 	/**
-	 * Check whether the data provider contains a next item
-	 * 
-	 * @return
+	 * @return whether the data provider contains a next item
 	 */
-	@SuppressWarnings("unchecked")
 	protected boolean hasNextEntity() {
 		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
 		return provider.hasNextItemId();
 	}
 
 	/**
-	 * Check whether the data provider contains a previous item
-	 * 
-	 * @return
+	 * @return whether the data provider contains a previous item
 	 */
-	@SuppressWarnings("unchecked")
 	protected boolean hasPrevEntity() {
 		BaseDataProvider<ID, T> provider = (BaseDataProvider<ID, T>) getGridWrapper().getDataProvider();
 		return provider.hasPreviousItemId();
 	}
 
 	/**
-	 * 
 	 * @return whether the user is currently editing/adding an item
 	 */
 	public boolean isEditing() {
@@ -516,7 +499,6 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public void setSelectedItem(T selectedItem) {
 		super.setSelectedItem(selectedItem);
 		// communicate selected item ID to provider

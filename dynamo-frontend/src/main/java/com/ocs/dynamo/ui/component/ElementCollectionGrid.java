@@ -13,17 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
@@ -48,21 +37,25 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
-import com.vaadin.flow.data.binder.ValidationResult;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.validator.BigDecimalRangeValidator;
 import com.vaadin.flow.data.validator.IntegerRangeValidator;
 import com.vaadin.flow.data.validator.LongRangeValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.function.ValueProvider;
-
 import lombok.Getter;
 import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
  * A grid for editing a collection of simple values stored in a JPA collection
@@ -100,7 +93,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	/**
 	 * The entity on to which to store the values. This should not normally be
-	 * needed but for some reason the normal binding mechanisms don't work so we
+	 * needed but for some reason the normal binding mechanisms don't work, so we
 	 * need to set the values ourselves
 	 */
 	@Getter
@@ -116,7 +109,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	private final MessageService messageService;
 
-	private ListDataProvider<ValueHolder<T>> provider;
+	private final ListDataProvider<ValueHolder<T>> provider;
 
 	@Getter
 	@Setter
@@ -299,7 +292,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	}
 
 	private Collection<T> getValueInner() {
-		Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
+		Collection<T> col = provider.getItems().stream().map(ValueHolder::getValue).toList();
 		Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
 		if (entity != null) {
 			ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);

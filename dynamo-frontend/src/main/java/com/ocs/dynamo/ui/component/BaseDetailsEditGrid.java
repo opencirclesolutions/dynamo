@@ -219,20 +219,14 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	@Setter
 	private Consumer<T> removeEntity;
 
-	/**
-	 * Search dialog
-	 */
 	@Getter
 	private ModelBasedSearchDialog<ID, T> searchDialog;
 
-	/**
-	 * Button used to open the search dialog
-	 */
 	@Getter
 	private Button searchDialogButton;
 
 	/**
-	 * Button used to open a popup that shows the details
+	 * Button used to open a popup that shows the details of the selected entity
 	 */
 	@Getter
 	private Button popupButton;
@@ -452,8 +446,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		for (Component comp : componentsToUpdate) {
 			boolean enabled = selectedItem != null
 					&& (mustEnableComponent == null || mustEnableComponent.test(comp, selectedItem));
-			if (comp instanceof HasEnabled) {
-				((HasEnabled) comp).setEnabled(enabled);
+			if (comp instanceof HasEnabled has) {
+				has.setEnabled(enabled);
 			}
 		}
 	}
@@ -755,8 +749,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 */
 	public void registerComponent(Component component) {
 		if (component != null) {
-			if (component instanceof HasEnabled) {
-				((HasEnabled) component).setEnabled(false);
+			if (component instanceof HasEnabled has) {
+				has.setEnabled(false);
 			}
 			componentsToUpdate.add(component);
 		}
@@ -775,8 +769,8 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	@SuppressWarnings("rawtypes")
 	public void setValue(U value) {
 		super.setValue(value);
-		if (value instanceof Collection) {
-			updateCaption(((Collection) value).size());
+		if (value instanceof Collection col) {
+			updateCaption(col.size());
 		}
 
 		hideSelectedDetailsPanel();
@@ -797,11 +791,10 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	 * Displays the item that is selected in the grid in a panel directly below the
 	 * grid
 	 * 
-	 * @param selectedItem
+	 * @param selectedItem the selected item
 	 */
 	private void showInDetailsPanel(T selectedItem) {
 		constructDetailsPanel();
-
 		boolean show = isViewMode() || showDetailsPanelInEditMode();
 
 		if (selectedItem != null && selectedItem.getId() != null && show) {

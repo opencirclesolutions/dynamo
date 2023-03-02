@@ -13,26 +13,7 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import javax.persistence.EntityManager;
-import javax.persistence.NoResultException;
-import javax.persistence.NonUniqueResultException;
-import javax.persistence.PersistenceContext;
-import javax.persistence.Query;
-import javax.persistence.Tuple;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaQuery;
-
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.Pageable;
-import com.ocs.dynamo.dao.SortOrder;
-import com.ocs.dynamo.dao.SortOrders;
+import com.ocs.dynamo.dao.*;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.Filter;
@@ -40,6 +21,13 @@ import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAUpdateClause;
+
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaQuery;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Base class for all DAO implementations
@@ -250,13 +238,13 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		TypedQuery<Tuple> query = JpaQueryBuilder.createDistinctQuery(filter, entityManager, getEntityClass(),
 				distinctField, orders);
 		return query.getResultList().stream().map(t -> t.get(0)).filter(Objects::nonNull).map(o -> (S) o)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
-		String query = "select distinct " + distinctField + " from " + tableName;
+		String query = "select distinct %s from %s".formatted(distinctField, tableName);
 		return getEntityManager().createNativeQuery(query).getResultList();
 	}
 
@@ -267,7 +255,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		if (maxResults != null) {
 			query = query.setMaxResults(maxResults);
 		}
-		return query.getResultList().stream().map(t -> t.get(0)).map(o -> (ID) o).collect(Collectors.toList());
+		return query.getResultList().stream().map(tuple -> tuple.get(0)).map(o -> (ID) o).toList();
 	}
 
 	@Override

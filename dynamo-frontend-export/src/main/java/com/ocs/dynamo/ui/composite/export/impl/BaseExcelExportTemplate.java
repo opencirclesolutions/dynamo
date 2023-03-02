@@ -55,8 +55,8 @@ import lombok.Setter;
  * 
  * @author BasRutten
  *
- * @param <ID>
- * @param <T>
+ * @param <ID> the type of the primary key
+ * @param <T> the type of the entity
  */
 public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseExportTemplate<ID, T> {
@@ -74,15 +74,15 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	private Workbook workbook;
 
 	/**
-	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param exportMode
-	 * @param sortOrders
-	 * @param filter
-	 * @param title
-	 * @param customGenerator
-	 * @param joins
+	 * Constructor
+	 * @param service the database service
+	 * @param entityModel the entity model of the entity to export
+	 * @param exportMode the export mode
+	 * @param sortOrders the sorting orders
+	 * @param filter the search filter to apply
+	 * @param title the title
+	 * @param customGenerator the custom style generator
+	 * @param joins the joins
 	 */
 	protected BaseExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
 			SortOrder[] sortOrders, Filter filter, String title,
@@ -94,7 +94,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	/**
 	 * Indicates whether it is possible to resize the columns
 	 *
-	 * @return
+	 * @return whether resizing is possible
 	 */
 	protected boolean canResize() {
 		return !(getWorkbook() instanceof SXSSFWorkbook);
@@ -104,7 +104,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	 * Creates the style generator
 	 *
 	 * @param workbook the work book that is being created
-	 * @return
+	 * @return the created generator
 	 */
 	protected XlsStyleGenerator<ID, T> createGenerator(Workbook workbook) {
 		return new BaseXlsStyleGenerator<>(workbook);
@@ -120,7 +120,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	 * @param value          the cell value
 	 * @param attributeModel the attribute model used to determine the style
 	 * @param pivotColumnKey the column key (for pivot export)
-	 * @return
+	 * @return the created cell
 	 */
 	protected Cell createCell(Row row, int colIndex, T entity, Object value, AttributeModel attributeModel,
 			Object pivotColumnKey) {
@@ -142,7 +142,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	 * the size of the export set
 	 * 
 	 * @param size the size of the export
-	 * @return
+	 * @return the workbook
 	 */
 	protected Workbook createWorkbook(int size) {
 		if (size > SystemPropertyUtils.getMaxExportRowsBeforeStreaming()) {
@@ -169,12 +169,12 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 		if (NumberUtils.isInteger(value) || NumberUtils.isLong(value)) {
 			// integer or long numbers
 			cell.setCellValue(((Number) value).doubleValue());
-		} else if (value instanceof Date && (am == null || !am.isWeek())) {
-			cell.setCellValue((Date) value);
-		} else if (value instanceof LocalDate) {
-			cell.setCellValue(DateUtils.toLegacyDate((LocalDate) value));
-		} else if (value instanceof LocalDateTime) {
-			cell.setCellValue(DateUtils.toLegacyDate((LocalDateTime) value));
+		} else if (value instanceof Date date && (am == null || !am.isWeek())) {
+			cell.setCellValue(date);
+		} else if (value instanceof LocalDate date) {
+			cell.setCellValue(DateUtils.toLegacyDate(date));
+		} else if (value instanceof LocalDateTime ldt) {
+			cell.setCellValue(DateUtils.toLegacyDate(ldt));
 		} else if (value instanceof BigDecimal || NumberUtils.isDouble(value)) {
 			writeDecimalCellValue(cell, value, am, forcePercentage);
 		} else if (am != null) {
@@ -183,7 +183,6 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 					VaadinUtils.getTimeZoneId(), VaadinUtils.getCurrencySymbol());
 			cell.setCellValue(str);
 		} else if (value != null) {
-			// fall back - just call toSTring
 			cell.setCellValue(value.toString());
 		}
 	}
@@ -197,8 +196,8 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
 	 * @param forcePercentage whether to force the value to a percentage
 	 */
 	private void writeDecimalCellValue(Cell cell, Object value, AttributeModel am, boolean forcePercentage) {
-		if (value instanceof Double) {
-			value = BigDecimal.valueOf((Double) value);
+		if (value instanceof Double doub) {
+			value = BigDecimal.valueOf(doub);
 		}
 		boolean isPercentage = (am != null && am.isPercentage()) || forcePercentage;
 

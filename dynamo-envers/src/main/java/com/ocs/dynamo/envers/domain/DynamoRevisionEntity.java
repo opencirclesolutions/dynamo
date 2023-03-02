@@ -27,7 +27,7 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * Custom revision entity for use with Envers - stores user name in addition to
+ * Custom revision entity for use with Envers - stores username in addition to
  * default fields
  */
 @Table(name = "RevisionEntity")

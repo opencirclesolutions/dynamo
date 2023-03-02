@@ -451,14 +451,14 @@ public final class JpaQueryBuilder {
         }
     }
 
-    @SuppressWarnings({"rawtypes", "unchecked"})
     /**
      * Creates a predicate based on a "Like"-filter (case-insensitive)
      * @param builder the criteria builder
      * @param root    the query root
-     * @param filter the filter
+     * @param like    the Like filter
      * @return the constructed predicate
      */
+    @SuppressWarnings({"rawtypes", "unchecked"})
     private static Predicate createLikePredicate(CriteriaBuilder builder, Root<?> root, Like like) {
         String unaccentName = SystemPropertyUtils.getUnAccentFunctionName();
         if (!StringUtils.isEmpty(unaccentName)) {

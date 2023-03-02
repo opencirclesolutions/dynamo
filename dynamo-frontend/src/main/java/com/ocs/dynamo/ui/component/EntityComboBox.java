@@ -155,10 +155,10 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-		if (provider instanceof CallbackDataProvider) {
-			setItems((CallbackDataProvider) provider);
-		} else if (provider instanceof ListDataProvider) {
-			setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false), (ListDataProvider) provider);
+		if (provider instanceof CallbackDataProvider callbackDataProvider) {
+			setItems(callbackDataProvider);
+		} else if (provider instanceof ListDataProvider listDataProvider) {
+			setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false), listDataProvider);
 		}
 	}
 
@@ -171,7 +171,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
-				new SortOrders(SortUtils.translateSortOrders(sortOrders)), count -> this.count = count);
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), result -> this.count = result);
 	}
 
 	public int getDataProviderSize() {
