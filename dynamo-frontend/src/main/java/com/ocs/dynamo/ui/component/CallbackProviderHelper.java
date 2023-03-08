@@ -50,11 +50,11 @@ public class CallbackProviderHelper {
 	 * @param filter      search filter to apply (in addition to the search term)
 	 * @return the constructed provider
 	 */
-	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, String> createCallbackProvider(
+	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider createCallbackProvider(
 			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
 			SortOrders sortOrders, IntConsumer afterCountDone) {
 		FilterConverter<T> converter = new FilterConverter<>(entityModel);
-		return new CallbackDataProvider<>(query -> {
+		return new CallbackDataProvider<T,String>(query -> {
 			int offset = query.getOffset();
 			int page = offset / query.getLimit();
 
@@ -90,8 +90,8 @@ public class CallbackProviderHelper {
 	 * @param filter      the field filter
 	 * @return the constructed predicate
 	 */
-	private static <ID extends Serializable, T extends AbstractEntity<ID>> SerializablePredicate<T> constructFilterPredicate(
-			Query<T, String> query, EntityModel<T> entityModel, SerializablePredicate<T> filter) {
+	private static <ID extends Serializable, T extends AbstractEntity<ID>, U> SerializablePredicate<U> constructFilterPredicate(
+			Query<T, String> query, EntityModel<T> entityModel, SerializablePredicate<U> filter) {
 		String searchString = query.getFilter().orElse(null);
 		
 		// escape any actual percentage signs
@@ -99,8 +99,8 @@ public class CallbackProviderHelper {
 			searchString = searchString.replace("%", "\\%");
 		}
 
-		SerializablePredicate<T> predicate = null;
-		SerializablePredicate<T> like = new LikePredicate<>(entityModel.getFilterProperty(), "%" + searchString + "%",
+		SerializablePredicate<U> predicate = null;
+		SerializablePredicate<U> like = new LikePredicate<>(entityModel.getFilterProperty(), "%" + searchString + "%",
 				false);
 
 		if (filter == null) {
