@@ -61,6 +61,10 @@ import lombok.Setter;
 public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseExportTemplate<ID, T> {
 
+	protected static final int FIXED_COLUMN_WIDTH = 20 * 256;
+
+	protected static final int TITLE_ROW_HEIGHT = 40;
+
 	@Getter
 	@Setter
 	private XlsStyleGenerator<ID, T> generator;

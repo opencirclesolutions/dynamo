@@ -17,6 +17,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -117,11 +118,8 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	@Getter
 	private Button clearButton;
 
-	/**
-	 * The list of currently active search filters
-	 */
 	@Getter
-	private List<SerializablePredicate<T>> currentFilters = new ArrayList<>();
+	private final List<SerializablePredicate<T>> currentFilters = new ArrayList<>();
 
 	/**
 	 * Any filters that will always be applied to any search query (use these to
@@ -129,23 +127,14 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 */
 	@Getter
 	@Setter
-	private List<SerializablePredicate<T>> defaultFilters = new ArrayList<>();
+	private List<SerializablePredicate<T>> defaultFilters;
 
-	/**
-	 * Field factory singleton for constructing fields
-	 */
 	@Getter
-	private FieldFactory fieldFactory = FieldFactory.getInstance();
+	private final FieldFactory fieldFactory = FieldFactory.getInstance();
 
-	/**
-	 * The layout that holds the various filters
-	 */
 	@Getter
 	private HasComponents filterLayout;
 
-	/**
-	 * The main layout (constructed only once)
-	 */
 	private VerticalLayout main;
 
 	/**
@@ -193,11 +182,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructor
 	 *
-	 * @param searchable
-	 * @param entityModel
-	 * @param formOptions
-	 * @param defaultFilters
-	 * @param fieldFilters
+	 * @param searchable the component to execute the search on
+	 * @param entityModel the entity model on which to base the search form
+	 * @param formOptions form options that govern the behaviour of the form
+	 * @param defaultFilters default filters that are applied to any search
+	 * @param fieldFilters field filters to apply to the search components
 	 */
 	protected AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel,
 			FormOptions formOptions, List<SerializablePredicate<T>> defaultFilters,
@@ -264,7 +253,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the "toggle advanced search mode" button
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
 	protected final Button constructAdvancedSearchModeButton() {
 		toggleAdvancedModeButton = new Button(
@@ -286,9 +275,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the "clear" button
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
-	protected Button constructClearButton() {
+	protected final Button constructClearButton() {
 		clearButton = new Button(message("ocs.clear"));
 		clearButton.setIcon(VaadinIcon.ERASER.create());
 		clearButton.addClickListener(this);
@@ -299,7 +288,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the layout that holds all the filter components
 	 *
-	 * @return
+	 * @return the constructed layout
 	 */
 	protected abstract HasComponents constructFilterLayout();
 
@@ -307,7 +296,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Construct the "search any" button which allows the user to search on entities
 	 * that match any (rather than all) of the search criteria
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
 	protected final Button constructSearchAnyButton() {
 		searchAnyButton = new Button(message("ocs.search.any"));
@@ -320,7 +309,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the Search button
 	 * 
-	 * @return
+	 * @return the constructed search button
 	 */
 	protected final Button constructSearchButton() {
 		searchButton = new Button(message("ocs.search"));
@@ -333,7 +322,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the "toggle" button which shows/hides the search form
 	 * 
-	 * @return
+	 * @return the toggle button
 	 */
 	protected final Button constructToggleButton() {
 		toggleButton = new Button(message("ocs.hide"));
@@ -343,7 +332,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return toggleButton;
 	}
 
-	public SerializablePredicate<T> extractFilter() {
+	public final SerializablePredicate<T> extractFilter() {
 		return extractFilter(false);
 	}
 
@@ -356,7 +345,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			}
 			List<SerializablePredicate<T>> customFilters = new ArrayList<>(currentFilters);
 			customFilters.removeAll(defaultFilters);
-			if (currentFilters.isEmpty()) {
+			if (customFilters.isEmpty()) {
 				return defaultFilter;
 			}
 			SerializablePredicate<T> currentFilter = matchAny
@@ -376,23 +365,23 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * 
 	 * @param entityModel    the entity model of the entity
 	 * @param attributeModel the attribute model of the attribute
-	 * @return
+	 * @return the constructed component
 	 */
-	protected Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel) {
+	protected final Optional<Component> constructCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel) {
 		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
 				.getCustomFieldCreator(attributeModel.getPath());
 		if (customFieldCreator != null) {
-			return customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
-					.attributeModel(attributeModel).searchMode(true).build());
+			return Optional.of(customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
+					.attributeModel(attributeModel).searchMode(true).build()));
 		}
-		return null;
+		return Optional.empty();
 	}
 
 	/**
 	 *
 	 * @return the number of currently active search filters
 	 */
-	public int getFilterCount() {
+	public final int getFilterCount() {
 		return currentFilters.size();
 	}
 
@@ -400,9 +389,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Checks whether a filter has been set for a certain attribute
 	 *
 	 * @param path the path of the attribute
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
-	public boolean isFilterSet(String path) {
+	public final boolean isFilterSet(String path) {
 		return currentFilters.stream().filter(p -> p instanceof PropertyPredicate).map(p -> (PropertyPredicate<T>) p)
 				.anyMatch(p -> p.appliesToProperty(path));
 	}

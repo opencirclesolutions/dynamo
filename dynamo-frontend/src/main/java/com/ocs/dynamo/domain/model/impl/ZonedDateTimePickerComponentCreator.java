@@ -45,11 +45,7 @@ public class ZonedDateTimePickerComponentCreator implements SimpleComponentCreat
 		}
 
 		boolean searchDateOnly = context.isSearch() && attributeModel.isSearchDateOnly();
-		if (ZonedDateTime.class.equals(attributeModel.getType()) && !searchDateOnly) {
-			return true;
-		}
-
-		return false;
+		return ZonedDateTime.class.equals(attributeModel.getType()) && !searchDateOnly;
 	}
 
 	@Override

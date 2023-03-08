@@ -30,102 +30,100 @@ import lombok.Setter;
 
 /**
  * A form that contains a file upload component and a progress bar
- * 
+ *
  * @author bas.rutten
  */
 public class UploadForm extends ProgressForm<byte[]> {
 
-	private static final long serialVersionUID = -4717815709838453902L;
+    private static final long serialVersionUID = -4717815709838453902L;
 
-	@Getter
-	private boolean showCancelButton;
+    @Getter
+    private final boolean showCancelButton;
 
-	@Getter
-	private Upload upload;
+    @Getter
+    private Upload upload;
 
-	@Getter
-	private String fileName;
+    @Getter
+    private String fileName;
 
-	@Getter
-	@Setter
-	private Consumer<EnhancedFormLayout> buildForm;
+    @Getter
+    @Setter
+    private Consumer<EnhancedFormLayout> buildForm;
 
-	/**
-	 * The code to execute when the user clicks the Cancel button
-	 */
-	@Getter
-	@Setter
-	private Runnable onCancel;
+    @Getter
+    @Setter
+    private Runnable onCancel;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param progressMode     the desired progress mode
-	 * @param showCancelButton whether to include a cancel button
-	 */
-	public UploadForm(UI ui, ProgressMode progressMode, boolean showCancelButton) {
-		super(ui, progressMode);
-		this.showCancelButton = showCancelButton;
-		setBuildMainLayout(main -> {
-			EnhancedFormLayout form = new EnhancedFormLayout();
-			main.add(form);
+    /**
+     * Constructor
+     *
+     * @param ui               the Vaadin UI
+     * @param progressMode     the desired progress mode
+     * @param showCancelButton whether to include a cancel button
+     */
+    public UploadForm(UI ui, ProgressMode progressMode, boolean showCancelButton) {
+        super(ui, progressMode);
+        this.showCancelButton = showCancelButton;
+        setBuildMainLayout(main -> {
+            EnhancedFormLayout form = new EnhancedFormLayout();
+            main.add(form);
 
-			// add custom components
-			if (buildForm != null) {
-				buildForm.accept(form);
-			}
+            // add custom components
+            if (buildForm != null) {
+                buildForm.accept(form);
+            }
 
-			// add file upload field
-			upload = createFileUpload();
-			form.add(upload);
+            // add file upload field
+            upload = createFileUpload();
+            form.add(upload);
 
-			if (showCancelButton) {
-				addCancelButton(main);
-			}
-		});
-	}
+            if (showCancelButton) {
+                addCancelButton(main);
+            }
+        });
+    }
 
-	private void addCancelButton(VerticalLayout main) {
-		Button cancelButton = new Button(message("ocs.cancel"));
-		cancelButton.addClickListener(event -> {
-			if (onCancel != null) {
-				onCancel.run();
-			}
-		});
-		main.add(cancelButton);
-	}
+    private void addCancelButton(VerticalLayout main) {
+        Button cancelButton = new Button(message("ocs.cancel"));
+        cancelButton.addClickListener(event -> {
+            if (onCancel != null) {
+                onCancel.run();
+            }
+        });
+        main.add(cancelButton);
+    }
 
-	private Upload createFileUpload() {
-		MemoryBuffer buffer = new MemoryBuffer();
-		Upload upload = new Upload(buffer);
-		upload.setClassName("dynamoUpload");
-		upload.addFinishedListener(event -> {
-			this.fileName = event.getFileName();
-			if (event.getContentLength() > 0L) {
-				byte[] content = new byte[(int) event.getContentLength()];
-				try {
-					upload.clearFileList();
+    private Upload createFileUpload() {
+        MemoryBuffer buffer = new MemoryBuffer();
+        Upload upload = new Upload(buffer);
+        upload.setClassName("dynamoUpload");
+        upload.addFinishedListener(event -> {
+            this.fileName = event.getFileName();
+            if (event.getContentLength() > 0L) {
+                byte[] content = new byte[(int) event.getContentLength()];
+                try {
+                    upload.clearFileList();
 
-					buffer.getInputStream().read(content);
-					startWork(content);
-				} catch (IOException e) {
-					// do nothing
-				}
-			} else {
-				showNotification(message("ocs.no.file.selected"));
-			}
-		});
-		return upload;
-	}
+                    buffer.getInputStream().read(content);
+                    startWork(content);
+                } catch (IOException e) {
+                    // do nothing
+                }
+            } else {
+                showNotification(message("ocs.no.file.selected"));
+            }
+        });
+        return upload;
+    }
 
-	/**
-	 * Shows an error after file upload and clears the upload component
-	 * 
-	 * @param message the message to show
-	 */
-	protected void showErrorAndClear(String message) {
-		VaadinUtils.showErrorNotification(message);
-		getUpload().getElement().setPropertyJson("files", Json.createArray());
-	}
+    /**
+     * Shows an error after file upload and clears the upload component
+     *
+     * @param message the message to show
+     */
+    protected void showErrorAndClear(String message) {
+        VaadinUtils.showErrorNotification(message);
+        getUpload().getElement().setPropertyJson("files", Json.createArray());
+    }
 
 }

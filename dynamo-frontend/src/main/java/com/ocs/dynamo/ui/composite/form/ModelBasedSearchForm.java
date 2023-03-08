@@ -163,27 +163,27 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	}
 
 	/**
-	 * Creates a search field based on an attribute model
+	 * Creates a search component based on an attribute model
 	 * 
 	 * @param entityModel    the entity model of the entity to search for
 	 * @param attributeModel the attribute model the attribute model of the property
 	 *                       that is bound to the field
 	 * @return the component that was created
 	 */
-	protected Component constructField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		Component field = findCustomComponent(entityModel, attributeModel);
-		if (field == null) {
+	protected Component constructComponent(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		Component component = constructCustomComponent(entityModel, attributeModel)
+				.orElseGet(() -> {
 			EntityModel<?> em = getFieldEntityModel(attributeModel);
 			FieldCreationContext ctx = FieldCreationContext.create().attributeModel(attributeModel).fieldEntityModel(em)
 					.fieldFilters(getFieldFilters()).viewMode(false).search(true).build();
-			field = getFieldFactory().constructField(ctx);
-		}
+			return getFieldFactory().constructField(ctx);
+		});
 
-		if (field == null) {
+		if (component == null) {
 			throw new OCSRuntimeException("No field could be constructed for %s".formatted(attributeModel.getPath()));
 		}
 
-		return field;
+		return component;
 	}
 
 	/**
@@ -194,7 +194,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @return the constructed filter group
 	 */
 	protected FilterGroup<T> constructFilterGroup(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		Component field = this.constructField(entityModel, attributeModel);
+		Component field = this.constructComponent(entityModel, attributeModel);
 		if (field != null) {
 			FilterType filterType = FilterType.BETWEEN;
 			if (String.class.isAssignableFrom(attributeModel.getType())) {
@@ -223,7 +223,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				String from = message("ocs.from");
 				setLabelAndPlaceHolder(attributeModel, field, from);
 
-				auxField = constructField(entityModel, attributeModel);
+				auxField = constructComponent(entityModel, attributeModel);
 				String to = message("ocs.to");
 				setLabelAndPlaceHolder(attributeModel, auxField, to);
 				auxField.setVisible(true);
@@ -262,7 +262,6 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * Builds the layout that contains the various search filters
 	 * 
-	 * @param entityModel the entity model
 	 * @return the constructed filter layout
 	 */
 	@Override

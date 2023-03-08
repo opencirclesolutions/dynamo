@@ -35,10 +35,10 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class GridFormatUtils {
 
-	private static EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
+	private static final EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
 			.getEntityModelFactory();
 
-	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private static final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * local Extracts a field value from an object and formats it

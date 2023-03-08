@@ -565,12 +565,12 @@ public class ModelBasedFlexibleSearchForm<ID extends Serializable, T extends Abs
 			Object oldValue = mainValueComponent == null ? null : mainValueComponent.getValue();
 			Object oldAuxValue = auxValueComponent == null ? null : auxValueComponent.getValue();
 
-			Component custom = findCustomComponent(getEntityModel(), am);
 			FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
 					.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(getFieldFilters()).viewMode(false)
 					.search(true).build();
-			Component newComponent = custom != null ? custom : factory.constructField(context);
 
+			Component newComponent = constructCustomComponent(getEntityModel(), am)
+					.orElseGet(() -> factory.constructField(context));
 			addValueChangeListener(newComponent);
 			addCascadeListeners(newComponent);
 

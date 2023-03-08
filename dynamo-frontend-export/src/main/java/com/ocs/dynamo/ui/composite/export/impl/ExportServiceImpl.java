@@ -116,8 +116,7 @@ public class ExportServiceImpl implements ExportService {
 		FilterConverter<T> converter = new FilterConverter<>(entityModel);
 		Filter filter = converter.convert(predicate);
 		ModelBasedCsvPivotExportTemplate<ID, T> template = new ModelBasedCsvPivotExportTemplate<>(service, entityModel,
-				SortUtils.translateSortOrders(sortOrders), filter,
-				entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), pivotParameters, joins);
+				SortUtils.translateSortOrders(sortOrders), filter, pivotParameters, joins);
 		return template.process();
 	}
 

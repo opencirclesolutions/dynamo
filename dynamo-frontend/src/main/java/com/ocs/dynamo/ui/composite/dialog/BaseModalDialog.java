@@ -38,8 +38,8 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Base class for modal dialogs. This class has an empty button bar and no
- * content. Subclasses should implement the "doBuildButtonBar" method to add the
- * appropriate buttons and "doBuild" to add the appropriate content
+ * content. Subclasses should use the "setBuildMainLayout" and "setBuildButtonBar"
+ * methods to add actual content
  * 
  * @author bas.rutten
  */
@@ -56,7 +56,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 
 	private Consumer<HorizontalLayout> buildButtonBar;
 
-	private String className = DynamoConstants.CSS_DIALOG;
+	private String className;
 
 	private Consumer<HorizontalLayout> postProcessButtonBar;
 
@@ -89,7 +89,6 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 		main.addClassName(className);
 		add(main);
 
-		// differently colored title layout
 		VerticalLayout titleLayout = new DefaultVerticalLayout(false, false);
 		titleLayout.setPadding(true);
 		titleLayout.add(new Text(title));
@@ -146,7 +145,6 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 	 * the log instead
 	 * 
 	 * @param message the message
-	 * @param type    the type of the message
 	 */
 	protected void showNotification(String message) {
 		if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {

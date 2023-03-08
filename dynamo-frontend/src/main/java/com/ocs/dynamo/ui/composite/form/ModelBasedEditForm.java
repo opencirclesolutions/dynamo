@@ -12,40 +12,10 @@
  */
 package com.ocs.dynamo.ui.composite.form;
 
-import java.io.ByteArrayInputStream;
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Set;
-import java.util.function.BiConsumer;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.FieldCreationContext;
-import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.GroupTogetherMode;
+import com.ocs.dynamo.domain.model.*;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.InPredicate;
@@ -54,19 +24,7 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.UseInViewMode;
-import com.ocs.dynamo.ui.component.BaseDetailsEditGrid;
-import com.ocs.dynamo.ui.component.Cascadable;
-import com.ocs.dynamo.ui.component.CollapsiblePanel;
-import com.ocs.dynamo.ui.component.CustomEntityField;
-import com.ocs.dynamo.ui.component.CustomFieldContext;
-import com.ocs.dynamo.ui.component.DefaultFlexLayout;
-import com.ocs.dynamo.ui.component.DefaultHorizontalLayout;
-import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.component.ElementCollectionGrid;
-import com.ocs.dynamo.ui.component.InternalLinkButton;
-import com.ocs.dynamo.ui.component.ServiceBasedDetailsEditGrid;
-import com.ocs.dynamo.ui.component.URLField;
-import com.ocs.dynamo.ui.component.UploadComponent;
+import com.ocs.dynamo.ui.component.*;
 import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.TabWrapper;
@@ -74,19 +32,9 @@ import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.util.TriConsumer;
-import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.EntityModelUtils;
-import com.ocs.dynamo.utils.FormatUtils;
-import com.ocs.dynamo.utils.NumberUtils;
-import com.ocs.dynamo.utils.StringUtils;
+import com.ocs.dynamo.utils.*;
 import com.vaadin.componentfactory.EnhancedFormLayout;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.Focusable;
-import com.vaadin.flow.component.HasComponents;
-import com.vaadin.flow.component.HasEnabled;
-import com.vaadin.flow.component.HasSize;
-import com.vaadin.flow.component.HasValidation;
-import com.vaadin.flow.component.HasValue;
+import com.vaadin.flow.component.*;
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.component.button.Button;
@@ -111,9 +59,16 @@ import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.BinderValidationStatus;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.server.StreamResource;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.ByteArrayInputStream;
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.function.*;
 
 /**
  * An edit form that is constructed based on an entity model
@@ -455,13 +410,12 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
             for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
                 steps.add(new ResponsiveStep(percentage + "%", i + 1));
             }
-            rowLayout.setResponsiveSteps(steps);
         } else {
             for (int i = 0; i < attributeModel.getGroupTogetherWith().size() + 1; i++) {
                 steps.add(new ResponsiveStep((i * gtw) + "px", i + 1));
             }
-            rowLayout.setResponsiveSteps(steps);
         }
+        rowLayout.setResponsiveSteps(steps);
 
         // when in nested mode (e.g. DetailsEditLayout) stretch over entire width
         if (nestedMode) {
@@ -500,10 +454,10 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 formItems.get(isViewMode()).put(attributeModel, fi);
             } else {
                 // do not indent grids (probably better)
-                if (field instanceof BaseDetailsEditGrid) {
-                    ((BaseDetailsEditGrid) field).setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
-                } else if (field instanceof DetailsEditLayout) {
-                    ((DetailsEditLayout) field).setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+                if (field instanceof BaseDetailsEditGrid baseDetailsEditGrid) {
+                    baseDetailsEditGrid.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+                } else if (field instanceof DetailsEditLayout detailsEditLayout) {
+                    detailsEditLayout.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
                 } else if (field instanceof ElementCollectionGrid) {
                     ((ElementCollectionGrid) field).setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
                 }
@@ -781,7 +735,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Constructs the button bar
      *
      * @param bottom whether this is the bottom button bar
-     * @return
+     * @return the button bar layout
      */
     private FlexLayout constructButtonBar(boolean bottom) {
         FlexLayout buttonBar = new DefaultFlexLayout();
@@ -925,7 +879,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Constructs a preview component for displaying an image
      *
      * @param attributeModel the attribute model for the image property
-     * @return
+     * @return the constructed component
      */
     private Component constructImagePreview(AttributeModel attributeModel) {
         if (attributeModel.isImage()) {
@@ -934,7 +888,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 return new Span(message("ocs.no.preview.available"));
             } else {
                 StreamResource sr = new StreamResource(attributeModel.getDisplayName(VaadinUtils.getLocale()),
-                        () -> bytes == null ? new ByteArrayInputStream(new byte[0]) : new ByteArrayInputStream(bytes));
+                        () -> new ByteArrayInputStream(new byte[0]));
                 Image image = new Image(sr, attributeModel.getDisplayName(VaadinUtils.getLocale()));
                 image.setClassName(DynamoConstants.CSS_IMAGE_PREVIEW);
                 return image;
@@ -949,7 +903,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * link in view mode
      *
      * @param attributeModel the attribute model
-     * @return
+     * @return the constructed button
      */
     @SuppressWarnings("unchecked")
     private <ID2 extends Serializable, S extends AbstractEntity<ID2>> InternalLinkButton<ID2, S> constructInternalLinkButton(
@@ -969,7 +923,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private void constructLabel(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel,
                                 int tabIndex) {
-        Component comp = null;
+        Component comp;
         if (attributeModel.isUrl()) {
             // read-only URL field
             String value = (String) ClassUtils.getFieldValue(entity, attributeModel.getName());
@@ -1025,7 +979,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Constructs the button for navigating to the next entity
      *
      * @param buttonBar the button bar to which to add the button
-     * @return
+     * @return the constructed button
      */
     private Button constructNextButton(FlexLayout buttonBar) {
         Button nextButton = new Button(message("ocs.next"));
@@ -1076,9 +1030,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         Button refreshButton = new Button(message("ocs.refresh"));
         refreshButton.setIcon(VaadinIcon.RECYCLE.create());
         storeButton(REFRESH_BUTTON_DATA, refreshButton);
-        refreshButton.addClickListener(event -> {
-            setEntity(service.fetchById(entity.getId(), getDetailJoins()));
-        });
+        refreshButton.addClickListener(event -> setEntity(service.fetchById(entity.getId(), getDetailJoins())));
         return refreshButton;
     }
 
@@ -1123,8 +1075,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // enable/disable save button based on form validity
         if (bottom) {
             groups.get(isViewMode()).getFields().forEach(f -> {
-                if (f instanceof HasValidation) {
-                    HasValidation hv = (HasValidation) f;
+                if (f instanceof HasValidation hv) {
                     ValueChangeListener<ValueChangeEvent<?>> listener = event -> hv.setErrorMessage(null);
                     f.addValueChangeListener(listener);
                 }
@@ -1186,8 +1137,8 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Filters the buttons and returns those that match the provided data string
      *
-     * @param data
-     * @return
+     * @param data the String to filter on
+     * @return the filtered list of buttons
      */
     private List<Button> filterButtons(String data) {
         List<Button> list = buttons.get(isViewMode()).get(data);
@@ -1201,7 +1152,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @param entityModel    the entity model
      * @param attributeModel the attribute model
      * @param viewMode       whether the form is in view mode
-     * @return
+     * @return the component
      */
     private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
         Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
@@ -1260,10 +1211,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     private Component getField(boolean viewMode, String fieldName) {
         Optional<Binding<T, ?>> binding = groups.get(viewMode).getBinding(fieldName);
-        if (binding.isPresent()) {
-            return (Component) binding.get().getField();
-        }
-        return null;
+        return binding.map(tBinding -> (Component) tBinding.getField()).orElse(null);
     }
 
     /**
@@ -1293,7 +1241,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Returns the field with the given name, if it exists, cast to a HasValue
      *
      * @param fieldName the name of the field
-     * @return
+     * @return the field
      */
     @SuppressWarnings("unchecked")
     public <U> HasValue<?, U> getFieldAsHasValue(String fieldName) {
@@ -1304,7 +1252,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * Returns an Optional that contains the field with the given name, if it exists
      *
      * @param fieldName the name of the field
-     * @return
+     * @return the field
      */
     public Optional<Component> getFieldOptional(String fieldName) {
         return Optional.ofNullable(getField(fieldName));
@@ -1321,14 +1269,14 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @return
      */
     public Collection<HasValue<?, ?>> getFields(boolean viewMode) {
-        return groups.get(viewMode).getFields().collect(Collectors.toList());
+        return groups.get(viewMode).getFields().toList();
     }
 
     /**
      * Returns a label for a property
      *
      * @param path the path to the property
-     * @return
+     * @return the label component
      */
     public Component getLabel(String path) {
         AttributeModel am = getEntityModel().getAttributeModel(path);
@@ -1423,15 +1371,15 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Check if a certain attribute group is visible
      *
-     * @param c the component representing the attribute group
+     * @param group the component representing the attribute group
      * @return true whether the group is visible, false otherwise
      */
-    private boolean isGroupVisible(Object c) {
-        if (c != null) {
-            if (c instanceof Component) {
-                return ((Component) c).isVisible();
-            } else if (c instanceof Tab) {
-                return ((Tab) c).isVisible();
+    private boolean isGroupVisible(Object group) {
+        if (group != null) {
+            if (group instanceof Component comp) {
+                return comp.isVisible();
+            } else if (group instanceof Tab tab) {
+                return tab.isVisible();
             }
         }
         return false;
@@ -1629,7 +1577,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Selects the tab specified by the provided index
      *
-     * @param index
+     * @param index the index of the tab to select
      */
     public void selectTab(int index) {
         if (tabs.get(isViewMode()) != null) {
@@ -1969,11 +1917,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      */
     @Override
     public boolean validateAllFields() {
-        boolean error = false;
 
         BinderValidationStatus<T> status = groups.get(isViewMode()).validate();
-
-        error = !status.isOk();
+        boolean error = !status.isOk();
 
         // validate nested form and components
         error |= groups.get(isViewMode()).getFields().anyMatch(field -> {

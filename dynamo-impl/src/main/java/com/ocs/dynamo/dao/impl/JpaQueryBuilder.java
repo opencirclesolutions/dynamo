@@ -657,13 +657,12 @@ public final class JpaQueryBuilder {
                     // Do nothing; not a supported function; assume property name
                 }
                 if (queryFunction != null) {
-                    switch (queryFunction) {
-                        case AF_AVG -> selections[i] = builder.avg(path);
-                        case AF_COUNT -> selections[i] = builder.count(path);
-                        case AF_COUNT_DISTINCT -> selections[i] = builder.countDistinct(path);
-                        case AF_SUM -> selections[i] = builder.sum(path);
-                        default -> throw new OCSRuntimeException("Unsupported function");
-                    }
+                    selections[i] = switch (queryFunction) {
+                        case AF_AVG -> builder.avg(path);
+                        case AF_COUNT -> builder.count(path);
+                        case AF_COUNT_DISTINCT -> builder.countDistinct(path);
+                        case AF_SUM -> builder.sum(path);
+                    };
                     aggregated = true;
                 } else {
                     path = getPropertyPath(root, sp, true);

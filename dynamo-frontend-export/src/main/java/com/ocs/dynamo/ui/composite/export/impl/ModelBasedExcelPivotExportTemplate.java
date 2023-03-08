@@ -215,7 +215,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
      * @param colIndex       the column index
      * @return the resulting column index
      */
-    private int addPivotColumnHeader(Sheet sheet, boolean resize, Row titleRow, int nrOfPivotProps, int colIndex) {
+    private int addPivotColumnHeaders(Sheet sheet, boolean resize, Row titleRow, int nrOfPivotProps, int colIndex) {
         for (Object fc : pivotParameters.getPossibleColumnKeys()) {
             int mergeStart = colIndex;
             for (String property : pivotParameters.getPivotedProperties()) {
@@ -225,9 +225,9 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
                 }
 
                 cell.setCellStyle(getGenerator().getHeaderStyle(colIndex));
-                String value = pivotParameters.getHeaderMapper().apply(fc, property);
-                if (value != null) {
-                    cell.setCellValue(value);
+                String header = pivotParameters.getHeaderMapper().apply(fc, property);
+                if (header != null) {
+                    cell.setCellValue(header);
                 }
                 colIndex++;
             }
@@ -301,7 +301,7 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
         i = addFixedColumnHeaders(sheet, resize, titleRow, i);
 
         int startIndex = i;
-        i = addPivotColumnHeader(sheet, resize, titleRow, nrOfPivotProps, i);
+        i = addPivotColumnHeaders(sheet, resize, titleRow, nrOfPivotProps, i);
 
         i = startIndex;
         i = addPivotColumnSubHeader(sheet, resize, subtitleRow, i);
@@ -346,9 +346,10 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
                 createCell(row, nrOfFixedCols + colsAdded, entity, "", null, pivotColumnKey);
             } else {
                 match = true;
-                writeActualCellValue(nrOfFixedCols, row, propIndex, colsAdded, rowTotals, entity, pivotColumnKey);
+                writeActualCellValue(row, nrOfFixedCols, propIndex, colsAdded, rowTotals, entity, pivotColumnKey);
             }
 
+            // move to next property?
             if (propIndex == pivotParameters.getPivotedProperties().size() - 1) {
                 updateHiddenPropertyAggregates(rowTotals, entity);
                 propIndex = 0;
@@ -360,7 +361,6 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
                 propIndex++;
             }
             colsAdded++;
-
             prevRowKey = rowKey;
         }
 
@@ -410,14 +410,13 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
     }
 
     private void updateHiddenPropertyAggregates(Map<String, BigDecimal> rowTotals, T entity) {
-        // add aggregates for hidden props
-        for (String hiddenProp : pivotParameters.getHiddenPivotedProperties()) {
-            Object value = ClassUtils.getFieldValue(entity, hiddenProp);
+        for (String hiddenProperty : pivotParameters.getHiddenPivotedProperties()) {
+            Object value = ClassUtils.getFieldValue(entity, hiddenProperty);
 
-            PivotAggregationType type = pivotParameters.getAggregationMap().get(hiddenProp);
+            PivotAggregationType type = pivotParameters.getAggregationMap().get(hiddenProperty);
             if (type != null) {
-                rowTotals.putIfAbsent(hiddenProp, BigDecimal.ZERO);
-                rowTotals.put(hiddenProp, rowTotals.get(hiddenProp).add(toBigDecimal(value)));
+                rowTotals.putIfAbsent(hiddenProperty, BigDecimal.ZERO);
+                rowTotals.put(hiddenProperty, rowTotals.get(hiddenProperty).add(toBigDecimal(value)));
             }
         }
     }
@@ -425,15 +424,15 @@ public class ModelBasedExcelPivotExportTemplate<ID extends Serializable, T exten
     /**
      * Writes an actual cell value to the sheet
      *
-     * @param nrOfFixedCols  the number of fixed columns
      * @param row            the row to which to add the cell
+     * @param nrOfFixedCols  the number of fixed columns
      * @param propIndex      the index of the pivot property
      * @param colsAdded      the number of columns added so far
      * @param rowTotals      the running totals for the row
      * @param entity         the current entity
      * @param pivotColumnKey the pivot column key
      */
-    private void writeActualCellValue(int nrOfFixedCols, Row row, int propIndex, int colsAdded,
+    private void writeActualCellValue(Row row, int nrOfFixedCols, int propIndex, int colsAdded,
                                       Map<String, BigDecimal> rowTotals, T entity, Object pivotColumnKey) {
         String prop = pivotParameters.getPivotedProperties().get(propIndex);
         Object value = ClassUtils.getFieldValue(entity, prop);

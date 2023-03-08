@@ -46,7 +46,7 @@ public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEn
 
 	private int indexInPage;
 
-	private int pageSize;
+	private final int pageSize;
 
 	/**
 	 * Constructor
@@ -78,7 +78,7 @@ public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEn
 			return null;
 		}
 
-		loadNextPage();
+		loadNextPageIfNeeded();
 
 		if (indexInPage < page.size()) {
 			T t = page.get(indexInPage);
@@ -89,10 +89,7 @@ public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEn
 		return null;
 	}
 
-	/**
-	 * Loads the next page of data when needed
-	 */
-	private void loadNextPage() {
+	private void loadNextPageIfNeeded() {
 		if (index >= lastRead) {
 			List<ID> ids = new ArrayList<>();
 			for (int i = 0; i < pageSize && index + i < idList.size(); i++) {
@@ -110,11 +107,6 @@ public class PagingDataSetIterator<ID extends Serializable, T extends AbstractEn
 		}
 	}
 
-	/**
-	 * Returns the size of the iterator
-	 * 
-	 * @return
-	 */
 	@Override
 	public int size() {
 		return idList.size();

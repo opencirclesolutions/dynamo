@@ -72,7 +72,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	private Component headerLayout;
 
 	/**
-	 * Supplier that is used to define a custom header layout
+	 * Supplier that is used for defining a custom header layout
 	 */
 	@Getter
 	@Setter
@@ -126,7 +126,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Callback method that fires after the detail screen has been reloaded
 	 *
-	 * @param entity
+	 * @param entity the selected entity
 	 */
 	protected void afterReload(T entity) {
 		// override in subclasses
@@ -172,7 +172,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			// extra splitter (for horizontal mode)
 			if (isHorizontalMode()) {
 				splitter = constructSplitterLayout();
-
 			} else {
 				// vertical mode, just add component at bottom
 				mainLayout.add(getGridWrapper());
@@ -254,9 +253,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Do not override this method as an end user - implement the
 	 * "setQuickSearchFilterSupplier" instead
 	 *
-	 * @return
+	 * @return the constructed textfield
 	 */
-	protected abstract TextField constructSearchField();
+	abstract TextField constructSearchField();
 
 	protected abstract Button constructPopupSearchButton();
 
@@ -321,7 +320,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			// canceling is not needed in the in-line view
 			getFormOptions().setShowCancelButton(false).setPreserveSelectedTab(true);
-			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
+			editForm = new ModelBasedEditForm<>(entity, getService(), getEntityModel(), getFormOptions(),
 					getFieldFilters());
 
 			initEditForm(editForm);
@@ -390,7 +389,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	/**
 	 * Indicates whether the panel is in horizontal mode
 	 *
-	 * @return
+	 * @return true if the component is in horizontal mode, false otherwise
 	 */
 	protected boolean isHorizontalMode() {
 		return ScreenMode.HORIZONTAL.equals(getFormOptions().getScreenMode());
@@ -485,9 +484,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Sets the provided items as the currently selected itmes
+	 * Sets the provided items as the currently selected items
 	 * 
-	 * @param selectedItems
+	 * @param selectedItems the selected items
 	 */
 	public abstract void setSelectedItems(Object selectedItems);
 

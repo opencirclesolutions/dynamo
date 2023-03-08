@@ -39,7 +39,7 @@ public interface CustomXlsStyleGenerator<ID extends Serializable, T extends Abst
 	 * @param entity   the entity that is displayed in the row
 	 * @param value    the cell value
 	 * @param am       the attribute model. Can be empty
-	 * @return
+	 * @return the desired style
 	 */
 	CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am, Object pivotColumnKey);
 }
