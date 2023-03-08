@@ -201,9 +201,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
     private void initProvider(DataProvider<T, SerializablePredicate<T>> provider, List<T> items, SelectMode mode) {
         if (provider == null) {
             if (SelectMode.ALL.equals(mode)) {
-                ListDataProvider<T> listProvider = new ListDataProvider<>(
-                        service.findAll(SortUtils.translateSortOrders(sortOrders)));
-                setDataProvider(listProvider);
+                setItems(service.findAll(SortUtils.translateSortOrders(sortOrders)));
             } else if (SelectMode.FILTERED_PAGED.equals(mode)) {
                 setItems(createCallbackProvider());
             } else if (SelectMode.FILTERED_ALL.equals(mode)) {

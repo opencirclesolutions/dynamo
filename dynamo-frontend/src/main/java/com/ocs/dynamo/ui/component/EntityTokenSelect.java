@@ -186,7 +186,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	@SuppressWarnings({ "unchecked" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider callbackDataProvider) {
-			setDataProvider(callbackDataProvider);
+			setDataProvider(callbackDataProvider);;
 		} else if (provider instanceof ListDataProvider listDataProvider) {
 			setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 					listDataProvider);
