@@ -44,7 +44,7 @@ public class IntegerFieldComponentCreator implements SimpleComponentCreator {
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 		IntegerField intField = new IntegerField();
-		intField.setHasControls(true);
+		intField.setStepButtonsVisible(true);
 		intField.setStep(am.getNumberFieldStep());
 		return intField;
 	}

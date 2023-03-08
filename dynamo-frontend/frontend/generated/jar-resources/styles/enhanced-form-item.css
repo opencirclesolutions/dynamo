@@ -1,0 +1,17 @@
+:host {
+	--required-dot-opacity: 1;
+}
+
+[part="label"]::after {
+    content: var(--lumo-required-field-indicator, "\2022");
+    transition: opacity 0.2s;
+    opacity: var(--required-dot-opacity);
+    color: var(--lumo-primary-text-color);
+    right: 0;
+    width: 1em;
+    text-align: center;
+}
+
+:host([theme~="right-aligned"]) [part="label"] {
+	text-align: right;
+}

@@ -156,7 +156,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		Collections.sort(items, Comparator.naturalOrder());
 		ListDataProvider<T> provider = new ListDataProvider<>(items);
 
-		multiComboBox.setDataProvider(provider);
+		multiComboBox.setItems(provider);
 	}
 
 	@Override

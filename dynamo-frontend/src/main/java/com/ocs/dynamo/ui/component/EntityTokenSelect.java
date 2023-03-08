@@ -194,7 +194,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider) {
-			setDataProvider((CallbackDataProvider) provider);
+			setItems((CallbackDataProvider) provider);
 		} else if (provider instanceof ListDataProvider) {
 			setItems(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false), (Collection<T>) provider);
 		}
@@ -225,17 +225,17 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			if (SelectMode.ALL.equals(mode)) {
 				ListDataProvider<T> listProvider = new ListDataProvider<>(
 						service.findAll(SortUtils.translateSortOrders(sortOrders)));
-				setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false), listProvider);
+				setItems(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false), listProvider);
 			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
-				setDataProvider(callbackProvider);
+				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
 				items = service.find(new FilterConverter<T>(entityModel).convert(_filter),
 						SortUtils.translateSortOrders(sortOrders));
-				setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
+				setItems(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 								 new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
-				setDataProvider(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
+				setItems(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 								 new ListDataProvider<>(items));
 			}
 		} else {
@@ -296,7 +296,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			listProvider.getItems().addAll(service.findAll(SortUtils.translateSortOrders(sortOrders)));
 		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
 			// add a filtered selection of items
-			setDataProvider(createCallbackProvider());
+			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
 			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(_filter),

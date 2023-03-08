@@ -185,7 +185,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	/**
 	 * Initializes the data provider
-	 * 
+	 *
 	 * @param provider already existing provider (in case of shared provider)
 	 * @param items    fixed list of items to display
 	 * @param mode     the desired mode
@@ -196,17 +196,17 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 			if (SelectMode.ALL.equals(mode)) {
 				ListDataProvider<T> listProvider = new ListDataProvider<>(
 						service.findAll(SortUtils.translateSortOrders(sortOrders)));
-				setDataProvider(listProvider);
+				setItems(listProvider);
 			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
-				setDataProvider(callbackProvider);
+//				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
 				// add a filtered selection of items
 				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
 						SortUtils.translateSortOrders(sortOrders));
-				setDataProvider(new ListDataProvider<>(items));
+				setItems(new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
-				setDataProvider(new ListDataProvider<>(items));
+				setItems(new ListDataProvider<>(items));
 			}
 		} else {
 			castAndSetDataProvider(provider);
@@ -245,7 +245,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	/**
 	 * Updates the data provider after a refresh
-	 * 
+	 *
 	 * @param provider
 	 */
 	private void updateProvider(DataProvider<T, SerializablePredicate<T>> provider) {
@@ -253,7 +253,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
 			reloadDataProvider(listProvider, service.findAll(SortUtils.translateSortOrders(sortOrders)));
 		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
-			setDataProvider(createCallbackProvider());
+			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
 			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),

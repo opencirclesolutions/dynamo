@@ -108,7 +108,7 @@ public class UploadComponent extends CustomField<byte[]> {
 
 	@SuppressWarnings("deprecation")
 	private void clearFilesList() {
-		upload.getElement().executeJavaScript("this.files=[]");
+		upload.getElement().executeJs("this.files=[]");
 	}
 
 	@Override
