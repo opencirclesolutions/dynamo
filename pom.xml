@@ -214,11 +214,11 @@
 				<artifactId>camel-spring-boot-starter</artifactId>
 				<version>${camel.version}</version>
 			</dependency>
-			<dependency>
+			<!--<dependency>
 				<groupId>com.vaadin.componentfactory</groupId>
 				<artifactId>selection-grid-flow</artifactId>
 				<version>2.0.0</version>
-			</dependency>
+			</dependency>-->
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>

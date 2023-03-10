@@ -71,10 +71,6 @@
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-core</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.vaadin.gatanaso</groupId>-->
-<!--			<artifactId>multiselect-combo-box-flow</artifactId>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>com.vaadin.componentfactory</groupId>
 			<artifactId>enhancedformlayout</artifactId>
@@ -122,10 +118,10 @@
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.vaadin.componentfactory</groupId>
 			<artifactId>selection-grid-flow</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>

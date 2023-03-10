@@ -44,7 +44,7 @@ import com.ocs.dynamo.ui.composite.dialog.EntityPopupDialog;
 import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
-import com.ocs.dynamo.ui.composite.grid.ModelBasedSelectionGrid;
+//import com.ocs.dynamo.ui.composite.grid.ModelBasedSelectionGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
@@ -411,11 +411,12 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		if (layout == null) {
 
 			boolean checkBoxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
-			if (checkBoxesForMultiSelect) {
-				createCheckboxSelectGrid();
-			} else {
-				createMultiSelectGrid();
-			}
+//			if (checkBoxesForMultiSelect) {
+//				createCheckboxSelectGrid();
+//			} else {
+//				//createMultiSelectGrid();
+//			}
+			createCheckboxSelectGrid();
 
 			addEditButtonToGrid();
 			addRemoveButtonToGrid();
@@ -617,41 +618,41 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		((ModelBasedGrid<ID, T>) grid).build();
 	}
 
-	@SuppressWarnings("unchecked")
-	private void createMultiSelectGrid() {
-		grid = new ModelBasedSelectionGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
-				formOptions.createCopy().setGridEditMode(GridEditMode.SIMULTANEOUS),
-				componentContext.toBuilder().editable(isGridEditEnabled()).build()) {
-
-			private static final long serialVersionUID = 6143503902550597524L;
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
-				return findCustomComponent(entityModel, am, false);
-			}
-
-			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				binders.computeIfAbsent(t, ent -> {
-					BeanValidationBinder<T> val = new BeanValidationBinder<>(entityModel.getEntityClass());
-					val.setBean(ent);
-					return val;
-				});
-
-				Binder<T> binder = binders.get(t);
-				return binder.forField((HasValue<?, ?>) field);
-			}
-
-			@Override
-			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-				if (postProcessComponent != null) {
-					postProcessComponent.accept(id, am, comp);
-				}
-			}
-		};
-
-		((ModelBasedSelectionGrid<ID, T>) grid).build();
-	}
+//	@SuppressWarnings("unchecked")
+//	private void createMultiSelectGrid() {
+//		grid = new ModelBasedSelectionGrid<ID, T>(getDataProvider(), entityModel, getFieldFilters(),
+//				formOptions.createCopy().setGridEditMode(GridEditMode.SIMULTANEOUS),
+//				componentContext.toBuilder().editable(isGridEditEnabled()).build()) {
+//
+//			private static final long serialVersionUID = 6143503902550597524L;
+//
+//			@Override
+//			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel am) {
+//				return findCustomComponent(entityModel, am, false);
+//			}
+//
+//			@Override
+//			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+//				binders.computeIfAbsent(t, ent -> {
+//					BeanValidationBinder<T> val = new BeanValidationBinder<>(entityModel.getEntityClass());
+//					val.setBean(ent);
+//					return val;
+//				});
+//
+//				Binder<T> binder = binders.get(t);
+//				return binder.forField((HasValue<?, ?>) field);
+//			}
+//
+//			@Override
+//			protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+//				if (postProcessComponent != null) {
+//					postProcessComponent.accept(id, am, comp);
+//				}
+//			}
+//		};
+//
+//		((ModelBasedSelectionGrid<ID, T>) grid).build();
+//	}
 
 	private void disableSorting() {
 		if (!getFormOptions().isDetailsGridSortable()) {

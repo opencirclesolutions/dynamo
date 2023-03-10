@@ -137,7 +137,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected abstract DataProvider<T, SerializablePredicate<T>> constructDataProvider();
 
 	protected Grid<T> constructGrid() {
-		if (getComponentContext().isUseCheckboxesForMultiSelect()) {
+		//if (getComponentContext().isUseCheckboxesForMultiSelect()) {
 
 			ModelBasedGrid<ID, T> newGrid = new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters,
 					getFormOptions(), getComponentContext()) {
@@ -164,31 +164,31 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 			newGrid.build();
 			return newGrid;
 
-		} else {
-			ModelBasedSelectionGrid<ID, T> newGrid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
-					fieldFilters, getFormOptions(), getComponentContext()) {
-
-				private static final long serialVersionUID = -4559181057050230055L;
-
-				@Override
-				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
-				}
-
-				@Override
-				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-					return BaseGridWrapper.this.doBind(t, field, attributeName);
-				}
-
-				@Override
-				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-					BaseGridWrapper.this.postProcessComponent(id, am, comp);
-				}
-
-			};
-			newGrid.build();
-			return newGrid;
-		}
+//		} else {
+//			ModelBasedSelectionGrid<ID, T> newGrid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
+//					fieldFilters, getFormOptions(), getComponentContext()) {
+//
+//				private static final long serialVersionUID = -4559181057050230055L;
+//
+//				@Override
+//				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+//					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
+//				}
+//
+//				@Override
+//				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+//					return BaseGridWrapper.this.doBind(t, field, attributeName);
+//				}
+//
+//				@Override
+//				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+//					BaseGridWrapper.this.postProcessComponent(id, am, comp);
+//				}
+//
+//			};
+//			newGrid.build();
+//			return newGrid;
+//		}
 	}
 
 	protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
