@@ -53,7 +53,7 @@ public interface SimpleComponentCreator extends ComponentCreator {
 	 */
 	default DatePickerI18n getDatePickerLocalization(MessageService messageService, Locale dateLocale) {
 		DatePickerI18n dpi = new DatePickerI18n();
-		dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLocale));
+		//dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLocale));
 
 		String weekdays = messageService.getMessage("ocs.calendar.days", dateLocale);
 		if (weekdays != null) {
@@ -71,10 +71,10 @@ public interface SimpleComponentCreator extends ComponentCreator {
 		}
 
 		dpi.setCancel(messageService.getMessage("ocs.calendar.cancel", dateLocale));
-		dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLocale));
+		//dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLocale));
 		dpi.setFirstDayOfWeek(Integer.parseInt(messageService.getMessage("ocs.calendar.first", dateLocale)));
-		dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLocale));
-		dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLocale));
+		//dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLocale));
+		//dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLocale));
 
 		return dpi;
 	}

@@ -13,15 +13,6 @@
  */
 package com.ocs.dynamo.utils;
 
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -29,8 +20,14 @@ import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-
 import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
+
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
  * 
@@ -52,7 +49,7 @@ public final class FormatUtils {
 	 * @param locale             the locale used for the formatting
 	 * @param zoneId             the zone ID
 	 * @param currencySymbol     the currency symbol
-	 * @return
+	 * @return the result of the formatting
 	 */
 	public static String extractAndFormat(EntityModelFactory entityModelFactory, MessageService messageService,
 			AttributeModel am, Object obj, Locale locale, ZoneId zoneId, String currencySymbol) {
@@ -65,11 +62,10 @@ public final class FormatUtils {
 	 * 
 	 * @param entityModel the entity model
 	 * @param value       the value (the entity)
-	 * @return
+	 * @return the result of the formatting
 	 */
 	public static String formatEntity(EntityModel<?> entityModel, Object value) {
-		if (value instanceof AbstractEntity) {
-			AbstractEntity<?> entity = (AbstractEntity<?>) value;
+		if (value instanceof AbstractEntity<?> entity) {
 			if (entityModel.getDisplayProperty() != null) {
 				return ClassUtils.getFieldValueAsString(entity, entityModel.getDisplayProperty());
 			} else {
@@ -90,7 +86,7 @@ public final class FormatUtils {
 	 *                           representations
 	 * @param locale             the locale used for the formatting
 	 * @param currencySymbol     the currency symbol used for the formatting
-	 * @return
+	 * @return the result of the formatting
 	 */
 	public static String formatEntityCollection(EntityModelFactory entityModelFactory, AttributeModel attributeModel,
 			Object collection, String separator, Locale locale, String currencySymbol) {
@@ -111,7 +107,7 @@ public final class FormatUtils {
 				result.add(next.toString());
 			}
 		}
-		return result.stream().collect(Collectors.joining(separator));
+		return String.join(separator, result);
 	}
 
 	/**
@@ -127,7 +123,7 @@ public final class FormatUtils {
 	 * @param locale             the locale used for the formatting
 	 * @param zoneId             the zone ID of the time zone used for time stamp
 	 *                           formatting
-	 * @return
+	 * @return the result of the formatting
 	 */
 	public static String formatPropertyValue(EntityModelFactory entityModelFactory, MessageService messageService,
 			AttributeModel attributeModel, Object value, String separator, Locale locale, ZoneId zoneId) {
@@ -171,10 +167,7 @@ public final class FormatUtils {
 			} else if (am.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message
 				// bundle
-				String msg = messageService.getEnumMessage((Class<Enum<?>>) am.getType(), (Enum<?>) value, locale);
-				if (msg != null) {
-					return msg;
-				}
+				return messageService.getEnumMessage((Class<Enum<?>>) am.getType(), (Enum<?>) value, locale);
 			} else if (value instanceof Iterable) {
 				return formatEntityCollection(entityModelFactory, am, value, separator, locale, currencySymbol);
 			} else if (AbstractEntity.class.isAssignableFrom(am.getType())) {
@@ -199,7 +192,7 @@ public final class FormatUtils {
 	 * @param am     the attribute model for the property
 	 * @param value  the value
 	 * @param locale the locale
-	 * @return
+	 * @return the result of the formatting
 	 */
 	private static String formatBooleanProperty(AttributeModel am, Object value, Locale locale) {
 		if (!StringUtils.isEmpty(am.getTrueRepresentation(locale)) && Boolean.TRUE.equals(value)) {
@@ -225,7 +218,7 @@ public final class FormatUtils {
 	 * @param zoneId             the zone ID of the time zone used for time stamp
 	 *                           formatting
 	 * @param currencySymbol     the currency symbol used for the formatting
-	 * @return
+	 * @return the result of the formatting
 	 */
 	private static String formatEntityWithCheck(EntityModelFactory entityModelFactory, MessageService messageService,
 			AttributeModel attributeModel, Object value, String separator, Locale locale, ZoneId zoneId,

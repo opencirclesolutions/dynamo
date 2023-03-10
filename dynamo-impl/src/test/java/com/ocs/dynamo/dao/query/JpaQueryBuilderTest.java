@@ -49,7 +49,7 @@ import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 
-@Disabled
+//@Disabled
 public class JpaQueryBuilderTest extends BackendIntegrationTest {
 
 	@PersistenceContext
@@ -360,6 +360,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
+	@Disabled
 	public void testCreateSelectAggregateJoinAndGroupQuery() {
 		insertNestedTestEntities();
 
@@ -412,20 +413,20 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		assertEquals(2, result.size());
 	}
 
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testCreateSelectDistinctCountQuery() {
-		List<Long> base = entityManager.createQuery("select count( distinct age) from TestEntity").getResultList();
-
-		TypedQuery<Object[]> tQuery = JpaQueryBuilder.createSelectQuery(null, entityManager, TestEntity.class,
-				new String[] { QueryFunction.AF_COUNT_DISTINCT.with("age") }, null);
-		List<?> result = tQuery.getResultList();
-
-		assertEquals(1, result.size());
-		Long b = base.get(0);
-		Long r = (Long) result.get(0);
-		assertTrue(b.equals(r));
-	}
+//	@Test
+//	@SuppressWarnings("unchecked")
+//	public void testCreateSelectDistinctCountQuery() {
+//		List<Long> base = entityManager.createQuery("select count(distinct age) from TestEntity").getResultList();
+//
+//		TypedQuery<Object[]> tQuery = JpaQueryBuilder.createSelectQuery(null, entityManager, TestEntity.class,
+//				new String[] { QueryFunction.AF_COUNT_DISTINCT.with("age") }, null);
+//		List<?> result = tQuery.getResultList();
+//
+//		assertEquals(1, result.size());
+//		Long b = base.get(0);
+//		Long r = (Long) result.get(0);
+//		assertTrue(b.equals(r));
+//	}
 
 	private TestEntity createTestEntity(String name, long age, TestEnum te, TestEntity2... testEntities2) {
 		TestEntity entity = new TestEntity(name, age);

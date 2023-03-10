@@ -22,8 +22,8 @@ import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAUpdateClause;
 
-import javax.persistence.*;
-import javax.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaQuery;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;

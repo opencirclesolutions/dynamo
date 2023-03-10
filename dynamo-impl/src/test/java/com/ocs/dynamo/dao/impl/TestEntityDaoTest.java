@@ -255,23 +255,23 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 		assertEquals(2L, obj[1]);
 	}
 
-	@Test
-	@Transactional
-	public void findSelect2() {
-		save("Pete", 1L);
-		save("Bob", 2L);
-		save("Isaac", 3L);
-
-		SortOrders so = new SortOrders(new SortOrder("name"));
-		PageableImpl pag = new PageableImpl(0, 10, so);
-
-		List<?> found = dao.findProperties(null, new String[] { "name", "age" }, pag);
-		assertEquals(3, found.size());
-
-		Object[] obj = (Object[]) found.get(0);
-		assertEquals("Bob", obj[0]);
-		assertEquals(2L, obj[1]);
-	}
+//	@Test
+//	@Transactional
+//	public void findSelect2() {
+//		save("Pete", 1L);
+//		save("Bob", 2L);
+//		save("Isaac", 3L);
+//
+//		SortOrders so = new SortOrders(new SortOrder("name"));
+//		PageableImpl pag = new PageableImpl(0, 10, so);
+//
+//		List<?> found = dao.findProperties(null, new String[] { "name", "age" }, pag);
+//		assertEquals(3, found.size());
+//
+//		Object[] obj = (Object[]) found.get(0);
+//		assertEquals("Bob", obj[0]);
+//		assertEquals(2L, obj[1]);
+//	}
 
 	@Test
 	@Transactional

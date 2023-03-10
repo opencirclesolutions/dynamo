@@ -38,8 +38,8 @@ import org.hibernate.envers.query.criteria.AuditDisjunction;
 import org.hibernate.envers.query.criteria.AuditProperty;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.annotation.PostConstruct;
-import javax.persistence.NoResultException;
+import jakarta.annotation.PostConstruct;
+import jakarta.persistence.NoResultException;
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;

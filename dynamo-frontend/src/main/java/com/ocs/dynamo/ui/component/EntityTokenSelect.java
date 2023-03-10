@@ -295,8 +295,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(_filter),
-			List<T> items = service.find(new FilterConverter<>(entityModel).convert(filter),
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(_filter),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

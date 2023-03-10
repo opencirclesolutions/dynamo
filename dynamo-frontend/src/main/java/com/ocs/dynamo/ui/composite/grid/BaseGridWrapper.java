@@ -257,7 +257,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * Callback method used to modify data provider creation
 	 * 
-	 * @param container
+	 * @param provider
 	 */
 	protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		// overwrite in subclasses

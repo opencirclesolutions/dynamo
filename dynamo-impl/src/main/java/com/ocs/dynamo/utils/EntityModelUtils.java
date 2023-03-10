@@ -74,7 +74,7 @@ public final class EntityModelUtils {
 	 * @param maxItems       the maximum number of items before the description is
 	 *                       truncated
 	 * @param messageService message service
-	 * @return
+	 * @return the resulting display value
 	 */
 	public static <T> String getDisplayPropertyValue(Collection<T> entities, EntityModel<T> model, int maxItems,
 			MessageService messageService, Locale locale) {
@@ -103,7 +103,7 @@ public final class EntityModelUtils {
 	 * 
 	 * @param entity the entity
 	 * @param model  the entity model
-	 * @return
+	 * @return the resulting display value
 	 */
 	public static <T> String getDisplayPropertyValue(T entity, EntityModel<?> model) {
 		if (entity == null) {

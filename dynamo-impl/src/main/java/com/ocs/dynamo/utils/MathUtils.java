@@ -32,8 +32,8 @@ public final class MathUtils {
 	 *            the first argument
 	 * @param second
 	 *            the second argument
-	 * @param scale
-	 * @return
+	 * @param scale the scale to use
+	 * @return the result of the division
 	 */
 	public static BigDecimal dividePercentage(BigDecimal first, BigDecimal second, int scale) {
 		if (second == null || BigDecimal.ZERO.subtract(second).abs().doubleValue() < 0.00001) {

@@ -35,9 +35,12 @@ import jakarta.persistence.criteria.Path;
 import jakarta.persistence.criteria.Predicate;
 import jakarta.persistence.criteria.Root;
 import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.Order;
 import jakarta.persistence.metamodel.Attribute;
 
+
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 
 import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
@@ -130,9 +133,9 @@ public final class JpaQueryBuilder {
             ms.addAll(multiSelect);
         }
         if (sortOrders != null && sortOrders.length > 0) {
-            List<javax.persistence.criteria.Order> orders = new ArrayList<>();
+            List<Order> orders = new ArrayList<>();
             for (SortOrder sortOrder : sortOrders) {
-                Expression<?> property = distinct ? getPropertyPath(root, sortOrder.getProperty(), true)
+                Expression<?> property = distinct ? getPropertyPath(root, sortOrder.getProperty(), false)
                         : getPropertyPathForSort(root, sortOrder.getProperty());
                 ms.add(property);
                 orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
@@ -288,7 +291,7 @@ public final class JpaQueryBuilder {
         Root<T> root = cq.from(entityClass);
 
         // select only the distinctField
-        cq.multiselect(getPropertyPath(root, distinctField, true));
+        cq.multiselect(getPropertyPath(root, distinctField, false));
 
         Map<String, Object> pars = createParameterMap();
         Predicate predicate = createPredicate(filter, builder, root, pars);
@@ -553,7 +556,7 @@ public final class JpaQueryBuilder {
             return createComparePredicate(builder, root, filter);
         } else if (filter instanceof IsNull isNull) {
             Path path = getPropertyPath(root, isNull.getPropertyId(), true);
-            if (path.type() != null && java.util.Collection.class.isAssignableFrom(path.type().getJavaType())) {
+            if (isCollection(path)) {
                 return builder.isEmpty(path);
             }
             return builder.isNull(path);
@@ -769,7 +772,9 @@ public final class JpaQueryBuilder {
                 path = path.get(part);
             }
             // Check collection join
-            if (join && Collection.class.isAssignableFrom(path.type().getJavaType())) {
+            
+            
+            if (join && isCollection(path)) {
                 // Reuse existing join
                 Join<?, ?> detailJoin = null;
                 Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
@@ -816,9 +821,17 @@ public final class JpaQueryBuilder {
             } else {
                 path = path.get(part);
             }
+            
+            // TODO: is there a nicer way to fix this?
+            boolean entityOrCollection = false;
+            try {
+            	entityOrCollection = AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
+                || Collection.class.isAssignableFrom(path.type().getJavaType());
+            } catch(Exception ex) {
+            	
+            }
 
-            if (AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
-                    || Collection.class.isAssignableFrom(path.type().getJavaType())) {
+            if (entityOrCollection) {
                 // Reuse existing join
                 Join<?, ?> detailJoin = null;
                 Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
@@ -864,6 +877,17 @@ public final class JpaQueryBuilder {
             result = result || attribute.isCollection() || nested;
         }
         return result;
+    }
+    
+    private static boolean isCollection(Path<?> path) {
+    	boolean collection = false;
+    	try {
+    		collection = path.type() != null && java.util.Collection.class.isAssignableFrom(path.type().getJavaType());
+    	 	}
+    	catch (Exception ex) {
+    		
+    	}
+    	return collection;
     }
 
     private static String removeAccents(String input) {
