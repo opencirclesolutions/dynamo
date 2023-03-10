@@ -107,9 +107,8 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 * @param filter         the field filter
 	 * @param items          the fixed collection on entities to display
 	 * @param sharedProvider the shared data provider
-	 * @param sortOrders     the sort orders to apply
+	 * @param sortOrders     the sort orders
 	 */
-	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode selectMode, SerializablePredicate<T> filter, List<T> items,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, SortOrder<?>... sortOrders) {
@@ -124,8 +123,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
 		}
 
-		DataProvider<T, SerializablePredicate<T>> provider = sharedProvider;
-		initProvider(provider, items, selectMode);
+		initProvider(sharedProvider, items, selectMode);
 
 		setItemLabelGenerator(t -> {
 			String value = EntityModelUtils.getDisplayPropertyValue(t, entityModel);
@@ -144,9 +142,9 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 *                          to this component
 	 * @param service           the service used to retrieve the entities
 	 * @param filter            the filter used to filter the entities
+	 * @param sortOrders        the sort orders used to sort the entities
 //	 * @param sortOrder         the sort order used to sort the entities
 	 */
-	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
 			BaseService<ID, T> service, SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {
 		this(targetEntityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrders);
@@ -161,7 +159,6 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 *                          to this component
 	 * @param service           the service used to retrieve entities
 	 */
-	@SafeVarargs
 	public EntityTokenSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
 			BaseService<ID, T> service, SortOrder<?>... sortOrder) {
 		this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
@@ -191,7 +188,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		select(entity);
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({ "unchecked" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider) {
 			setItems((CallbackDataProvider) provider);
@@ -218,7 +215,6 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 * @param provider already existing provider (in case of shared provider)
 	 * @param items    fixed list of items to display
 	 * @param mode     the desired mode
-	 * @return
 	 */
 	private void initProvider(DataProvider<T, SerializablePredicate<T>> provider, List<T> items, SelectMode mode) {
 		if (provider == null) {
@@ -255,8 +251,8 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	@SuppressWarnings("rawtypes")
 	public int getDataProviderSize() {
-		if (getDataProvider() instanceof ListDataProvider) {
-			return ((ListDataProvider) getDataProvider()).getItems().size();
+		if (getDataProvider() instanceof ListDataProvider listDataProvider) {
+			return listDataProvider.getItems().size();
 		} else if (getDataProvider() instanceof CallbackDataProvider) {
 			return count;
 		}
@@ -300,6 +296,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
 			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(_filter),
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(filter),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

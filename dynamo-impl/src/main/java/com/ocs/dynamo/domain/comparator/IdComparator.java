@@ -18,7 +18,8 @@ import java.util.Comparator;
 import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
- * A comparator for comparing entities based on their IDs
+ * A comparator for comparing entities based on their IDs (entities without
+ * IDs are returned first)
  * 
  * @author bas.rutten
  */

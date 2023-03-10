@@ -27,7 +27,8 @@ import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 
 /**
- * Component creator used for creating an URL field
+ * Component creator used for creating a URL field. This is only supported
+ * for String fields that have the "url" setting at "true"
  * 
  * @author BasRutten
  *

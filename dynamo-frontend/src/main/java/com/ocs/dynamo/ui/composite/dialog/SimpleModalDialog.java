@@ -24,7 +24,8 @@ import lombok.Getter;
 import lombok.Setter;
 
 /**
- * A simple modal dialog
+ * A simple modal dialog that contains no actual content, and button bar with
+ * "Cancel" and "OK" buttons
  * 
  * @author Bas Rutten
  *

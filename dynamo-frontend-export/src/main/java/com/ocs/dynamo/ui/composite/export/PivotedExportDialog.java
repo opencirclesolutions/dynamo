@@ -29,68 +29,66 @@ import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * A simple dialog window that offers several buttons for exporting pivoted data
+ * A dialog window that offers several buttons for exporting pivoted data
  * to various formats
- * 
- * @author Bas Rutten
  *
  * @param <ID> the class of the ID of the entity that is being exported
  * @param <T>  the class of the entity that is being exported
+ * @author Bas Rutten
  */
 public class PivotedExportDialog<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends BaseExportDialog<ID, T> {
+        extends BaseExportDialog<ID, T> {
 
-	private static final long serialVersionUID = -7559490010581729532L;
+    private static final long serialVersionUID = -7559490010581729532L;
 
-	private final SerializablePredicate<T> predicate;
+    private final SerializablePredicate<T> predicate;
 
-	private final List<SortOrder<?>> sortOrders;
+    private final List<SortOrder<?>> sortOrders;
 
-	private final FetchJoinInformation[] joins;
+    private final FetchJoinInformation[] joins;
 
-	private Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator;
+    private final Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator;
 
-	private PivotParameters pivotParameters;
+    private final PivotParameters pivotParameters;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param exportService   the export service
-	 * @param entityModel     the entity model of the entity to export
-	 * @param exportMode      the export mode
-	 * @param predicate       predicated used to filter the results
-	 * @param sortOrders      sort orders to apply to the results
-	 * @param customGenerator custom style generator
-	 * @param joins
-	 */
-	public PivotedExportDialog(ExportService exportService, EntityModel<T> entityModel,
-			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
-			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, PivotParameters pivotParameters,
-			FetchJoinInformation... joins) {
-		super(exportService, entityModel, ExportMode.FULL);
-		this.predicate = predicate;
-		this.sortOrders = sortOrders;
-		this.customGenerator = customGenerator;
-		this.joins = joins;
-		this.pivotParameters = pivotParameters;
-	}
+    /**
+     * Constructor
+     *
+     * @param exportService   the export service
+     * @param entityModel     the entity model of the entity to export
+     * @param predicate       predicated used to filter the results
+     * @param sortOrders      the sort orders
+     * @param customGenerator custom style generator
+     * @param joins           the fetch joins to use when retrieving the data
+     */
+    public PivotedExportDialog(ExportService exportService, EntityModel<T> entityModel,
+                               SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+                               Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, PivotParameters pivotParameters,
+                               FetchJoinInformation... joins) {
+        super(exportService, entityModel, ExportMode.FULL);
+        this.predicate = predicate;
+        this.sortOrders = sortOrders;
+        this.customGenerator = customGenerator;
+        this.joins = joins;
+        this.pivotParameters = pivotParameters;
+    }
 
-	@Override
-	protected DownloadButton createDownloadCSVButton() {
-		return new DownloadButton(message("ocs.export.csv"), getProgressBar(),
-				() -> download(() -> new ByteArrayInputStream(getExportService().exportCsvPivot(getEntityModel(),
-						predicate, sortOrders, pivotParameters, joins))),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_CSV);
-	}
+    @Override
+    protected DownloadButton createDownloadCSVButton() {
+        return new DownloadButton(message("ocs.export.csv"), getProgressBar(),
+                () -> download(() -> new ByteArrayInputStream(getExportService().exportCsvPivot(getEntityModel(),
+                        predicate, sortOrders, pivotParameters, joins))),
+                () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+                        + EXTENSION_CSV);
+    }
 
-	@Override
-	protected DownloadButton createDownloadExcelButton() {
-		return new DownloadButton(message("ocs.export.excel"), getProgressBar(),
-				() -> download(() -> new ByteArrayInputStream(getExportService().exportExcelPivot(getEntityModel(),
-						predicate, sortOrders, customGenerator, pivotParameters, joins))),
-				() -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
-						+ EXTENSION_XLS);
-	}
+    @Override
+    protected DownloadButton createDownloadExcelButton() {
+        return new DownloadButton(message("ocs.export.excel"), getProgressBar(),
+                () -> download(() -> new ByteArrayInputStream(getExportService().exportExcelPivot(getEntityModel(),
+                        predicate, sortOrders, customGenerator, pivotParameters, joins))),
+                () -> getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + "_" + LocalDateTime.now()
+                        + EXTENSION_XLS);
+    }
 
 }

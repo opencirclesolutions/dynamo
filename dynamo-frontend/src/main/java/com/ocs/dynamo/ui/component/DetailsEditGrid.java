@@ -53,7 +53,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 	@Setter
 	private Comparator<T> comparator;
 
-	private ListDataProvider<T> provider;
+	private final ListDataProvider<T> provider;
 
 	/**
 	 * Constructor
@@ -68,6 +68,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
 
+		// add a row containing a new entity
 		setOnAdd(() -> {
 			T entity = getCreateEntity().get();
 			provider.getItems().add(entity);
@@ -139,8 +140,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 
 	@Override
 	protected void setPresentationValue(Collection<T> value) {
-		List<T> list = new ArrayList<>();
-		list.addAll(value);
+		List<T> list = new ArrayList<>(value);
 		if (comparator != null) {
 			list.sort(comparator);
 		}
@@ -152,7 +152,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 			provider.refreshAll();
 		}
 
-		updateCaption(value == null ? 0 : value.size());
+		updateCaption(value.size());
 
 		// clear the selection
 		setSelectedItem(null);

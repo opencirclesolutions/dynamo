@@ -40,33 +40,46 @@ public class DownloadButton extends HorizontalLayout {
 	 * The actual link
 	 */
 	@Getter
-	private Anchor anchor;
+	private final Anchor anchor;
 
 	/**
-	 * Button wrapped inside of link
+	 * The button wrapped inside the link
 	 */
 	@Getter
-	private Button button;
+	private final Button button;
 
 	/**
 	 * Supplier for creating the file name
 	 */
-	private Supplier<String> createFileName;
+	private final Supplier<String> createFileName;
 
 	/**
 	 * Supplier for creating the file content
 	 */
-	private Supplier<InputStream> createContent;
+	private final Supplier<InputStream> createContents;
 
-	public DownloadButton(String caption, Supplier<InputStream> createContent, Supplier<String> createFileName) {
-		this(caption, null, createContent, createFileName);
+	/**
+	 * Constructor
+	 * @param caption the caption to display on the button
+	 * @param createContents code to carry out to retrieve the file contents
+	 * @param createFileName code to carry out to construct the file name
+	 */
+	public DownloadButton(String caption, Supplier<InputStream> createContents, Supplier<String> createFileName) {
+		this(caption, null, createContents, createFileName);
 	}
 
-	public DownloadButton(String caption, ProgressBar progressBar, Supplier<InputStream> createContent,
+	/**
+	 * Constructor
+	 * @param caption the caption to display on the button
+	 * @param progressBar optional progress bar to keep track of the download process
+	 * @param createContents code to carry out to retrieve the file contents
+	 * @param createFileName code to carry out to construct the file name
+	 */
+	public DownloadButton(String caption, ProgressBar progressBar, Supplier<InputStream> createContents,
 			Supplier<String> createFileName) {
 		setMargin(false);
 		this.createFileName = createFileName;
-		this.createContent = createContent;
+		this.createContents = createContents;
 
 		anchor = new Anchor();
 		update();
@@ -84,11 +97,11 @@ public class DownloadButton extends HorizontalLayout {
 	}
 
 	/**
-	 * Updates the component after the content that can be downloaded has changed
+	 * Updates the component after the contents that can be downloaded has changed
 	 */
 	public final void update() {
 		anchor.setHref(new StreamResource(this.createFileName.get(), () -> {
-			InputStream inputStream = this.createContent.get();
+			InputStream inputStream = this.createContents.get();
 			if (inputStream == null) {
 				return new ByteArrayInputStream(new byte[0]);
 			}

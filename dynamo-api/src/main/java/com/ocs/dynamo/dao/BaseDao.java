@@ -39,7 +39,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param filter   the filter
 	 * @param distinct whether to return only distinct results
-	 * @return the number of entities that match the provided filter
+	 * @return the number of entities
 	 */
 	long count(Filter filter, boolean distinct);
 
@@ -92,7 +92,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param id    the ID of the entity
 	 * @param joins the desired relations to fetch
-	 * @return
+	 * @return the entity
 	 */
 	T fetchById(ID id, FetchJoinInformation... joins);
 
@@ -102,7 +102,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param ids        the IDs of the entities to fetch
 	 * @param sortOrders the sort orders to apply
 	 * @param joins      the desired relations to fetch
-	 * @return
+	 * @return the list of entities
 	 */
 	List<T> fetchByIds(List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... joins);
 
@@ -112,7 +112,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param ids        the IDs of the entities to fetch
 	 * @param sortOrders the sort orders to apply
 	 * @param joins      the desired relations to fetch
-	 * @return
+	 * @return the list of entities 
 	 */
 	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
 
@@ -124,7 +124,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param caseSensitive indicates whether the value is case sensitive
 	 * @param joins         the desired relations to fetch
 	 * 
-	 * @return
+	 * @return the entity, or <code>null</code> if no entity can be found
 	 */
 	T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive, FetchJoinInformation... joins);
 
@@ -132,7 +132,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Returns all entities that match the provided filter
 	 * 
 	 * @param filter the filter
-	 * @return
+	 * @return the list of entities
 	 */
 	List<T> find(Filter filter);
 
@@ -142,14 +142,14 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param filter the filter
 	 * @param orders the sort orders
-	 * @return
+	 * @return the list of entities
 	 */
 	List<T> find(Filter filter, SortOrder... orders);
 
 	/**
 	 * Returns a list of all entities. Use with caution
 	 * 
-	 * @return
+	 * @return the list of entities
 	 */
 	List<T> findAll();
 
@@ -157,39 +157,38 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Returns a list of all entities. Use with caution
 	 * 
 	 * @param sortOrders the desired sorting information
-	 * @return
+	 * @return the list of entities
 	 */
 	List<T> findAll(SortOrder... sortOrders);
 
 	/**
-	 * Finds an object based on its ID
+	 * Finds an entity based on its ID
 	 * 
 	 * @param id the ID
-	 * @return the object identified by the ID, or <code>null</code> if it cannot be
+	 * @return the entity identified by the ID, or <code>null</code> if it cannot be
 	 *         found
 	 */
 	T findById(ID id);
 
 	/**
-	 * Finds an object based on a unique property value
+	 * Finds an entity based on a unique property value
 	 * 
 	 * @param propertyName  the name of the property
 	 * @param value         the desired value of the property
-	 * @param caseSensitive whether the match is case sensitive
-	 * @return
+	 * @param caseSensitive whether the match is case-sensitive
+	 * @return the entity, or <code>null</code> if no entity can be found
 	 */
 	T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
 
 	/**
-	 * Returns all entities that match the provided filter and apply a distinct on
-	 * the given column
+	 * Returns all distinct values of a field that match the search filter
 	 * 
-	 * @param filter        the filter
+	 * @param filter        the search filter
 	 * @param distinctField the field used to remove duplicate rows
 	 * @param sortOrders    the sort orders
-	 * @return
+	 * @return the list of all distinct values
 	 */
-	<S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... sortOrders);
+	<S> List<S> findDistinctValues(Filter filter, String distinctField, Class<S> elementType, SortOrder... sortOrders);
 
 	/**
 	 * Returns all distinct values in an element collection table
@@ -197,7 +196,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param tableName     the table name
 	 * @param distinctField the distinct field
 	 * @param elementType   the element type
-	 * @return
+	 * @return the list of all distinct values
 	 */
 	<S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType);
 
@@ -207,7 +206,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param filter     the filter
 	 * @param maxResults limit the amount of results
 	 * @param sortOrders the sort orders
-	 * @return
+	 * @return the list of IDs
 	 */
 	List<ID> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders);
 
@@ -216,29 +215,29 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param filter the filter
 	 * @param sortOrders the sort orders
-	 * @return
+	 * @return the list of IDs
 	 */
 	List<ID> findIds(Filter filter, SortOrder... sortOrders);
 
 	/**
-	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
+	 * Selects the values of the specified properties of the entities that match the provided filter
 	 * 
 	 * @param filter           the filter
 	 * @param selectProperties the properties to use in the selection
 	 * @param pageable         object containing the paging data
-	 * @return
+	 * @return the list of IDs
 	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable);
+	List<?> findProperties(Filter filter, String[] selectProperties, Pageable pageable);
 
 	/**
-	 * Selects and sorts properties (NOT ENTITIES) that match the provided filter
+	 * Selects the values of the specified properties of the entities that match the provided filter
 	 * 
 	 * @param filter           the filter
 	 * @param selectProperties the properties to use in the selection
 	 * @param orders           the sort info
-	 * @return
+	 * @return the list of the provided properties
 	 */
-	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders);
+	List<?> findProperties(Filter filter, String[] selectProperties, SortOrders orders);
 
 	/**
 	 * Flushes and clears the entity manager (useful after an explicit update or
@@ -249,15 +248,15 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns the class of the entity managed by this DAO
 	 * 
-	 * @return
+	 * @return the entity class
 	 */
 	Class<T> getEntityClass();
 
 	/**
-	 * Saves the provide list of entities
+	 * Saves the provided list of entities
 	 * 
 	 * @param list the list of entities
-	 * @return
+	 * @return the saved list of entities
 	 */
 	List<T> save(List<T> list);
 
@@ -265,7 +264,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Saves the provided entity
 	 * 
 	 * @param entity the entity to save
-	 * @return
+	 * @return the saved entity
 	 */
 	T save(T entity);
 }

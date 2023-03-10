@@ -39,7 +39,7 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Implementation of the export delegate
- * 
+ *
  * @author Bas Rutten
  *
  */
@@ -48,14 +48,14 @@ public class ExportDelegateImpl implements ExportDelegate {
 	/**
 	 * Map for keeping track of custom style generators
 	 */
-	private Map<EntityModel<?>, Supplier<CustomXlsStyleGenerator<?, ?>>> customStyleMap = new HashMap<>();
+	private final Map<EntityModel<?>, Supplier<CustomXlsStyleGenerator<?, ?>>> customStyleMap = new HashMap<>();
 
 	@Autowired
 	private ExportService exportService;
 
 	/**
 	 * Adds a mapping between an entity model and a custom style generator
-	 * 
+	 *
 	 * @param entityModel the entity model of the entity
 	 * @param generator   the custom style generator
 	 */

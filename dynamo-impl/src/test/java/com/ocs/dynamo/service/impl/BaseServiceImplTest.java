@@ -307,12 +307,12 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 	}
 
 	@Test
-	public void testFindDistinct() {
+	public void findDistinctValues() {
 		Filter filter = new Compare.Equal("property1", 1);
 		SortOrder so = new SortOrder("property2");
 
-		service.findDistinct(filter, "property1", String.class, so);
-		verify(dao).findDistinct(filter, "property1", String.class, so);
+		service.findDistinctValues(filter, "property1", String.class, so);
+		verify(dao).findDistinctValues(filter, "property1", String.class, so);
 	}
 
 	@Test
@@ -325,16 +325,16 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 	public void testFindSelect() {
 		Filter filter = new Compare.Equal("property1", 1);
 		SortOrders so = new SortOrders(new SortOrder("property1"));
-		service.findSelect(filter, new String[] { "property1", "property2" }, so);
-		verify(dao).findSelect(filter, new String[] { "property1", "property2" }, so);
+		service.findProperties(filter, new String[] { "property1", "property2" }, so);
+		verify(dao).findProperties(filter, new String[] { "property1", "property2" }, so);
 	}
 
 	@Test
 	public void testFindSelect2() {
 		Filter filter = new Compare.Equal("property1", 1);
 		SortOrders so = new SortOrders(new SortOrder("property1"));
-		service.findSelect(filter, new String[] { "property1", "property2" }, 1, 10, so);
-		verify(dao).findSelect(eq(filter), eq(new String[] { "property1", "property2" }), any(PageableImpl.class));
+		service.findProperties(filter, new String[] { "property1", "property2" }, 1, 10, so);
+		verify(dao).findProperties(eq(filter), eq(new String[] { "property1", "property2" }), any(PageableImpl.class));
 	}
 
 	/**

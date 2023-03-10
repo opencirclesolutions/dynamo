@@ -127,7 +127,7 @@ public class ModelBasedPivotExportTemplateTest extends FrontendIntegrationTest {
 		ModelBasedCsvPivotExportTemplate<Integer, TestEntity> template = new ModelBasedCsvPivotExportTemplate<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class),
 				new SortOrder[] { new SortOrder("name", Direction.ASC), new SortOrder("someEnum", Direction.ASC) },
-				null, "Sheet name", pars);
+				null, pars);
 		byte[] bytes = template.process();
 
 		String str = new String(bytes);

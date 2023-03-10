@@ -30,7 +30,6 @@ import com.ocs.dynamo.ui.converter.ConverterFactory;
 import com.ocs.dynamo.ui.converter.IntToDoubleConverter;
 import com.ocs.dynamo.ui.converter.LocalDateWeekCodeConverter;
 import com.ocs.dynamo.ui.converter.LongToDoubleConverter;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.data.binder.ValueContext;
@@ -38,17 +37,16 @@ import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Utility for converting between data types
  * 
  * @author bas.rutten
  *
  */
+@UtilityClass
 public final class ConvertUtils {
-
-	private ConvertUtils() {
-		// hidden constructor
-	}
 
 	/**
 	 * Converts a value to its presentation value

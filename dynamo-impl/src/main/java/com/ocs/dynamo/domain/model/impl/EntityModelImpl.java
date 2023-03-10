@@ -110,11 +110,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		}
 	}
 
-	/**
-	 * Constructs a stream of all attribute models sorted by order
-	 * 
-	 * @return
-	 */
 	private Stream<AttributeModel> constructAttributeModelStream(Comparator<AttributeModel> comp) {
 		return attributeModels.values().stream().flatMap(List::stream).sorted(comp);
 	}
@@ -122,7 +117,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	private List<AttributeModel> filterAttributeModels(Predicate<AttributeModel> p) {
 		return Collections
 				.unmodifiableList(constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
-						.filter(p).collect(Collectors.toList()));
+						.filter(p).toList());
 	}
 
 	private AttributeModel findAttributeModel(Predicate<AttributeModel> p) {
@@ -169,7 +164,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	@Override
 	public List<AttributeModel> getAttributeModels() {
 		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
-				.collect(Collectors.toList());
+				.toList();
 		return Collections.unmodifiableList(list);
 	}
 
@@ -193,7 +188,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 			return getAttributeModels();
 		}
 		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getGridOrder))
-				.collect(Collectors.toList());
+				.toList();
 		return Collections.unmodifiableList(list);
 	}
 
@@ -203,7 +198,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 			return getAttributeModels();
 		}
 		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getSearchOrder))
-				.collect(Collectors.toList());
+				.toList();
 		return Collections.unmodifiableList(list);
 	}
 
@@ -258,7 +253,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 						list.addAll(nested);
 					}
 					return list;
-				}).flatMap(List::stream).collect(Collectors.toList());
+				}).flatMap(List::stream).toList();
 		return Collections.unmodifiableList(result);
 	}
 
@@ -277,7 +272,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	 * @param locale   the desired locale
 	 * @param key      the message key
 	 * @param fallBack value to fall back to if no match is found
-	 * @return
+	 * @return the translation of the key
 	 */
 	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack) {
 		// look up in message bundle and add to cache
@@ -285,7 +280,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 			try {
 				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
 				String str = rb.getString(reference + "." + key);
-				source.put(locale.toString(), Optional.ofNullable(str));
+				source.put(locale.toString(), Optional.of(str));
 			} catch (MissingResourceException ex) {
 				source.put(locale.toString(), Optional.empty());
 			}

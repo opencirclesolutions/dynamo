@@ -40,8 +40,8 @@ public interface FieldFactory {
 	 * is separate from the actual component creation since the converters and
 	 * validators must be configured on a binding builder
 	 * 
-	 * @param <U>
-	 * @param <V>
+	 * @param <U> the input type of the conversion
+	 * @param <V> the target type of the conversion
 	 * @param builder                 the builder
 	 * @param am                      the attribute model
 	 * @param context                 the component creation context
@@ -56,11 +56,11 @@ public interface FieldFactory {
 	/**
 	 * Convenience method for adding converters and validators, assumes no custom
 	 * converters or validators
-	 * 
-	 * @param <U>
-	 * @param <V>
+	 *
+	 * @param <U> the input type of the conversion
+	 * @param <V> the target type of the conversion
 	 * @param builder the binding builder
-	 * @param am      the atttribute mode
+	 * @param am      the attribute mode
 	 */
 	<U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am);
 
@@ -69,7 +69,7 @@ public interface FieldFactory {
 	 * context)
 	 * 
 	 * @param am the attribute model
-	 * @return
+	 * @return the constructed field
 	 */
 	Component constructField(AttributeModel am);
 
@@ -77,7 +77,7 @@ public interface FieldFactory {
 	 * Constructs a field based on the provided context
 	 * 
 	 * @param context the context
-	 * @return
+	 * @return the constructed field
 	 */
 	Component constructField(FieldCreationContext context);
 }

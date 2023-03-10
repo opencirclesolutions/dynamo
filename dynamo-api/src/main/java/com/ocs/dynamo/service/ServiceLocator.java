@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.service;
 
-import java.util.Collection;
-
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 
 /**
@@ -29,7 +27,7 @@ public interface ServiceLocator {
 	 * Retrieves a service of a certain type
 	 * 
 	 * @param clazz the class of the service
-	 * @return
+	 * @return the service
 	 */
 	<T> T getService(Class<T> clazz);
 
@@ -37,36 +35,29 @@ public interface ServiceLocator {
 	 * Returns a service bean based on name and class
 	 * @param name the name
 	 * @param clazz the class
-	 * @return
+	 * @return the service
 	 */
 	<T> T getServiceByName(String name, Class<T> clazz);
 	
 	/**
-	 * 
-	 * @param clazz the class of the service
-	 * @return
-	 */
-	<T> Collection<T> getServices(Class<T> clazz);
-
-	/**
 	 * Retrieves the message service from the context
 	 * 
-	 * @return
+	 * @return the message service
 	 */
 	MessageService getMessageService();
 
 	/**
 	 * Retrieves the entity model factory from the context
 	 * 
-	 * @return
+	 * @return the entity model factory
 	 */
 	EntityModelFactory getEntityModelFactory();
 
 	/**
-	 * Returns a service that is used to manage a certain type of entity
+	 * Retrieves a service that is used to manage a certain type of entity
 	 * 
 	 * @param entityClass the entity class
-	 * @return
+	 * @return the service used for managing the specified entity type
 	 */
 	BaseService<?, ?> getServiceForEntity(Class<?> entityClass);
 

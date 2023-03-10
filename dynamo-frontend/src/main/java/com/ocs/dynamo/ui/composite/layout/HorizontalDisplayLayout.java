@@ -26,7 +26,6 @@ import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.AttachEvent;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.formlayout.FormLayout.ResponsiveStep;
 import com.vaadin.flow.component.html.Span;
 

@@ -21,7 +21,9 @@ import lombok.EqualsAndHashCode;
 import lombok.Getter;
 
 /**
- * 
+ * Base class for search filter used inside combo box or multi select. This
+ * search filter replaces diacritic characters by their basic counterparts
+ *
  * @author BasRutten
  *
  * @param <T> the entity class to search on
@@ -42,9 +44,9 @@ public abstract class BaseIgnoreDiacriticsFilter<T> {
 	/**
 	 * Constructor
 	 * 
-	 * @param entityModel
-	 * @param ignoreCase
-	 * @param onlyMatchPrefix
+	 * @param entityModel the entity model
+	 * @param ignoreCase whether to ignore case
+	 * @param onlyMatchPrefix whether to only match on prefix
 	 */
 	protected BaseIgnoreDiacriticsFilter(EntityModel<T> entityModel, boolean ignoreCase, boolean onlyMatchPrefix) {
 		this.ignoreCase = ignoreCase;
@@ -53,7 +55,6 @@ public abstract class BaseIgnoreDiacriticsFilter<T> {
 	}
 
 	public boolean test(T item, String filterText) {
-		// replace any diacritical characters
 		if (item == null) {
 			return false;
 		}

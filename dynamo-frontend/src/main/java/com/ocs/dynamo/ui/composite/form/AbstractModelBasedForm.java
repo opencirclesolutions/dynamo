@@ -42,7 +42,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 	private static final long serialVersionUID = -1163137979989646987L;
 
 	@Getter
-	private EntityModel<T> entityModel;
+	private final EntityModel<T> entityModel;
 
 	@Getter
 	@Setter
@@ -82,7 +82,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 				: getEntityModelFactory().getModel(reference, attributeModel.getNormalizedType());
 	}
 
-	public Map<String, String> getFieldEntityModels() {
+	public final Map<String, String> getFieldEntityModels() {
 		return getComponentContext().getFieldEntityModels();
 	}
 

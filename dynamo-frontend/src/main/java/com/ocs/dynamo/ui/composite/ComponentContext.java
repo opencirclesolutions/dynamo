@@ -13,17 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite;
 
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.GroupTogetherMode;
@@ -34,10 +23,16 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasComponents;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.converter.Converter;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.function.*;
 
 /**
  * A context for keeping track of component settings that cannot be modified
@@ -55,6 +50,10 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	private Consumer<T> afterEntitySet;
 
+	/**
+	 * Consumer that runs after the edit form has been built in a composite layout
+	 * Takes as its arguments the parent component and whether the component is in view mode
+	 */
 	private BiConsumer<HasComponents, Boolean> afterEditFormBuilt;
 
 	private BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged;
@@ -146,8 +145,7 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 	public Converter findCustomConverter(AttributeModel attributeModel) {
 		Supplier<Converter<?, ?>> supplier = customConverters.get(attributeModel.getPath());
 		if (supplier != null) {
-			Converter<?, ?> converter = supplier.get();
-			return converter;
+			return supplier.get();
 		}
 		return null;
 	}
@@ -164,11 +162,7 @@ public class ComponentContext<ID extends Serializable, T extends AbstractEntity<
 
 	private Validator<?> findValidator(AttributeModel attributeModel, Map<String, Supplier<Validator<?>>> map) {
 		Supplier<Validator<?>> supplier = map.get(attributeModel.getPath());
-		if (supplier != null) {
-			Validator<?> validator = supplier.get();
-			return validator;
-		}
-		return null;
+		return supplier != null ? supplier.get() : null;
 	}
 
 	public Function<CustomFieldContext, Component> getCustomFieldCreator(String path) {

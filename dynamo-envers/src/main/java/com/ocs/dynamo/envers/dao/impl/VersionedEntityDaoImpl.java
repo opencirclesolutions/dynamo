@@ -13,30 +13,6 @@
  */
 package com.ocs.dynamo.envers.dao.impl;
 
-import java.time.Instant;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.stream.Collectors;
-
-import jakarta.annotation.PostConstruct;
-import jakarta.persistence.NoResultException;
-
-import org.hibernate.envers.AuditReader;
-import org.hibernate.envers.AuditReaderFactory;
-import org.hibernate.envers.query.AuditEntity;
-import org.hibernate.envers.query.AuditQuery;
-import org.hibernate.envers.query.criteria.AuditConjunction;
-import org.hibernate.envers.query.criteria.AuditCriterion;
-import org.hibernate.envers.query.criteria.AuditDisjunction;
-import org.hibernate.envers.query.criteria.AuditProperty;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.Pageable;
@@ -49,17 +25,30 @@ import com.ocs.dynamo.envers.domain.DynamoRevisionEntity;
 import com.ocs.dynamo.envers.domain.RevisionKey;
 import com.ocs.dynamo.envers.domain.RevisionType;
 import com.ocs.dynamo.envers.domain.VersionedEntity;
-import com.ocs.dynamo.filter.And;
-import com.ocs.dynamo.filter.Compare;
-import com.ocs.dynamo.filter.Contains;
-import com.ocs.dynamo.filter.DynamoFilterUtil;
-import com.ocs.dynamo.filter.Filter;
-import com.ocs.dynamo.filter.In;
-import com.ocs.dynamo.filter.Like;
-import com.ocs.dynamo.filter.Not;
-import com.ocs.dynamo.filter.Or;
+import com.ocs.dynamo.filter.*;
 import com.ocs.dynamo.utils.DateUtils;
 import com.querydsl.core.types.dsl.EntityPathBase;
+import org.hibernate.envers.AuditReader;
+import org.hibernate.envers.AuditReaderFactory;
+import org.hibernate.envers.query.AuditEntity;
+import org.hibernate.envers.query.AuditQuery;
+import org.hibernate.envers.query.criteria.AuditConjunction;
+import org.hibernate.envers.query.criteria.AuditCriterion;
+import org.hibernate.envers.query.criteria.AuditDisjunction;
+import org.hibernate.envers.query.criteria.AuditProperty;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.annotation.PostConstruct;
+import javax.persistence.NoResultException;
+import java.time.Instant;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of Data Access object for versioned entities
@@ -80,13 +69,13 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	/**
 	 * Adds any additional filters to an AuditQuery
 	 * 
-	 * @param aq     the AuditQuery to which to add the filters
+	 * @param auditQuery     the AuditQuery to which to add the filters
 	 * @param filter the filter to translate
 	 */
-	private void addAdditionalFilters(AuditQuery aq, Filter filter) {
-		AuditCriterion ac = createAuditCriterion(aq, filter);
-		if (ac != null) {
-			aq.add(ac);
+	private void addAdditionalFilters(AuditQuery auditQuery, Filter filter) {
+		AuditCriterion criterion = createAuditCriterion(filter);
+		if (criterion != null) {
+			auditQuery.add(criterion);
 		}
 	}
 
@@ -97,19 +86,19 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 * @param aq  the audit query to which to add the criterion
 	 */
 	private void addIdCriteria(List<RevisionKey<ID>> ids, AuditQuery aq) {
-		AuditCriterion crit = null;
+		AuditCriterion criterion = null;
 		for (RevisionKey<ID> id : ids) {
 			AuditCriterion and = AuditEntity.and(AuditEntity.id().eq(id.getId()),
 					AuditEntity.revisionNumber().eq(id.getRevision()));
-			if (crit == null) {
-				crit = and;
+			if (criterion == null) {
+				criterion = and;
 			} else {
-				crit = AuditEntity.or(crit, and);
+				criterion = AuditEntity.or(criterion, and);
 			}
 		}
 
-		if (crit != null) {
-			aq.add(crit);
+		if (criterion != null) {
+			aq.add(criterion);
 		}
 	}
 
@@ -176,58 +165,47 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 * Translates a filter to an AuditCriterion
 	 * 
 	 * @param filter the filter to translate
-	 * @return
+	 * @return the resulting AuditCriterion
 	 */
-	private AuditCriterion createAuditCriterion(AuditQuery aq, Filter filter) {
-		if (filter instanceof Compare.Equal) {
-			Compare.Equal eq = (Compare.Equal) filter;
+	private AuditCriterion createAuditCriterion(Filter filter) {
+		if (filter instanceof Compare.Equal eq) {
 			return createAuditProperty(eq.getPropertyId(), eq.getValue()).eq(eq.getValue());
-		} else if (filter instanceof Like) {
-			Like like = (Like) filter;
+		} else if (filter instanceof Like like) {
 			return createAuditProperty(like.getPropertyId(), like.getValue()).ilike(like.getValue());
-		} else if (filter instanceof Compare.Greater) {
-			Compare.Greater gt = (Compare.Greater) filter;
+		} else if (filter instanceof Compare.Greater gt) {
 			return createAuditProperty(gt.getPropertyId(), gt.getValue()).gt(gt.getValue());
-		} else if (filter instanceof Compare.GreaterOrEqual) {
-			Compare.GreaterOrEqual ge = (Compare.GreaterOrEqual) filter;
+		} else if (filter instanceof Compare.GreaterOrEqual ge) {
 			return createAuditProperty(ge.getPropertyId(), ge.getValue()).ge(ge.getValue());
-		} else if (filter instanceof Compare.Less) {
-			Compare.Less lt = (Compare.Less) filter;
-			return createAuditProperty(lt.getPropertyId(), lt.getValue()).lt(lt.getValue());
-		} else if (filter instanceof Compare.LessOrEqual) {
-			Compare.LessOrEqual le = (Compare.LessOrEqual) filter;
+		} else if (filter instanceof Compare.Less ls) {
+			return createAuditProperty(ls.getPropertyId(), ls.getValue()).lt(ls.getValue());
+		} else if (filter instanceof Compare.LessOrEqual le) {
 			return createAuditProperty(le.getPropertyId(), le.getValue()).le(le.getValue());
-		} else if (filter instanceof And) {
-			And and = (And) filter;
+		} else if (filter instanceof And and) {
 			AuditConjunction ac = AuditEntity.conjunction();
-			for (Filter f : and.getFilters()) {
-				AuditCriterion ct = createAuditCriterion(aq, f);
+			for (Filter andFilter : and.getFilters()) {
+				AuditCriterion ct = createAuditCriterion(andFilter);
 				if (ct != null) {
 					ac.add(ct);
 				}
 			}
 			return ac;
-		} else if (filter instanceof Or) {
-			Or or = (Or) filter;
+		} else if (filter instanceof Or or) {
 			AuditDisjunction ad = AuditEntity.disjunction();
-			for (Filter f : or.getFilters()) {
-				AuditCriterion ct = createAuditCriterion(aq, f);
+			for (Filter orFilter : or.getFilters()) {
+				AuditCriterion ct = createAuditCriterion(orFilter);
 				if (ct != null) {
 					ad.add(ct);
 				}
 			}
 			return ad;
-		} else if (filter instanceof Not) {
-			Not not = (Not) filter;
-			AuditCriterion ct = createAuditCriterion(aq, not.getFilter());
+		} else if (filter instanceof Not not) {
+			AuditCriterion ct = createAuditCriterion(not.getFilter());
 			if (ct != null) {
 				return AuditEntity.not(ct);
 			}
-		} else if (filter instanceof In) {
-			In in = (In) filter;
+		} else if (filter instanceof In in) {
 			return createAuditProperty(in.getPropertyId(), in.getValues()).in(in.getValues());
-		} else if (filter instanceof Contains) {
-			Contains c = (Contains) filter;
+		} else if (filter instanceof Contains c) {
 			throw new UnsupportedOperationException(
 					"Contains filter is not supported for property " + c.getPropertyId());
 		}
@@ -237,10 +215,9 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	/**
 	 * Translates a property name to an AuditProperty
 	 * 
-	 * @param aq    the audit query
 	 * @param prop  the name of the property
 	 * @param value the value of the property
-	 * @return
+	 * @return the created AuditProperty
 	 */
 	@SuppressWarnings("unchecked")
 	private <X> AuditProperty<X> createAuditProperty(String prop, Object value) {
@@ -268,7 +245,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	/**
 	 * Creates a new instance of the versioned entity
 	 * 
-	 * @return
+	 * @return the newly created instance
 	 */
 	protected abstract U createVersionedEntity(T t, int revision);
 
@@ -346,7 +323,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 		@SuppressWarnings("unchecked")
 		List<Object[]> revs = aq.getResultList();
-		return revs.stream().map(rev -> mapRevision(rev)).collect(Collectors.toList());
+		return revs.stream().map(this::mapRevision).toList();
 	}
 
 	@Override
@@ -383,8 +360,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	@SuppressWarnings("unchecked")
 	private List<RevisionKey<ID>> findRevisionKeys(AuditQuery aq) {
 		List<Object[]> revs = aq.getResultList();
-		List<RevisionKey<ID>> ids = revs.stream().map(rev -> mapRevisionKey(rev)).collect(Collectors.toList());
-		return ids;
+		return revs.stream().map(this::mapRevisionKey).toList();
 	}
 
 	@Override
@@ -398,7 +374,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	public List<U> findRevisions(ID id) {
 		List<Object[]> revs = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true)
 				.add(AuditEntity.id().eq(id)).getResultList();
-		return revs.stream().map(rev -> mapRevision(rev)).collect(Collectors.toList());
+		return revs.stream().map(this::mapRevision).toList();
 	}
 
 	private AuditReader getAuditReader() {
@@ -406,9 +382,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	}
 
 	/**
-	 * Returns the class of the "base entity" (i.e. the non-versioned class)
-	 * 
-	 * @return
+	 * @return the class of the "base entity" (i.e. the non-versioned class)
 	 */
 	public abstract Class<T> getBaseEntityClass();
 
@@ -433,14 +407,13 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 * Determine whether a property value is an entity (or a collection of entities)
 	 * 
 	 * @param value the value for which to determine this
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	private boolean isEntity(Object value) {
 		if (value instanceof AbstractEntity) {
 			return true;
 		}
-		if (value instanceof Collection) {
-			Collection<?> col = (Collection<?>) value;
+		if (value instanceof Collection col) {
 			return !col.isEmpty() && col.iterator().next() instanceof AbstractEntity;
 		}
 		return false;
@@ -452,7 +425,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 * (position 1) and the modification type (position 2)
 	 * 
 	 * @param rev the data structure to map
-	 * @return
+	 * @return the result of the mapping
 	 */
 	@SuppressWarnings("unchecked")
 	private U mapRevision(Object[] rev) {
@@ -476,6 +449,6 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private RevisionKey<ID> mapRevisionKey(Object[] rev) {
-		return new RevisionKey((Integer) rev[0], (Integer) rev[1]);
+		return new RevisionKey(rev[0], (Integer) rev[1]);
 	}
 }

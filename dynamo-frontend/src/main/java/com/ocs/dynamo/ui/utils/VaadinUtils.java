@@ -53,7 +53,6 @@ import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
-import com.vaadin.flow.server.VaadinService;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
 
@@ -70,7 +69,7 @@ public final class VaadinUtils {
 	 * @param percentage  whether the value represents a percentage
 	 * @param useGrouping whether to use a thousand grouping
 	 * @param value       the value
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean percentage, boolean useGrouping, BigDecimal value) {
 		return bigDecimalToString(false, percentage, useGrouping, SystemPropertyUtils.getDefaultDecimalPrecision(),
@@ -86,7 +85,7 @@ public final class VaadinUtils {
 	 * @param percentage  whether the value represents a percentage
 	 * @param useGrouping whether to use a thousand grouping
 	 * @param value       the value
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping,
 			BigDecimal value) {
@@ -102,7 +101,7 @@ public final class VaadinUtils {
 	 * @param useGrouping whether to use a thousand grouping
 	 * @param value       the value
 	 * @param locale      the locale to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			BigDecimal value, Locale locale) {
@@ -119,7 +118,7 @@ public final class VaadinUtils {
 	 * @param value          the value to convert
 	 * @param locale         the locale to use
 	 * @param currencySymbol the currency symbol to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			BigDecimal value, String currencySymbol, Locale locale) {
@@ -127,6 +126,12 @@ public final class VaadinUtils {
 				currencySymbol);
 	}
 
+	/**
+	 * Converts a BigDecimal to a String based on the attribute model
+	 * @param am the attribute model
+	 * @param value the value to convert
+	 * @return the resulting String value
+	 */
 	public static String bigDecimalToString(AttributeModel am, BigDecimal value) {
 		return bigDecimalToString(am.isCurrency(), am.isPercentage(), am.useThousandsGroupingInViewMode(),
 				am.getPrecision(), value, am.getCurrencySymbol(), getDateLocale());
@@ -137,20 +142,18 @@ public final class VaadinUtils {
 	 * directory
 	 * 
 	 * @param imageName the name of the file
-	 * @return
+	 * @return the created image
 	 */
 	public static Image createImage(String imageName) {
 		String resolvedImage = VaadinServletService.getCurrent().resolveResource("images/" + imageName);
-//		String resolvedImage = VaadinServletService.getCurrent().resolveResource("frontend://images/" + imageName,
-//				VaadinSession.getCurrent().getBrowser());
 		return new Image(resolvedImage, "");
 	}
 
 	/**
 	 * Creates an overflow layout of a certain height
 	 * 
-	 * @param height
-	 * @return
+	 * @param height the desired height
+	 * @return the created layout
 	 */
 	public static VerticalLayout createOverflowLayout(String height) {
 		VerticalLayout restricted = new DefaultVerticalLayout(false, false);
@@ -164,11 +167,11 @@ public final class VaadinUtils {
 	 * 
 	 * @param currency    whether to include a currency symbol
 	 * @param percentage  whether to include a percentage sign
-	 * @param useGrouping whether to use a thousands grouping separator
+	 * @param useGrouping whether to use a thousand grouping separator
 	 * @param precision   the desired precision
 	 * @param value       the value to convert
 	 * @param locale      the locale to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			Double value, Locale locale) {
@@ -185,7 +188,7 @@ public final class VaadinUtils {
 	 * @param value          the value to convert
 	 * @param locale         the locale to use
 	 * @param currencySymbol the currency symbol to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			Double value, Locale locale, String currencySymbol) {
@@ -196,7 +199,7 @@ public final class VaadinUtils {
 	 * Returns the currency symbol to be used - by default this is looked up from
 	 * the session, with a fallback to the system property "default.currency.symbol"
 	 *
-	 * @return
+	 * @return the currency symbol
 	 */
 	public static String getCurrencySymbol() {
 		String currencySymbol = SystemPropertyUtils.getDefaultCurrencySymbol();
@@ -213,7 +216,7 @@ public final class VaadinUtils {
 	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
 	 * this is not set, it falls back to the normal locale mechanism
 	 * 
-	 * @return
+	 * @return the Date locale
 	 */
 	public static Locale getDateLocale() {
 		if (VaadinSession.getCurrent() != null
@@ -365,14 +368,13 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Converts a number to a String
-	 * 
-	 * @param am
-	 * @param type
+	 * Converts a number to a String based on an
+	 * @param am the attribute model
 	 * @param value
 	 * @param grouping
 	 * @param locale
 	 * @param currencySymbol
+	 * @param <T>
 	 * @return
 	 */
 	public static <T> String numberToString(AttributeModel am, T value, boolean grouping, Locale locale,

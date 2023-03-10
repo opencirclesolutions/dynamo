@@ -66,7 +66,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	 * @param pageNumber the zero-based number of the first page
 	 * @param pageSize   the page size
 	 * @param orders     the sort orders
-	 * @return
+	 * @return the request
 	 */
 	private Pageable constructPageRequest(int pageNumber, int pageSize, SortOrder... orders) {
 		return new PageableImpl(pageNumber, pageSize, orders);
@@ -95,8 +95,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 
 	@Override
 	@Transactional
-	public void delete(T t) {
-		getDao().delete(t);
+	public void delete(T entity) {
+		getDao().delete(entity);
 	}
 
 	@Override
@@ -179,8 +179,8 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
-	public <S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
-		return getDao().findDistinct(filter, distinctField, elementType, orders);
+	public <S> List<S> findDistinctValues(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
+		return getDao().findDistinctValues(filter, distinctField, elementType, orders);
 	}
 
 	@Override
@@ -189,10 +189,11 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	/**
-	 * Looks for an identical entity (which has a different primary key but
+	 * Looks for an identical entity (which has a different primary key but is otherwise identical)
+	 * Returns <code>null</code> by default, override in subclasses
 	 * 
 	 * @param entity the entity
-	 * @return
+	 * @return the identical entity
 	 */
 	protected T findIdenticalEntity(T entity) {
 		return null;
@@ -209,15 +210,15 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	@Override
-	public List<?> findSelect(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
-			SortOrders sortOrders) {
-		return getDao().findSelect(filter, selectProperties,
+	public List<?> findProperties(Filter filter, String[] selectProperties, int pageNumber, int pageSize,
+								  SortOrders sortOrders) {
+		return getDao().findProperties(filter, selectProperties,
 				constructPageRequest(pageNumber, pageSize, sortOrders == null ? null : sortOrders.toArray()));
 	}
 
 	@Override
-	public List<?> findSelect(Filter filter, String[] selectProperties, SortOrders sortOrders) {
-		return getDao().findSelect(filter, selectProperties, sortOrders);
+	public List<?> findProperties(Filter filter, String[] selectProperties, SortOrders sortOrders) {
+		return getDao().findProperties(filter, selectProperties, sortOrders);
 	}
 
 	protected abstract BaseDao<ID, T> getDao();
@@ -232,22 +233,17 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 	}
 
 	/**
-	 * Checks if there is an entity that is identical to this one Subclasses must
+	 * Checks if there is an entity that is identical to this one. Subclasses must
 	 * override the findIdenticalEntity method to perform the actual calculation
 	 * 
-	 * @param t the entity to check
-	 * @return
+	 * @param entity the entity to check
+	 * @return true if an identical entity exists, false otherwise
 	 */
-	protected final boolean identicalEntityExists(T t) {
-		T other = findIdenticalEntity(t);
-		return other != null && (t.getId() == null || !t.getId().equals(other.getId()));
+	protected final boolean identicalEntityExists(T entity) {
+		T other = findIdenticalEntity(entity);
+		return other != null && (entity.getId() == null || !entity.getId().equals(other.getId()));
 	}
 
-	/**
-	 * 
-	 * @param key
-	 * @return
-	 */
 	protected String message(String key) {
 		return messageService.getMessage(key, Locale.getDefault());
 	}
@@ -256,36 +252,32 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 		return messageService.getMessage(key, Locale.getDefault(), args);
 	}
 
-	protected String messageWithLocale(String key, Locale loc, Object... args) {
-		return messageService.getMessage(key, loc, args);
-	}
-
 	@Override
 	@Transactional
 	public List<T> save(List<T> list) {
-		for (T t : list) {
-			validate(t);
+		for (T entity : list) {
+			validate(entity);
 		}
 		return getDao().save(list);
 	}
 
 	@Override
 	@Transactional
-	public T save(T t) {
-		validate(t);
-		return getDao().save(t);
+	public T save(T entity) {
+		validate(entity);
+		return getDao().save(entity);
 	}
 
 	/**
 	 * Validates an entity
 	 * 
-	 * @param t
+	 * @param entity the entity to validate
 	 */
 	@Override
-	public void validate(T t) {
+	public void validate(T entity) {
 
 		Validator validator = factory.getValidator();
-		Set<ConstraintViolation<T>> constraintViolations = validator.validate(t);
+		Set<ConstraintViolation<T>> constraintViolations = validator.validate(entity);
 
 		if (!constraintViolations.isEmpty()) {
 			List<String> errors = new ArrayList<>();
@@ -300,14 +292,12 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 				}
 			}
 
-			for (String error : errors) {
-				log.warn(error);
-			}
+			errors.forEach(error -> log.warn(error));
 
 			throw new OCSValidationException(errors);
 		}
 
-		if (identicalEntityExists(t)) {
+		if (identicalEntityExists(entity)) {
 			throw new OCSNonUniqueException(messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique",
 					new Locale(SystemPropertyUtils.getDefaultLocale())));
 		}

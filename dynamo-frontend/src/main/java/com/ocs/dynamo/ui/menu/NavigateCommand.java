@@ -70,7 +70,7 @@ public class NavigateCommand<T extends Component, U> implements ComponentEventLi
 		} else {
 			helper.setSelectedTab(null);
 		}
-		String lastVisited = "";
+		String lastVisited;
 		if (StringUtils.isEmpty(mode)) {
 			helper.navigate(destination);
 			lastVisited = destination;

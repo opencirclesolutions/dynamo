@@ -33,14 +33,14 @@ public class URLValidator implements Validator<String> {
 
 	private static final String URL_PREFIX = "http://";
 
-	private String message;
+	private final String message;
 
 	private static final long serialVersionUID = 680372854650555066L;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param message
+	 * @param message the message to show when an error occurs
 	 */
 	public URLValidator(String message) {
 		this.message = message;

@@ -53,11 +53,10 @@ public class EnumFieldComponentCreator implements SimpleComponentCreator {
 
 		// sort on the description
 		List<E> list = Lists.newArrayList(enumClass.getEnumConstants());
-		list.sort((a, b) -> {
-			String msg1 = messageService.getEnumMessage(enumClass, a, VaadinUtils.getLocale());
-			String msg2 = messageService.getEnumMessage(enumClass, b, VaadinUtils.getLocale());
+		list.sort((first, second) -> {
+			String msg1 = messageService.getEnumMessage(enumClass, first, VaadinUtils.getLocale());
+			String msg2 = messageService.getEnumMessage(enumClass, second, VaadinUtils.getLocale());
 			return msg1.compareToIgnoreCase(msg2);
-
 		});
 
 		cb.setItems(new ListDataProvider<>(list));

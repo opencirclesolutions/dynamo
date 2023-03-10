@@ -29,7 +29,7 @@ import com.ocs.dynamo.domain.AbstractEntity;
  */
 public class FixedDataSetIterator<ID extends Serializable, T extends AbstractEntity<ID>> implements DataSetIterator<ID, T> {
 
-    private List<T> items;
+    private final List<T> items;
 
     private int index = 0;
 

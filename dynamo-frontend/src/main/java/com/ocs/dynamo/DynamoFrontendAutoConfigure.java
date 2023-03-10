@@ -160,14 +160,14 @@ public class DynamoFrontendAutoConfigure {
 	@Bean
 	@Order(1130)
 	@ConditionalOnMissingBean(BooleanComboboxCreator.class)
-	public BooleanComboboxCreator BooleanComboboxCreator() {
+	public BooleanComboboxCreator booleanComboboxCreator() {
 		return new BooleanComboboxCreator();
 	}
 
 	@Bean
 	@Order(1140)
 	@ConditionalOnMissingBean(DatePickerComponentCreator.class)
-	public DatePickerComponentCreator DatePickerComponentCreator() {
+	public DatePickerComponentCreator datePickerComponentCreator() {
 		return new DatePickerComponentCreator();
 	}
 

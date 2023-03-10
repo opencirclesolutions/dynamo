@@ -44,10 +44,10 @@ public class AttributeComparator<T extends AbstractEntity<?>> implements Compara
             return -1;
         } else if (v2 == null) {
             return 1;
-        } else if (v1 instanceof String) {
-            return ((String) v1).compareToIgnoreCase((String) v2);
-        } else if (v1 instanceof Comparable) {
-            return ((Comparable) v1).compareTo(v2);
+        } else if (v1 instanceof String str1) {
+            return str1.compareToIgnoreCase((String) v2);
+        } else if (v1 instanceof Comparable comp) {
+            return comp.compareTo(v2);
         }
         return 0;
     }

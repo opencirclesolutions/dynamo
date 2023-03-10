@@ -16,11 +16,9 @@ package com.ocs.dynamo.dao.impl;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.querydsl.core.types.dsl.EntityPathBase;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Arrays;
-import java.util.stream.Collectors;
-
-import org.springframework.transaction.annotation.Transactional;
 
 /**
  * A default DAO implementation
@@ -72,7 +70,7 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 			return super.getFetchJoins();
 		}
 
-		return Arrays.stream(fetchPropertyIds).map(prop -> new FetchJoinInformation(prop)).collect(Collectors.toList())
+		return Arrays.stream(fetchPropertyIds).map(FetchJoinInformation::new).toList()
 				.toArray(new FetchJoinInformation[0]);
 	}
 }

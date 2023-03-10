@@ -37,7 +37,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	/**
 	 * Constructor
 	 * 
-	 * @param filters
+	 * @param filters the filters to include
 	 */
 	protected AbstractJunctionFilter(Filter... filters) {
 		this.filters.addAll(Lists.newArrayList(filters));
@@ -46,7 +46,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	/**
 	 * Constructor
 	 * 
-	 * @param filters
+	 * @param filters the filters to include
 	 */
 	protected AbstractJunctionFilter(Collection<Filter> filters) {
 		this.filters.addAll(filters);

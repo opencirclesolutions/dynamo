@@ -33,8 +33,8 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author BasRutten
  *
- * @param <ID>
- * @param <T>
+ * @param <ID> the primary key of the entity
+ * @param <T>  the type of the entity
  */
 public class TokenFieldComponentCreator<ID extends Serializable, T extends AbstractEntity<ID>>
 		implements EntityComponentCreator<ID, T> {
@@ -57,7 +57,7 @@ public class TokenFieldComponentCreator<ID extends Serializable, T extends Abstr
 			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> fieldFilter,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider) {
 		SortOrder<String>[] sortOrder = constructSortOrder(entityModel);
-		return new QuickAddTokenSelect<ID, T>(entityModel, attributeModel, service,
+		return new QuickAddTokenSelect<>(entityModel, attributeModel, service,
 				mapPagingMode(attributeModel.getPagingMode()), fieldFilter, sharedProvider, context.isSearch(),
 				sortOrder);
 	}

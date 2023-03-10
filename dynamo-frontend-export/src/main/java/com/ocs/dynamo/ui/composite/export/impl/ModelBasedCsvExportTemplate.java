@@ -55,11 +55,11 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 	 * @param exportMode  the export mode
 	 * @param sortOrders  the sort orders used to order the data
 	 * @param filter      filter to apply to limit the results
-	 * @param joins
+	 * @param joins       fetch joins to use when querying the database
 	 */
 	public ModelBasedCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
 			SortOrder[] sortOrders, Filter filter, FetchJoinInformation... joins) {
-		super(service, entityModel, exportMode, sortOrders, filter, "", joins);
+		super(service, entityModel, exportMode, sortOrders, filter, joins);
 	}
 
 	@Override
@@ -70,21 +70,13 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 						SystemPropertyUtils.getCsvQuoteChar().charAt(0),
 						SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
 
-			// add header row
-			List<String> headers = new ArrayList<>();
-			for (AttributeModel am : getEntityModel().getAttributeModelsSortedForGrid()) {
-				if (show(am)) {
-					headers.add(am.getDisplayName(VaadinUtils.getLocale()));
-				}
-			}
-			writer.writeNext(headers.toArray(new String[0]));
+			addHeaderRow(writer);
 
-			// iterate over the rows
 			T entity = iterator.next();
 			while (entity != null) {
 				List<String> row = new ArrayList<>();
 				for (AttributeModel am : getEntityModel().getAttributeModelsSortedForGrid()) {
-					if (show(am)) {
+					if (mustShow(am)) {
 						Object value = ClassUtils.getFieldValue(entity, am.getPath());
 						String str = GridFormatUtils.formatPropertyValue(am, value, ", ", VaadinUtils.getLocale(),
 								VaadinUtils.getTimeZoneId(), VaadinUtils.getCurrencySymbol());
@@ -99,6 +91,16 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
 			writer.flush();
 			return out.toByteArray();
 		}
+	}
+
+	private void addHeaderRow(CSVWriter writer) {
+		List<String> headers = new ArrayList<>();
+		for (AttributeModel am : getEntityModel().getAttributeModelsSortedForGrid()) {
+			if (mustShow(am)) {
+				headers.add(am.getDisplayName(VaadinUtils.getLocale()));
+			}
+		}
+		writer.writeNext(headers.toArray(new String[0]));
 	}
 
 }

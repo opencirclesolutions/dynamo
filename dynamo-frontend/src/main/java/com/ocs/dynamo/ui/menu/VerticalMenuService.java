@@ -13,15 +13,6 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -32,6 +23,13 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * A service that builds a menu in which the items are displayed below each
@@ -42,7 +40,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  */
 public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 
-	private Map<Component, AccordionPanel> toPanelMap = new HashMap<>();
+	private final Map<Component, AccordionPanel> toPanelMap = new HashMap<>();
 
 	/**
 	 * Adds child menu items to a parent item
@@ -75,7 +73,7 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 	 * @param destination the destination
 	 * @param description the description of the menu item
 	 * @param command     the navigation command to add to the item
-	 * @return
+	 * @return the resulting component
 	 */
 	private Accordion addMenuItem(Accordion parent, String caption, boolean hasChildren, String mode,
 			String destination, String description, NavigateCommand<Button, Accordion> command) {
@@ -89,7 +87,7 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 			button.addClassName("verticalMenuButton");
 			button.addThemeVariants(ButtonVariant.LUMO_SMALL);
 			button.addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-			button.addClickListener(event -> command.onComponentEvent(event));
+			button.addClickListener(command::onComponentEvent);
 
 			if (description != null) {
 				VaadinUtils.setTooltip(button, description);
@@ -134,7 +132,6 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 	/**
 	 * Constructs a menu item and its children
 	 * 
-	 * @param bar    the main menu bar
 	 * @param parent the parent component (either a menu bar or menu item) to add
 	 *               the menu to
 	 * @param key    the message key
@@ -172,7 +169,7 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 	 * 
 	 * @param rootName the root name (prefix) of the messages that are used to
 	 *                 populate the menu
-	 * @return
+	 * @return the component that is the root of the constructed menu
 	 */
 	public Accordion constructMenu(String rootName) {
 		Accordion mainMenu = new Accordion();
@@ -195,10 +192,10 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 
 	private List<Component> getChildren(Component comp) {
 		if (comp instanceof AccordionPanel) {
-			return ((AccordionPanel) comp).getContent().collect(Collectors.toList());
+			return ((AccordionPanel) comp).getContent().toList();
 		}
 
-		return comp.getChildren().collect(Collectors.toList());
+		return comp.getChildren().toList();
 	}
 
 	@Override
@@ -279,7 +276,7 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 	 * Recursively process all menu items and hides the items that have no visible
 	 * children
 	 * 
-	 * @param bar the menu bar
+	 * @param accordion the parent component
 	 */
 	protected void hideRecursively(Accordion accordion) {
 		for (Component item : getChildren(accordion)) {

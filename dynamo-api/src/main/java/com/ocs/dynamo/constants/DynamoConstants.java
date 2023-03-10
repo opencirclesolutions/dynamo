@@ -24,87 +24,87 @@ import lombok.experimental.UtilityClass;
  */
 @UtilityClass
 public class DynamoConstants {
-
+	
 	/**
-	 * CSS style for the main layout for a base view
+	 * CSS class for the main layout for a base view
 	 */
 	public static final String CSS_BASE_VIEW_PARENT = "baseViewParent";
 
 	/**
-	 * CSS style for grid details panel
-	 */
-	public static final String CSS_GRID_DETAILS_PANEL = "gridDetailsPanel";
-
-	/**
-	 * CSS style for the button that is used as the header for a collapsible panel
+	 * CSS class for the button that is used as the header for a collapsible panel
 	 */
 	public static final String CSS_COLLAPSIBLE_PANEL_BUTTON = "collapsiblePanelButton";
 
 	/**
-	 * CSS style for composition layout
+	 * CSS class for composition layout
 	 */
 	public static final String CSS_COMPOSITION_LAYOUT = "compositionLayout";
 
 	/**
-	 * CSS style for remove button in details edit layout
+	 * CSS class for remove button in details edit layout
 	 */
 	public static final String CSS_DETAIL_EDIT_LAYOUT_REMOVE_BUTTON = "detailsEditLayoutRemoveButton";
 
 	/**
-	 * CSS style for details edit layout
+	 * CSS class for details edit layout
 	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT = "detailsEditLayout";
 
 	/**
-	 * CSS style for button bar in details edit layout that apepars below the
+	 * CSS class for button bar in details edit layout that appears below the
 	 * components
 	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR = "detailsEditLayoutButtonBar";
 
 	/**
-	 * CSS style for button bar in details edit layout that appears on same line as
+	 * CSS class for button bar in details edit layout that appears on same line as
 	 * the components
 	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
 	/**
-	 * CSS style for modal dialog
+	 * CSS class for modal dialog
 	 */
 	public static final String CSS_DIALOG = "dynamoDialog";
 
 	/**
-	 * CSS style for modal dialog title
+	 * CSS class for modal dialog title
 	 */
 	public static final String CSS_DIALOG_TITLE = "dynamoDialogTitle";
 
 	/**
-	 * CSS style for download button
+	 * CSS class for download button
 	 */
 	public static final String CSS_DOWNLOAD_BUTTON = "downloadButton";
 
 	/**
-	 * CSS style for flex layouts
+	 * CSS class for flex layouts
 	 */
 	public static final String CSS_DYNAMO_FLEX_ROW = "dynamoFlexRow";
 
 	/**
-	 * CSS style for editable grid layout
+	 * CSS class for editable grid layout
 	 */
 	public static final String CSS_EDITABLE_GRID_LAYOUT = "editableGridLayout";
 
 	/**
-	 * CSS style for form layout that is used for grouping components together on
+	 * CSS class for grid details panel
+	 */
+	public static final String CSS_GRID_DETAILS_PANEL = "gridDetailsPanel";
+
+	/**
+	 * CSS class for form layout that is used for grouping components together on
 	 * same row
 	 */
 	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
 
 	/**
-	 * CSS style for horizontal display layout
+	 * CSS class for horizontal display layout
 	 */
 	public static final String CSS_HORIZONTAL_DISPLAY_LAYOUT = "horizontalDisplayLayout";
 
 	/**
-	 * CSS style for image previews
+	 * CSS class for image previews
 	 */
 	public static final String CSS_IMAGE_PREVIEW = "dynamoImagePreview";
 
@@ -113,65 +113,90 @@ public class DynamoConstants {
 	 */
 	public static final String CSS_LAST_VISITED = "lastVisited";
 
+	/**
+	 * CSS class for the main edit layout in a SearchLayout
+	 */
 	public static final String CSS_MAIN_EDIT_LAYOUT = "mainEditLayout";
 
 	/**
-	 * CSS style for main search layout
+	 * CSS class for main search layout
 	 */
 	public static final String CSS_MAIN_SEARCH_LAYOUT = "mainSearchLayout";
 
-	public static final String CSS_SEARCH_FORM_LAYOUT = "searchFormLayout";
-
-	public static final String CSS_SEARCH_FORM_WRAPPER = "searchFormWrapper";
-
-	public static final String CSS_FLEXIBLE_SEARCH_LAYOUT_SEARCH_FORM = "flexibleSearchForm";
-
+	/**
+	 * CSS class for ModelBasedEditForm
+	 */
 	public static final String CSS_MODEL_BASED_EDIT_FORM = "modelBasedEditForm";
 
 	/**
-	 * CSS style for edit form main layout
+	 * CSS class for edit form main layout
 	 */
 	public static final String CSS_MODEL_BASED_EDIT_FORM_MAIN = "modelBasedEditFormMain";
 
 	/**
-	 * CSS style for panel
+	 * CSS class for panel
 	 */
 	public static final String CSS_PANEL = "dynamoPanel";
 
 	/**
-	 * CSS style for dialog title
+	 * CSS class for dialog title
 	 */
 	public static final String CSS_PANEL_TITLE = "dynamoPanelTitle";
 
 	/**
-	 * CSS style for parent row in tree grid
+	 * CSS class for parent row in tree grid
 	 */
 	public static final String CSS_PARENT_ROW = "dynamoParentRow";
 
 	/**
-	 * CSS style for search results layout
+	 * CSS class for search form layout
+	 */
+	public static final String CSS_SEARCH_FORM_LAYOUT = "searchFormLayout";
+
+	/**
+	 * CSS class for search layout search form wrapper
+	 */
+	public static final String CSS_SEARCH_FORM_WRAPPER = "searchFormWrapper";
+
+	/**
+	 * CSS class for search results layout
 	 */
 	public static final String CSS_SEARCH_RESULTS_LAYOUT = "searchResultsLayout";
 
 	/**
-	 * CSS style for simple edit layout
+	 * CSS class for simple edit layout
 	 */
 	public static final String CSS_SIMPLE_EDIT_LAYOUT = "simpleEditLayout";
 
+	/**
+	 * CSS class for simple search layout
+	 */
 	public static final String CSS_SIMPLE_SEARCH_LAYOUT = "simpleSearchLayout";
 
 	/**
-	 * CSS style for split layout
+	 * CSS class for split layout
 	 */
 	public static final String CSS_SPLIT_LAYOUT = "splitLayout";
 
+	/**
+	 * CSS class split layout left side
+	 */
 	public static final String CSS_SPLIT_LAYOUT_LEFT = "splitLayoutLeft";
 
+	/**
+	 * CSS class split layout right side
+	 */
 	public static final String CSS_SPLIT_LAYOUT_RIGHT = "splitLayoutRight";
 
-	public static final String CSS_TAB_LAYOUT_DISPLAY_PAGE = "tabLayoutDisplayPage";
-
+	/**
+	 * CSS class for tab layout 
+	 */
 	public static final String CSS_TAB_LAYOUT = "tabLayout";
+
+	/**
+	 * CSS Class for the displayed page in a tab layout
+	 */
+	public static final String CSS_TAB_LAYOUT_DISPLAY_PAGE = "tabLayoutDisplayPage";
 
 	/**
 	 * Currency symbol
@@ -230,27 +255,21 @@ public class DynamoConstants {
 	public static final String SP_CAPITALIZE_WORDS = "ocs.capitalize.words";
 
 	/**
-	 * Name of the system property that is used to determine the default currency
-	 * symbol
-	 */
-	public static final String SP_DEFAULT_CURRENCY_SYMBOL = "ocs.default.currency.symbol";
-
-	/**
 	 * Name of the system property that is used to determine whether a clear button
 	 * is visible for a component
 	 */
 	public static final String SP_DEFAULT_CLEAR_BUTTON_VISIBLE = "ocs.default.clear.button.visible";
 
 	/**
+	 * Name of the system property that is used to determine the default currency
+	 * symbol
+	 */
+	public static final String SP_DEFAULT_CURRENCY_SYMBOL = "ocs.default.currency.symbol";
+
+	/**
 	 * Name of the system property that is used to determine the default date format
 	 */
 	public static final String SP_DEFAULT_DATE_FORMAT = "ocs.default.date.format";
-
-	/**
-	 * Name of the system property that is used to specify the default number field
-	 * mode
-	 */
-	public static final String SP_DEFAULT_NUMBER_FIELD_MODE = "ocs.default.number.field.mode";
 
 	/**
 	 * Name of the system property that is used to set the locale used for month
@@ -312,11 +331,6 @@ public class DynamoConstants {
 	public static final String SP_DEFAULT_GROUP_TOGETHER_MODE = "ocs.default.group.together.mode";
 
 	/**
-	 * Name of the system property that is used to determine the default paging mode
-	 */
-	public static final String SP_DEFAULT_PAGING_MODE = "ocs.default.paging.mode";
-
-	/**
 	 * Name of the system property that is used to determine the column width from
 	 * grouping together
 	 */
@@ -350,6 +364,17 @@ public class DynamoConstants {
 	 * depth
 	 */
 	public static final String SP_DEFAULT_NESTING_DEPTH = "ocs.default.entity.nesting.depth";
+
+	/**
+	 * Name of the system property that is used to specify the default number field
+	 * mode
+	 */
+	public static final String SP_DEFAULT_NUMBER_FIELD_MODE = "ocs.default.number.field.mode";
+
+	/**
+	 * Name of the system property that is used to determine the default paging mode
+	 */
+	public static final String SP_DEFAULT_PAGING_MODE = "ocs.default.paging.mode";
 
 	/**
 	 * Name of the system property that is used to determine the default case
@@ -424,6 +449,12 @@ public class DynamoConstants {
 	public static final String SP_LIST_SELECT_HEIGHT = "ocs.default.list.select.height";
 
 	/**
+	 * Name of the system property that indicates whether to display captions on the buttons
+	 * in a lookup field
+	 */
+	public static final String SP_LOOKUP_FIELD_CAPTIONS = "ocs.default.lookupfield.captions";
+	
+	/**
 	 * Name of the system property that indicates the maximum number of items to
 	 * display in an entity lookup field in multiple select mode
 	 */
@@ -454,6 +485,11 @@ public class DynamoConstants {
 	public static final String SP_TRIM_SPACES = "ocs.trim.spaces";
 
 	/**
+	 * The name of the database function used to replace accents
+	 */
+	public static final String SP_UNACCENT_FUNCTION_NAME = "ocs.unaccent.function.name";
+
+	/**
 	 * Indicates whether to use the browser time zone for formatting zoned date
 	 * times
 	 */
@@ -468,15 +504,10 @@ public class DynamoConstants {
 	 * Indicates whether to use selection check boxes for multiple selection in grid
 	 */
 	public static final String SP_USE_GRID_SELECTION_CHECK_BOXES = "ocs.use.grid.selection.checkboxes";
-
+	
 	/**
 	 * Whether to use thousands grouping in XLS files
 	 */
 	public static final String SP_XLS_THOUSANDS_GROUPING = "ocs.xls.thousands.grouping";
-	
-	/**
-	 * The name of the database function used to replace accents
-	 */
-	public static final String SP_UNACCENT_FUNCTION_NAME = "ocs.unaccent.function.name";
 
 }

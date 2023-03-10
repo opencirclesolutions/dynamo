@@ -47,7 +47,7 @@ public class SortOrder implements Serializable {
 		 * Translates the provided String into the corresponding Direction enum
 		 * 
 		 * @param value the String representation of the Direction
-		 * @return
+		 * @return the Direction
 		 */
 		public static Direction fromString(String value) {
 			try {

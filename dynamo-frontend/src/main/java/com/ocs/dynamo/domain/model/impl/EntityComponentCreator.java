@@ -50,7 +50,7 @@ public interface EntityComponentCreator<ID extends Serializable, T extends Abstr
 	 * @param entityModel    the entity model
 	 * @param fieldFilter    the field filter used for limiting the results
 	 * @param sharedProvider shared data provider
-	 * @return
+	 * @return the created component
 	 */
 	Component createComponent(AttributeModel attributeModel, FieldCreationContext context, BaseService<ID, T> service,
 			EntityModel<T> entityModel, SerializablePredicate<T> fieldFilter,
@@ -60,7 +60,7 @@ public interface EntityComponentCreator<ID extends Serializable, T extends Abstr
 	 * Constructs the sort order to be used by the component
 	 * 
 	 * @param entityModel the entity model that defines the sort order
-	 * @return
+	 * @return the sort order
 	 */
 	@SuppressWarnings("unchecked")
 	default SortOrder<String>[] constructSortOrder(EntityModel<?> entityModel) {
@@ -82,21 +82,18 @@ public interface EntityComponentCreator<ID extends Serializable, T extends Abstr
 	 * @return the associated SelectMode
 	 */
 	default SelectMode mapPagingMode(PagingMode mode) {
-		switch (mode) {
-		case NON_PAGED:
-			return SelectMode.FILTERED_ALL;
-		case PAGED:
-			return SelectMode.FILTERED_PAGED;
-		default:
-			return null;
-		}
+		return switch (mode) {
+			case NON_PAGED -> SelectMode.FILTERED_ALL;
+			case PAGED -> SelectMode.FILTERED_PAGED;
+			default -> null;
+		};
 	}
 
 	/**
 	 * Checks whether the attribute model defines an entity or a collection
 	 * 
-	 * @param attributeModel
-	 * @return
+	 * @param attributeModel the attribute model to check
+	 * @return true if this is the case, false otherwise
 	 */
 	default boolean isCollectionOrEntity(AttributeModel attributeModel) {
 		return Collection.class.isAssignableFrom(attributeModel.getType())

@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -41,7 +42,6 @@ import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.AttachEvent;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
@@ -88,6 +88,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	/**
 	 * The classes of the domains that are managed by this screen
 	 */
+	@Getter
 	private final List<Class<? extends Domain>> domainClasses;
 
 	@Getter
@@ -120,6 +121,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	/**
 	 * The selected domain class
 	 */
+	@Getter
 	private Class<? extends Domain> selectedDomain;
 
 	/**
@@ -233,7 +235,9 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
 
 			layout.setEditAllowed(getEditAllowed());
-			layout.addCustomField(null, null);
+			for (Entry<String, Function<CustomFieldContext, Component>> entry : customFields.entrySet()) {
+				layout.addCustomField(entry.getKey(), entry.getValue());
+			}
 
 			// register afterwards so that we actually register for the current layout
 			// rather than the previous one
@@ -248,10 +252,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		}
 	}
 
-	public List<Class<? extends Domain>> getDomainClasses() {
-		return domainClasses;
-	}
-
 	/**
 	 * Returns the entity model to use for a certain domain class
 	 *
@@ -262,13 +262,6 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		String override = entityModelOverrides.get(domainClass);
 		return override != null ? getEntityModelFactory().getModel(override, domainClass)
 				: getEntityModelFactory().getModel(domainClass);
-	}
-
-	/**
-	 * @return the currently selected domain class
-	 */
-	public Class<? extends Domain> getSelectedDomain() {
-		return selectedDomain;
 	}
 
 	/**

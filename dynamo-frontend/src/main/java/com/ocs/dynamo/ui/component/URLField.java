@@ -13,15 +13,16 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.vaadin.componentfactory.EnhancedFormLayout;
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+
+import lombok.Getter;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A custom field for displaying a clickable URL
@@ -33,17 +34,21 @@ public class URLField extends CustomField<String> {
 
     private static final long serialVersionUID = -1899451186343723434L;
 
-    private AttributeModel attributeModel;
+    @Getter
+    private final AttributeModel attributeModel;
 
     private EnhancedFormLayout bar;
 
+    @Getter
     private boolean editable;
 
+    @Getter
     private Anchor link;
 
     private HorizontalLayout main;
 
-    private TextField textField;
+    @Getter
+    private final TextField textField;
 
     public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
         setSizeFull();
@@ -58,14 +63,6 @@ public class URLField extends CustomField<String> {
     @Override
     protected String generateModelValue() {
         return textField.getValue();
-    }
-
-    protected Anchor getLink() {
-        return link;
-    }
-
-    public TextField getTextField() {
-        return textField;
     }
 
     @Override
@@ -84,10 +81,6 @@ public class URLField extends CustomField<String> {
         add(main);
     }
 
-    public boolean isEditable() {
-        return editable;
-    }
-
     public void setEditable(boolean editable) {
         this.editable = editable;
         setMode();
@@ -100,6 +93,14 @@ public class URLField extends CustomField<String> {
         }
     }
 
+    @Override
+	public void setInvalid(boolean invalid) {
+		super.setInvalid(invalid);
+		if (textField != null) {
+			textField.setInvalid(invalid);
+		}
+	}
+
     /**
      * Sets the correct mode (read only or editable)
      */
@@ -111,6 +112,12 @@ public class URLField extends CustomField<String> {
             } else {
                 main.replace(textField, bar);
             }
+        }
+    }
+
+    public void setPlaceholder(String placeHolder) {
+        if (textField != null) {
+            textField.setPlaceholder(placeHolder);
         }
     }
 
@@ -130,8 +137,8 @@ public class URLField extends CustomField<String> {
         updateLink(newValue);
         textField.setValue(newValue);
     }
-
-    /**
+    
+	/**
      * Updates the field value - renders a clickable URL if the field value is not
      * empty
      * 
@@ -150,23 +157,5 @@ public class URLField extends CustomField<String> {
             }
         }
     }
-
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
-
-    public void setPlaceholder(String placeHolder) {
-        if (textField != null) {
-            textField.setPlaceholder(placeHolder);
-        }
-    }
-    
-	@Override
-	public void setInvalid(boolean invalid) {
-		super.setInvalid(invalid);
-		if (textField != null) {
-			textField.setInvalid(invalid);
-		}
-	}
 
 }

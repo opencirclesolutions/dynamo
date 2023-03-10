@@ -49,6 +49,10 @@ public class UploadComponent extends CustomField<byte[]> {
 
 	private static final long serialVersionUID = -2254464483539583268L;
 
+	/**
+	 * The code to execute after an upload completes successfully 
+	 * Accepts the name of the file that was uploaded and the binary representation of the file
+	 */
 	@Setter
 	@Getter
 	private BiConsumer<String, byte[]> afterUploadCompleted;

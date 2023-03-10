@@ -38,20 +38,17 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 /**
  * Base class for entity model based exports to Excel or CSV
  * 
  * @author bas.rutten
  *
- * @param <ID> the type of the primary key of the entity
- * @param <T>  the type of the entity
+ * @param <ID> the type of the primary key of the entity to export
+ * @param <T>  the type of the entity to export
  */
 public abstract class BaseExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> {
-
-	protected static final int FIXED_COLUMN_WIDTH = 20 * 256;
-
-	protected static final int TITLE_ROW_HEIGHT = 40;
 
 	protected static final int PAGE_SIZE = 1000;
 
@@ -86,7 +83,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * @param service     the service used for contacting the database
 	 * @param entityModel the entity model of the entity to export
 	 * @param exportMode  the desired export mode
-	 * @param sortOrders  the sort orders to apply
+	 * @param sortOrders  the sort orders
 	 * @param filter      the filter used to restrict the result set
 	 * @param title       the title of the sheet
 	 * @param joins       the joins to use when retrieving data
@@ -105,11 +102,11 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	}
 
 	/**
-	 * Generates the file
+	 * Generates the content to export
 	 *
 	 * @param iterator data set iterator that contains the rows to include
-	 * @return
-	 * @throws IOException
+	 * @return the byte representation of the exported data
+	 * @throws IOException when the data cannot be written
 	 */
 	protected abstract byte[] generate(DataSetIterator<ID, T> iterator) throws IOException;
 
@@ -120,12 +117,10 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * @return <code>true</code> if the attribute must be included,
 	 *         <code>false</code> otherwise
 	 */
-	protected boolean show(AttributeModel am) {
+	protected boolean mustShow(AttributeModel am) {
 		boolean visible = ExportMode.FULL.equals(exportMode) ? am.isVisible() : am.isVisibleInGrid();
-
 		// never show invisible or LOB attributes
 		return visible && !AttributeType.LOB.equals(am.getAttributeType());
-
 	}
 
 	/**
@@ -139,7 +134,6 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 			List<ID> ids = service.findIds(getFilter(), sortOrders);
 			PagingDataSetIterator<ID, T> iterator = new PagingDataSetIterator<>(ids,
 					page -> service.fetchByIds(page, new SortOrders(sortOrders), joins), PAGE_SIZE);
-
 			return generate(iterator);
 		} catch (IOException ex) {
 			throw new OCSRuntimeException(ex.getMessage(), ex);
@@ -150,7 +144,7 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
 	 * Processes a fixed set of data
 	 * 
 	 * @param items the set of data to process
-	 * @return
+	 * @return the byte representation
 	 */
 	public final byte[] processFixed(List<T> items) {
 		try {

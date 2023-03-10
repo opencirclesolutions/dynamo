@@ -38,6 +38,7 @@ import com.ocs.dynamo.domain.model.MultiSelectMode;
 import com.ocs.dynamo.domain.model.NumberFieldMode;
 import com.ocs.dynamo.domain.model.PagingMode;
 import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
+import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 
@@ -120,6 +121,8 @@ public class AttributeModelImpl implements AttributeModel {
 	private boolean ignoreInSearchFilter;
 
 	private boolean image;
+	
+	private VisibilityType lookupFieldCaptions;
 
 	private boolean mainAttribute;
 
@@ -348,7 +351,7 @@ public class AttributeModelImpl implements AttributeModel {
 			try {
 				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
 				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
-				source.put(locale.toString(), Optional.ofNullable(str));
+				source.put(locale.toString(), Optional.of(str));
 			} catch (MissingResourceException ex) {
 				source.put(locale.toString(), Optional.empty());
 			}
@@ -365,7 +368,7 @@ public class AttributeModelImpl implements AttributeModel {
 	 * @param source the cache
 	 * @param locale the locale
 	 * @param key    the message key
-	 * @return
+	 * @return the value  that the key resolves to
 	 */
 	private String lookupNoDefault(Map<String, Optional<String>> source, Locale locale, String key) {
 		if (!source.containsKey(locale.toString())) {
@@ -373,7 +376,7 @@ public class AttributeModelImpl implements AttributeModel {
 				// resource bundle has not been checked yet, check it now
 				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
 				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
-				source.put(locale.toString(), Optional.ofNullable(str));
+				source.put(locale.toString(), Optional.of(str));
 			} catch (MissingResourceException ex) {
 				// nothing in resource bundle, store empty value
 				source.put(locale.toString(), Optional.empty());

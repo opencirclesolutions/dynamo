@@ -13,19 +13,17 @@
  */
 package com.ocs.dynamo.ui.menu;
 
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Set;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.contextmenu.HasMenuItems;
 import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.contextmenu.SubMenu;
 import com.vaadin.flow.component.menubar.MenuBar;
+import org.apache.commons.lang3.StringUtils;
+
+import java.util.List;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Service for creating a menu based on property files. Use the
@@ -41,14 +39,14 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 	 * @param menuItem the menu item to add the children to
 	 * @param key the key of the menu item
 	 */
-	private void addChildItems(MenuBar bar, HasMenuItems item, String key) {
+	private void addChildItems(MenuBar bar, HasMenuItems menuItem, String key) {
 		// add the child items
 		int index = 1;
 		String childKey = getMessageService().getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
 				VaadinUtils.getLocale());
 
 		while (childKey != null) {
-			constructMenu(bar, item, key + "." + index);
+			constructMenu(bar, menuItem, key + "." + index);
 			index++;
 			childKey = getMessageService().getMessageNoDefault(key + "." + index + "." + DISPLAY_NAME,
 					VaadinUtils.getLocale());
@@ -61,17 +59,15 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 	 * @param parent  the parent to which to add the item
 	 * @param caption the caption of the item
 	 * @param command the navigation command to add to the item
-	 * @return
+	 * @return the menu item
 	 */
 	private MenuItem addMenuItem(HasMenuItems parent, String caption, NavigateCommand<MenuItem, MenuBar> command) {
 		MenuItem menuItem;
 		if (parent instanceof MenuBar) {
-			// main menu bar
-			menuItem = ((MenuBar) parent).addItem(caption, command);
+			menuItem = parent.addItem(caption, command);
 			return menuItem;
 		} else {
-			// sub menu
-			menuItem = ((SubMenu) parent).addItem(caption, command);
+			menuItem = parent.addItem(caption, command);
 		}
 		return menuItem;
 	}
@@ -89,7 +85,6 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 		String caption = getMessageService().getMessageNoDefault(key + "." + DISPLAY_NAME, VaadinUtils.getLocale());
 
 		MenuItem menuItem = null;
-		// When no caption exists, return no instance of menuItem (null)
 		if (!StringUtils.isEmpty(caption)) {
 			// look up the messages
 			String destination = getMessageService().getMessageNoDefault(key + "." + DESTINATION,
@@ -101,7 +96,6 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 
 			// create navigation command
 			NavigateCommand<MenuItem, MenuBar> command = createNavigationCommand(root, destination, tabIndex, mode);
-
 			menuItem = addMenuItem(parent, caption, command);
 
 			// set description
@@ -127,7 +121,7 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 	 * 
 	 * @param rootName the root name (prefix) of the messages that are used to
 	 *                 populate the menu
-	 * @return
+	 * @return construct the menu
 	 */
 	public MenuBar constructMenu(String rootName) {
 		MenuBar mainMenu = new MenuBar();
@@ -155,9 +149,9 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 	 * Checks whether the provided item has a sub menu item with the provided
 	 * destination
 	 * 
-	 * @param item
-	 * @param destination
-	 * @return
+	 * @param item the item
+	 * @param destination destination
+	 * @return true when this is the case, false otherwise
 	 */
 	private boolean hasChildWithDestination(MenuItem item, String destination) {
 		if (item.getSubMenu() != null && !item.getSubMenu().getItems().isEmpty()) {
@@ -173,7 +167,7 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 	 * Hides a menu item if all its children are hidden
 	 * 
 	 * @param item the menu item
-	 * @return
+	 * @return true whether the item is still visible in the end
 	 */
 	private boolean hideIfAllChildrenHidden(MenuItem item) {
 		if (!item.getSubMenu().getItems().isEmpty()) {
@@ -186,7 +180,7 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 				found |= visible;
 			}
 
-			// .. if not, then hide the item
+			// if not, then hide the item
 			if (!found) {
 				item.setVisible(false);
 			}

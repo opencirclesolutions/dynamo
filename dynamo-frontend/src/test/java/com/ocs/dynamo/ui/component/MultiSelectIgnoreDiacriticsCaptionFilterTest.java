@@ -1,9 +1,8 @@
 package com.ocs.dynamo.ui.component;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class MultiSelectIgnoreDiacriticsCaptionFilterTest {
 
@@ -56,15 +55,15 @@ public class MultiSelectIgnoreDiacriticsCaptionFilterTest {
 
 		MultiSelectIgnoreDiacriticsCaptionFilter<String> filter1 = new MultiSelectIgnoreDiacriticsCaptionFilter<>(null,
 				false, false);
-		assertFalse(filter1.equals(null));
-		assertFalse(filter1.equals(new Object()));
+		assertNotEquals(null, filter1);
+		assertNotEquals(filter1, new Object());
 
 		MultiSelectIgnoreDiacriticsCaptionFilter<String> filter2 = new MultiSelectIgnoreDiacriticsCaptionFilter<>(null,
 				false, false);
-		assertTrue(filter1.equals(filter2));
+		assertEquals(filter1, filter2);
 
 		MultiSelectIgnoreDiacriticsCaptionFilter<String> filter3 = new MultiSelectIgnoreDiacriticsCaptionFilter<>(null,
 				false, true);
-		assertFalse(filter1.equals(filter3));
+		assertNotEquals(filter1, filter3);
 	}
 }

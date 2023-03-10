@@ -69,14 +69,14 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 	private ProgressBar progressBar;
 
 	@Getter
-	private UI ui;
+	private final UI ui;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param exportService the export button
 	 * @param entityModel   the entity model of the entity to export
-	 * @param exportMode    the export mode
+	 * @param exportMode    the desired export mode
 	 */
 	protected BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
 		super("ocsDownloadDialog");
@@ -86,7 +86,7 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 		this.ui = UI.getCurrent();
 
 		setTitle(message("ocs.export"));
-		setBuildMainLayout(parent -> buildMainLayout(parent));
+		setBuildMainLayout(this::buildMainLayout);
 
 		setBuildButtonBar(buttonBar -> {
 			Button cancelButton = new Button(message("ocs.cancel"));
@@ -94,6 +94,31 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 			cancelButton.setIcon(VaadinIcon.BAN.create());
 			buttonBar.add(cancelButton);
 		});
+	}
+
+	protected abstract DownloadButton createDownloadCSVButton();
+
+	protected abstract DownloadButton createDownloadExcelButton();
+
+	/**
+	 * Creates the download stream
+	 * 
+	 * @param supplier supplier function
+	 * @return an input stream that can be used to download
+	 */
+	protected InputStream download(Supplier<ByteArrayInputStream> supplier) {
+		try {
+			ByteArrayInputStream stream = supplier.get();
+			getProgressBar().setVisible(false);
+			this.close();
+			return stream;
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			getUi().access(() -> VaadinUtils.showErrorNotification(ex.getMessage()));
+			return null;
+		} finally {
+			this.close();
+		}
 	}
 
 	private void buildMainLayout(VerticalLayout parent) {
@@ -109,30 +134,5 @@ public abstract class BaseExportDialog<ID extends Serializable, T extends Abstra
 
 		UI.getCurrent().setPollInterval(100);
 		parent.add(progressBar);
-	}
-
-	protected abstract DownloadButton createDownloadCSVButton();
-
-	protected abstract DownloadButton createDownloadExcelButton();
-
-	/**
-	 * Creates the download stream
-	 * 
-	 * @param supplier supplier function
-	 * @return
-	 */
-	protected InputStream download(Supplier<ByteArrayInputStream> supplier) {
-		try {
-			ByteArrayInputStream stream = supplier.get();
-			getProgressBar().setVisible(false);
-			this.close();
-			return stream;
-		} catch (Exception ex) {
-			log.error(ex.getMessage(), ex);
-			getUi().access(() -> VaadinUtils.showErrorNotification(ex.getMessage()));
-			return null;
-		} finally {
-			this.close();
-		}
 	}
 }

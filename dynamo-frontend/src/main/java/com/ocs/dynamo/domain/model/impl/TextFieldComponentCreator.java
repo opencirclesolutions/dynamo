@@ -17,10 +17,11 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
-import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
+
+import static com.ocs.dynamo.utils.NumberUtils.isNumeric;
 
 /**
  * Component creator used for creating a text field for managing an attribute of
@@ -40,7 +41,7 @@ public class TextFieldComponentCreator implements SimpleComponentCreator {
 		}
 
 		// only for String and number
-		if (!(String.class.equals(attributeModel.getType()) || NumberUtils.isNumeric(attributeModel.getType()))) {
+		if (!(String.class.equals(attributeModel.getType()) || isNumeric(attributeModel.getType()))) {
 			return false;
 		}
 
@@ -50,8 +51,7 @@ public class TextFieldComponentCreator implements SimpleComponentCreator {
 
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
-		TextField tf = new TextField();
-		return tf;
+		return new TextField();
 	}
 
 	@Override

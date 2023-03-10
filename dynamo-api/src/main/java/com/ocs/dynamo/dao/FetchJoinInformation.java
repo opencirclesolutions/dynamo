@@ -45,18 +45,10 @@ public class FetchJoinInformation {
 	/**
 	 * Constructor - defaults to left join
 	 * 
-	 * @param property
+	 * @param property the property to fetch
 	 */
 	public FetchJoinInformation(String property) {
 		this(property, JoinType.LEFT);
-	}
-
-	public String getProperty() {
-		return property;
-	}
-
-	public JoinType getJoinType() {
-		return joinType;
 	}
 
 	/**
@@ -70,19 +62,19 @@ public class FetchJoinInformation {
 	}
 
 	/**
-	 * 
-	 * @param property
-	 * @return
+	 * Create a FetchJoinInformation based on the provided property
+	 * @param property the property
+	 * @return the created FetchJoinInformation object
 	 */
 	public static FetchJoinInformation of(String property) {
 		return new FetchJoinInformation(property);
 	}
 
 	/**
-	 * 
-	 * @param property
-	 * @param joinType
-	 * @return
+	 * Create a FetchJoinInformation based on the provided property and join type
+	 * @param property the property
+	 * @param joinType the join type
+	 * @return the created FetchJoinInformation object
 	 */
 	public static FetchJoinInformation of(String property, JoinType joinType) {
 		return new FetchJoinInformation(property, joinType);

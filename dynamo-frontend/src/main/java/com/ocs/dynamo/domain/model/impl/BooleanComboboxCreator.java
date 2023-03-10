@@ -22,7 +22,7 @@ import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.provider.ListDataProvider;
 
 /**
- * Component creator for creating a boolean check box (featuring true, false,
+ * Component creator for creating a boolean combo box (featuring true, false,
  * and undefined as possible values).
  * 
  * @author BasRutten

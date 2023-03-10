@@ -13,26 +13,7 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.stream.Collectors;
-
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.NoResultException;
-import jakarta.persistence.NonUniqueResultException;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Query;
-import jakarta.persistence.Tuple;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaQuery;
-
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.Pageable;
-import com.ocs.dynamo.dao.SortOrder;
-import com.ocs.dynamo.dao.SortOrders;
+import com.ocs.dynamo.dao.*;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.Filter;
@@ -40,6 +21,13 @@ import com.querydsl.core.types.dsl.EntityPathBase;
 import com.querydsl.jpa.impl.JPADeleteClause;
 import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAUpdateClause;
+
+import javax.persistence.*;
+import javax.persistence.criteria.CriteriaQuery;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
 
 /**
  * Base class for all DAO implementations
@@ -109,15 +97,13 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public void delete(List<T> list) {
-		for (T t : list) {
-			delete(t);
-		}
+		list.forEach(this::delete);
 	}
 
 	@Override
-	public void delete(T t) {
-		t = entityManager.merge(t);
-		entityManager.remove(t);
+	public void delete(T entity) {
+		entity = entityManager.merge(entity);
+		entityManager.remove(entity);
 	}
 
 	@Override
@@ -201,14 +187,6 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		return fetch(filter, null, null, (FetchJoinInformation[]) null);
 	}
 
-	/**
-	 * Performs a query and returns results (without fetches)
-	 * 
-	 * @param filter     the filter to apply
-	 * @param pageable   paging data
-	 * @param sortOrders the sort orders to apply
-	 * @return
-	 */
 	private List<T> find(Filter filter, Pageable pageable, SortOrders sortOrders) {
 		TypedQuery<T> query = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(), null,
 				sortOrders == null ? null : sortOrders.toArray());
@@ -256,17 +234,17 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	@SuppressWarnings("unchecked")
-	public <S> List<S> findDistinct(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
+	public <S> List<S> findDistinctValues(Filter filter, String distinctField, Class<S> elementType, SortOrder... orders) {
 		TypedQuery<Tuple> query = JpaQueryBuilder.createDistinctQuery(filter, entityManager, getEntityClass(),
 				distinctField, orders);
 		return query.getResultList().stream().map(t -> t.get(0)).filter(Objects::nonNull).map(o -> (S) o)
-				.collect(Collectors.toList());
+				.toList();
 	}
 
 	@Override
 	@SuppressWarnings("unchecked")
 	public <S> List<S> findDistinctInCollectionTable(String tableName, String distinctField, Class<S> elementType) {
-		String query = "select distinct " + distinctField + " from " + tableName;
+		String query = "select distinct %s from %s".formatted(distinctField, tableName);
 		return getEntityManager().createNativeQuery(query).getResultList();
 	}
 
@@ -277,7 +255,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		if (maxResults != null) {
 			query = query.setMaxResults(maxResults);
 		}
-		return query.getResultList().stream().map(t -> t.get(0)).map(o -> (ID) o).collect(Collectors.toList());
+		return query.getResultList().stream().map(tuple -> tuple.get(0)).map(o -> (ID) o).toList();
 	}
 
 	@Override
@@ -286,7 +264,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	@Override
-	public List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable) {
+	public List<?> findProperties(Filter filter, String[] selectProperties, Pageable pageable) {
 		SortOrders sortOrders = pageable == null ? null : pageable.getSortOrders();
 		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
 				selectProperties, sortOrders);
@@ -298,7 +276,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	@Override
-	public List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders) {
+	public List<?> findProperties(Filter filter, String[] selectProperties, SortOrders orders) {
 		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
 				selectProperties, orders);
 		return query.getResultList();
@@ -325,7 +303,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	 * Returns the fetch joins that must be included in a query to fetch the IDs.
 	 * This method return an empty array by default - override when needed
 	 * 
-	 * @return
+	 * @return the fetch joins
 	 */
 	protected FetchJoinInformation[] getFetchJoins() {
 		return new FetchJoinInformation[] {};
@@ -346,7 +324,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	 * Returns an Optional containing the first value of the provided list
 	 * 
 	 * @param list the list to select the first value from
-	 * @return
+	 * @return the Optional
 	 */
 	protected Optional<T> getFirstValueOptional(List<T> list) {
 		return Optional.ofNullable(getFirstValue(list));
@@ -354,18 +332,18 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public List<T> save(List<T> list) {
-		list.replaceAll(t -> save(t));
+		list.replaceAll(this::save);
 		return list;
 	}
 
 	@Override
-	public T save(T t) {
-		if (t.getId() == null) {
-			entityManager.persist(t);
+	public T save(T entity) {
+		if (entity.getId() == null) {
+			entityManager.persist(entity);
 		} else {
-			t = entityManager.merge(t);
+			entity = entityManager.merge(entity);
 		}
-		return t;
+		return entity;
 	}
 
 }

@@ -66,12 +66,11 @@ public class In extends AbstractFilter implements PropertyFilter {
 
     @Override
     public boolean equals(Object obj) {
-        if (!(obj instanceof In)) {
+        if (!(obj instanceof In in)) {
             return false;
         }
-        In c = (In) obj;
 
-        return Objects.equals(propertyId, c.getPropertyId()) && Objects.equals(values, c.getValues());
+        return Objects.equals(propertyId, in.getPropertyId()) && Objects.equals(values, in.getValues());
     }
 
     @Override

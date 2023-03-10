@@ -190,6 +190,11 @@ public interface EntityModel<T> {
 	 * Whether a (BLOB) field represents an image
 	 */
 	String IMAGE = "image";
+	
+	/**
+	 * Whether to display button captions in lookup fields
+	 */
+	String LOOKUP_FIELD_CAPTIONS = "lookupFieldCaptions";
 
 	/**
 	 * Whether the attribute is the main attribute

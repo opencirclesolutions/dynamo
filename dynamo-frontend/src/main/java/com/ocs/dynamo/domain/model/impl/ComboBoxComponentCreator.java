@@ -43,11 +43,10 @@ public class ComboBoxComponentCreator<ID extends Serializable, T extends Abstrac
 
 		AttributeSelectMode selectMode = context.getAppropriateMode(am);
 
-		// in search mode, use this component unless multiple search is enabled
+		// in search mode, use this component unless "multiple search" is enabled
 		if (context.isSearch()) {
-			boolean ret = !am.isMultipleSearch() && AbstractEntity.class.isAssignableFrom(am.getNormalizedType())
+			return !am.isMultipleSearch() && AbstractEntity.class.isAssignableFrom(am.getNormalizedType())
 					&& AttributeSelectMode.COMBO.equals(selectMode);
-			return ret;
 		}
 
 		return AbstractEntity.class.isAssignableFrom(am.getType()) && AttributeSelectMode.COMBO.equals(selectMode);

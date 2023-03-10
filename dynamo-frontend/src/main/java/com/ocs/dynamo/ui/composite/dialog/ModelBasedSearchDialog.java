@@ -52,45 +52,21 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 
 	private static final long serialVersionUID = -7158664165266474097L;
 
-	/**
-	 * Column threshold
-	 */
 	private List<String> columnThresholds = new ArrayList<>();
 
-	/**
-	 * The entity model
-	 */
 	private EntityModel<T> entityModel;
 
-	/**
-	 * The search filters to apply to the individual fields
-	 */
 	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
-	/**
-	 * The (default) filters to apply to any search
-	 */
 	private List<SerializablePredicate<T>> filters;
 
-	/**
-	 * The optional joins that determine which related data to fetch
-	 */
 	private FetchJoinInformation[] joins;
 
-	/**
-	 * The actual search layout
-	 */
 	private SimpleSearchLayout<ID, T> searchLayout;
 
-	/**
-	 * The service used for querying the database
-	 */
 	private BaseService<ID, T> service;
 
-	/**
-	 * The sort orders to us when searching for results
-	 */
-	private List<SortOrder<?>> sortOrders = new ArrayList<>();
+	private List<SortOrder<?>> sortOrders;
 
 	private Runnable afterOpen;
 
@@ -111,10 +87,6 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	 * @param entityModel        the entity model
 	 * @param filters            the search filters
 	 * @param sortOrders         the sort orders
-	 * @param multiSelect        whether multiple selection is allowed
-	 * @param searchImmediately  whether to search immediately after the screen is
-	 *                           opened
-	 * @param advancedSearchMode whether advanced search mode is enabled
 	 * @param joins              the fetch joins
 	 */
 	public ModelBasedSearchDialog(BaseService<ID, T> service, EntityModel<T> entityModel,
@@ -168,7 +140,7 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 			searchLayout.setPostProcessSearchButtonBar(postProcessSearchButtonBar);
 			searchLayout.setPostProcessMainButtonBar(postProcessMainButtonBar);
 
-			this.fieldFilters.entrySet().forEach(c -> searchLayout.addFieldFilter(c.getKey(), c.getValue()));
+			this.fieldFilters.forEach((key, value) -> searchLayout.addFieldFilter(key, value));
 
 			// add double click listener for quickly selecting item and closing the
 			// dialog
@@ -208,13 +180,13 @@ public class ModelBasedSearchDialog<ID extends Serializable, T extends AbstractE
 	@SuppressWarnings("unchecked")
 	public void select(Object selectedItems) {
 		if (selectedItems instanceof Collection) {
-			Collection<T> col = (Collection<T>) selectedItems;
-			for (T t : col) {
-				searchLayout.getGridWrapper().getGrid().select(t);
+			Collection<T> collection = (Collection<T>) selectedItems;
+			for (T entity : collection) {
+				searchLayout.getGridWrapper().getGrid().select(entity);
 			}
 		} else {
-			T t = (T) selectedItems;
-			searchLayout.getGridWrapper().getGrid().select(t);
+			T entity = (T) selectedItems;
+			searchLayout.getGridWrapper().getGrid().select(entity);
 		}
 	}
 
