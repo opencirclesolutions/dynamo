@@ -53,6 +53,42 @@ public class CallbackProviderHelper {
 	 * @param filter      search filter to apply (in addition to the search term)
 	 * @return
 	 */
+	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, Void> createCallbackProviderNoFiltering(
+			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
+			SortOrders sortOrders, IntConsumer afterCountDone) {
+		CallbackDataProvider<T, Void> callbackProvider = new CallbackDataProvider<>(query -> {
+			int offset = query.getOffset();
+			int page = offset / query.getLimit();
+			List<T> list = service.fetch(null, page, query.getLimit(), sortOrders);
+			if (afterCountDone != null) {
+				afterCountDone.accept(list.size());
+			}
+			return list.stream();
+		}, query -> {
+			try {
+				int count = (int) service.count(null, true);
+				if (afterCountDone != null) {
+					afterCountDone.accept(count);
+				}
+				return count;
+			} catch (Exception ex) {
+				VaadinUtils.showErrorNotification(ex.getMessage());
+				return 0;
+			}
+		});
+		return callbackProvider;
+	}
+	
+	/**
+	 * Creates a callback data provider for use with lookup components
+	 * 
+	 * @param <ID>        the type of the primary key of the entity
+	 * @param <T>         the type of the entity
+	 * @param service     the service that is used to retrieve entities
+	 * @param entityModel the entity model
+	 * @param filter      search filter to apply (in addition to the search term)
+	 * @return
+	 */
 	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, String> createCallbackProvider(
 			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
 			SortOrders sortOrders, IntConsumer afterCountDone) {
@@ -116,4 +152,6 @@ public class CallbackProviderHelper {
 
 		return pred;
 	}
+	
+
 }

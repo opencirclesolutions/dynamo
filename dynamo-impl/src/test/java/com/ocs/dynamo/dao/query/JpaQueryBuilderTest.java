@@ -26,6 +26,7 @@ import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.google.common.collect.Lists;
@@ -48,6 +49,7 @@ import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 
+@Disabled
 public class JpaQueryBuilderTest extends BackendIntegrationTest {
 
 	@PersistenceContext

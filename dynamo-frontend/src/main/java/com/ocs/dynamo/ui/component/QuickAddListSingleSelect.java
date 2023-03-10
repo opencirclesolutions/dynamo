@@ -41,7 +41,7 @@ import com.vaadin.flow.shared.Registration;
  * @param <T>  the type of the entity that is being displayed
  */
 public class QuickAddListSingleSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, T> implements Refreshable, SharedProvider<T> {
+		extends QuickAddEntityField<ID, T, T> implements Refreshable /*,SharedProvider<T>*/ {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
@@ -115,11 +115,11 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 		return listSelect;
 	}
 
-	@Override
-	@SuppressWarnings("unchecked")
-	public ListDataProvider<T> getSharedProvider() {
-		return (ListDataProvider<T>) listSelect.getDataProvider();
-	}
+//	@Override
+//	@SuppressWarnings("unchecked")
+//	public ListDataProvider<T> getSharedProvider() {
+//		return (ListDataProvider<T>) listSelect.getD
+//	}
 
 	@Override
 	public T getValue() {

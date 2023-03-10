@@ -96,17 +96,10 @@
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
-			<version>6.1.7.Final</version>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.hibernate.orm</groupId>-->
-<!--			<artifactId>hibernate-entitymanager</artifactId>-->
-<!--			<version>6.1.3.Final</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
-			<version>8.0.0.Final</version>
 		</dependency>
 		<dependency>
 			<groupId>jakarta.servlet</groupId>
@@ -121,9 +114,8 @@
 			<artifactId>jakarta.validation-api</artifactId>
 		</dependency>
 		<dependency>
-			<groupId>com.github.mvysny.kaributesting</groupId>
-			<artifactId>karibu-testing-v10</artifactId>
-			<scope>test</scope>
+		    <groupId>com.github.mvysny.kaributesting</groupId>
+		    <artifactId>karibu-testing-v10</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>

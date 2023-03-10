@@ -145,20 +145,21 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	@SuppressWarnings("unchecked")
 	public void afterNewEntityAdded(T entity) {
-		if (getDataProvider() instanceof ListDataProvider) {
-			ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
-			provider.getItems().add(entity);
-		} else {
-			updateProvider((DataProvider<T, SerializablePredicate<T>>) getDataProvider());
-		}
+//		if (getDataProvider() instanceof ListDataProvider) {
+//			ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
+//			provider.getItems().add(entity);
+//		} else {
+//			updateProvider((DataProvider<T, SerializablePredicate<T>>) getDataProvider());
+//		}
 		setValue(entity);
 	}
 
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-		if (provider instanceof CallbackDataProvider || provider instanceof ListDataProvider) {
-			setDataProvider(provider);
-			// https://vaadin.com/api/platform/23.0.10/deprecated-list.html
-			//setItems((Stream<T>) provider);
+		if (provider instanceof ListDataProvider ldp) {
+			setItems(ldp.getItems());
+		}
+		else if (provider instanceof CallbackDataProvider cdp) {
+			setItems(cdp);
 		}
 	}
 
@@ -169,19 +170,19 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		refresh();
 	}
 
-	private CallbackDataProvider<T, String> createCallbackProvider() {
-		return CallbackProviderHelper.createCallbackProvider(service, entityModel, filter,
+	private CallbackDataProvider<T, Void> createCallbackProvider() {
+		return CallbackProviderHelper.createCallbackProviderNoFiltering(service, entityModel, filter,
 				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
-	public int getDataProviderSize() {
-		if (getDataProvider() instanceof ListDataProvider) {
-			return ((ListDataProvider<?>) getDataProvider()).getItems().size();
-		} else if (getDataProvider() instanceof CallbackDataProvider) {
-			return count;
-		}
-		return 0;
-	}
+//	public int getDataProviderSize() {
+//		if (getDataProvider() instanceof ListDataProvider) {
+//			return ((ListDataProvider<?>) getDataProvider()).getItems().size();
+//		} else if (getDataProvider() instanceof CallbackDataProvider) {
+//			return count;
+//		}
+//		return 0;
+//	}
 
 	/**
 	 * Initializes the data provider
@@ -198,7 +199,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 						service.findAll(SortUtils.translateSortOrders(sortOrders)));
 				setItems(listProvider);
 			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
-				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
+				CallbackDataProvider<T, Void> callbackProvider = createCallbackProvider();
 //				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
 				// add a filtered selection of items
@@ -218,8 +219,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	public void refresh() {
 		T stored = this.getValue();
 		clear();
-		DataProvider<T, ?> provider = getDataProvider();
-		updateProvider((DataProvider<T, SerializablePredicate<T>>) provider);
+		//updateProvider((DataProvider<T, SerializablePredicate<T>>) provider);
+		updateProvider();
 		setValue(stored);
 	}
 
@@ -248,17 +249,20 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 *
 	 * @param provider
 	 */
-	private void updateProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+	private void updateProvider() {
 		if (SelectMode.ALL.equals(selectMode)) {
-			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			reloadDataProvider(listProvider, service.findAll(SortUtils.translateSortOrders(sortOrders)));
+			//ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
+			//reloadDataProvider(listProvider, service.findAll(SortUtils.translateSortOrders(sortOrders)));
+			setItems(service.findAll(SortUtils.translateSortOrders(sortOrders)));
+			
 		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
-			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
+			//ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
 			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
 					SortUtils.translateSortOrders(sortOrders));
-			reloadDataProvider(listProvider, items);
+			setItems(items);
+			//reloadDataProvider(listProvider, items);
 		}
 	}
 

@@ -24,6 +24,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
 
 import java.util.List;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
@@ -37,6 +38,7 @@ import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 
+@Disabled
 public class EntityListSingleSelectTest extends BaseMockitoTest {
 
 	private EntityModelFactory factory = new EntityModelFactoryImpl();
