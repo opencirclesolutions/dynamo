@@ -13,19 +13,6 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.transaction.annotation.Transactional;
-
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.BackendIntegrationTest;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.PageableImpl;
@@ -38,6 +25,13 @@ import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
 import com.ocs.dynamo.filter.In;
 import com.ocs.dynamo.utils.DateUtils;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * A basic integration test for testing the functionality of a DAO
@@ -132,7 +126,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 				.getSingleResult();
 
 		SortOrder sortName = new SortOrder("name");
-		Filter filter = new In("name", Lists.newArrayList(e1.getName(), e2.getName()));
+		Filter filter = new In("name", List.of(e1.getName(), e2.getName()));
 		List<Object[]> result = (List<Object[]>) dao.findProperties(filter, new String[] { "name", "age" },
 				new SortOrders(sortName));
 
@@ -310,7 +304,7 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 		TestEntity entity2 = new TestEntity("Bob", 2L);
 		TestEntity entity3 = new TestEntity("Bob", 3L);
 
-		dao.save(Lists.newArrayList(entity1, entity2, entity3));
+		dao.save(List.of(entity1, entity2, entity3));
 
 		List<TestEntity> list = dao.findAll();
 		assertEquals(3, list.size());

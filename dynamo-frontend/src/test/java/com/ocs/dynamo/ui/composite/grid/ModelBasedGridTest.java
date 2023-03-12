@@ -21,14 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -56,12 +55,12 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 	@BeforeEach
 	public void setUp() {
 		ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
-		MockVaadin.setup();
+		//MockVaadin.setup();
 	}
 
 	@Test
 	public void testDataProvider() {
-		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		ListDataProvider<Person> provider = new ListDataProvider<>(new ArrayList<>());
 		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
@@ -76,7 +75,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
 	@Test
 	public void testMultipleRowsEditable() {
-		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		ListDataProvider<Person> provider = new ListDataProvider<>(new ArrayList<>());
 		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
@@ -86,7 +85,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SIMULTANEOUS);
 
 		assertDoesNotThrow(
-				() -> new ModelBasedGrid<>(provider, model, new HashMap<String, SerializablePredicate<?>>(), fo, cc));
+				() -> new ModelBasedGrid<>(provider, model, new HashMap<>(), fo, cc));
 	}
 
 	@Test
@@ -96,7 +95,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		FixedGridWrapper<Integer, TestEntity> wrapper = new FixedGridWrapper<>(service, model, new FormOptions(),
 				ComponentContext.<Integer, TestEntity>builder().build(),
-				new HashMap<String, SerializablePredicate<?>>(), Lists.newArrayList(entity), new ArrayList<>());
+				new HashMap<String, SerializablePredicate<?>>(), List.of(entity), new ArrayList<>());
 		wrapper.build();
 
 		Grid<TestEntity> grid = wrapper.getGrid();
@@ -105,7 +104,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 
 	@Test
 	public void testSetVisible() {
-		ListDataProvider<Person> provider = new ListDataProvider<Person>(Lists.newArrayList());
+		ListDataProvider<Person> provider = new ListDataProvider<>(new ArrayList<>());
 		EntityModel<Person> model = entityModelFactory.getModel(Person.class);
 
 		Person person = new Person(1, "Bob", 50, BigDecimal.valueOf(76.4), BigDecimal.valueOf(44.4));
@@ -115,7 +114,7 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
 
 		ModelBasedGrid<Integer, Person> grid = new ModelBasedGrid<>(provider, model,
-				new HashMap<String, SerializablePredicate<?>>(), fo, cc);
+				new HashMap<>(), fo, cc);
 		grid.build();
 
 		assertTrue(grid.getColumnByKey("name").isVisible());

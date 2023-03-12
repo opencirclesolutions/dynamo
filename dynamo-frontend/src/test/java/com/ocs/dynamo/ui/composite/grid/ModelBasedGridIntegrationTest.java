@@ -5,13 +5,13 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
+import java.util.List;
 
 import javax.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -105,8 +105,8 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
 				QueryType.ID_BASED, new FormOptions(), ComponentContext.<Integer, TestEntity>builder().build(), null,
-				new HashMap<String, SerializablePredicate<?>>(),
-				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
+				new HashMap<>(),
+				List.of(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
 		assertNotNull(wrapper.getGrid());
@@ -125,7 +125,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
 				QueryType.PAGING, new FormOptions(), ComponentContext.<Integer, TestEntity>builder().build(), null,
 				new HashMap<String, SerializablePredicate<?>>(),
-				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
+				List.of(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
 		assertTrue(wrapper.getDataProvider() instanceof PagingDataProvider);

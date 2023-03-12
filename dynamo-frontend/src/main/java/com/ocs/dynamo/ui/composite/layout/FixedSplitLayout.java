@@ -64,7 +64,6 @@ public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<
 	 * @param service      the service
 	 * @param entityModel  the entity model that is used to construct the layout
 	 * @param formOptions  the form options that govern how the screen behaves
-	 * @param fieldFilters field filters applied to fields in the detail view
 	 * @param sortOrder    the sort order
 	 */
 	public FixedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,

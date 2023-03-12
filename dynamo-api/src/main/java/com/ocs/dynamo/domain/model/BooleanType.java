@@ -18,13 +18,9 @@ public enum BooleanType {
 	TRUE, FALSE, INHERIT;
 
 	public boolean toBoolean() {
-		switch (this) {
-		case TRUE:
-			return true;
-		case FALSE:
-			return false;
-		default:
-			return false;
-		}
+		return switch (this) {
+			case TRUE -> true;
+			case FALSE, INHERIT -> false;
+		};
 	}
 }

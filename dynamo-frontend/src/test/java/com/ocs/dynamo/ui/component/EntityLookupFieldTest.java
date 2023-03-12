@@ -19,6 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -26,7 +27,6 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -62,7 +62,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
 				factory.getModel(TestEntity.class), null, null, false,
 				SearchOptions.builder().multiSelect(false).build(),
-				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
+				List.of(new SortOrder<>("name", SortDirection.ASCENDING)));
 		field.initContent();
 		assertEquals("name", field.getSortOrders().get(0).getSorted().toString());
 	}
@@ -73,9 +73,9 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
 				factory.getModel(TestEntity.class), factory.getModel(TestEntity2.class).getAttributeModel("testEntity"),
 				null, false, SearchOptions.builder().multiSelect(true).build(),
-				Lists.newArrayList(new SortOrder("name", SortDirection.ASCENDING)));
+				List.of(new SortOrder("name", SortDirection.ASCENDING)));
 		field.initContent();
-		field.setValue(Lists.newArrayList(e1));
+		field.setValue(List.of(e1));
 		field.getSelectButton().click();
 		Collection<TestEntity> col = (Collection<TestEntity>) field.getValue();
 		assertTrue(col.contains(e1));
@@ -89,7 +89,7 @@ public class EntityLookupFieldTest extends BaseMockitoTest {
 		EntityLookupField<Integer, TestEntity> field = new EntityLookupField<>(service,
 				factory.getModel(TestEntity.class), factory.getModel(TestEntity2.class).getAttributeModel("testEntity"),
 				null, false, SearchOptions.builder().multiSelect(false).build(),
-				Lists.newArrayList(new SortOrder<String>("name", SortDirection.ASCENDING)));
+				List.of(new SortOrder<String>("name", SortDirection.ASCENDING)));
 		field.initContent();
 		field.setValue(new TestEntity("Kevin", 47L));
 

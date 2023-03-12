@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 
@@ -196,13 +195,13 @@ public class FilterTest {
         TestEntity testEntity = new TestEntity();
         testEntity.setId(1);
 
-        In in = new In("id", Lists.newArrayList(1));
+        In in = new In("id", List.of(1));
 
         assertFalse(in.evaluate(null));
         assertTrue(in.evaluate(testEntity));
 
-        In in2 = new In("id", Lists.newArrayList(1));
-        In in3 = new In("id", Lists.newArrayList(1, 2));
+        In in2 = new In("id", List.of(1));
+        In in3 = new In("id", List.of(1, 2));
 
         assertFalse(in.equals(null));
         assertFalse(in.equals(new Object()));

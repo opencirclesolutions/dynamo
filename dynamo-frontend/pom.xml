@@ -34,10 +34,10 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.eclipse.persistence</groupId>-->
-<!--			<artifactId>jakarta.persistence</artifactId>-->
-<!--		</dependency>-->
+		<!--		<dependency>-->
+		<!--			<groupId>org.eclipse.persistence</groupId>-->
+		<!--			<artifactId>jakarta.persistence</artifactId>-->
+		<!--		</dependency>-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-api</artifactId>
@@ -110,8 +110,9 @@
 			<artifactId>jakarta.validation-api</artifactId>
 		</dependency>
 		<dependency>
-		    <groupId>com.github.mvysny.kaributesting</groupId>
-		    <artifactId>karibu-testing-v10</artifactId>
+			<groupId>com.github.mvysny.kaributesting</groupId>
+			<artifactId>karibu-testing-v10</artifactId>
+			<scope>test</scope>
 		</dependency>
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
@@ -178,5 +179,5 @@
 				</executions>
 			</plugin>
 		</plugins>
-    </build>
+	</build>
 </project>

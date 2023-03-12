@@ -13,13 +13,15 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.data.provider.ListDataProvider;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Component creator for creating a boolean combo box (featuring true, false,
@@ -38,7 +40,7 @@ public class BooleanComboboxCreator implements SimpleComponentCreator {
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 		ComboBox<Boolean> cb = new ComboBox<>();
-		ListDataProvider<Boolean> provider = new ListDataProvider<>(Lists.newArrayList(Boolean.TRUE, Boolean.FALSE));
+		ListDataProvider<Boolean> provider = new ListDataProvider<>(new ArrayList<>(List.of(Boolean.TRUE, Boolean.FALSE)));
 		cb.setItems(provider);
 		cb.setItemLabelGenerator(b -> Boolean.TRUE.equals(b) ? am.getTrueRepresentation(VaadinUtils.getLocale())
 				: am.getFalseRepresentation(VaadinUtils.getLocale()));

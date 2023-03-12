@@ -22,7 +22,6 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -84,7 +83,7 @@ public class FilterConverterTest extends BaseMockitoTest {
 
 	@Test
 	public void testIn() {
-		Filter result = converter.convert(new InPredicate<TestEntity>("test", Lists.newArrayList("v1", "v2")));
+		Filter result = converter.convert(new InPredicate<TestEntity>("test", List.of("v1", "v2")));
 		assertTrue(result instanceof In);
 	}
 
@@ -165,7 +164,7 @@ public class FilterConverterTest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testSearchDetails2() {
-		List<TestEntity2> entities = Lists.newArrayList(new TestEntity2(), new TestEntity2());
+		List<TestEntity2> entities = List.of(new TestEntity2(), new TestEntity2());
 
 		Filter result = modelConverter
 				.convert(new AndPredicate<TestEntity>(new EqualsPredicate<TestEntity>("testEntities", entities)));

@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
@@ -33,7 +32,7 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
 	public void testCreate() {
 
 		FormOptions fo = new FormOptions().setShowQuickSearchField(true).setShowRemoveButton(true);
-		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, Lists.newArrayList(Country.class, Region.class));
+		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, List.of(Country.class, Region.class));
 		layout.addEntityModelOverride(Region.class, "CustomRegion");
 		layout.build();
 
@@ -59,7 +58,7 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
 	@Test
 	public void testCreateInReadOnly() {
 		FormOptions fo = new FormOptions();
-		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, Lists.newArrayList(Country.class, Region.class));
+		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, List.of(Country.class, Region.class));
 		layout.setEditAllowed(() -> false);
 		layout.setPostProcessButtonBar(buttonBar -> {
 			Button button = new Button("testButton");

@@ -36,26 +36,10 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeDateType;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -90,10 +74,22 @@ import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
 
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 
 /**
  * Implementation of the entity model factory - creates models that hold
@@ -544,7 +540,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		List<String> explicitAttributeNames = new ArrayList<>();
 		AttributeOrder orderAnnot = entityClass.getAnnotation(AttributeOrder.class);
 		if (orderAnnot != null) {
-			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
+			explicitAttributeNames = List.of(orderAnnot.attributeNames());
 		}
 
 		// set all orders
@@ -579,7 +575,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		String msg = messageService == null ? null
 				: messageService.getEntityMessage(reference, messageBundleKey, getLocale());
 		if (msg != null) {
-			explicitAttributeNames = Lists.newArrayList(msg.replaceAll("\\s+", "").split(","));
+			explicitAttributeNames = List.of(msg.replaceAll("\\s+", "").split(","));
 		}
 
 		explicit = !explicitAttributeNames.isEmpty();
@@ -722,7 +718,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		List<String> explicitAttributeNames = new ArrayList<>();
 		GridAttributeOrder orderAnnot = entityClass.getAnnotation(GridAttributeOrder.class);
 		if (orderAnnot != null) {
-			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
+			explicitAttributeNames = List.of(orderAnnot.attributeNames());
 		}
 		return determineAttributeOrderInner(entityClass, reference, EntityModel.GRID_ATTRIBUTE_ORDER,
 				explicitAttributeNames, attributeModels, (am, order) -> am.setGridOrder(order));
@@ -743,7 +739,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		List<String> explicitAttributeNames = new ArrayList<>();
 		SearchAttributeOrder orderAnnot = entityClass.getAnnotation(SearchAttributeOrder.class);
 		if (orderAnnot != null) {
-			explicitAttributeNames = Lists.newArrayList(orderAnnot.attributeNames());
+			explicitAttributeNames = List.of(orderAnnot.attributeNames());
 		}
 		return determineAttributeOrderInner(entityClass, reference, EntityModel.SEARCH_ATTRIBUTE_ORDER,
 				explicitAttributeNames, attributeModels, (am, order) -> am.setSearchOrder(order));
@@ -1260,13 +1256,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.WEEK);
 		if (!StringUtils.isEmpty(msg)) {
 			checkWeekSettingAllowed(attributeModel);
-			attributeModel.setWeek(Boolean.valueOf(msg));
+			attributeModel.setWeek(Boolean.parseBoolean(msg));
 		}
 
 		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.ALLOWED_EXTENSIONS);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
 			String[] extensions = msg.split(",");
-			Set<String> hashSet = Sets.newHashSet(extensions);
+			Set<String> hashSet = Set.of(extensions);
 			attributeModel.setAllowedExtensions(hashSet);
 		}
 
@@ -1279,10 +1275,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,
-				value -> attributeModel.setPrecision(value));
+				attributeModel::setPrecision);
 
 		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.EMBEDDED);
-		if (msg != null && !StringUtils.isEmpty(msg) && Boolean.valueOf(msg)) {
+		if (msg != null && !StringUtils.isEmpty(msg) && Boolean.parseBoolean(msg)) {
 			attributeModel.setAttributeType(AttributeType.EMBEDDED);
 		}
 
@@ -1290,7 +1286,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		// mode to TOKEN
 		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MULTIPLE_SEARCH);
 		if (msg != null && !StringUtils.isEmpty(msg)) {
-			attributeModel.setMultipleSearch(Boolean.valueOf(msg));
+			attributeModel.setMultipleSearch(Boolean.parseBoolean(msg));
 			attributeModel.setSearchSelectMode(AttributeSelectMode.TOKEN);
 		}
 

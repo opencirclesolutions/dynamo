@@ -15,5 +15,5 @@ package com.ocs.dynamo.domain.model;
 
 public enum NumberFieldMode {
 
-	INHERIT, TEXTFIELD, NUMBERFIELD;
+	INHERIT, TEXTFIELD, NUMBERFIELD
 }

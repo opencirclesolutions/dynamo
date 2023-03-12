@@ -13,20 +13,18 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
+import com.ocs.dynamo.utils.DateUtils;
+import org.apache.commons.io.FileUtils;
+import org.junit.jupiter.api.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
-import org.apache.commons.io.FileUtils;
-import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.Lists;
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
-import com.ocs.dynamo.utils.DateUtils;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class BaseFixedLengthImporterTest {
 
@@ -48,7 +46,7 @@ public class BaseFixedLengthImporterTest {
 	public void testReadFile() throws IOException {
 		byte[] bytes = readFile("importertest.fixed");
 		List<String[]> lines = importer.readFixedLengthFile(bytes,
-				Lists.newArrayList(10, 10, 10, 10, 10, 10, 10, 10, 10));
+				List.of(10, 10, 10, 10, 10, 10, 10, 10, 10));
 
 		PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
 		assertNotNull(dto);
@@ -78,7 +76,7 @@ public class BaseFixedLengthImporterTest {
 	@Test
 	public void testParseFieldLengths() {
 		List<Integer> list = importer.parseFieldLengths("1,2,3,4");
-		assertEquals(Lists.newArrayList(1, 2, 3, 4), list);
+		assertEquals(List.of(1, 2, 3, 4), list);
 	}
 
 	@Test

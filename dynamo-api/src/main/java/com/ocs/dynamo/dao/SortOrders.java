@@ -15,6 +15,7 @@ package com.ocs.dynamo.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import lombok.ToString;
 
@@ -31,12 +32,13 @@ public class SortOrders {
 
 	/**
 	 * Constructor
+	 * @param orders the sort orders that must be used
 	 */
 	public SortOrders(SortOrder... orders) {
 		if (orders != null) {
-			for (SortOrder o : orders) {
-				if (o != null && o.getProperty() != null) {
-					addSortOrder(o);
+			for (SortOrder order : orders) {
+				if (order != null && order.getProperty() != null) {
+					addSortOrder(order);
 				}
 			}
 		}
@@ -45,7 +47,7 @@ public class SortOrders {
 	/**
 	 * Adds a sort order
 	 * 
-	 * @param order the sort order to add
+	 * @param order the sort order that must be added
 	 * @return the current list of sort orders
 	 */
 	public SortOrders addSortOrder(SortOrder order) {
@@ -59,10 +61,10 @@ public class SortOrders {
 	 * Returns the first sort order for the specified property
 	 * 
 	 * @param property the property
-	 * @return the first sort order that is defined for the specified property
+	 * @return an Optional containing the sort order
 	 */
-	public SortOrder getOrderFor(String property) {
-		return orders.stream().filter(o -> o.getProperty().equals(property)).findAny().orElse(null);
+	public Optional<SortOrder> getOrderFor(String property) {
+		return orders.stream().filter(o -> o.getProperty().equals(property)).findFirst();
 	}
 
 	public SortOrder[] toArray() {

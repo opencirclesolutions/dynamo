@@ -13,16 +13,8 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.io.Serializable;
-import java.util.Collection;
-
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.FieldCreationContext;
-import com.ocs.dynamo.domain.model.MultiSelectMode;
+import com.ocs.dynamo.domain.model.*;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.EntityLookupField;
 import com.ocs.dynamo.ui.composite.layout.SearchOptions;
@@ -30,6 +22,10 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import java.io.Serializable;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * 
@@ -70,6 +66,6 @@ public class LookupFieldComponentCreator<ID extends Serializable, T extends Abst
 				.useCheckboxesForMultiSelect(MultiSelectMode.CHECKBOX.equals(attributeModel.getMultiSelectMode()))
 				.build();
 		return new EntityLookupField<>(service, entityModel, attributeModel, fieldFilter, context.isSearch(), options,
-				sortOrder.length == 0 ? null : Lists.newArrayList(sortOrder));
+				sortOrder.length == 0 ? null : List.of(sortOrder));
 	}
 }

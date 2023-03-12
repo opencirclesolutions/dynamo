@@ -13,18 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Function;
-import java.util.function.Supplier;
-
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -63,9 +51,13 @@ import com.vaadin.flow.data.binder.BinderValidationStatus;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 /**
  * A layout for editing entities directly inside a grid. This layout supports
@@ -472,7 +464,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		saveButton.addClickListener(event -> {
 
 			// perform validation
-			List<T> toSave = Lists.newArrayList(binders.keySet());
+			List<T> toSave = new ArrayList<>(binders.keySet());
 			boolean valid = binders.values().stream().map(b -> b.validate()).allMatch(s -> s.isOk());
 			if (valid) {
 				if (getFormOptions().isConfirmSave()) {
@@ -558,8 +550,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		compMap.put(id + "_" + am.getPath(), comp);
-		if (comp instanceof HasValue) {
-			HasValue<?, ?> hv = (HasValue<?, ?>) comp;
+		if (comp instanceof HasValue<?, ?> hv) {
 			ValueChangeListener listener = event -> changedEntityIds.add(id);
 			hv.addValueChangeListener(listener);
 		}

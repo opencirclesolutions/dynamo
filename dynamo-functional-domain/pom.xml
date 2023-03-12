@@ -44,11 +44,6 @@
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.hibernate.orm</groupId>-->
-<!--			<artifactId>hibernate-entitymanager</artifactId>-->
-<!--			<version>6.1.3.Final</version>-->
-<!--		</dependency>-->
 		<dependency>
 			<groupId>org.hibernate.validator</groupId>
 			<artifactId>hibernate-validator</artifactId>
@@ -134,10 +129,10 @@
 				<artifactId>maven-release-plugin</artifactId>
 			</plugin>
 			<!-- Generate Query Objects. -->
-<!--			<plugin>-->
-<!--				<groupId>com.mysema.maven</groupId>-->
-<!--				<artifactId>apt-maven-plugin</artifactId>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+			</plugin>
 			<!-- Code coverage. -->
 			<plugin>
 				<groupId>org.jacoco</groupId>

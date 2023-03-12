@@ -393,7 +393,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         // together
         EnhancedFormLayout rowLayout = new EnhancedFormLayout();
         rowLayout.setWidth("100%");
-        rowLayout.addClassName(DynamoConstants.CSS_GROUPTOGETHER_LAYOUT);
+        rowLayout.addClassName(DynamoConstants.CSS_GROUP_TOGETHER_LAYOUT);
 
         List<ResponsiveStep> steps = new ArrayList<>();
 

@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Comparator;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -61,7 +61,7 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 		assertTrue(layout.getAddButton().isVisible());
 		assertTrue(buttonBarPostconstruct);
 
-		layout.setValue(Lists.newArrayList(e1, e2));
+		layout.setValue(List.of(e1, e2));
 		assertTrue(detailButtonBarPostconstruct);
 
 		assertEquals(2, layout.getFormCount().intValue());

@@ -3,6 +3,7 @@ package com.ocs.dynamo.ui.composite.grid;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Function;
 
 import javax.inject.Inject;
@@ -10,7 +11,6 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -54,10 +54,10 @@ public class PivotGridIntegrationTest extends FrontendIntegrationTest {
 				entityModelFactory.getModel(TestEntity.class));
 
 		PivotDataProvider<Integer, TestEntity> pivotProvider = new PivotDataProvider<>(provider, "name", "someEnum",
-				Lists.newArrayList("name"), Lists.newArrayList("age"), new ArrayList<>(), () -> 10);
+				List.of("name"), List.of("age"), new ArrayList<>(), () -> 10);
 
 		PivotGrid<Integer, TestEntity> pg = new PivotGrid<Integer, TestEntity>(pivotProvider,
-				Lists.newArrayList(TestEnum.A, TestEnum.B, TestEnum.C), Function.identity(), (a, b) -> a.toString(),
+				List.of(TestEnum.A, TestEnum.B, TestEnum.C), Function.identity(), (a, b) -> a.toString(),
 				(a, b) -> b.toString(), null);
 		assertNotNull(pg.getColumnByKey("name"));
 		assertNotNull(pg.getColumnByKey("A_age"));

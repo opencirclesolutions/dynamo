@@ -1,10 +1,8 @@
 package com.ocs.dynamo.dao;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SortOrdersTest {
 
@@ -21,10 +19,10 @@ public class SortOrdersTest {
 		// create sort order with a single operand
 		so = new SortOrders(new SortOrder("test"));
 		assertEquals(1, so.toArray().length);
-		assertNotNull(so.getOrderFor("test"));
-		assertNull(so.getOrderFor("test2"));
+		assertTrue(so.getOrderFor("test").isPresent());
+		assertFalse(so.getOrderFor("test2").isPresent());
 
 		so.addSortOrder(new SortOrder("test2"));
-		assertNotNull(so.getOrderFor("test"));
+		assertTrue(so.getOrderFor("test").isPresent());
 	}
 }

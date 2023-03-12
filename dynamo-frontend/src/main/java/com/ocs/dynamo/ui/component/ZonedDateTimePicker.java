@@ -13,13 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
-import java.util.Locale;
-import java.util.TimeZone;
-
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
@@ -29,6 +22,13 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.FlexLayout.FlexWrap;
 import com.vaadin.flow.component.timepicker.TimePicker;
 import com.vaadin.flow.data.provider.ListDataProvider;
+
+import java.time.LocalTime;
+import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.util.List;
+import java.util.Locale;
+import java.util.TimeZone;
 
 /**
  * A simple component for entering a date with a time stamp. This is a very bare
@@ -55,7 +55,7 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 		timePicker.setLocale(locale);
 
 		timeZone = new ComboBox<>();
-		ListDataProvider<String> provider = new ListDataProvider<>(Lists.newArrayList(TimeZone.getAvailableIDs()));
+		ListDataProvider<String> provider = new ListDataProvider<>(List.of(TimeZone.getAvailableIDs()));
 		timeZone.setItems(provider);
 		timeZone.setValue(VaadinUtils.getTimeZoneId().toString());
 

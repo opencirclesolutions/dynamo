@@ -13,16 +13,6 @@
 */
 package com.ocs.dynamo.ui.utils;
 
-import java.time.ZoneId;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Objects;
-import java.util.Set;
-
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
@@ -32,8 +22,10 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.ocs.dynamo.utils.FormatUtils;
-
 import lombok.experimental.UtilityClass;
+
+import java.time.ZoneId;
+import java.util.*;
 
 /**
  * Utility methods for comparing two entities
@@ -61,7 +53,7 @@ public final class CompareUtils {
 
 		Set<String> toIgnore = new HashSet<>();
 		if (ignore != null) {
-			toIgnore = Sets.newHashSet(ignore);
+			toIgnore = new HashSet<String>(Arrays.asList(ignore));
 		}
 		toIgnore.addAll(EntityModelUtils.ALWAYS_IGNORE);
 

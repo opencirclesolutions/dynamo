@@ -1,24 +1,5 @@
 package com.ocs.dynamo.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.Set;
-
-import jakarta.persistence.ElementCollection;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
-
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -30,6 +11,20 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.test.MockUtil;
+import jakarta.persistence.ElementCollection;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
+
+import java.math.BigDecimal;
+import java.time.ZoneId;
+import java.util.HashSet;
+import java.util.Locale;
+import java.util.Set;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @ExtendWith(SpringExtension.class)
 public class FormatUtilsTest {
@@ -138,10 +133,12 @@ public class FormatUtilsTest {
 		t3.setName("a3");
 
 		Entity3 e3 = new Entity3();
-		e3.setEntities(Sets.newHashSet(t1, t2, t3));
+		e3.setEntities(Set.of(t1, t2, t3));
 
 		String result = FormatUtils.formatEntityCollection(factory, null, e3.getEntities(), ", ", LOCALE, "");
-		assertEquals("a1, a2, a3", result);
+		assertTrue(result.contains("a1"));
+		assertTrue(result.contains("a2"));
+		assertTrue(result.contains("a3"));
 	}
 
 	/**

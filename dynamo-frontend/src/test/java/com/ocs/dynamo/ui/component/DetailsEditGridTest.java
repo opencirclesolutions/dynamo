@@ -13,7 +13,6 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.comparator.AttributeComparator;
@@ -72,7 +71,7 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 		assertTrue(grid.getAddButton().isVisible());
 		assertFalse(grid.getSearchDialogButton().isVisible());
 
-		grid.setValue(Lists.newArrayList(e1, e2));
+		grid.setValue(List.of(e1, e2));
 
 		assertEquals(2, grid.getItemCount());
 
@@ -81,7 +80,7 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 		assertEquals(3, grid.getItemCount());
 
 		// explicitly set field value
-		grid.setValue(Lists.newArrayList(e1));
+		grid.setValue(List.of(e1));
 		assertEquals(1, grid.getItemCount());
 	}
 
@@ -126,7 +125,7 @@ public class DetailsEditGridTest extends BaseMockitoTest {
 		assertFalse(grid.getAddButton().isVisible());
 		assertFalse(grid.getSearchDialogButton().isVisible());
 
-		grid.setValue(Lists.newArrayList(e1, e2));
+		grid.setValue(List.of(e1, e2));
 		assertEquals(2, grid.getItemCount());
 	}
 

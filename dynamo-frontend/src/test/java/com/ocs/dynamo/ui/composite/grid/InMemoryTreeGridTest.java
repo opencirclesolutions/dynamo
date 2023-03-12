@@ -10,7 +10,6 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.service.TestEntity2Service;
@@ -72,8 +71,8 @@ public class InMemoryTreeGridTest extends FrontendIntegrationTest {
 	@Test
 	public void testBuildGrid() {
 
-		final List<TestEntity> parents = Lists.newArrayList(e1, e2);
-		final List<TestEntity2> children = Lists.newArrayList(child1, child2);
+		final List<TestEntity> parents = List.of(e1, e2);
+		final List<TestEntity2> children = List.of(child1, child2);
 
 		InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity> grid = new InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity>();
 

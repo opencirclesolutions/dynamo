@@ -24,7 +24,7 @@ public interface Filter {
 	 * Evaluates an object against the filter
 	 * 
 	 * @param that the object to evaluate
-	 * @return
+	 * @return the result of the evaluation
 	 */
 	boolean evaluate(Object that);
 

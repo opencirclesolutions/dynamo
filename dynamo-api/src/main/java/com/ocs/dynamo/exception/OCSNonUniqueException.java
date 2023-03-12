@@ -16,7 +16,7 @@ package com.ocs.dynamo.exception;
 import lombok.NoArgsConstructor;
 
 /**
- * An exception that is used to indicates that an entity cannot be added or update because it would
+ * An exception that is used to indicate that an entity cannot be added or update because it would
  * violate a uniqueness constraint
  * 
  * @author bas.rutten

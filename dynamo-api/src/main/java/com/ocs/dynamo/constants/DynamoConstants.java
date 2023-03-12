@@ -96,7 +96,7 @@ public class DynamoConstants {
 	 * CSS class for form layout that is used for grouping components together on
 	 * same row
 	 */
-	public static final String CSS_GROUPTOGETHER_LAYOUT = "groupTogether";
+	public static final String CSS_GROUP_TOGETHER_LAYOUT = "groupTogether";
 
 	/**
 	 * CSS class for horizontal display layout
@@ -319,7 +319,7 @@ public class DynamoConstants {
 	public static final String SP_DEFAULT_FALSE_REPRESENTATION = "ocs.default.false.representation";
 
 	/**
-	 * Name of the system property that is used to determined the default grid
+	 * Name of the system property that is used to determine the default grid
 	 * height
 	 */
 	public static final String SP_DEFAULT_GRID_HEIGHT = "ocs.default.grid.height";
@@ -383,7 +383,7 @@ public class DynamoConstants {
 	public static final String SP_DEFAULT_SEARCH_CASE_SENSITIVE = "ocs.default.search.case.sensitive";
 
 	/**
-	 * Name of the system property that is used to determined the default grid
+	 * Name of the system property that is used to determine the default grid
 	 * height in a search dialog
 	 */
 	public static final String SP_DEFAULT_SEARCH_DIALOG_GRID_HEIGHT = "ocs.default.search.dialog.grid.height";

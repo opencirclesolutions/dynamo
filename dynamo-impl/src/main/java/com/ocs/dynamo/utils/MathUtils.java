@@ -13,16 +13,15 @@
  */
 package com.ocs.dynamo.utils;
 
+import lombok.experimental.UtilityClass;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 
+@UtilityClass
 public final class MathUtils {
 
 	public static final BigDecimal HUNDRED = new BigDecimal(100);
-
-	private MathUtils() {
-		// hidden constructor
-	}
 
 	/**
 	 * Divides the first argument by the second argument, then converts the
@@ -52,7 +51,7 @@ public final class MathUtils {
 	 *            the second argument
 	 * @param scale
 	 *            the desired scale
-	 * @return
+	 * @return the result of the division
 	 */
 	public static BigDecimal dividePercentage(Integer first, Integer second, int scale) {
 		return dividePercentage(first == null ? BigDecimal.ZERO : new BigDecimal(first),
@@ -69,25 +68,18 @@ public final class MathUtils {
 	 *            the non-percentage value
 	 * @param scale
 	 *            the scale
-	 * @return
+	 * @return the result of the division
 	 */
 	public static BigDecimal multiplyPercentage(BigDecimal percentage, BigDecimal value, int scale) {
 		return percentage.multiply(value).divide(HUNDRED, scale, RoundingMode.HALF_UP);
 	}
 
-	/**
-	 * Performs a null-safe get of an Integer
-	 * 
-	 * @param x
-	 *            the integer
-	 * @return
-	 */
-	public static int nullSafeGet(Integer x) {
-		return x == null ? 0 : x;
+	public static int nullSafeGet(Integer input) {
+		return input == null ? 0 : input;
 	}
 
-	public static long nullSafeGet(Long x) {
-		return x == null ? 0L : x;
+	public static long nullSafeGet(Long input) {
+		return input == null ? 0L : input;
 	}
 
 }

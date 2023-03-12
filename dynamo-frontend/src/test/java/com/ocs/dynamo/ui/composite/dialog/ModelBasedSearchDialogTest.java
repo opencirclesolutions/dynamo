@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
@@ -76,11 +75,11 @@ public class ModelBasedSearchDialogTest extends FrontendIntegrationTest {
 		ModelBasedSearchDialog<Integer, TestEntity> dialog = new ModelBasedSearchDialog<>(testEntityService,
 				entityModelFactory.getModel(TestEntity.class), new ArrayList<>(), null, options);
 		dialog.build();
-		dialog.select(Lists.newArrayList(e1, e2));
+		dialog.select(List.of(e1, e2));
 
 		assertDoesNotThrow(() -> {
 			dialog.build();
-			dialog.select(Lists.newArrayList(e1, e2));
+			dialog.select(List.of(e1, e2));
 		});
 	}
 

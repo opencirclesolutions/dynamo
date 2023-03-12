@@ -20,10 +20,10 @@ import java.util.Set;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 
 /**
- * An attribute model represents how a certain attribute of an entity will be
+ * An attribute model represents how a certain attribute of an entity will
  * behave in the user interface. This includes e.g. whether the attribute is
  * searchable, sortable, what kind of user interface component is used to edit
- * the attribute any many other aspects
+ * the attribute, any many additional aspects
  * 
  * @author bas.rutten
  *
@@ -49,15 +49,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	void addGroupTogetherWith(String path);
 
 	/**
-	 * 
 	 * @return the actual path to search on. This uses the replacementSearchPath
 	 *         when set or the default search path otherwise
 	 */
 	String getActualSearchPath();
 
 	/**
-	 * 
-	 * @return the actual path to sort on. This uses the replacementSorthPath when
+	 * @return the actual path to sort on. This uses the replacementSortPath when
 	 *         set or the default sort path otherwise
 	 */
 	String getActualSortPath();
@@ -81,15 +79,15 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Returns the path to filter on when applying a cascade operation
 	 * 
-	 * @param cascadeTo the path of the property to which to apply cascading
+	 * @param cascadeTo the path of the attribute to which to apply cascading
 	 * @return the path to filter on
 	 */
 	String getCascadeFilterPath(String cascadeTo);
 
 	/**
-	 * Returns the cascade mode for a property
+	 * Returns the cascade mode for an attribute
 	 * 
-	 * @param cascadeTo the path of the property to which to apply cascading
+	 * @param cascadeTo the path of the attribute to which to apply cascading
 	 * @return when to apply cascading - in search mode, edit mode, or both
 	 */
 	CascadeMode getCascadeMode(String cascadeTo);
@@ -139,7 +137,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Returns the description of the attribute for a certain locale
 	 * 
-	 * @param the locale
+	 * @param locale the locale
 	 * @return the description of the attribute. This is used as the tool tip in
 	 *         tables
 	 */
@@ -181,7 +179,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The name of the property in which to store the file name after a
+	 * @return The name of the attribute in which to store the file name after a
 	 *         successful file upload
 	 */
 	String getFileNameProperty();
@@ -199,7 +197,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the paths to the other attributes that must be appear on the same
+	 * @return the paths to the other attributes that must appear on the same
 	 *         line in an edit form
 	 */
 	List<String> getGroupTogetherWith();
@@ -367,7 +365,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	AttributeTextFieldMode getTextFieldMode();
 
 	/**
-	 * @return the thousands the mode that determines how to handel the thousands
+	 * @return the thousands the mode that determines how to handle the thousand
 	 *         separator when formatting floating point numbers
 	 */
 	ThousandsGroupingMode getThousandsGroupingMode();
@@ -379,7 +377,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return The Java type of the property
+	 * @return The Java type of the attribute
 	 */
 	Class<?> getType();
 
@@ -392,38 +390,35 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return whether the attribute is a boolean attribute
+	 * @return whether the attribute value is a Boolean
 	 */
 	boolean isBoolean();
 
 	/**
-	 * 
-	 * @return whether the clear button is visible for the component
+	 * @return whether the Clear button is visible for the component
 	 */
 	boolean isClearButtonVisible();
 
 	/**
-	 * 
-	 * @return whether the property is present inside an edit form. By default this
+	 * @return whether the attribute is present inside an edit form. By default, this
 	 *         is switched off for complex (i.e. MASTER or DETAIL) objects
 	 */
 	boolean isComplexEditable();
 
 	/**
-	 * 
-	 * @return Whether this property represents a currency
+	 * @return whether the attribute represents a currency
 	 */
 	boolean isCurrency();
 
 	/**
 	 * 
-	 * @return Whether the attribute is an email address
+	 * @return whether the attribute represents an email address
 	 */
 	boolean isEmail();
 
 	/**
 	 * 
-	 * @return Whether this is an embedded attribute
+	 * @return Whether the attribute is an embedded attribute
 	 */
 	boolean isEmbedded();
 
@@ -435,7 +430,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isIgnoreInSearchFilter();
 	
 	/**
-	 * @return whether this attribute represents an image
+	 * @return whether the attribute represents an image
 	 */
 	boolean isImage();
 
@@ -458,13 +453,13 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return Whether this is a numeric attribute
+	 * @return whether the attribute value is numerical
 	 */
 	boolean isNumerical();
 
 	/**
 	 * 
-	 * @return Whether the attribute represents a percentage
+	 * @return whether the attribute represents a percentage
 	 */
 	boolean isPercentage();
 
@@ -494,13 +489,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSearchable();
 
 	/**
-	 * @return whether searching on this attribute is case sensitive (only applies
+	 * @return whether searching on this attribute is case-sensitive (only applies
 	 *         if this is a String attribute)
 	 */
 	boolean isSearchCaseSensitive();
 
 	/**
-	 * 
 	 * @return whether searching on a time stamp field should only use the date part
 	 */
 	boolean isSearchDateOnly();
@@ -512,15 +506,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSearchForExactValue();
 
 	/**
-	 * 
-	 * 
 	 * @return whether searching should only match on prefixes rather than on a
 	 *         substring occurring anywhere
 	 */
 	boolean isSearchPrefixOnly();
 
 	/**
-	 * 
 	 * @return whether the password reveal button is visible
 	 */
 	boolean isShowPassword();
@@ -532,47 +523,37 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isSortable();
 
 	/**
-	 * Indicates whether to trim extra spaces from text input
-	 * 
-	 * @return
+	 * @return whether to trim extra spaces from text input
 	 */
 	boolean isTrimSpaces();
 
 	/**
-	 * Indicates whether this represents a (clickable) URL
-	 * 
-	 * @return
+	 * @return whether the attribute value represent a URL
 	 */
 	boolean isUrl();
 
 	/**
-	 * Indicates whether the attribute is visible
-	 * 
-	 * @return
+	 * @return whether the attribute is visible
 	 */
 	boolean isVisible();
 
 	/**
-	 * Indicates whether the attribute must be shown in a table
-	 * 
-	 * @return
+	 * @return whether the attribute must be shown in a table
 	 */
 	boolean isVisibleInGrid();
 
 	/**
-	 * Indicates whether this attribute represents a weekly recurring date
-	 * 
-	 * @return
+	 * @return whether the attribute represents a weekly recurring date
 	 */
 	boolean isWeek();
 
 	/**
-	 * Removes all cascading
+	 * Removes all cascading search settings for the attribute
 	 */
 	void removeCascades();
 
 	/**
-	 * Adds a custom setting
+	 * Adds a custom setting for the attribute
 	 * 
 	 * @param name  the name of the custom setting
 	 * @param value the value of the custom setting
@@ -582,18 +563,16 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	/**
 	 * Sets whether this attribute is the main attribute
 	 * 
-	 * @param main
+	 * @param main the desired value for the "main" setting
 	 */
 	void setMainAttribute(boolean main);
 
 	/**
-	 * 
 	 * @return whether to use thousands grouping in edit mode
 	 */
 	boolean useThousandsGroupingInEditMode();
 
 	/**
-	 * 
 	 * @return whether to use thousands grouping in edit mode
 	 */
 	boolean useThousandsGroupingInViewMode();

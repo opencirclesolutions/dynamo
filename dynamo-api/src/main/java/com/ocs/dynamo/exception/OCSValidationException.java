@@ -15,8 +15,6 @@ package com.ocs.dynamo.exception;
 
 import java.util.List;
 
-import com.google.common.collect.Lists;
-
 /**
  * An exception indicating that one or more validation errors have occurred
  * 
@@ -29,7 +27,7 @@ public class OCSValidationException extends OCSRuntimeException {
 	private final List<String> errors;
 
 	public OCSValidationException(String error) {
-		this.errors = Lists.newArrayList(error);
+		this.errors = List.of(error);
 	}
 
 	public OCSValidationException(List<String> errors) {

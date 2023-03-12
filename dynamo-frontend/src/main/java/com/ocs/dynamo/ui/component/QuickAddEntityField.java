@@ -14,12 +14,8 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -156,10 +152,10 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 			return null;
 		} else if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
 			Collection<T> col = (Collection<T>) value;
-			return Sets.newHashSet(col);
+			return new HashSet<>(col);
 		} else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
 			Collection<T> col = (Collection<T>) value;
-			return Lists.newArrayList(col);
+			return new ArrayList<>(col);
 		} else {
 			return value;
 		}

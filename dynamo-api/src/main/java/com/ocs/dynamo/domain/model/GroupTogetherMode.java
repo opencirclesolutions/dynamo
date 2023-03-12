@@ -15,5 +15,5 @@ package com.ocs.dynamo.domain.model;
 
 public enum GroupTogetherMode {
 
-	PERCENTAGE, PIXEL;
+	PERCENTAGE, PIXEL
 }

@@ -14,16 +14,11 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -598,10 +593,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 				if (col.size() == 1) {
 					T t = (T) col.iterator().next();
 					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
-					this.selectedItems = Lists.newArrayList(getSelectedItem());
+					this.selectedItems = new ArrayList<>(List.of(getSelectedItem()));
 				} else if (col.size() > 1) {
 					// deal with the selection of multiple items
-					List<ID> ids = Lists.newArrayList();
+					List<ID> ids = new ArrayList<>();
 					for (Object c : col) {
 						ids.add(((T) c).getId());
 					}

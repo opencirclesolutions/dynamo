@@ -17,7 +17,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Currency;
 import com.ocs.dynamo.functional.domain.Domain;
@@ -70,7 +69,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 	public void testUpdateDomains() {
 
 		// replace currencies with new one
-		DomainUtil.updateDomains(Currency.class, domains, Sets.newHashSet(new Currency("GBP", "English Pound")));
+		DomainUtil.updateDomains(Currency.class, domains, Set.of(new Currency("GBP", "English Pound")));
 		assertEquals(2, domains.size());
 
 		// remove all currencies
@@ -79,7 +78,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 
 		// remove all currencies
 		DomainUtil.updateDomains(Country.class, domains,
-				Sets.newHashSet(new Country("USA", "United States Of America")));
+				Set.of(new Country("USA", "United States Of America")));
 		assertEquals(1, domains.size());
 	}
 

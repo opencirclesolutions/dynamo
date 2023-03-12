@@ -14,9 +14,9 @@
 package com.ocs.dynamo.domain.model.impl;
 
 import java.math.BigDecimal;
+import java.util.List;
 import java.util.Locale;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.service.MessageService;
@@ -53,28 +53,23 @@ public interface SimpleComponentCreator extends ComponentCreator {
 	 */
 	default DatePickerI18n getDatePickerLocalization(MessageService messageService, Locale dateLocale) {
 		DatePickerI18n dpi = new DatePickerI18n();
-		//dpi.setCalendar(messageService.getMessage("ocs.calendar.calendar", dateLocale));
-
 		String weekdays = messageService.getMessage("ocs.calendar.days", dateLocale);
 		if (weekdays != null) {
-			dpi.setWeekdays(Lists.newArrayList(weekdays.split(",")));
+			dpi.setWeekdays(List.of(weekdays.split(",")));
 		}
 
 		String weekdaysShort = messageService.getMessage("ocs.calendar.days.short", dateLocale);
 		if (weekdaysShort != null) {
-			dpi.setWeekdaysShort(Lists.newArrayList(weekdaysShort.split(",")));
+			dpi.setWeekdaysShort(List.of(weekdaysShort.split(",")));
 		}
 
 		String months = messageService.getMessage("ocs.calendar.months", dateLocale);
 		if (months != null) {
-			dpi.setMonthNames(Lists.newArrayList(months.split(",")));
+			dpi.setMonthNames(List.of(months.split(",")));
 		}
 
 		dpi.setCancel(messageService.getMessage("ocs.calendar.cancel", dateLocale));
-		//dpi.setClear(messageService.getMessage("ocs.calendar.clear", dateLocale));
 		dpi.setFirstDayOfWeek(Integer.parseInt(messageService.getMessage("ocs.calendar.first", dateLocale)));
-		//dpi.setClear(messageService.getMessage("ocs.calendar.today", dateLocale));
-		//dpi.setWeek(messageService.getMessage("ocs.calendar.week", dateLocale));
 
 		return dpi;
 	}

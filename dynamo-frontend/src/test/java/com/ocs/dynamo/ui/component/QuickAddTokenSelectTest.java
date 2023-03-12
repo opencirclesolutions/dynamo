@@ -8,12 +8,12 @@ import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.Mockito.when;
 
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.TestEntity;
@@ -51,17 +51,17 @@ public class QuickAddTokenSelectTest extends BaseMockitoTest {
 		t2 = new TestEntity(2, "Bob", 13L);
 		t3 = new TestEntity(3, "Stewart", 14L);
 
-		when(service.find(isNull(), (SortOrder[]) any())).thenReturn(Lists.newArrayList(t1, t2, t3));
-		when(service.find(isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
-		when(service.findAll(isNull())).thenReturn(Lists.newArrayList(t1, t2, t3));
+		when(service.find(isNull(),  any())).thenReturn(List.of(t1, t2, t3));
+		when(service.find(isNull())).thenReturn(List.of(t1, t2, t3));
+		when(service.findAll(isNull())).thenReturn(List.of(t1, t2, t3));
 
 		Filter f = new com.ocs.dynamo.filter.Compare.Equal("name", "Kevin");
-		when(service.find(eq(f))).thenReturn(Lists.newArrayList(t1));
+		when(service.find(eq(f))).thenReturn(List.of(t1));
 
 		when(service.fetch(isNull(), any(Integer.class), any(Integer.class), any(SortOrders.class)))
-				.thenReturn(Lists.newArrayList(t1, t2, t3));
+				.thenReturn(List.of(t1, t2, t3));
 		when(service.fetch(eq(f), any(Integer.class), any(Integer.class), any(SortOrders.class)))
-				.thenReturn(Lists.newArrayList(t1));
+				.thenReturn(List.of(t1));
 
 		when(service.createNewEntity()).thenReturn(new TestEntity());
 		MockUtil.mockServiceSave(service, TestEntity.class);

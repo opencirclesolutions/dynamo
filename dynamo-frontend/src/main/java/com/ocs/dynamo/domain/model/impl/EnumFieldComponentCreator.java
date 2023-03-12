@@ -13,11 +13,12 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
+import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
+
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.service.MessageService;
@@ -52,7 +53,7 @@ public class EnumFieldComponentCreator implements SimpleComponentCreator {
 		ComboBox<E> cb = new ComboBox<>();
 
 		// sort on the description
-		List<E> list = Lists.newArrayList(enumClass.getEnumConstants());
+		List<E> list = Arrays.asList(enumClass.getEnumConstants());
 		list.sort((first, second) -> {
 			String msg1 = messageService.getEnumMessage(enumClass, first, VaadinUtils.getLocale());
 			String msg2 = messageService.getEnumMessage(enumClass, second, VaadinUtils.getLocale());

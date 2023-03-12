@@ -14,15 +14,11 @@
 package com.ocs.dynamo.ui.composite.export.impl;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -78,7 +74,7 @@ public class ExportDelegateImpl implements ExportDelegate {
 	public <ID extends Serializable, T extends AbstractEntity<ID>> void exportFixed(EntityModel<T> entityModel,
 			ExportMode mode, Collection<T> items) {
 		FixedExportDialog<ID, T> dialog = new FixedExportDialog<>(exportService, entityModel, mode,
-				(Supplier) customStyleMap.get(entityModel), () -> Lists.newArrayList(items));
+				(Supplier) customStyleMap.get(entityModel), () -> new ArrayList<>(items));
 		dialog.buildAndOpen();
 	}
 

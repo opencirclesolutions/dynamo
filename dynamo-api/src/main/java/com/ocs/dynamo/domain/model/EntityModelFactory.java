@@ -15,37 +15,35 @@ package com.ocs.dynamo.domain.model;
 
 /**
  * Factory for entity models
- * 
+ *
  * @author bas.rutten
  */
 public interface EntityModelFactory {
 
-	/**
-	 * Retrieves the entity model for a class
-	 *
-	 * @param entityClass
-	 *            the class of the entity
-	 * @return
-	 */
-	<T> EntityModel<T> getModel(Class<T> entityClass);
+    /**
+     * Retrieves the entity model for a class
+     *
+     * @param entityClass the class of the entity
+     * @return the retrieved entity model
+     */
+    <T> EntityModel<T> getModel(Class<T> entityClass);
 
-	/**
-	 * Retrieves a named entity model for a class
-	 *
-	 * @param reference
-	 *            the unique reference
-	 * @param entityClass
-	 *            the class of the entity
-	 * @return
-	 */
-	<T> EntityModel<T> getModel(String reference, Class<T> entityClass);
+    /**
+     * Retrieves a named entity model for a class
+     *
+     * @param reference   the unique reference of the model
+     * @param entityClass the class of the entity
+     * @return the retrieved entity model
+     */
+    <T> EntityModel<T> getModel(String reference, Class<T> entityClass);
 
-	/**
-	 * Checks whether the factory can provide a model
-	 *
-	 * @param reference
-	 * @param entityClass
-	 */
-	<T> boolean canProvideModel(String reference, Class<T> entityClass);
+    /**
+     * Checks whether the factory can provide a model for a certain entity
+     *
+     * @param reference   the unique reference of the model
+     * @param entityClass the  class of the entity
+     * @return true if the model can be provided, false otherwise
+     */
+    <T> boolean canProvideModel(String reference, Class<T> entityClass);
 
 }

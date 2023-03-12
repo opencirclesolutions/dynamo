@@ -14,10 +14,10 @@
 package com.ocs.dynamo.filter;
 
 import java.util.Collection;
+import java.util.List;
 
 import org.springframework.beans.PropertyAccessorFactory;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.filter.Compare.Equal;
 import com.ocs.dynamo.filter.Compare.Greater;
 import com.ocs.dynamo.filter.Compare.GreaterOrEqual;
@@ -65,7 +65,7 @@ public abstract class AbstractFilter implements Filter {
      * @return the provided filters, wrapped in an And filter
      */
     public And and(Filter... filters) {
-        return and(Lists.newArrayList(filters));
+        return and(List.of(filters));
     }
 
     /**
@@ -250,7 +250,7 @@ public abstract class AbstractFilter implements Filter {
      * @return the filters wrapped in a logical or
      */
     public Or or(Filter... filters) {
-        return or(Lists.newArrayList(filters));
+        return or(List.of(filters));
     }
 
     @Override

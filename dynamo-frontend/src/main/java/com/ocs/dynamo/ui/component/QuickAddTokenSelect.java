@@ -16,8 +16,8 @@ package com.ocs.dynamo.ui.component;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -75,7 +75,6 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	 * @param search         whether the component is part of a search form
 	 * @param sortOrder      sort orders
 	 */
-	@SafeVarargs
 	public QuickAddTokenSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode selectMode, SerializablePredicate<T> filter,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, boolean search, SortOrder<?>... sortOrder) {
@@ -93,7 +92,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 		if (tokenSelect != null) {
 			return tokenSelect
 					.addValueChangeListener(event -> listener.valueChanged(new ComponentValueChangeEvent<>(this, this,
-							event.getOldValue() == null ? null : Sets.newHashSet(event.getOldValue()),
+							event.getOldValue() == null ? null : new HashSet<>(event.getOldValue()),
 							event.isFromClient())));
 		}
 		return null;
@@ -234,7 +233,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 			if (value == null) {
 				value = Collections.emptyList();
 			}
-			tokenSelect.setValue(Sets.newHashSet(value));
+			tokenSelect.setValue(new HashSet<>(value));
 		}
 	}
 
@@ -257,7 +256,7 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 			if (value == null) {
 				value = Collections.emptyList();
 			}
-			tokenSelect.setValue(Sets.newHashSet(value));
+			tokenSelect.setValue(new HashSet<>(value));
 		}
 		super.setValue(value);
 	}

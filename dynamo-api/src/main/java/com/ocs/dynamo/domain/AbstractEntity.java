@@ -33,7 +33,6 @@ public abstract class AbstractEntity<ID> implements Serializable {
 
 	private static final long serialVersionUID = -8442763252267825950L;
 
-	// version field for optimistic locking
 	@Version
 	private Integer version;
 

@@ -51,7 +51,7 @@ public interface EntityModel<T> {
 	String CASCADE = "cascade";
 
 	/**
-	 * Cascade filter path (the attribute to filter on on the receiving side of a
+	 * Cascade filter path (the attribute to filter on the receiving side of a
 	 * cascade action)
 	 */
 	String CASCADE_FILTER_PATH = "cascadeFilterPath";
@@ -145,7 +145,7 @@ public interface EntityModel<T> {
 	String DISPLAY_PROPERTY = "displayProperty";
 
 	/**
-	 * The editable modus (EDITABLE, READ_ONLY, or CREATE_ONLY)
+	 * The editable mode (EDITABLE, READ_ONLY, or CREATE_ONLY)
 	 */
 	String EDITABLE = "editable";
 
@@ -314,7 +314,7 @@ public interface EntityModel<T> {
 	String SEARCH_ATTRIBUTE_ORDER = "searchAttributeOrder";
 
 	/**
-	 * Whether searching is case sensitive
+	 * Whether searching is case-sensitive
 	 */
 	String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
 
@@ -376,7 +376,7 @@ public interface EntityModel<T> {
 	String TEXTFIELD_MODE = "textFieldMode";
 
 	/**
-	 * Indicates whether when to use the thousands separator when formatting
+	 * Indicates whether when to use the thousand separator when formatting
 	 * floating point numbers
 	 */
 	String THOUSANDS_GROUPING_MODE = "thousandsGroupingMode";
@@ -422,7 +422,7 @@ public interface EntityModel<T> {
 	/**
 	 * Adds a new attribute model on the position of the given existing attribute
 	 * model. The existing model will shift one position to the back of the list.
-	 * When the existing model is not found the attribute will added on the end of
+	 * When the existing model is not found the attribute will be added to the end of
 	 * the list.
 	 * 
 	 * @param attributeGroup The group to which the attribute model should be
@@ -462,19 +462,19 @@ public interface EntityModel<T> {
 	 * Returns the attribute models for a certain group
 	 * 
 	 * @param group the caption of the group
-	 * @return
+	 * @return the attribute models that belong to this group
 	 */
 	List<AttributeModel> getAttributeModelsForGroup(String group);
 
 	/**
 	 * Returns the attribute models for a certain attribute type and type. Just one
 	 * of the parameters is mandatory, when both are given both will be used in a
-	 * boolean AND. Will also look at the generic type of a attribute, e.g.
+	 * boolean AND. Will also look at the generic type of an attribute, e.g.
 	 * List<some generic type>.
 	 * 
 	 * @param attributeType the attribute type
 	 * @param type          the type
-	 * @return
+	 * @return the list of attribute models
 	 */
 	List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type);
 
@@ -513,7 +513,7 @@ public interface EntityModel<T> {
 	 * Return the display name plural form of an entity for the specified locale
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the display name
 	 */
 	String getDisplayNamePlural(Locale locale);
 
@@ -521,7 +521,7 @@ public interface EntityModel<T> {
 	 * The name of the property that is used when displaying the entity inside a
 	 * select component (like a combo box) or a grid
 	 * 
-	 * @return
+	 * @return the name of the display property
 	 */
 	String getDisplayProperty();
 
@@ -534,7 +534,7 @@ public interface EntityModel<T> {
 	 * The name of the property that is used to filter inside a combo box or token
 	 * component
 	 * 
-	 * @return
+	 * @return the name of the filter property
 	 */
 	String getFilterProperty();
 
@@ -579,7 +579,7 @@ public interface EntityModel<T> {
 	/**
 	 * Indicates whether this is the "base" entity model
 	 * 
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	boolean isBaseEntityModel();
 

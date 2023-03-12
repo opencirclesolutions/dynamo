@@ -100,7 +100,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Fetches the entities identified by the provided IDs
 	 * 
 	 * @param ids        the IDs of the entities to fetch
-	 * @param sortOrders the sort orders to apply
+	 * @param sortOrders the sort orders that must be used
 	 * @param joins      the desired relations to fetch
 	 * @return the list of entities
 	 */
@@ -110,7 +110,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * Fetches the entities identified by the provided IDs
 	 * 
 	 * @param ids        the IDs of the entities to fetch
-	 * @param sortOrders the sort orders to apply
+	 * @param sortOrders the sort orders that must be used
 	 * @param joins      the desired relations to fetch
 	 * @return the list of entities 
 	 */
@@ -121,7 +121,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * 
 	 * @param propertyName  the name of the property
 	 * @param value         the value of the property
-	 * @param caseSensitive indicates whether the value is case sensitive
+	 * @param caseSensitive indicates whether the value is case-sensitive
 	 * @param joins         the desired relations to fetch
 	 * 
 	 * @return the entity, or <code>null</code> if no entity can be found

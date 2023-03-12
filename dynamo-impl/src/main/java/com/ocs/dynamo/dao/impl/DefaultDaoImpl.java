@@ -21,7 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.Arrays;
 
 /**
- * A default DAO implementation
+ * A default DAO implementation for handling database access for a simple
  *
  * @author bas.rutten
  *
@@ -37,6 +37,11 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 
     private final String[] fetchPropertyIds;
 
+	/**
+	 * Constructor
+	 * @param dslRoot          the query DSL root path
+	 * @param entityClass      the entity class
+	 */
 	public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
 		this(dslRoot, entityClass, (String[]) null);
 	}

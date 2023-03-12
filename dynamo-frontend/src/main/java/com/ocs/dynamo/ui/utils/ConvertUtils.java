@@ -17,13 +17,8 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZonedDateTime;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
+import java.util.*;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
@@ -95,8 +90,8 @@ public final class ConvertUtils {
 	 * Converts the search value from the presentation to the model
 	 * 
 	 * @param am    the attribute model that governs the conversion
-	 * @param input the search value to convert
-	 * @return
+	 * @param value the search value to convert
+	 * @return the result of the conversion
 	 */
 	public static Result<? extends Object> convertToModelValue(AttributeModel am, Object value) {
 		if (value == null) {
@@ -142,10 +137,10 @@ public final class ConvertUtils {
 			return null;
 		} else if (Set.class.isAssignableFrom(am.getType())) {
 			Collection<T> col = (Collection<T>) value;
-			return Sets.newHashSet(col);
+			return new HashSet<>(col);
 		} else if (List.class.isAssignableFrom(am.getType())) {
 			Collection<T> col = (Collection<T>) value;
-			return Lists.newArrayList(col);
+			return new ArrayList<>(col);
 		}
 		return null;
 	}

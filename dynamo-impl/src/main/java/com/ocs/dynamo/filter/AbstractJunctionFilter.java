@@ -20,8 +20,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 
-import com.google.common.collect.Lists;
-
 import lombok.Getter;
 
 /**
@@ -40,7 +38,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	 * @param filters the filters to include
 	 */
 	protected AbstractJunctionFilter(Filter... filters) {
-		this.filters.addAll(Lists.newArrayList(filters));
+		this.filters.addAll(List.of(filters));
 	}
 
 	/**

@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+//import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -55,7 +55,7 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
 	@BeforeEach
 	public void setUp() {
-		MockVaadin.setup();
+		//MockVaadin.setup();
 		fieldFactory = FieldFactory.getInstance();
 	}
 

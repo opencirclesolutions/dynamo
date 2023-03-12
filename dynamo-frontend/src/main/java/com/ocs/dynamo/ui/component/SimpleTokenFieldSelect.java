@@ -14,17 +14,10 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
-//import org.vaadin.gatanaso.MultiselectComboBox;
-
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -164,7 +157,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 		if (value == null) {
 			value = Collections.emptyList();
 		}
-		multiComboBox.setValue(Sets.newHashSet(value));
+		multiComboBox.setValue(new HashSet<>(value));
 	}
 
 }

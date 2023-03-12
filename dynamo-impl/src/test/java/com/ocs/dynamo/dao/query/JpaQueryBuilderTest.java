@@ -20,16 +20,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
-import jakarta.persistence.Tuple;
-import jakarta.persistence.TypedQuery;
-
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.BackendIntegrationTest;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.QueryFunction;
@@ -49,7 +42,11 @@ import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 
-//@Disabled
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+
 public class JpaQueryBuilderTest extends BackendIntegrationTest {
 
 	@PersistenceContext
@@ -159,7 +156,6 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		assertEquals(1, count);
 	}
 
-
 	@Test
 	public void testCreateCountQuery_LikeCaseInsensitiveInfix2() {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
@@ -188,7 +184,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 	@Test
 	public void testCreateCountQuery_In() {
 		TypedQuery<Long> tQuery = JpaQueryBuilder.createCountQuery(entityManager, TestEntity.class,
-				new In("name", Lists.newArrayList("Bob", "Sally")), false);
+				new In("name", List.of("Bob", "Sally")), false);
 		long count = tQuery.getSingleResult();
 		assertEquals(2, count);
 	}
@@ -247,7 +243,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				.getSingleResult();
 
 		TypedQuery<TestEntity> tQuery = createFetchQuery(entityManager, TestEntity.class,
-				Lists.newArrayList(e1.getId()), null, null);
+				List.of(e1.getId()), null, null);
 		List<TestEntity> entity = tQuery.getResultList();
 
 		assertEquals(1, entity.size());
@@ -259,7 +255,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				.getSingleResult();
 
 		TypedQuery<TestEntity> tQuery = createFetchQuery(entityManager, TestEntity.class,
-				Lists.newArrayList(e1.getId()), new Compare.Equal("name", "Bob"), null);
+				List.of(e1.getId()), new Compare.Equal("name", "Bob"), null);
 		List<TestEntity> entity = tQuery.getResultList();
 
 		assertEquals(1, entity.size());
@@ -274,8 +270,9 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 		entityManager.persist(e2);
 
 		// fetch join the testEntity
-		TypedQuery<TestEntity2> tQuery = createFetchQuery(entityManager, TestEntity2.class, Lists.newArrayList(e2.getId()),
-				null, null, new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
+		TypedQuery<TestEntity2> tQuery = createFetchQuery(entityManager, TestEntity2.class,
+				List.of(e2.getId()), null, null,
+				new FetchJoinInformation[] { new FetchJoinInformation("testEntity") });
 		List<TestEntity2> entity = tQuery.getResultList();
 
 		assertEquals(1, entity.size());
@@ -305,7 +302,7 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				.getSingleResult();
 
 		SortOrder sortName = new SortOrder("name");
-		Filter filter = new In("name", Lists.newArrayList(e1.getName(), e2.getName()));
+		Filter filter = new In("name", List.of(e1.getName(), e2.getName()));
 		TypedQuery<Object[]> tQuery = JpaQueryBuilder.createSelectQuery(filter, entityManager, TestEntity.class,
 				new String[] { "name", "age" }, new SortOrders(sortName));
 		List<Object[]> result = tQuery.getResultList();
@@ -360,7 +357,6 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	@Disabled
 	public void testCreateSelectAggregateJoinAndGroupQuery() {
 		insertNestedTestEntities();
 
@@ -368,19 +364,23 @@ public class JpaQueryBuilderTest extends BackendIntegrationTest {
 				"select t1.name, sum(t2.value) from TestEntity t1 join t1.testEntities t2 group by t1.name order by t1.name")
 				.getResultList();
 
-		TypedQuery<Object[]> tQuery = JpaQueryBuilder.createSelectQuery(null, entityManager, TestEntity.class,
+		TypedQuery<Object[]> typedQuery = JpaQueryBuilder.createSelectQuery(null, entityManager, TestEntity.class,
 				new String[] { "name", QueryFunction.AF_SUM.with("testEntities.value") },
 				new SortOrders(new SortOrder("name")));
-		List<Object[]> result = tQuery.getResultList();
+		List<Object[]> result = typedQuery.getResultList();
 
 		assertEquals(2, result.size());
 		Object[] br = base.get(0);
 		assertTrue(br[0].equals(result.get(0)[0]));
-		assertTrue(br[1].equals(result.get(0)[1]));
+		Long value = (Long) br[1];
+		assertEquals(value.intValue(), ((Integer) result.get(0)[1]).intValue());
 
 		Object[] br1 = base.get(1);
 		assertTrue(br1[0].equals(result.get(1)[0]));
-		assertTrue(br1[1].equals(result.get(1)[1]));
+
+		value = (Long) br1[1];
+		assertEquals(value.intValue(), ((Integer) result.get(1)[1]).intValue());
+
 	}
 
 	@Test

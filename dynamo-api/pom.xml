@@ -55,22 +55,20 @@
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-jpa</artifactId>
 			<classifier>jakarta</classifier>
-			<version>5.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 			<classifier>jakarta</classifier>
-			<version>5.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
 		</dependency>
-		<dependency>
+		<!--<dependency>
 			<groupId>com.google.guava</groupId>
 			<artifactId>guava</artifactId>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 	<build>
 		<plugins>
@@ -100,10 +98,10 @@
 				<artifactId>jacoco-maven-plugin</artifactId>
 			</plugin>
 			<!-- QueryDSL code generation -->
-<!--			<plugin>-->
-<!--				<groupId>com.mysema.maven</groupId>-->
-<!--				<artifactId>apt-maven-plugin</artifactId>-->
-<!--			</plugin>-->
+			<plugin>
+				<groupId>com.mysema.maven</groupId>
+				<artifactId>apt-maven-plugin</artifactId>
+			</plugin>
 		</plugins>
 	</build>
 </project>

@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import com.google.common.collect.Lists;
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -159,7 +157,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         if (searchOptions.isMultiSelect()) {
             if (getValue() == null) {
                 // create new collection
-                setValue(Lists.newArrayList(entity));
+                setValue(new ArrayList<>(List.of(entity)));
             } else {
                 // add new entity to existing collection
                 Collection<T> col = (Collection<T>) getValue();
@@ -176,9 +174,9 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      */
     public void clearValue() {
         if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
-            setValue(Sets.newHashSet());
+            setValue(new HashSet<>());
         } else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
-            setValue(Lists.newArrayList());
+            setValue(new ArrayList<>());
         } else {
             setValue(null);
         }
@@ -401,10 +399,10 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
             super.setValue(null);
         } else if (Set.class.isAssignableFrom(getAttributeModel().getType())) {
             Collection<T> col = (Collection<T>) value;
-            super.setValue(Sets.newHashSet(col));
+            super.setValue(new HashSet<>(col));
         } else if (List.class.isAssignableFrom(getAttributeModel().getType())) {
             Collection<T> col = (Collection<T>) value;
-            super.setValue(Lists.newArrayList(col));
+            super.setValue(new ArrayList<>(col));
         } else {
             super.setValue(value);
         }

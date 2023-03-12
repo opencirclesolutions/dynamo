@@ -29,6 +29,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
+import static com.ocs.dynamo.utils.NumberUtils.numberToString;
+
 /**
  * 
  * Utilities for formatting property values
@@ -102,7 +104,7 @@ public final class FormatUtils {
 					result.add(next.toString());
 				}
 			} else if (next instanceof Number) {
-				result.add(NumberUtils.numberToString(attributeModel, next, true, locale, currencySymbol));
+				result.add(numberToString(attributeModel, next, true, locale, currencySymbol));
 			} else {
 				result.add(next.toString());
 			}
@@ -162,7 +164,7 @@ public final class FormatUtils {
 				// other Java 8 dates
 				return DateUtils.formatJava8Date(am.getType(), value, am.getDisplayFormat(), zoneId);
 			} else if (NumberUtils.isNumeric(am.getType())) {
-				return NumberUtils.numberToString(am, value, am.useThousandsGroupingInViewMode(), locale,
+				return numberToString(am, value, am.useThousandsGroupingInViewMode(), locale,
 						currencySymbol);
 			} else if (am.getType().isEnum()) {
 				// in case of an enumeration, look it up in the message

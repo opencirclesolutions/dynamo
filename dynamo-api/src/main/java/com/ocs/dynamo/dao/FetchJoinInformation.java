@@ -35,7 +35,7 @@ public class FetchJoinInformation {
 	 * Constructor
 	 * 
 	 * @param property the property to use for the fetch
-	 * @param joinType the desired join type (left, inner etc)
+	 * @param joinType the desired join type (left, inner etc.)
 	 */
 	public FetchJoinInformation(String property, JoinType joinType) {
 		this.property = property;

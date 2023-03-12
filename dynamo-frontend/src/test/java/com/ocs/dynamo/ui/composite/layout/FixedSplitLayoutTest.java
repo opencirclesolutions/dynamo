@@ -11,7 +11,6 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -20,6 +19,9 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class FixedSplitLayoutTest extends FrontendIntegrationTest {
 
@@ -64,7 +66,7 @@ public class FixedSplitLayoutTest extends FrontendIntegrationTest {
 		FixedSplitLayout<Integer, TestEntity> layout = new FixedSplitLayout<Integer, TestEntity>(testEntityService,
 				entityModelFactory.getModel(TestEntity.class), fo,
 				new SortOrder<String>("name", SortDirection.ASCENDING));
-		layout.setLoadItemSupplier(() -> Lists.newArrayList(e1, e2));
+		layout.setLoadItemSupplier(() -> new ArrayList<>(List.of(e1, e2)));
 		layout.build();
 
 		// layout must contain 2 items
@@ -91,9 +93,9 @@ public class FixedSplitLayoutTest extends FrontendIntegrationTest {
 	@Test
 	public void testCreateDetailLayout() {
 		FormOptions fo = new FormOptions();
-		FixedDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new FixedDetailLayout<Integer, TestEntity2, Integer, TestEntity>(
+		FixedDetailLayout<Integer, TestEntity2, Integer, TestEntity> layout = new FixedDetailLayout<>(
 				testEntity2Service, e1, testEntityService, entityModelFactory.getModel(TestEntity2.class), fo, null);
-		layout.setLoadItemSupplier(() -> Lists.newArrayList(child1));
+		layout.setLoadItemSupplier(() -> new ArrayList<>(List.of(child1)));
 		layout.build();
 
 		assertEquals(1, layout.getGridWrapper().getDataProviderSize());

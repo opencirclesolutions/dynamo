@@ -20,5 +20,5 @@ package com.ocs.dynamo.domain.model;
  *
  */
 public enum MultiSelectMode {
-	INHERIT, CHECKBOX, ROWSELECT;
+	INHERIT, CHECKBOX, ROWSELECT
 }

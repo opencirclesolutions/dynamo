@@ -13,10 +13,7 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
@@ -40,7 +37,7 @@ import org.mockito.Spy;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.google.common.collect.Lists;
+
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.Pageable;
@@ -66,7 +63,7 @@ import com.ocs.dynamo.test.MockUtil;
 @ExtendWith(SpringExtension.class)
 public class BaseServiceImplTest extends BaseMockitoTest {
 
-	private class Dependency {
+	private static class Dependency {
 
 		public void noop() {
 			// do nothing
@@ -156,10 +153,10 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 
 		Pageable p = captor.getValue();
 
-		Direction dir = p.getSortOrders().getOrderFor("name").getDirection();
+		Direction dir = p.getSortOrders().getOrderFor("name").get().getDirection();
 		assertEquals(Direction.ASC, dir);
 
-		Direction dir2 = p.getSortOrders().getOrderFor("age").getDirection();
+		Direction dir2 = p.getSortOrders().getOrderFor("age").get().getDirection();
 		assertEquals(Direction.DESC, dir2);
 
 		assertEquals(2, p.getPageNumber());
@@ -187,13 +184,13 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 		SortOrders s = captor.getValue();
 		assertNotNull(s);
 
-		Direction dir = s.getOrderFor("name").getDirection();
+		Direction dir = s.getOrderFor("name").get().getDirection();
 		assertEquals(Direction.ASC, dir);
 
-		dir = s.getOrderFor("age").getDirection();
+		dir = s.getOrderFor("age").get().getDirection();
 		assertEquals(Direction.DESC, dir);
 
-		assertNull(s.getOrderFor("notExists"));
+		assertFalse(s.getOrderFor("notExists").isPresent());
 	}
 
 	@Test
@@ -208,8 +205,8 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 		TestEntity obj = new TestEntity();
 		TestEntity obj2 = new TestEntity();
 
-		service.delete(Lists.newArrayList(obj, obj2));
-		verify(dao).delete(Lists.newArrayList(obj, obj2));
+		service.delete(List.of(obj, obj2));
+		verify(dao).delete(List.of(obj, obj2));
 	}
 
 	@Test
@@ -225,11 +222,11 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 	@Test
 	public void testFetchByIds() {
 
-		service.fetchByIds(Lists.newArrayList(1, 2));
-		verify(dao).fetchByIds(Lists.newArrayList(1, 2), null);
+		service.fetchByIds(List.of(1, 2));
+		verify(dao).fetchByIds(List.of(1, 2), null);
 
-		service.fetchByIds(Lists.newArrayList(1, 2), new FetchJoinInformation("property1"));
-		verify(dao).fetchByIds(Lists.newArrayList(1, 2), null, new FetchJoinInformation("property1"));
+		service.fetchByIds(List.of(1, 2), new FetchJoinInformation("property1"));
+		verify(dao).fetchByIds(List.of(1, 2), null, new FetchJoinInformation("property1"));
 	}
 
 	@Test
@@ -361,8 +358,8 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 		TestEntity obj1 = new TestEntity("name1", 14L);
 		TestEntity obj2 = new TestEntity("name2", 15L);
 
-		service.save(Lists.newArrayList(obj1, obj2));
-		verify(dao).save(Lists.newArrayList(obj1, obj2));
+		service.save(List.of(obj1, obj2));
+		verify(dao).save(List.of(obj1, obj2));
 	}
 
 	@Test

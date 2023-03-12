@@ -24,10 +24,8 @@ import com.querydsl.jpa.impl.JPAUpdateClause;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaQuery;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+
+import java.util.*;
 
 /**
  * Base class for all DAO implementations
@@ -332,8 +330,11 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 
 	@Override
 	public List<T> save(List<T> list) {
-		list.replaceAll(this::save);
-		return list;
+		List<T> result = new ArrayList<>();
+		for (T entity: list) {
+			result.add(this.save(entity));
+		}
+		return result;
 	}
 
 	@Override

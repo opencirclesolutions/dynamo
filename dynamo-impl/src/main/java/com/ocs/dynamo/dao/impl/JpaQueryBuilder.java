@@ -20,36 +20,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.Tuple;
-import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Fetch;
-import jakarta.persistence.criteria.FetchParent;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.ParameterExpression;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.metamodel.Attribute;
-
-
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.dao.InvalidDataAccessApiUsageException;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.QueryFunction;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Between;
 import com.ocs.dynamo.filter.Compare;
@@ -62,6 +40,24 @@ import com.ocs.dynamo.filter.Modulo;
 import com.ocs.dynamo.filter.Not;
 import com.ocs.dynamo.filter.Or;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Expression;
+import jakarta.persistence.criteria.Fetch;
+import jakarta.persistence.criteria.FetchParent;
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Order;
+import jakarta.persistence.criteria.ParameterExpression;
+import jakarta.persistence.criteria.Path;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.metamodel.Attribute;
 
 /**
  * @author patrick.deenen
@@ -135,7 +131,7 @@ public final class JpaQueryBuilder {
         if (sortOrders != null && sortOrders.length > 0) {
             List<Order> orders = new ArrayList<>();
             for (SortOrder sortOrder : sortOrders) {
-                Expression<?> property = distinct ? getPropertyPath(root, sortOrder.getProperty(), false)
+                Expression<?> property = distinct ? getPropertyPath(root, sortOrder.getProperty(), true)
                         : getPropertyPathForSort(root, sortOrder.getProperty());
                 ms.add(property);
                 orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
@@ -291,7 +287,7 @@ public final class JpaQueryBuilder {
         Root<T> root = cq.from(entityClass);
 
         // select only the distinctField
-        cq.multiselect(getPropertyPath(root, distinctField, false));
+        cq.multiselect(getPropertyPath(root, distinctField, true));
 
         Map<String, Object> pars = createParameterMap();
         Predicate predicate = createPredicate(filter, builder, root, pars);
@@ -564,7 +560,7 @@ public final class JpaQueryBuilder {
             return createLikePredicate(builder, root, filter);
         } else if (filter instanceof Contains contains) {
             return builder.isMember(contains.getValue(),
-                    (Expression) getPropertyPath(root, contains.getPropertyId(), false));
+                    (Expression) getPropertyPath(root, contains.getPropertyId(), true));
         } else if (filter instanceof In in) {
             if (in.getValues() != null && !in.getValues().isEmpty()) {
                 Expression<?> exp = getPropertyPath(root, in.getPropertyId(), true);
@@ -580,7 +576,7 @@ public final class JpaQueryBuilder {
             } else {
                 // match with an empty list
                 Expression exp = getPropertyPath(root, in.getPropertyId(), true);
-                return exp.in(Lists.newArrayList(-1));
+                return exp.in(List.of(-1));
             }
         } else if (filter instanceof Modulo) {
             return createModuloPredicate(builder, root, filter);
@@ -771,7 +767,6 @@ public final class JpaQueryBuilder {
             } else {
                 path = path.get(part);
             }
-            // Check collection join
             
             
             if (join && isCollection(path)) {
@@ -821,17 +816,8 @@ public final class JpaQueryBuilder {
             } else {
                 path = path.get(part);
             }
-            
-            // TODO: is there a nicer way to fix this?
-            boolean entityOrCollection = false;
-            try {
-            	entityOrCollection = AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
-                || Collection.class.isAssignableFrom(path.type().getJavaType());
-            } catch(Exception ex) {
-            	
-            }
 
-            if (entityOrCollection) {
+            if (isEntityOrCollection(path)) {
                 // Reuse existing join
                 Join<?, ?> detailJoin = null;
                 Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
@@ -885,9 +871,20 @@ public final class JpaQueryBuilder {
     		collection = path.type() != null && java.util.Collection.class.isAssignableFrom(path.type().getJavaType());
     	 	}
     	catch (Exception ex) {
-    		
+            // do nothing (new JPA is stricter on this than before)
     	}
     	return collection;
+    }
+
+    private static boolean isEntityOrCollection(Path<?> path) {
+        boolean entityOrCollection = false;
+        try {
+            entityOrCollection = AbstractEntity.class.isAssignableFrom(path.type().getJavaType())
+                    || Collection.class.isAssignableFrom(path.type().getJavaType());
+        } catch(Exception ex) {
+            // do nothing (new JPA is stricter on this than before)
+        }
+        return entityOrCollection;
     }
 
     private static String removeAccents(String input) {
