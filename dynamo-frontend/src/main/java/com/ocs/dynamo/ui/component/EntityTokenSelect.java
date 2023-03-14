@@ -18,7 +18,6 @@ import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
-import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 //import org.vaadin.gatanaso.MultiselectComboBox;
 
@@ -38,7 +37,6 @@ import com.vaadin.flow.data.provider.CallbackDataProvider;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
-import com.vaadin.flow.function.SerializableFunction;
 import com.vaadin.flow.function.SerializablePredicate;
 
 import lombok.Getter;
@@ -74,7 +72,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 * The search filter to use in filtered mode
 	 */
 	@Getter
-	private SerializablePredicate<T> _filter;
+	private SerializablePredicate<T> predicate;
 
 	/**
 	 * The original search filter
@@ -117,7 +115,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		this.selectMode = selectMode;
 		this.sortOrders = sortOrders;
 		this.attributeModel = attributeModel;
-		this._filter = filter;
+		this.predicate = filter;
 
 		if (attributeModel != null) {
 			this.setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
@@ -199,13 +197,13 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	@Override
 	public void clearAdditionalFilter() {
-		this.additionalFilter = _filter;
-		this._filter = originalFilter;
+		this.additionalFilter = predicate;
+		this.predicate = originalFilter;
 		refresh();
 	}
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
-		return CallbackProviderHelper.createCallbackProvider(service, entityModel, _filter,
+		return CallbackProviderHelper.createCallbackProvider(service, entityModel, predicate,
 															 new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
@@ -226,7 +224,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
-				items = service.find(new FilterConverter<T>(entityModel).convert(_filter),
+				items = service.find(new FilterConverter<T>(entityModel).convert(predicate),
 						SortUtils.translateSortOrders(sortOrders));
 				setItems(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
 								 new ListDataProvider<>(items));
@@ -261,7 +259,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 
 	public void refresh(SerializablePredicate<T> filter) {
 		this.originalFilter = filter;
-		this._filter = filter;
+		this.predicate = filter;
 		refresh();
 	}
 
@@ -275,7 +273,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		clear();
 		this.additionalFilter = additionalFilter;
-		this._filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
+		this.predicate = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
 
@@ -295,7 +293,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			List<T> items = service.find(new FilterConverter<>(entityModel).convert(_filter),
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(predicate),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

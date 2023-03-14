@@ -200,7 +200,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 				setItems(listProvider);
 			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
 				CallbackDataProvider<T, Void> callbackProvider = createCallbackProvider();
-//				setItems(callbackProvider);
+				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
 				// add a filtered selection of items
 				items = service.find(new FilterConverter<T>(entityModel).convert(filter),

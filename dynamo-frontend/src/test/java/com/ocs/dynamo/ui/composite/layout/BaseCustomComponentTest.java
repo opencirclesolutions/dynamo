@@ -23,7 +23,7 @@ import java.util.Locale;
 
 import jakarta.persistence.OptimisticLockException;
 
-//import com.github.mvysny.kaributesting.v10.MockVaadin;
+import com.github.mvysny.kaributesting.v10.MockVaadin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -63,7 +63,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 	@BeforeEach
 	public void setupBaseCustomComponentTest() throws NoSuchFieldException {
 		// Reset vaadin session locale for unit test
-		//MockVaadin.tearDown();
+		MockVaadin.tearDown();
 		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "en");
 		MockUtil.mockMessageService(messageService);
 		ReflectionTestUtils.setField(component, "messageService", messageService);
