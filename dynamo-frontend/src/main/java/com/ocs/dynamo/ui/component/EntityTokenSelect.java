@@ -188,7 +188,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		select(entity);
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked" , "rawtypes" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider) {
 			setItems((CallbackDataProvider) provider);

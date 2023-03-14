@@ -86,7 +86,6 @@
 			<groupId>com.querydsl</groupId>
 			<artifactId>querydsl-apt</artifactId>
 			<classifier>jakarta</classifier>
-			<version>5.0.0</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>

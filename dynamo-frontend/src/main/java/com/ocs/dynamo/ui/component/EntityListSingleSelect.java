@@ -154,6 +154,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		setValue(entity);
 	}
 
+	@SuppressWarnings("rawtypes")
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof ListDataProvider ldp) {
 			setItems(ldp.getItems());
@@ -200,7 +201,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 				setItems(listProvider);
 			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
 				CallbackDataProvider<T, Void> callbackProvider = createCallbackProvider();
-//				setItems(callbackProvider);
+				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
 				// add a filtered selection of items
 				items = service.find(new FilterConverter<T>(entityModel).convert(filter),

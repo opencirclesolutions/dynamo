@@ -153,7 +153,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		setValue(entity);
 	}
 
-	@SuppressWarnings({ "unchecked" })
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider callbackDataProvider) {
 			setItems(callbackDataProvider);

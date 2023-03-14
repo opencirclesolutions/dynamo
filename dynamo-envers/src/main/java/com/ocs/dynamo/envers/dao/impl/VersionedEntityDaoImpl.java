@@ -413,7 +413,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 		if (value instanceof AbstractEntity) {
 			return true;
 		}
-		if (value instanceof Collection col) {
+		if (value instanceof Collection<?> col) {
 			return !col.isEmpty() && col.iterator().next() instanceof AbstractEntity;
 		}
 		return false;
