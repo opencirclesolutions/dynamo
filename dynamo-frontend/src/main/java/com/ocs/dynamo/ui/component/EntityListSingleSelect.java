@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.stream.Stream;
 
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -57,6 +56,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	@Getter
 	private final AttributeModel attributeModel;
 
+	private int count;
+
 	private final EntityModel<T> entityModel;
 
 	@Getter
@@ -72,8 +73,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 
 	@Getter
 	private final SortOrder<?>[] sortOrders;
-
-	private int count;
 
 	@SafeVarargs
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -91,8 +90,8 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		initProvider(provider, items, mode);
 
 		// non-standard way of setting captions
-		setRenderer(new ComponentRenderer<Text, T>(t -> {
-			String label = EntityModelUtils.getDisplayPropertyValue(t, entityModel);
+		setRenderer(new ComponentRenderer<Text, T>(entity -> {
+			String label = EntityModelUtils.getDisplayPropertyValue(entity, entityModel);
 			return new Text(label == null ? "" : label);
 		}));
 	}
@@ -143,18 +142,16 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		this(entityModel, attributeModel, null, SelectMode.FIXED, null, items, null);
 	}
 
-	@SuppressWarnings("unchecked")
 	public void afterNewEntityAdded(T entity) {
-//		if (getDataProvider() instanceof ListDataProvider) {
-//			ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
-//			provider.getItems().add(entity);
-//		} else {
-//			updateProvider((DataProvider<T, SerializablePredicate<T>>) getDataProvider());
-//		}
+		if (usesFixedProvider()) {
+			getListDataView().addItem(entity);
+		} else {
+			setItems(createCallbackProvider());
+		}
 		setValue(entity);
 	}
 
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({ "unchecked", "rawtypes" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof ListDataProvider ldp) {
 			setItems(ldp.getItems());
@@ -176,14 +173,13 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
-//	public int getDataProviderSize() {
-//		if (getDataProvider() instanceof ListDataProvider) {
-//			return ((ListDataProvider<?>) getDataProvider()).getItems().size();
-//		} else if (getDataProvider() instanceof CallbackDataProvider) {
-//			return count;
-//		}
-//		return 0;
-//	}
+	public int getDataProviderSize() {
+		if (usesFixedProvider()) {
+			return getListDataView().getItemCount();
+		} else {
+			return count;
+		}
+	}
 
 	/**
 	 * Initializes the data provider
@@ -214,13 +210,11 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 			castAndSetDataProvider(provider);
 		}
 	}
-
+	
 	@Override
-	@SuppressWarnings("unchecked")
 	public void refresh() {
 		T stored = this.getValue();
 		clear();
-		//updateProvider((DataProvider<T, SerializablePredicate<T>>) provider);
 		updateProvider();
 		setValue(stored);
 	}
@@ -231,12 +225,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		refresh();
 	}
 
-	private void reloadDataProvider(ListDataProvider<T> listProvider, List<T> items) {
-		listProvider.getItems().clear();
-		listProvider.getItems().addAll(items);
-		listProvider.refreshAll();
-	}
-
 	@Override
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		clear();
@@ -244,7 +232,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
-
+   
 	/**
 	 * Updates the data provider after a refresh
 	 *
@@ -252,19 +240,20 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 */
 	private void updateProvider() {
 		if (SelectMode.ALL.equals(selectMode)) {
-			//ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			//reloadDataProvider(listProvider, service.findAll(SortUtils.translateSortOrders(sortOrders)));
 			setItems(service.findAll(SortUtils.translateSortOrders(sortOrders)));
-			
 		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
-			//ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
 			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
 					SortUtils.translateSortOrders(sortOrders));
 			setItems(items);
 			//reloadDataProvider(listProvider, items);
 		}
+	}
+
+	private boolean usesFixedProvider() {
+		return SelectMode.ALL.equals(selectMode) || SelectMode.FILTERED_ALL.equals(selectMode) || 
+				SelectMode.FIXED.equals(selectMode);
 	}
 
 }

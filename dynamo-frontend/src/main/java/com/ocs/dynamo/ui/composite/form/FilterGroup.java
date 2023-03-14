@@ -258,14 +258,14 @@ public class FilterGroup<T> {
      * Resets the search filters for both fields
      */
     public void reset() {
-        if (field instanceof HasValue hv) {
+        if (field instanceof HasValue<?,?> hv) {
             hv.clear();
             if (field instanceof HasValidation hasValidation) {
                 hasValidation.setErrorMessage(null);
             }
         }
 
-        if (auxField instanceof HasValue hv) {
+        if (auxField instanceof HasValue<?,?> hv) {
             hv.clear();
             if (auxField instanceof HasValidation hasValidation) {
                 hasValidation.setErrorMessage(null);

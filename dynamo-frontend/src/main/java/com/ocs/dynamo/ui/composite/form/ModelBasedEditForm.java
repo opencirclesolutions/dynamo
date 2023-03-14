@@ -1530,7 +1530,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 formatted = StringUtils.prependProtocol(formatted);
                 anchor.setHref(formatted == null ? "" : formatted);
                 anchor.setText(formatted);
-            } else if (comp instanceof InternalLinkButton linkButton) {
+            } else if (comp instanceof InternalLinkButton<?,?> linkButton) {
                 linkButton.setText(formatted);
                 linkButton.setValue(value);
             }

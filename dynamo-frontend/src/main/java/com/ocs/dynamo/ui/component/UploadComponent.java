@@ -110,7 +110,6 @@ public class UploadComponent extends CustomField<byte[]> {
 		clearButton.setVisible(true);
 	}
 
-	@SuppressWarnings("deprecation")
 	private void clearFilesList() {
 		upload.getElement().executeJs("this.files=[]");
 	}

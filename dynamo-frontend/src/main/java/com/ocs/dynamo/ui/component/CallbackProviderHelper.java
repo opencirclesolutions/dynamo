@@ -15,7 +15,6 @@ package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
 import java.util.List;
-import java.util.function.Consumer;
 import java.util.function.IntConsumer;
 
 import org.apache.commons.lang3.StringUtils;
@@ -44,7 +43,7 @@ import lombok.experimental.UtilityClass;
 public class CallbackProviderHelper {
 
 	/**
-	 * Creates a callback data provider for use with lookup components
+	 * Creates a callback data provider that does not support filtering
 	 * 
 	 * @param <ID>        the type of the primary key of the entity
 	 * @param <T>         the type of the entity

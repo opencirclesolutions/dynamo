@@ -38,7 +38,6 @@ import com.ocs.dynamo.ui.composite.type.ExportMode;
 
 import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.SneakyThrows;
 
 /**
  * Base class for entity model based exports to Excel or CSV

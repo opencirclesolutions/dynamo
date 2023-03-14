@@ -381,7 +381,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	/**
 	 * Opens the screen in details mode and selects a certain tab
 	 *
-	 * @param entity      the entity to display
+	 * @param entity           the entity to display
 	 * @param selectedTabIndex the index of currently selected tab
 	 */
 	protected void detailsMode(T entity, int selectedTabIndex) {

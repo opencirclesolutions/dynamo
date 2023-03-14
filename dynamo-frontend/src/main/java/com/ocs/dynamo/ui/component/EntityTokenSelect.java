@@ -19,7 +19,6 @@ import java.util.List;
 import java.util.Set;
 
 import com.vaadin.flow.component.combobox.MultiSelectComboBox;
-//import org.vaadin.gatanaso.MultiselectComboBox;
 
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -93,6 +92,9 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	@Getter
 	private final SortOrder<?>[] sortOrders;
 
+	/**
+	 * The number of items managed by the data provider
+	 */
 	private int count;
 
 	/**
@@ -127,8 +129,6 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 			String value = EntityModelUtils.getDisplayPropertyValue(t, entityModel);
 			return value == null ? "" : value;
 		});
-
-//		setOrdered(true);
 	}
 
 	/**
@@ -141,7 +141,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 * @param service           the service used to retrieve the entities
 	 * @param filter            the filter used to filter the entities
 	 * @param sortOrders        the sort orders used to sort the entities
-//	 * @param sortOrder         the sort order used to sort the entities
+	 * @param sortOrder         the sort order used to sort the entities
 	 */
 	public EntityTokenSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
 			BaseService<ID, T> service, SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {
