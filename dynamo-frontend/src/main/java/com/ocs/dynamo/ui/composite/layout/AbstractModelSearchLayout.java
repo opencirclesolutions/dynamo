@@ -300,7 +300,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * @param entity the entity to display
 	 */
 	@Override
-	protected void detailsMode(T entity) {
+	public void detailsMode(T entity) {
 
 		if (mainEditLayout == null) {
 			mainEditLayout = new DefaultVerticalLayout(true, false);
@@ -384,7 +384,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 	 * @param entity           the entity to display
 	 * @param selectedTabIndex the index of currently selected tab
 	 */
-	protected void detailsMode(T entity, int selectedTabIndex) {
+	public void detailsMode(T entity, int selectedTabIndex) {
 		detailsMode(entity);
 		if (editForm != null) {
 			editForm.selectTab(selectedTabIndex);

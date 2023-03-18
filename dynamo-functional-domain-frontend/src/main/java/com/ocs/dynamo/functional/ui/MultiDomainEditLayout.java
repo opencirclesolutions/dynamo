@@ -79,7 +79,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 
 	private List<Component> componentsToRegister = new ArrayList<>();
 
-	private Map<String, Function<CustomFieldContext, Component>> customFields = new HashMap<>();
+	private Map<Class<? extends Domain>, Map<String, Function<CustomFieldContext, Component>>> customFields = new HashMap<>();
 
 	@Getter
 	@Setter
@@ -152,8 +152,9 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 * @param path     the path to the attribute
 	 * @param function the function used to construct the custom component
 	 */
-	public void addCustomField(String path, Function<CustomFieldContext, Component> function) {
-		customFields.put(path, function);
+	public void addCustomField(String path, Class<? extends Domain> clazz, Function<CustomFieldContext, Component> function) {
+		customFields.putIfAbsent(clazz, new HashMap<>());
+		customFields.get(clazz).put(path, function);
 	}
 
 	/**
@@ -235,8 +236,10 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 							new SimpleStringPredicate<>(Domain.ATTRIBUTE_CODE, value, false, false)));
 
 			layout.setEditAllowed(getEditAllowed());
-			for (Entry<String, Function<CustomFieldContext, Component>> entry : customFields.entrySet()) {
-				layout.addCustomField(entry.getKey(), entry.getValue());
+			if (customFields.get(domainClass) != null) {
+				for (Entry<String, Function<CustomFieldContext, Component>> entry : customFields.get(domainClass).entrySet()) {
+					layout.addCustomField(entry.getKey(), entry.getValue());
+				}
 			}
 
 			// register afterwards so that we actually register for the current layout
