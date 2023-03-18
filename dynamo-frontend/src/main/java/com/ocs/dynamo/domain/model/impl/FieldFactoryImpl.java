@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain.model.impl;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
@@ -68,36 +69,32 @@ public class FieldFactoryImpl implements FieldFactory {
 			FieldCreationContext context, Converter<V, T> customConverter, Function<HasSelectedItem<T>, Validator<?>> customValidator,
 			Function<HasSelectedItem<T>, Validator<?>> customRequiredValidator) {
 
-		ComponentCreator creator = componentCreators.stream().filter(c -> c.supports(am, context)).findFirst()
-				.orElse(null);
-		if (creator == null) {
-			log.warn("Cannot add converters and validators for {}", am);
-			return;
-		}
-
-		if (customValidator != null) {
-			builder.withValidator((Validator<V>) customValidator.apply(entityProvider));
-		}
-		if (customConverter != null) {
-			if (am.getType().equals(String.class) || NumberUtils.isNumeric(am.getType())) {
-				builder.withNullRepresentation((V) "");
+		Optional<ComponentCreator> optCreator = componentCreators.stream().filter(c -> c.supports(am, context)).findFirst();
+		optCreator.ifPresent(creator -> {
+			if (customValidator != null) {
+				builder.withValidator((Validator<V>) customValidator.apply(entityProvider));
 			}
-			builder.withConverter(customConverter);
-		}
+			if (customConverter != null) {
+				if (am.getType().equals(String.class) || NumberUtils.isNumeric(am.getType())) {
+					builder.withNullRepresentation((V) "");
+				}
+				builder.withConverter(customConverter);
+			}
 
-		if (customRequiredValidator != null) {
-			builder.asRequired((Validator<V>) customRequiredValidator.apply(entityProvider));
-		}
+			if (customRequiredValidator != null) {
+				builder.asRequired((Validator<V>) customRequiredValidator.apply(entityProvider));
+			}
 
-		// only delegate to the default mechanism when there are no custom components
-		// defined
-		if (customConverter == null) {
-			creator.addConverters(am, builder);
-		}
+			// only delegate to the default mechanism when there are no custom components
+			// defined
+			if (customConverter == null) {
+				creator.addConverters(am, builder);
+			}
 
-		if (customValidator == null) {
-			creator.addValidators(am, builder);
-		}
+			if (customValidator == null) {
+				creator.addValidators(am, builder);
+			}
+		});
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
@@ -162,9 +159,9 @@ public class FieldFactoryImpl implements FieldFactory {
 			EntityModel<?> entityModel, DataProvider<?, SerializablePredicate<?>> sharedProvider,
 			SerializablePredicate<?> fieldFilter) {
 
-		ComponentCreator creator = componentCreators.stream().filter(comp -> comp.supports(attributeModel, context))
-				.findFirst().orElse(null);
-		if (creator != null) {
+		Optional<ComponentCreator> optCreator = componentCreators.stream().filter(comp -> comp.supports(attributeModel, context))
+				.findFirst();
+		return optCreator.map(creator -> {
 			if (creator instanceof EntityComponentCreator) {
 				return invokeEntityComponentCreator(context, attributeModel, entityModel, sharedProvider, fieldFilter,
 						creator);
@@ -172,8 +169,7 @@ public class FieldFactoryImpl implements FieldFactory {
 				SimpleComponentCreator simpleCreator = (SimpleComponentCreator) creator;
 				return simpleCreator.createComponent(attributeModel, context);
 			}
-		}
-		return null;
+		}).orElse(null);
 	}
 
 	@SuppressWarnings("unchecked")
