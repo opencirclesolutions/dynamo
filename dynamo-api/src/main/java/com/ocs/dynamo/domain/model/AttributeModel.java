@@ -197,8 +197,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the paths to the other attributes that must appear on the same
-	 *         line in an edit form
+	 * @return the paths to the other attributes that must appear on the same line
+	 *         in an edit form
 	 */
 	List<String> getGroupTogetherWith();
 
@@ -400,8 +400,8 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isClearButtonVisible();
 
 	/**
-	 * @return whether the attribute is present inside an edit form. By default, this
-	 *         is switched off for complex (i.e. MASTER or DETAIL) objects
+	 * @return whether the attribute is present inside an edit form. By default,
+	 *         this is switched off for complex (i.e. MASTER or DETAIL) objects
 	 */
 	boolean isComplexEditable();
 
@@ -428,7 +428,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 *         the attribute is there only for cascading)
 	 */
 	boolean isIgnoreInSearchFilter();
-	
+
 	/**
 	 * @return whether the attribute represents an image
 	 */
@@ -515,7 +515,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return whether the password reveal button is visible
 	 */
 	boolean isShowPassword();
-	
 
 	/**
 	 * @return whether the attribute is sortable

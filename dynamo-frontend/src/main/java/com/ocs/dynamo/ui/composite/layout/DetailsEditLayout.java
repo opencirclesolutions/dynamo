@@ -334,7 +334,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 *                       add a custom converter
 	 * @param converter      the validator to add
 	 */
-	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
+	public void addCustomRequiredValidator(String path, Function<HasSelectedItem<T>,Validator<?>> validator) {
 		componentContext.addCustomRequiredValidator(path, validator);
 	}
 
@@ -345,7 +345,7 @@ public class DetailsEditLayout<ID extends Serializable, T extends AbstractEntity
 	 *                       add a custom converter
 	 * @param converter      the converter to add
 	 */
-	public void addCustomValidator(String path, Supplier<Validator<?>> validator) {
+	public void addCustomValidator(String path, Function<HasSelectedItem<T>,Validator<?>> validator) {
 		componentContext.addCustomValidator(path, validator);
 	}
 

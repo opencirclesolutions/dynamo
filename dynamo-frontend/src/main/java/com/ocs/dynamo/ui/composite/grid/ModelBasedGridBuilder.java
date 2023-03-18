@@ -32,6 +32,7 @@ import com.ocs.dynamo.ui.component.InternalLinkField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.HasSelectedItem;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
 import com.ocs.dynamo.ui.utils.GridFormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -169,8 +170,10 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 			if (am.isRequired()) {
 				builder.asRequired();
 			}
-			fieldFactory.addConvertersAndValidators(builder, am, context, componentContext.findCustomConverter(am),
-					componentContext.findCustomValidator(am), null);
+
+			GridSelectedEntityProviderWrapper<T> wrapper = new GridSelectedEntityProviderWrapper<>(grid);
+			fieldFactory.addConvertersAndValidators(wrapper, builder, am, context,
+					componentContext.findCustomConverter(am), componentContext.findCustomValidator(am), null);
 			builder.bind(am.getPath());
 		}
 		column.setEditorComponent(comp);
@@ -183,7 +186,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 
 	@SuppressWarnings("unchecked")
 	private Column<T> addEditableColumn(AttributeModel am) {
-		return grid.addComponentColumn(t -> {
+		return grid.addComponentColumn(entity -> {
 			Component comp = constructCustomField(entityModel, am);
 			FieldCreationContext context = FieldCreationContext.create().attributeModel(am)
 					.fieldEntityModel(getFieldEntityModel(am)).fieldFilters(fieldFilters).viewMode(false)
@@ -204,13 +207,15 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 			}
 
 			// delegate the binding to the enveloping component
-			BindingBuilder<T, ?> builder = doBind(t, comp, am.getPath());
+			BindingBuilder<T, ?> builder = doBind(entity, comp, am.getPath());
 			if (builder != null) {
-				fieldFactory.addConvertersAndValidators(builder, am, context, componentContext.findCustomConverter(am),
-						componentContext.findCustomValidator(am), null);
+				HasSelectedItem<T> selector = () -> entity;
+				fieldFactory.addConvertersAndValidators(selector, builder, am, context,
+						componentContext.findCustomConverter(am), componentContext.findCustomValidator(am),
+						componentContext.findCustomRequiredValidator(am));
 				builder.bind(am.getPath());
 			}
-			postProcessComponent(t.getId(), am, comp);
+			postProcessComponent(entity.getId(), am, comp);
 
 			return comp;
 		});

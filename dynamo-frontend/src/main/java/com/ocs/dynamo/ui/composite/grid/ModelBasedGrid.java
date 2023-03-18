@@ -57,9 +57,6 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	@Getter
 	private EntityModel<T> entityModel;
 
-	/**
-	 * The message service
-	 */
 	@Getter
 	private MessageService messageService;
 

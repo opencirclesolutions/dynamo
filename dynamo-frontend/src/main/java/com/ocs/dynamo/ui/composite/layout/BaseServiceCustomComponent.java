@@ -65,7 +65,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 
 		private static final long serialVersionUID = -942298948585447203L;
 
-		public RemoveButton(HasSelectedItem<T> hasSelectedItem, String message, Component icon, Runnable doDelete,
+		public RemoveButton(HasSelectedItem<T> provider, String message, Component icon, Runnable doDelete,
 				Function<T, String> itemDescriptionCreator) {
 			super(message);
 			setIcon(icon);
@@ -77,7 +77,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 						showErrorNotification(ex.getMessage());
 					}
 				};
-				T selectedItem = hasSelectedItem.getSelectedItem();
+				T selectedItem = provider.getSelectedItem();
 				String description = itemDescriptionCreator.apply(selectedItem);
 				VaadinUtils.showConfirmDialog(message("ocs.delete.confirm", description), r);
 			});
@@ -184,11 +184,11 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		componentContext.addCustomField(path, function);
 	}
 
-	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
+	public void addCustomRequiredValidator(String path, Function<HasSelectedItem<T>,Validator<?>> validator) {
 		componentContext.addCustomRequiredValidator(path, validator);
 	}
 
-	public void addCustomValidator(String path, Supplier<Validator<?>> validator) {
+	public void addCustomValidator(String path, Function<HasSelectedItem<T>,Validator<?>> validator) {
 		componentContext.addCustomValidator(path, validator);
 	}
 

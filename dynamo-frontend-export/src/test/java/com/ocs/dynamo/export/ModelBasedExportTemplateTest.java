@@ -132,7 +132,7 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 	public void testCsv() {
 		ModelBasedCsvExportTemplate<Integer, TestEntity> template = new ModelBasedCsvExportTemplate<Integer, TestEntity>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
-				new SortOrder[] { new SortOrder("name", Direction.ASC) }, null, null);
+				new SortOrder[] { new SortOrder("name", Direction.ASC) }, null);
 		byte[] bytes = template.process();
 		String str = new String(bytes);
 		String[] lines = str.split("\n");

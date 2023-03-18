@@ -27,6 +27,7 @@ import com.ocs.dynamo.ui.UseInViewMode;
 import com.ocs.dynamo.ui.component.*;
 import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.HasSelectedItem;
 import com.ocs.dynamo.ui.composite.layout.TabWrapper;
 import com.ocs.dynamo.ui.composite.type.AttributeGroupMode;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -78,7 +79,7 @@ import java.util.function.*;
  * @author bas.rutten
  */
 public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends AbstractModelBasedForm<ID, T> implements NestedComponent {
+        extends AbstractModelBasedForm<ID, T> implements NestedComponent, HasSelectedItem<T> {
 
     private static final String COLSPAN = "colspan";
 
@@ -328,9 +329,9 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         if (!(field instanceof ServiceBasedDetailsEditGrid)) {
             BindingBuilder<T, ?> builder = groups.get(viewMode).forField((HasValue<?, ?>) field);
 
-            fieldFactory.addConvertersAndValidators(builder, attributeModel, context,
+            fieldFactory.addConvertersAndValidators(this, builder, attributeModel, context,
                     getComponentContext().findCustomConverter(attributeModel),
-                    getComponentContext().findCustomValidator(attributeModel),
+                    getComponentContext().findCustomValidator(attributeModel), 
                     getComponentContext().findCustomRequiredValidator(attributeModel));
             builder.bind(attributeModel.getPath());
         }
@@ -1930,5 +1931,11 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
         });
         return error;
     }
+
+	@Override
+	public T getSelectedItem() {
+		return getEntity();
+	}
+
 
 }

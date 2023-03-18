@@ -31,6 +31,7 @@ import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.grid.ModelBasedGrid;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
+import com.ocs.dynamo.ui.composite.layout.HasSelectedItem;
 import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.composite.type.GridEditMode;
@@ -327,11 +328,11 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 		componentContext.addCustomField(path, function);
 	}
 
-	public void addCustomRequiredValidator(String path, Supplier<Validator<?>> validator) {
+	public void addCustomRequiredValidator(String path, Function<HasSelectedItem<T>,Validator<?>> validator) {
 		componentContext.addCustomRequiredValidator(path, validator);
 	}
 
-	public void addCustomValidator(String path, Supplier<Validator<?>> validator) {
+	public void addCustomValidator(String path, Function<HasSelectedItem<T>,Validator<?>> validator) {
 		componentContext.addCustomValidator(path, validator);
 	}
 

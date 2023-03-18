@@ -180,7 +180,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 			return count;
 		}
 	}
-
+	
 	/**
 	 * Initializes the data provider
 	 *

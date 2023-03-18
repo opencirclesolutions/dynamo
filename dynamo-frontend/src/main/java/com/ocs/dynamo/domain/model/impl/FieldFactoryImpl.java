@@ -16,6 +16,7 @@ package com.ocs.dynamo.domain.model.impl;
 import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +32,7 @@ import com.ocs.dynamo.domain.model.FieldFactory;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.composite.layout.HasSelectedItem;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.component.AbstractField;
@@ -62,9 +64,9 @@ public class FieldFactoryImpl implements FieldFactory {
 	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
 	@SuppressWarnings("unchecked")
-	public <U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
-			FieldCreationContext context, Converter<V, U> customConverter, Validator<V> customValidator,
-			Validator<V> customRequiredValidator) {
+	public <T, V> void addConvertersAndValidators(HasSelectedItem<T> entityProvider, BindingBuilder<T, V> builder, AttributeModel am,
+			FieldCreationContext context, Converter<V, T> customConverter, Function<HasSelectedItem<T>, Validator<?>> customValidator,
+			Function<HasSelectedItem<T>, Validator<?>> customRequiredValidator) {
 
 		ComponentCreator creator = componentCreators.stream().filter(c -> c.supports(am, context)).findFirst()
 				.orElse(null);
@@ -74,7 +76,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 
 		if (customValidator != null) {
-			builder.withValidator(customValidator);
+			builder.withValidator((Validator<V>) customValidator.apply(entityProvider));
 		}
 		if (customConverter != null) {
 			if (am.getType().equals(String.class) || NumberUtils.isNumeric(am.getType())) {
@@ -84,7 +86,7 @@ public class FieldFactoryImpl implements FieldFactory {
 		}
 
 		if (customRequiredValidator != null) {
-			builder.asRequired(customRequiredValidator);
+			builder.asRequired((Validator<V>) customRequiredValidator.apply(entityProvider));
 		}
 
 		// only delegate to the default mechanism when there are no custom components
@@ -160,7 +162,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			EntityModel<?> entityModel, DataProvider<?, SerializablePredicate<?>> sharedProvider,
 			SerializablePredicate<?> fieldFilter) {
 
-		ComponentCreator creator = componentCreators.stream().filter(c -> c.supports(attributeModel, context))
+		ComponentCreator creator = componentCreators.stream().filter(comp -> comp.supports(attributeModel, context))
 				.findFirst().orElse(null);
 		if (creator != null) {
 			if (creator instanceof EntityComponentCreator) {
@@ -207,7 +209,8 @@ public class FieldFactoryImpl implements FieldFactory {
 		VaadinUtils.setClearButtonVisible(field, am.isClearButtonVisible());
 
 		if (field instanceof AbstractField<?, ?> abstractField) {
-			abstractField.setRequiredIndicatorVisible(context.isSearch() ? am.isRequiredForSearching() : am.isRequired());
+			abstractField
+					.setRequiredIndicatorVisible(context.isSearch() ? am.isRequiredForSearching() : am.isRequired());
 		}
 
 		// right alignment for text field
@@ -277,8 +280,8 @@ public class FieldFactoryImpl implements FieldFactory {
 	}
 
 	@Override
-	public <U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am) {
-		addConvertersAndValidators(builder, am, FieldCreationContext.create().build(), null, null, null);
+	public <T, V> void addConvertersAndValidators(HasSelectedItem<T> entityProvider, BindingBuilder<T, V> builder, AttributeModel am) {
+		addConvertersAndValidators(entityProvider, builder, am, FieldCreationContext.create().build(), null, null, null);
 	}
 
 }

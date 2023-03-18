@@ -338,13 +338,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		}
 	}
 
-	/**
-	 * 
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param viewMode
-	 * @return
-	 */
 	private Component findCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel, boolean viewMode) {
 		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
 				.getCustomFieldCreator(attributeModel.getPath());
@@ -376,13 +369,13 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 			}
 
 			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+			protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
 
-				if (!binders.containsKey(t)) {
-					binders.put(t, new BeanValidationBinder<>(getEntityModel().getEntityClass()));
-					binders.get(t).setBean(t);
+				if (!binders.containsKey(entity)) {
+					binders.put(entity, new BeanValidationBinder<>(getEntityModel().getEntityClass()));
+					binders.get(entity).setBean(entity);
 				}
-				Binder<T> binder = binders.get(t);
+				Binder<T> binder = binders.get(entity);
 				return binder.forField((HasValue<?, ?>) field);
 			}
 

@@ -20,6 +20,7 @@ package com.ocs.dynamo.ui.composite.layout;
  *
  * @param <T>
  */
+@FunctionalInterface
 public interface HasSelectedItem<T> {
 
 	/**

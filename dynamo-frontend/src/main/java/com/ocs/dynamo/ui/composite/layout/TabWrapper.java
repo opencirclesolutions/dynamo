@@ -116,7 +116,7 @@ public class TabWrapper extends DefaultVerticalLayout {
 	}
 
 	public Tab getTabByIndex(int index) {
-		return (Tab) tabs.getComponentAt(index);
+		return (Tab) tabs.getTabAt(index);
 	}
 
 	/**

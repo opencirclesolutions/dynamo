@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import javax.inject.Inject;
 
-import com.vaadin.componentfactory.EnhancedFormLayout;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -12,8 +11,8 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.formlayout.FormLayout;
 
 public class HorizontalDisplayLayoutTest extends FrontendIntegrationTest {
 

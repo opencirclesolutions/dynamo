@@ -79,9 +79,10 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param service        the service used to retrieve entities
 	 * @param mode           the selection mode
 	 * @param filter         optional filters to apply to the search
-	 * @param sharedProvider shared data provider when using the component inside a grid
+	 * @param sharedProvider shared data provider when using the component inside a
+	 *                       grid
 	 * @param items          the items to display (in fixed mode)
-	 * @param sortOrders      the sort order(s) to apply
+	 * @param sortOrders     the sort order(s) to apply
 	 * 
 	 */
 	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
@@ -110,7 +111,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 * @param attributeModel the attribute model
 	 * @param service        the service for querying the database
 	 * @param filter         the filter to apply when searching
-	 * @param sortOrders      the sort orders that will be used
+	 * @param sortOrders     the sort orders that will be used
 	 */
 	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {
@@ -171,7 +172,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 
 	private CallbackDataProvider<T, String> createCallbackProvider() {
 		return CallbackProviderHelper.createCallbackProvider(service, entityModel, predicate,
-															 new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
 	public int getDataProviderSize() {
@@ -202,11 +203,9 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
 				items = service.find(new FilterConverter<T>(entityModel).convert(predicate),
 						SortUtils.translateSortOrders(sortOrders));
-				setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
-						new ListDataProvider<>(items));
+				setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false), new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
-				setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false),
-						new ListDataProvider<>(items));
+				setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false), new ListDataProvider<>(items));
 			}
 		} else {
 			castAndSetDataProvider(provider);
@@ -239,10 +238,11 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		clear();
 		this.additionalFilter = additionalFilter;
-		this.predicate = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
+		this.predicate = originalFilter == null ? additionalFilter
+				: new AndPredicate<>(originalFilter, additionalFilter);
 		refresh();
 	}
-	
+
 	/**
 	 * Updates the data provider after a refresh
 	 * 

@@ -79,7 +79,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
-	 * The service used to query the DB
+	 * The service used to query the database
 	 */
 	@Getter
 	private final BaseService<ID, T> service;
