@@ -22,7 +22,6 @@
 		</license>
 	</licenses>
 	<dependencies>
-		<!-- logging -->
 		<dependency>
 			<groupId>jakarta.annotation</groupId>
 			<artifactId>jakarta.annotation-api</artifactId>
