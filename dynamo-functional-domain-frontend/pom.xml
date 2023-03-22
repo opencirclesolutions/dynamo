@@ -46,7 +46,6 @@
 			<type>test-jar</type>
 			<scope>test</scope>
 		</dependency>
-		<!-- Hibernate -->
 		<dependency>
 			<groupId>org.hibernate.orm</groupId>
 			<artifactId>hibernate-core</artifactId>

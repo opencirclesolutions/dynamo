@@ -98,12 +98,12 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	/**
 	 * Entity model overrides
 	 */
-	private Map<Class<?>, String> entityModelOverrides = new HashMap<>();
+	private final Map<Class<?>, String> entityModelOverrides = new HashMap<>();
 
 	/**
 	 * The form options (these are passed directly to the split layout)
 	 */
-	private FormOptions formOptions;
+	private final FormOptions formOptions;
 
 	/**
 	 * The main layout
@@ -218,14 +218,14 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				.getServiceForEntity(domainClass);
 		if (baseService != null) {
 			componentsToRegister.clear();
-			ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<Integer, T>(baseService,
+			ServiceBasedSplitLayout<Integer, T> layout = new ServiceBasedSplitLayout<>(baseService,
 					getEntityModelFactory().getModel(domainClass), QueryType.ID_BASED, formOptions,
-					new SortOrder<String>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING));
+					new SortOrder<>(Domain.ATTRIBUTE_NAME, SortDirection.ASCENDING));
 
 			layout.setAfterLayoutBuilt(postProcessSplitLayout);
 			layout.setMustEnableComponent((component, t) -> {
 				if (layout.getRemoveButton() == component) {
-					return deleteAllowed == null ? true : deleteAllowed.test(getSelectedDomain());
+					return deleteAllowed == null || deleteAllowed.test(getSelectedDomain());
 				}
 				return true;
 			});
@@ -284,7 +284,7 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 * Registers a component. The component will be disabled or enabled depending on
 	 * whether an item is selected
 	 *
-	 * @param button the button to register
+	 * @param comp the component to register
 	 */
 	public final void registerComponent(Component comp) {
 		componentsToRegister.add(comp);

@@ -39,7 +39,6 @@ public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
 		// check that first domain class is selected by default
 		assertEquals(2, layout.getDomainClasses().size());
 		assertEquals(Country.class, layout.getSelectedDomain());
-		//assertTrue(layout.isDeleteAllowed(Country.class));
 
 		layout.selectDomain(Region.class);
 
