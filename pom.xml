@@ -4,7 +4,7 @@
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0.0-SNAPSHOT</version>
+	<version>3.0.1-SNAPSHOT</version>
 	<name>Dynamo Framework</name>
 	<description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
@@ -104,7 +104,7 @@
 		<org.apache.maven.plugins.gpg.version>1.6</org.apache.maven.plugins.gpg.version>
 		<org.jacoco.maven.plugins.version>0.8.8</org.jacoco.maven.plugins.version>
 		<github-release-plugin.version>1.4.0</github-release-plugin.version>
-		<org.sonatype.plugins.version>1.6.8</org.sonatype.plugins.version>
+		<org.sonatype.plugins.version>1.6.13</org.sonatype.plugins.version>
 		<jakarta.el-api.version>3.0.1-b06</jakarta.el-api.version>
 		<junit.version>5.8.2</junit.version>
 		<spotbugs.version>4.7.3.2</spotbugs.version>
