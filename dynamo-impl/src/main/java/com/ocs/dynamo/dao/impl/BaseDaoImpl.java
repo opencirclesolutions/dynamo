@@ -26,6 +26,7 @@ import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaQuery;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Base class for all DAO implementations
@@ -253,7 +254,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		if (maxResults != null) {
 			query = query.setMaxResults(maxResults);
 		}
-		return query.getResultList().stream().map(tuple -> tuple.get(0)).map(o -> (ID) o).toList();
+		return query.getResultList().stream().map(tuple -> tuple.get(0)).map(o -> (ID) o).collect(Collectors.toList());
 	}
 
 	@Override
