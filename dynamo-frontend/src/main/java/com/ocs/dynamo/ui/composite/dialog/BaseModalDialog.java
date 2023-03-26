@@ -80,6 +80,14 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 		build();
 		open();
 	}
+	
+	@Override
+	public void open() {
+		super.open();
+		UI.getCurrent().beforeClientResponse(this, executionContext -> {
+			UI.getCurrent().setChildComponentModal(this, false);
+		});
+	}
 
 	/**
 	 * Constructs the layout

@@ -84,7 +84,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 		parent.add(layout);
 
 		// open in edit mode by default
-		assertFalse(layout.isViewmode());
+		assertFalse(layout.isViewMode());
 		assertFalse(layout.getEditButton().isVisible());
 		assertFalse(layout.getCancelButton().isVisible());
 		assertTrue(layout.getAddButton().isVisible());
@@ -112,7 +112,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 		parent.add(layout);
 
 		// open in edit mode by default
-		assertFalse(layout.isViewmode());
+		assertFalse(layout.isViewMode());
 		assertFalse(layout.getEditButton().isVisible());
 		assertFalse(layout.getCancelButton().isVisible());
 		assertTrue(layout.getAddButton().isVisible());
@@ -154,7 +154,7 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 		layout.build();
 
 		// open in view mode
-		assertTrue(layout.isViewmode());
+		assertTrue(layout.isViewMode());
 		assertTrue(layout.getEditButton().isVisible());
 		assertFalse(layout.getCancelButton().isVisible());
 		assertFalse(layout.getAddButton().isVisible());
@@ -165,14 +165,14 @@ public class EditableGridLayoutTest extends FrontendIntegrationTest {
 
 		// switch to edit mode
 		layout.getEditButton().click();
-		assertFalse(layout.isViewmode());
+		assertFalse(layout.isViewMode());
 		assertFalse(layout.getEditButton().isVisible());
 		assertTrue(layout.getCancelButton().isVisible());
 		assertTrue(layout.getAddButton().isVisible());
 
 		// switch back
 		layout.getCancelButton().click();
-		assertTrue(layout.isViewmode());
+		assertTrue(layout.isViewMode());
 		assertTrue(layout.getEditButton().isVisible());
 		assertFalse(layout.getCancelButton().isVisible());
 		assertFalse(layout.getAddButton().isVisible());

@@ -19,6 +19,7 @@ import jakarta.persistence.DiscriminatorValue;
 import jakarta.persistence.Entity;
 
 import com.ocs.dynamo.domain.model.annotation.Model;
+import lombok.NoArgsConstructor;
 
 /**
  * A region of the world
@@ -29,13 +30,10 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Entity
 @DiscriminatorValue("REGION")
 @Model(displayProperty = "name", sortOrder = "name asc")
+@NoArgsConstructor
 public class Region extends DomainParent<Country, Region> {
 
 	private static final long serialVersionUID = 1410771214783677106L;
-
-	public Region() {
-		// default constructor
-	}
 
 	public Region(String code, String name) {
 		super(code, name);

@@ -13,6 +13,16 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -24,18 +34,14 @@ import com.ocs.dynamo.ui.composite.layout.SearchOptions;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
-import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
-import lombok.Getter;
-import org.apache.commons.lang3.ArrayUtils;
 
-import java.io.Serializable;
-import java.util.*;
+import lombok.Getter;
 
 /**
  * A composite component that displays a selected entity and offers a search
@@ -83,13 +89,23 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     private Span label;
 
     /**
+     * The pop-up search dialog
+     */
+    private ModelBasedSearchDialog<ID, T> searchDialog;
+
+    /**
+     * The options to use for the search dialog
+     */
+    private final SearchOptions searchOptions;
+
+    /**
      * The button that brings up the search dialog
      */
     @Getter
     private Button selectButton;
 
     /**
-     * The sort orders that are used in the popup dialog
+     * The sort orders that are used in the pop-up dialog
      */
     private final List<SortOrder<?>> sortOrders;
 
@@ -97,15 +113,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
      * The current value of the component. This can either be a single item or a set
      */
     private Object value;
-
-    /**
-     * The modal search dialog
-     */
-    private ModelBasedSearchDialog<ID, T> dialog;
-
-    private final SearchOptions searchOptions;
-
-    private final UI ui = UI.getCurrent();
 
     /**
      * Constructor
@@ -170,6 +177,17 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     }
 
     /**
+     * Select the currently selected values in the pop-up search dialog
+     * This uses a bit of a work-around of waiting until the dialog has
+     * been opened first and then selecting the values because the checkbox dialog does not play nice
+     */
+    private void afterOpen() {
+        if (searchOptions.isMultiSelect()) {
+            selectValuesInDialog(searchDialog);
+        }
+    }
+
+    /**
      * Clears the current value of the component
      */
     public void clearValue() {
@@ -216,69 +234,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         VaadinUtils.setTooltip(selectButton, getMessageService().getMessage("ocs.select", VaadinUtils.getLocale()));
         selectButton.addClickListener(event -> showSearchDialog());
         bar.add(selectButton);
-    }
-
-    private void showSearchDialog() {
-        List<SerializablePredicate<T>> filterList = new ArrayList<>();
-        if (getFilter() != null) {
-            filterList.add(getFilter());
-        }
-        if (getAdditionalFilter() != null) {
-            filterList.add(getAdditionalFilter());
-        }
-
-        dialog = new ModelBasedSearchDialog<>(getService(), getEntityModel(), filterList, sortOrders,
-                searchOptions, getJoins());
-        dialog.setOnClose(this::onDialogClose);
-        dialog.setAfterOpen(this::afterOpen);
-        dialog.buildAndOpen();
-    }
-
-    private Boolean onDialogClose() {
-        if (searchOptions.isMultiSelect()) {
-            if (EntityLookupField.this.getValue() == null) {
-                EntityLookupField.this.setValue(dialog.getSelectedItems());
-            } else {
-                // add selected items to already selected items
-                @SuppressWarnings("unchecked")
-                Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
-
-                for (T selectedItem : dialog.getSelectedItems()) {
-                    if (!cumulative.contains(selectedItem)) {
-                        cumulative.add(selectedItem);
-                    }
-                }
-                EntityLookupField.this.setValue(cumulative);
-            }
-        } else {
-            // single value select
-            EntityLookupField.this.setValue(dialog.getSelectedItem());
-        }
-        return true;
-    }
-
-    /**
-     * Select the currently selected values in the pop-up search dialog
-     * This uses a bit of a work-around of waiting until the dialog has
-     * been opened first and then selecting the values because the checkbox dialog does not play nice
-     */
-    private void afterOpen() {
-        if (searchOptions.isMultiSelect()) {
-        	if (searchOptions.isUseCheckboxesForMultiSelect()) {
-            Runnable run = () -> {
-                try {
-                    Thread.sleep(200);
-                    ui.access(() -> selectValuesInDialog(dialog));
-                } catch (Exception e) {
-                    // do nothing
-                }
-            };
-            new Thread(run).start();
-        	}
-        	else {
-        	  selectValuesInDialog(dialog);
-        	}
-        }
     }
 
     @Override
@@ -345,6 +300,29 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         return directNavigationAllowed;
     }
 
+    private Boolean onDialogClose() {
+        if (searchOptions.isMultiSelect()) {
+            if (EntityLookupField.this.getValue() == null) {
+                EntityLookupField.this.setValue(searchDialog.getSelectedItems());
+            } else {
+                // add selected items to already selected items
+                @SuppressWarnings("unchecked")
+                Collection<T> cumulative = (Collection<T>) EntityLookupField.this.getValue();
+
+                for (T selectedItem : searchDialog.getSelectedItems()) {
+                    if (!cumulative.contains(selectedItem)) {
+                        cumulative.add(selectedItem);
+                    }
+                }
+                EntityLookupField.this.setValue(cumulative);
+            }
+        } else {
+            // single value select
+            EntityLookupField.this.setValue(searchDialog.getSelectedItem());
+        }
+        return true;
+    }
+
     @Override
     public void refresh(SerializablePredicate<T> filter) {
         setFilter(filter);
@@ -365,6 +343,11 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
         setValue(null);
         super.setAdditionalFilter(additionalFilter);
+    }
+
+    @Override
+    public void setClearButtonVisible(boolean visible) {
+        // do nothing
     }
 
     @Override
@@ -393,6 +376,11 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     }
 
     @Override
+    public void setReadOnly(boolean readOnly) {
+        setEnabled(!readOnly);
+    }
+
+    @Override
     @SuppressWarnings("unchecked")
     public void setValue(Object value) {
         if (value == null) {
@@ -409,6 +397,22 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
         updateLabel(value);
     }
 
+    private void showSearchDialog() {
+        List<SerializablePredicate<T>> filterList = new ArrayList<>();
+        if (getFilter() != null) {
+            filterList.add(getFilter());
+        }
+        if (getAdditionalFilter() != null) {
+            filterList.add(getAdditionalFilter());
+        }
+
+        searchDialog = new ModelBasedSearchDialog<>(getService(), getEntityModel(), filterList, sortOrders,
+                searchOptions, getJoins());
+        searchDialog.setOnClose(this::onDialogClose);
+        searchDialog.setAfterOpen(this::afterOpen);
+        searchDialog.buildAndOpen();
+    }
+
     /**
      * Updates the value that is displayed in the label
      *
@@ -419,16 +423,6 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
             String caption = constructLabelValue(newValue);
             label.setText(caption);
         }
-    }
-
-    @Override
-    public void setReadOnly(boolean readOnly) {
-        setEnabled(!readOnly);
-    }
-
-    @Override
-    public void setClearButtonVisible(boolean visible) {
-        // do nothing
     }
 
 }

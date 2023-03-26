@@ -41,12 +41,12 @@ public class ElementCollectionComponentCreator implements SimpleComponentCreator
 	@Override
 	public Component createComponent(AttributeModel am, FieldCreationContext context) {
 
-		// use a "collection grid" for an element collection
-		FormOptions fo = new FormOptions().setShowRemoveButton(true);
 
 		boolean allowed = String.class.equals(am.getMemberType()) || NumberUtils.isLong(am.getMemberType())
 				|| NumberUtils.isInteger(am.getMemberType()) || BigDecimal.class.equals(am.getMemberType());
 		if (allowed) {
+			// use a "collection grid" for an element collection
+			FormOptions fo = new FormOptions().setShowRemoveButton(true);
 			return new ElementCollectionGrid<>(am, fo);
 		} else {
 			// other types not supported for now

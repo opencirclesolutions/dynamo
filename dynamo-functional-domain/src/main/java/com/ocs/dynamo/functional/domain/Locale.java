@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import lombok.NoArgsConstructor;
 
 /**
  * A locale identified by an IETF BCP 47 code
@@ -27,15 +28,13 @@ import com.ocs.dynamo.domain.model.annotation.Model;
  * @author bas.rutten
  */
 @Entity
+@NoArgsConstructor
 @DiscriminatorValue("LOCALE")
 @Model(displayNamePlural = "Locales", displayProperty = "name", sortOrder = "name asc")
 public class Locale extends Domain {
 
 	private static final long serialVersionUID = 3270223599926941961L;
 
-	public Locale() {
-		// default constructor
-	}
 
 	/**
 	 * Constructor

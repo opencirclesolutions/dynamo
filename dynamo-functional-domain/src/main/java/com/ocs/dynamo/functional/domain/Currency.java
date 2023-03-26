@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import lombok.NoArgsConstructor;
 
 /**
  * A currency identified by an ISO currency code
@@ -30,13 +31,10 @@ import com.ocs.dynamo.domain.model.annotation.Model;
 @Entity
 @DiscriminatorValue("CURRENCY")
 @Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc", filterProperty = "name")
+@NoArgsConstructor
 public class Currency extends Domain {
 
 	private static final long serialVersionUID = 3270223599926941961L;
-
-	public Currency() {
-		// default constructor
-	}
 
 	/**
 	 * Constructor

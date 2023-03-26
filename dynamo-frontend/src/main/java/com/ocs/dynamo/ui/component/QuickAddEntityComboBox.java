@@ -52,7 +52,7 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	 * The combo box that holds the actual values
 	 */
 	@Getter
-	private EntityComboBox<ID, T> comboBox;
+	private final EntityComboBox<ID, T> comboBox;
 
 	/**
 	 * Whether direct navigation from edit screen or grid to another screen is
@@ -68,15 +68,14 @@ public class QuickAddEntityComboBox<ID extends Serializable, T extends AbstractE
 	/**
 	 * Constructor
 	 *
-	 * @param entityModel    the entity model
-	 * @param attributeModel the attribute model
-	 * @param service        the service
-	 * @param selectMode     the selectMode
+	 * @param entityModel    the entity model of the entity to display
+	 * @param attributeModel the attribute model of the attribute to manage
+	 * @param service        the service that is used to retrieve data
+	 * @param selectMode     the selectMode that is used
 	 * @param filter         the filter that is used for filtering the data
 	 * @param items          the fixed collection of items to display
-	 * @param sortOrder      the desired sort orders
+	 * @param sortOrders     the desired sort orders
 	 */
-	@SafeVarargs
 	public QuickAddEntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode selectMode, SerializablePredicate<T> filter, boolean search,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, List<T> items, SortOrder<?>... sortOrders) {

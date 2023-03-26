@@ -13,17 +13,17 @@
  */
 package com.ocs.dynamo.functional;
 
+import lombok.experimental.UtilityClass;
+
 /**
  * Various domain-related constants
  * 
  * @author bas.rutten
  *
  */
+@UtilityClass
 public final class DomainConstants {
 
 	public static final int MAX_NAME_LENGTH = 255;
 
-	private DomainConstants() {
-		// default constructor
-	}
 }

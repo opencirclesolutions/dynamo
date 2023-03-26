@@ -577,7 +577,7 @@ public interface EntityModel<T> {
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
 
 	/**
-	 * Indicates whether this is the "base" entity model
+	 * Indicates whether this is the "base" entity model for the class
 	 * 
 	 * @return true if this is the case, false otherwise
 	 */

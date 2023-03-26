@@ -25,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 
 /**
  * Service listener that will check whether the user has the correct permissions
+ * before accessing a Vaadin view
  * 
  * @author BasRutten
  *

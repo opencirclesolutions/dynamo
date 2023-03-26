@@ -80,26 +80,26 @@ public interface SimpleComponentCreator extends ComponentCreator {
 	 * @param <U>            the type of the value to convert to
 	 * @param attributeModel the attribute model that is used to construct the
 	 *                       component
-	 * @param sBuilder       the binding builder that is used to bind the component
+	 * @param builder       the binding builder that is used to bind the component
 	 */
-	default <U> void addTextFieldConverters(AttributeModel attributeModel, BindingBuilder<U, String> sBuilder) {
-		sBuilder.withNullRepresentation("");
+	default <U> void addTextFieldConverters(AttributeModel attributeModel, BindingBuilder<U, String> builder) {
+		builder.withNullRepresentation("");
 		if (attributeModel.getType().equals(BigDecimal.class)) {
-			sBuilder.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
+			builder.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
 					attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
 					attributeModel.getPrecision(), attributeModel.getCurrencySymbol()));
 		} else if (NumberUtils.isInteger(attributeModel.getType())) {
-			sBuilder.withConverter(ConverterFactory.createIntegerConverter(
+			builder.withConverter(ConverterFactory.createIntegerConverter(
 					attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
 		} else if (NumberUtils.isLong(attributeModel.getType())) {
-			sBuilder.withConverter(ConverterFactory.createLongConverter(attributeModel.useThousandsGroupingInEditMode(),
+			builder.withConverter(ConverterFactory.createLongConverter(attributeModel.useThousandsGroupingInEditMode(),
 					attributeModel.isPercentage()));
 		} else if (NumberUtils.isDouble(attributeModel.getType())) {
-			sBuilder.withConverter(ConverterFactory.createDoubleConverter(attributeModel.isCurrency(),
+			builder.withConverter(ConverterFactory.createDoubleConverter(attributeModel.isCurrency(),
 					attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage(),
 					attributeModel.getPrecision(), attributeModel.getCurrencySymbol()));
 		} else if (String.class.equals(attributeModel.getType()) && attributeModel.isTrimSpaces()) {
-			sBuilder.withConverter(new TrimSpacesConverter());
+			builder.withConverter(new TrimSpacesConverter());
 		}
 	}
 }

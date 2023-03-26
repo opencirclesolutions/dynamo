@@ -28,20 +28,19 @@ public interface PermissionChecker {
      * Checks if the user is allowed to access a certain view
      * 
      * @param viewName the name of the view
-     * @return
+     * @return true if access is allowed, false otherwise
      */
     boolean isAccessAllowed(String viewName);
 
     /**
-     * Returns a list of all view names
-     * 
-     * @return
+     * @return a list of all view names
      */
     List<String> getViewNames();
 
     /**
-     * @param viewName
-     * @return
+     *
+     * @param viewName the name of the view
+     * @return true if the view is edit only, false otherwise
      */
     boolean isEditOnly(String viewName);
 }

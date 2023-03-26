@@ -50,7 +50,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 
 	private static final long serialVersionUID = 7118578276952170818L;
 
-	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
+	private final EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
 	@Getter
 	private Button addButton;
@@ -79,7 +79,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 * Method that is called after a new entity has been successfully created. Use
 	 * this to add the new entity to the component and select it
 	 * 
-	 * @param entity
+	 * @param entity the entity
 	 */
 	protected abstract void afterNewEntityAdded(T entity);
 
@@ -92,7 +92,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 * Constructs the button that brings up the dialog that allows the user to add a
 	 * new item
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
 	protected Button constructAddButton() {
 		addButton = new Button("");
@@ -116,7 +116,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	@SuppressWarnings("unchecked")
 	private EntityModel<T> determineEntityModel() {
 		EntityModel<T> actualModel;
-		if (getEntityModel().isBaseEntityModel() || getEntityModel().getReference().indexOf(".") >= 0) {
+		if (getEntityModel().isBaseEntityModel() || getEntityModel().getReference().contains(".")) {
 			actualModel = (EntityModel<T>) entityModelFactory.getModel(getAttributeModel().getNormalizedType());
 		} else {
 			actualModel = getEntityModel();
@@ -128,7 +128,7 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	 * Constructs the button that navigates directly to a detail screen for an
 	 * entity
 	 *
-	 * @return
+	 * @return the constructed button
 	 */
 	protected Button constructDirectNavigationButton() {
 		directNavigationButton = new Button("");
@@ -143,8 +143,8 @@ public abstract class QuickAddEntityField<ID extends Serializable, T extends Abs
 	/**
 	 * Converts a value (can be a collection but in some cases also a single value)
 	 * 
-	 * @param value
-	 * @return
+	 * @param value the value to convert
+	 * @return the result of the conversion
 	 */
 	@SuppressWarnings("unchecked")
 	protected Object convertToCorrectCollection(Object value) {

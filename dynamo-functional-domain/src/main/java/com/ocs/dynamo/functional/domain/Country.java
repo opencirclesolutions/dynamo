@@ -23,6 +23,7 @@ import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.Hibernate;
 
@@ -35,15 +36,12 @@ import org.hibernate.Hibernate;
 @Getter
 @Setter
 @Entity
+@NoArgsConstructor
 @DiscriminatorValue("COUNTRY")
 @Model(displayNamePlural = "Countries", displayProperty = "name", sortOrder = "name asc")
 public class Country extends DomainChild<Country, Region> {
 
 	private static final long serialVersionUID = 1410771214783677106L;
-
-	public Country() {
-		// default constructor
-	}
 
 	public Country(String code, String name) {
 		super(code, name);

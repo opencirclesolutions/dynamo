@@ -117,7 +117,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	}
 
 	protected void initContent() {
-		retrieveValues(this.elementCollection);
+		extractValues(this.elementCollection);
 		multiComboBox.addValueChangeListener(event -> setValue(event.getValue()));
 		multiComboBox.setSizeFull();
 		add(multiComboBox);
@@ -125,7 +125,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 
 	@Override
 	public void refresh() {
-		retrieveValues(elementCollection);
+		extractValues(elementCollection);
 	}
 
 	/**
@@ -133,7 +133,7 @@ public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractE
 	 * 
 	 * @param elementCollection whether to query an element collection
 	 */
-	private void retrieveValues(boolean elementCollection) {
+	private void extractValues(boolean elementCollection) {
 		List<T> items;
 		if (elementCollection) {
 			// search element collection table

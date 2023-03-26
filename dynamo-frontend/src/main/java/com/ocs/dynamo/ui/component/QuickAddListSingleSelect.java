@@ -58,7 +58,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	 */
 	private final boolean quickAddAllowed;
 
-	@SafeVarargs
 	public QuickAddListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel,
 			BaseService<ID, T> service, SelectMode selectMode, SerializablePredicate<T> filter,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, boolean search, SortOrder<?>... sortOrder) {

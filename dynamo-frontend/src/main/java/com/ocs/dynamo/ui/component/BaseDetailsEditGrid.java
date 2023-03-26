@@ -246,7 +246,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private Function<U, List<SerializablePredicate<T>>> searchDialogFilters = u -> Collections.emptyList();
 
 	/**
-	 * Sort order to apply to the search dialog
+	 * Sort order that will be used in the search dialog
 	 */
 	@Getter
 	@Setter
@@ -395,7 +395,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	public void build() {
 		if (layout == null) {
 
-			boolean checkBoxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
+//			boolean checkBoxesForMultiSelect = SystemPropertyUtils.useGridSelectionCheckBoxes();
 //			if (checkBoxesForMultiSelect) {
 //				createCheckboxSelectGrid();
 //			} else {
@@ -413,19 +413,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 			layout.setSizeFull();
 			layout.add(grid);
 
-			// add a change listener (to make sure the buttons are correctly
-			// enabled/disabled)
-			grid.addSelectionListener(event -> {
-				if (grid.getSelectedItems().iterator().hasNext()) {
-					selectedItem = grid.getSelectedItems().iterator().next();
-					onSelect(selectedItem);
-					checkComponentState(selectedItem);
-
-					if (getFormOptions().isShowDetailsGridDetailsPanel()) {
-						showInDetailsPanel(selectedItem);
-					}
-				}
-			});
+			addGridSelectionListener();
 
 			disableSorting();
 			applyFilter();
@@ -435,6 +423,20 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 			addDownloadMenu();
 		}
+	}
+
+	private void addGridSelectionListener() {
+		grid.addSelectionListener(event -> {
+			if (grid.getSelectedItems().iterator().hasNext()) {
+				selectedItem = grid.getSelectedItems().iterator().next();
+				onSelect(selectedItem);
+				checkComponentState(selectedItem);
+
+				if (getFormOptions().isShowDetailsGridDetailsPanel()) {
+					showInDetailsPanel(selectedItem);
+				}
+			}
+		});
 	}
 
 	/**
@@ -767,7 +769,6 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public void setValue(U value) {
 		super.setValue(value);
 		if (value instanceof Collection col) {

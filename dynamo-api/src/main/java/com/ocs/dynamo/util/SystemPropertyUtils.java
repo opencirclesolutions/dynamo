@@ -47,7 +47,7 @@ public final class SystemPropertyUtils {
 
 	private static final String DEFAULT_TRUE_REPRESENTATION = "true";
 
-	private static Properties properties = new Properties();
+	private static final Properties properties = new Properties();
 
 	static {
 		try {
@@ -382,7 +382,7 @@ public final class SystemPropertyUtils {
 	 * <lan> is the language code of the locale, e.g. "en", "nl"
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the true representation
 	 */
 	public static String getDefaultTrueRepresentation(Locale locale) {
 		return getStringProperty(DynamoConstants.SP_DEFAULT_TRUE_REPRESENTATION + "." + locale.getLanguage(), null);
@@ -393,7 +393,7 @@ public final class SystemPropertyUtils {
 	 * 
 	 * @param propertyName the name of the property
 	 * @param defaultValue the default value
-	 * @return
+	 * @return the property value
 	 */
 	private static Integer getIntProperty(String propertyName, Integer defaultValue) {
 		Integer sys = Integer.getInteger(propertyName);

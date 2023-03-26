@@ -13,28 +13,20 @@
  */
 package com.ocs.dynamo.ui.auth.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.service.UserDetailsService;
+import com.ocs.dynamo.ui.auth.Authorized;
+import com.ocs.dynamo.ui.auth.PermissionChecker;
+import com.vaadin.flow.router.Route;
 import jakarta.annotation.PostConstruct;
-
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.service.UserDetailsService;
-import com.ocs.dynamo.ui.auth.Authorized;
-import com.ocs.dynamo.ui.auth.PermissionChecker;
-import com.vaadin.flow.router.Route;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.*;
 
 /**
  * Default permission checker - checks if the user has the correct role to
@@ -51,18 +43,18 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 	/**
 	 * Map from view name to list of roles that are allowed to access the view
 	 */
-	private Map<String, List<String>> permissions = new HashMap<>();
+	private final Map<String, List<String>> permissions = new HashMap<>();
 
 	/**
 	 * Map indicating whether a certain view is an "edit only" view that may be
 	 * hidden if the user has no edit rights
 	 */
-	private Map<String, Boolean> editOnly = new HashMap<>();
+	private final Map<String, Boolean> editOnly = new HashMap<>();
 
 	/**
 	 * The base package to scan for views
 	 */
-	private String basePackage;
+	private final String basePackage;
 
 	/**
 	 * Constructor
@@ -78,25 +70,23 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 	}
 
 	/**
-	 * Returns a list of all view names
-	 * 
-	 * @return
+	 * @return a list of all view names
 	 */
 	@Override
 	public List<String> getViewNames() {
-		return Collections.unmodifiableList(new ArrayList<>(permissions.keySet()));
+		return List.copyOf(new ArrayList<>(permissions.keySet()));
 	}
 
 	/**
 	 * Checks if the user is allowed to access a certain view
 	 * 
 	 * @param viewName the name of the view
-	 * @return
+	 * @return true when access is allowed, false otherwise
 	 */
 	@Override
 	public boolean isAccessAllowed(String viewName) {
 		List<String> roles = permissions.get(viewName);
-		return roles == null ? true : userDetailsService.isUserInRole(roles.toArray(new String[0]));
+		return roles == null || userDetailsService.isUserInRole(roles.toArray(new String[0]));
 	}
 
 	/**
@@ -104,7 +94,7 @@ public class DefaultPermissionCheckerImpl implements PermissionChecker {
 	 * doesn't have certain edit rights
 	 * 
 	 * @param viewName the name of the view
-	 * @return
+	 * @return true if the view is an "edit only" view, false otherwise
 	 */
 	@Override
 	public boolean isEditOnly(String viewName) {

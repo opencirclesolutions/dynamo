@@ -26,16 +26,12 @@ import java.lang.annotation.Target;
 public @interface Authorized {
 
     /**
-     * The roles that are given access to the view
-     * 
-     * @return
+     * @return the roles that are given access to the view
      */
     String[] roles();
 
     /**
-     * Indicates that this screen is for editing purposes only
-     * 
-     * @return
+     * @return whether the screen is for editing purposes only
      */
     boolean editOnly() default false;
 }

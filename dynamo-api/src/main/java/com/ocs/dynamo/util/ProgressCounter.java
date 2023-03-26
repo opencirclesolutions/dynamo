@@ -14,7 +14,7 @@
 package com.ocs.dynamo.util;
 
 /**
- * Interface for a simple progress counter
+ * Interface for progress counter
  * 
  * @author Bas Rutten
  *

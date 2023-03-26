@@ -139,7 +139,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		Map<String, String> attributeGroupMap = determineAttributeGroupMapping(entityModel, entityClass);
 		entityModel.addAttributeGroup(EntityModel.DEFAULT_GROUP);
 
-		Collections.sort(attributeModels, Comparator.comparing(AttributeModel::getOrder));
+		attributeModels.sort(Comparator.comparing(AttributeModel::getOrder));
 		for (AttributeModel attributeModel : attributeModels) {
 			// determine the attribute group name
 			String group = attributeGroupMap.get(attributeModel.getName());
@@ -285,7 +285,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param nested      whether this is a nested attribute
 	 * @param prefix      the prefix to apply to the attribute name (in case of
 	 *                    nested attributes)
-	 * @return
+	 * @return the constructed attribute model
 	 */
 	protected <T> List<AttributeModel> constructAttributeModel(PropertyDescriptor descriptor,
 			EntityModelImpl<T> entityModel, Class<?> parentClass, boolean nested, String prefix) {
@@ -350,7 +350,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param reference   reference of the entity model
 	 * @param entityClass the entity class
 	 * @param entityModel the entity model
-	 * @return
+	 * @return the constructed attribute models
 	 */
 	private <T> List<AttributeModel> constructAttributeModels(String reference, Class<T> entityClass,
 			EntityModelImpl<T> entityModel) {
@@ -399,7 +399,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 *
 	 * @param reference   unique reference to the entity model
 	 * @param entityClass the class of the entity
-	 * @return
+	 * @return the constructed model
 	 */
 	protected synchronized <T> EntityModel<T> constructModel(String reference, Class<T> entityClass) {
 
@@ -449,7 +449,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		List<AttributeModel> attributeModels = constructAttributeModels(reference, entityClass, entityModel);
 
 		// calculate the various attribute orders
-		Collections.sort(attributeModels, (a, b) -> a.getName().compareToIgnoreCase(b.getName()));
+		attributeModels.sort((a, b) -> a.getName().compareToIgnoreCase(b.getName()));
 		determineAttributeOrder(entityClass, reference, attributeModels);
 		boolean gridOrder = determineGridAttributeOrder(entityClass, reference, attributeModels);
 		boolean searchOrder = determineSearchAttributeOrder(entityClass, reference, attributeModels);
@@ -477,10 +477,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	}
 
 	/**
-	 * 
-	 * @param type
-	 * @param reference
-	 * @return
+	 * Constructs a nested entity model
+	 * @param type the class of the entity
+	 * @param reference the unique reference
+	 * @return the constructed model
 	 */
 	public EntityModel<?> constructNestedEntityModel(Class<?> type, String reference) {
 		return getModel(reference, type);
@@ -492,7 +492,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 *
 	 * @param model       the entity model
 	 * @param entityClass the entity class
-	 * @return
+	 * @return the mapping from attribute name to group
 	 */
 	protected <T> Map<String, String> determineAttributeGroupMapping(EntityModel<T> model, Class<T> entityClass) {
 		Map<String, String> result = collectAttributeGroups(model, entityClass);
@@ -530,7 +530,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * Determines the (default) attribute ordering for an entity based on
 	 * the @AttributeOrder annotation
 	 * 
-	 * @param <T>
+	 * @param <T> the type of the entity class
 	 * @param entityClass     the entity class
 	 * @param reference       the unique reference of the entity model
 	 * @param attributeModels the list of attribute models to process
@@ -544,7 +544,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		// set all orders
-		determineAttributeOrderInner(entityClass, reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames,
+		determineAttributeOrderInner(reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames,
 				attributeModels, (am, order) -> am.setOrder(order));
 	}
 
@@ -554,7 +554,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * the order in which they occur) and then add any attributes that are not
 	 * explicitly mentioned
 	 *
-	 * @param entityClass            the type of the entity
 	 * @param reference              the unique reference to the entity model
 	 * @param messageBundleKey       the key under which to look up the attribute
 	 *                               overrides in the message bundle
@@ -565,10 +564,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 *                               proper order on the attribute model
 	 * @return whether an explicit ordering is defined
 	 */
-	protected <T> boolean determineAttributeOrderInner(Class<T> entityClass, String reference, String messageBundleKey,
+	protected boolean determineAttributeOrderInner(String reference, String messageBundleKey,
 			List<String> explicitAttributeNames, List<AttributeModel> attributeModels,
 			BiConsumer<AttributeModelImpl, Integer> consumer) {
-		boolean explicit = false;
 		List<String> additionalNames = new ArrayList<>();
 
 		// overwrite by message bundle (if present)
@@ -578,7 +576,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			explicitAttributeNames = List.of(msg.replaceAll("\\s+", "").split(","));
 		}
 
-		explicit = !explicitAttributeNames.isEmpty();
+		boolean explicit = !explicitAttributeNames.isEmpty();
 		List<String> result = new ArrayList<>(explicitAttributeNames);
 
 		addMissingAttributeNames(explicitAttributeNames, attributeModels, additionalNames);
@@ -587,8 +585,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		// loop over the attributes and set the orders
 		int i = 0;
 		for (String attributeName : result) {
-			AttributeModel am = attributeModels.stream() //
-					.filter(m -> m.getName().equals(attributeName)) //
+			AttributeModel am = attributeModels.stream()
+					.filter(m -> m.getName().equals(attributeName))
 					.findFirst().orElse(null);
 			if (am != null) {
 				consumer.accept((AttributeModelImpl) am, i);
@@ -720,7 +718,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (orderAnnot != null) {
 			explicitAttributeNames = List.of(orderAnnot.attributeNames());
 		}
-		return determineAttributeOrderInner(entityClass, reference, EntityModel.GRID_ATTRIBUTE_ORDER,
+		return determineAttributeOrderInner(reference, EntityModel.GRID_ATTRIBUTE_ORDER,
 				explicitAttributeNames, attributeModels, (am, order) -> am.setGridOrder(order));
 	}
 
@@ -741,7 +739,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (orderAnnot != null) {
 			explicitAttributeNames = List.of(orderAnnot.attributeNames());
 		}
-		return determineAttributeOrderInner(entityClass, reference, EntityModel.SEARCH_ATTRIBUTE_ORDER,
+		return determineAttributeOrderInner(reference, EntityModel.SEARCH_ATTRIBUTE_ORDER,
 				explicitAttributeNames, attributeModels, (am, order) -> am.setSearchOrder(order));
 	}
 

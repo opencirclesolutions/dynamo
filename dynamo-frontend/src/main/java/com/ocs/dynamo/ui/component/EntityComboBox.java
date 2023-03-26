@@ -144,7 +144,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	}
 
 	@SuppressWarnings("unchecked")
-	public void afterNewEntityAdded(T entity) {
+	protected void afterNewEntityAdded(T entity) {
 		if (getDataProvider() instanceof ListDataProvider) {
 			ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
 			provider.getItems().add(entity);

@@ -123,13 +123,6 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	private T selectedItem;
 
 	/**
-	 * 
-	 * Whether the grid is in view mode. If this is the case, editing is not allowed
-	 */
-	@Getter
-	private boolean viewMode;
-
-	/**
 	 * Constructor
 	 * 
 	 * @param attributeModel the attribute model
@@ -203,6 +196,8 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	@Override
 	public void assignEntity(U entity) {
 		this.entity = entity;
+		provider.refreshAll();
+
 	}
 
 	/**
@@ -237,7 +232,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
 		parent.add(buttonBar);
 
-		if (!viewMode && formOptions.isShowAddButton()) {
+		if (formOptions.isShowAddButton()) {
 			constructAddButton(buttonBar);
 		}
 
@@ -250,14 +245,14 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	 * Constructs the column that holds the "remove" button
 	 */
 	private void constructRemoveColumn() {
-		if (!viewMode && formOptions.isShowRemoveButton()) {
+		if (formOptions.isShowRemoveButton()) {
 			String removeMsg = message("ocs.detail.remove");
-			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) t -> {
+			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) entity -> {
 				Button remove = new Button();
 				remove.setIcon(VaadinIcon.TRASH.create());
 				remove.addClickListener(event -> {
-					binders.remove(t);
-					provider.getItems().remove(t);
+					binders.remove(entity);
+					provider.getItems().remove(entity);
 					provider.refreshAll();
 				});
 				return remove;
@@ -377,6 +372,7 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 
 	public void setEntity(U entity) {
 		this.entity = entity;
+		provider.refreshAll();
 	}
 
 	@Override
@@ -384,8 +380,8 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		provider.getItems().clear();
 		provider.refreshAll();
 		binders.clear();
-		for (T t : value) {
-			ValueHolder<T> vh = new ValueHolder<>(t);
+		for (T entity : value) {
+			ValueHolder<T> vh = new ValueHolder<>(entity);
 			provider.getItems().add(vh);
 			@SuppressWarnings({ "rawtypes", "unchecked" })
 			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);

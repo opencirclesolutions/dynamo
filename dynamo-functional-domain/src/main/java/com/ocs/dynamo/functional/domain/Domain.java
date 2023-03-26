@@ -96,7 +96,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 		if (this == obj) {
 			return true;
 		}
-		if (!(obj instanceof Domain)) {
+		if (!(obj instanceof final Domain other)) {
 			return false;
 		}
 
@@ -104,7 +104,6 @@ public abstract class Domain extends AbstractEntity<Integer> {
 			return false;
 		}
 
-		final Domain other = (Domain) obj;
 		if (this.id != null && other.id != null) {
 			// first, check if the IDs match
 			return Objects.equals(this.id, other.id);
