@@ -191,7 +191,7 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 		if (provider instanceof CallbackDataProvider) {
 			setItems((CallbackDataProvider) provider);
 		} else if (provider instanceof ListDataProvider) {
-			setItems(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false), (Collection<T>) provider);
+			setItems(new MultiSelectIgnoreDiacriticsCaptionFilter<>(entityModel, true, false), ((ListDataProvider<T>) provider).getItems());
 		}
 	}
 
