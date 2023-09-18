@@ -21,7 +21,6 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -94,7 +93,7 @@ import lombok.extern.slf4j.Slf4j;
 /**
  * Implementation of the entity model factory - creates models that hold
  * metadata about an entity
- *ó
+ * 
  * @author bas.rutten
  */
 @Slf4j
@@ -182,7 +181,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			if (!StringUtils.isEmpty(annot.filterProperty())) {
 				builder.filterProperty(annot.filterProperty());
 			}
-
 		}
 	}
 
@@ -478,7 +476,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 	/**
 	 * Constructs a nested entity model
-	 * @param type the class of the entity
+	 * 
+	 * @param type      the class of the entity
 	 * @param reference the unique reference
 	 * @return the constructed model
 	 */
@@ -530,7 +529,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * Determines the (default) attribute ordering for an entity based on
 	 * the @AttributeOrder annotation
 	 * 
-	 * @param <T> the type of the entity class
+	 * @param <T>             the type of the entity class
 	 * @param entityClass     the entity class
 	 * @param reference       the unique reference of the entity model
 	 * @param attributeModels the list of attribute models to process
@@ -544,8 +543,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		}
 
 		// set all orders
-		determineAttributeOrderInner(reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames,
-				attributeModels, (am, order) -> am.setOrder(order));
+		determineAttributeOrderInner(reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames, attributeModels,
+				(am, order) -> am.setOrder(order));
 	}
 
 	/**
@@ -585,9 +584,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		// loop over the attributes and set the orders
 		int i = 0;
 		for (String attributeName : result) {
-			AttributeModel am = attributeModels.stream()
-					.filter(m -> m.getName().equals(attributeName))
-					.findFirst().orElse(null);
+			AttributeModel am = attributeModels.stream().filter(m -> m.getName().equals(attributeName)).findFirst()
+					.orElse(null);
 			if (am != null) {
 				consumer.accept((AttributeModelImpl) am, i);
 				i++;
@@ -718,8 +716,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (orderAnnot != null) {
 			explicitAttributeNames = List.of(orderAnnot.attributeNames());
 		}
-		return determineAttributeOrderInner(reference, EntityModel.GRID_ATTRIBUTE_ORDER,
-				explicitAttributeNames, attributeModels, (am, order) -> am.setGridOrder(order));
+		return determineAttributeOrderInner(reference, EntityModel.GRID_ATTRIBUTE_ORDER, explicitAttributeNames,
+				attributeModels, (am, order) -> am.setGridOrder(order));
 	}
 
 	/**
@@ -739,8 +737,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (orderAnnot != null) {
 			explicitAttributeNames = List.of(orderAnnot.attributeNames());
 		}
-		return determineAttributeOrderInner(reference, EntityModel.SEARCH_ATTRIBUTE_ORDER,
-				explicitAttributeNames, attributeModels, (am, order) -> am.setSearchOrder(order));
+		return determineAttributeOrderInner(reference, EntityModel.SEARCH_ATTRIBUTE_ORDER, explicitAttributeNames,
+				attributeModels, (am, order) -> am.setSearchOrder(order));
 	}
 
 	/**

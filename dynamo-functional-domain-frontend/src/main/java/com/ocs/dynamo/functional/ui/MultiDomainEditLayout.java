@@ -47,6 +47,7 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 
+import com.vaadin.flow.function.SerializablePredicate;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -134,6 +135,12 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 	 */
 	@Getter
 	private ServiceBasedSplitLayout<?, ?> splitLayout;
+
+	@Getter
+	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+
+	@Getter
+	private Map<String, String> fieldEntityModels = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -242,6 +249,9 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 				}
 			}
 
+			fieldFilters.forEach(layout::addFieldFilter);
+			fieldEntityModels.forEach(layout::addFieldEntityModel);
+
 			// register afterwards so that we actually register for the current layout
 			// rather than the previous one
 			layout.build();
@@ -312,5 +322,23 @@ public class MultiDomainEditLayout extends BaseCustomComponent {
 		if (afterDomainSelected != null) {
 			afterDomainSelected.accept(clazz);
 		}
+	}
+
+	/**
+	 * Adds a entity model for a field
+	 * @param path field
+	 * @param reference entity model
+	 */
+	public final void addFieldEntityModel(String path, String reference) {
+		this.fieldEntityModels.put(path, reference);
+	}
+
+	/**
+	 * Adds a filter for a field
+	 * @param property field
+	 * @param filter filter
+	 */
+	public void addFieldFilter(String property, SerializablePredicate<?> filter) {
+		this.fieldFilters.put(property, filter);
 	}
 }
