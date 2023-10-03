@@ -266,7 +266,6 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
 		// make sure the grid can be edited
 		Editor<T> editor = wrapper.getGrid().getEditor();
 		editor.addCloseListener(listener -> {
-			System.out.println("Closing editor");
 			binders.clear();
 			clearGridWrapper();
 			constructGrid();
