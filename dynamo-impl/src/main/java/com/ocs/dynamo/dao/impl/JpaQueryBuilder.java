@@ -96,7 +96,7 @@ public final class JpaQueryBuilder {
 					prefix += property;
 					
 					if (fetchMap.containsKey(prefix)) {
-						fetch = fetchMap.get(property);
+						fetch = fetchMap.get(prefix);
 					} else {
 				      fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
 					  fetchMap.put(prefix, fetch);
