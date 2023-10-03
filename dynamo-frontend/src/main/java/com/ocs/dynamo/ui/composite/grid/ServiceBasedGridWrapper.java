@@ -58,7 +58,10 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	 * @param service     the service that is used for retrieving data
 	 * @param entityModel the entity model
 	 * @param queryType   the query type to use
-	 * @param order       the default sort order
+	 * @param formOptions the form options
+	 * @param componentContext the component context
+	 * @param filter the search filter
+	 * @param sortOrders  the sort orders
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public ServiceBasedGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
@@ -79,7 +82,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 			provider = new IdBasedDataProvider<>(getService(), getEntityModel(), getJoins());
 		}
 		provider.setMaxResults(maxResults);
-		provider.setAfterCountCompleted(x -> updateCaption(x));
+		provider.setAfterCountCompleted(count -> updateCaption(count));
 		postProcessDataProvider(provider);
 
 		return provider;
@@ -112,7 +115,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 				List<SortOrder<?>> orders = new ArrayList<>();
 				List<GridSortOrder<T>> so = getGrid().getSortOrder();
 				for (GridSortOrder<T> gso : so) {
-					orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
+					orders.add(new SortOrder<>(gso.getSorted().getKey(), gso.getDirection()));
 				}
 				getExportDelegate().export(getExportEntityModel() != null ? getExportEntityModel() : getEntityModel(),
 						getFormOptions().getExportMode(), getFilter(), !orders.isEmpty() ? orders : getSortOrders(),

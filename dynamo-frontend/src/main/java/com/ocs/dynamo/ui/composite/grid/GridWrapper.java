@@ -197,7 +197,7 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 			missing = initDefaultSortOrders(fallBackOrders, builder);
 		}
 
-		// use grid sorting only if all columns are present. otherwise use fallback
+		// use grid sorting only if all columns are present, otherwise use fallback
 		if (!missing) {
 			getGrid().sort(builder.build());
 		}
@@ -219,7 +219,7 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 			} else {
 				missing = true;
 			}
-			fallBackOrders.add(new SortOrder<String>(am.getActualSortPath(),
+			fallBackOrders.add(new SortOrder<>(am.getActualSortPath(),
 					asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
 		}
 		return missing;

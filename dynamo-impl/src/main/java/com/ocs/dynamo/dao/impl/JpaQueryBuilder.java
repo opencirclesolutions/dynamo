@@ -79,14 +79,28 @@ public final class JpaQueryBuilder {
 	private static <T> boolean addFetchJoins(FetchParent<T, ?> root, FetchJoinInformation... fetchJoins) {
 		boolean collection = false;
 
+		Map<String,FetchParent<T, ?>> fetchMap = new HashMap<>();
+		
 		if (root != null && fetchJoins != null) {
 			for (FetchJoinInformation s : fetchJoins) {
 
 				// Support nested properties
 				FetchParent<T, ?> fetch = root;
 				String[] propertyPath = s.getProperty().split("\\.");
+				String prefix = "";
+				
 				for (String property : propertyPath) {
-					fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
+					if (prefix.length() > 0) {
+						prefix = prefix + ".";
+					}
+					prefix += property;
+					
+					if (fetchMap.containsKey(prefix)) {
+						fetch = fetchMap.get(property);
+					} else {
+				      fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
+					  fetchMap.put(prefix, fetch);
+					}
 				}
 			}
 

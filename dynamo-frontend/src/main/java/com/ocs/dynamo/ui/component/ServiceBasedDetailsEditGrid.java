@@ -110,7 +110,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 						getMessageService().getMessage("ocs.save.entity.first", VaadinUtils.getLocale()));
 			}
 		});
-		setOnEdit(ent -> showPopup(ent));
+		setOnEdit(this::showPopup);
 
 		build();
 

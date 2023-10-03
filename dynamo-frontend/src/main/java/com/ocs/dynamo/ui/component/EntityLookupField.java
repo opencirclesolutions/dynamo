@@ -253,6 +253,7 @@ public class EntityLookupField<ID extends Serializable, T extends AbstractEntity
     protected void initContent() {
         HorizontalLayout bar = new HorizontalLayout();
         bar.setSizeFull();
+
         if (this.getAttributeModel() != null) {
             this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
         }

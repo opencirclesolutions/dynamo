@@ -25,8 +25,8 @@ import org.springframework.stereotype.Service;
 import java.time.ZonedDateTime;
 
 /**
- * Aspect for intercepting calls and automatically setting audit information (created by/created on
- * etc.)
+ * Aspect for intercepting calls and automatically setting audit information
+ * (created by/created on etc.)
  * 
  * Can be used in your application simply by adding "com.ocs.dynamo.aop" to the
  * list of packages to scan for components
@@ -49,35 +49,32 @@ public class AuditAspect {
 		// pointcut method for intercepting any save method
 	}
 
-    /**
-     * intercept any method that saves an auditable entity
-     * 
-     * @param joinPoint
-     *            the join point
-     * @param entity
-     *            the entity that is being saved
-     * @return the result of proceeding with the join point
-     * @throws Throwable when something goes wrong
-     */
-    @Around("anySaveMethod() && args(entity)")
-    public Object auditSave(ProceedingJoinPoint joinPoint, AbstractAuditableEntity<?> entity)
-            throws Throwable {
-        setAuditFields(entity);
-        return joinPoint.proceed();
-    }
+	/**
+	 * intercept any method that saves an auditable entity
+	 * 
+	 * @param joinPoint the join point
+	 * @param entity    the entity that is being saved
+	 * @return the result of proceeding with the join point
+	 * @throws Throwable when something goes wrong
+	 */
+	@Around("anySaveMethod() && args(entity)")
+	public Object auditSave(ProceedingJoinPoint joinPoint, AbstractAuditableEntity<?> entity) throws Throwable {
+		setAuditFields(entity);
+		return joinPoint.proceed();
+	}
 
-    /**
-     * Fills in the audit fields (created by, created on etc.)
-     * 
-     * @param entity the entity for which to set the audit fields
-     */
-    private void setAuditFields(AbstractAuditableEntity<?> entity) {
-        String userName = userDetailsService.getCurrentUserName();
-        if (entity.getId() == null) {
-            entity.setCreatedBy(userName);
-            entity.setCreatedOn(ZonedDateTime.now());
-        }
-        entity.setChangedBy(userName);
-        entity.setChangedOn(ZonedDateTime.now());
-    }
+	/**
+	 * Fills in the audit fields (created by, created on etc.)
+	 * 
+	 * @param entity the entity for which to set the audit fields
+	 */
+	private void setAuditFields(AbstractAuditableEntity<?> entity) {
+		String userName = userDetailsService.getCurrentUserName();
+		if (entity.getId() == null) {
+			entity.setCreatedBy(userName);
+			entity.setCreatedOn(ZonedDateTime.now());
+		}
+		entity.setChangedBy(userName);
+		entity.setChangedOn(ZonedDateTime.now());
+	}
 }
