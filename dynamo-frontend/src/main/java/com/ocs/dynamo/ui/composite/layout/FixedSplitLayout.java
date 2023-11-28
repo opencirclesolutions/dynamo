@@ -40,7 +40,6 @@ import lombok.Setter;
  * @param <ID> the type of the primary key
  * @param <T>  the type of the entity
  */
-@SuppressWarnings("serial")
 public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 4606800218149558500L;
@@ -75,7 +74,7 @@ public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<
 	 * Callback method that is executed after reload
 	 */
 	@Override
-	protected void afterReload(T t) {
+	protected final void afterReload(T t) {
 		if (t != null) {
 			getGridWrapper().getGrid().select(t);
 		} else {
@@ -93,7 +92,7 @@ public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<
 
 	@Override
 	protected final BaseGridWrapper<ID, T> constructGridWrapper() {
-		FixedGridWrapper<ID, T> wrapper = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getFormOptions(),
+		FixedGridWrapper<ID, T> wrapper = new FixedGridWrapper<>(getService(), getEntityModel(), getFormOptions(),
 				getComponentContext(), getFieldFilters(), getItems(), getSortOrders()) {
 
 			@Override
@@ -140,8 +139,7 @@ public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public void setSelectedItems(Object selectedItems) {
 		if (selectedItems != null) {
-			if (selectedItems instanceof Collection<?>) {
-				Collection<?> col = (Collection<?>) selectedItems;
+			if (selectedItems instanceof Collection col) {
 				if (col.iterator().hasNext()) {
 					T t = (T) col.iterator().next();
 					// fetch the item again so that any details are loaded

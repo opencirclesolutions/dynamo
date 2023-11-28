@@ -49,7 +49,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 	 * functionality (equal, contains, and starts)
 	 */
 	@Getter
-	private Set<String> basicStringFilterProperties = new HashSet<>();
+	private final Set<String> basicStringFilterProperties = new HashSet<>();
 
 	/**
 	 * Constructor
@@ -78,7 +78,7 @@ public class FlexibleSearchLayout<ID extends Serializable, T extends AbstractEnt
 
 	@Override
 	protected AbstractModelBasedSearchForm<ID, T> constructSearchForm() {
-		ModelBasedFlexibleSearchForm<ID, T> searchForm = new ModelBasedFlexibleSearchForm<ID, T>(null, getEntityModel(),
+		ModelBasedFlexibleSearchForm<ID, T> searchForm = new ModelBasedFlexibleSearchForm<>(null, getEntityModel(),
 				getFormOptions(), this.getDefaultFilters(), this.getFieldFilters());
 
 		initSearchForm(searchForm);

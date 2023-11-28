@@ -50,10 +50,10 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 
 	private static final long serialVersionUID = -8982555842423738005L;
 
-	private UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+	private final UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 
 	@Getter
-	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * Constructs a (formatted) label based on the attribute model
@@ -126,7 +126,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	/**
 	 * Navigates to the specified view
 	 *
-	 * @param view the ID of the view
+	 * @param viewName the name of the view to navigate to
 	 */
 	protected void navigate(String viewName) {
 		helper.navigate(viewName);
@@ -148,7 +148,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * @param message the message to show
 	 */
 	protected void showErrorNotification(String message) {
-		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
+		showNotification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
 	}
 
 	/**
@@ -157,9 +157,10 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * the log instead
 	 *
 	 * @param message the message
-	 * @param type    the type of the message (error, warning, tray etc.)
+	 * @param position the screen position at which to show the notification
+	 * @param variant the variant (e.g. warning, error)
 	 */
-	protected void showNotifification(String message, Position position, NotificationVariant variant) {
+	protected void showNotification(String message, Position position, NotificationVariant variant) {
 		if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
 			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position)
 					.addThemeVariants(variant);
@@ -174,7 +175,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * @param message the message to show
 	 */
 	protected void showSuccessNotification(String message) {
-		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_SUCCESS);
+		showNotification(message, Position.MIDDLE, NotificationVariant.LUMO_SUCCESS);
 	}
 
 	/**
@@ -183,7 +184,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * @param message the message to show
 	 */
 	protected void showTrayNotification(String message) {
-		showNotifification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
+		showNotification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
 	}
 
 }

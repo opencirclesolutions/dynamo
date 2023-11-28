@@ -106,7 +106,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	 * mode
 	 */
 	@Getter
-	private Map<Integer, BiFunction<FormOptions, Boolean, Component>> detailTabCreators = new HashMap<>();
+	private final Map<Integer, BiFunction<FormOptions, Boolean, Component>> detailTabCreators = new HashMap<>();
 
 	@Getter
 	private VerticalLayout mainSearchLayout;
@@ -140,7 +140,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	private Consumer<VerticalLayout> afterSearchFormBuilt;
 
 	@Getter
-	private QueryType queryType;
+	private final QueryType queryType;
 
 	private AbstractModelBasedSearchForm<ID, T> searchForm;
 
@@ -187,10 +187,10 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Registers a lambda functions for creating a details tab that is used when
-	 * "complexDetailsMode" is enab
+	 * "complexDetailsMode" is enabled
 	 * 
-	 * @param index
-	 * @param creator
+	 * @param index the index of the tab
+	 * @param creator the function used to create the tab
 	 */
 	public void addDetailTabCreator(int index, BiFunction<FormOptions, Boolean, Component> creator) {
 		detailTabCreators.put(index, creator);
@@ -345,11 +345,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
-	/**
-	 * Constructs the edit button
-	 * 
-	 * @return
-	 */
 	protected final Button constructEditButton() {
 		Button editButton = new Button(
 				(!getFormOptions().isShowEditButton() || !checkEditAllowed()) ? message("ocs.view")
@@ -400,7 +395,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	protected final Button constructRemoveButton() {
 		Button removeButton = new RemoveButton(this, message("ocs.remove"), VaadinIcon.TRASH.create(),
-				() -> removeEntity(), entity -> FormatUtils.formatEntity(getEntityModel(), entity));
+				this::removeEntity, entity -> FormatUtils.formatEntity(getEntityModel(), entity));
 		removeButton.setVisible(checkEditAllowed() && getFormOptions().isShowRemoveButton());
 		return removeButton;
 	}
@@ -428,7 +423,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 			checkComponentState(getSelectedItem());
 		});
 
-		// select item by double clicking on row (disable this inside pop-up
+		// select item by double-clicking on row (disable this inside pop-up
 		// windows)
 		if (getFormOptions().isDetailsModeEnabled() && getFormOptions().isDoubleClickSelectAllowed()) {
 			getGridWrapper().getGrid().addItemDoubleClickListener(event -> {
@@ -450,8 +445,8 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 
 	/**
 	 * Open the screen in edit mode for the provided entity
-	 * 
-	 * @param entity
+	 *
+	 * @param entity the entity
 	 */
 	public final void edit(T entity) {
 		setSelectedItem(entity);
@@ -466,11 +461,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return getSearchForm().getFilterCount();
 	}
 
-	/**
-	 * Returns the search form (lazily constructing it when needed)
-	 * 
-	 * @return
-	 */
 	public AbstractModelBasedSearchForm<ID, T> getSearchForm() {
 		if (searchForm == null) {
 			searchForm = constructSearchForm();
@@ -499,11 +489,6 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 		return getSearchForm().isFilterSet(path);
 	}
 
-	/**
-	 * Checks whether the layout is currently in search mode
-	 *
-	 * @return
-	 */
 	public boolean isInSearchMode() {
 		return Objects.equals(getComponentAt(0), mainSearchLayout);
 	}
@@ -585,11 +570,7 @@ public abstract class AbstractSearchLayout<ID extends Serializable, T extends Ab
 	@SuppressWarnings("unchecked")
 	public void select(Object selectedItems) {
 		if (selectedItems != null) {
-			if (selectedItems instanceof Collection<?>) {
-				// the lazy query container returns an array of IDs of the
-				// selected items
-
-				Collection<?> col = (Collection<?>) selectedItems;
+			if (selectedItems instanceof Collection<?> col) {
 				if (col.size() == 1) {
 					T t = (T) col.iterator().next();
 					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));

@@ -45,7 +45,7 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 
 	private static final long serialVersionUID = -2610435729199505546L;
 
-	private T entity;
+	private final T entity;
 
 	@Getter
 	@Setter
@@ -57,7 +57,6 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 	 * @param service     the service used to query the database
 	 * @param entityModel the entity model of the entity to display
 	 * @param entity      the entity to display
-	 * @param formOptions the form options that govern how the layout is displayed
 	 */
 	public HorizontalDisplayLayout(BaseService<ID, T> service, EntityModel<T> entityModel, T entity) {
 		super(service, entityModel, new FormOptions());

@@ -45,7 +45,7 @@ public class CompositionLayout<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = 3696293073812817902L;
 
-	private List<Component> nestedComponents = new ArrayList<>();
+	private final List<Component> nestedComponents = new ArrayList<>();
 
 	@Getter
 	@Setter

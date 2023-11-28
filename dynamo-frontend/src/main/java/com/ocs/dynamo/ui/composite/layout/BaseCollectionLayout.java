@@ -45,7 +45,7 @@ import lombok.Setter;
 
 /**
  * A base class for a composite layout that displays a collection of data
- * (rather than an single object)
+ * (rather than a single object)
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
@@ -60,7 +60,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The main button bar that appears below the search results grid
 	 */
 	@Getter
-	private FlexLayout buttonBar = new DefaultFlexLayout();
+	private final FlexLayout buttonBar = new DefaultFlexLayout();
 
 	/**
 	 * The relations to fetch when retrieving a single entity
@@ -86,7 +86,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The search filters to apply to the individual fields
 	 */
 	@Getter
-	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+	private final Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
 
 	/**
 	 * The default height of the grid
@@ -101,7 +101,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	 * The joins to use when retrieving data for the grid
 	 */
 	@Getter
-	private FetchJoinInformation[] joins;
+	private final FetchJoinInformation[] joins;
 
 	/**
 	 * The maximum number of search results
@@ -154,7 +154,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	private boolean sortEnabled = true;
 
 	/**
-	 * The list of sort orders to apply by default
+	 * The list of sort orders that are applied by default
 	 */
 	@Setter
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
@@ -168,9 +168,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 
 	@Getter
 	@Setter
-	private Runnable onRemove = () -> {
-		getService().delete(getSelectedItem());
-	};
+	private Runnable onRemove = () -> getService().delete(getSelectedItem());
 
 	/**
 	 * Constructor
@@ -201,9 +199,9 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * Adds an additional sort order
+	 * Adds a sort order
 	 * 
-	 * @param sortOrder the sort order to add
+	 * @param sortOrder the sort order that must be added
 	 */
 	public final void addSortOrder(SortOrder<?> sortOrder) {
 		this.sortOrders.add(sortOrder);
@@ -220,7 +218,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Constructs the Add button that is used to open the form in "new entity" mode
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
 	protected final Button constructAddButton() {
 		Button ab = new Button(message("ocs.add"));
@@ -244,7 +242,7 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	/**
 	 * Creates a new entity - override in subclass if needed
 	 * 
-	 * @return
+	 * @return the created entity
 	 */
 	protected final T doCreateEntity() {
 		return getCreateEntity() != null ? getCreateEntity().get() : getService().createNewEntity();
@@ -269,11 +267,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 		}
 	}
 
-	/**
-	 * Returns the grid wrapper, lazily constructing it if needed
-	 * 
-	 * @return
-	 */
 	public GridWrapper<ID, T, U> getGridWrapper() {
 		if (gridWrapper == null) {
 			gridWrapper = constructGridWrapper();
@@ -286,7 +279,6 @@ public abstract class BaseCollectionLayout<ID extends Serializable, T extends Ab
 	}
 
 	/**
-	 * 
 	 * @return the currently configured sort orders
 	 */
 	public final List<SortOrder<?>> getSortOrders() {

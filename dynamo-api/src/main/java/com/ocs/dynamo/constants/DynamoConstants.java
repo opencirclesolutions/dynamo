@@ -62,6 +62,8 @@ public class DynamoConstants {
 	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
+	public static final String CSS_DETAILS_EDIT_LAYOUT_ROW = "detailsEditLayoutRow";
+
 	/**
 	 * CSS class for modal dialog
 	 */
@@ -194,9 +196,16 @@ public class DynamoConstants {
 	public static final String CSS_TAB_LAYOUT = "tabLayout";
 
 	/**
-	 * CSS Class for the displayed page in a tab layout
+	 * CSS class for the displayed page in a tab layout
 	 */
 	public static final String CSS_TAB_LAYOUT_DISPLAY_PAGE = "tabLayoutDisplayPage";
+
+	/**
+	 * CSS class for the detail layout in a split layout
+	 */
+	public static final String CSS_SPLIT_LAYOUT_DETAIL_LAYOUT = "splitLayoutDetailLayout";
+
+	public static final String CSS_SPLIT_LAYOUT_EDIT_PANEL = "splitLayoutEditPanel";
 
 	/**
 	 * Currency symbol

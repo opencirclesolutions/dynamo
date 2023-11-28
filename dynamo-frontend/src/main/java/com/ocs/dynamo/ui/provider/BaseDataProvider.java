@@ -198,6 +198,10 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	}
 
 	public ID getNextItemId() {
+		if (ids == null) {
+			return null;
+		}
+
 		int index = ids.indexOf(currentlySelectedId);
 		if (index < ids.size() - 1) {
 			currentlySelectedId = ids.get(index + 1);
@@ -207,6 +211,10 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	}
 
 	public ID getPreviousItemId() {
+		if (ids == null) {
+			return null;
+		}
+
 		int index = ids.indexOf(currentlySelectedId);
 		if (index > 0) {
 			currentlySelectedId = ids.get(index - 1);

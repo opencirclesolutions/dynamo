@@ -850,8 +850,9 @@ public class FormOptions implements Serializable {
 
 	/**
 	 * Specify whether to show the "quick search" field in a split layout
-	 * 
-	 * @return
+	 *
+	 * @param showQuickSearchField the desired setting
+	 * @return the FormOptions object
 	 */
 	public FormOptions setShowQuickSearchField(boolean showQuickSearchField) {
 		this.showQuickSearchField = showQuickSearchField;
@@ -862,8 +863,8 @@ public class FormOptions implements Serializable {
 	 * Specify whether to display a "refresh" button in the details screen of a
 	 * SearchLayout
 	 * 
-	 * @param showRefreshButton
-	 * @return
+	 * @param showRefreshButton the desired setting
+	 * @return the FormOptions object
 	 */
 	public FormOptions setShowRefreshButton(boolean showRefreshButton) {
 		this.showRefreshButton = showRefreshButton;
@@ -873,8 +874,8 @@ public class FormOptions implements Serializable {
 	/**
 	 * Specify whether to display a "remove" button below the search results grid
 	 * 
-	 * @param showRemoveButton
-	 * @return
+	 * @param showRemoveButton the desired setting
+	 * @return the FormOptions object
 	 */
 	public FormOptions setShowRemoveButton(boolean showRemoveButton) {
 		this.showRemoveButton = showRemoveButton;
@@ -886,8 +887,8 @@ public class FormOptions implements Serializable {
 	 * allows the user to search on any criterion, rather than on the combination of
 	 * all criteria
 	 * 
-	 * @param showSearchAnyButton
-	 * @return
+	 * @param showSearchAnyButton the desired setting
+	 * @return the FormOptions object
 	 */
 	public FormOptions setShowSearchAnyButton(boolean showSearchAnyButton) {
 		this.showSearchAnyButton = showSearchAnyButton;
@@ -897,8 +898,8 @@ public class FormOptions implements Serializable {
 	/**
 	 * Specify whether to display a search button above a split layout
 	 * 
-	 * @param splitLayoutSearchButton
-	 * @return
+	 * @param showSplitLayoutSearchButton the desired setting
+	 * @return the FormOptions object
 	 */
 	public FormOptions setShowSplitLayoutSearchButton(boolean showSplitLayoutSearchButton) {
 		this.showSplitLayoutSearchButton = showSplitLayoutSearchButton;
@@ -908,8 +909,8 @@ public class FormOptions implements Serializable {
 	/**
 	 * Specify whether to display a toggle button for showing/hiding the search form
 	 * 
-	 * @param showToggleButton
-	 * @return
+	 * @param showToggleButton the desired setting
+	 * @return the FormOptions object
 	 */
 	public FormOptions setShowToggleButton(boolean showToggleButton) {
 		this.showToggleButton = showToggleButton;

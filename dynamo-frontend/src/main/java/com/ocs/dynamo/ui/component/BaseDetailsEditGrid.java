@@ -70,7 +70,7 @@ import java.util.function.*;
 
 /**
  * Base class for grid components that are displayed inside an edit form. These
- * components can be used to manage a one-to-many or many-to-many collection.
+ * components can be used to manage one-to-many or many-to-many relations.
  * 
  * For small collections that can be managed in-memory and fetched through JPA
  * relationship fetching, use the DetailsEditGrid subclass. For larger
@@ -195,10 +195,19 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	@Getter
 	private final MessageService messageService;
 
+	/**
+	 * Biconsumer that is used to determine whether a component must be enabled. Takes
+	 * as its parameters the component and the currently selected entity
+	 */
 	@Getter
 	@Setter
 	private BiPredicate<Component, T> mustEnableComponent;
 
+	/**
+	 * Biconsumer that is used to post-process the button bar below the grid. Takes as
+	 * its parameters the button bar layout and a boolean that indicates whether the
+	 * component is in view mode
+	 */
 	@Getter
 	@Setter
 	private BiConsumer<HorizontalLayout, Boolean> postProcessButtonBar;
@@ -296,7 +305,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	@Getter
 	@Setter
-	private Consumer<T> onEdit = t -> {
+	private Consumer<T> onEdit = entity -> {
 	};
 
 	/**
@@ -365,17 +374,17 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 
 	private void addRemoveButtonToGrid() {
 		if (!isViewMode() && formOptions.isShowRemoveButton()) {
-			getGrid().addComponentColumn((ValueProvider<T, Component>) t -> {
+			getGrid().addComponentColumn((ValueProvider<T, Component>) entity -> {
 				Button remove = new Button();
 				remove.setIcon(VaadinIcon.TRASH.create());
 				remove.addClickListener(event -> {
-					binders.remove(t);
+					binders.remove(entity);
 
 					if (removeEntity != null) {
-						removeEntity.accept(t);
+						removeEntity.accept(entity);
 					}
 					if (getDataProvider() instanceof ListDataProvider) {
-						((ListDataProvider<T>) getDataProvider()).getItems().remove(t);
+						((ListDataProvider<T>) getDataProvider()).getItems().remove(entity);
 					}
 					getDataProvider().refreshAll();
 				});

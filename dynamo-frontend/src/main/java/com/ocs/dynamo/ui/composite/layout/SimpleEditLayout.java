@@ -80,6 +80,9 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 	@Setter
 	private FetchJoinInformation[] joins;
 
+	/**
+	 * Specifies what to do after the user exists the edit mode (either by saving or by cancelling)
+	 */
 	@Getter
 	@Setter
 	private TriConsumer<Boolean, Boolean, T> afterEditDone;
@@ -123,9 +126,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
-	/**
-	 * Constructs the screen - this method is called just once
-	 */
 	@Override
 	public void build() {
 		if (main == null) {
@@ -139,20 +139,17 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 			// there is just one component here, so the screen mode is always
 			// vertical
 			getFormOptions().setScreenMode(ScreenMode.VERTICAL);
-			editForm = new ModelBasedEditForm<ID, T>(entity, getService(), getEntityModel(), getFormOptions(),
+			editForm = new ModelBasedEditForm<>(entity, getService(), getEntityModel(), getFormOptions(),
 					fieldFilters);
 
 			initEditForm(editForm);
 			editForm.setPostProcessButtonBar(postProcessButtonBar);
 			editForm.setDetailJoins(getJoins());
-
 			editForm.setAfterEditDone((cancel, isNew, ent) -> {
 				setEntity(ent);
 				handleEditDone(cancel, isNew, ent);
 			});
-
 			editForm.build();
-
 			main.add(editForm);
 
 			if (afterLayoutBuilt != null) {
@@ -188,11 +185,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		}
 	}
 
-	/**
-	 * Check if the layout is in edit mode
-	 *
-	 * @return
-	 */
 	public boolean isViewMode() {
 		return editForm.isViewMode();
 	}
@@ -228,11 +220,6 @@ public class SimpleEditLayout<ID extends Serializable, T extends AbstractEntity<
 		editForm.selectTab(index);
 	}
 
-	/**
-	 * Sets the entity
-	 *
-	 * @param entity
-	 */
 	public void setEntity(T entity) {
 		this.entity = entity;
 		if (this.entity == null) {

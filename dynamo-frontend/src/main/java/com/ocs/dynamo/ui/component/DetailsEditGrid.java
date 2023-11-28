@@ -122,7 +122,7 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 	protected void handleDialogSelection(Collection<T> selected) {
 		if (getLinkEntity() == null) {
 			throw new OCSRuntimeException(
-					"linkEntity not set. Please use the setLinkEntity method to specify what to do with the selected items");
+					"LinkEntity not set. Please use the setLinkEntity method to specify what to do with the selected items");
 		}
 
 		// add to data provider

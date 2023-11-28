@@ -103,6 +103,9 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 */
 	private VerticalLayout splitterGridLayout;
 
+	/**
+	 * The initial splitter position (as a percentage)
+	 */
 	@Getter
 	@Setter
 	private double initialSplitterPosition = 50.0;
@@ -143,28 +146,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			splitterGridLayout = null;
 
 			detailLayout = new DefaultVerticalLayout(isHorizontalMode(), false);
-			detailLayout.addClassName("splitLayoutDetailLayout");
+			detailLayout.addClassName(DynamoConstants.CSS_SPLIT_LAYOUT_DETAIL_LAYOUT);
 			emptyDetailView();
 
 			quickSearchField = constructSearchField();
 			popupSearchButton = constructPopupSearchButton();
 			popupClearButton = constructPopupClearButton();
 
-			if (!isHorizontalMode()) {
-				if (quickSearchField != null || popupSearchButton != null) {
-					FlexLayout extraButtonBar = new DefaultFlexLayout();
-					mainLayout.add(extraButtonBar);
-
-					if (quickSearchField != null) {
-						extraButtonBar.add(quickSearchField);
-					}
-
-					if (popupSearchButton != null) {
-						extraButtonBar.add(popupSearchButton);
-						extraButtonBar.add(popupClearButton);
-					}
-				}
-			}
+			addExtraButtonBar();
 
 			getGridWrapper().getGrid().setHeight(getGridHeight());
 			disableGridSorting();
@@ -186,15 +175,14 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			// create a panel to hold the edit form
 			VerticalLayout editPanel = new DefaultVerticalLayout(false, false);
 			editPanel.add(detailLayout);
-			editPanel.addClassName("splitLayoutEditPanel");
+			editPanel.addClassName(DynamoConstants.CSS_SPLIT_LAYOUT_EDIT_PANEL);
 
-			if (isHorizontalMode()) {
+			if (isHorizontalMode() && splitter != null) {
 				// create the layout that is the right part of the splitter
 				VerticalLayout extra = new DefaultVerticalLayout(false, true);
 				extra.setClassName(DynamoConstants.CSS_SPLIT_LAYOUT_RIGHT);
 				extra.add(editPanel);
 				splitter.addToSecondary(extra);
-
 			} else {
 				mainLayout.add(editPanel);
 			}
@@ -203,7 +191,6 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 			getButtonBar().add(addButton);
 
 			removeButton = constructRemoveButton();
-			registerComponent(removeButton);
 			getButtonBar().add(removeButton);
 
 			// allow the user to define extra buttons
@@ -217,6 +204,28 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 
 			checkComponentState(null);
 			add(mainLayout);
+		}
+	}
+
+	/**
+	 * Adds an extra button bar with a search button and quick search
+	 * field when in vertical mode
+	 */
+	private void addExtraButtonBar() {
+		if (!isHorizontalMode()) {
+			if (quickSearchField != null || popupSearchButton != null) {
+				FlexLayout extraButtonBar = new DefaultFlexLayout();
+				mainLayout.add(extraButtonBar);
+
+				if (quickSearchField != null) {
+					extraButtonBar.add(quickSearchField);
+				}
+
+				if (popupSearchButton != null) {
+					extraButtonBar.add(popupSearchButton);
+					extraButtonBar.add(popupClearButton);
+				}
+			}
 		}
 	}
 
@@ -240,10 +249,11 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	protected final Button constructRemoveButton() {
-		Button removeButton = new RemoveButton(this, message("ocs.remove"), null, () -> removeEntity(),
+		Button removeButton = new RemoveButton(this, message("ocs.remove"), null, this::removeEntity,
 				entity -> FormatUtils.formatEntity(getEntityModel(), entity));
 		removeButton.setIcon(VaadinIcon.TRASH.create());
 		removeButton.setVisible(getFormOptions().isShowRemoveButton() && checkEditAllowed());
+		registerComponent(removeButton);
 		return removeButton;
 	}
 
@@ -253,7 +263,7 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	 * Do not override this method as an end user - implement the
 	 * "setQuickSearchFilterSupplier" instead
 	 *
-	 * @return the constructed textfield
+	 * @return the constructed text field
 	 */
 	abstract TextField constructSearchField();
 
@@ -458,16 +468,16 @@ public abstract class BaseSplitLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Reselects the specified entity
+	 * Re-selects the specified entity
 	 *
-	 * @param t entity to reselect
+	 * @param entity entity to reselect
 	 */
-	public void reselect(T t) {
-		detailsMode(t);
-		if (t == null) {
+	public void reselect(T entity) {
+		detailsMode(entity);
+		if (entity == null) {
 			getGridWrapper().getGrid().deselectAll();
 		} else {
-			getGridWrapper().getGrid().select(t);
+			getGridWrapper().getGrid().select(entity);
 		}
 	}
 

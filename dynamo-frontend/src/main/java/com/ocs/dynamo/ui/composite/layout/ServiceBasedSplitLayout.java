@@ -52,14 +52,13 @@ import lombok.Setter;
  * @param <ID> type of the primary key
  * @param <T>  type of the entity
  */
-@SuppressWarnings("serial")
 public class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 1068860513192819804L;
 
 	/**
-	 * The search filter to apply
+	 * The search filter used to limit the results
 	 */
 	@Getter
 	protected SerializablePredicate<T> filter;
@@ -75,7 +74,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * The query type (ID based or paging) used to query the database
 	 */
 	@Getter
-	private QueryType queryType;
+	private final QueryType queryType;
 
 	/**
 	 * Supplier for creating the quick search filter
@@ -92,7 +91,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * @param queryType   the desired query type
 	 * @param formOptions the form options
 	 * @param sortOrder   the sort order
-	 * @param joins
+	 * @param joins the fetch joints to use
 	 */
 	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
@@ -117,7 +116,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 			}
 		}
 
-		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
+		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<>(getService(), getEntityModel(),
 				getQueryType(), getFormOptions(), getComponentContext(), filter, getFieldFilters(), getSortOrders(),
 				false, getJoins()) {
 
@@ -192,8 +191,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	@Override
 	public void setSelectedItems(Object selectedItems) {
 		if (selectedItems != null) {
-			if (selectedItems instanceof Collection<?>) {
-				Collection<?> col = (Collection<?>) selectedItems;
+			if (selectedItems instanceof Collection<?> col) {
 				if (!col.isEmpty()) {
 					T t = (T) col.iterator().next();
 					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
@@ -278,10 +276,10 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * Respond to the user closing the search dialog by applying the search filters
 	 * from the dialog to the grid
 	 * 
-	 * @param dialog
-	 * @return
+	 * @param dialog the search dialog
+	 * @return whether to close the dialog
 	 */
-	private Boolean onSearchDialogClose(ModelBasedSearchDialog<ID, T> dialog) {
+	private boolean onSearchDialogClose(ModelBasedSearchDialog<ID, T> dialog) {
 
 		if (getQuickSearchField() != null) {
 			getQuickSearchField().clear();

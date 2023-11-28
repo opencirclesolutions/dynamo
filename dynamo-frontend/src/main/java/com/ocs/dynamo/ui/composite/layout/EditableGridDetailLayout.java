@@ -53,6 +53,7 @@ public class EditableGridDetailLayout<ID extends Serializable, T extends Abstrac
 	 * The joins to use when refreshing the parent entity
 	 */
 	@Getter
+	@Setter
 	private FetchJoinInformation[] parentJoins;
 
 	@Getter

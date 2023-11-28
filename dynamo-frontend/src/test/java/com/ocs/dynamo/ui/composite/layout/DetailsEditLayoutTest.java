@@ -73,13 +73,13 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 		layout.setDeleteEnabled(0, false);
 		@SuppressWarnings("rawtypes")
 		FormContainer container = layout.getFormContainer(0);
-		assertFalse(container.getDeleteButton().isEnabled());
+		assertFalse(container.getRemoveButton().isEnabled());
 
 		// out of bounds
 		layout.setDeleteEnabled(4, false);
 
 		layout.setDeleteVisible(0, false);
-		assertFalse(container.getDeleteButton().isVisible());
+		assertFalse(container.getRemoveButton().isVisible());
 
 		// disable field
 		layout.setFieldEnabled(0, "age", false);

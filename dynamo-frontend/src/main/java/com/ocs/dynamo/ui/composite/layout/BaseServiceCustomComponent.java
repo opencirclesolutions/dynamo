@@ -57,7 +57,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 		extends BaseCustomComponent {
 
 	/**
-	 * A remove button with a built in confirmation message
+	 * A remove button with a built-in confirmation message
 	 *
 	 * @author bas.rutten
 	 */
@@ -97,7 +97,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	/**
 	 * The list of components to update after an entity is selected
 	 */
-	private List<Component> componentsToUpdate = new ArrayList<>();
+	private final List<Component> componentsToUpdate = new ArrayList<>();
 
 	/**
 	 * The code that is carried out to create a new entity
@@ -109,7 +109,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	/**
 	 * Mapping from custom component label to custom component
 	 */
-	private Map<String, List<Component>> customComponentMap = new HashMap<>();
+	private final Map<String, List<Component>> customComponentMap = new HashMap<>();
 
 	/**
 	 * Code that is carried out to determine whether the current user is allowed to
@@ -136,7 +136,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * The form options that determine what options are available in the screen
 	 */
 	@Getter
-	private FormOptions formOptions;
+	private final FormOptions formOptions;
 
 	/**
 	 * Code that is executed to determine when a component in a button bar must be
@@ -216,7 +216,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	}
 
 	public boolean checkEditAllowed() {
-		return getEditAllowed() == null ? true : getEditAllowed().getAsBoolean();
+		return getEditAllowed() == null || getEditAllowed().getAsBoolean();
 	}
 
 	/**
@@ -224,7 +224,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * key
 	 * 
 	 * @param key the key under which the custom components are stored
-	 * @return
+	 * @return the components
 	 */
 	public List<Component> getCustomComponents(String key) {
 		return customComponentMap.get(key);
@@ -249,7 +249,7 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * 
 	 * @param key     the key
 	 * @param toCheck the component to check
-	 * @return
+	 * @return true if this the case, false otherwise
 	 */
 	public boolean isRegisteredComponent(String key, Component toCheck) {
 		return customComponentMap.get(key) != null && customComponentMap.get(key).contains(toCheck);

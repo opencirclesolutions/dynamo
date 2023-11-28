@@ -25,7 +25,7 @@ public interface HasSelectedItem<T> {
 
 	/**
 	 * 
-	 * @return
+	 * @return the selected item
 	 */
 	T getSelectedItem();
 }

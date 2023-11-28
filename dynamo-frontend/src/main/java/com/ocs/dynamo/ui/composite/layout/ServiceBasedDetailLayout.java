@@ -63,13 +63,15 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Constructor
-	 * 
-	 * @param service
-	 * @param parentEntity
-	 * @param parentService
-	 * @param formOptions
-	 * @param sortOrder
-	 * @param joins
+	 *
+	 * @param service     the service for retrieving data from the database
+	 * @param parentEntity the parent entity
+	 * @param parentService the service for retrieving the parent entity from the database
+	 * @param entityModel the entity model
+	 * @param queryType   the desired query type
+	 * @param formOptions the form options
+	 * @param sortOrder   the sort order
+	 * @param joins the fetch joints to use
 	 */
 	public ServiceBasedDetailLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
 			EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions, SortOrder<?> sortOrder,
