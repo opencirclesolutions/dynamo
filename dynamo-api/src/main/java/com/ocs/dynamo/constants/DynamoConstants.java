@@ -62,6 +62,9 @@ public class DynamoConstants {
 	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT_BUTTONBAR_SAME = "detailsEditLayoutButtonBarSame";
 
+	/**
+	 * CSS class for a row in a details edit layout
+	 */
 	public static final String CSS_DETAILS_EDIT_LAYOUT_ROW = "detailsEditLayoutRow";
 
 	/**
@@ -205,6 +208,9 @@ public class DynamoConstants {
 	 */
 	public static final String CSS_SPLIT_LAYOUT_DETAIL_LAYOUT = "splitLayoutDetailLayout";
 
+	/**
+	 * CSS class for edit panel in split layout
+	 */
 	public static final String CSS_SPLIT_LAYOUT_EDIT_PANEL = "splitLayoutEditPanel";
 
 	/**
@@ -518,5 +524,10 @@ public class DynamoConstants {
 	 * Whether to use thousands grouping in XLS files
 	 */
 	public static final String SP_XLS_THOUSANDS_GROUPING = "ocs.xls.thousands.grouping";
+
+	/**
+	 * Whether the auto-filling of forms by using an AI service is supported
+	 */
+	public static final String SP_FORM_AUTO_FILL_ENABLED = "ocs.form.auto-fill.enabled";
 
 }

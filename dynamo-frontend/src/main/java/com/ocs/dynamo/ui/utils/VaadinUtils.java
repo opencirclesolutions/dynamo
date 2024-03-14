@@ -55,12 +55,14 @@ import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
+import lombok.experimental.UtilityClass;
 
 /**
  * Utility class for Vaadin-related functionality
  * 
  * @author bas.rutten
  */
+@UtilityClass
 public final class VaadinUtils {
 
 	/**
@@ -223,16 +225,16 @@ public final class VaadinUtils {
 				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
 			return (Locale) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE);
 		}
-		return new Locale(SystemPropertyUtils.getDefaultDateLocale());
+		return SystemPropertyUtils.getDefaultDateLocale();
 	}
 
 	/**
-	 * Returns the first child of the provide component that is of the specified
+	 * Returns the first child of the provided component that is of the specified
 	 * class (or is a subclass of the specified class)
 	 * 
-	 * @param component
-	 * @param clazz
-	 * @return
+	 * @param component the component
+	 * @param clazz the class to look for
+	 * @return the first child component that is of the specified class
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T getFirstChildOfClass(Component component, Class<T> clazz) {
@@ -244,7 +246,7 @@ public final class VaadinUtils {
 	 *
 	 * @param map the map
 	 * @param key the map key
-	 * @return
+	 * @return the first value
 	 */
 	public static String getFirstValueFromCollection(Map<String, Object> map, String key) {
 		if (map != null) {
@@ -267,13 +269,13 @@ public final class VaadinUtils {
 	/**
 	 * Returns the locale associated with the current Vaadin session
 	 *
-	 * @return
+	 * @return the locale
 	 */
 	public static Locale getLocale() {
 		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getLocale() != null) {
 			return VaadinSession.getCurrent().getLocale();
 		}
-		return new Locale(SystemPropertyUtils.getDefaultLocale());
+		return SystemPropertyUtils.getDefaultLocale();
 	}
 
 	/**
@@ -282,7 +284,7 @@ public final class VaadinUtils {
 	 *
 	 * @param component the component
 	 * @param clazz     the class
-	 * @return
+	 * @return the first parent component that was found
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T getParentOfClass(Component component, Class<T> clazz) {
@@ -300,7 +302,7 @@ public final class VaadinUtils {
 	 *
 	 * @param attributeName the name of the attribute that holds the map
 	 * @param key           the map key
-	 * @return
+	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
 	public static String getSessionAttributeValueFromMap(String attributeName, String key) {
@@ -312,7 +314,7 @@ public final class VaadinUtils {
 	/**
 	 * Returns the time zone ID that is set for the session
 	 * 
-	 * @return
+	 * @return zone id
 	 */
 	public static ZoneId getTimeZoneId() {
 		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getAttribute("zoneId") != null) {
@@ -326,7 +328,7 @@ public final class VaadinUtils {
 	 *
 	 * @param grouping indicates whether grouping separators must be used
 	 * @param value    the value to convert
-	 * @return
+	 * @return the String value
 	 */
 	public static String integerToString(boolean grouping, boolean percentage, Integer value) {
 		return integerToString(grouping, percentage, value, getLocale());
@@ -338,7 +340,7 @@ public final class VaadinUtils {
 	 * @param grouping indicates whether grouping separators must be used
 	 * @param value    the value to convert
 	 * @param locale   the locale
-	 * @return
+	 * @return the String value
 	 */
 	public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
 		return NumberUtils.integerToString(grouping, percentage, value, locale);
@@ -461,12 +463,10 @@ public final class VaadinUtils {
 	 * @param placeHolder the placeholder to set
 	 */
 	public static void setPlaceHolder(Component component, String placeHolder) {
-		if (component instanceof TextField) {
-			TextField textField = (TextField) component;
+		if (component instanceof TextField textField) {
 			textField.setPlaceholder(placeHolder);
-		} else if (component instanceof DatePicker) {
+		} else if (component instanceof DatePicker dateField) {
 			// set a separate format for a date field
-			DatePicker dateField = (DatePicker) component;
 			dateField.setPlaceholder(placeHolder);
 		} else if (component instanceof TimePicker) {
 			((TimePicker) component).setPlaceholder(placeHolder);
@@ -488,7 +488,7 @@ public final class VaadinUtils {
 	/**
 	 * Sets a tool tip on a component
 	 * 
-	 * @param field   the component
+	 * @param component   the component
 	 * @param tooltip the tool tip to set
 	 */
 	public static void setTooltip(Component component, String tooltip) {
@@ -691,8 +691,6 @@ public final class VaadinUtils {
 		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
 	}
 
-	private VaadinUtils() {
-		// hidden constructor
-	}
+
 
 }

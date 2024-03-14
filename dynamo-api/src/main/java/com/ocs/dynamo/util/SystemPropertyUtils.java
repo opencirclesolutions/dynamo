@@ -131,8 +131,10 @@ public final class SystemPropertyUtils {
 	 * 
 	 * @return the locale used for localization of date picker components
 	 */
-	public static String getDefaultDateLocale() {
-		return getStringProperty(DynamoConstants.SP_DEFAULT_DATE_LOCALE, getDefaultLocale());
+	public static Locale getDefaultDateLocale() {
+		String localeString =  getStringProperty(DynamoConstants.SP_DEFAULT_DATE_LOCALE,
+				DynamoConstants.DEFAULT_LOCALE.toString());
+		return constructLocale(localeString);
 	}
 
 	/**
@@ -243,8 +245,18 @@ public final class SystemPropertyUtils {
 	 *
 	 * @return the default locale used for e.g. the decimal and thousands separators
 	 */
-	public static String getDefaultLocale() {
-		return getStringProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
+	public static Locale getDefaultLocale() {
+		String localeString = getStringProperty(DynamoConstants.SP_DEFAULT_LOCALE, DynamoConstants.DEFAULT_LOCALE.toString());
+		return constructLocale(localeString);
+	}
+
+	private static Locale constructLocale(String localeString) {
+		int split = localeString.indexOf("_");
+		if (split > -1) {
+			return new Locale.Builder().setLanguage(localeString.substring(0,split)
+			).setRegion(localeString.substring(split+1)).build();
+		}
+		return new Locale.Builder().setLanguage(localeString).build();
 	}
 
 	/**
@@ -428,7 +440,7 @@ public final class SystemPropertyUtils {
 	 * 
 	 * @param propertyName the name of the property
 	 * @param defaultValue the default value
-	 * @return
+	 * @return the property
 	 */
 	private static String getStringProperty(String propertyName, String defaultValue) {
 		String sys = System.getProperty(propertyName);
@@ -499,6 +511,10 @@ public final class SystemPropertyUtils {
 	
 	public static String getUnAccentFunctionName() {
 		return getStringProperty(DynamoConstants.SP_UNACCENT_FUNCTION_NAME, "");
+	}
+
+	public static boolean isFormAutofillEnabled() {
+		return getBooleanProperty(DynamoConstants.SP_FORM_AUTO_FILL_ENABLED, false);
 	}
 
 	private SystemPropertyUtils() {

@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.component;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.times;
@@ -47,8 +48,8 @@ public class EntityComboBoxTest extends BaseMockitoTest {
 		AttributeModel am = factory.getModel(TestEntity.class).getAttributeModel("name");
 		EntityComboBox<Integer, TestEntity> select = new EntityComboBox<>(factory.getModel(TestEntity.class), am,
 				service);
-		assertEquals(SelectMode.ALL, select.getSelectMode());
-		assertEquals(am, select.getAttributeModel());
+		assertThat(select.getSelectMode()).isEqualTo(SelectMode.ALL);
+		assertThat(select.getAttributeModel()).isEqualTo(am);
 		select.refresh();
 		verify(service, times(2)).findAll((SortOrder[]) null);
 	}

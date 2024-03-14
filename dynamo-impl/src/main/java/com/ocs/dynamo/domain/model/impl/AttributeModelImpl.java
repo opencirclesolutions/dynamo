@@ -212,6 +212,8 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean week;
 
+	private String autoFillInstructions;
+
 	@Override
 	public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
 		this.cascadeAttributes.put(cascadeTo, filterPath);

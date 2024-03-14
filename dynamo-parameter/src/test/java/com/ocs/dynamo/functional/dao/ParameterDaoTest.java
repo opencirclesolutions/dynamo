@@ -13,6 +13,7 @@ import jakarta.validation.ValidatorFactory;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ocs.dynamo.BackendIntegrationTest;
@@ -28,14 +29,14 @@ import com.ocs.dynamo.functional.domain.ParameterType;
 @SpringBootTest(classes = ParameterIntegrationTestConfig.class)
 public class ParameterDaoTest extends BackendIntegrationTest {
 
-	@Inject
+	@Autowired
 	private ParameterDao parameterDao;
 
 	private Parameter maxPrograms;
 
 	private Parameter showMargins;
 
-	@Inject
+	@Autowired
 	private ValidatorFactory factory;
 
 	@BeforeEach

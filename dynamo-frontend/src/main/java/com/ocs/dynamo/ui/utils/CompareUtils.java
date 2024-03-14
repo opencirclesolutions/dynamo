@@ -43,7 +43,7 @@ public final class CompareUtils {
 	 * @param oldEntity          the old entity
 	 * @param newEntity          the new entity
 	 * @param model              the entity model
-	 * @param entityModelFactory
+	 * @param entityModelFactory the entity model factory
 	 * @param messageService     the message service
 	 * @param ignore             the names of the fields to ignore
 	 */

@@ -1,11 +1,16 @@
 package com.ocs.dynamo.ui.utils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.lenient;
 
 import java.util.List;
+import java.util.Locale;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentMatchers;
 import org.mockito.Mock;
 
 import com.ocs.dynamo.domain.TestEntity;
@@ -16,10 +21,11 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
+import org.mockito.Mockito;
 
 public class CompareUtilsTest extends BaseMockitoTest {
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+    private final EntityModelFactory factory = new EntityModelFactoryImpl();
 
     @Mock
     private MessageService messageService = new MessageServiceImpl();
@@ -33,6 +39,14 @@ public class CompareUtilsTest extends BaseMockitoTest {
     public void testCompare() {
         TestEntity e1 = new TestEntity();
         TestEntity e2 = new TestEntity();
+
+        lenient().when(messageService.getMessage(anyString(), nullable(Locale.class)))
+                .thenAnswer(invocation -> invocation.getArguments()[0]);
+
+        lenient().when(messageService.getMessage(anyString(), nullable(Locale.class),
+                     Mockito.any(Object[].class)))
+                .thenAnswer(invocation -> invocation.getArguments()[0]);
+
 
         // there are no changes
         List<String> changes = CompareUtils.compare(e1, e2, factory.getModel(TestEntity.class), factory, messageService);

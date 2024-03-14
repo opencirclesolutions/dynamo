@@ -20,10 +20,12 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
+import lombok.experimental.UtilityClass;
 
 /**
  * @author bas.rutten
  */
+@UtilityClass
 public final class EntityModelUtils {
 
     public static final Set<String> ALWAYS_IGNORE = Set.of("createdOn", "createdBy", "changedBy", "changedOn");
@@ -78,13 +80,13 @@ public final class EntityModelUtils {
         StringBuilder result = new StringBuilder();
 
         int i = 0;
-        for (T t : entities) {
+        for (T entity : entities) {
             if (result.length() > 0) {
                 result.append(", ");
             }
 
             if (i < maxItems) {
-                result.append(ClassUtils.getFieldValueAsString(t, property));
+                result.append(ClassUtils.getFieldValueAsString(entity, property));
             } else {
                 result.append(messageService.getMessage("ocs.and.others", locale, entities.size() - maxItems));
                 break;
@@ -111,9 +113,4 @@ public final class EntityModelUtils {
         }
         return ClassUtils.getFieldValueAsString(entity, property);
     }
-
-    private EntityModelUtils() {
-        // private constructor
-    }
-
 }

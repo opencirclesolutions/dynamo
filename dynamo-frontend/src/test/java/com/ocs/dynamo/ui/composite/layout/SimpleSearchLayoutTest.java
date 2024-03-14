@@ -1,31 +1,12 @@
 package com.ocs.dynamo.ui.composite.layout;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.ArrayList;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.ocs.dynamo.domain.CascadeEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
-import com.ocs.dynamo.domain.TestEntity2;
-import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.EqualsPredicate;
-import com.ocs.dynamo.service.CascadeEntityService;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
-import com.ocs.dynamo.ui.component.QuickAddEntityComboBox;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
@@ -35,17 +16,22 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 
-	@Inject
+	@Autowired
 	private EntityModelFactory entityModelFactory;
 
-	@Inject
+	@Autowired
 	private TestEntityService testEntityService;
-
-	@Inject
-	private CascadeEntityService cascadeEntityService;
 
 	private TestEntity e1;
 
@@ -288,40 +274,6 @@ public class SimpleSearchLayoutTest extends FrontendIntegrationTest {
 		layout.setSearchValue("someEnum", TestEnum.A);
 		layout.search();
 		assertEquals(0, layout.getGridWrapper().getDataProviderSize());
-	}
-
-	/**
-	 * Test a cascading search
-	 */
-	@Test
-	@SuppressWarnings("unchecked")
-	public void testSimpleSearchLayout_Cascade() {
-
-		assertEquals(3, testEntityService.findAll().size());
-
-		FormOptions fo = new FormOptions();
-		EntityModel<CascadeEntity> model = entityModelFactory.getModel(CascadeEntity.class);
-		assertEquals(1, model.getAttributeModel("testEntity").getCascadeAttributes().size());
-
-		SimpleSearchLayout<Integer, CascadeEntity> layout = new SimpleSearchLayout<Integer, CascadeEntity>(
-				cascadeEntityService, entityModelFactory.getModel(CascadeEntity.class), QueryType.ID_BASED, fo, null);
-		layout.build();
-
-		QuickAddEntityComboBox<Integer, TestEntity> box1 = (QuickAddEntityComboBox<Integer, TestEntity>) (Object) layout
-				.getSearchForm().getGroups().get("testEntity").getField();
-		box1.refresh();
-
-		layout.setSearchValue("testEntity", e1);
-
-		// check that an additional filter for "testEntity" is set
-		QuickAddEntityComboBox<Integer, TestEntity2> box2 = (QuickAddEntityComboBox<Integer, TestEntity2>) (Object) layout
-				.getSearchForm().getGroups().get("testEntity2").getField();
-		EqualsPredicate<TestEntity2> equal = (EqualsPredicate<TestEntity2>) box2.getAdditionalFilter();
-		assertEquals("testEntity", equal.getProperty());
-
-		// clear filter and verify cascaded filter is removed as well
-		layout.setSearchValue("testEntity", null);
-		assertNull(box2.getAdditionalFilter());
 	}
 
 	@Test

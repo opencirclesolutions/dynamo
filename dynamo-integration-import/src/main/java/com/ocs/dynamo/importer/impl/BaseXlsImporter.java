@@ -13,7 +13,19 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import static java.lang.String.format;
+import com.github.pjfanning.xlsx.StreamingReader;
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.importer.ImportField;
+import com.ocs.dynamo.importer.dto.AbstractDTO;
+import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.ClassUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.BeanUtils;
 
 import java.beans.PropertyDescriptor;
 import java.io.ByteArrayInputStream;
@@ -21,26 +33,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Iterator;
 
-import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
-import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.CellType;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.springframework.beans.BeanUtils;
-
-import com.monitorjbl.xlsx.StreamingReader;
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.importer.ImportField;
-import com.ocs.dynamo.importer.dto.AbstractDTO;
-import com.ocs.dynamo.util.SystemPropertyUtils;
-import com.ocs.dynamo.utils.ClassUtils;
+import static java.lang.String.format;
 
 /**
  * Base class for services that can be used to import Excel files.
@@ -56,7 +50,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * 
 	 * @param row   the row to check
 	 * @param value the String value to check for
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	protected boolean containsStringValue(Row row, String value) {
 		if (row == null || !row.iterator().hasNext()) {
@@ -81,9 +75,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	public int countRows(byte[] bytes, int sheetIndex) {
 		int count = 0;
 		try (Workbook wb = createReader(bytes, CACHE_SIZE)) {
-			Iterator<Row> iterator = wb.getSheetAt(sheetIndex).iterator();
-			while (iterator.hasNext()) {
-				Row r = iterator.next();
+			for (Row r : wb.getSheetAt(sheetIndex)) {
 				// if a row in the middle of the sheet is empty, we assume
 				// everything else is empty
 				if (isRowEmpty(r)) {
@@ -101,9 +93,8 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Creates a reader for processing an Excel file using streaming
 	 * 
 	 * @param bytes      the content of the file
-	 * @param sheetIndex index of the sheet to read from
 	 * @param cacheSize  the cache size
-	 * @return
+	 * @return the reader
 	 */
 	public Workbook createReader(byte[] bytes, int cacheSize) {
 		return StreamingReader.builder().rowCacheSize(cacheSize).open(new ByteArrayInputStream(bytes));
@@ -113,10 +104,10 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Creates a workbook from an array of bytes
 	 * 
 	 * @param bytes the byte content of the file
-	 * @return
+	 * @return the workbook
 	 */
 	public Workbook createWorkbook(byte[] bytes) {
-		Workbook workbook = null;
+		Workbook workbook;
 		try {
 			// first, try to check if it's an old Excel file
 			workbook = new HSSFWorkbook(new ByteArrayInputStream(bytes));
@@ -136,7 +127,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Extracts a Boolean value from a cell
 	 * 
 	 * @param cell the cell to extract the value from
-	 * @return
+	 * @return the value
 	 */
 	protected Boolean getBooleanValue(Cell cell) {
 		if (cell != null && (CellType.BOOLEAN == cell.getCellType())) {
@@ -165,7 +156,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Retrieves a date value from a cell
 	 * 
 	 * @param cell the cell to extract the value from
-	 * @return
+	 * @return the value
 	 */
 	protected LocalDate getDateValue(Cell cell) {
 		if (cell != null && (CellType.NUMERIC == cell.getCellType() || CellType.BLANK == cell.getCellType())) {
@@ -203,7 +194,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Retrieves a numeric value for a cell
 	 * 
 	 * @param cell the cell to retrieve the value from
-	 * @return
+	 * @return the value
 	 */
 	protected Double getNumericValue(Cell cell) {
 		if (cell != null && (CellType.NUMERIC == cell.getCellType() || CellType.BLANK == cell.getCellType())) {
@@ -243,7 +234,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * 
 	 * @param cell  the cell to extract the value from
 	 * @param field the field definition
-	 * @return
+	 * @return the value
 	 */
 	@Override
 	public Double getNumericValueWithDefault(Cell cell, ImportField field) {
@@ -259,7 +250,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * cell does not contain a string
 	 * 
 	 * @param cell the cell to extract the value from
-	 * @return
+	 * @return the value
 	 */
 	protected String getStringValue(Cell cell) {
 		if (cell != null && (CellType.STRING == cell.getCellType() || cell.getCellType() == CellType.BLANK)) {
@@ -268,8 +259,8 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		} else if (cell != null && CellType.NUMERIC == cell.getCellType()) {
 			// if a number is entered in a field that is supposed to contain a
 			// string, Excel goes insane. We have to compensate for this
-			Double d = cell.getNumericCellValue();
-			return d == null ? null : Long.toString(d.longValue());
+			double d = cell.getNumericCellValue();
+			return Double.toString(d);
 		} else if (cell != null && CellType.FORMULA == cell.getCellType()) {
 			try {
 				return cell.getStringCellValue();
@@ -286,7 +277,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * 
 	 * @param cell  the cell to extract the value from
 	 * @param field the field definition
-	 * @return
+	 * @return the value
 	 */
 	@Override
 	protected String getStringValueWithDefault(Cell cell, ImportField field) {
@@ -311,7 +302,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * Check if the specified row is completely empty
 	 * 
 	 * @param row the row to check
-	 * @return
+	 * @return true if ths is the case, false otherwise
 	 */
 	public boolean isRowEmpty(Row row) {
 		if (row == null || row.getFirstCellNum() < 0) {
@@ -343,10 +334,10 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	 * @param firstRowIndex the index of the first row to start reading from
 	 * @param colIndex      the index of the column that contains the values
 	 * @param clazz         the class
-	 * @return
+	 * @return the resulting DTO
 	 */
 	public <T extends AbstractDTO> T processRows(Sheet sheet, int firstRowIndex, int colIndex, Class<T> clazz) {
-		T t = ClassUtils.instantiateClass(clazz);
+		T dto = ClassUtils.instantiateClass(clazz);
 
 		Object firstCellValue = null;
 		try {
@@ -366,7 +357,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 						Cell unit = row.getCell(colIndex);
 						Object obj = getFieldValue(d, unit, field);
 						if (obj != null) {
-							ClassUtils.setFieldValue(t, d.getName(), obj);
+							ClassUtils.setFieldValue(dto, d.getName(), obj);
 						} else if (field.required()) {
 							// a required value is missing!
 							throw new OCSImportException(
@@ -379,6 +370,6 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 				}
 			}
 		}
-		return t;
+		return dto;
 	}
 }

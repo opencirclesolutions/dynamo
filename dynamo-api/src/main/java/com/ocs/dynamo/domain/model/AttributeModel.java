@@ -575,4 +575,10 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return whether to use thousands grouping in edit mode
 	 */
 	boolean useThousandsGroupingInViewMode();
+
+	/**
+	 *
+	 * @return return the auto-fill instructions used for ChatGPT
+	 */
+	String getAutoFillInstructions();
 }

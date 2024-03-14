@@ -13,10 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -38,9 +34,12 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
-
 import lombok.Getter;
 import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A base class for objects that wrap around a ModelBasedTable
@@ -55,9 +54,9 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	/**
-	 * The label that displays the table caption
+	 * The caption that displays the table caption
 	 */
-	private Span caption = new Span("");
+	private final Span caption = new Span("");
 
 	/**
 	 * The data provider
@@ -68,7 +67,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * Field filter map
 	 */
-	private Map<String, SerializablePredicate<?>> fieldFilters;
+	private final Map<String, SerializablePredicate<?>> fieldFilters;
 
 	/**
 	 * The wrapped grid component
@@ -123,7 +122,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * 
 	 * @param entityModel    the entity model of the main entity
 	 * @param attributeModel the attribute model to base the field on
-	 * @return
+	 * @return the constructed component
 	 */
 	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 		return null;
@@ -137,8 +136,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	protected abstract DataProvider<T, SerializablePredicate<T>> constructDataProvider();
 
 	protected Grid<T> constructGrid() {
-		//if (getComponentContext().isUseCheckboxesForMultiSelect()) {
-
+		if (getComponentContext().isUseCheckboxesForMultiSelect()) {
 			ModelBasedGrid<ID, T> newGrid = new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters,
 					getFormOptions(), getComponentContext()) {
 
@@ -163,32 +161,31 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 
 			newGrid.build();
 			return newGrid;
+		} else {
+			ModelBasedSelectionGrid<ID, T> newGrid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
+					fieldFilters, getFormOptions(), getComponentContext()) {
 
-//		} else {
-//			ModelBasedSelectionGrid<ID, T> newGrid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
-//					fieldFilters, getFormOptions(), getComponentContext()) {
-//
-//				private static final long serialVersionUID = -4559181057050230055L;
-//
-//				@Override
-//				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-//					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
-//				}
-//
-//				@Override
-//				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-//					return BaseGridWrapper.this.doBind(t, field, attributeName);
-//				}
-//
-//				@Override
-//				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
-//					BaseGridWrapper.this.postProcessComponent(id, am, comp);
-//				}
-//
-//			};
-//			newGrid.build();
-//			return newGrid;
-//		}
+				private static final long serialVersionUID = -4559181057050230055L;
+
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
+				}
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					return BaseGridWrapper.this.doBind(t, field, attributeName);
+				}
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					BaseGridWrapper.this.postProcessComponent(id, am, comp);
+				}
+
+			};
+			newGrid.build();
+			return newGrid;
+		}
 	}
 
 	protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
@@ -204,11 +201,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		return dataProvider;
 	}
 
-	/**
-	 * Lazily construct and return the grid
-	 * 
-	 * @return
-	 */
 	public Grid<T> getGrid() {
 		if (grid == null) {
 			grid = constructGrid();
@@ -230,7 +222,6 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * Initializes the sorting and filtering for the grid
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected List<SortOrder<?>> initSortingAndFiltering() {
 
@@ -244,20 +235,26 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
-	 * Respond to a selection of an item in the grid
+	 * Responds to a selection of an item in the grid
 	 */
 	protected void onSelect(Object selected) {
 		// overwrite in subclasses
 	}
 
-	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+	/**
+	 * Callback method used to post process any component
+	 * @param id the ID of the entity
+	 * @param attributeModel the attribute model
+	 * @param component the component
+	 */
+	protected void postProcessComponent(ID id, AttributeModel attributeModel, Component component) {
 		// overwrite in subclasses
 	}
 
 	/**
 	 * Callback method used to modify data provider creation
 	 * 
-	 * @param provider
+	 * @param provider the data provider
 	 */
 	protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		// overwrite in subclasses
@@ -271,7 +268,7 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * Updates the caption above the grid that shows the number of items
 	 * 
-	 * @param size
+	 * @param size the number of items
 	 */
 	protected void updateCaption(int size) {
 		caption.setText(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + " "

@@ -43,7 +43,7 @@ public interface FieldFactory {
 	 * is separate from the actual component creation since the converters and
 	 * validators must be configured on a binding builder
 	 * 
-	 * @param <U>                     the input type of the conversion
+	 * @param <T>                     the input type of the conversion
 	 * @param <V>                     the target type of the conversion
 	 * @param builder                 the builder
 	 * @param am                      the attribute model
@@ -60,7 +60,7 @@ public interface FieldFactory {
 	 * Convenience method for adding converters and validators, assumes no custom
 	 * converters or validators
 	 *
-	 * @param <U>     the input type of the conversion
+	 * @param <T>     the input type of the conversion
 	 * @param <V>     the target type of the conversion
 	 * @param builder the binding builder
 	 * @param am      the attribute mode

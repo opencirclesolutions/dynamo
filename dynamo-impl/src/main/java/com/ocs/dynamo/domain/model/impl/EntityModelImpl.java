@@ -85,6 +85,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private boolean searchOrderSet;
 
+	private String autofillInstructions;
+
 	@Builder.Default
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();
 

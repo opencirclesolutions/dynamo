@@ -33,7 +33,7 @@ public interface MessageService {
 	 * @param attributeModel the attribute model
 	 * @param propertyName   the name of the property
 	 * @param locale         the locale
-	 * @return
+	 * @return the message
 	 */
 	String getAttributeMessage(String reference, AttributeModel attributeModel, String propertyName, Locale locale);
 
@@ -42,7 +42,7 @@ public interface MessageService {
 	 * 
 	 * @param reference    the entity class
 	 * @param propertyName the name of the property
-	 * @return
+	 * @return the message
 	 */
 	String getEntityMessage(String reference, String propertyName, Locale locale);
 
@@ -51,7 +51,7 @@ public interface MessageService {
 	 * 
 	 * @param enumClass the class of the enum
 	 * @param value     the enum value
-	 * @return
+	 * @return the message
 	 */
 	<E extends Enum<?>> String getEnumMessage(Class<E> enumClass, E value, Locale locale);
 
@@ -62,7 +62,7 @@ public interface MessageService {
 	 * @param key    the key of the message
 	 * @param locale the locale
 	 * @param args   the arguments. These are referred to using {0}, {1} etc
-	 * @return
+	 * @return the message
 	 */
 	String getMessage(String key, Locale locale, Object... args);
 
@@ -83,7 +83,7 @@ public interface MessageService {
 	 * @param key    the key of the message
 	 * @param locale the desired locale
 	 * @param args   the message parameters
-	 * @return
+	 * @return the message
 	 */
 	String getMessageNoDefault(String key, Locale locale, Object... args);
 

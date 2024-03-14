@@ -26,6 +26,11 @@ import java.util.Map;
 public interface EntityModel<T> {
 
 	/**
+	 * Auto-fill instructions for AI
+	 */
+	String AUTO_FILL_INSTRUCTIONS = "autoFillInstructions";
+
+	/**
 	 * Allowed extensions (for a file upload)
 	 */
 	String ALLOWED_EXTENSIONS = "allowedExtensions";
@@ -469,7 +474,7 @@ public interface EntityModel<T> {
 	/**
 	 * Returns the attribute models for a certain attribute type and type. Just one
 	 * of the parameters is mandatory, when both are given both will be used in a
-	 * boolean AND. Will also look at the generic type of an attribute, e.g.
+	 * boolean AND. Will also look at the generic type of the attribute, e.g.
 	 * List<some generic type>.
 	 * 
 	 * @param attributeType the attribute type
@@ -587,4 +592,10 @@ public interface EntityModel<T> {
 	 * @return whether only the default attribute group is used
 	 */
 	boolean usesDefaultGroupOnly();
+
+	/**
+	 *
+	 * @return the auto-fill instructions
+	 */
+	String getAutofillInstructions();
 }

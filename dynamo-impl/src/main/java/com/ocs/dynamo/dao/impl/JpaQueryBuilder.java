@@ -87,19 +87,19 @@ public final class JpaQueryBuilder {
 				// Support nested properties
 				FetchParent<T, ?> fetch = root;
 				String[] propertyPath = s.getProperty().split("\\.");
-				String prefix = "";
+				StringBuilder prefix = new StringBuilder();
 				
 				for (String property : propertyPath) {
 					if (prefix.length() > 0) {
-						prefix = prefix + ".";
+						prefix.append(".");
 					}
-					prefix += property;
+					prefix.append(property);
 					
-					if (fetchMap.containsKey(prefix)) {
-						fetch = fetchMap.get(prefix);
+					if (fetchMap.containsKey(prefix.toString())) {
+						fetch = fetchMap.get(prefix.toString());
 					} else {
 				      fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
-					  fetchMap.put(prefix, fetch);
+					  fetchMap.put(prefix.toString(), fetch);
 					}
 				}
 			}
@@ -341,8 +341,6 @@ public final class JpaQueryBuilder {
 			log.warn("Using distinct select, sorting on complex properties is not supported!");
 		}
 
-		// use parameters to prevent Hibernate from creating different query plan
-		// every time
 		Expression<String> exp = root.get(DynamoConstants.ID);
 		ParameterExpression<List> idExpression = builder.parameter(List.class, DynamoConstants.IDS);
 		cq.distinct(distinct);

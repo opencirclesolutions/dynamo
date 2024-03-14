@@ -141,7 +141,6 @@ public class EntityTokenSelect<ID extends Serializable, T extends AbstractEntity
 	 * @param service           the service used to retrieve the entities
 	 * @param filter            the filter used to filter the entities
 	 * @param sortOrders        the sort orders used to sort the entities
-	 * @param sortOrder         the sort order used to sort the entities
 	 */
 	public EntityTokenSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel,
 			BaseService<ID, T> service, SerializablePredicate<T> filter, SortOrder<?>... sortOrders) {

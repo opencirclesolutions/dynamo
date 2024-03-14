@@ -48,7 +48,7 @@ public class SortOrders {
 	 * Adds a sort order
 	 * 
 	 * @param order the sort order that must be added
-	 * @return the current list of sort orders
+	 * @return the SortOrders object
 	 */
 	public SortOrders addSortOrder(SortOrder order) {
 		if (order != null && order.getProperty() != null) {

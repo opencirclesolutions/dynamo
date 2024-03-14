@@ -84,6 +84,7 @@ public class TestEntity extends AbstractEntity<Integer> {
 	private LocalDate birthWeek;
 
 	@Attribute(searchable = SearchMode.ALWAYS)
+	@Column(columnDefinition = "smallint")
 	private TestEnum someEnum;
 
 	@Lob

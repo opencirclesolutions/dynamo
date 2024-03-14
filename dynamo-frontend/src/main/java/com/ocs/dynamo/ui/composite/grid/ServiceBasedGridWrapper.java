@@ -92,7 +92,7 @@ public class ServiceBasedGridWrapper<ID extends Serializable, T extends Abstract
 	 * Forces a search
 	 */
 	public void forceSearch() {
-		getDataProvider().size(new Query<T, SerializablePredicate<T>>(getFilter()));
+		getDataProvider().size(new Query<>(getFilter()));
 	}
 
 	public Integer getMaxResults() {

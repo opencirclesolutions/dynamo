@@ -23,7 +23,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 	@Mock
 	private MessageService messageService;
 
-	private BaseXlsImporter importer = new BaseXlsImporter();
+	private final BaseXlsImporter importer = new BaseXlsImporter();
 
 	@BeforeEach
 	public void setUp() {
@@ -35,7 +35,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		byte[] bytes = readFile("importer_rows.xlsx");
 		List<String> errors = new ArrayList<>();
 
-		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
 				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, false) {
 
 			@Override
@@ -56,17 +56,12 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		assertEquals(Boolean.TRUE, person.getAbool());
 	}
 
-	/**
-	 * Test with an incomplete record
-	 * 
-	 * @throws IOException
-	 */
 	@Test
 	public void test2() throws IOException {
 		byte[] bytes = readFile("importer_rows2.xlsx");
 		List<String> errors = new ArrayList<>();
 
-		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
 				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
 
 			@Override
@@ -79,16 +74,12 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 
 	}
 
-	/**
-	 * 
-	 * @throws IOException
-	 */
 	@Test
 	public void test3_Duplicates() throws IOException {
 		byte[] bytes = readFile("importer_rows3.xlsx");
 		List<String> errors = new ArrayList<>();
 
-		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
 				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, true) {
 
 			@Override
@@ -109,7 +100,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		byte[] bytes = readFile("importer_rows4.xlsx");
 		List<String> errors = new ArrayList<>();
 
-		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<String, PersonDTO>(importer,
+		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
 				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
 
 			@Override

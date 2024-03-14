@@ -13,9 +13,7 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
@@ -58,6 +56,7 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
 	@NotNull
 	@Attribute(searchable = SearchMode.ALWAYS, editable = EditableType.READ_ONLY)
 	@Column(name = "type")
+	@Enumerated(EnumType.STRING)
 	private ParameterType parameterType;
 
 	@NotNull

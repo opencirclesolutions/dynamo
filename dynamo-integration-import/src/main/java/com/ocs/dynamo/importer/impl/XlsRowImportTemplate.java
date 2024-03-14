@@ -13,23 +13,21 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
-
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
- * A template for processing an Excel file that contains row-based data and
+ * A template for processing an Excel file that contains row-based data, and
  * transforming it into a collection of DTOs
  *
  * @param <ID> the type of the key of the DTO
@@ -41,64 +39,64 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
     /**
      * The importer
      */
-    private BaseXlsImporter importer;
+    private final BaseXlsImporter importer;
 
     /**
      * Index of the column (zero based) from which to read the values
      */
-    private int colIndex;
+    private final int colIndex;
 
     /**
-     * Byte representation of the files
+     * Byte representation of the file
      */
-    private byte[] bytes;
+    private final byte[] bytes;
 
     /**
      * Index of the sheet from which to read the values
      */
-    private int sheetIndex;
+    private final int sheetIndex;
 
     /**
      * Whether to check for duplicates
      */
-    private boolean checkForDuplicates;
+    private final boolean checkForDuplicates;
 
     /**
      * List of errors/warnings that have occurred so far
      */
-    private List<String> errors;
+    private final List<String> errors;
 
     /**
      * Index of the first row from which to start reading
      */
-    private int firstRowNumber;
+    private final int firstRowNumber;
 
     /**
      * Length (number of rows) in a single record
      */
-    private int recordLength;
+    private final int recordLength;
 
     /**
      * Keys of the records processed so far
      */
-    private Set<ID> keys = new HashSet<>();
+    private final Set<ID> keys = new HashSet<>();
 
     /**
      * The message service
      */
-    private MessageService messageService;
+    private final MessageService messageService;
 
     /**
      * The class of the DTO object to create
      */
-    private Class<T> clazz;
+    private final Class<T> clazz;
 
     /**
      * Constructor
      *
      * @param importer           the XLS importer that is used to do the actual
      *                           reading from the file
-     * @param messageService
+     * @param messageService     the message service
      * @param bytes              the raw content to process
      * @param errors             list of errors
      * @param clazz              the class
@@ -143,10 +141,10 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
                             i++;
                         }
 
-                        T t = importer.processRows(sheet, i, colIndex, clazz);
+                        T entity = importer.processRows(sheet, i, colIndex, clazz);
 
-                        if (t != null && extractKey(t) != null) {
-                            ID key = extractKey(t);
+                        if (entity != null && extractKey(entity) != null) {
+                            ID key = extractKey(entity);
 
                             // in case of a string, compare by lower case
                             if (key instanceof String) {
@@ -156,13 +154,13 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
                             if (checkForDuplicates) {
                                 if (!keys.contains(key)) {
                                     keys.add(key);
-                                    results.add(t);
+                                    results.add(entity);
                                 } else {
                                     errors.add(messageService.getMessage("ocs.duplicate.row",
-                                            new Locale(SystemPropertyUtils.getDefaultLocale()), i + 1, key));
+                                           SystemPropertyUtils.getDefaultLocale(), i + 1, key));
                                 }
                             } else {
-                                results.add(t);
+                                results.add(entity);
                             }
                         }
                     } catch (OCSImportException ex) {

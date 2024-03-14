@@ -82,7 +82,7 @@ public class FieldCreationContext {
 	 * the context
 	 * 
 	 * @param am the attribute model
-	 * @return
+	 * @return the selected mode
 	 */
 	public AttributeSelectMode getAppropriateMode(AttributeModel am) {
 		return isSearch() ? am.getSearchSelectMode() : (isEditableGrid() ? am.getGridSelectMode() : am.getSelectMode());

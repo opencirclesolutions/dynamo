@@ -13,12 +13,10 @@
  */
 package com.ocs.dynamo.utils;
 
-import java.text.Normalizer;
-import java.util.Arrays;
-import java.util.Locale;
-import java.util.stream.Collectors;
-
 import lombok.experimental.UtilityClass;
+
+import java.text.Normalizer;
+import java.util.Locale;
 
 /**
  * String utility functions
@@ -42,7 +40,7 @@ public final class StringUtils {
 	 * @param capitalize      indicates whether to capitalize every word (if set to
 	 *                        <code>false</code> then only the first word will be
 	 *                        capitalized
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static String camelCaseToHumanFriendly(String camelCaseString, boolean capitalize) {
 		if (camelCaseString == null) {
@@ -57,14 +55,14 @@ public final class StringUtils {
 				parts[i] = i > 0 ? parts[i].toLowerCase() : capitalize(parts[i]);
 			}
 		}
-		return Arrays.stream(parts).collect(Collectors.joining(" "));
+		return String.join(" ", parts);
 	}
 
 	/**
 	 * Capitalize a String
 	 *
 	 * @param string the String to capitalize
-	 * @return
+	 * @return the result of the capitalization
 	 */
 	private static String capitalize(String string) {
 		if (string == null) {
@@ -96,20 +94,20 @@ public final class StringUtils {
 	}
 
 	/**
-	 * Indicates whether a word ends at position i in the string
+	 * Indicates whether a word ends at the provided index
 	 *
 	 * @param camelCaseString the string
-	 * @param i
-	 * @return
+	 * @param index the index
+	 * @return true if this is the case, false otherwise
 	 */
-	private static boolean isWordComplete(String camelCaseString, int i) {
-		if (i == 0) {
+	private static boolean isWordComplete(String camelCaseString, int index) {
+		if (index == 0) {
 			// Word can't end at the beginning
 			return false;
-		} else if (!Character.isUpperCase(camelCaseString.charAt(i - 1))) {
+		} else if (!Character.isUpperCase(camelCaseString.charAt(index - 1))) {
 			// Word ends if previous char wasn't upper case
 			return true;
-		} else if (i + 1 < camelCaseString.length() && !Character.isUpperCase(camelCaseString.charAt(i + 1))) {
+		} else if (index + 1 < camelCaseString.length() && !Character.isUpperCase(camelCaseString.charAt(index + 1))) {
 			// Word ends if next char isn't upper case
 			return true;
 		} else {

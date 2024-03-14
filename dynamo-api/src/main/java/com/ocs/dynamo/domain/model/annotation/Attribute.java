@@ -44,6 +44,11 @@ public @interface Attribute {
 	boolean CASE_SENSITIVE = SystemPropertyUtils.getDefaultSearchCaseSensitive();
 
 	/**
+	 * @return the instructions to use when auto-filling the form using AI
+	 */
+	String autoFillInstructions() default "";
+
+	/**
 	 * @return the allowed extensions for a file upload component
 	 */
 	String[] allowedExtensions() default {};
@@ -334,7 +339,7 @@ public @interface Attribute {
 	AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;
 
 	/**
-	 * @return whether to use a thousands separate for numerical fields
+	 * @return whether to use a thousand separator for numerical fields
 	 */
 	ThousandsGroupingMode thousandsGrouping() default ThousandsGroupingMode.INHERIT;
 

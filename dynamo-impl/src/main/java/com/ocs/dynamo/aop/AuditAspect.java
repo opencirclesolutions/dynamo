@@ -50,7 +50,7 @@ public class AuditAspect {
 	}
 
 	/**
-	 * intercept any method that saves an auditable entity
+	 * Intercepts any method that saves an auditable entity
 	 * 
 	 * @param joinPoint the join point
 	 * @param entity    the entity that is being saved

@@ -69,7 +69,7 @@ public class FieldFactoryImpl implements FieldFactory {
 			FieldCreationContext context, Converter<V, T> customConverter, Function<HasSelectedItem<T>, Validator<?>> customValidator,
 			Function<HasSelectedItem<T>, Validator<?>> customRequiredValidator) {
 
-		Optional<ComponentCreator> optCreator = componentCreators.stream().filter(c -> c.supports(am, context)).findFirst();
+		Optional<ComponentCreator> optCreator = componentCreators.stream().filter(creator -> creator.supports(am, context)).findFirst();
 		optCreator.ifPresent(creator -> {
 			if (customValidator != null) {
 				builder.withValidator((Validator<V>) customValidator.apply(entityProvider));

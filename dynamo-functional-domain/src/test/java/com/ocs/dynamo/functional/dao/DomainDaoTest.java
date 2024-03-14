@@ -23,6 +23,7 @@ import javax.inject.Inject;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import com.ocs.dynamo.BackendIntegrationTest;
@@ -39,7 +40,7 @@ import com.ocs.dynamo.functional.domain.Region;
 @SpringBootTest
 public class DomainDaoTest extends BackendIntegrationTest {
 
-    @Inject
+    @Autowired
     private DomainDao domainDao;
 
     private Region europa;
@@ -74,7 +75,6 @@ public class DomainDaoTest extends BackendIntegrationTest {
         getEntityManager().persist(usd);
         Currency gpb = new Currency("GPB", "Pound Sterling");
         getEntityManager().persist(gpb);
-
     }
 
     @Test

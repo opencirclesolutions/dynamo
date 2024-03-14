@@ -71,21 +71,21 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Creates a java.time.LocalTime based on a String representation
+	 * Creates a java.time.LocalDate based on a String representation
 	 * 
 	 * @param dateStr the String (in the format ddMMyyyy)
-	 * @return
+	 * @return the LocalDate
 	 */
 	public static LocalDate createLocalDate(String dateStr) {
 		return createLocalDate(dateStr, DATE_FORMAT);
 	}
 
 	/**
-	 * Creates a java.time.LocalTime based on a String representation
+	 * Creates a java.time.LocalDate based on a String representation
 	 * 
 	 * @param dateStr the String
 	 * @param format  the desired format
-	 * @return
+	 * @return the LocalDate
 	 */
 	public static LocalDate createLocalDate(String dateStr, String format) {
 		if (dateStr == null) {
@@ -99,7 +99,7 @@ public final class DateUtils {
 	 * Creates a java.time.LocalDateTime based on a String representation
 	 * 
 	 * @param dateTimeStr the String representation (ddMMyyyy HHmmss)
-	 * @return
+	 * @return the constructed LocalDateTime
 	 */
 	public static LocalDateTime createLocalDateTime(String dateTimeStr) {
 		return createLocalDateTime(dateTimeStr, DATE_TIME_FORMAT);
@@ -110,7 +110,7 @@ public final class DateUtils {
 	 * 
 	 * @param dateTimeStr the String representation
 	 * @param format      the desired format
-	 * @return
+	 * @return the constructed LocalDateTime
 	 */
 	public static LocalDateTime createLocalDateTime(String dateTimeStr, String format) {
 		if (dateTimeStr == null) {
@@ -124,7 +124,7 @@ public final class DateUtils {
 	 * Creates a java.time.LocalTime based on a String representation
 	 * 
 	 * @param timeStr the String representation
-	 * @return
+	 * @return the constructed LocalTime
 	 */
 	public static LocalTime createLocalTime(String timeStr) {
 		return createLocalTime(timeStr, TIME_FORMAT);
@@ -135,7 +135,7 @@ public final class DateUtils {
 	 * 
 	 * @param timeStr the String representation
 	 * @param format  the desired format
-	 * @return
+	 * @return the constructed LocalTime
 	 */
 	public static LocalTime createLocalTime(String timeStr, String format) {
 		if (timeStr == null) {
@@ -149,7 +149,7 @@ public final class DateUtils {
 	 * Create a ZonedDateTime based from a String, using the default format
 	 * 
 	 * @param dateTimeStr the String to parse
-	 * @return
+	 * @return the constructed ZonedDateTime
 	 */
 	public static ZonedDateTime createZonedDateTime(String dateTimeStr) {
 		return createZonedDateTime(dateTimeStr, SystemPropertyUtils.getDefaultDateTimeWithTimezoneFormat());
@@ -160,7 +160,7 @@ public final class DateUtils {
 	 * 
 	 * @param dateTimeStr the String
 	 * @param format      the format
-	 * @return
+	 * @return the constructed ZonedDateTime
 	 */
 	public static ZonedDateTime createZonedDateTime(String dateTimeStr, String format) {
 		if (dateTimeStr == null) {
@@ -175,7 +175,7 @@ public final class DateUtils {
 	 * 
 	 * @param date   the date
 	 * @param format the format
-	 * @return
+	 * @return the String representation of the date
 	 */
 	public static String formatDate(LocalDate date, String format) {
 		if (date == null || format == null) {
@@ -190,7 +190,7 @@ public final class DateUtils {
 	 * 
 	 * @param dateTime the DateTime to format
 	 * @param format   the desired format
-	 * @return
+	 * @return the String representation of the datetime
 	 */
 	public static String formatDateTime(LocalDateTime dateTime, String format) {
 		if (dateTime == null || format == null) {
@@ -206,7 +206,7 @@ public final class DateUtils {
 	 * @param clazz  the class of the object to format
 	 * @param value  the value
 	 * @param format the desired format
-	 * @return
+	 * @return the resulting String
 	 */
 	public static String formatJava8Date(Class<?> clazz, Object value, String format, ZoneId zoneId) {
 		if (LocalDate.class.equals(clazz)) {
@@ -226,7 +226,7 @@ public final class DateUtils {
 	 * 
 	 * @param time   the objec to format
 	 * @param format the desired format
-	 * @return
+	 * @return the resulting String
 	 */
 	public static String formatTime(LocalTime time, String format) {
 		if (time == null || format == null) {
@@ -241,7 +241,7 @@ public final class DateUtils {
 	 * 
 	 * @param dateTime the DateTime to format
 	 * @param format   the desired format
-	 * @return
+	 * @return the resulting String
 	 */
 	public static String formatZonedDateTime(ZonedDateTime dateTime, String format, ZoneId zoneId) {
 		if (dateTime == null || format == null) {
@@ -255,7 +255,7 @@ public final class DateUtils {
 	 * Return the week number (1 - 53) of the last week of the specified year
 	 * 
 	 * @param year the year
-	 * @return
+	 * @return the resulting String
 	 */
 	public static int getLastWeekOfYear(int year) {
 		LocalDate date = createLocalDate("3112" + year);
@@ -272,7 +272,7 @@ public final class DateUtils {
 	 * Returns the next week code given an existing week code
 	 * 
 	 * @param weekCode the week code
-	 * @return
+	 * @return the resulting String
 	 */
 	public static String getNextWeekCode(String weekCode) {
 		if (weekCode == null) {
@@ -295,7 +295,7 @@ public final class DateUtils {
 	 * in case the argument passed to this function is null
 	 * 
 	 * @param date the date
-	 * @return
+	 * @return the resulting String
 	 */
 	public static int getQuarter(LocalDate date) {
 		if (date == null) {
@@ -319,10 +319,8 @@ public final class DateUtils {
 			int year = getYearFromWeekCode(weekCode);
 			int week = getWeekFromWeekCode(weekCode);
 			WeekFields weekFields = WeekFields.ISO;
-			LocalDate firstDayOfWeek = LocalDate.ofYearDay(year, 1).with(weekFields.weekOfYear(), week)
+			return LocalDate.ofYearDay(year, 1).with(weekFields.weekOfYear(), week)
 					.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));
-
-			return firstDayOfWeek;
 		}
 		throw new OCSRuntimeException("Cannot convert");
 	}
@@ -335,17 +333,17 @@ public final class DateUtils {
 	 * Retrieves the year part from a week code (yyyy-ww)
 	 * 
 	 * @param weekCode the week code
-	 * @return
+	 * @return the year
 	 */
 	private static int getYearFromWeekCode(String weekCode) {
 		return Integer.parseInt(weekCode.substring(0, YEAR_STRING_LENGTH));
 	}
 
 	/**
-	 * Çhecks whether a class represents a Java 8 date or time type
+	 * Checks whether a class represents a Java 8 date or time type
 	 * 
 	 * @param clazz the class
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	public static boolean isJava8DateType(Class<?> clazz) {
 		return LocalDate.class.equals(clazz) || LocalDateTime.class.equals(clazz) || LocalTime.class.equals(clazz)
@@ -357,7 +355,7 @@ public final class DateUtils {
 	 * date types and the legacy java.time.LocalTime
 	 *
 	 * @param clazz the class to check
-	 * @return
+	 * @return true if the
 	 */
 	public static boolean isSupportedDateType(Class<?> clazz) {
 		return isJava8DateType(clazz);
@@ -368,7 +366,7 @@ public final class DateUtils {
 	 * considered valid
 	 * 
 	 * @param weekCode the week code
-	 * @return
+	 * @return true if the value is a valid week code, false otherwise
 	 */
 	public static boolean isValidWeekCode(String weekCode) {
 		if (weekCode == null) {
@@ -388,23 +386,23 @@ public final class DateUtils {
 	}
 
 	/**
-	 * Converts a LocalDate to a legacy java.time.LocalTime
+	 * Converts a LocalDate to a legacy java.util.Date
 	 * 
-	 * @param d the LocalDate to convert
-	 * @return
+	 * @param date the LocalDate to convert
+	 * @return the value converted to a java.util.Date
 	 */
-	public static Date toLegacyDate(LocalDate d) {
-		if (d == null) {
+	public static Date toLegacyDate(LocalDate date) {
+		if (date == null) {
 			return null;
 		}
-		return Date.from(d.atStartOfDay(ZoneId.systemDefault()).toInstant());
+		return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());
 	}
 
 	/**
-	 * Converts a java.time.LocalDateTime to a java.time.LocalTime
+	 * Converts a java.time.LocalDateTime to a java.util.Date
 	 * 
-	 * @param d the LocalDatetime to convert
-	 * @return
+	 * @param ldt the LocalDatetime to convert
+	 * @return the value converted to a java.util.Date
 	 */
 	public static Date toLegacyDate(LocalDateTime ldt) {
 		if (ldt == null) {
@@ -417,7 +415,7 @@ public final class DateUtils {
 	 * Converts a date to its corresponding week code
 	 * 
 	 * @param date the date
-	 * @return
+	 * @return the resulting week code
 	 */
 	public static String toWeekCode(LocalDate date) {
 		if (date != null) {
@@ -432,7 +430,7 @@ public final class DateUtils {
 				year++;
 			}
 
-			// if the week number is 53 but we are in January, then reduce the
+			// if the week number is 53, but we are in January, then reduce the
 			// year by one
 			if ((week == LAST_WEEK_NUMBER || week == LAST_WEEK_NUMBER - 1) && month == Month.JANUARY) {
 				year--;

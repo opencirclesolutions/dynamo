@@ -29,17 +29,17 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 public final class NumberUtils {
 
     /**
-     * Appends a percentage sing to the provided string if needed
+     * Appends a percentage sign to the provided string if needed
      *
-     * @param s          the string
+     * @param input         the string
      * @param percentage whether to append the sign
-     * @return
+     * @return the input string with a percentage sign appended to it
      */
-    private static String appendPercentage(String s, boolean percentage) {
-        if (s == null) {
+    private static String appendPercentage(String input, boolean percentage) {
+        if (input == null) {
             return null;
         }
-        return percentage ? s + "%" : s;
+        return percentage ? input + "%" : input;
     }
 
     /**
@@ -51,7 +51,7 @@ public final class NumberUtils {
      * @param value          the value
      * @param currencySymbol the currency symbol
      * @param locale         the locale to use
-     * @return
+     * @return the result of the conversion
      */
     public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
                                             BigDecimal value, Locale locale, String currencySymbol) {
@@ -62,7 +62,7 @@ public final class NumberUtils {
      * Formats a value
      *
      * @param value the value to format
-     * @return
+     * @return the result of the formatting
      */
     public static String format(Object value) {
         if (value == null) {
@@ -70,11 +70,11 @@ public final class NumberUtils {
         }
 
         if (value instanceof BigDecimal) {
-            value = String.format("%.2f", (BigDecimal) value);
+            value = String.format("%.2f", value);
         } else if (value instanceof Double) {
-            value = String.format("%.2f", (Double) value);
+            value = String.format("%.2f", value);
         } else if (value instanceof Float) {
-            value = String.format("%.2f", (Float) value);
+            value = String.format("%.2f", value);
         }
 
         return value.toString();
@@ -85,12 +85,12 @@ public final class NumberUtils {
      *
      * @param currency       whether to include a currency symbol
      * @param percentage     whether to include a percentage sign
-     * @param useGrouping    whether to use a thousands grouping separator
+     * @param useGrouping    whether to use a thousand grouping separator
      * @param precision      the desired precision
      * @param value          the value to convert
      * @param currencySymbol the currency symbol to use
      * @param locale         the locale to use
-     * @return
+     * @return the result of the conversion
      */
     public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
                                         Double value, Locale locale, String currencySymbol) {
@@ -102,12 +102,12 @@ public final class NumberUtils {
      *
      * @param currency       whether to include a currency symbol
      * @param percentage     whether to include a percentage sign
-     * @param useGrouping    whether to use a thousands grouping separator
+     * @param useGrouping    whether to use a thousand grouping separator
      * @param precision      the desired precision
      * @param value          the value to convert
      * @param currencySymbol the currency symbol to use
      * @param locale         the locale to use
-     * @return
+     * @return the result of the conversion
      */
     public static String fractionalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
                                             Number value, Locale locale, String currencySymbol) {
@@ -115,7 +115,7 @@ public final class NumberUtils {
             return null;
         }
 
-        DecimalFormat df = null;
+        DecimalFormat df;
         if (currency) {
             df = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
             DecimalFormatSymbols s = df.getDecimalFormatSymbols();
@@ -138,7 +138,7 @@ public final class NumberUtils {
      * @param grouping indicates whether grouping separators must be used
      * @param value    the value to convert
      * @param locale   the locale
-     * @return
+     * @return the result of the conversion
      */
     public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
         if (value == null) {
@@ -153,8 +153,8 @@ public final class NumberUtils {
     /**
      * Checks whether a class is a double (either wrapper or primitive)
      *
-     * @param clazz
-     * @return
+     * @param clazz the class to check
+     * @return true if the provided class is a double or Double
      */
     public static boolean isDouble(Class<?> clazz) {
         return Double.class.equals(clazz) || double.class.equals(clazz);
@@ -163,31 +163,31 @@ public final class NumberUtils {
     /**
      * Checks if an object is a double (either wrapper or primitive)
      *
-     * @param value
-     * @return
+     * @param value the object to check
+     * @return true if the provided object is a double or Double
      */
     public static boolean isDouble(Object value) {
         if (value == null) {
             return false;
         }
-        return value.getClass().equals(Double.class) || value.getClass().equals(double.class);
+        return value.getClass().equals(Double.class);
     }
 
     /**
-     * Checks if a class is a float (either wrapper or primitive)
+     * Checks if a class is represents a float (either wrapper or primitive)
      *
      * @param clazz the class to check
-     * @return
+     * @return true if the provided class is a Float or float
      */
     public static boolean isFloat(Class<?> clazz) {
         return Float.class.equals(clazz) || float.class.equals(clazz);
     }
 
     /**
-     * Checks if a class is an integer (either wrapper or primitive)
+     * Checks if a class represents an integer (either wrapper or primitive)
      *
      * @param clazz the class to check
-     * @return
+     * @return true  if the provided class is Integer or integer
      */
     public static boolean isInteger(Class<?> clazz) {
         return Integer.class.equals(clazz) || int.class.equals(clazz);
@@ -197,20 +197,20 @@ public final class NumberUtils {
      * Checks if an object is an integer (either wrapper or primitive)
      *
      * @param value the value to check
-     * @return
+     * @return true if this is the case, false otherwise
      */
     public static boolean isInteger(Object value) {
         if (value == null) {
             return false;
         }
-        return value.getClass().equals(Integer.class) || value.getClass().equals(int.class);
+        return value.getClass().equals(Integer.class);
     }
 
     /**
      * Checks if a class is a long (either wrapper or primitive)
      *
      * @param clazz the class to check
-     * @return
+     * @return true if this is the case, false otherwise
      */
     public static boolean isLong(Class<?> clazz) {
         return Long.class.equals(clazz) || long.class.equals(clazz);
@@ -220,21 +220,21 @@ public final class NumberUtils {
      * Checks if an object is a Long (either primitive or wrapper)
      *
      * @param value the value to check
-     * @return
+     * @return true if this is the case, false otherwise
      */
     public static boolean isLong(Object value) {
         if (value == null) {
             return false;
         }
-        return value.getClass().equals(Long.class) || value.getClass().equals(long.class);
+        return value.getClass().equals(Long.class);
     }
 
     /**
      * Indicates whether a certain class is a numeric class (either a primitive or a
      * wrapper that extends the Number class) that is supported by the framework
      *
-     * @param clazz
-     * @return
+     * @param clazz the class to check
+     * @return true if this is the case, false otherwise
      */
     public static boolean isNumeric(Class<?> clazz) {
         return Number.class.isAssignableFrom(clazz) || float.class.equals(clazz) || double.class.equals(clazz)
@@ -243,12 +243,12 @@ public final class NumberUtils {
     }
 
     /**
-     * Converts an Long to a String, using the Vaadin converters
+     * Converts a Long to a String, using the Vaadin converters
      *
      * @param grouping indicates whether grouping separators must be used
      * @param value    the value to convert
      * @param locale   the locale
-     * @return
+     * @return the resulting String value
      */
     public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
         if (value == null) {

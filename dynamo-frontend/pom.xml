@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>3.0.2-SNAPSHOT</version>
+		<version>3.0.3-SNAPSHOT</version>
 	</parent>
 	<organization>
 		<name>Open Circle Solutions</name>
@@ -34,10 +34,6 @@
 			<groupId>com.h2database</groupId>
 			<artifactId>h2</artifactId>
 		</dependency>
-		<!--		<dependency>-->
-		<!--			<groupId>org.eclipse.persistence</groupId>-->
-		<!--			<artifactId>jakarta.persistence</artifactId>-->
-		<!--		</dependency>-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>dynamo-api</artifactId>
@@ -119,13 +115,17 @@
 			<artifactId>junit-jupiter</artifactId>
 			<scope>test</scope>
 		</dependency>
-		<!--<dependency>
+		<dependency>
 			<groupId>com.vaadin.componentfactory</groupId>
 			<artifactId>selection-grid-flow</artifactId>
-		</dependency>-->
+		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
 			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>com.vaadin.flow.ai</groupId>
+			<artifactId>form-filler-addon</artifactId>
 		</dependency>
 	</dependencies>
 	<build>

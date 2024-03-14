@@ -74,7 +74,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	@Getter
 	private final SortOrder<?>[] sortOrders;
 
-	@SafeVarargs
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode mode, SerializablePredicate<T> filter, List<T> items,
 			DataProvider<T, SerializablePredicate<T>> sharedProvider, SortOrder<?>... sortOrders) {
@@ -86,11 +85,10 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		this.filter = filter;
 		setHeight(SystemPropertyUtils.getDefaultListSelectHeight());
 
-		DataProvider<T, SerializablePredicate<T>> provider = sharedProvider;
-		initProvider(provider, items, mode);
+		initProvider(sharedProvider, items, mode);
 
 		// non-standard way of setting captions
-		setRenderer(new ComponentRenderer<Text, T>(entity -> {
+		setRenderer(new ComponentRenderer<>(entity -> {
 			String label = EntityModelUtils.getDisplayPropertyValue(entity, entityModel);
 			return new Text(label == null ? "" : label);
 		}));
@@ -107,7 +105,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param filter         the filter used to filter the entities
 	 * @param sortOrder      the sort order used to sort the entities
 	 */
-	@SafeVarargs
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
 		this(entityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrder);
@@ -123,7 +120,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param service        the service used to retrieve entities
 	 * @param sortOrder      the sort order
 	 */
-	@SafeVarargs
 	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SortOrder<?>... sortOrder) {
 		this(entityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
@@ -151,7 +147,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		setValue(entity);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof ListDataProvider ldp) {
 			setItems(ldp.getItems());
@@ -169,7 +165,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	}
 
 	private CallbackDataProvider<T, Void> createCallbackProvider() {
-		return CallbackProviderHelper.createCallbackProviderNoFiltering(service, entityModel, filter,
+		return CallbackProviderHelper.createCallbackProviderNoFiltering(service,
 				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
 	}
 
@@ -187,7 +183,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 	 * @param provider already existing provider (in case of shared provider)
 	 * @param items    fixed list of items to display
 	 * @param mode     the desired mode
-	 * @return
 	 */
 	private void initProvider(DataProvider<T, SerializablePredicate<T>> provider, List<T> items, SelectMode mode) {
 		if (provider == null) {
@@ -200,7 +195,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
 				// add a filtered selection of items
-				items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+				items = service.find(new FilterConverter<>(entityModel).convert(filter),
 						SortUtils.translateSortOrders(sortOrders));
 				setItems(new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
@@ -235,8 +230,6 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
    
 	/**
 	 * Updates the data provider after a refresh
-	 *
-	 * @param provider
 	 */
 	private void updateProvider() {
 		if (SelectMode.ALL.equals(selectMode)) {
@@ -244,7 +237,7 @@ public class EntityListSingleSelect<ID extends Serializable, T extends AbstractE
 		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
-			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(filter),
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(filter),
 					SortUtils.translateSortOrders(sortOrders));
 			setItems(items);
 			//reloadDataProvider(listProvider, items);

@@ -133,7 +133,7 @@ public abstract class TextImportTemplate<ID, T> {
 				results.add(t);
 			} else {
 				errors.add(messageService.getMessage("ocs.duplicate.row",
-						new Locale(SystemPropertyUtils.getDefaultDateLocale()), i + 1, key));
+						SystemPropertyUtils.getDefaultDateLocale(), i + 1, key));
 			}
 		} else {
 			results.add(t);

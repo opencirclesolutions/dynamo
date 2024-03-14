@@ -54,9 +54,8 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public long count() {
-		return createQuery().fetchCount();
+		return createQuery().select(getDslRoot().count()).fetchOne();
 	}
 
 	@Override

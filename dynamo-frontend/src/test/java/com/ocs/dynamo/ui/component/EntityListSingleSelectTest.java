@@ -13,21 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyInt;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.isNull;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoInteractions;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Disabled;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.TestEntity;
@@ -37,11 +22,19 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 
-@Disabled
+import java.util.List;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
+
 public class EntityListSingleSelectTest extends BaseMockitoTest {
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private final EntityModelFactory factory = new EntityModelFactoryImpl();
 
 	@Mock
 	private TestEntityService service;
@@ -50,7 +43,7 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 	public void testAll() {
 		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
 				factory.getModel(TestEntity.class), null, service);
-		assertEquals(SelectMode.ALL, select.getSelectMode());
+		assertThat(select.getSelectMode()).isEqualTo(SelectMode.ALL);
 		verify(service).findAll((SortOrder[]) null);
 	}
 
@@ -58,7 +51,7 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 	public void testFixed() {
 		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
 				factory.getModel(TestEntity.class), null, List.of(new TestEntity()));
-		assertEquals(SelectMode.FIXED, select.getSelectMode());
+		assertThat(select.getSelectMode()).isEqualTo(SelectMode.FIXED);
 		verifyNoInteractions(service);
 	}
 
@@ -66,10 +59,9 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 	public void testFilterPaged() {
 
 		EntityListSingleSelect<Integer, TestEntity> select = new EntityListSingleSelect<>(
-				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
-		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
-
-		verify(service).fetch(any(com.ocs.dynamo.filter.Filter.class), eq(0), anyInt(), any(SortOrders.class));
+				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<>("name", "Bob"));
+		assertThat(select.getSelectMode()).isEqualTo(SelectMode.FILTERED_PAGED);
+		verify(service).fetch(nullable(com.ocs.dynamo.filter.Filter.class), eq(0), anyInt(), any(SortOrders.class));
 	}
 
 	@Test
@@ -79,8 +71,7 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 				factory.getModel("TestEntityNonPaged", TestEntity.class), null, service, SelectMode.FILTERED_ALL,
 				new EqualsPredicate<TestEntity>("name", "Bob"), null, null);
 
-		assertEquals(SelectMode.FILTERED_ALL, select.getSelectMode());
-
+		assertThat(select.getSelectMode()).isEqualTo(SelectMode.FILTERED_ALL);
 		verify(service).find(any(com.ocs.dynamo.filter.Filter.class), isNull());
 	}
 
@@ -91,14 +82,12 @@ public class EntityListSingleSelectTest extends BaseMockitoTest {
 				factory.getModel(TestEntity.class), null, service, new EqualsPredicate<TestEntity>("name", "Bob"));
 		assertEquals(SelectMode.FILTERED_PAGED, select.getSelectMode());
 
-		verify(service, times(1)).fetch(any(com.ocs.dynamo.filter.Filter.class), any(Integer.class), any(Integer.class),
+		verify(service, times(1)).fetch(isNull(), any(Integer.class), any(Integer.class),
 				any(SortOrders.class));
 
 		select.refresh();
-
-		verify(service, times(2)).fetch(any(com.ocs.dynamo.filter.Filter.class), any(Integer.class), any(Integer.class),
+		verify(service, times(2)).fetch(isNull(), any(Integer.class), any(Integer.class),
 				any(SortOrders.class));
-
 	}
 
 }

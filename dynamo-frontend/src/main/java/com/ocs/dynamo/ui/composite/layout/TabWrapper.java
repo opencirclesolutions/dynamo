@@ -43,9 +43,9 @@ public class TabWrapper extends DefaultVerticalLayout {
 
 	private VerticalLayout displayedPage;
 
-	private Tabs tabs;
+	private final Tabs tabs;
 
-	private Map<Tab, Component> tabsToPages = new HashMap<>();
+	private final Map<Tab, Component> tabsToPages = new HashMap<>();
 
 	public TabWrapper() {
 		setMargin(false);
@@ -68,7 +68,7 @@ public class TabWrapper extends DefaultVerticalLayout {
 	 * Adds a selection change listener
 	 * 
 	 * @param listener the listener to add
-	 * @return
+	 * @return the registration
 	 */
 	public Registration addSelectedChangeListener(ComponentEventListener<SelectedChangeEvent> listener) {
 		return tabs.addSelectedChangeListener(listener);
@@ -81,7 +81,7 @@ public class TabWrapper extends DefaultVerticalLayout {
 	 * @param description the tool tip/description of the tab
 	 * @param component   the component to display inside the tab
 	 * @param icon        the icon to display on the tab(optional)
-	 * @return
+	 * @return the tab that was added
 	 */
 	public Tab addTab(String caption, String description, Component component, Icon icon) {
 		Button button = new Button(caption);
@@ -116,7 +116,11 @@ public class TabWrapper extends DefaultVerticalLayout {
 	}
 
 	public Tab getTabByIndex(int index) {
-		return (Tab) tabs.getTabAt(index);
+		return tabs.getTabAt(index);
+	}
+
+	public int getTabCount() {
+		return tabsToPages.size();
 	}
 
 	/**

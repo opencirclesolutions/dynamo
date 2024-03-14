@@ -28,6 +28,12 @@ import java.lang.annotation.Target;
 public @interface Model {
 
     /**
+     *
+     * @return additional context/instructions for auto-filling form
+     */
+    String autofillInstructions() default "";
+
+    /**
      * 
      * @return the display name of the entity
      */

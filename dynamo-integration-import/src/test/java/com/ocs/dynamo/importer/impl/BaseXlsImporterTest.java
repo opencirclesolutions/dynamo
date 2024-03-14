@@ -34,7 +34,7 @@ import com.ocs.dynamo.utils.DateUtils;
 
 public class BaseXlsImporterTest {
 
-	private BaseXlsImporter importer = new BaseXlsImporter();
+	private final BaseXlsImporter importer = new BaseXlsImporter();
 
 	/**
 	 * Test that a simple row count works

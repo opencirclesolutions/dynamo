@@ -250,6 +250,11 @@ public class FormOptions implements Serializable {
 	 */
 	private boolean startInAdvancedMode;
 
+    /**
+	 * Whether to show a button for automatically filling out forms
+	 */
+	private boolean showFormFillButton;
+
 	public FormOptions createCopy() {
 		FormOptions fo = new FormOptions();
 		fo.setAttributeGroupMode(getAttributeGroupMode());
@@ -287,6 +292,7 @@ public class FormOptions implements Serializable {
 		fo.setPreserveAdvancedMode(isPreserveAdvancedMode());
 		fo.setShowDetailsGridDetailsPanel(isShowDetailsGridDetailsPanel());
 		fo.setShowSplitLayoutSearchButton(isShowSplitLayoutSearchButton());
+		fo.setShowFormFillButton(isShowFormFillButton());
 		return fo;
 	}
 
@@ -840,7 +846,7 @@ public class FormOptions implements Serializable {
 	 * Specify whether to show the "previous" button in the detail screen of a
 	 * search layout
 	 * 
-	 * @param showNextButton
+	 * @param showPrevButton
 	 * @return
 	 */
 	public FormOptions setShowPrevButton(boolean showPrevButton) {
@@ -920,12 +926,21 @@ public class FormOptions implements Serializable {
 	/**
 	 * Specify whether to open the search form in advanced mode
 	 * 
-	 * @param startInAdvancedMode
-	 * @return
+	 * @param startInAdvancedMode the desired setting
+	 * @return the FormOptions object
 	 */
 	public FormOptions setStartInAdvancedMode(boolean startInAdvancedMode) {
 		this.startInAdvancedMode = startInAdvancedMode;
 		return this;
+	}
+
+	public FormOptions setShowFormFillButton(boolean showFormFillButton) {
+		this.showFormFillButton = showFormFillButton;
+		return this;
+	}
+
+	public boolean isShowFormFillButton() {
+		return showFormFillButton;
 	}
 
 }

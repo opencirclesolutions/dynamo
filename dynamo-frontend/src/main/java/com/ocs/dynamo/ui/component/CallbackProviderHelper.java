@@ -48,14 +48,11 @@ public class CallbackProviderHelper {
 	 * @param <ID>        the type of the primary key of the entity
 	 * @param <T>         the type of the entity
 	 * @param service     the service that is used to retrieve entities
-	 * @param entityModel the entity model
-	 * @param filter      search filter to apply (in addition to the search term)
-	 * @return
+	 * @return the callback provider
 	 */
 	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, Void> createCallbackProviderNoFiltering(
-			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
-			SortOrders sortOrders, IntConsumer afterCountDone) {
-		CallbackDataProvider<T, Void> callbackProvider = new CallbackDataProvider<>(query -> {
+			BaseService<ID, T> service, SortOrders sortOrders, IntConsumer afterCountDone) {
+		return new CallbackDataProvider<>(query -> {
 			int offset = query.getOffset();
 			int page = offset / query.getLimit();
 			List<T> list = service.fetch(null, page, query.getLimit(), sortOrders);
@@ -75,7 +72,6 @@ public class CallbackProviderHelper {
 				return 0;
 			}
 		});
-		return callbackProvider;
 	}
 	
 	/**
@@ -86,13 +82,13 @@ public class CallbackProviderHelper {
 	 * @param service     the service that is used to retrieve entities
 	 * @param entityModel the entity model
 	 * @param filter      search filter to apply (in addition to the search term)
-	 * @return
+	 * @return the constructed callback
 	 */
 	public static <ID extends Serializable, T extends AbstractEntity<ID>> CallbackDataProvider<T, String> createCallbackProvider(
 			BaseService<ID, T> service, EntityModel<T> entityModel, SerializablePredicate<T> filter,
 			SortOrders sortOrders, IntConsumer afterCountDone) {
 		FilterConverter<T> converter = new FilterConverter<>(entityModel);
-		CallbackDataProvider<T, String> callbackProvider = new CallbackDataProvider<>(query -> {
+		return new CallbackDataProvider<>(query -> {
 			int offset = query.getOffset();
 			int page = offset / query.getLimit();
 
@@ -115,7 +111,6 @@ public class CallbackProviderHelper {
 				return 0;
 			}
 		});
-		return callbackProvider;
 	}
 
 	/**
@@ -127,7 +122,7 @@ public class CallbackProviderHelper {
 	 * @param query       the query
 	 * @param entityModel the entity model
 	 * @param filter      the field filter
-	 * @return
+	 * @return the constructed predicate
 	 */
 	private static <ID extends Serializable, T extends AbstractEntity<ID>> SerializablePredicate<T> constructFilterPredicate(
 			Query<T, String> query, EntityModel<T> entityModel, SerializablePredicate<T> filter) {

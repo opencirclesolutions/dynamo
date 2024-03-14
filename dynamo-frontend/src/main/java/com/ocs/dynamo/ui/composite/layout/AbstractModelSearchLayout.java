@@ -316,6 +316,7 @@ public abstract class AbstractModelSearchLayout<ID extends Serializable, T exten
 		copy.setShowPrevButton(getFormOptions().isShowPrevButton());
 		copy.setPlaceButtonBarAtTop(getFormOptions().isPlaceButtonBarAtTop());
 		copy.setConfirmSave(getFormOptions().isConfirmSave());
+		copy.setShowFormFillButton(getFormOptions().isShowFormFillButton());
 
 		// set the form options for the detail form
 		if (getFormOptions().isShowEditButton()) {
