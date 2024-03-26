@@ -11,7 +11,7 @@ image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
 
 Main committer: Bas Rutten
 
-Copyright © 2014 - 2023 Open Circle Solutions BV.
+Copyright © 2014 - 2024 Open Circle Solutions BV.
 
 Nothing from this document may be copied and/or made public by use of
 print, photocopy, microfilm or by any other means, without prior
@@ -57,7 +57,7 @@ To create the entity model, you need access to an *EntityModelFactory*.
 The *EntityModelFactory* is a Spring singleton and can be acquired by
 injection (@Inject or @Autowired). You can also acquire a reference to
 the *EntityModelFactory* by calling the *getEntityModelFactory* method
-on the *ServiceLocator*_._
+on the *ServiceLocator*.
 
 You can then acquire the *EntityModel* for a certain entity by calling
 the *getModel(Class<?> clazz)* method. This will retrieve the entity
@@ -120,9 +120,9 @@ The following rules apply when constructing the attribute models:
 
 * An attribute model will be created for every public, non-static
 no-parameter getter-method that follows the JavaBean naming convention
-(e.g., “getAge()”; for Boolean or boolean properties, the getter may
-also start with “is”, e.g. “isValid”).
-* You can use Lombok to generate getters and setters for you.
+(e.g., “*getAge*()”; for Boolean or boolean properties, the getter may
+also start with “is”, e.g. “*isValid*”).
+* You can use *Lombok* to generate getters and setters for you.
 * The entity class does not necessarily have to contain an actual field
 corresponding to the property. This allows you to create attribute
 models for read-only or composite properties (e.g. a “*getNameAndAge*()”
@@ -130,7 +130,7 @@ method which concatenates the name and age as a String). Note that such
 an attribute will have to be defined as read-only.
 * Certain attributes are ignored. Currently this includes only “version”
 (used for JPA optimistic locking) and “class” (every object has a
-“getClass()” method).
+“*getClass*()” method).
 * Attributes can be simple (String, Integer, Long, enumerated types
 etc.) or complex (a reference to another entity, a collection of
 primitive values, or a collection of other entities). The Entity Model
@@ -144,7 +144,7 @@ setting on attributes of nested entities is ignored – this is because
 when you are creating a search screen for an entity, you normally want
 to search on the attributes of that entity, not on the nested
 attributes.
-* Getters that are annotated with _@_*AssertTrue* or _@_*AssertFalse*
+* Getters that are annotated with @*AssertTrue* or @*AssertFalse*
 are skipped (these are methods that are used for Bean Validations, not
 properties for the meta model).
 
@@ -152,7 +152,10 @@ An attribute model has a *name* attribute that is equal to the name of
 the property. This *name* can be used to retrieve the attribute model
 from the entity model:
 
+[source,java]
+--
 AttributeModel getAttributeModel(String attributeName);
+--
 
 For a nested attribute model, the name of the model consists of the
 concatenation of the names of the non-nested models separated by
@@ -235,20 +238,20 @@ Some examples:
 --
 Organization.displayName=Criminal Organization
 --
-Sets the display name of the Organization entity to “Crimal
+Sets the *display name* of the Organization entity to “Crimal
 Organization”.
 [source,properties]
 --
 Person2.displayName=Gang Member
 --
-Sets the display name for Person in the “Person2” entity model to “Gang
+Sets the *display name* for Person in the “Person2” entity model to “Gang
 Member”
 
 [source,properties]
 --
 Person.name.visible=true
 --
-Sets the visibility of the “name” attribute model to true
+Sets the visibility of the “*name*” attribute model to true
 
 [source,properties]
 --
@@ -259,12 +262,12 @@ nested attribute model) to false.
 
 Please observe the following:
 
-* For Boolean values, use the (lower case) values “true” and “false”.
-* For numeric values, simply use the String representation of the
+* For *Boolean values*, use the (lower case) values “true” and “false”.
+* For *numeric values*, simply use the String representation of the
 numeric value. Use the period “.” as the decimal separator.
-* For enumeration values, use the upper-case String representation of
+* For *enumeration values*, use the upper-case String representation of
 the enumeration value.
-* For dates and times, use the formats that are specified by the system
+* For *dates* and *times*, use the formats that are specified by the system
 properties:
 ** “ocs.default.date.format” (dd-MM-yyyy) for dates
 ** “ocs.default.time.format” (HH:mm:ss) for times
@@ -323,17 +326,17 @@ certain attribute will be displayed on-screen in an edit form:
 
 * For a *BASIC* property, a simple user interface component will be
 displayed, based on the type of the property:
-** For String fields and numeric fields, a text field will be rendered.
+** For *String* fields and numeric fields, a text field will be rendered.
 For a String property, you can use the *textFieldMode* setting to render
 a text area or a password field instead. For an Integer field, you can
 use the *numberFieldMode* setting to render an “integer field” instead.
-** For a Boolean, a check box will be rendered
+** For a *Boolean*, a check box will be rendered
 ** For a *LocalTime* attribute, a time picker will be rendered.
 ** For a *LocalDate* attribute, a date picker will be rendered.
 ** For a *LocalDateTime* attribute, a date/time picker will be rendered.
 ** For a *ZonedDatetime* attribute, a date/time picker (with a time zone
 component) will be rendered.
-** For an enumeration, a combo box will be created. You can use the
+** For an *enumeration*, a combo box will be created. You can use the
 message bundle mechanism to specify translations for the enumeration
 values (more on this below)
 * For a *LOB* property, a file upload field will be created.
@@ -351,24 +354,24 @@ values.
 Inside a search form the rendering is a slightly different:
 
 * For a *BASIC* property:
-** For a String property, a text field is created. This text field can
+** For a *String* property, a text field is created. This text field can
 be used to perform a search. You can use additional properties to toggle
 the case sensitivity and whether to allow prefix or substring matches.
 The *textAreaMode* setting is ignored in search forms.
-** For a numeric or a date/time property, two search fields are
+** For a *numeric* or a *date/time* property, two search fields are
 generated. These allow the user to perform an interval search (return
 all values that are higher than the value in the first field and lower
 than the value in the second field). This interval search is inclusive
 (i.e. the boundaries match). If you do not want this behaviour, you can
-change the value of the *searchForExactValue* setting to true_;_ if
+change the value of the *searchForExactValue* setting to _true_; if
 you do this then only a single search field will appear.
-*** For a property of type LocalDateTime or ZonedDateTime you can set
-the *searchForDate* setting to true. If you do this then only a single
+*** For a property of type *LocalDateTime* or *ZonedDateTime* you can set
+the *searchForDate* setting to _true_. If you do this then only a single
 search field will be created. In this field you can select the date to
 search on.
-** For a Boolean property, a combo box is displayed. This combo box
-contains three options: true, false, and “no value”.
-** For an enumeration, a combo box containing all values of the
+** For a *Boolean* property, a combo box is displayed. This combo box
+contains three options: *true*, *false*, and “*no value*”.
+** For an *enumeration*, a combo box containing all values of the
 enumeration is displayed.
 * For a *MASTER* property, by default a combo box containing all
 possible values of the master entity is displayed. You can use the
@@ -392,7 +395,7 @@ the values of the *displayProperty* properties of all individual
 entities in the collection will be displayed, separated by commas.
 * a *MASTER* or *DETAIL* attribute will by default not be displayed
 inside an edit form. You can change this by setting the
-*complexEditable* setting of the attribute model to true. Note that in
+*complexEditable* setting of the attribute model to _true_. Note that in
 some cases you may also have to implement some custom logic for dealing
 with these properties.
 
@@ -406,13 +409,13 @@ are displayed inside the combo box are taken from the message bundle:
 E.g.:
 [source,properties]
 --
-Reputation.REALLY_NOT_FEARSOME=Really not [.underline]#fearsome#
+Reputation.REALLY_NOT_FEARSOME=Really not fearsome
 
-Reputation.MILDLY_FEARSOME=Mildly [.underline]#fearsome#
+Reputation.MILDLY_FEARSOME=Mildly fearsome
 
-Reputation.FEARSOME=[.underline]#Fearsome#
+Reputation.FEARSOME=Fearsome
 
-Reputation.EXTREMELY_FEARSOME=Extremely [.underline]#fearsome#
+Reputation.EXTREMELY_FEARSOME=Extremely fearsome
 --
 === Cascade
 
@@ -512,7 +515,7 @@ by the “name” specified on the *@Column* annotation. E.g., in this case:
 private Set<Integer> luckyNumbers = new HashSet<>();
 --
 the value of the *collectionTableFieldName* setting is automatically set
-to “lucky_number”
+to “_lucky_number_”
 
 This setting is used internally by the framework when for searching
 inside the collection table and cannot be modified directly.
@@ -534,7 +537,7 @@ the *@CollectionTable* annotation. E.g., in this case:
 private Set<Integer> luckyNumbers = new HashSet<>();
 --
 the value of the *collectionTableName* setting is set to
-“person_lucky_numbers”.
+“_person_lucky_numbers_”.
 
 This setting is used internally by the framework when for searching
 inside the collection table. You do not normally have to modify it.
@@ -549,10 +552,10 @@ some cases, some additional code might be needed to properly deal with
 these properties (e.g. you might have to create a *DetailsEditGrid*
 yourself).
 
-This setting defaults to false_._
+This setting defaults to _false_.
 
-When set to true, for an attribute of type *DETAIL*, by default a
-token field will be rendered. This generally works fine for many-to-many
+When set to _true_, for an attribute of type *DETAIL*, by default a
+token field will be rendered. This generally works fine for *many-to-many*
 relations but will not work if the details must be manually created. In
 this case, you need to write some custom code. This will be covered
 later in the manual (see the section about the *DetailsEditGrid*).
@@ -567,8 +570,8 @@ nested grid or nested form (this will be covered later in the manual).
 In message bundle: *currency = true | false*
 
 This setting can be used to specify that a numeric field (currently only
-supported for BigDecimal properties) contains a currency value. If this
-setting is changed to true for a property, then a currency symbol will
+supported for *BigDecimal* properties) contains a currency value. If this
+setting is changed to _true_ for a property, then a currency symbol will
 be displayed in front of the value of the property. The currency symbol
 defaults to the Euro sign (€) but can be modified using the system
 property *ocs.default.currency.symbol*.
@@ -580,7 +583,7 @@ In message bundle: *currencyCode = [string]*
 === Custom
 
 It is also possible to specify custom attribute settings. This can be
-done by using the @CustomSetting annotation which can be applied as
+done by using the *@CustomSetting* annotation which can be applied as
 follows:
 [source,java]
 --
@@ -590,10 +593,10 @@ follows:
     @CustomSetting(name = "customBool", value = "true", type =  CustomType.BOOLEAN) })
 private String name;
 --
-In the above, we specify three custom settings named “customString”,
-“customInt” and “customBool”. Each setting consists of a name, a value
-and a type. The type can be omitted in which case it defaults to
-CustomType.STRING.
+In the above, we specify three custom settings named “*customString*”,
+“*customInt*” and “*customBool*”. Each setting consists of a *name*, a *value*
+and a *type*. The type can be omitted in which case it defaults to
+*CustomType.STRING*.
 
 You can retrieve the value of a custom setting by calling the
 *AttributeModel.getCustomSetting(String name)* method.
@@ -608,11 +611,11 @@ Organization.name.customValue.1=countryOfOrigin
 
 Organization.name.customType.1=INT
 --
-For each custom setting, you specify three properties, “custom”,
-“customValue” and “customType”. Each property must contain a number,
+For each custom setting, you specify three properties, “*custom*”,
+“*customValue*” and “*customType*”. Each property must contain a number,
 starting at 1, to indicate which properties belong together. Custom
 settings defined in the message bundle overwrite the settings defined
-using the @CustomSetting annotations.
+using the *@CustomSetting* annotations.
 
 === DateType
 
@@ -633,8 +636,8 @@ time selection component.
 By default, the value of the *dateType* setting is derived from the Java
 type of the property. You do not normally have to manually override it.
 
-Dynamo does not support the Legacy Java date types (java.util.Date and
-java.sql.Date).
+Dynamo does not support the Legacy Java date types (*java.util.Date* and
+*java.sql.Date*).
 
 === DefaultValue
 
@@ -643,12 +646,12 @@ In message bundle: *defaultValue = [String]*
 The *defaultValue* setting can be used to set the default value that
 appears inside the user interface component when creating a new entity.
 
-You always specify this setting as a String; if the value must be
-converted to a decimal number, use the period (“.”) as the decimal
-separator. For enumeration values, use the upper-case String
+You always specify this setting as a *String*; if the value must be
+converted to a *decimal number*, use the period (“.”) as the decimal
+separator. For *enumeration* values, use the upper-case String
 representation of the desired value.
 
-For date attributes, use the String representations according to the
+For *date* attributes, use the String representations according to the
 system properties *ocs.default.date.format* _(dd-MM-yyyy),_
 *ocs.default.time.format* _(HH:mm:ss),_ *ocs.default.datetime.format*
 _(dd-MM-yyyy HH:mm:ss)_, *ocs.default.datetime.zone.format* (dd-MM-yyyy
@@ -668,13 +671,13 @@ setting**.**
 
 In message bundle: *displayFormat = [String]*
 
-The *displayFormat* setting indicates how date/time values will be
+The *displayFormat* setting indicates how *date/time* values will be
 formatted. It is supported for attributes of a Java 8 date/time type
-(LocalDate, LocalTime etc).
+(*LocalDate, LocalTime, etc.*).
 
 The value of the *displayFormat* attribute must be a valid Java
-data/time formatting pattern, e.g. “dd-MM-yyyy”, but you can use
-different separators like “dd/MM-yyyy” or use formats like “yyyy-MM-dd”.
+data/time formatting pattern, e.g. “*dd-MM-yyyy*”, but you can use
+different separators like “*dd/MM-yyyy*” or use formats like “*yyyy-MM-dd*”.
 
 If you do not specify a displayFormat for an attribute, the framework
 will default to the value of the *ocs.default.date.format,
@@ -699,7 +702,7 @@ The *displayName* setting determines how the attribute will be named
 onscreen. By default, it is derived from the *name* setting, replacing
 CamelCase notation by spaces and then capitalizing individual words,
 e.g. “mininumAge” will be translated to “Minimum Age”. You can use the
-system property *ocs.capitalize.words* and set it to false so that
+system property *ocs.capitalize.words* and set it to _false_ so that
 only the first word will be capitalized.
 
 The display name is localized – you can use message bundles to define
@@ -716,15 +719,15 @@ creating a new entity. *READ_ONLY* means that the property is read-only
 and cannot be edited in a the interface.
 
 Note: in previous versions of the framework, this setting was called
-“readOnly” and could only be used to toggle between editable and
-read-only state.
+“*readOnly*” and could only be used to toggle between _editable_ and
+_read-only state_.
 
 === Email
 
 In message bundle: *N/A*
 
 The *email* setting can be used to specify that a field must contain a
-valid email address. It is automatically set to true if the property
+valid email address. It is automatically set to _true_ if the property
 is annotated with the (custom) *@Email* annotation.
 
 === Embedded
@@ -759,11 +762,11 @@ In the example above, we see a *Gift* class with an embedded attribute
 “logo” of type *GiftLogo.* The *GiftLogo* class contains several fields
 like “image” and “filename”.
 
-By setting *embedded* to true, we effectively make sure that there is no
+By setting *embedded* to _true_, we effectively make sure that there is no
 entity model for *GiftLogo*, and all the attributes from *GiftLogo* are
 made part of the entity model of the embedding class, *Gift.* When you
 want to access an attribute model for an attribute inside *GiftLogo,*
-you must use its full path, e.g. “logo.fileName” or “logo.image” rather
+you must use its full path, e.g. “*logo.fileName*” or “*logo.image*” rather
 than just “fileName’ or “image”.
 
 === FileNameProperty
@@ -783,19 +786,19 @@ private byte[] image;
 @Attribute(readOnly = true, visibleInGrid = VisibilityType.HIDE)
 private String fileName;
 --
-By default, if you define an attribute of type LOB, then the application
+By default, if you define an attribute of type *LOB*, then the application
 will render a file upload component for editing this attribute. The byte
 content of the uploaded file will be stored in the property itself, but
 the file name of the file that was uploaded will not be persisted.
 
 If you want to store the file name as well, simply create another
-property (of type String) and then set the *fileNameProperty* of the
+property (of type *String*) and then set the *fileNameProperty* of the
 *@Attribute* annotation that is placed on the property that holds the
 byte content to point to this property. The framework will then store
 the name of the uploaded file in this property as part of the file
 upload process.
 
-Note that the actual “fileName” property is annotated as “readOnly”
+Note that the actual “*fileName*” property is annotated as “*readOnly*”
 since it is automatically set by the framework and does not need to be
 modified by the user.
 
@@ -872,8 +875,8 @@ want to ignore the selected value when actually performing a search.
 In message bundle: *image = true | false*
 
 This setting can be used on a LOB property to specify whether it
-represents an image. By default, this setting has the value false_._
-If set to true, the application will try to render a preview image of
+represents an image. By default, this setting has the value _false_.
+If set to _true_, the application will try to render a preview image of
 the value (byte contents) of the property.
 
 === Main
@@ -885,13 +888,13 @@ property is the main property of an entity. The main property is the
 property that will be used as the default field to search on using a
 quick search field inside a SplitLayout.
 
-By default, the first encountered property of type String will be marked
+By default, the first encountered property of type *String* will be marked
 as the main attribute but you can use this setting to override the
 default.
 
 In the past, the main attribute was also used for creating the title
 that appears above a search form. However, currently the displayProperty
-from the @Model annotation is used for this.
+from the *@Model* annotation is used for this.
 
 === MaxLength
 
@@ -982,7 +985,7 @@ with a check box. When it is set to *ROWSELECT* then the user can select
 multiple rows by Ctrl- and Shift-clicking on the rows.
 
 The default value of this setting depends on the value of the system
-property ocs.use.grid.selection.checkboxes (if set to true, then the
+property *ocs.use.grid.selection.checkboxes* (if set to _true_, then the
 default will be CHECKBOX).
 
 === MultipleSearch
@@ -992,7 +995,7 @@ In message bundle: *multipleSearch = true | false*
 The *multipleSearch* setting can be used to allow searching on multiple
 values at once for attributes of type *MASTER*. By default, you would
 only be allowed to search on a single value at a time for such
-attributes, but if you set this setting to true you will be allowed to
+attributes, but if you set this setting to _true_ you will be allowed to
 select multiple values (and the application will return all entities
 that match at least one of the selected values). This will also change
 the component that is rendered by default from a combo box to a token
@@ -1001,7 +1004,7 @@ field.
 You can use the *searchSelectMode* to further modify the type of the
 search component that is rendered (you can also use a lookup field).
 
-Default searching for many-to-one property *–>* combo box:
+Default searching for *many-to-one* property *–>* combo box:
 [source,java]
 --
 @Attribute(visibleInGrid = VisibilityType.SHOW, searchable = true, complexEditable = true)
@@ -1022,7 +1025,7 @@ image:media/image5.png[image,width=498,height=71]
 
 You can also use the *multipleSearch* setting for searching on distinct
 String values – As you have seen before, by default the framework will
-generate a text field. However, if you set *multipleSearch* to true and
+generate a text field. However, if you set *multipleSearch* to _true_ and
 *searchSelectMode* to *TOKEN* then the application will render a token
 field that allows you to enter multiple values to search on. The token
 field will contain a list of all distinct values of the property from
@@ -1041,7 +1044,7 @@ In message bundle: *navigable = true | false*
 The *navigable* setting can be used to specify that a hyperlink for
 in-application navigation must be rendered for a certain property. This
 works both in a grid and in a detail form. This is only supported for
-properties of type *MASTER* (i.e. many-to-one relations). When a
+properties of type *MASTER* (i.e. *many-to-one relations*). When a
 property is declared to be navigable, a button that looks like a
 hyperlink will be rendered to represent it (in a grid or in a form in
 edit mode) and clicking this button will kick of the
@@ -1068,8 +1071,8 @@ selected entity.
 In message bundle: *numberFieldMode* = *TEXTFIELD | NUMBERFIELD*
 
 The number field mode can be used to set the field mode to use for a
-numeric property (currently only supported for fields of type “int” or
-“Integer”). When set to “TEXTFIELD” (the default), a text field will be
+*numeric property* (currently only supported for fields of type “*int*” or
+“*Integer*”). When set to “TEXTFIELD” (the default), a text field will be
 rendered to edit the attribute. This text field includes validation, but
 it is still possible to input non-numeric characters. When set to
 “NUMBERFIELD” a special numeric input component (IntegerField) will be
@@ -1101,9 +1104,9 @@ items will be retrieved at once. If there are many items in the
 collection, this might cause memory issues.
 
 With regard to filtering the items within the component, when you use
-the *NON*_*PAGED* setting, the application will simply search inside the
+the *NON_PAGED* setting, the application will simply search inside the
 descriptions of the items (which are simply the values of the
-*displayProperties* of the items). When using the PAGED setting, the
+*displayProperties* of the items). When using the *PAGED* setting, the
 value of the *filterProperty* setting of the entity model will be used
 instead.
 
@@ -1121,7 +1124,7 @@ In message bundle: *percentage = true | false*
 
 The *percentage* setting is used to indicate whether a numeric value
 represents a percentage. By default, this attribute has the value
-false_._ If set to true, then the value of the property will be
+_false_. If set to _true_, then the value of the property will be
 displayed with a “%” sign following it, both in read-only and edit mode.
 
 The percentage sign is purely cosmetic; the actual value of the property
@@ -1178,8 +1181,8 @@ As an example, consider the following:
 @Attribute(complexEditable = true, quickAddAllowed = true, selectMode = AttributeSelectMode.LOOKUP)
 private Country countryOfOrigin;
 --
-Here, we define a “countryOfOrigin” property that is of type “Country”..
-We set the *quickAddAllowed* to “true”. Once the user now starts the
+Here, we define a “*countryOfOrigin*” property that is of type “*Country*”.
+We set the *quickAddAllowed* to “_true_”. Once the user now starts the
 application, they will see an “Add” button behind the field that can be
 used to create a new country. Once pressed, the button will bring up the
 following dialog:
@@ -1196,7 +1199,7 @@ the user tries to save the entity (based on the *findIdenticalEntity*
 functionality), and will then look for an error message stored under the
 “<short name of entity>.not.unique” key in order to display an error
 message. E.g. in the example above, you should add a
-“Country.not.unique” message to the message bundle.
+“*Country.not.unique*” message to the message bundle.
 
 === ReplacementSearchPath
 
@@ -1213,8 +1216,8 @@ to use during the search.
 
 A common use case for this occurs when you are using the functionality
 from the *dynamo-functional-domain* module, and you have multiple
-many-to-many relations from an entity to various Domain subclasses. In
-this case, you can model a single many-to-many relation between the
+*many-to-many* relations from an entity to various Domain subclasses. In
+this case, you can model a single *many-to-many* relation between the
 entity and the domain table as follows:
 [source,java]
 --
@@ -1262,7 +1265,7 @@ In message bundle: *requiredForSearching = true | false*
 The *requiredForSearching* setting determines if a property is required
 before a search can be carried out inside a *SearchLayout.* If you
 create a search form that contains properties that have
-*requiredForSearching* set tot true, you will not be able to carry out a
+*requiredForSearching* set tot _true_, you will not be able to carry out a
 search (i.e. the *Search* button will be disabled) until you provide a
 search value for these properties.
 
@@ -1294,25 +1297,25 @@ In message bundle: *searchCaseSensitive = true | false*
 
 The *searchCaseSensitive* setting determines whether search operations
 on the property are case sensitive. The default is given by the system
-property *ocs.default.search.case.sensitive* which defaults to “false”.
+property *ocs.default.search.case.sensitive* which defaults to “_false_”.
 This setting is only used for attributes of type String and ignored in
 all other cases.
 
-On the attribute, you can use the values BooleanType.TRUE and
-BooleanType.FALSE.
+On the attribute, you can use the values *BooleanType.TRUE* and
+*BooleanType.FALSE*.
 
 === SearchDateOnly
 
 In message bundle: *searchDateOnly = true | false*
 
 The *searchDateOnly* setting determines whether search operations on an
-attribute that represents a date/time (either LocalDateTime or
-ZonedDateTime) are carried out using only date selection fields rather
+attribute that represents a *date/time* (either *LocalDateTime* or
+*ZonedDateTime*) are carried out using only date selection fields rather
 than time selection fields.
 
 By default, when searching on an a date/time attribute, the application
 will render two timestamp search fields that allow you to specify a
-search interval. When you change this setting to true then instead the
+search interval. When you change this setting to _true_ then instead the
 application will render to date selection fields. Searching using these
 date selection fields will return any time stamps that fall within the
 specified date interval (inclusive). E.g. if you enter the search values
@@ -1325,12 +1328,12 @@ time stamp value matches the interval from *2020-04-04 00:00:00* up to
 In message bundle: *searchForExactValue = true | false*
 
 This setting determines whether to search for an exact value rather than
-a range, when searching for numeric or date values. By default, for such
+a range, when searching for *numeric* or *date* values. By default, for such
 a field two search fields will be rendered: one for the lower bound of
 the range to search for, and one for the upper bound of the range to
 search for.
 
-By default, this setting has the value *false.* If set to *true,* then
+By default, this setting has the value _false_. If set to _true_, then
 instead of the two search fields, a single field will be rendered that
 allows the user to search for an exact value.
 
@@ -1339,13 +1342,13 @@ allows the user to search for an exact value.
 In message bundle: *searchPrefixOnly = true | false*
 
 The *searchPrefixOnly* setting determines whether search operations on
-the property check only for a prefix match. If this is set to true,
+the property check only for a prefix match. If this is set to _true_,
 then searching for e.g. “a” will only match “almond” (“a” appears at
-start) but not “walnut” (“a” appears in the middle). If set to false,
+start) but not “walnut” (“a” appears in the middle). If set to _false_,
 then “a” will match both “almond” and “walnut”.
 
-By default, this setting has the value false. This setting is only
-used for attributes of type String and ignored in all other cases.
+By default, this setting has the value _false_. This setting is only
+used for attributes of type *String* and ignored in all other cases.
 
 === SearchSelectMode
 
@@ -1366,7 +1369,7 @@ The following restrictions apply:
 *LOOKUP* or *LIST*.
 * For a property of type *DETAIL* you can use the values *LOOKUP* and
 *TOKEN*
-* For an attribute of type String, you can use the value *TOKEN*, in
+* For an attribute of type *String*, you can use the value *TOKEN*, in
 combination with setting the *multipleSearch* to *true.* This will
 produce a search field that allows you to select multiple values from
 among a list of all the distinct values of the attribute.
@@ -1377,9 +1380,9 @@ In message bundle: *showPassword = true | false*
 
 The *showPassword* setting can be used to specify whether a button to
 toggle between showing and hiding a password inside a password field
-will be shown. When this setting has the value false (the default),
+will be shown. When this setting has the value _false_ (the default),
 then the contents of the password field will always be shown obscured.
-When this setting has the value *true,* a button to toggle between an
+When this setting has the value _true_, a button to toggle between an
 unobscured and obscured view is displayed at the end of the input
 component.
 
@@ -1390,7 +1393,7 @@ image:media/image9.png[image,width=197,height=68]
 In message bundle: *sortable = true | false*
 
 The *sortable* setting can be used to specify whether a grid can be
-sorted on the attribute. By default, it is set to true for all
+sorted on the attribute. By default, it is set to _true_ for all
 attributes.
 
 === TextAreaHeight
@@ -1399,7 +1402,7 @@ In message bundle: *textAreaHeight = [string value]*
 
 The *textAreaHeight* setting can be used to specify the height of a text
 area. It is only used when *textFieldMode* is set to *TEXTAREA* and
-accepts all ways to specify height in CSS/HTML (e.g. “px”, “em” etc).
+accepts all ways to specify height in *CSS/HTML* (e.g. “px”, “em” etc).
 The default value is the value of the system property
 *ocs.default.text.area.height*
 
@@ -1440,9 +1443,9 @@ the start and end of the input inside text areas and text fields. This
 defaults to false but can be modified by changing the value of the
 *ocs.trim.spaces* system property.
 
-On the @Attribute annotation, you can use the “trimSpaces” setting which
-supports the values INHERIT, TRIM and NO_TRIM. When INHERIT is used, it
-will just use the value of the system property. With TRIM and NO_TRIM
+On the *@Attribute* annotation, you can use the “*trimSpaces*” setting which
+supports the values *INHERIT, TRIM* and *NO_TRIM*. When _INHERIT_ is used, it
+will just use the value of the system property. With _TRIM_ and _NO_TRIM_
 you can either enable or disable the trimming for this specific
 attribute.
 
@@ -1450,13 +1453,13 @@ attribute.
 
 In message bundle: *trueRepresentation = [desired value]*
 
-____
+
 *falseRepresentation = [desired value]*
-____
+
 
 The *trueRepresentation* and *falseRepresentation* settings can be used
 to modify how a boolean value is displayed in read-only mode. By
-default, such a value will simply by displayed as “true” or “false”, but
+default, such a value will simply by displayed as “_true_” or “_false_”, but
 this can be overruled by setting respectively the *trueRepresentation*
 and *falseRepresentation* values**.**
 
@@ -1481,7 +1484,7 @@ In message bundle: *url = true | false*
 The *url* setting can be used to specify that a certain String property
 must be rendered as a clickable URL.
 
-The default value is false_._ If set to *true,* then a validator will
+The default value is _false_. If set to _true_, then a validator will
 be added to the field (when in edit mode) that checks if the entered
 value is a valid URL (must start with http or https). Also, in read-only
 mode the framework will render a clickable URL containing the value of
@@ -1493,21 +1496,21 @@ browser window.
 In message bundle: *visible = true | false | SHOW | HIDE*
 
 The *visible* setting determines whether a property will be displayed
-inside an edit form__.__ It is not to be confused with the
+inside an edit form. It is not to be confused with the
 *visibleInGrid* attribute that governs whether a property shows up in a
 grid.
 
-By default, all properties will have *visible* set to true, except for
-the “id” property which is reserved for a technical primary key and will
+By default, all properties will have *visible* set to _true_, except for
+the “*id*” property which is reserved for a technical primary key and will
 by default be hidden from the user.
 
 Note that if you set the visible setting to false using the annotation
 override, the *visibleInGrid* setting will also be set to false. If
 you _do_ want the property to show up in a grid view, explicitly set the
-*visibleInGrid* setting to true.
+*visibleInGrid* setting to _true_.
 
-Instead of true you can also use the value *SHOW* and instead of
-false you can also sue the value *HIDE*.
+Instead of _true_ you can also use the value *SHOW* and instead of
+_false_ you can also sue the value *HIDE*.
 
 === VisibleInGrid
 
@@ -1517,7 +1520,7 @@ The *visibleInGrid* setting determines whether a property will be
 displayed in a search results grid.
 
 By default, all *BASIC* properties will have *visibleInGrid* set to
-true, except for the “id” property which is used for a technical primary
+_true_, except for the “*id*” property which is used for a technical primary
 key and will by default be hidden from the user.
 
 For all other properties, you must manually set the attribute to true
@@ -1529,13 +1532,13 @@ In message bundle: *week = true | false*
 
 The *week* setting can be used to specify that a date field must be
 treated as a week code (e.g. “2016-34”). The default for this setting is
-*false.* If set to true, then instead of a date picker, a text field
+_false_. If set to _true_, then instead of a date picker, a text field
 will be rendered for editing the property, and this text field will only
 accept input in the correct format (yyyy-ww). Also, in view mode the
 date will be displayed as the week code.
 
 Note that under the covers, the value will still be treated and stored
-as a java.time.LocalDate.
+as a *java.time.LocalDate*.
 
 == Attribute ordering and grouping
 
@@ -1561,7 +1564,7 @@ public class Organization extends AbstractEntity<Integer> {
 You can achieve the same effect by including a message like
 *Organization.attributeOrder=name,headquarters,address,countryOfOrigin,reputation*
 in the message bundle (use commas to separate the values). The message
-in the bundle will overwrite the ordering set by @AttributeOrder. If
+in the bundle will overwrite the ordering set by *@AttributeOrder*. If
 your entity has a large number of attributes this might get a bit
 unwieldy though.
 
@@ -1619,7 +1622,7 @@ the group. As an example, consider:
 public class Organization extends AbstractEntity<Integer> {
 --
 The above defines two attribute groups identified by the message keys
-“Organization.first” and “Organization.second”. The display names of the
+“*Organization.first*” and “*Organization.second*”. The display names of the
 groups can be defined in the message bundle:
 [source,properties]
 --
@@ -1681,7 +1684,7 @@ property (e.g. *Movie.director.name.displayName=Director Name*). The
 
 The Entity Model framework also supports dealing with “element
 collection” properties, i.e. properties that are collections of simple
-types (currently String, Integer, Long and BigDecimal are supported) and
+types (currently *String, Integer, Long* and *BigDecimal* are supported) and
 that are annotated with the *@ElementCollection* annotation.
 
 For these properties, the application will automatically generate a
@@ -1751,9 +1754,9 @@ public class OrganizationDaoImpl
     }
 }
 --
-The minimal implementation contains just two methods: getEntityClass()
+The minimal implementation contains just two methods: *getEntityClass*()
 which returns the type of the entity that is managed by the DAO, and
-getDslRoot() which returns the QueryDSL root.
+*getDslRoot*() which returns the QueryDSL root.
 
 QueryDSL is a framework that is used by the Dynamo Framework to create
 type-safe queries. Basically, what QueryDSL does is create a QueryDSL
@@ -1797,9 +1800,9 @@ public class OrganizationServiceImpl
     }
 }
 --
-In its most basic form, you can defined a service by extending the
+In its most basic form, you can define a service by extending the
 *BaseServiceImpl* class and inject the appropriate DAO. This DAO must
-also be returned by the *getDao* method. Note that the service must be
+also be returned by the *getDao*() method. Note that the service must be
 annotated with @*Service*, registering it as a Spring service.
 
 By default, the methods of the service that manipulate data (basically,
@@ -1887,7 +1890,10 @@ specify with relations to fetch as part of the query.
 
 Note e.g. the following method defined in *BaseService*:
 
+[source,java]
+--
 public T fetchById(ID id, FetchJoinInformation... joins);
+--
 
 As you can see, this method accepts a _vararg_ parameter that specifies
 which relations to fetch. If left empty, the application will use the
@@ -1907,9 +1913,9 @@ service method, and you do not explicitly specify which relations to
 fetch, all relations returned by this method will be fetched.
 
 Note that when creating a *FetchJoinInformation* object, you can specify
-the type of join. The default is LEFT JOIN which means that the entity
+the type of join. The default is *LEFT JOIN* which means that the entity
 will be returned even if the relation to fetch is empty. You can change
-this to INNER. This will often improve performance but only used this if
+this to *INNER*. This will often improve performance but only used this if
 it relation you are fetching is mandatory and thus always present.
 
 Take great care not to include any substantially large relations, since
@@ -1933,9 +1939,9 @@ relations to fetch.
 amount of entities, and will then use a paging query (using
 *firstResults* and *maxResults*) to retrieve a subset of the desired
 entities). This approach supports the fetching of associated relations,
-but take care that you must only fetch many-to-one or one-to-one
+but take care that you must only fetch *many-to-one* or *one-to-one*
 relations in this fashion. This is because if you fetch one-to-many or
-many-to-many relations, the result set will contain multiple rows per
+*many-to-many* relations, the result set will contain multiple rows per
 entity, which clashes with the *firstResults* and *maxResults* settings
 and will cause the underlying ORM provider to retrieve the entire data
 set first and do the filtering in memory. This is often very
@@ -1945,20 +1951,20 @@ In both cases, the grid is filled lazily – only a small subset of the
 available data will be retrieved. The best approach depends on the
 situation – if you have a large data set and no relations to fetch then
 paging is preferred. If you have a lot of relations to fetch (or if you
-must fetch any one-to-many or many-to-many relations), use the ID-based
+must fetch any *one-to-many* or *many-to-many* relations), use the ID-based
 approach.
 
 === Validation 
 
 The validation facilities in the Dynamo Framework are based on the JSR
 303 (Bean Validation) standard: to express validation rules, simply use
-the standard annotations (@NotNull, @Size, @Min etc.) on the properties
+the standard annotations (*@NotNull, @Size, @Min etc.*) on the properties
 of your entity.
 
-You can also use @AssertTrue and @AssertFalse to express more complex
+You can also use *@AssertTrue* and *@AssertFalse* to express more complex
 (inter-field) validation rules, or write your own validations by
-implementing the *ConstraintValidator* interface. To use @AssertTrue or
-@AssertFalse, create a method on the entity class that returns a
+implementing the *ConstraintValidator* interface. To use *@AssertTrue* or
+*@AssertFalse*, create a method on the entity class that returns a
 Boolean, then annotate that method with either of these annotations –
 during the validation process these methods will be executed and if the
 return value does not match the value expected by the annotation then a
@@ -2069,6 +2075,7 @@ need the default methods provided by *BaseService*_._ If this is the
 case, then you do not have to go through the trouble of creating a DAO
 and Service class. Instead, you can configure a *DefaultServiceImpl*
 and/or *DefaultDaoImpl* in a configuration class. This looks as follows:
+
 [source,java]
 --
 @Bean
@@ -2086,7 +2093,7 @@ As you can see, you can configure a bean that is an instance of
 *DefaultServiceImpl* and supply the necessary arguments to the
 constructor. This includes:
 
-* An instance of *DefaultDaoImpl*_._ This in turn has two (or three)
+* An instance of *DefaultDaoImpl*. This in turn has two (or three)
 constructor arguments, namely:
 ** The QueryDSL base class (the QEntity class)
 ** The entity class.
@@ -2114,7 +2121,7 @@ private BaseService<Integer, Country> countryService;
 
 By default, projects created using the Dynamo Framework consist of a
 root project (with a root pom) that contains three sub-projects:
-*domain*_,_ *core* and *ui*_:_
+*domain*_,_ *core* and *ui*:
 
 * The *domain* subproject contains the domain classes.
 * The *core* subproject contains the service and business logic classes.
@@ -2161,7 +2168,7 @@ located). These message bundles are made available to the Spring
 Framework and you can retrieve a message from them using the
 *MessageService* which is a Spring-managed singleton bean that you can
 inject into your services. Note that many standard components already
-have a reference to this *MessageService*_._
+have a reference to this *MessageService*.
 
 The message bundles used in the application all serve different
 purposes:
@@ -2179,31 +2186,36 @@ In the message bundle and then use the
 *messageService.getMessage(“mybutton.caption”)* method in order to
 retrieve the message. Note that you can use the standard features of the
 Java message bundle mechanism to provide internationalization, e.g. you
-can create a message bundle “messages_fr.properties” and fill that with
+can create a message bundle “*messages_fr.properties*” and fill that with
 the French translations of your messages. This bundle will then be
 picked up if the locale of the application is set to French.
-____
+
 
 * *ValidationMessages.properties* is the message bundle used configuring
 Bean Validation error messages. You can refer to messages from this
 bundle in the following way. Suppose that in your bundle you have the
 following message:
 
-____
-product.aliases.different=Duplicate product aliases found. Please make
+
+*product.aliases.different=Duplicate* product aliases found. Please make
 sure they are all different
 
 Then in the code you can refer to this message by placing the message
 name within curly brackets:
 
-@AssertTrue(message = "\{product.aliases.different}")
+[source,java]
+--
+@AssertTrue(message = "{product.aliases.different}")
+public boolean isAliasesDifferent() {
 
-public *boolean* isAliasesDifferent() \{
-____
+}
+--
+
 
 * *entitymodel.properties* is the message bundle that is used to
 override the default behaviour of the Entity Model factory. See section
 2.5 for instructions on how to use this override mechanism.
+
 * *menu.properties* is the message bundle that is used to configure the
 structure of your menu. It contains both the textual descriptions of
 menu items, and the structure of the menu. More on this can be found in
@@ -2233,78 +2245,63 @@ A Dynamo application uses Spring boot as its application framework. This
 means that there must be a main class that is annotated with
 *@SpringBootApplication*.
 
+[source,java]
+--
 @SpringBootApplication
-
 @Import(ApplicationConfig.class)
-
-public class GtsApplication \{
-
-public *static* void main(String[] args) \{
-
-SpringApplication._run_(GtsApplication.class, args);
-
+public class GtsApplication {
+    public static void main(String[] args) {
+        SpringApplication._run_(GtsApplication.class, args);
+    }
 }
+--
 
-}
-
-As you can see, we use the @Import annotation to import the main
+As you can see, we use the *@Import* annotation to import the main
 configuration file. Strictly speaking this is optional (you can add the
 configuration directly in the main class) but using this setup allows
 you to use a base class from Dynamo that will take care of instantiating
 the basic Dynamo components.
 
-The ApplicationConfig class looks as follows:
+The *ApplicationConfig* class looks as follows:
 
-@ComponentScan(basePackages = \{ "com.ocs.gts", "com.ocs.dynamo" })
-
-@EntityScan(basePackages = \{ "com.ocs.gts.domain",
+[source,java]
+--
+@ComponentScan(basePackages = { "com.ocs.gts", "com.ocs.dynamo" })
+@EntityScan(basePackages = { "com.ocs.gts.domain",
 "com.ocs.dynamo.functional.domain" })
-
 public class ApplicationConfig extends
-ApplicationConfigurationSupport \{
+ApplicationConfigurationSupport {
+    @Override
+    protected String[] getBaseNames() {
+        return new String[] { "classpath:/META-INF/entitymodel",
+                    "classpath:/menu", "classpath:/ui.messages",
+                    "classpath:/ocscommon", "classpath:/ValidationMessages"};
+    }
 
-@Override
+    @Bean
+    @UIScope
+    public UIHelper uiHelper() {
+        return new UIHelper();
+    }
 
-protected String[] getBaseNames() \{
+    @Bean
+    public BaseDao<Integer, Region> regionDao() {
+        return new DefaultDaoImpl<>(QRegion._region_, Region.class);
+    }
 
-return new String[] \{ "classpath:/META-INF/entitymodel",
-"classpath:/menu", "classpath:/ui.messages", "classpath:/ocscommon",
-
-"classpath:/ValidationMessages"};
-
+    …other declarations
 }
-
-@Bean
-
-@UIScope
-
-public UIHelper uiHelper() \{
-
-return new UIHelper();
-
-}
-
-@Bean
-
-public BaseDao<Integer, Region> regionDao() \{
-
-return new DefaultDaoImpl<>(QRegion.*_region_*, Region.class);
-
-}
-
-….other declarations
-
-}
+--
 
 * Use @*ComponentScan* to specify which packages to scan for classes to
 be instantiated by Spring.
 * Use @*EntityScan* to specify which packages to scan for entity
 classes. Normally this will be your own package (in this example
-“com.ocs.gts.domain”). If you want to use the dynamo-functional-domain
-module you must also add “com.ocs.dynamo.functional.domain”.
+“*com.ocs.gts.domain*”). If you want to use the dynamo-functional-domain
+module you must also add “*com.ocs.dynamo.functional.domain*”.
 * Extends the *ApplicationConfigurationSupport* class to automatically
 instantiate the base components needed by Dynamo.
-* Implement the “getBaseNames” method to specify the all resources
+* Implement the “*getBaseNames*” method to specify the all resources
 bundles that are used by the application.
 * Below this you can add your own bean definitions. If you use the
 dynamo-functional-domain module then this will likely including some
@@ -2323,55 +2320,47 @@ security. You can use Spring Security to set up your desired security
 configuration, which is normally done by overwriting the
 *WebSecurityConfigurerAdapter* from Spring.
 
-This is an example for Basic authentication with one in-memory user.
+This is an example for Basic authentication with one in-memory user:
 
+[source,java]
+--
 @EnableWebSecurity
-
 @Configuration
+public class GtsSecurityAdapter extends WebSecurityConfigurerAdapter {
 
-public class GtsSecurityAdapter extends
-WebSecurityConfigurerAdapter \{
+    @Autowired
+    private MyBasicAuthenticationEntryPoint entryPoint;
 
-@Autowired
 
-private MyBasicAuthenticationEntryPoint entryPoint;
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().withUser("Dynamo")
+                .password("{noop}Dynamo")
+                .authorities("user");
+    }
 
-@Autowired
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // disable CSRF (already provided by Vaadin)
+        http.csrf().disable().authorizeRequests().anyRequest()
+                .authenticated().and().httpBasic()
+                .authenticationEntryPoint(entryPoint);
+    }
 
-public void configureGlobal(AuthenticationManagerBuilder auth)
-throws Exception \{
-
-auth.inMemoryAuthentication().withUser("Dynamo").password("\{noop}Dynamo").authorities("user");
-
+    @Bean
+    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
+    }
 }
-
-@Override
-
-protected void configure(HttpSecurity http) throws Exception \{
-
-// disable CSRF (already provided by [.underline]#Vaadin#)
-
-http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic().authenticationEntryPoint(entryPoint);
-
-}
-
-@Bean
-
-GrantedAuthorityDefaults grantedAuthorityDefaults() \{
-
-return new GrantedAuthorityDefaults("");
-
-}
-
-}
+--
 
 Most of this set-up is not specific to Dynamo, but a couple of things
 are worth mentioning:
 
-* We add a bean of type “GrantedAuthorityDefaults”, instantiated with an
+* We add a bean of type “*GrantedAuthorityDefaults*”, instantiated with an
 empty String. This removes the “ROLE_” prefix that Spring Security
 normally adds to role names.
-* We disable CSRF protection by calling http.csrf().disable(). This is
+* We disable CSRF protection by calling *http.csrf().disable()*. This is
 not needed since Vaadin already provided this.
 
 === System properties
@@ -2563,7 +2552,7 @@ access these system properties from inside your code.
 === DatePicker Customization
 
 It is possible to modify the way that the Date Picker component used for
-modifying values of type LocalDate, LocalDateTime and ZonedDateTime is
+modifying values of type *LocalDate, LocalDateTime* and *ZonedDateTime* is
 localized. You can do this by including some messages in any of the
 message bundles used by your application.
 
@@ -2587,8 +2576,8 @@ Monday, etc.
 
 Since this uses the standard Java message bundle functionality, you can
 have different settings for different languages/locales simply by using
-different message bundles, e.g. “messages_nl.properties” for Dutch,
-“messages_es.properties” for Spanish etc. You can set which locale to
+different message bundles, e.g. “*messages_nl.properties*” for Dutch,
+“*messages_es.properties*” for Spanish etc. You can set which locale to
 use for a certain user by calling the *VaadinUtils.storeDateLocale*
 method.
 
@@ -2601,79 +2590,53 @@ basically a class that implements the Vaadin *RouterLayout* interface
 and defines the basic page structure. A simplified version may look as
 follows:
 
+[source,java]
+--
 @UIScope
-
 @Theme(Lumo.class)
-
 @CssImport("./styles/shared-styles.css")
+@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
+@CssImport(value = "./styles/vaadin-custom-field.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/vaadin-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
+@CssImport(value = "./styles/vaadin-combo-box.css", themeFor = "vaadin-combo-box")
+@CssImport(value = "./styles/vaadin-button.css", themeFor = "vaadin-button")
+@CssImport(value = "./styles/vaadin-text-field.css", themeFor = "vaadin-text-field")
 
-@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0,
-user-scalable=yes")
+public class GtsUI extends VerticalLayout implements RouterLayout {
 
-@CssImport(value = "./styles/vaadin-custom-field.css", themeFor =
-"vaadin-custom-field")
+    private static final long _serialVersionUID_ = -4652393330832382449L;
 
-@CssImport(value = "./styles/vaadin-dialog-overlay.css", themeFor =
-"vaadin-dialog-overlay")
+    private MenuBar menu;
 
-@CssImport(value = "./styles/vaadin-combo-box.css", themeFor =
-"vaadin-combo-box")
+    @Autowired
+    private MenuService menuService;
 
-@CssImport(value = "./styles/vaadin-button.css", themeFor =
-"vaadin-button")
+    @Autowired
+    private MessageService messageService;
 
-@CssImport(value = "./styles/vaadin-text-field.css", themeFor =
-"vaadin-text-field")
+    @Autowired
+    private UIHelper uiHelper;
 
-public class GtsUI extends VerticalLayout implements
-RouterLayout \{
+    @PostConstruct
+    protected void init() {
 
-private *static* *final* *long* *_serialVersionUID_* =
--4652393330832382449L;
+    VaadinUtils._storeLocale_(new Locale("nl"));
+    VaadinUtils._storeDateLocale_(new Locale("nl"));
 
-private MenuBar menu;
+    // construct your title bar
+    // construct the menu
 
-@Autowired
+    menu = menuService.constructMenu("gts.menu");
+    add(menu);
 
-private MenuService menuService;
-
-@Autowired
-
-private MessageService messageService;
-
-@Autowired
-
-private UIHelper uiHelper;
-
-@PostConstruct
-
-protected void init() \{
-
-VaadinUtils._storeLocale_(new Locale("nl"));
-
-VaadinUtils._storeDateLocale_(new Locale("nl"));
-
-// construct your title bar
-
-// construct the menu
-
-menu = menuService.constructMenu("gts.menu");
-
-add(menu);
-
-menuService.setLastVisited(menu, Views.*_ORGANIZATION_VIEW_*);
-
-uiHelper.addEntityNavigationMapping(Organization.class, item -> \{
-
-uiHelper.setSelectedEntity(item);
-
-uiHelper.navigate(Views.*_ORGANIZATION_VIEW_*);
-
-});
-
+    menuService.setLastVisited(menu, Views._ORGANIZATION_VIEW_);
+        uiHelper.addEntityNavigationMapping(Organization.class, item -> {
+            uiHelper.setSelectedEntity(item);
+            uiHelper.navigate(Views._ORGANIZATION_VIEW_);
+        });
+    }
 }
-
-}
+--
 
 * The class must be annotated with *@UIScope* to specify that it is
 scoped to a single browser tab.
@@ -2708,8 +2671,8 @@ A view is configured as follows:
 to a single browser tab.
 * *@Route* is used to indicate how the user can navigate to the page. It
 is recommended to store the available view names in a constants file.
-The “value” attribute refers to the relative path at which the view will
-be available. The “layout” attribute should point to your class that
+The “*value*” attribute refers to the relative path at which the view will
+be available. The “*layout*” attribute should point to your class that
 contains the generic screen layout as described in section 8.1.
 * *@RouteAlias* can be used to mark a view as the default view. This is
 the view that will be opened when the user does not enter a relative
@@ -2717,37 +2680,29 @@ path in the browser address bar. At most one view in your entire
 application may be annotated with *@RouteAlias*.
 * *@PageTitle* can be used to set the page title (that will be displayed
 in the user’s browser’s title bar)
-* The *doInit* method can be used to add your own code. Inside this
+* The *doInit*() method can be used to add your own code. Inside this
 method, you must construct your screen. You can add your own components
 to the *VerticalLayout* that is passed as the constructor argument
 (don’t forget this).
 
+[source,java]
+--
 @UIScope
-
-@Route(value = Views.*_ORGANIZATION_VIEW_*, layout = GtsUI.class)
-
+@Route(value = Views._ORGANIZATION_VIEW_, layout = GtsUI.class)
 @RouteAlias(value = "", layout = GtsUI.class)
-
 @PageTitle("Organizations")
+public class OrganizationView extends BaseView {
 
-public class OrganizationView extends BaseView \{
+    @Autowired
+    private OrganizationService organizationService;
+    private static final long _serialVersionUID_ = 3310122000037867336L;
 
-@Autowired
-
-private OrganizationService organizationService;
-
-private *static* *final* *long* *_serialVersionUID_* =
-3310122000037867336L;
-
-@Override
-
-protected void doInit(VerticalLayout main) \{
-
-.. your code goes here
-
+    @Override
+    protected void doInit(VerticalLayout main) {
+        .. your code goes here
+    }
 }
-
-}
+--
 
 === Navigation
 
@@ -2765,9 +2720,11 @@ By default, all views inside a Dynamo application are accessible to all
 users. In order to protect one or more views, you must first ensure that
 two application properties are properly set:
 
+[source,properties]
+--
 ocs.enable.view.authorization=true
-
 ocs.view.package=com.ocs.gts
+--
 
 *ocs.enable.view.authorization* makes sure the view based authorization
 is enabled. *ocs.view.package* must be set to the base package that
@@ -2786,17 +2743,17 @@ authorized.
 
 You can then annotate a view as follows:
 
+[source,java]
+--
 @UIScope
-
-@Route(value = Views.*_PERSON_VIEW_*, layout = GtsUI.class)
-
+@Route(value = Views._PERSON_VIEW_, layout = GtsUI.class)
 @Authorized(roles = "admin")
+public class PersonView extends BaseView {
 
-public class PersonView extends BaseView \{
-
-@Autowired
-
-private PersonService personService;
+    @Autowired
+    private PersonService personService;
+}
+--
 
 The above shows an example of a view definition. The view is annotated
 with *@Route* as we’ve seen before. It is also annotated with
@@ -2811,52 +2768,40 @@ that view then they will be taken to the error view instead.
 Note that for this to work properly, you must create an appropriate
 error view in your application. This can looks as follows:
 
+[source,java]
+--
 package com.ocs.gts.ui;
 
 import com.ocs.dynamo.constants.DynamoConstants;
-
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-
 import com.ocs.dynamo.ui.view.BaseView;
-
 import com.vaadin.flow.component.html.Label;
-
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import com.vaadin.flow.router.Route;
-
 import com.vaadin.flow.spring.annotation.UIScope;
 
 @UIScope
-
 @Route(value = DynamoConstants.ERROR_VIEW, layout = GtsUI.class)
-
-public class GtsErrorView extends BaseView \{
+public class GtsErrorView extends BaseView {
 
 private static final long serialVersionUID = 3955677765990706688L;
 
 @Override
+protected void doInit(VerticalLayout main) {
+    VerticalLayout main = new DefaultVerticalLayout(true, true);
+    VerticalLayout inside = new DefaultVerticalLayout(true, true);
+    main.add(inside);
 
-protected void doInit(VerticalLayout [.underline]#main#) \{
+    Label errorLabel = new Label(message("ocs.view.unknown"));
 
-VerticalLayout main = new DefaultVerticalLayout(true, true);
-
-VerticalLayout inside = new DefaultVerticalLayout(true, true);
-
-main.add(inside);
-
-Label errorLabel = new Label(message("ocs.view.unknown"));
-
-inside.add(errorLabel);
-
-add(main);
-
+    inside.add(errorLabel);
+    add(main);
+    }
 }
-
-}
+--
 
 The error view should container an *@Route* annotation with a value of
-“errorView”. Other than that, it is up to you to determine what the view
+“*errorView*”. Other than that, it is up to you to determine what the view
 looks like.
 
 === Menu Construction
@@ -2868,23 +2813,18 @@ The *MenuService* is a Spring-managed bean which contains a
 *constructMenu* method that you can use to construct the menu bar. The
 *menuService* is configured using the *menu.properties* message bundle:
 
+[source,properties]
+--
 gts.menu.1.displayName=Top Level Menu
-
 gts.menu.1.1.displayName=Organizations
-
 gts.menu.1.1.destination=organizationView
-
 gts.menu.1.2.displayName=Members
-
 gts.menu.1.2.destination=personView
-
 gts.menu.1.3.displayName=Gifts
-
 gts.menu.1.3.destination=giftView
-
 gts.menu.2.displayName=Deliveries
-
 gts.menu.2.destination=deliveryView
+--
 
 When calling the *constructMenu* service, you must pass along a prefix
 that will be used to retrieve the messages from the bundle. In the above
@@ -2897,19 +2837,22 @@ on the fly.
 The following code suffices to create a menu and add it to the UI (main
 refers to the main layout of the UI):
 
+[source,java]
+--
 menu = menuService.constructMenu("gts.menu");
-
 main.add(menu);
+--
 
 You can switch the menu bar at any time by using Vaadin’s support for
 replacing components (“menu” refers to a field on the UI that holds the
 reference to the current menu).
 
+[source,java]
+--
 MenuBar other = menuService.constructMenu("gts.other", getNavigator());
-
 main.replace(menu, other);
-
 menu = other;
+--
 
 The *MenuService* will iterate over the messages, starting at
 “gts.menu.1”, followed by “gts.menu.2”, “gts.menu.3” etc., and try to
@@ -2973,7 +2916,10 @@ in nearly exactly the same way as the regular horizontal menu bar,
 except that you need to insert a reference to the *VerticalMenuService*
 in your code. You can then construct the menu in much the same way:
 
+[source,java]
+--
 Accordion verticalMenu = verticalMenuService.constructMenu("blip.menu");
+--
 
 The component returned by this method (the Accordion) can be added
 anywhere in your layout to create a menu that displays the various
@@ -2986,7 +2932,7 @@ it to the individual layouts pretty easily.
 
 A Spring Vaadin View can have several scopes that govern how long the
 view sticks around – it can be newly created every time it is accessed
-(@ViewScope), persist while the UI persists (@UIScope) or persist as
+(*@ViewScope*), persist while the UI persists (*@UIScope*) or persist as
 long as a Vaadin session exists.
 
 In general, to get the most out of the Dynamo Framework we suggest
@@ -2995,7 +2941,7 @@ having to recreate the view on every request and allows you to e.g. save
 state (like which search filters were entered) in between subsequent
 visits to the same page.
 
-Using @UIScope also ensures that the application will work across
+Using *@UIScope* also ensures that the application will work across
 multiple browser tabs: each browser tab that the user opens within the
 same session gets its own Vaadin UI instance and can be used
 independently. Note that for this to work, you must not yourself store
@@ -3045,13 +2991,13 @@ item. Another example occurs when you mark a property of an entity as
 *navigable.* When you do this, you must also provide an
 EntityNavigationMapping as follows:
 
-uiHelper.addEntityNavigationMapping(Organization.class, item -> \{
-
-uiHelper.setSelectedEntity(item);
-
-uiHelper.navigate(Views.*_ORGANIZATION_VIEW_*);
-
+[source,java]
+--
+uiHelper.addEntityNavigationMapping(Organization.class, item -> {
+    uiHelper.setSelectedEntity(item);
+    uiHelper.navigate(Views.*_ORGANIZATION_VIEW_*);
 });
+--
 
 This ensures that the application knows which view to navigate to (and
 potentially which other actions to take) when the user clicks on a link
@@ -3067,17 +3013,15 @@ E.g. you can place the following code at the bottom of your view to
 check if an entity has been set on the UIHelper, and then navigate to
 the detail screen if needed.
 
-*if* (getUiHelper().getSelectedEntity() *instanceof* Organization) \{
-
-Organization org = (Organization) getUiHelper().getSelectedEntity();
-
-org = organizationService.fetchById(org.getId());
-
-layout.edit(org);
-
-getUIHeler().clearState();
-
+[source,java]
+--
+if (getUiHelper().getSelectedEntity() instanceof Organization) {
+    Organization org = (Organization) getUiHelper().getSelectedEntity();
+    org = organizationService.fetchById(org.getId());
+    layout.edit(org);
+    getUIHeler().clearState();
 }
+--
 
 The *clearState* method removes any state stored in the UIHelper. It is
 recommended to use this to clear up after yourself.
@@ -3086,7 +3030,7 @@ recommended to use this to clear up after yourself.
 
 It is possible to configure the framework to ask for confirmation before
 navigating away from a page. To do so, you must construct the view and
-pass “true” to the constructor parameter *confirmBeforeLeave.*
+pass “_true_” to the constructor parameter *confirmBeforeLeave.*
 
 You can then overwrite the *isEditing* method to indicate when the
 screen is in edit mode. In most cases you can simply delegate to the
@@ -3096,7 +3040,7 @@ Note: the check for whether something is currently being edited is a bit
 simple, it merely checks if the component is currently displaying an
 edit form, if the edit form opens in read only ode, and if this edit
 form is currently in edit mode. If all conditions are true then the
-*isEditing* returns true.
+*isEditing* returns _true_.
 
 === Localization
 
@@ -3109,7 +3053,10 @@ user’s session:
 E.g. the following will make sure that the locale from the user’s
 browser is used:
 
+[source,java]
+--
 VaadinUtils._storeLocale_(VaadinRequest.getCurrent().getLocale());
+--
 
 Note that for date field (i.e. for displaying month names), Dynamo uses
 a separate locale setting. By default, the value of the system property
@@ -3133,24 +3080,21 @@ In order to do so:
 * Create a file named *entitymodel_<loc>.properties* where <loc> is the
 name of the locale e.g. “fr” or “es” in the same directory that already
 contains the *entitymodel.properties* file. You can also use constructs
-like “entitymodel_nl_NL.properties” for the variant of Dutch spoken in
-the Netherlands, or “entitymodel_en_US.properties”.
+like “*entitymodel_nl_NL.properties*” for the variant of Dutch spoken in
+the Netherlands, or “*entitymodel_en_US.properties*”.
 * Inside this file, place the desired translations in the same way as
 you would include regular message bundle overrides. For example, these
 are some lines that could be included in *entitymodel_es.properties*
 
-Organization.displayName=[.underline]#Organización#
-
-Organization.displayNamePlural=[.underline]#Organizaciones#
-
-Organization.description=[.underline]#Una# [.underline]#empresa#
-criminal
-
-Person.displayName=[.underline]#Persona#
-
-Person.displayNamePlural=[.underline]#Personas#
-
-Organization.name.displayName=[.underline]#Nombre#
+[source,properties]
+--
+Organization.displayName=Organización
+Organization.displayNamePlural=Organizaciones
+Organization.description=Una empresa criminal
+Person.displayName=Persona
+Person.displayNamePlural=Personas
+Organization.name.displayName=Nombre
+--
 
 Dynamo uses the following algorithm to determine the appropriate value:
 
@@ -3159,7 +3103,7 @@ Dynamo uses the following algorithm to determine the appropriate value:
 * If this is not the case, revert to the generic
 *entitymodel.properties*
 * If no message can be found in this file, revert to the value declared
-using the @Attribute annotation.
+using the *@Attribute* annotation.
 * Finally, use the calculated default value.
 
 Localization is supported for the following settings:
@@ -3187,7 +3131,7 @@ message bundles.
 instead (since the *description* and *prompt* default to the
 *displayName* if not explicitly defined)
 * If no message can be found in this file, revert to the value declared
-using the @Attribute annotation.
+using the *@Attribute* annotation.
 * If all else fails, use the calculated default value.
 
 == Composite UI components
@@ -3203,17 +3147,17 @@ The Dynamo framework offers the *SimpleSearchLayout* component for
 creating search screens. A basic application of this
 *SimpleSearchLayout* looks as follows:
 
-EntityModel<Organization> em =
-getModelFactory().getModel(Organization.class);
+[source,java]
+--
+EntityModel<Organization> em = getModelFactory().getModel(Organization.class);
 
-FormOptions fo = new
-FormOptions().setAttributeGroupMode(AttributeGroupMode.*_TABSHEET_*).setShowIterationButtons(true);
+FormOptions fo = new FormOptions().setAttributeGroupMode(AttributeGroupMode._TABSHEET_).setShowIterationButtons(true);
 
-SimpleSearchLayout<Integer, Organization> layout = new
-SimpleSearchLayout<>(organizationService, em, QueryType.*_ID_BASED_*,
+SimpleSearchLayout<Integer, Organization> layout = new SimpleSearchLayout<>(organizationService, em, QueryType._ID_BASED_,
 fo,
 
-new SortOrder<String>("name", SortDirection.*_ASCENDING_*));
+new SortOrder<String>("name", SortDirection._ASCENDING_));
+--
 
 As you can see, you create a new instance of the *SimpleSearchLayout*
 and declare both the class of the primary key of the entity and the
@@ -3265,19 +3209,19 @@ will be displayed: the value *PANEL* means that a separate panel will be
 created for every attribute group, with the panels being placed below
 each other, and *TABSHEET* means that a tab sheet component will be
 rendered that contains a separate tab for each attribute group.
-* *complexDetailsMode –* When this is set to true, instead of displaying
+* *complexDetailsMode –* When this is set to _true_, instead of displaying
 a “simple” detail screen that allows you to only edit a single entity, a
 lazy tab layout with multiple tabs will be rendered. This is explained
 in more detail below.
-* *confirmClear –* If this is set to true the user will be asked for
+* *confirmClear –* If this is set to _true_ the user will be asked for
 confirmation if the user presses the *Clear* button to clear all search
 filters in a search form.
-* *confirmSave* – If this is set to true the user will be asked for
+* *confirmSave* – If this is set to _true_ the user will be asked for
 confirmation before changes are saved in response to clicking on the
 *Save* button in an edit form.
 * *detailsEditLayoutButtonsOnSameRow –* this is used to specify whether
 the buttons in a *DetailsEditLayout* that is nested in an edit form will
-appear on the same row as the edit components. If set to false the
+appear on the same row as the edit components. If set to _false_ the
 buttons will be displayed on a separate row below the edit components.
 * *detailsGridSearchMode* – Used on a *DetailsEditGrid* to specify that
 it must be used in search mode. In this mode, you can bring up a modal
@@ -3289,19 +3233,19 @@ allow you to select multiple rows at a time.
 * *detailsModeEnabled –* Indicates whether it is possible to navigate
 from the search mode of a *SearchLayout* to the details view (the part
 that shows the details of a single selected entity). Note that this is
-different from setting *showEditButton* to false – setting *editAllowed*
+different from setting *showEditButton* to _false_ – setting *editAllowed*
 to false ensures there is still a detail view but it cannot be used in
-edit mode. Setting *detailsModeEnabled* to false completely turns off
+edit mode. Setting *detailsModeEnabled* to _false_ completely turns off
 the detail view.
 * *doubleclickSelectAllowed –* Specifies whether the user can navigate
 to a detail screen in a *SearchLayout* by double-clicking on a row in
 the results grid. This is enabled by default.
 * *editAllowed* – specifies whether the *Edit* button will show up
 above/below and edit form when the screen is in view mode. Set
-*openInViewMode* to true and this setting to false if you want to
+*openInViewMode* to true and this setting to _false_ if you want to
 disable editing for a component.
-* *enableAdvancedSearchMode* – by setting this to true, you enable the
-“advanced search mode” which means that you can toggle between the
+* *enableAdvancedSearchMode* – by setting this to _true_, you enable the
+“*advanced search mode*” which means that you can toggle between the
 simple and advanced search mode. Attributes with search mode set to
 ADVANCED will only show up when the screen is in advanced mode.
 * *exportAllowed* – This specifies whether it is allowed to export the
@@ -3318,16 +3262,16 @@ grid). The default value is *ONLY_VISIBLE_IN_GRID.*
 will be shown in edit mode. If you set *openInViewMode* to true, then
 the edit form will open in view mode and you need to click the *Edit*
 button to put the form in edit mode.
-* *placeButtonBarAtTop* – If set to true, the application will display
+* *placeButtonBarAtTop* – If set to _true_, the application will display
 the button bar (containing *Save*, *Cancel*, *Edit* buttons etc.) above
 of the title label (rather than behind it) inside the edit form. This is
 true by default.
 * *preserveAdvancedMode* – this setting is used to specify whether the
 “advanced search mode” should be preserved when navigating away from a
-search screen and then back. It defaults to *true.*
+search screen and then back. It defaults to _true_.
 * *preserveSearchTerms* – this setting ensures that any search terms are
 preserved when navigating away from the screen and then back. By default
-it is set to *true.*
+it is set to _true_.
 * *preserveSelectedTab* – This specifies whether the selected tab will
 be preserved when switching between entities (by using the *Previous*
 and *Next* buttons) in the detail view of a *SearchLayout*.
@@ -3350,7 +3294,7 @@ the screen has been opened in view mode).
 up below the search fields in a search form.
 * *showEditFormCaption* – Whether to display a caption (that lists the
 name/description of the thing you are editing) above an edit form. This
-defaults to *true.*
+defaults to _true_.
 * *showDetailsGridDetailsPanel –* Whether to display a panel containing
 the details of the selected row when a row is selected in a
 DetailsEditGrid.
@@ -3385,7 +3329,7 @@ displayed in Advanced Mode (if available) when first opening a screen.
 
 Finally, you can use the *setReadOnly* method as a shorthand for making
 sure that a screen always opens in read-only mode (under the covers this
-hides the appropriate buttons and sets *openInViewMode* to true).
+hides the appropriate buttons and sets *openInViewMode* to _true_).
 
 The *SimpleSearchLayout* also supports disabling the *Search* button
 until all required search fields have been filled (the required search
@@ -3408,10 +3352,10 @@ search field for attribute “country” that displays a list of countries.
 Say you only want to display countries whose name contains the string
 “ab” then you can add the following field filter:
 
-____
-layout.addFieldFilter("countryOfOrigin", new
-LikePredicate<String>("name", "%au%", false));
-____
+[source,java]
+--
+layout.addFieldFilter("countryOfOrigin", new LikePredicate<String>("name", "%au%", false));
+--
 
 * *detailJoins* is used to pass along the relations that must be fetched
 when retrieving a single entity when displaying the details screen. If
@@ -3436,7 +3380,7 @@ search results. If the number of search results exceeds this value, then
 the result set will be truncated after the specified amount and the user
 will be shown a warning message.
 
-You can also use the *setSearchValue* methods to explicitly set a
+You can also use the *setSearchValue*() methods to explicitly set a
 predefined search value for a certain search field.
 
 By default, the component starts in search mode, meaning that an empty
@@ -3473,24 +3417,22 @@ Next, you must call the *setDetailModeTabCaptions* to set the caption of
 the individual tabs. Implicitly this will also specify the number of
 tabs.
 
-layout.setDetailsModeTabCaptions(new String[] \{ "Organizations",
-"Members" });
+[source,java]
+--
+layout.setDetailsModeTabCaptions(new String[] { "Organizations", "Members" });
+--
 
 You can then use the *addDetailTabCreator* method to specify what the
 individual tabs must look like:
 
-layout.addDetailTabCreator(0, (formOptions, isNew) -> \{
+[source,java]
+--
+layout.addDetailTabCreator(0, (formOptions, isNew) -> {
+    EntityModel<Organization> em2 = getModelFactory().getModel(Organization.class);
 
-EntityModel<Organization> em2 =
-getModelFactory().getModel(Organization.class);
-
-return new SimpleEditLayout<Integer,
-Organization>(layout.getSelectedItem(), organizationService, em2,
-
-formOptions, new FetchJoinInformation("members"), new
-FetchJoinInformation("countryOfOrigin"));
-
+    return new SimpleEditLayout<Integer, Organization>(layout.getSelectedItem(), organizationService, em2, formOptions, new FetchJoinInformation("members"), new FetchJoinInformation("countryOfOrigin"));
 });
+--
 
 This method takes two parameters: the zero-based index of the tab and a
 bifunction that takes the form options and a boolen that indicates
@@ -3504,7 +3446,7 @@ to an edit screen that contains multiple tabs. Clicking on a tab will
 bring up the appropriate composite layout component.
 
 If you want a title to be displayed above the tabs, you can use the
-*setDetailsModeTabTitle* to set it.
+*setDetailsModeTabTitle*() method to set it.
 
 When you try to create a new entity using a search layout while in
 complex details mode, you will not immediately get to see all the tab
@@ -3577,15 +3519,16 @@ organisation as the parent object.
 
 A simple example of a *ServiceBasedSplitLayout* looks as follows:
 
+[source,java]
+--
 EntityModel<Person> em = getModelFactory().getModel(Person.class);
-
 FormOptions fo = new FormOptions();
 
-ServiceBasedSplitLayout<Integer, Person> layout = new
-ServiceBasedSplitLayout<Integer, Person>(personService, em,
-QueryType.ID_BASED, fo, *null);*
+ServiceBasedSplitLayout<Integer, Person> layout = new ServiceBasedSplitLayout<Integer, Person>(personService, em,
+QueryType.ID_BASED, fo, null);
 
 main.addComponent(layout);
+--
 
 You can specify the following parameters when creating the layout:
 
@@ -3598,21 +3541,21 @@ You can specify the following parameters when creating the layout:
 
 By default, the data displayed by the component will not be filtered. If
 you want to apply a filter to the data, you can do so by using the
-*setFilterCreator* method.
+*setFilterCreator*() method.
 
 Like the *SimpleSearchLayout*, the *SplitLayout* supports the use of
-field filters__.__
+field filters.
 
 The *SplitLayout* components support the use of the *FormOptions*
 parameter object. Of special interest is the *screenMode* setting, which
 allows you to specify whether to display the form in vertical mode (grid
 above the edit form) or horizontal mode (grid to the left of the edit
-form). The default value is *HORIZONTAL*_._
+form). The default value is *HORIZONTAL*.
 
 For the *ServiceBasedSplitLayout* you can also set the
-*showQuickSearchField* property to true or false to specify whether a
+*showQuickSearchField* property to _true_ or _false_ to specify whether a
 quick search field must appear above the results grid. The default value
-is *false.* If you set it to true, then the screen will contain a
+is _false_. If you set it to _true_, then the screen will contain a
 quick search field for searching on the *main* attribute of the entity.
 If this is not sufficient, you can use the *setQuickSearchSupplyFilter*
 method to define you own custom search filter. This method takes a
@@ -3661,29 +3604,26 @@ The *EditableGridLayout* component can be used to display and edit a
 collection of entities inside a grid. The constructor for the
 *EditableGridLayout* constructor looks as follows:
 
-public EditableGridLayout(BaseService<ID, T> service, EntityModel<T>
-entityModel,
-
-FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation...
-joins) \{
-
-*super*(service, entityModel, formOptions, sortOrder, joins);
-
+[source,java]
+--
+public EditableGridLayout(BaseService<ID, T> service, EntityModel<T>entityModel, FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation...joins) {
+    super(service, entityModel, formOptions, sortOrder, joins);
 }
+--
 
-This results in a grid in which items can directly be edited, added, and
-deleted.
+This results in a grid in which items can directly be *edited, added,* and
+*deleted*.
 
 You can use the *GridEditMode* setting on the *FormOptions* to switch
 between the two available edit modes:
 
 * *SINGLE_ROW* mode allows you to edit one row at a time. In this edit
-mode, the data in the grid is shown in read-only mode. You can click on
+mode, the data in the grid is shown in *read-only mode*. You can click on
 a button in each row in the grid to open an in-line editor row that
 allows you to edit the selected row. The in-line editor contains a
 *Save* button that can be used to save just the changes to this row.
 * *SIMULTANEOUS* mode allows you to edit multiple rows at once. In this
-mode, all the rows in the grid are shown in edit mode, and a *Save*
+mode, all the rows in the grid are shown in *edit mode*, and a *Save*
 button will show up below the grid. When clicked, this button will save
 all the pending changes for all modified rows at once.
 
@@ -3704,7 +3644,7 @@ which component to render inside an editable grid.
 
 Apart from these two grid modes, the EditableGrid also supports
 switching between view mode and edit mode. This is independent of the
-grid mode: if you set *openInViewMode* to true, the grid will
+grid mode: if you set *openInViewMode* to _true_, the grid will
 (obviously) open in view mode first, with an edit button below it. If
 your press this button and the grid mode is *SINGLE_ROW* then the grid
 will still be in read-only mode afterwards, but you can use the buttons
@@ -3746,84 +3686,49 @@ To use this component, you need to create an instance of it and then set
 a number of methods that define the captions, icons, and actual tab
 contents:
 
+[source,java]
+--
 tabLayout = new TabLayout<Integer, ProgrammeSelection>(selection);
-
-tabLayout.setDescriptionsCreator(index -> \{
-
-*switch* (index) \{
-
-*case* *_INDEX_PROGRAM_LIST_*:
-
-return message("blip.programme.list.description");
-
-*case* *_INDEX_PROGRAM_COUNT_*:
-
-return message("blip.programme.count.layout.description");
-
-*default*:
-
-return *null*;
-
-}
-
+tabLayout.setDescriptionsCreator(index -> {
+    switch (index) {
+        case _INDEX_PROGRAM_LIST_:
+            return message("blip.programme.list.description");
+        case _INDEX_PROGRAM_COUNT_:
+            return message("blip.programme.count.layout.description");
+        default:
+            return null;
+    }
 });
 
-tabLayout.setIconCreator(index -> \{
-
-*switch* (index) \{
-
-*case* *_INDEX_PROGRAM_LIST_*:
-
-return VaadinIcon.*_LIST_*.create();
-
-*case* *_INDEX_PROGRAM_COUNT_*:
-
-return VaadinIcon.*_ABACUS_*.create();
-
-*default*:
-
-return *null*;
-
-}
-
+tabLayout.setIconCreator(index -> {
+    switch (index) {
+        case _INDEX_PROGRAM_LIST_:
+            return VaadinIcon._LIST_.create();
+        case _INDEX_PROGRAM_COUNT_:
+            return VaadinIcon._ABACUS_.create();
+        default:
+            return null;
+    }
 });
 
-tabLayout.setCaptions(new String[] \{ message("blip.programme.list"),
-message("blip.programme.count.layout") });
-
-tabLayout.setTabCreator(index -> \{
-
-SerializablePredicate<Programme> filter = fsf.extractFilter() == *null*
-? statusFilter
-
-: new AndPredicate<>(fsf.extractFilter(), statusFilter);
-
-*switch* (index) \{
-
-*case* *_INDEX_PROGRAM_LIST_*:
-
-return constructProgrammeListLayout(() -> fsf.extractFilter() ==
-*null* ? statusFilter
-
-: new AndPredicate<>(fsf.extractFilter(), statusFilter),
-tabLayout.getEntity());
-
-*case* *_INDEX_PROGRAM_COUNT_*:
-
-return constructProgrammeCountLayout(filter);
-
-*default*:
-
-return *null*;
-
-}
-
+tabLayout.setCaptions(new String[] { message("blip.programme.list"), message("blip.programme.count.layout") });
+tabLayout.setTabCreator(index -> {
+    SerializablePredicate<Programme> filter = fsf.extractFilter() == null ? statusFilter : new AndPredicate<>(fsf.extractFilter(), statusFilter);
+    switch (index) {
+        case _INDEX_PROGRAM_LIST_:
+            return constructProgrammeListLayout(() -> fsf.extractFilter() == null ? statusFilter : new AndPredicate<>(fsf.extractFilter(), statusFilter), tabLayout.getEntity());
+        case _INDEX_PROGRAM_COUNT_:
+            return constructProgrammeCountLayout(filter);
+        default:
+            return null;
+    }
 });
+--
 
 These methods mostly follow a similar structure: they take a lambda
 function as an argument – the lambda in turn takes the input of the tab
 as the argument and return a component, icon or String. The exception is
-the “setCaptions” method which is just used to define the captions of
+the “*setCaptions*()” method which is just used to define the captions of
 the individual tabs (and implicitly, the total number of tabs).
 
 Note that whenever a tab is opened after the first time, the framework
@@ -3873,7 +3778,7 @@ out and one thread that will periodically poll for the progress of the
 job and update the progress bar. Once the process starts, the component
 will automatically switch to the progress bar view, and once it is done
 it will switch back to the form view. You can use the
-*afterWorkComplete* method to carry out an action after the job
+*afterWorkComplete*() method to carry out an action after the job
 completes.
 
 By default, the *ProgressForm* uses a *ProgessCounter* to keep track of
@@ -3888,7 +3793,7 @@ that will kick off the batch process once the file has been uploaded.
 
 === DetailsEditGrid
 
-The Dynamo framework contains built-in support for managing many-to-many
+The Dynamo framework contains built-in support for managing *many-to-many*
 relations (to already existing entities) in edit forms (a token field
 component will be rendered by default) but this does not cover the
 situation in which you have an object that contains a one-to-many
@@ -3898,7 +3803,7 @@ order and the order lines that make up the order: the order lines do not
 exist on their own but are an integral part of the order.
 
 To be able to create both an entity and its related sub-entities, you
-can use a *DetailsEditGrid*_._ This is a component that you must
+can use a *DetailsEditGrid*. This is a component that you must
 initialize explicitly.
 
 You can do so by calling the *addCustomField* method on the component to
@@ -3906,38 +3811,29 @@ which you want to add the DetailsEditGrid.
 
 This looks as follows:
 
-addCustomField("translations", context -> \{
+[source,java]
+--
+addCustomField("translations", context -> {
+    FormOptions fo = new FormOptions().setShowRemoveButton(true).setDetailsEditLayoutButtonsOnSameRow(false)
+             .setDetailsGridSearchMode(false);
 
-FormOptions fo = new
-FormOptions().setShowRemoveButton(true).setDetailsEditLayoutButtonsOnSameRow(false)
+    EntityModel<GiftTranslation> model =getEntityModelFactory().getModel(GiftTranslation.class);
+    DetailsEditGrid<Integer, GiftTranslation> dt = new DetailsEditGrid<>(model, context.getAttributeModel(),
 
-.setDetailsGridSearchMode(false);
+    context.isViewMode(), fo);
+    dt.setService(giftTranslationService);
 
-EntityModel<GiftTranslation> model =
-getEntityModelFactory().getModel(GiftTranslation.class);
+    dt.setCreateEntity(() -> {
+        GiftTranslation translation = new GiftTranslation();
+        translation.setDescription("desc");
+        getSelectedItem().addTranslation(translation);
 
-DetailsEditGrid<Integer, GiftTranslation> dt = new
-DetailsEditGrid<>(model, context.getAttributeModel(),
+        return translation;
+    });
 
-context.isViewMode(), fo);
-
-dt.setService(giftTranslationService);
-
-dt.setCreateEntity(() -> \{
-
-GiftTranslation translation = new GiftTranslation();
-
-translation.setDescription("desc");
-
-getSelectedItem().addTranslation(translation);
-
-return translation;
-
+    return dt;
 });
-
-return dt;
-
-});
+--
 
 [arabic]
 . The *DetailsEditGrid*, like many composite components, takes two type
@@ -3949,17 +3845,20 @@ set to e.g. specify if a *Remove* button must be shown. By default, an
 . Finally, the constructor takes a Boolean *viewMode* parameter. You can
 simply pass along the parameter from the *context* or set your own
 value.
-. The *setCreateEntity* method can be used to initialize a new entity.
+. The *setCreateEntity*() method can be used to initialize a new entity.
 It is called after the user clicks the *Add* button below the grid.
-. Likewise, the *setRemoveEntity* method can be used to remove the
+. Likewise, the *setRemoveEntity*() method can be used to remove the
 detail object from the parent entity in response to a click on the
 *Remove* button.
 
 Note that it is also possible to use the *DetailsEditGrid* as a lookup
 component for a many-to-many relation. You can do so by setting the
-*detailsGridSearchMode* on the FormOptions parameter object to *true:*
+*detailsGridSearchMode* on the FormOptions parameter object to _true_:
 
+[source,java]
+--
 FormOptions fo = new FormOptions().setDetailsGridSearchMode(true);
+--
 
 This will display the *DetailsEditGrid* in read-only mode and will also
 add a *Search* button below the grid that will bring up a dialog that
@@ -3967,7 +3866,7 @@ allows you to select multiple (already existing) entities to add to the
 grid/couple to the entity being edited. Note that in this mode it is not
 possible to manually add new entities – you are looking up and coupling
 existing entities rather than creating new ones. As such, the
-*setCreateEntity* method is pointless in this mode. However, in this
+*setCreateEntity*() method is pointless in this mode. However, in this
 scenario you must use the *setLinkEntity* method which must contain the
 code that is required to link an item that was selected in the search
 dialog to the entity that is being edited in the edit form.
@@ -3982,7 +3881,7 @@ changes in between.
 
 === ServiceBasedDetailsEditGrid
 
-In the case that you want to edit an 1-to-N relationship or N-to-N
+In the case that you want to edit an *1-to-N* relationship or *N-to-N*
 relationship inside an edit form but the number of coupled entities is
 potentially very large (e.g. the relation from a country to its
 inhabitants), the approach described above using the *DetailsEditGrid*
@@ -3996,13 +3895,13 @@ component to show up.
 
 You can start by adding a property like this to your (parent) entity:
 
+[source,java]
+--
 @Attribute(visibleInGrid = VisibilityType.HIDE)
-
-public Integer getOrganizationId() \{
-
-return id;
-
+public Integer getOrganizationId() {
+    return id;
 }
+--
 
 This is simply a getter that has the same value as the entity’s primary
 key. It is simply used as a hook for starting the custom field
@@ -4011,39 +3910,25 @@ construction.
 Next, you can use the following code to instantiate the custom component
 inside the *addCustomField* method:
 
-____
-ServiceBasedDetailsEditGrid<Integer, Person, Integer, Organization> grid
-= new ServiceBasedDetailsEditGrid<>(
+[source,java]
+--
+ServiceBasedDetailsEditGrid<Integer, Person, Integer, Organization> grid = new ServiceBasedDetailsEditGrid<>(personService, getModelFactory().getModel(Person.class), attributeModel, viewMode, new FormOptions().setDetailsGridSearchMode(false).setShowRemoveButton(true));
 
-personService, getModelFactory().getModel(Person.class),
-attributeModel, viewMode,
+grid.setFilterCreator(org -> new EqualsPredicate<>("organization.id", org.getId()));
+grid.setCreateEntity(() -> {
+    Person person = new Person();
+    person.setOrganization(getSelectedItem());
 
-new
-FormOptions().setDetailsGridSearchMode(false).setShowRemoveButton(true));
-
-grid.setFilterCreator(org -> new EqualsPredicate<>("organization.id",
-org.getId()));
-
-grid.setCreateEntity(() -> \{
-
-Person person = new Person();
-
-person.setOrganization(getSelectedItem());
-
-return person;
-
+    return person;
 });
 
-grid.setRemoveEntity(person -> \{
-
-person.setOrganization(*null*);
-
-personService.save(person);
-
+grid.setRemoveEntity(person -> {
+    person.setOrganization(null);
+    personService.save(person);
 });
 
 return grid;
-____
+--
 
 As you can see, the *ServiceBasedDetailsEditGrid* takes four type
 parameters; the first two are identical to the ones used by the basic
@@ -4056,7 +3941,7 @@ The methods for creating and removing entities (*setCreateEntity* and
 *setRemoveEntity*) function in roughly the same way as for the
 *DetailsEditGrid.*
 
-Of special interest is the *setFilterCreator* method, which is used to
+Of special interest is the *setFilterCreator*() method, which is used to
 specify the filter that is used to limit the entities that show up. In
 this case, we apply a filter that makes sure that only the members for
 which their organization matches the organization that is currently
@@ -4073,19 +3958,22 @@ bring up a dialog that can be used to add a new entity and couple it to
 the parent entity being edited in the form.
 
 Note that if you have a pre-existing collection of entities that you
-want to couple to the entity being edited (a many-to-many relation) you
+want to couple to the entity being edited (a *many-to-many* relation) you
 can use the grid in couple mode as well. As with the basic
 *DetailsEditGrid* you can specify this via the form options.
 
+[source,java]
+--
 FormOptions fo = new FormOptions().setDetailsGridSearchMode(true);
+--
 
 In this mode, there will not be any *Add* or *Edit* buttons, but instead
 you will see a *Search* button below the grid. Clicking this button will
 bring up a search dialog that allows you to select the entities to link.
-You can use the *setSearchDialogFilters* method to specify the (default)
+You can use the *setSearchDialogFilters*() method to specify the (default)
 filters that must be applied when within the search dialog.
 
-In this mode, you will need to use the *setLinkEntity* method to specify
+In this mode, you will need to use the *setLinkEntity*() method to specify
 the code that is to be carried out to link the selected item(s) from the
 dialog screen to the entity that is being edited in edit form. The
 method is called once for each entity that was selected in the dialog
@@ -4094,7 +3982,7 @@ screen.
 === DetailsEditLayout
 
 A slightly more complex use case occurs in the situation in which you
-want to manage a one-to-many relation inside an edit form, while using a
+want to manage a *one-to-many* relation inside an edit form, while using a
 nested form per dependent entity rather than a grid for all dependent
 entities together. This can be achieved by using a *DetailsEditLayout*
 component which can be constructed in a way similar to the creation of a
@@ -4115,33 +4003,25 @@ mode or edit mode.
 forms are rendered (optional).
 
 As is the case with the *DetailsEditGrid,* you can use the
-*setCreateEntity* and *setRemoveEntity* methods to specify what to do in
+*setCreateEntity*() and *setRemoveEntity*() methods to specify what to do in
 order to add a new entity or remove a coupled entity.
 
-DetailsEditLayout<Integer, GiftTranslation> dt = new
-DetailsEditLayout<Integer, GiftTranslation>(giftTranslationService,
-getEntityModelFactory().getModel(GiftTranslation.class),
-attributeModel,
+[source,java]
+--
+DetailsEditLayout<Integer, GiftTranslation> dt = new DetailsEditLayout<Integer, GiftTranslation>(giftTranslationService, getEntityModelFactory().getModel(GiftTranslation.class), attributeModel, viewMode, fo, new AttributeComparator<>("description"));
 
-viewMode, fo, new AttributeComparator<>("description"));
+dt.setCreateEntity(() -> {
+    GiftTranslation gt = new GiftTranslation();
+    GiftLayout.*this*.getSelectedItem().addTranslation(gt);
 
-dt.setCreateEntity(() -> \{
-
-GiftTranslation gt = new GiftTranslation();
-
-GiftLayout.*this*.getSelectedItem().addTranslation(gt);
-
-return gt;
-
+    return gt;
 });
 
-dt.setRemoveEntity(gt -> \{
-
-Gift gift = GiftLayout.*this*.getSelectedItem();
-
-gift.removeTranslation(gt);
-
-s});
+dt.setRemoveEntity(gt -> {
+    Gift gift = GiftLayout.this.getSelectedItem();
+    gift.removeTranslation(gt);
+});
+--
 
 As described above, the framework will render a sub-form that is nested
 within the main edit form for every entity. For each sub-form a *Remove*
@@ -4155,34 +4035,28 @@ form is clicked.
 === EntityPopupDialog
 
 The *EntityPopupDialog* is a simple modal dialog that can be used to
-add, modify, or view a single entity. It can be used as follows:
+*add, modify,* or *view* a single entity. It can be used as follows:
 
+[source,java]
+--
 Button popupButton = new Button("Popup");
 
-popupButton.addClickListener(event -> \{
+popupButton.addClickListener(event -> {
+    EntityPopupDialog<Integer, Organization> popupDialog = new EntityPopupDialog<Integer, Organization>(organizationService, getSelectedItem(), getEntityModelFactory().getModel(Organization.class), new HashMap<>(), new FormOptions());
 
-EntityPopupDialog<Integer, Organization> popupDialog = new
-EntityPopupDialog<Integer, Organization>(organizationService,
-
-getSelectedItem(),
-getEntityModelFactory().getModel(Organization.class), new
-HashMap<>(), new FormOptions());
-
-popupDialog.build();
-
-popupDialog.open();
-
+    popupDialog.build();
+    popupDialog.open();
 });
 
 buttonBar.add(popupButton);
-
 registerComponent(popupButton);
+--
 
 As you can see, the *EntityPopupDialog* takes many of the same
 parameters as the other composite components:
 
 * The service used to query the database.
-* The entity to display (the “getSelectedItem” in the example above)
+* The entity to display (the “*getSelectedItem*” in the example above)
 * The entity model used to construct the dialog.
 * The *FormOptions* used to modify how the form is constructed.
 
@@ -4192,7 +4066,7 @@ selected entity:
 image:media/image14.png[image,width=560,height=543]
 
 By default, the popup will open in edit mode. You can modify this by
-using the *FormOptions* and setting *openInViewMode* to true.
+using the *FormOptions* and setting *openInViewMode* to _true_.
 
 === CompositionLayout
 
@@ -4204,9 +4078,9 @@ will in turn delegate the reload request to all the components nested
 within.
 
 When you want to use a *CompositionLayout,* call its
-*setBuildMainLayout* method and create any components that you want to
+*setBuildMainLayout*() method and create any components that you want to
 nest inside this method. For each component, register it with the
-*CompositionLayout* using the *addNestedComponent* method.
+*CompositionLayout* using the *addNestedComponent*() method.
 
 == Callbacks and method overrides
 
@@ -4236,14 +4110,14 @@ changes e.g. to modify the page length or to defined field filters or
 default filters – at this point you are only calling setter methods.
 
 Once the component is added to its parent component, Vaadin will call
-the *onAttach* method, and this method has been overridden to call the
+the *onAttach*() method, and this method has been overridden to call the
 *build* method which is implemented by all composite components and it
 used to lazily construct the starting state of the component. E.g. for a
 search layout, the framework will initialize the search form and the
 results grid. During this process, callback methods are carried out.
 
 Other parts of the component are not immediately created, e.g. the edit
-form in only created the first time the user presses the Add or
+form is only created the first time the user presses the Add or
 View/Edit button. This might also trigger some callback methods.
 
 In case it is not possible to directly attach a component to its parent
@@ -4529,49 +4403,37 @@ enough and in these cases, you can do the following:
 
 * {blank}
 +
-____
-The *setParentGroupHeaders* method can be used to return an array of
+
+The *setParentGroupHeaders*() method can be used to return an array of
 Strings. These represent the captions of the extra groups you want to
 create.
-____
+
 * {blank}
 +
-____
-The *setFindParentGroup* method can be used to link an existing
+
+The *setFindParentGroup*() method can be used to link an existing
 attribute group (as defined on your entity) to the newly created top
 level group.
-____
 
-setParentGroupHeaders(
 
-new String[] \{ "blip.attributes.main", *_MSG_ATTRIBUTES_PROMOTED_*,
-"blip.attributes.other" });
+[source,java]
+--
+setParentGroupHeaders(new String[] { "blip.attributes.main", _MSG_ATTRIBUTES_PROMOTED_, "blip.attributes.other" });
 
-setFindParentGroup(childGroup -> \{
-
-*switch* (childGroup) \{
-
-*case* Constants.*_AUDIT_DATA_*:
-
-return "blip.attributes.other";
-
-*case* Constants.*_PROMOTED_MAIN_*:
-
-*case* Constants.*_PROJECTED_FINAL_*:
-
-*case* Constants.*_OTHER_ATTRIBUTES_PROMOTED_*:
-
-// display on the promoted tab
-
-return *_MSG_ATTRIBUTES_PROMOTED_*;
-
-*default*:
-
-return "blip.attributes.main";
-
-}
-
+setFindParentGroup(childGroup -> {
+    switch (childGroup) {
+        case Constants._AUDIT_DATA_:
+            return "blip.attributes.other";
+        case Constants._PROMOTED_MAIN_:
+        case Constants._PROJECTED_FINAL_:
+        case Constants._OTHER_ATTRIBUTES_PROMOTED_:
+            // display on the promoted tab
+            return _MSG_ATTRIBUTES_PROMOTED_;
+        default:
+            return "blip.attributes.main";
+    }
 });
+--
 
 The value of the *attributeGroupMode* from the *FormOptions* determines
 the top-level attribute grouping – so if this is e.g. set to *TABSHEET*
@@ -4585,71 +4447,67 @@ level, and a tab component within each panel.
 The composite components offer a number of methods for modifying the
 various button bars that they contain.
 
-The *setPostProcessMainButtonBar* method can be used to make
+The *setPostProcessMainButtonBar*() method can be used to make
 modifications to the button bar that appears below the results grid in a
 SearchLayout, a SplitLayout or a EditableGridLayout.
 
-The *setPostProcessDetailButtonBar* method can be used to make
+The *setPostProcessDetailButtonBar*() method can be used to make
 modifications to the button bar that appears above and below the edit
 form in a SearchLayout, a SplitLayout or an EditableGridLayout. For a
 SimpleEditLayout you can achieve the same by using the
-*setPostProcessButtonBar* method.
+*setPostProcessButtonBar*() method.
 
-Finally, the *setPostProcessSearchButton* method can be used to make
+Finally, the *setPostProcessSearchButton*() method can be used to make
 modifications to the button bar that appears below the search form in a
 SearchLayout (and that normally contains the Search and Clear buttons).
 
 When a button or component must become enabled/disabled based on whether
-a row is selected in the grid, then you can call the *registerComponent*
+a row is selected in the grid, then you can call the *registerComponent*()
 method (passing the component as the argument) inside one of the post
 process method. If you need to further modify the conditions under which
-the button is enabled, use the *setMustEnableComponent* method.
+the button is enabled, use the *setMustEnableComponent*() method.
 
 As an example, consider the following:
 
-layout.setPostProcessMainButtonBar(buttonBar -> \{
+[source,java]
+--
+layout.setPostProcessMainButtonBar(buttonBar -> {
+    Button notificationButton = new Button("Show name");
 
-Button notificationButton = new Button("Show name");
+    notificationButton.addClickListener(event -> {
+        showErrorNotification(layout.getSelectedItem().getNickName());
+    });
 
-notificationButton.addClickListener(event -> \{
+    buttonBar.add(notificationButton);
 
-showErrorNotification(layout.getSelectedItem().getNickName());
+    layout.registerComponent("notificationButton", notificationButton);
 
-});
+    });
 
-buttonBar.add(notificationButton);
+    layout.setMustEnableComponent((com, ent) -> {
+        if (layout.isRegisteredComponent("notificationButton", com)) {
+            return ent.getFirstName().startsWith("M");
+        }
 
-layout.registerComponent("notificationButton", notificationButton);
+        return true;
+    });
+--
 
-});
-
-layout.setMustEnableComponent((com, ent) -> \{
-
-*if* (layout.isRegisteredComponent("notificationButton", com)) \{
-
-return ent.getFirstName().startsWith("M");
-
-}
-
-return true;
-
-});
-
-First, we create a button (“notificationButton”) that simply shows a
+First, we create a button (“*notificationButton*”) that simply shows a
 notification message when clicked. We then register this button under
 the reference “notificationButton”.
 
 Now, every time a row is selected or deselected in the results grid of
 the component, all registered buttons are evaluated. If no row is
 selected, the button is disabled. If a row is selected, the
-“mustEnableComponent” method is evaluated for every registered
+“*mustEnableComponent*()” method is evaluated for every registered
 component. In the example above, we check if that component is the
-notificationButton (by calling the *isRegisteredComponent* method).
+notificationButton (by calling the *isRegisteredComponent*() method).
 
 ==== setPostProcessEditFields
 
 If you want to add custom behaviour to the edit form, you can do so in
-the *setPostProcessEditFields* method. This method can e.g. be used to
+the *setPostProcessEditFields*() method. This method can e.g. be used to
 add extra behaviour to input fields (i.e. respond to the change of field
 A by changing the value in field B, or by disabling field C). This
 method is called once per composite layout component, after the first
@@ -4661,16 +4519,16 @@ The method invocation takes a lamdba has a single parameter of type
 *ModelBasedEditForm.* This is a class from the Dynamo Framework that is
 responsible for creating and managing an edit form based on the Entity
 Model. If you want to retrieve the component used for editing a certain
-attribute, you can use the *getField* method for this.
+attribute, you can use the *getField*() method for this.
 
-The *getField* method will return null when there is no appropriate
-field (e.g. because the associated attribute is read-only!) so use this
+The *getField*() method will return null when there is no appropriate
+field (e.g. because the associated attribute is *read-only!*) so use this
 with care.
 
 Note: you must _not_ use this method to modify the characteristics of
 the fields that you can easily manipulate using the entity model. E.g.
 if you always want a field to be invisible or read-only, use the entity
-model for this. Use the *setPostProcessEditFields* method only for
+model for this. Use the *setPostProcessEditFields*() method only for
 complex inter-field behaviour e.g. for having one field respond to a
 Callback methods called in response to user action.
 
@@ -4688,31 +4546,26 @@ format.
 In order to use this functionality, you will first have to add the
 appropriate dependencies to your project:
 
+[source,java]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-frontend-export</artifactId>
-
-<version>$\{dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-frontend-export</artifactId>
+    <version>$\{dynamo.version}</version>
 </dependency>
 
 <dependency>
-
-<groupId>com.monitorjbl</groupId>
-
-<artifactId>xlsx-streamer</artifactId>
-
-<version>2.1.0</version>
-
+    <groupId>com.monitorjbl</groupId>
+    <artifactId>xlsx-streamer</artifactId>
+    <version>2.1.0</version>
 </dependency>
+--
 
 Next, to enable the export for all applications in the table, you will
-have to set the system property *ocs.allow.list.export* to true. This
+have to set the system property *ocs.allow.list.export* to _true_. This
 will enable the export functionality for all grids in your application.
 If you would rather enable the export on a screen-by-screen basis you
-can use the *setExportAllowed* setting on the FormOptions to true.
+can use the *setExportAllowed* setting on the FormOptions to _true_.
 
 The result of this will be that when the user right-clicks on a search
 results grid in the application, the following dialog will appear:
@@ -4729,7 +4582,10 @@ By default, only the columns that are visible in the grid will be
 exported. You can switch to a full export of all the (visible)
 attributes by using the FormOptions object:
 
-FormOptions fo = new FormOptions().setExportMode(ExportMode.*_FULL_*);
+[source,java]
+--
+FormOptions fo = new FormOptions().setExportMode(ExportMode._FULL_);
+--
 
 Note that if you set the export mode to full, this might mean that the
 application will try to export related entities that have not been
@@ -4737,9 +4593,9 @@ fetched, resulting in lazy loading exceptions.
 
 To remedy this, you can do the following:
 
-* You can use the *setExportJoins* method to specify which relations to
+* You can use the *setExportJoins*() method to specify which relations to
 fetch when performing the export.
-* You can use the *setExportEntityModel* method to specify a custom
+* You can use the *setExportEntityModel*() method to specify a custom
 entity model to use for the export. This overrides the default entity
 model that is used to construct the search results grid. You can e.g.
 use this to set the visibility of certain attributes to false so they
@@ -4749,14 +4605,16 @@ To further customize the export to Excel, it is possible to specify a
 custom style generator.
 
 You can register such a custom style generator by using the static
-*ExportDelegateHelper.addCustomStyleGenerator*. This method adds a
+*ExportDelegateHelper.addCustomStyleGenerator*(). This method adds a
 mapping between an entity model and a style generator.
 
 The style generator is a fairly straightforward functional interface
 that defines a method with the following signature:
 
-CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value,
-AttributeModel am, Object pivotColumnKey);
+[source,java]
+--
+CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am, Object pivotColumnKey);
+--
 
 This method allows you to define custom style (that e.g. allows you to
 change the color, font, border etc.) for a cell based on the entity that
@@ -4774,44 +4632,45 @@ languages, order statuses etc.
 
 If you want to use Dynamo’s functionality for easily managing lookup
 tables, you will have to include the following dependency in your
-pom.xml file:
+*pom.xml* file:
 
+[source,java]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-functional-domain</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-functional-domain</artifactId>
+    <version>$\{com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 This will give you access to a number of bases entities, DAO’s, and
 services for managing lookup tables/domains. The most important one is
 arguably the *Domain* entity which serves as the base for all your
 lookup tables.
 
+[source,java]
+--
 @Inheritance
-
 @DiscriminatorColumn(name = "type")
-
 @Entity(name = "domain")
-
 @Model(displayProperty = "name", sortOrder = "name asc")
-
-public *abstract* class Domain extends AbstractEntity<Integer> \{
+public abstract class Domain extends AbstractEntity<Integer> {
+    
+}
+--
 
 The idea is that you can define a lookup table class by subclassing this
 class as follows:
 
+[source,java]
+--
 @Entity
-
 @DiscriminatorValue("COUNTRY")
-
-@Model(displayNamePlural = "Countries", displayProperty = "name",
-sortOrder = "name asc")
-
-public class Country extends DomainChild<Country, Region> \{
+@Model(displayNamePlural = "Countries", displayProperty = "name", sortOrder = "name asc")
+public class Country extends DomainChild<Country, Region> {
+    
+}
+--
 
 As you can see, this example uses JPA inheritance to define a new entity
 that will be stored in the “domain” table using JPA’s “single table”
@@ -4819,32 +4678,25 @@ inheritance model.
 
 You can then define simple DAO and service objects for your domain class
 as follows (you would normally place these in a class annotated with
-@Configuration).
+*@Configuration*).
 
+[source,java]
+--
 @Bean
-
-public BaseDao<Integer, Country> countryDao() \{
-
-return new DefaultDaoImpl<>(QCountry.*_country_*, Country.class,
-"parent");
-
+public BaseDao<Integer, Country> countryDao() {
+    return new DefaultDaoImpl<>(QCountry._country_, Country.class, "parent");
 }
 
 @Bean
-
-public BaseService<Integer, Country> countryService(BaseDao<Integer,
-Country> dao) \{
-
-DefaultServiceImpl<Integer, Country> countryService = new
-DefaultServiceImpl<>(dao, "code");
-
-return countryService;
-
+public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> dao) {
+    DefaultServiceImpl<Integer, Country> countryService = new DefaultServiceImpl<>(dao, "code");
+    return countryService;
 }
+--
 
 Note that the *DefaultDaoImpl* and *DefaultServiceImpl* classes are part
 of the core dynamo implementation so you can use them without adding the
-*dynamo-functional-domain* dependencies to your pom.xml.
+*dynamo-functional-domain* dependencies to your *pom.xml*.
 
 In addition to the *Domain* class, the *dynamo-functional-domain* module
 contains several other classes like *DomainParent* and *DomainChild*
@@ -4853,15 +4705,14 @@ that can be used to manage lookup tables with simple hierarchies.
 Dynamo also comes with simply functionality for managing a list of
 parametes. To use this functionality, add the following dependency:
 
+[source,java]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-parameter</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-parameter</artifactId>
+    <version>$\{com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 This makes the *Parameter* class as well as the associated
 *ParameterDao* and *ParameterService* available to your application.
@@ -4875,70 +4726,44 @@ This configuration can be included in the *orm.xml* file that can be
 included in the *src/main/resources/META-INF* directory. The following
 shows the configuration for PostgreSQL:
 
-<?xml version=__"1.0"__ encoding=__"UTF-8"__ ?>
+[source,html]
+--
+<?xml version="1.0" encoding="UTF-8"?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd" version="1.0">
 
-<entity-mappings xmlns=__"http://java.sun.com/xml/ns/persistence/orm"__
+    <sequence-generator name="domain_id_seq" allocation-size="1" sequence-name="domain_id_seq"/>
+    <sequence-generator name="parameter_id_seq" allocation-size="1" sequence-name="parameter_id_seq">
 
-xmlns:xsi=__"http://www.w3.org/2001/XMLSchema-instance"__
+    <entity class="com.ocs.dynamo.functional.domain.Domain">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="domain_id_seq"/>
+            </id>
+        </attributes>
+    </entity>
 
-xsi:schemaLocation=__"http://java.sun.com/xml/ns/persistence/orm
-http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"__
-
-version=__"1.0"__>
-
-<sequence-generator name=__"domain_id_seq"__
-
-allocation-size=__"1"__ sequence-name=__"domain_id_seq"__ />
-
-<sequence-generator name=__"parameter_id_seq"__
-
-allocation-size=__"1"__ sequence-name=__"parameter_id_seq"__ />
-
-<entity class=__"com.ocs.dynamo.functional.domain.Domain"__>
-
-<attributes>
-
-<id name=__"id"__>
-
-<generated-value strategy=__"SEQUENCE"__ generator=__"domain_id_seq"__
-/>
-
-</id>
-
-</attributes>
-
-</entity>
-
-<entity class=__"com.ocs.dynamo.functional.domain.Parameter"__>
-
-<attributes>
-
-<id name=__"id"__>
-
-<generated-value strategy=__"SEQUENCE"__
-generator=__"parameter_id_seq"__ />
-
-</id>
-
-</attributes>
-
-</entity>
-
+    <entity class="com.ocs.dynamo.functional.domain.Parameter">
+        <attributes>
+            <id name="id">
+                <generated-value strategy="SEQUENCE" generator="parameter_id_seq" />
+            </id>
+        </attributes>
+    </entity>
 </entity-mappings>
+--
 
 Dynamo also contains some functionality for managing your lookup tables
 in the user interface. To use this functionality you must include the
 *dynamo-functional-domain-frontend* dependency:
 
+[source,java]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-functional-domain-frontend</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-functional-domain-frontend</artifactId>
+    <version>$\{com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 This dependency includes a single component named
 *MultiDomainEditLayout* which offers a simple screen for managing your
@@ -4946,14 +4771,15 @@ lookup tables.
 
 The initialization of this component looks as follows:
 
+[source,java]
+--
 List<Class<? extends Domain>> domains = new ArrayList<>();
 
 domains.add(Country.class);
-
 domains.add(Region.class);
 
-MultiDomainEditLayout dom = new MultiDomainEditLayout(new
-FormOptions(), domains);
+MultiDomainEditLayout dom = new MultiDomainEditLayout(new FormOptions(), domains);
+--
 
 You can simply pass a list of the domain classes you want to manage to
 the *MultiDomainEditLayout’s* constructor. This will then result in a
@@ -4978,7 +4804,7 @@ use input components backed by an entity model – in this case you can
 use the field factory to create the components one-by-one.
 
 In order to acquire a reference to a FieldFactory, you can use the
-static FieldFactory._getInstance_() method.
+static *FieldFactory.getInstance*() method.
 
 You can then use the *constructField(AttributeModel am)* or
 *constructField(FieldCreationContext ctx)* methods to create the field.
@@ -5008,13 +4834,13 @@ in order to share the data providers that are used by similar components
 inside an editable grid.
 
 In addition to the *constructField*-methods the Field Factory also
-offers the *addConvertersAndValidators* method. This method has the
+offers the *addConvertersAndValidators*() method. This method has the
 following signature:
 
-<U> void addConvertersAndValidators(BindingBuilder<U, ?> builder,
-AttributeModel am,
-
-Converter<String, ?> customConverter);
+[source,java]
+--
+<U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am, Converter<String, ?> customConverter);
+--
 
 This method is used internally by the framework in order to add
 converters and validators to a field, but in case you are creating your
@@ -5042,9 +4868,9 @@ ComponentCreator subclass implements a *supports* method that is used by
 the FieldFactory to check if it supports constructing a component for
 the current attribute model and creation context – the first component
 creator that is found is used by the FieldFactory to actually construct
-the component by calling the *createComponent* method. Later in the
-process, the FieldFactory also calls the *addConverters* and
-*addValidators* method to add converters and validators to the component
+the component by calling the *createComponent*() method. Later in the
+process, the FieldFactory also calls the *addConverters*() and
+*addValidators*() method to add converters and validators to the component
 (well, technically to the binding between the component and the backing
 bean, but you get the point).
 
@@ -5056,7 +4882,7 @@ creation process:
 
 * First of all, you can make a class that is a subclass of one of the
 ComponentCreators that come with Dynamo and annotate it as a Spring
-component (e.g. by using @Service or @Component). Spring Boot will then
+component (e.g. by using *@Service* or *@Component*). Spring Boot will then
 use your subclass instead of the default implementation. You can use
 this subclass to make modifications to the component creation process,
 e.g. by changing default settings, adding functionality etc. But if
@@ -5065,10 +4891,10 @@ completely different component. Note however that this will only work
 properly as long as your component can deal with the same data types as
 the original component – i.e. overwriting TextFieldCreator and having
 your subclass return a date picker is not going to work very well.
-* The ComponentCreators are also ordered using the Spring @Order
+* The ComponentCreators are also ordered using the Spring *@Order*
 annotation, so what you can also do is define your own class (that
 inherits from SimpleComponentCreator or EntityComponentCreator), then
-register this component as a Spring bean and annotate it with an @Order
+register this component as a Spring bean and annotate it with an *@Order*
 with a lower value than the default converters (the default converters
 start with an order value of 1000 so anything below that will work). The
 FieldFactory will start evaluating the ComponentCreators starting with
@@ -5086,17 +4912,18 @@ two separate approaches are possible (or necessary, depending on what
 exactly you are trying to do).
 
 To make changes to the general styling of the application, create a file
-named “shared-styles.css” and place this in the “frontend/styles”
+named “*shared-styles.css*” and place this in the “*frontend/styles*”
 subdirectory of your project root directory.
 
 To make sure the application can actually find your style sheet you must
-pace an @CssLayout on the class in your application that imlements
+pace an *@CssLayout* on the class in your application that imlements
 RouterLayout:
 
+[source,java]
+--
 @CssImport("./styles/shared-styles.css")
-
-public class GtsUI extends VerticalLayout implements
-RouterLayout \{
+public class GtsUI extends VerticalLayout implements RouterLayout {
+--
 
 Inside this css file you can place your custom styles or make changes to
 the default styles.
@@ -5109,18 +4936,22 @@ https://cdn.vaadin.com/vaadin-lumo-styles/1.5.0/demo/index.html.
 In order to modify a variable, you can include an html element in your
 style sheet and then assign a new value as follows:
 
-*html* \{
-
---lumo-primary-color: _#f99d34_;
-
+[source,css]
+--
+html {
+    lumo-primary-color: _#f99d34_;
 }
+--
 
 You can then refer to the variable in the remainder of the style sheet
 as follows:
 
-border: _1px_ _solid_ _var(_-_-lumo-primary-color)_ _!important_;
+[source,css]
+--
+border: 1px solid_var(lumo-primary-color) !important;
+--
 
-As you can see, you use the name of the variable enclosed in a *var()*
+As you can see, you use the name of the variable enclosed in a *var*()
 construct.
 
 Unfortunately, this does not work for all styles in the application.
@@ -5131,20 +4962,20 @@ component. This can be very useful but it does mean that modifying the
 styles from a global style sheet is tricky.
 
 To modify styles that are in the shadow DOM, create a file named
-“<component-name>.css” in the *frontend/styles* directory, where
-“component-name” is the name of the component you want to modify, e.g.
-“vaadin-custom-field.css”.
+“*<component-name>.css*” in the *frontend/styles* directory, where
+“*component-name*” is the name of the component you want to modify, e.g.
+“*vaadin-custom-field.css*”.
 
 Inside this file, you can place any valid CSS that you want.
 
-Next, add another CssImport annotation to your RouterLayout class and
+Next, add another *@CssImport* annotation to your *RouterLayout* class and
 make sure the value matches the name of the file you created.
 
-@CssImport(value = "./styles/vaadin-custom-field.css", themeFor =
-"vaadin-custom-field")
-
-public class GtsUI extends VerticalLayout implements
-RouterLayout \{
+[source,java]
+--
+@CssImport(value = "./styles/vaadin-custom-field.css", themeFor = "vaadin-custom-field")
+public class GtsUI extends VerticalLayout implements RouterLayout {
+--
 
 == Hibernate Envers Integration
 
@@ -5160,44 +4991,40 @@ database tables – one table to keep track of the time stamps and
 revision keys, and one table for every “regular” table you want to
 audit. By default, these shadow tables are named after the table they
 are shadowing, postfixed with “_aud”. E.g. the shadow table for “person”
-would be named “person_aud”. The table for keeping track of timestamps
-is normally named “revinfo”. However, Dynamo makes some small additions
+would be named “*person_aud*”. The table for keeping track of timestamps
+is normally named “*revinfo*”. However, Dynamo makes some small additions
 to the framework and stores the revision info in a table named
 “RevisionEntity” instead. The definition for this table (MySQL) is as
 follows:
 
-*CREATE* *TABLE* `RevisionEntity` (
-
-`id` *int*(11) *NOT* *NULL* AUTO_INCREMENT,
-
-`**timestamp**` bigint(20) *NOT* *NULL*,
-
-`username` *varchar*(255) *DEFAULT* *NULL*,
-
-*PRIMARY* *KEY* (`id`)
-
+[source,sql]
+--
+CREATE TABLE `RevisionEntity` (
+    `id` int(11) NOT NULL AUTO_INCREMENT,
+    `timestamp` bigint(20) NOT NULL,
+    `username` varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
+--
 
 And for Postgresql:
 
+[source,sql]
+--
 CREATE TABLE IF NOT EXISTS public.revisionentity(
-
-id integer NOT NULL DEFAULT nextval('revision_entity_id_seq'::regclass),
-
-"timestamp" bigint NOT NULL,
-
-username character varying(255) ,
-
-CONSTRAINT revisionentity_pkey PRIMARY KEY (id)
-
+    id integer NOT NULL DEFAULT nextval('revision_entity_id_seq'::regclass),
+    "timestamp" bigint NOT NULL,
+    username character varying(255) ,
+    CONSTRAINT revisionentity_pkey PRIMARY KEY (id)
 )
+--
 
 You must provide implementations for the shadow tables yourself. For
 more information on this, consult the Hibernate Envers documentation.
 However, note that compared to the original table:
 
-* There must be a REV column that contains the revision number
-* There must be a REVTYPE column that contains the type of the revision
+* There must be a *REV* column that contains the revision number
+* There must be a *REVTYPE* column that contains the type of the revision
 (insert, update, delete)
 * The primary key must consist of the primary key of the original table
 combined with the REV column.
@@ -5206,57 +5033,56 @@ required. This is because if the record in the shadowed table is
 deleted, a mostly empty record is stored in the shadow table.
 
 Instead of creating these tables yourself, you can also set the
-spring.jpa.hibernate.ddl-auto property to “auto”. This will cause
+*spring.jpa.hibernate.ddl-auto* property to “_auto_”. This will cause
 Hibernate to generate the missing shadow table the next time the
 application starts.
 
 In order to use the Dynamo Envers functionality in your code, add the
-following to your POM file:
+following to your *POM* file:
 
+[source,java]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-envers</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-envers</artifactId>
+    <version>$\{com.ocs.dynamo.version}</version>
 </dependency>
+--
 
-Also, add the following to the UI project:
+Also, add the following to the *UI project*:
 
+[source,java]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-envers-frontend</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-envers-frontend</artifactId>
+    <version>$\{com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 You will probably also explicitly have to add the hibernate-envers
 dependency to the POM of your UI project.
 
-Then, add the following to your application.properties:
+Then, add the following to your *application.properties*:
 
-[.underline]#spring.jpa.properties.org.hibernate.envers.revision_listener#=com.ocs.dynamo.envers.listener.DynamoRevisionListener
+[source,properties]
+--
+spring.jpa.properties.org.hibernate.envers.revision_listener=com.ocs.dynamo.envers.listener.DynamoRevisionListener
+--
 
 This will make sure the framework uses the custom Dynamo revision
 listener rather than the default Hibernate listener.
 
 Next, update the *@EntityScan* so that the
-“com.ocs.dynamo.envers.domain” package is included. This will make sure
+“*com.ocs.dynamo.envers.domain*” package is included. This will make sure
 the “RevisionEntity” entity is recognized.
 
-@ComponentScan(basePackages = \{ "com.ocs.gts", "com.ocs.dynamo", "
-com.ocs.dynamo.envers.domain" })
-
-@EntityScan(basePackages = \{ "com.ocs.gts.domain",
-"com.ocs.dynamo.functional.domain", "com.ocs.dynamo.envers.domain" })
-
-public class ApplicationConfig extends
-ApplicationConfigurationSupport \{
+[source,java]
+--
+@ComponentScan(basePackages = { "com.ocs.gts", "com.ocs.dynamo", " com.ocs.dynamo.envers.domain" })
+@EntityScan(basePackages = { "com.ocs.gts.domain", "com.ocs.dynamo.functional.domain", "com.ocs.dynamo.envers.domain" })
+public class ApplicationConfig extends ApplicationConfigurationSupport {
+--
 
 After that, make sure to annotate your entity classes with *@Audited*
 and you should be good to go – whenever one of the audited entities
@@ -5273,44 +5099,32 @@ functionality. In order to use this class, take the following steps:
 Create a *VersionedXXX* class, where XXX is the name of the original
 class:
 
-@Model(displayName = "Organization revision", displayNamePlural =
-"Organization revisions", displayProperty = "entity.name")
+[source,java]
+--
+@Model(displayName = "Organization revision", displayNamePlural = "Organization revisions", displayProperty = "entity.name")
+public class VersionedOrganization extends VersionedEntity<Integer, Organization> {
+    
+    private static final long _serialVersionUID_ = 4271855110308393329L;
+    public VersionedOrganization(Organization entity, int revision) {
+        super(entity, revision);
+    }
 
-public class VersionedOrganization extends
-VersionedEntity<Integer, Organization> \{
+    @Attribute(embedded = true)
+    public Organization getEntity() {
+        return super.getEntity();
+    }
 
-private *static* *final* *long* *_serialVersionUID_* =
-4271855110308393329L;
-
-public VersionedOrganization(Organization entity, *int* revision) \{
-
-*super*(entity, revision);
-
+    @Attribute(visible = VisibilityType.HIDE)
+    public String getDescription() {
+        return RevisionType._DEL_.equals(getRevisionType()) ? "Deleted" : getEntity().getName();
+    }
 }
-
-@Attribute(embedded = true)
-
-public Organization getEntity() \{
-
-return *super*.getEntity();
-
-}
-
-@Attribute(visible = VisibilityType.HIDE)
-
-public String getDescription() \{
-
-return RevisionType.*_DEL_*.equals(getRevisionType()) ? "Deleted" :
-getEntity().getName();
-
-}
-
-}
+--
 
 * Have the class extend *VersionedEntity* from the Dynamo framework.
-* Override the *getEntity* method an annotate it with
+* Override the *getEntity*() method an annotate it with
 *@Attribute(embedded = true)*
-* Overwrite the getDescription() method to have it return a custom value
+* Overwrite the *getDescription*() method to have it return a custom value
 in case the revision type is “DEL” (deleted).
 * If you want to define attribute groups and/or an attribute order, note
 that you can refer to the properties from the original entity by
@@ -5322,137 +5136,102 @@ the notification).
 
 Next, create a DAO like this:
 
-public *interface* VersionedOrganizationDao extends
-VersionedEntityDao<Integer, Organization, VersionedOrganization> \{
+[source,java]
+--
+public interface VersionedOrganizationDao extends
+VersionedEntityDao<Integer, Organization, VersionedOrganization> {
 
 }
+--
 
 And the implementation associated with it:
 
+[source,java]
+--
 @Repository
+public class VersionedOrganizationDaoImpl extends VersionedEntityDaoImpl<Integer, Organization, VersionedOrganization> implements VersionedOrganizationDao {
 
-public class VersionedOrganizationDaoImpl extends
-VersionedEntityDaoImpl<Integer, Organization, VersionedOrganization>
+    @Override
+    public Class<VersionedOrganization> getEntityClass() {
+        return VersionedOrganization.class;
+    }
 
-implements VersionedOrganizationDao \{
+    @Override
+    protected VersionedOrganization createVersionedEntity(Organization t, int revision) {
+        return new VersionedOrganization(t, revision);
+    }
 
-@Override
+    @Override
+    public Class<Organization> getBaseEntityClass() {
+        return Organization.class;
+    }
 
-public Class<VersionedOrganization> getEntityClass() \{
-
-return VersionedOrganization.class;
-
+    @Override
+    protected void doMap(VersionedOrganization u) {
+        super.doMap(u);
+    
+        if (u.getEntity().getCountryOfOrigin() != null) {
+            u.getEntity().getCountryOfOrigin().getName();
+        }
+    
+        if (u.getEntity().getMembers() != null) {
+            u.getEntity().getMembers().forEach(c -> c.getFirstName());
+        }
+    
+        if (u.getEntity().getMainActivity() != null) {
+            u.getEntity().getMainActivity().getName();
+        }
+    }
 }
+--
 
-@Override
-
-protected VersionedOrganization createVersionedEntity(Organization t,
-*int* revision) \{
-
-return new VersionedOrganization(t, revision);
-
-}
-
-@Override
-
-public Class<Organization> getBaseEntityClass() \{
-
-return Organization.class;
-
-}
-
-@Override
-
-protected void doMap(VersionedOrganization u) \{
-
-*super*.doMap(u);
-
-*if* (u.getEntity().getCountryOfOrigin() != *null*) \{
-
-u.getEntity().getCountryOfOrigin().getName();
-
-}
-
-*if* (u.getEntity().getMembers() != *null*) \{
-
-u.getEntity().getMembers().forEach(c -> c.getFirstName());
-
-}
-
-*if* (u.getEntity().getMainActivity() != *null*) \{
-
-u.getEntity().getMainActivity().getName();
-
-}
-
-}
-
-}
-
-Most of this implementation is very straightforward. Only the *doMap*
+Most of this implementation is very straightforward. Only the *doMap*()
 method requires some additional clarification. In this method, you
 should retrieve all relations that must be loaded when loading a
 revision.
 
 Finally, you must create a *Service* and *ServiceImpl* for you entity:
 
-public *interface* VersionedOrganizationService extends
-BaseService<RevisionKey<Integer>, VersionedOrganization> \{
+[source,java]
+--
+public interface VersionedOrganizationService extends BaseService<RevisionKey<Integer>, VersionedOrganization> {
 
 }
 
 @Service
+public class VersionedOrganizationServiceImpl extends BaseServiceImpl<RevisionKey<Integer>, VersionedOrganization> implements VersionedOrganizationService {
 
-public class VersionedOrganizationServiceImpl extends
-BaseServiceImpl<RevisionKey<Integer>, VersionedOrganization>
+    @Autowired
+    private VersionedOrganizationDao dao;
 
-implements VersionedOrganizationService \{
-
-@Autowired
-
-private VersionedOrganizationDao dao;
-
-@Override
-
-protected BaseDao<RevisionKey<Integer>, VersionedOrganization>
-getDao() \{
-
-return dao;
-
+    @Override
+    protected BaseDao<RevisionKey<Integer>, VersionedOrganization> getDao() {
+        return dao;
+    }
 }
-
-}
+--
 
 After this, you can use the entity like you would use any other entity
 with regard to the creation of custom components. E.g. to create a
 simple search layout for browsing the revision table, do the following:
 
-SimpleSearchLayout<RevisionKey<Integer>, VersionedOrganization>
-versLayout = new SimpleSearchLayout<>(
-
-versionService,
-getModelFactory().getModel(VersionedOrganization.class),
-QueryType.*_ID_BASED_*,
-
-new FormOptions().setReadOnly(true), *null*);
+[source,java]
+--
+SimpleSearchLayout<RevisionKey<Integer>, VersionedOrganization> versLayout = new SimpleSearchLayout<>(
+        versionService, getModelFactory().getModel(VersionedOrganization.class), QueryType.ID_BASED, new FormOptions().setReadOnly(true), null);
 
 main.add(versLayout);
+--
 
 Dynamo offers one more convenient feature for showing the revision
 history of a single entity. This is the *ViewRevisionDialog*:
 
-ViewRevisionDialog<Integer, Organization, VersionedOrganization> dialog
-= [.underline]#new ViewRevisionDialog(#
-
-[.underline]#versionService,
-getModelFactory().getModel(VersionedOrganization.class),#
-
-[.underline]#new
-FormOptions().setAttributeGroupMode(AttributeGroupMode.*_TABSHEET_*),#
-
-[.underline]#layout.getSelectedItem().getId())#;
+[source,java]
+--
+ViewRevisionDialog<Integer, Organization, VersionedOrganization> dialog = new ViewRevisionDialog(versionService, getModelFactory().getModel(VersionedOrganization.class), new FormOptions().setAttributeGroupMode(AttributeGroupMode.TABSHEET), layout.getSelectedItem().getId());
 
 dialog.buildAndOpen();
+--
 
 The code above will create and open a popup dialog that displays the
 revisions for just the selected entity. The FormOptions parameter can be
@@ -5461,7 +5240,7 @@ used to specify the screen mode (horizontal/vertical) and group mode
 
 There is one known limitation with regard to searching on the revision
 history – it is not possible to search for attributes of type DETAIL
-(i.e. one-to-many or many-to-many relations) or MASTER.
+(i.e. *one-to-many* or *many-to-many* relations) or MASTER.
 
 == Composite components class diagram
 
@@ -5488,7 +5267,6 @@ a collection of entities.
 * *ProgressForm* (not shown in diagram) is a form that allows the user
 to start a batch process (like a file upload) and contains a progress
 bar that can be used to keep track of this process.
-* {blank}
 * *TabLayout* (not shown in diagram) is a tab sheet components that has
 the functionality for creating certain tabs on the fly.
 
