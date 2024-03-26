@@ -55,7 +55,7 @@ productive set of technologies:
 
 To create the entity model, you need access to an *EntityModelFactory*.
 The *EntityModelFactory* is a Spring singleton and can be acquired by
-injection (@Inject or @Autowired). You can also acquire a reference to
+injection (*@Inject* or *@Autowired*). You can also acquire a reference to
 the *EntityModelFactory* by calling the *getEntityModelFactory* method
 on the *ServiceLocator*.
 
@@ -4916,7 +4916,7 @@ named “*shared-styles.css*” and place this in the “*frontend/styles*”
 subdirectory of your project root directory.
 
 To make sure the application can actually find your style sheet you must
-pace an *@CssLayout* on the class in your application that imlements
+pace an *@CssLayout* on the class in your application that implements
 RouterLayout:
 
 [source,java]
