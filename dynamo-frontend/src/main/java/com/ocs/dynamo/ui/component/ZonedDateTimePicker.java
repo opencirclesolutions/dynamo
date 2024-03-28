@@ -31,8 +31,7 @@ import java.util.Locale;
 import java.util.TimeZone;
 
 /**
- * A simple component for entering a date with a time stamp. This is a very bare
- * bones implementation that simply places a DatePicker and a TimePicker behind
+ * A simple component for entering a date with a time stamp. This is a very basic implementation that simply places a DatePicker and a TimePicker behind
  * each other
  * 
  * @author Bas Rutten
@@ -42,11 +41,11 @@ public class ZonedDateTimePicker extends CustomField<ZonedDateTime> {
 
 	private static final long serialVersionUID = 8711426577974057547L;
 
-	private DatePicker datePicker;
+	private final DatePicker datePicker;
 
-	private TimePicker timePicker;
+	private final TimePicker timePicker;
 
-	private ComboBox<String> timeZone;
+	private final ComboBox<String> timeZone;
 
 	public ZonedDateTimePicker(Locale locale) {
 		datePicker = new DatePicker();

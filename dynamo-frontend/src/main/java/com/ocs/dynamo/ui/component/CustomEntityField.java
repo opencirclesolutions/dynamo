@@ -28,7 +28,7 @@ import lombok.Getter;
 
 /**
  * A custom field that can be used to edit an AbstractEntity or collection
- * thereof
+ * of AbstractEntities
  * 
  * @author bas.rutten
  *

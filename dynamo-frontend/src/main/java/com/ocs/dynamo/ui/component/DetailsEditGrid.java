@@ -133,8 +133,8 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		}
 
 		// link to parent entity
-		for (T t : selected) {
-			getLinkEntity().accept(t);
+		for (T selectedEntity : selected) {
+			getLinkEntity().accept(selectedEntity);
 		}
 	}
 

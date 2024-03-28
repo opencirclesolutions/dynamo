@@ -31,7 +31,7 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Interface that must be implemented by component creators that create
- * components that are used for managing an entity or collections of entitie
+ * components that are used for managing an entity or collections of entities
  * 
  * @author BasRutten
  *
@@ -45,7 +45,7 @@ public interface EntityComponentCreator<ID extends Serializable, T extends Abstr
 	 * Creates the component
 	 * 
 	 * @param attributeModel the attribute model to base the component on
-	 * @param context        the creation context to based the component on
+	 * @param context        the creation context to base the component on
 	 * @param service        service for contacting the database
 	 * @param entityModel    the entity model
 	 * @param fieldFilter    the field filter used for limiting the results

@@ -154,7 +154,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 		setValue(entity);
 	}
 
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "unchecked" })
 	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		if (provider instanceof CallbackDataProvider callbackDataProvider) {
 			setItems(callbackDataProvider);
@@ -201,7 +201,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 				CallbackDataProvider<T, String> callbackProvider = createCallbackProvider();
 				setItems(callbackProvider);
 			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
-				items = service.find(new FilterConverter<T>(entityModel).convert(predicate),
+				items = service.find(new FilterConverter<>(entityModel).convert(predicate),
 						SortUtils.translateSortOrders(sortOrders));
 				setItems(new IgnoreDiacriticsCaptionFilter<>(entityModel, true, false), new ListDataProvider<>(items));
 			} else if (SelectMode.FIXED.equals(mode)) {
@@ -256,7 +256,7 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 			setItems(createCallbackProvider());
 		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
 			ListDataProvider<T> listProvider = (ListDataProvider<T>) provider;
-			List<T> items = service.find(new FilterConverter<T>(entityModel).convert(predicate),
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(predicate),
 					SortUtils.translateSortOrders(sortOrders));
 			reloadDataProvider(listProvider, items);
 		}

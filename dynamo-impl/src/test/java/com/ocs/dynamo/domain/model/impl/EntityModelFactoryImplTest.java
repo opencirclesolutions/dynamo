@@ -87,13 +87,13 @@ import lombok.Setter;
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
-	private EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
+	private final EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
 
-	private ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+	private final ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
-	private MessageService messageService = new MessageServiceImpl();
+	private final MessageService messageService = new MessageServiceImpl();
 
-	private Locale locale = new Locale("en");
+	private final Locale locale = new Locale.Builder().setLanguage("nl").build();
 
 	@BeforeEach
 	public void setupEntityModelFactoryTest() throws NoSuchFieldException {
@@ -503,7 +503,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel m2 = model.getAttributeModel("child.grandChild.sometAttribute");
 		assertNotNull(m2);
-
 	}
 
 	@Test

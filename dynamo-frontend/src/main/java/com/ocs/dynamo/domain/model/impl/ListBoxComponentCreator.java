@@ -28,7 +28,7 @@ import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
 /**
- * Component creator that is used for creating a Listbox component for managing
+ * Component creator that is used for creating a List box component for managing
  * an entity
  * 
  * @author BasRutten

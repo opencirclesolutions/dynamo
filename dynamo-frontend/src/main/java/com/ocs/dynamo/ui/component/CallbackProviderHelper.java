@@ -92,16 +92,16 @@ public class CallbackProviderHelper {
 			int offset = query.getOffset();
 			int page = offset / query.getLimit();
 
-			SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
-			List<T> list = service.fetch(converter.convert(pred), page, query.getLimit(), sortOrders);
+			SerializablePredicate<T> predicate = constructFilterPredicate(query, entityModel, filter);
+			List<T> list = service.fetch(converter.convert(predicate), page, query.getLimit(), sortOrders);
 			if (afterCountDone != null) {
 				afterCountDone.accept(list.size());
 			}
 			return list.stream();
 		}, query -> {
 			try {
-				SerializablePredicate<T> pred = constructFilterPredicate(query, entityModel, filter);
-				int count = (int) service.count(converter.convert(pred), true);
+				SerializablePredicate<T> predicate = constructFilterPredicate(query, entityModel, filter);
+				int count = (int) service.count(converter.convert(predicate), true);
 				if (afterCountDone != null) {
 					afterCountDone.accept(count);
 				}
@@ -128,23 +128,23 @@ public class CallbackProviderHelper {
 			Query<T, String> query, EntityModel<T> entityModel, SerializablePredicate<T> filter) {
 		String searchString = query.getFilter().orElse(null);
 
-		SerializablePredicate<T> pred = null;
+		SerializablePredicate<T> predicate = null;
 		SerializablePredicate<T> like = new LikePredicate<>(entityModel.getFilterProperty(), "%" + searchString + "%",
 				false);
 
 		if (filter == null) {
 			if (!StringUtils.isEmpty(searchString)) {
-				pred = like;
+				predicate = like;
 			}
 		} else {
 			if (!StringUtils.isEmpty(searchString)) {
-				pred = new AndPredicate<>(filter, like);
+				predicate = new AndPredicate<>(filter, like);
 			} else {
-				pred = filter;
+				predicate = filter;
 			}
 		}
 
-		return pred;
+		return predicate;
 	}
 	
 

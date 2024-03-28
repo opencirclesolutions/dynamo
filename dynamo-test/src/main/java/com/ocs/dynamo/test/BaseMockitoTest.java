@@ -37,8 +37,8 @@ public abstract class BaseMockitoTest {
     
     /**
      * 
-     * @param str
-     * @return
+     * @param str the string to convert
+     * @return the
      */
     protected String formatNumber(String str) {
         DecimalFormat df = (DecimalFormat) DecimalFormat.getNumberInstance();

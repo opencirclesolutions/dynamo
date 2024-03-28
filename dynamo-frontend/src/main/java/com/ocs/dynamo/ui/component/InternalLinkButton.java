@@ -26,7 +26,7 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 
 /**
- * A button that acts an an internal link that can be used to navigate to the
+ * A button that acts as an internal link that can be used to navigate to the
  * detail screen of an entity
  * 
  * @author Bas Rutten
@@ -47,12 +47,12 @@ public class InternalLinkButton<ID extends Serializable, T extends AbstractEntit
 	 * @param entityModel the entity model
 	 * @param am          the attribute model
 	 */
-	public InternalLinkButton(T value, EntityModel<T> entityModel, AttributeModel am) {
+	public InternalLinkButton(T entity, EntityModel<T> entityModel, AttributeModel am) {
 		EntityModel<?> em = entityModel != null ? entityModel : am.getNestedEntityModel();
 		String caption = FormatUtils.formatEntity(em, value);
 		setText(caption);
 		addThemeVariants(ButtonVariant.LUMO_TERTIARY_INLINE);
-		this.value = value;
+		this.value = entity;
 		addClickListener(event -> {
 			UIHelper ui = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 			ui.navigateToEntityScreen(this.value);

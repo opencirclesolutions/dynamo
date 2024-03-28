@@ -209,12 +209,6 @@ public class FieldFactoryImpl implements FieldFactory {
 					.setRequiredIndicatorVisible(context.isSearch() ? am.isRequiredForSearching() : am.isRequired());
 		}
 
-		// right alignment for text field
-//		if (NumberUtils.isNumeric(am.getType()) && context.isEditableGrid() && field instanceof TextField) {
-//			TextField atf = (TextField) field;
-//			atf.addThemeVariants(TextFieldVariant.LUMO_ALIGN_RIGHT);
-//		}
-
 		addPercentageSignListener(field, am);
 		addCurrencySymbolListener(field, am);
 	}

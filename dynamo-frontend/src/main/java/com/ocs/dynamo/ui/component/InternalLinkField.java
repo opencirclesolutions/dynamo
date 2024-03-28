@@ -38,9 +38,9 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 
     private T value;
 
-    private AttributeModel attributeModel;
+    private final AttributeModel attributeModel;
 
-    private EntityModel<T> entityModel;
+    private final EntityModel<T> entityModel;
 
     public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel) {
         this(attributeModel, entityModel, null);

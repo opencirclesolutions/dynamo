@@ -83,7 +83,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 	 */
 	private U parent;
 
-	private IdBasedDataProvider<ID, T> provider;
+	private final IdBasedDataProvider<ID, T> provider;
 
 	/**
 	 * Constructor
@@ -99,7 +99,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			AttributeModel attributeModel, boolean viewMode, FormOptions formOptions, FetchJoinInformation... joins) {
 		super(service, entityModel, attributeModel, viewMode, true, formOptions);
 		this.provider = new IdBasedDataProvider<>(service, entityModel, joins);
-		provider.setAfterCountCompleted(count -> updateCaption(count));
+		provider.setAfterCountCompleted(this::updateCaption);
 
 		setOnAdd(() -> {
 			if (this.parent.getId() != null) {
@@ -111,9 +111,7 @@ public class ServiceBasedDetailsEditGrid<ID extends Serializable, T extends Abst
 			}
 		});
 		setOnEdit(this::showPopup);
-
 		build();
-
 	}
 
 	protected void addDownloadMenu() {
