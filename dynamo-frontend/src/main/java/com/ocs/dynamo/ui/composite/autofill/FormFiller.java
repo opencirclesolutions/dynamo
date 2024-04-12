@@ -148,7 +148,6 @@ public class FormFiller {
         String aiResponse = llmService.getGeneratedResponse(prompt);
         FormFillUtils.fillComponents(mapping.componentInfoList(), promptJsonToMapHierarchyValues(aiResponse),
                 entityModel);
-
         log.debug("AI response: " + aiResponse.trim());
 
         return new FormFillerResult(prompt, aiResponse);
