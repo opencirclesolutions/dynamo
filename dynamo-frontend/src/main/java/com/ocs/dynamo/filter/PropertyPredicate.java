@@ -17,6 +17,9 @@ import java.util.function.Predicate;
 
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.ToString;
+
 /**
  * Base class for a predicate that is used for checking a property against a
  * given value
@@ -25,6 +28,8 @@ import com.vaadin.flow.function.SerializablePredicate;
  *
  * @param <T>
  */
+@ToString
+@Getter
 public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 
 	private static final long serialVersionUID = 777842598678435139L;
@@ -33,17 +38,9 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 
 	private final Object value;
 
-	public PropertyPredicate(String property, Object value) {
+	protected PropertyPredicate(String property, Object value) {
 		this.property = property;
 		this.value = value;
-	}
-
-	public String getProperty() {
-		return property;
-	}
-
-	public Object getValue() {
-		return value;
 	}
 
 	@Override
@@ -53,8 +50,9 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 	}
 
 	/**
+	 * Checks whether the predicate applies to the specified property
 	 * 
-	 * @param property
+	 * @param property the property
 	 * @return
 	 */
 	public boolean appliesToProperty(String property) {

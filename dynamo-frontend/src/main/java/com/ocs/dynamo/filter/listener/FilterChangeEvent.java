@@ -17,13 +17,17 @@ import java.io.Serializable;
 
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Builder;
+import lombok.Getter;
+
 /**
  * An event used to indicate that the value of a filter in a search form has
  * changed
  * 
  * @author bas.rutten
  */
-public class FilterChangeEvent<T> implements Serializable {
+@Getter
+public final class FilterChangeEvent<T> implements Serializable {
 
 	private static final long serialVersionUID = 7833584773075924736L;
 
@@ -50,23 +54,12 @@ public class FilterChangeEvent<T> implements Serializable {
 	 * @param newFilter  the new filter
 	 * @param value      the new value
 	 */
-	public FilterChangeEvent(String propertyId, SerializablePredicate<T> oldFilter,
+	@Builder
+	private FilterChangeEvent(String propertyId, SerializablePredicate<T> oldFilter,
 			SerializablePredicate<T> newFilter) {
 		this.propertyId = propertyId;
 		this.oldFilter = oldFilter;
 		this.newFilter = newFilter;
-	}
-
-	public SerializablePredicate<T> getOldFilter() {
-		return oldFilter;
-	}
-
-	public SerializablePredicate<T> getNewFilter() {
-		return newFilter;
-	}
-
-	public String getPropertyId() {
-		return propertyId;
 	}
 
 }

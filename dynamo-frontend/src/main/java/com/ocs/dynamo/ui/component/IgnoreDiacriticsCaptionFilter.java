@@ -13,76 +13,23 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.text.Normalizer;
-import java.util.Objects;
-
+import com.ocs.dynamo.domain.model.EntityModel;
 import com.vaadin.flow.component.combobox.ComboBox.ItemFilter;
 
+import lombok.EqualsAndHashCode;
+
 /**
- * A caption filter that ignores diacritic characters when comparing
+ * A caption filter that ignores diacritical characters when comparing
  * 
  * @author bas.rutten
  *
  */
-public class IgnoreDiacriticsCaptionFilter<T> implements ItemFilter<T> {
+@EqualsAndHashCode(onlyExplicitlyIncluded = true, callSuper = true)
+public class IgnoreDiacriticsCaptionFilter<T> extends BaseIgnoreDiacriticsFilter<T> implements ItemFilter<T> {
 
 	private static final long serialVersionUID = -8965855020406086688L;
 
-	private final boolean ignoreCase;
-
-	private final boolean onlyMatchPrefix;
-
-	/**
-	 * Constructor
-	 * 
-	 * @param propertyId      the name of the property to filter on
-	 * @param filterString    the filter string
-	 * @param ignoreCase      whether to ignore case
-	 * @param onlyMatchPrefix whether to only match the prefix
-	 */
-	public IgnoreDiacriticsCaptionFilter(boolean ignoreCase, boolean onlyMatchPrefix) {
-		this.ignoreCase = ignoreCase;
-		this.onlyMatchPrefix = onlyMatchPrefix;
+	public IgnoreDiacriticsCaptionFilter(EntityModel<T> entityModel, boolean ignoreCase, boolean onlyMatchPrefix) {
+		super(entityModel, ignoreCase, onlyMatchPrefix);
 	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(ignoreCase) + Objects.hashCode(onlyMatchPrefix);
-	}
-
-	@Override
-	@SuppressWarnings("unchecked")
-	public boolean equals(Object obj) {
-		if (obj == this) {
-			return true;
-		}
-
-		if (!(obj instanceof IgnoreDiacriticsCaptionFilter)) {
-			return false;
-		}
-		IgnoreDiacriticsCaptionFilter<T> o = (IgnoreDiacriticsCaptionFilter<T>) obj;
-		return Objects.equals(ignoreCase, o.ignoreCase) && Objects.equals(onlyMatchPrefix, o.onlyMatchPrefix);
-	}
-
-	public boolean isIgnoreCase() {
-		return ignoreCase;
-	}
-
-	public boolean isOnlyMatchPrefix() {
-		return onlyMatchPrefix;
-	}
-
-	@Override
-	public boolean test(T item, String filterText) {
-		// replace any diacritical characters
-		String t = item == null ? "" : item.toString();
-		String temp = ignoreCase ? t.toLowerCase() : t.toString();
-		filterText = ignoreCase ? filterText.toLowerCase() : filterText;
-
-		temp = Normalizer.normalize(temp, Normalizer.Form.NFD);
-		temp = temp.replaceAll("[^\\p{ASCII}]", "");
-
-		return onlyMatchPrefix ? temp.startsWith(filterText) : temp.contains(filterText);
-	}
-
 }

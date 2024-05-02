@@ -15,7 +15,8 @@ package com.ocs.dynamo.ui.composite.form;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
+import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -33,6 +34,7 @@ import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm.FilterType;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.HasEnabled;
 import com.vaadin.flow.component.HasValidation;
@@ -42,9 +44,12 @@ import com.vaadin.flow.component.HasValue.ValueChangeListener;
 import com.vaadin.flow.data.binder.Result;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Represents one or more search fields used to filter on a single property
- * 
+ *
  * @author bas.rutten
  */
 public class FilterGroup<T> {
@@ -57,6 +62,7 @@ public class FilterGroup<T> {
     /**
      * The auxiliary UI component
      */
+    @Getter
     private final Component auxField;
 
     /**
@@ -67,6 +73,7 @@ public class FilterGroup<T> {
     /**
      * The main UI component
      */
+    @Getter
     private final Component field;
 
     /**
@@ -77,16 +84,20 @@ public class FilterGroup<T> {
     /**
      * The top level component that contains the filter UI components
      */
+    @Getter
     private final Component filterComponent;
 
     /**
      * The type of the filter
      */
+    @Getter
     private final FilterType filterType;
 
     /**
      * Filter listeners to fire when the input changes
      */
+    @Getter
+    @Setter
     private List<FilterListener<T>> listeners = new ArrayList<>();
 
     /**
@@ -97,21 +108,20 @@ public class FilterGroup<T> {
     /**
      * The name of the property to filter on
      */
+    @Getter
     private final String propertyId;
 
     /**
      * Constructor
-     * 
+     *
      * @param attributeModel  the attribute model
-     * @param propertyId      the property to bind
      * @param filterType      the type of the filter
-     * @param filterComponent the layout component that contains the filter
-     *                        components
+     * @param filterComponent the layout component that contains the filter components
      * @param field           the main filter field
      * @param auxField        the auxiliary filter field
      */
     public FilterGroup(AttributeModel attributeModel, FilterType filterType, Component filterComponent, Component field,
-            Component auxField) {
+                       Component auxField) {
         this.attributeModel = attributeModel;
         this.propertyId = attributeModel.getPath();
         this.filterType = filterType;
@@ -142,8 +152,8 @@ public class FilterGroup<T> {
 
     /**
      * Adds a listener that responds to a filter change
-     * 
-     * @param listener
+     *
+     * @param listener the listener to add
      */
     public void addListener(FilterListener<T> listener) {
         this.listeners.add(listener);
@@ -151,7 +161,7 @@ public class FilterGroup<T> {
 
     /**
      * Broadcast a change to all listeners
-     * 
+     *
      * @param event the change event
      */
     protected void broadcast(FilterChangeEvent<T> event) {
@@ -161,88 +171,151 @@ public class FilterGroup<T> {
     }
 
     /**
-     * 
-     * @param value
-     * @return
+     * Handles a change of one of the filter values for a between filter and constructs
+     * a search predicate
+     *
+     * @param component the component
+     * @param value     the value
+     * @return the resulting predicate
      */
-    private SerializablePredicate<T> createSearchDateOnlyFilter(Object value) {
+    private SerializablePredicate<T> handleBetweenFilterChange(Component component, Object value) {
+        SerializablePredicate<T> filter;
+        if (value instanceof LocalDate) {
+            value = translateDateOnlyFilterValue((LocalDate) value);
+        }
+
+        if (component == this.auxField) {
+            if (value != null) {
+                auxFieldFilter = new LessOrEqualPredicate<>(propertyId, value);
+            } else {
+                auxFieldFilter = null;
+            }
+        } else {
+            // filter for the main field
+            if (value != null) {
+                mainFilter = new GreaterOrEqualPredicate<>(propertyId, value);
+            } else {
+                mainFilter = null;
+            }
+        }
+
+        // construct the aggregate filter
+        if (auxFieldFilter != null && mainFilter != null) {
+            filter = new AndPredicate<>(mainFilter, auxFieldFilter);
+        } else if (auxFieldFilter != null) {
+            filter = auxFieldFilter;
+        } else {
+            filter = mainFilter;
+        }
+        return filter;
+    }
+
+    /**
+     * Default handler, deals with most of the value changes
+     * @param value the new value
+     * @return the resulting predicate
+     */
+    private SerializablePredicate<T> handleFilterValueDefault(Object value) {
         SerializablePredicate<T> filter = null;
         if (attributeModel.isSearchDateOnly() && value != null) {
             LocalDate ldt = (LocalDate) value;
             if (LocalDateTime.class.equals(attributeModel.getType())) {
-                filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(), ldt.atStartOfDay().plusDays(1).minusSeconds(1));
+                filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(),
+                        ldt.atStartOfDay().plusDays(1).minusNanos(1));
             } else {
                 // zoned date time
-                filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(ZoneId.systemDefault()),
-                        ldt.atStartOfDay(ZoneId.systemDefault()).plusDays(1).minusSeconds(1));
+                filter = new BetweenPredicate<>(propertyId, ldt.atStartOfDay(VaadinUtils.getTimeZoneId()),
+                        ldt.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minusNanos(1));
             }
-        } else if (value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty())) {
+        } else if (isNonEmptyValue(value)) {
             filter = new EqualsPredicate<>(propertyId, value);
         }
         return filter;
     }
 
-    public Component getAuxField() {
-        return auxField;
+    private boolean isNonEmptyValue(Object value) {
+        return value != null && (!(value instanceof Collection) || !((Collection<?>) value).isEmpty());
     }
 
-    public Component getField() {
-        return field;
-    }
-
-    public Component getFilterComponent() {
-        return filterComponent;
-    }
-
-    public List<FilterListener<T>> getListeners() {
-        return listeners;
-    }
-
-    public String getPropertyId() {
-        return propertyId;
+    private SerializablePredicate<T> handleLikeFilterValue(Object value) {
+        SerializablePredicate<T> filter = null;
+        if (value != null) {
+            if (value instanceof Collection<?>) {
+                filter = new EqualsPredicate<>(propertyId, value);
+            } else {
+                // escape actual percentage signs
+                String valueStr = value.toString().replace("%", "\\%");
+                if (StringUtils.isNotEmpty(valueStr)) {
+                    filter = new SimpleStringPredicate<>(propertyId, valueStr, attributeModel.isSearchPrefixOnly(),
+                            attributeModel.isSearchCaseSensitive());
+                }
+            }
+        }
+        return filter;
     }
 
     /**
      * Resets the search filters for both fields
      */
     public void reset() {
-        if (field instanceof HasValue) {
-            ((HasValue<?, ?>) field).clear();
-            if (field instanceof HasValidation) {
-                ((HasValidation) field).setErrorMessage(null);
+        if (field instanceof HasValue<?,?> hv) {
+            hv.clear();
+            if (field instanceof HasValidation hasValidation) {
+                hasValidation.setErrorMessage(null);
             }
         }
 
-        if (auxField != null) {
-            if (auxField instanceof HasValue) {
-                ((HasValue<?, ?>) auxField).clear();
-                if (auxField instanceof HasValidation) {
-                    ((HasValidation) auxField).setErrorMessage(null);
-                }
+        if (auxField instanceof HasValue<?,?> hv) {
+            hv.clear();
+            if (auxField instanceof HasValidation hasValidation) {
+                hasValidation.setErrorMessage(null);
             }
         }
     }
 
     /**
      * Sets the input component(s) as enabled or disabled
-     * 
-     * @param enabled
+     *
+     * @param enabled the desired enabled setting
      */
     public void setEnabled(boolean enabled) {
         HasEnabled he = (HasEnabled) field;
         he.setEnabled(enabled);
-        if (auxField instanceof HasEnabled) {
-            ((HasEnabled) auxField).setEnabled(enabled);
+        if (auxField instanceof HasEnabled hasEnabled) {
+            hasEnabled.setEnabled(enabled);
         }
     }
 
-    public void setListeners(List<FilterListener<T>> listeners) {
-        this.listeners = listeners;
+    /**
+     * Translates a search value from a date to a time stamp if needed
+     *
+     * @param value the value to convert
+     * @return the object that is the result of the translation
+     */
+    private Object translateDateOnlyFilterValue(LocalDate value) {
+        boolean convertToDate = ZonedDateTime.class.equals(attributeModel.getType())
+                || LocalDateTime.class.equals(attributeModel.getType());
+        if (convertToDate && value != null) {
+            if (LocalDateTime.class.equals(attributeModel.getType())) {
+                if (field == this.auxField) {
+                    return value.atStartOfDay().plusDays(1).minus(1, ChronoUnit.MILLIS);
+                } else {
+                    return value.atStartOfDay();
+                }
+            } else if (ZonedDateTime.class.equals(attributeModel.getType())) {
+                if (field == this.auxField) {
+                    return value.atStartOfDay(VaadinUtils.getTimeZoneId()).plusDays(1).minus(1, ChronoUnit.MILLIS);
+                } else {
+                    return value.atStartOfDay(VaadinUtils.getTimeZoneId());
+                }
+            }
+        }
+        return value;
     }
 
     /**
      * Respond to a value change
-     * 
+     *
      * @param field the changed field (can either be the main field or the auxiliary
      *              field)
      * @param value the new field value
@@ -250,63 +323,19 @@ public class FilterGroup<T> {
     public void valueChange(Component field, Object value) {
         // store the current filter
         SerializablePredicate<T> oldFilter = fieldFilter;
-        SerializablePredicate<T> filter = null;
+        SerializablePredicate<T> filter = switch (filterType) {
+            case BETWEEN -> handleBetweenFilterChange(field, value);
+            case LIKE -> handleLikeFilterValue(value);
+            default -> handleFilterValueDefault(value);
+        };
 
-        switch (filterType) {
-        case BETWEEN:
-            // construct new filter for the selected field (or clear it)
-            if (field == this.auxField) {
-                // filter for the auxiliary field
-                if (value != null) {
-                    auxFieldFilter = new LessOrEqualPredicate<>(propertyId, value);
-                } else {
-                    auxFieldFilter = null;
-                }
-            } else {
-                // filter for the main field
-                if (value != null) {
-                    mainFilter = new GreaterOrEqualPredicate<>(propertyId, value);
-                } else {
-                    mainFilter = null;
-                }
-            }
-
-            // construct the aggregate filter
-            if (auxFieldFilter != null && mainFilter != null) {
-                filter = new AndPredicate<>(mainFilter, auxFieldFilter);
-            } else if (auxFieldFilter != null) {
-                filter = auxFieldFilter;
-            } else {
-                filter = mainFilter;
-            }
-
-            break;
-        case LIKE:
-            // like filter for comparing string fields
-            if (value != null) {
-                if (value instanceof Collection<?>) {
-                    filter = new EqualsPredicate<>(propertyId, value);
-                } else {
-                    String valueStr = value.toString();
-                    if (StringUtils.isNotEmpty(valueStr)) {
-                        filter = new SimpleStringPredicate<>(propertyId, valueStr, attributeModel.isSearchPrefixOnly(),
-                                attributeModel.isSearchCaseSensitive());
-                    }
-                }
-            }
-            break;
-        default:
-            // special handling for "search for date only"
-            filter = createSearchDateOnlyFilter(value);
-            break;
-        }
-
-        // store the current filter
         this.fieldFilter = filter;
 
         // propagate the change (this will trigger the actual search action)
         if (!listeners.isEmpty()) {
-            broadcast(new FilterChangeEvent<T>(propertyId, oldFilter, filter));
+            FilterChangeEvent<T> event = FilterChangeEvent.<T>builder().propertyId(propertyId).oldFilter(oldFilter)
+                    .newFilter(filter).build();
+            broadcast(event);
         }
     }
 

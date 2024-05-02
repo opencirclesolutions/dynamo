@@ -18,27 +18,31 @@ import org.apache.commons.lang3.StringUtils;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.UIHelper;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.ComponentEventListener;
-import com.vaadin.flow.component.contextmenu.MenuItem;
-import com.vaadin.flow.component.menubar.MenuBar;
+
+import lombok.Getter;
 
 /**
  * Command for navigating to a certain view
  * 
  * @author bas.rutten
  */
-public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuItem>> {
+public class NavigateCommand<T extends Component, U> implements ComponentEventListener<ClickEvent<T>> {
 
 	private static final long serialVersionUID = 5192333331107840255L;
 
-	private final MenuBar menuBar;
+	private final U rootComponent;
 
-	private final MenuService menuService;
+	private final BaseMenuService<T, U> menuService;
 
+	@Getter
 	private final String destination;
 
+	@Getter
 	private final String selectedTab;
 
+	@Getter
 	private final String mode;
 
 	/**
@@ -48,29 +52,17 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
 	 * @param selectedTab the index of the tab to select
 	 * @param mode        an optional screen mode
 	 */
-	public NavigateCommand(MenuService menuService, MenuBar menuBar, String destination, String selectedTab,
+	public NavigateCommand(BaseMenuService<T, U> menuService, U rootComponent, String destination, String selectedTab,
 			String mode) {
 		this.menuService = menuService;
 		this.destination = destination;
 		this.selectedTab = selectedTab;
-		this.menuBar = menuBar;
+		this.rootComponent = rootComponent;
 		this.mode = mode;
 	}
 
-	public String getDestination() {
-		return destination;
-	}
-
-	public String getSelectedTab() {
-		return selectedTab;
-	}
-
-	public String getMode() {
-		return mode;
-	}
-
 	@Override
-	public void onComponentEvent(ClickEvent<MenuItem> event) {
+	public void onComponentEvent(ClickEvent<T> event) {
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 
 		if (selectedTab != null) {
@@ -78,13 +70,15 @@ public class NavigateCommand implements ComponentEventListener<ClickEvent<MenuIt
 		} else {
 			helper.setSelectedTab(null);
 		}
+		String lastVisited;
 		if (StringUtils.isEmpty(mode)) {
 			helper.navigate(destination);
+			lastVisited = destination;
 		} else {
 			helper.navigate(destination, mode);
+			lastVisited = destination + "#" + mode;
 		}
-
-		menuService.setLastVisited(menuBar, destination);
+		menuService.setLastVisited(rootComponent, lastVisited);
 	}
 
 }

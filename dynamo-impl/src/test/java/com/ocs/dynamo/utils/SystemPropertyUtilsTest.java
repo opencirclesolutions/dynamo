@@ -1,49 +1,53 @@
 package com.ocs.dynamo.utils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import org.junit.jupiter.api.Test;
 
+import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
 import com.ocs.dynamo.util.SystemPropertyUtils;
+
+import java.util.Locale;
 
 public class SystemPropertyUtilsTest {
 
-    @Test
-    public void testDefaults() {
-        assertEquals("€", SystemPropertyUtils.getDefaultCurrencySymbol());
-        assertEquals("dd-MM-yyyy", SystemPropertyUtils.getDefaultDateFormat());
-        assertEquals("dd-MM-yyyy HH:mm:ss", SystemPropertyUtils.getDefaultDateTimeFormat());
-        assertEquals(2, SystemPropertyUtils.getDefaultDecimalPrecision());
-        assertEquals("HH:mm:ss", SystemPropertyUtils.getDefaultTimeFormat());
+	@Test
+	public void testDefaults() {
 
-        assertEquals(false, SystemPropertyUtils.allowListExport());
-        assertEquals("\"", SystemPropertyUtils.getCsvQuoteChar());
-        assertEquals(";", SystemPropertyUtils.getCsvSeparator());
-        assertEquals("\"\"", SystemPropertyUtils.getCsvEscapeChar());
 
-        assertEquals(false, SystemPropertyUtils.useThousandsGroupingInEditMode());
+		assertEquals("€", SystemPropertyUtils.getDefaultCurrencySymbol());
+		assertEquals("dd-MM-yyyy", SystemPropertyUtils.getDefaultDateFormat());
+		assertEquals("dd-MM-yyyy HH:mm:ss", SystemPropertyUtils.getDefaultDateTimeFormat());
+		assertEquals(2, SystemPropertyUtils.getDefaultDecimalPrecision());
+		assertEquals("HH:mm:ss", SystemPropertyUtils.getDefaultTimeFormat());
 
-        assertEquals("en_GB", SystemPropertyUtils.getDefaultLocale());
+		assertFalse(SystemPropertyUtils.allowListExport());
+		assertEquals("\"", SystemPropertyUtils.getCsvQuoteChar());
+		assertEquals(";", SystemPropertyUtils.getCsvSeparator());
+		assertEquals("\"\"", SystemPropertyUtils.getCsvEscapeChar());
 
-        assertFalse(SystemPropertyUtils.getDefaultSearchCaseSensitive());
-        assertFalse(SystemPropertyUtils.getDefaultSearchPrefixOnly());
+		assertEquals(ThousandsGroupingMode.ALWAYS, SystemPropertyUtils.getDefaultThousandsGroupingMode());
 
-        assertEquals("true", SystemPropertyUtils.getDefaultTrueRepresentation());
-        assertEquals("false", SystemPropertyUtils.getDefaultFalseRepresentation());
+		Locale loc = new Locale.Builder().setLanguage("en").setRegion("GB").build();
+		assertThat(SystemPropertyUtils.getDefaultLocale()).isEqualTo(loc);
 
-        assertEquals("400px", SystemPropertyUtils.getDefaultGridHeight());
-        assertEquals("300px", SystemPropertyUtils.getDefaultSearchDialogGridHeight());
-        assertEquals(2000, SystemPropertyUtils.getDefaultMessageDisplayTime().intValue());
+		assertFalse(SystemPropertyUtils.getDefaultSearchCaseSensitive());
+		assertFalse(SystemPropertyUtils.getDefaultSearchPrefixOnly());
 
-        assertEquals("200px", SystemPropertyUtils.getDefaultTextAreaHeight());
+		assertEquals("true", SystemPropertyUtils.getDefaultTrueRepresentation());
+		assertEquals("false", SystemPropertyUtils.getDefaultFalseRepresentation());
 
-        assertEquals(3, SystemPropertyUtils.getLookupFieldMaxItems());
+		assertEquals("400px", SystemPropertyUtils.getDefaultGridHeight());
+		assertEquals("300px", SystemPropertyUtils.getDefaultSearchDialogGridHeight());
+		assertEquals(2000, SystemPropertyUtils.getDefaultMessageDisplayTime().intValue());
 
-        assertEquals("1200px", SystemPropertyUtils.getMinimumTwoColumnWidth());
-        assertTrue(SystemPropertyUtils.isCapitalizeWords());
+		assertEquals("200px", SystemPropertyUtils.getDefaultTextAreaHeight());
 
-        assertTrue(SystemPropertyUtils.useDefaultPromptValue());
-    }
+		assertEquals(3, SystemPropertyUtils.getDefaultLookupFieldMaxItems());
+		assertTrue(SystemPropertyUtils.isCapitalizeWords());
+		assertTrue(SystemPropertyUtils.useDefaultPromptValue());
+	}
 }

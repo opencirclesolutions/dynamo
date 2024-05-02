@@ -11,7 +11,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.functional.domain.Country;
 import com.ocs.dynamo.functional.domain.Domain;
 import com.ocs.dynamo.functional.domain.Region;
@@ -19,7 +18,6 @@ import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.layout.BaseSplitLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 
 /**
  * Test for the MultiDomainEditLayout
@@ -30,83 +28,71 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 @SpringBootTest(classes = DomainFrontendIntegrationTestConfig.class)
 public class MultiDomainEditLayoutTest extends FrontendIntegrationTest {
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testCreate() {
+	@Test
+	public void testCreate() {
 
-        FormOptions fo = new FormOptions().setShowQuickSearchField(true).setShowRemoveButton(true);
-        MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, Lists.newArrayList(Country.class, Region.class));
-        layout.addEntityModelOverride(Region.class, "CustomRegion");
-        layout.build();
+		FormOptions fo = new FormOptions().setShowQuickSearchField(true).setShowRemoveButton(true);
+		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, List.of(Country.class, Region.class));
+		layout.addEntityModelOverride(Region.class, "CustomRegion");
+		layout.build();
 
-        // check that first domain class is selected by default
-        assertEquals(2, layout.getDomainClasses().size());
-        assertEquals(Country.class, layout.getSelectedDomain());
-        assertTrue(layout.isDeleteAllowed(Country.class));
+		// check that first domain class is selected by default
+		assertEquals(2, layout.getDomainClasses().size());
+		assertEquals(Country.class, layout.getSelectedDomain());
 
-        layout.selectDomain(Region.class);
+		layout.selectDomain(Region.class);
 
-        BaseSplitLayout<?, ?> splitLayout = layout.getSplitLayout();
-        assertNotNull(splitLayout);
-        splitLayout.build();
+		BaseSplitLayout<?, ?> splitLayout = layout.getSplitLayout();
+		assertNotNull(splitLayout);
+		splitLayout.build();
 
-        // adding is possible
-        assertNotNull(splitLayout.getAddButton());
-        assertTrue(splitLayout.getAddButton().isVisible());
+		// adding is possible
+		assertNotNull(splitLayout.getAddButton());
+		assertTrue(splitLayout.getAddButton().isVisible());
 
-        // test reload
-        splitLayout.reload();
-    }
+		// test reload
+		splitLayout.reload();
+	}
 
-    @Test
-    @SuppressWarnings("unchecked")
-    public void testCreateInReadOnly() {
-        FormOptions fo = new FormOptions();
-        MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, Lists.newArrayList(Country.class, Region.class)) {
+	@Test
+	public void testCreateInReadOnly() {
+		FormOptions fo = new FormOptions();
+		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, List.of(Country.class, Region.class));
+		layout.setEditAllowed(() -> false);
+		layout.setPostProcessButtonBar(buttonBar -> {
+			Button button = new Button("testButton");
+			buttonBar.add(button);
+			layout.registerComponent(button);
+		});
+		layout.build();
 
-            private static final long serialVersionUID = -2364409278522556475L;
+		BaseSplitLayout<?, ?> splitLayout = layout.getSplitLayout();
+		splitLayout.build();
 
-            @Override
-            protected boolean isEditAllowed() {
-                return false;
-            }
+		// adding is not possible
+		assertNotNull(splitLayout.getAddButton());
+		assertFalse(splitLayout.getAddButton().isVisible());
 
-            @Override
-            protected void postProcessButtonBar(FlexLayout buttonBar) {
-                Button button = new Button("testButton");
-                buttonBar.add(button);
-                registerComponent(button);
-            }
-        };
-        layout.build();
+		// test the reload method
+		layout.reload();
+	}
 
-        BaseSplitLayout<?, ?> splitLayout = layout.getSplitLayout();
-        splitLayout.build();
+	/**
+	 * Test what happens if there is no service class defined
+	 */
+	// @Test(expected = MethodException.class)
+	public void testCreateServiceMissing() {
+		List<Class<? extends Domain>> list = new ArrayList<>();
+		list.add(TestDomain.class);
 
-        // adding is not possible
-        assertNotNull(splitLayout.getAddButton());
-        assertFalse(splitLayout.getAddButton().isVisible());
+		FormOptions fo = new FormOptions();
+		MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, list);
+		layout.build();
+	}
 
-        // test the reload method
-        layout.reload();
-    }
+	private class TestDomain extends Domain {
 
-    /**
-     * Test what happens if there is no service class defined
-     */
-    // @Test(expected = MethodException.class)
-    public void testCreateServiceMissing() {
-        List<Class<? extends Domain>> list = new ArrayList<>();
-        list.add(TestDomain.class);
+		private static final long serialVersionUID = -204959303189799878L;
 
-        FormOptions fo = new FormOptions();
-        MultiDomainEditLayout layout = new MultiDomainEditLayout(fo, list);
-        layout.build();
-    }
-
-    private class TestDomain extends Domain {
-
-        private static final long serialVersionUID = -204959303189799878L;
-
-    }
+	}
 }

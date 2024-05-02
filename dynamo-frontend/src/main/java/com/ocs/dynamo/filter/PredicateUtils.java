@@ -13,11 +13,11 @@
  */
 package com.ocs.dynamo.filter;
 
-import java.util.Arrays;
+import com.vaadin.flow.function.SerializablePredicate;
+import lombok.experimental.UtilityClass;
+
 import java.util.List;
 import java.util.Set;
-
-import com.vaadin.flow.function.SerializablePredicate;
 
 /**
  * Various utility methods for dealing with filters
@@ -25,11 +25,8 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author bas.rutten
  *
  */
+@UtilityClass
 public final class PredicateUtils {
-
-	private PredicateUtils() {
-		// hidden constructor
-	}
 
 	/**
 	 * Extracts a specific predicate from a larger predicate
@@ -43,7 +40,7 @@ public final class PredicateUtils {
 	public static <T> SerializablePredicate<T> extractPredicate(SerializablePredicate<T> predicate, String propertyId,
 			Class<?>... typesToFind) {
 		List<Class<?>> types = typesToFind == null || typesToFind.length == 0
-				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : Arrays.asList(typesToFind);
+				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : List.of(typesToFind);
 		if (predicate instanceof CompositePredicate) {
 			CompositePredicate<T> comp = (CompositePredicate<T>) predicate;
 			for (SerializablePredicate<T> child : comp.getOperands()) {
@@ -103,7 +100,7 @@ public final class PredicateUtils {
 	/**
 	 * Checks if at least one filter value is set
 	 *
-	 * @param filter the filter to check
+	 * @param predicate the filter to check
 	 * @param ignore the list of properties to ignore when checking (even if a value
 	 *               for one or more of these properties is set, this will not cause
 	 *               a return value of <code>true</code>)

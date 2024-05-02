@@ -29,6 +29,7 @@ import java.util.Locale;
 
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -54,7 +55,7 @@ public final class MockUtil {
 	 * 
 	 * @param dao   the DAO
 	 * @param clazz the class of the entity being saved
-	 * @return
+	 * @return the saved entity
 	 */
 	public static <ID, X extends AbstractEntity<ID>> X captureSave(BaseDao<ID, X> dao, Class<X> clazz) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
@@ -67,13 +68,13 @@ public final class MockUtil {
 	 * DAO
 	 * 
 	 * @param dao the DAO that is being called
-	 * @return
+	 * @return the saved list
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureSaveList(BaseDao<ID, X> dao) {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 		verify(dao).save(captor.capture());
-		return (List<X>) captor.getValue();
+		return captor.getValue();
 	}
 
 	/**
@@ -110,7 +111,7 @@ public final class MockUtil {
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaveList(BaseService<ID, X> service) {
 		ArgumentCaptor<List> captor = ArgumentCaptor.forClass(List.class);
 		verify(service).save(captor.capture());
-		return (List<X>) captor.getValue();
+		return captor.getValue();
 	}
 
 	/**
@@ -145,7 +146,7 @@ public final class MockUtil {
 	/**
 	 * Injects a mocked Vaadin UI into an object
 	 * 
-	 * @param field the object into which to inject the field
+	 * @param object the object into which to inject the field
 	 * @param ui    the user interface
 	 */
 	public static void injectUI(Object object, Object ui) {
@@ -164,21 +165,16 @@ public final class MockUtil {
 	 * this allows for easily checking if the message service is called with the
 	 * correct parameter
 	 * 
-	 * @param messageService
+	 * @param messageService the message service
 	 */
 	public static void mockMessageService(MessageService messageService) {
-		// method with varargs
-		lenient()
-				.when(messageService.getMessage(anyString(), nullable(Locale.class), any()))
-				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
-
-		lenient().when(messageService.getMessage(anyString(), nullable(Locale.class)))
-				.thenAnswer(invocation -> (String) invocation.getArguments()[0]);
+		// use somewhat wonky new varargs syntax
+		lenient().when(messageService.getMessage(anyString(), nullable(Locale.class),
+						Mockito.any(Object[].class)))
+				.thenAnswer(invocation -> invocation.getArguments()[0]);
 
 		// method for retrieving enum message
-		lenient()
-				.when(messageService.getEnumMessage(any(), any(Enum.class),
-						nullable(Locale.class)))
+		lenient().when(messageService.getEnumMessage(any(), any(Enum.class), nullable(Locale.class)))
 				.thenAnswer(invocation -> invocation.getArguments()[1].toString());
 	}
 
@@ -216,9 +212,9 @@ public final class MockUtil {
 	}
 
 	/**
-	 * Mock the saving of a list on a DAO
+	 * Mock the saving of a list on a service
 	 * 
-	 * @param dao the DAO
+	 * @param service the service
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockServiceSaveList(BaseService<ID, X> service) {

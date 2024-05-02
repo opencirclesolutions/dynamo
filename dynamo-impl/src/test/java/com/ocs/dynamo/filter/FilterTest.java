@@ -23,7 +23,6 @@ import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 
@@ -196,13 +195,13 @@ public class FilterTest {
         TestEntity testEntity = new TestEntity();
         testEntity.setId(1);
 
-        In in = new In("id", Lists.newArrayList(1));
+        In in = new In("id", List.of(1));
 
         assertFalse(in.evaluate(null));
         assertTrue(in.evaluate(testEntity));
 
-        In in2 = new In("id", Lists.newArrayList(1));
-        In in3 = new In("id", Lists.newArrayList(1, 2));
+        In in2 = new In("id", List.of(1));
+        In in3 = new In("id", List.of(1, 2));
 
         assertFalse(in.equals(null));
         assertFalse(in.equals(new Object()));
@@ -369,18 +368,6 @@ public class FilterTest {
         // wrap a filter inside an Or
         Filter result = equal1.or();
         assertTrue(result instanceof Or);
-    }
-
-    @Test
-    public void testApplyFilter() {
-        Compare.Equal equal1 = new Compare.Equal("name", "Bob");
-
-        TestEntity t1 = new TestEntity("Pete", 14L);
-        TestEntity t2 = new TestEntity("Bob", 14L);
-        List<TestEntity> list = Lists.newArrayList(t1, t2);
-
-        List<TestEntity> result = equal1.applyFilter(list);
-        assertEquals(1, result.size());
     }
 
 }

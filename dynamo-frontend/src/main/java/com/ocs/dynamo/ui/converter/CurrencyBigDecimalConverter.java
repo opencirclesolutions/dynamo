@@ -30,56 +30,56 @@ import com.vaadin.flow.data.binder.ValueContext;
  */
 public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 
-    private static final long serialVersionUID = -8785156070280947096L;
+	private static final long serialVersionUID = -8785156070280947096L;
 
-    /**
-     * The currency symbol
-     */
-    private String currencySymbol;
+	/**
+	 * The currency symbol
+	 */
+	private String currencySymbol;
 
-    /**
-     * 
-     * Constructor for CurrencyBigDecimalConverter.
-     * 
-     * @param message
-     * @param precision
-     * @param useGrouping
-     * @param currencySymbol
-     */
-    public CurrencyBigDecimalConverter(String message, int precision, boolean useGrouping, String currencySymbol) {
-        super(message, precision, useGrouping);
-        this.currencySymbol = currencySymbol;
-    }
+	/**
+	 * 
+	 * Constructor for CurrencyBigDecimalConverter.
+	 * 
+	 * @param message
+	 * @param precision
+	 * @param useGrouping
+	 * @param currencySymbol
+	 */
+	public CurrencyBigDecimalConverter(String message, int precision, boolean useGrouping, String currencySymbol) {
+		super(message, precision, useGrouping);
+		this.currencySymbol = currencySymbol;
+	}
 
-    @Override
-    public Result<BigDecimal> convertToModel(String value, ValueContext context) {
-        if (value == null) {
-            return Result.ok(null);
-        }
+	@Override
+	public Result<BigDecimal> convertToModel(String value, ValueContext context) {
+		if (value == null) {
+			return Result.ok(null);
+		}
 
-        value = value.replace(" ", "");
-        if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
-            value = currencySymbol + value;
-        }
-        return super.convertToModel(value, context);
-    }
+		value = value.replace(" ", "").trim();
+		if (!StringUtils.isEmpty(value) && !value.startsWith(currencySymbol)) {
+			value = currencySymbol + value;
+		}
+		return super.convertToModel(value, context);
+	}
 
-    @Override
-    protected DecimalFormat constructFormat(Locale locale) {
-        DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
-        nf.applyPattern("¤####,###,###,###.##");
+	@Override
+	protected DecimalFormat constructFormat(Locale locale) {
+		DecimalFormat nf = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
+		nf.applyPattern("¤####,###,###,###.##;¤-####,###,###,###.##");
 
-        DecimalFormatSymbols s = nf.getDecimalFormatSymbols();
-        s.setCurrencySymbol(currencySymbol);
-        nf.setDecimalFormatSymbols(s);
-        return nf;
-    }
+		DecimalFormatSymbols s = nf.getDecimalFormatSymbols();
+		s.setCurrencySymbol(currencySymbol);
+		nf.setDecimalFormatSymbols(s);
+		return nf;
+	}
 
-    public String getCurrencySymbol() {
-        return currencySymbol;
-    }
+	public String getCurrencySymbol() {
+		return currencySymbol;
+	}
 
-    public void setCurrencySymbol(String currencySymbol) {
-        this.currencySymbol = currencySymbol;
-    }
+	public void setCurrencySymbol(String currencySymbol) {
+		this.currencySymbol = currencySymbol;
+	}
 }

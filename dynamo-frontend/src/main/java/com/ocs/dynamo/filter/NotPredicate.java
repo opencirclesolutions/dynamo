@@ -15,6 +15,8 @@ package com.ocs.dynamo.filter;
 
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * A predicate that can be used for negating another predicate
  * 
@@ -26,6 +28,7 @@ public class NotPredicate<T> implements SerializablePredicate<T> {
 
 	private static final long serialVersionUID = 4018552369404222694L;
 
+	@Getter
 	private final SerializablePredicate<T> operand;
 
 	@Override
@@ -41,7 +44,5 @@ public class NotPredicate<T> implements SerializablePredicate<T> {
 		}
 	}
 
-	public SerializablePredicate<T> getOperand() {
-		return operand;
-	}
+
 }

@@ -17,6 +17,9 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
+/**
+ * A service that can be used to acquire a reference to the Spring application context
+ */
 @Service
 public class ApplicationContextProvider implements ApplicationContextAware {
 

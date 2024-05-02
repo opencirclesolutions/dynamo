@@ -13,13 +13,14 @@
  */
 package com.ocs.dynamo.importer.impl;
 
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import org.apache.commons.lang3.StringUtils;
+
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.util.SystemPropertyUtils;
-import org.springframework.util.StringUtils;
-
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 
 /**
  * Base class for importers that read data from a text file

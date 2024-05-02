@@ -14,22 +14,22 @@
 package com.ocs.dynamo.service;
 
 /**
- * Service for retrieving the details of the logged in user
+ * Service for retrieving the details of the logged-in user
  * 
  * @author bas.rutten
  */
 public interface UserDetailsService {
 
     /**
-     * Retrieve the name of the currently logged in user
+     * Retrieve the name of the currently logged-in user
      */
     String getCurrentUserName();
 
     /**
      * Returns true when the user is in (at least one of) the provided roles
      * 
-     * @param roles
-     * @return
+     * @param roles the collection of roles
+     * @return true if the user is in at least one of the provided roles, false otherwise
      */
     boolean isUserInRole(String... roles);
 

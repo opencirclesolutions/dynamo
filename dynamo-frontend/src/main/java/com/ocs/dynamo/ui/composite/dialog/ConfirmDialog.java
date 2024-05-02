@@ -17,8 +17,6 @@ import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.button.ButtonVariant;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 /**
  * A simple confirm dialog with a Yes and No button
@@ -34,50 +32,37 @@ public class ConfirmDialog extends BaseModalDialog {
 
 	private Button noButton;
 
-	private Runnable whenConfirmed;
-
-	private Runnable whenCancelled;
-
-	private String question;
-
 	public ConfirmDialog(String question, Runnable whenConfirmed, Runnable whenCancelled) {
-		this.question = question;
-		this.whenConfirmed = whenConfirmed;
-		this.whenCancelled = whenCancelled;
-	}
-
-	@Override
-	protected void doBuild(VerticalLayout parent) {
-		Span questionSpan = new Span(question);
-		parent.add(questionSpan);
-	}
-
-	@Override
-	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		yesButton = new Button(message("ocs.yes"));
-		yesButton.setIcon(VaadinIcon.CHECK.create());
-		yesButton.addClickListener(event -> {
-			whenConfirmed.run();
-			this.close();
+		setTitle(message("ocs.confirm"));
+		setBuildMainLayout(parent -> {
+			Span questionSpan = new Span(question);
+			parent.add(questionSpan);
 		});
-		buttonBar.add(yesButton);
 
-		noButton = new Button(message("ocs.no"));
-		noButton.setIcon(VaadinIcon.BAN.create());
-		noButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
-		noButton.addClickListener(event -> {
-			if (whenCancelled != null) {
-				whenCancelled.run();
-			}
-			this.close();
-		});
-		buttonBar.add(noButton);
-
+		buildButtonBar(whenConfirmed, whenCancelled);
 	}
 
-	@Override
-	protected String getTitle() {
-		return message("ocs.confirm");
+	private void buildButtonBar(Runnable whenConfirmed, Runnable whenCancelled) {
+		setBuildButtonBar(buttonBar -> {
+			yesButton = new Button(message("ocs.yes"));
+			yesButton.setIcon(VaadinIcon.CHECK.create());
+			yesButton.addClickListener(event -> {
+				whenConfirmed.run();
+				this.close();
+			});
+			buttonBar.add(yesButton);
+
+			noButton = new Button(message("ocs.no"));
+			noButton.setIcon(VaadinIcon.BAN.create());
+			noButton.addThemeVariants(ButtonVariant.LUMO_ERROR);
+			noButton.addClickListener(event -> {
+				if (whenCancelled != null) {
+					whenCancelled.run();
+				}
+				this.close();
+			});
+			buttonBar.add(noButton);
+		});
 	}
 
 }

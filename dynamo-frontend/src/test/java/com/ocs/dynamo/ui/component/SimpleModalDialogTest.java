@@ -21,59 +21,32 @@ import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.composite.dialog.SimpleModalDialog;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
 public class SimpleModalDialogTest extends FrontendIntegrationTest {
 
-    @Test
-    public void testShowCancelButton() {
-        SimpleModalDialog dialog = new SimpleModalDialog(true) {
+	@Test
+	public void testShowCancelButton() {
+		SimpleModalDialog dialog = new SimpleModalDialog(true);
+		dialog.setTitle("Title");
+		dialog.build();
 
-            private static final long serialVersionUID = 87021849566418546L;
+		assertNotNull(dialog.getOkButton());
+		assertNotNull(dialog.getCancelButton());
+		assertTrue(dialog.getCancelButton().isVisible());
 
-            @Override
-            protected void doBuild(VerticalLayout parent) {
+		dialog.getOkButton().click();
+		dialog.getCancelButton().click();
 
-            }
+	}
 
-            @Override
-            protected String getTitle() {
-                return "Title";
-            }
+	@Test
+	public void testHideCancelButton() {
+		SimpleModalDialog dialog = new SimpleModalDialog(false);
+		dialog.setTitle("Title");
+		dialog.build();
 
-        };
-        dialog.build();
-
-        assertNotNull(dialog.getOkButton());
-        assertNotNull(dialog.getCancelButton());
-        assertTrue(dialog.getCancelButton().isVisible());
-
-        dialog.getOkButton().click();
-        dialog.getCancelButton().click();
-
-    }
-
-    @Test
-    public void testHideCancelButton() {
-        SimpleModalDialog dialog = new SimpleModalDialog(false) {
-
-            private static final long serialVersionUID = 87021849566418546L;
-
-            @Override
-            protected void doBuild(VerticalLayout parent) {
-
-            }
-
-            @Override
-            protected String getTitle() {
-                return "Title";
-            }
-
-        };
-        dialog.build();
-
-        assertNotNull(dialog.getOkButton());
-        assertNotNull(dialog.getCancelButton());
-        assertFalse(dialog.getCancelButton().isVisible());
-    }
+		assertNotNull(dialog.getOkButton());
+		assertNotNull(dialog.getCancelButton());
+		assertFalse(dialog.getCancelButton().isVisible());
+	}
 }

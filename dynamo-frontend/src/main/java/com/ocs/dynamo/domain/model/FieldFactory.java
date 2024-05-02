@@ -13,7 +13,10 @@
  */
 package com.ocs.dynamo.domain.model;
 
+import java.util.function.Function;
+
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.composite.layout.HasSelectedItem;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.binder.Validator;
@@ -36,22 +39,41 @@ public interface FieldFactory {
 	}
 
 	/**
-	 * Adds converters and validators for a field
+	 * Adds the converters and validators that are to be used for a component. This
+	 * is separate from the actual component creation since the converters and
+	 * validators must be configured on a binding builder
 	 * 
-	 * @param builder         the binding builder to which to add the converters and
-	 *                        validators
-	 * @param am              the attribute model for the field
-	 * @param customConverter custom converter to be used for data conversion
+	 * @param <T>                     the input type of the conversion
+	 * @param <V>                     the target type of the conversion
+	 * @param builder                 the builder
+	 * @param am                      the attribute model
+	 * @param context                 the component creation context
+	 * @param customConverter         the custom converter to add
+	 * @param customValidator         the custom validator to add
+	 * @param customRequiredValidator the custom required validator to add
 	 */
-	<U, V> void addConvertersAndValidators(BindingBuilder<U, V> builder, AttributeModel am,
-			Converter<V, U> customConverter, Validator<V> customValidator, Validator<V> customRequiredValidator);
+	<T, V> void addConvertersAndValidators(HasSelectedItem<T> entityProvider, BindingBuilder<T, V> builder,
+			AttributeModel am, FieldCreationContext context, Converter<V, T> customConverter,
+			Function<HasSelectedItem<T>, Validator<?>> customValidator, Function<HasSelectedItem<T>, Validator<?>> customRequiredValidator);
+
+	/**
+	 * Convenience method for adding converters and validators, assumes no custom
+	 * converters or validators
+	 *
+	 * @param <T>     the input type of the conversion
+	 * @param <V>     the target type of the conversion
+	 * @param builder the binding builder
+	 * @param am      the attribute mode
+	 */
+	<T, V> void addConvertersAndValidators(HasSelectedItem<T> entityProvider, BindingBuilder<T, V> builder,
+			AttributeModel am);
 
 	/**
 	 * Constructs a field based on the provided attribute model (given the default
 	 * context)
 	 * 
 	 * @param am the attribute model
-	 * @return
+	 * @return the constructed field
 	 */
 	Component constructField(AttributeModel am);
 
@@ -59,7 +81,7 @@ public interface FieldFactory {
 	 * Constructs a field based on the provided context
 	 * 
 	 * @param context the context
-	 * @return
+	 * @return the constructed field
 	 */
-	Component constructField(FieldFactoryContext context);
+	Component constructField(FieldCreationContext context);
 }

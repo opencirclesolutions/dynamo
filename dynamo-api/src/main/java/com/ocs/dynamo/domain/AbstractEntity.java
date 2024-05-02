@@ -16,8 +16,10 @@ package com.ocs.dynamo.domain;
 import java.io.Serializable;
 import java.util.Objects;
 
-import javax.persistence.MappedSuperclass;
-import javax.persistence.Version;
+import jakarta.persistence.MappedSuperclass;
+import jakarta.persistence.Version;
+
+import lombok.Data;
 
 /**
  * Base class for entities
@@ -26,25 +28,17 @@ import javax.persistence.Version;
  * @param <ID> the type of the primary key
  */
 @MappedSuperclass
+@Data
 public abstract class AbstractEntity<ID> implements Serializable {
 
 	private static final long serialVersionUID = -8442763252267825950L;
 
-	// version field for optimistic locking
 	@Version
 	private Integer version;
 
 	public abstract ID getId();
 
 	public abstract void setId(ID id);
-
-	public Integer getVersion() {
-		return version;
-	}
-
-	public void setVersion(Integer version) {
-		this.version = version;
-	}
 
 	/**
 	 * Basic hash code function - uses the ID. Override this (and the equals()
@@ -59,8 +53,8 @@ public abstract class AbstractEntity<ID> implements Serializable {
 	 * Basic equals function. Override this (and of the hashCode() method) if your
 	 * entity has a more meaningful key
 	 * 
-	 * @param obj
-	 * @return
+	 * @param obj the object to compare true
+	 * @return <code>true</code> if the objects are equal and <code>false</code> otherwise
 	 */
 	@Override
 	public boolean equals(Object obj) {

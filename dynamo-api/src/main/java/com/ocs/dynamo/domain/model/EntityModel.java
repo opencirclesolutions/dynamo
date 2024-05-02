@@ -26,6 +26,11 @@ import java.util.Map;
 public interface EntityModel<T> {
 
 	/**
+	 * Auto-fill instructions for AI
+	 */
+	String AUTO_FILL_INSTRUCTIONS = "autoFillInstructions";
+
+	/**
 	 * Allowed extensions (for a file upload)
 	 */
 	String ALLOWED_EXTENSIONS = "allowedExtensions";
@@ -36,12 +41,12 @@ public interface EntityModel<T> {
 	String ATTRIBUTE_GROUP = "attributeGroup";
 
 	/**
-	 * Attribute names
+	 * The names of the attributes inside an attribute group
 	 */
 	String ATTRIBUTE_NAMES = "attributeNames";
 
 	/**
-	 * Attribute order
+	 * The (default) order of the attributes
 	 */
 	String ATTRIBUTE_ORDER = "attributeOrder";
 
@@ -51,7 +56,8 @@ public interface EntityModel<T> {
 	String CASCADE = "cascade";
 
 	/**
-	 * Cascade filter path (what to filter to receiving end of the cascade on)
+	 * Cascade filter path (the attribute to filter on the receiving side of a
+	 * cascade action)
 	 */
 	String CASCADE_FILTER_PATH = "cascadeFilterPath";
 
@@ -66,8 +72,13 @@ public interface EntityModel<T> {
 	String CASCADE_OFF = "cascadeOff";
 
 	/**
+	 * Whether the clear button is visible
+	 */
+	String CLEAR_BUTTON_VISIBLE = "clearButtonVisible";
+
+	/**
 	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
-	 * in an edit form
+	 * when inside an edit form
 	 */
 	String COMPLEX_EDITABLE = "complexEditable";
 
@@ -75,22 +86,27 @@ public interface EntityModel<T> {
 	 * Whether an amount represents a currency
 	 */
 	String CURRENCY = "currency";
-	
+
 	/**
-	 * Custom attribute
+	 * The currency symbol to use
+	 */
+	String CURRENCY_SYMBOL = "currencySymbol";
+
+	/**
+	 * Custom setting
 	 */
 	String CUSTOM = "custom";
-	
+
 	/**
-	 * Custom attribute value
+	 * Type of custom setting
+	 */
+	String CUSTOM_TYPE = "customType";
+
+	/**
+	 * Value of custom setting
 	 */
 	String CUSTOM_VALUE = "customValue";
 
-	/**
-	 * Custom attribute type
-	 */
-	String CUSTOM_TYPE = "customType";
-	
 	/**
 	 * The date type (date, time, or time stamp) of a value from java.time.*
 	 */
@@ -134,7 +150,7 @@ public interface EntityModel<T> {
 	String DISPLAY_PROPERTY = "displayProperty";
 
 	/**
-	 * The editable modus (EDITABLE, READ_ONLY, or CREATE_ONLY)
+	 * The editable mode (EDITABLE, READ_ONLY, or CREATE_ONLY)
 	 */
 	String EDITABLE = "editable";
 
@@ -147,6 +163,16 @@ public interface EntityModel<T> {
 	 * The String representation for the boolean "false" value
 	 */
 	String FALSE_REPRESENTATION = "falseRepresentation";
+
+	/**
+	 * The property to use for filtering when using paged mode for lookup
+	 */
+	String FILTER_PROPERTY = "filterProperty";
+
+	/**
+	 * Attribute order in grid
+	 */
+	String GRID_ATTRIBUTE_ORDER = "gridAttributeOrder";
 
 	/**
 	 * The type of component to use in editable grid
@@ -166,9 +192,14 @@ public interface EntityModel<T> {
 	String IGNORE_IN_SEARCH_FILTER = "ignoreInSearchFilter";
 
 	/**
-	 * Whether a field represents an image
+	 * Whether a (BLOB) field represents an image
 	 */
 	String IMAGE = "image";
+	
+	/**
+	 * Whether to display button captions in lookup fields
+	 */
+	String LOOKUP_FIELD_CAPTIONS = "lookupFieldCaptions";
 
 	/**
 	 * Whether the attribute is the main attribute
@@ -206,6 +237,11 @@ public interface EntityModel<T> {
 	String MIN_VALUE = "minValue";
 
 	/**
+	 * The multiple select mode to use inside a search dialog
+	 */
+	String MULTI_SELECT_MODE = "multiSelectMode";
+
+	/**
 	 * Whether to allow searching for multiple values in case of a MASTER attribute
 	 */
 	String MULTIPLE_SEARCH = "multipleSearch";
@@ -215,6 +251,26 @@ public interface EntityModel<T> {
 	 * will be rendered)
 	 */
 	String NAVIGABLE = "navigable";
+
+	/**
+	 * The default nesting depth for nested entity models
+	 */
+	String NESTING_DEPTH = "nestingDepth";
+
+	/**
+	 * The number field mode
+	 */
+	String NUMBER_FIELD_MODE = "numberFieldMode";
+
+	/**
+	 * The number field step
+	 */
+	String NUMBER_FIELD_STEP = "numberFieldStep";
+
+	/**
+	 * The paging type for selection components
+	 */
+	String PAGING_MODE = "pagingMode";
 
 	/**
 	 * Whether to include a percentage sign to a numerical field (cosmetic only)
@@ -234,7 +290,7 @@ public interface EntityModel<T> {
 	/**
 	 * Indicates that quick add functionality is enabled
 	 */
-	String QUICK_ADD_PROPERTY = "quickAddProperty";
+	String QUICK_ADD_ALLOWED = "quickAddAllowed";
 
 	/**
 	 * Indicates whether the property is read-only. This is deprecated but left for
@@ -258,7 +314,12 @@ public interface EntityModel<T> {
 	String REQUIRED_FOR_SEARCHING = "requiredForSearching";
 
 	/**
-	 * Whether searching is case sensitive
+	 * Attribute order in search form
+	 */
+	String SEARCH_ATTRIBUTE_ORDER = "searchAttributeOrder";
+
+	/**
+	 * Whether searching is case-sensitive
 	 */
 	String SEARCH_CASE_SENSITIVE = "searchCaseSensitive";
 
@@ -283,7 +344,7 @@ public interface EntityModel<T> {
 	String SEARCH_SELECT_MODE = "searchSelectMode";
 
 	/**
-	 * Whether the field is searchable
+	 * Whether the field appears inside a search form
 	 */
 	String SEARCHABLE = "searchable";
 
@@ -292,6 +353,11 @@ public interface EntityModel<T> {
 	 * selecting the component
 	 */
 	String SELECT_MODE = "selectMode";
+
+	/**
+	 * Whether to show the password in a password field
+	 */
+	String SHOW_PASSWORD = "showPassword";
 
 	/**
 	 * Default sort order for an entity
@@ -304,9 +370,9 @@ public interface EntityModel<T> {
 	String SORTABLE = "sortable";
 
 	/**
-	 * One or more styles for the field
+	 * Text area height
 	 */
-	String STYLES = "styles";
+	String TEXT_AREA_HEIGHT = "textAreaHeight";
 
 	/**
 	 * The text field mode - indicates whether to use a text field or text area for
@@ -315,9 +381,15 @@ public interface EntityModel<T> {
 	String TEXTFIELD_MODE = "textFieldMode";
 
 	/**
-	 * Indicates whether to use thousand grouping characters in view mode
+	 * Indicates whether when to use the thousand separator when formatting
+	 * floating point numbers
 	 */
-	String THOUSANDS_GROUPING = "thousandsGrouping";
+	String THOUSANDS_GROUPING_MODE = "thousandsGroupingMode";
+
+	/**
+	 * Whether to trim excess spaces for text and text area fields
+	 */
+	String TRIM_SPACES = "trimSpaces";
 
 	/**
 	 * The textual representation of the boolean "TRUE" value
@@ -355,7 +427,7 @@ public interface EntityModel<T> {
 	/**
 	 * Adds a new attribute model on the position of the given existing attribute
 	 * model. The existing model will shift one position to the back of the list.
-	 * When the existing model is not found the attribute will added on the end of
+	 * When the existing model is not found the attribute will be added to the end of
 	 * the list.
 	 * 
 	 * @param attributeGroup The group to which the attribute model should be
@@ -366,9 +438,7 @@ public interface EntityModel<T> {
 	void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
 
 	/**
-	 * Returns the attribute groups that are defined for this entity
-	 * 
-	 * @return
+	 * @return the attribute groups that are defined for this entity
 	 */
 	List<String> getAttributeGroups();
 
@@ -376,14 +446,20 @@ public interface EntityModel<T> {
 	 * Looks up an attribute model by its name
 	 * 
 	 * @param attributeName the name of the attribute
-	 * @return
+	 * @return the attribute model, or null if this is not found
 	 */
 	AttributeModel getAttributeModel(String attributeName);
 
 	/**
-	 * Returns an ordered list of all attribute models
+	 * Returns an attribute model based on the value of its actualSortPath
 	 * 
-	 * @return
+	 * @param actualSortPath the actual sort path
+	 * @return the attribute model, or null if this is not found
+	 */
+	AttributeModel getAttributeModelByActualSortPath(String actualSortPath);
+
+	/**
+	 * @return an ordered list of all attribute models
 	 */
 	List<AttributeModel> getAttributeModels();
 
@@ -391,24 +467,33 @@ public interface EntityModel<T> {
 	 * Returns the attribute models for a certain group
 	 * 
 	 * @param group the caption of the group
-	 * @return
+	 * @return the attribute models that belong to this group
 	 */
 	List<AttributeModel> getAttributeModelsForGroup(String group);
 
 	/**
 	 * Returns the attribute models for a certain attribute type and type. Just one
 	 * of the parameters is mandatory, when both are given both will be used in a
-	 * boolean AND. Will also look at the generic type of a attribute, e.g.
+	 * boolean AND. Will also look at the generic type of the attribute, e.g.
 	 * List<some generic type>.
 	 * 
 	 * @param attributeType the attribute type
 	 * @param type          the type
-	 * @return
+	 * @return the list of attribute models
 	 */
 	List<AttributeModel> getAttributeModelsForType(AttributeType attributeType, Class<?> type);
 
 	/**
-	 * 
+	 * @return an ordered list of all attribute models for display in the grid
+	 */
+	List<AttributeModel> getAttributeModelsSortedForGrid();
+
+	/**
+	 * @return an ordered list of all attribute models for use in a search form
+	 */
+	List<AttributeModel> getAttributeModelsSortedForSearch();
+
+	/**
 	 * @return the attribute models for which cascading has been defined
 	 */
 	List<AttributeModel> getCascadeAttributeModels();
@@ -417,7 +502,7 @@ public interface EntityModel<T> {
 	 * Return the textual description of an entity for the specified locale
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the description in the specified locale
 	 */
 	String getDescription(Locale locale);
 
@@ -425,7 +510,7 @@ public interface EntityModel<T> {
 	 * Returns the display name for a certain locale
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the display name in the specified locale
 	 */
 	String getDisplayName(Locale locale);
 
@@ -433,7 +518,7 @@ public interface EntityModel<T> {
 	 * Return the display name plural form of an entity for the specified locale
 	 * 
 	 * @param locale the locale
-	 * @return
+	 * @return the display name
 	 */
 	String getDisplayNamePlural(Locale locale);
 
@@ -441,28 +526,33 @@ public interface EntityModel<T> {
 	 * The name of the property that is used when displaying the entity inside a
 	 * select component (like a combo box) or a grid
 	 * 
-	 * @return
+	 * @return the name of the display property
 	 */
 	String getDisplayProperty();
 
 	/**
-	 * The class of the entity that this model is based on
-	 * 
-	 * @return
+	 * @return The class of the entity that this model is based on
 	 */
 	Class<T> getEntityClass();
 
 	/**
-	 * @return The attribute model of the id
+	 * The name of the property that is used to filter inside a combo box or token
+	 * component
+	 * 
+	 * @return the name of the filter property
 	 */
-	AttributeModel getIdAttributeModel();
+	String getFilterProperty();
 
 	/**
-	 * Returns the main attribute
-	 * 
-	 * @return
+	 * @return the main attribute for this entity model
 	 */
 	AttributeModel getMainAttributeModel();
+
+	/**
+	 * 
+	 * @return the maximum nesting depth up to which to process attributes
+	 */
+	int getNestingDepth();
 
 	/**
 	 * @return the full reference of this attribute model
@@ -470,7 +560,6 @@ public interface EntityModel<T> {
 	String getReference();
 
 	/**
-	 * 
 	 * @return all attribute models for all attributes that are required for
 	 *         searching
 	 */
@@ -488,12 +577,25 @@ public interface EntityModel<T> {
 	 * 
 	 * @param group    the attribute group
 	 * @param readOnly whether the group is in read-only mode
-	 * @return
+	 * @return <code>true</code> if the group is visible, false otherwise
 	 */
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
+
+	/**
+	 * Indicates whether this is the "base" entity model for the class
+	 * 
+	 * @return true if this is the case, false otherwise
+	 */
+	boolean isBaseEntityModel();
 
 	/**
 	 * @return whether only the default attribute group is used
 	 */
 	boolean usesDefaultGroupOnly();
+
+	/**
+	 *
+	 * @return the auto-fill instructions
+	 */
+	String getAutofillInstructions();
 }

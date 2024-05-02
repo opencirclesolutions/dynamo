@@ -14,9 +14,7 @@
 package com.ocs.dynamo.ui.utils;
 
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
-import java.text.DecimalFormatSymbols;
-import java.text.NumberFormat;
+import java.time.ZoneId;
 import java.util.Collection;
 import java.util.Locale;
 import java.util.Map;
@@ -27,6 +25,7 @@ import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.ui.component.CustomEntityField;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.component.EntityComboBox;
+import com.ocs.dynamo.ui.component.QuickAddEntityField;
 import com.ocs.dynamo.ui.component.URLField;
 import com.ocs.dynamo.ui.converter.BigDecimalConverter;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
@@ -38,11 +37,15 @@ import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.IntegerField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
@@ -52,27 +55,15 @@ import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
 import com.vaadin.flow.server.VaadinServletService;
 import com.vaadin.flow.server.VaadinSession;
+import lombok.experimental.UtilityClass;
 
 /**
  * Utility class for Vaadin-related functionality
  * 
  * @author bas.rutten
  */
+@UtilityClass
 public final class VaadinUtils {
-
-	/**
-	 * Appends a percentage sing to the provided string if needed
-	 * 
-	 * @param s          the string
-	 * @param percentage whether to append the sign
-	 * @return
-	 */
-	private static String appendPercentage(String s, boolean percentage) {
-		if (s == null) {
-			return null;
-		}
-		return percentage ? s + "%" : s;
-	}
 
 	/**
 	 * Converts a BigDecimal value to a String
@@ -80,8 +71,7 @@ public final class VaadinUtils {
 	 * @param percentage  whether the value represents a percentage
 	 * @param useGrouping whether to use a thousand grouping
 	 * @param value       the value
-	 * @param locale      the locale to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean percentage, boolean useGrouping, BigDecimal value) {
 		return bigDecimalToString(false, percentage, useGrouping, SystemPropertyUtils.getDefaultDecimalPrecision(),
@@ -92,11 +82,12 @@ public final class VaadinUtils {
 	 *
 	 * Converts a BigDecimal value to a String (shortcut for values that are not
 	 * currency and not percentage)
-	 *
+	 * 
+	 * @param currency    whether the value represents a currency
 	 * @param percentage  whether the value represents a percentage
 	 * @param useGrouping whether to use a thousand grouping
 	 * @param value       the value
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping,
 			BigDecimal value) {
@@ -112,11 +103,11 @@ public final class VaadinUtils {
 	 * @param useGrouping whether to use a thousand grouping
 	 * @param value       the value
 	 * @param locale      the locale to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			BigDecimal value, Locale locale) {
-		return bigDecimalToString(currency, percentage, useGrouping, precision, value, locale, getCurrencySymbol());
+		return bigDecimalToString(currency, percentage, useGrouping, precision, value, getCurrencySymbol(), locale);
 	}
 
 	/**
@@ -129,11 +120,23 @@ public final class VaadinUtils {
 	 * @param value          the value to convert
 	 * @param locale         the locale to use
 	 * @param currencySymbol the currency symbol to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
-			BigDecimal value, Locale locale, String currencySymbol) {
-		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
+			BigDecimal value, String currencySymbol, Locale locale) {
+		return NumberUtils.bigDecimalToString(currency, percentage, useGrouping, precision, value, locale,
+				currencySymbol);
+	}
+
+	/**
+	 * Converts a BigDecimal to a String based on the attribute model
+	 * @param am the attribute model
+	 * @param value the value to convert
+	 * @return the resulting String value
+	 */
+	public static String bigDecimalToString(AttributeModel am, BigDecimal value) {
+		return bigDecimalToString(am.isCurrency(), am.isPercentage(), am.useThousandsGroupingInViewMode(),
+				am.getPrecision(), value, am.getCurrencySymbol(), getDateLocale());
 	}
 
 	/**
@@ -141,12 +144,24 @@ public final class VaadinUtils {
 	 * directory
 	 * 
 	 * @param imageName the name of the file
-	 * @return
+	 * @return the created image
 	 */
 	public static Image createImage(String imageName) {
-		String resolvedImage = VaadinServletService.getCurrent().resolveResource("frontend://images/" + imageName,
-				VaadinSession.getCurrent().getBrowser());
+		String resolvedImage = VaadinServletService.getCurrent().resolveResource("images/" + imageName);
 		return new Image(resolvedImage, "");
+	}
+
+	/**
+	 * Creates an overflow layout of a certain height
+	 * 
+	 * @param height the desired height
+	 * @return the created layout
+	 */
+	public static VerticalLayout createOverflowLayout(String height) {
+		VerticalLayout restricted = new DefaultVerticalLayout(false, false);
+		restricted.getStyle().set("overflow", "auto");
+		restricted.setHeight(height);
+		return restricted;
 	}
 
 	/**
@@ -154,11 +169,11 @@ public final class VaadinUtils {
 	 * 
 	 * @param currency    whether to include a currency symbol
 	 * @param percentage  whether to include a percentage sign
-	 * @param useGrouping whether to use a thousands grouping separator
+	 * @param useGrouping whether to use a thousand grouping separator
 	 * @param precision   the desired precision
 	 * @param value       the value to convert
 	 * @param locale      the locale to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			Double value, Locale locale) {
@@ -175,62 +190,27 @@ public final class VaadinUtils {
 	 * @param value          the value to convert
 	 * @param locale         the locale to use
 	 * @param currencySymbol the currency symbol to use
-	 * @return
+	 * @return the resulting String value
 	 */
 	public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
 			Double value, Locale locale, String currencySymbol) {
-		return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
-	}
-
-	/**
-	 * Converts a fractional value to a String
-	 * 
-	 * @param currency       whether to include a currency symbol
-	 * @param percentage     whether to include a percentage sign
-	 * @param useGrouping    whether to use a thousands grouping separator
-	 * @param precision      the desired precision
-	 * @param value          the value to convert
-	 * @param locale         the locale to use
-	 * @param currencySymbol the currency symbol to use
-	 * @return
-	 */
-	private static String fractionalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
-			Number value, Locale locale, String currencySymbol) {
-		if (value == null) {
-			return null;
-		}
-
-		DecimalFormat df = null;
-		if (currency) {
-			df = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
-			DecimalFormatSymbols s = df.getDecimalFormatSymbols();
-			s.setCurrencySymbol(currencySymbol);
-			df.setDecimalFormatSymbols(s);
-		} else {
-			df = (DecimalFormat) DecimalFormat.getInstance(locale);
-		}
-		df.setGroupingUsed(useGrouping);
-		df.setMaximumFractionDigits(precision);
-		df.setMinimumFractionDigits(precision);
-
-		String s = df.format(value);
-		return appendPercentage(s, percentage);
+		return NumberUtils.doubleToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
 	}
 
 	/**
 	 * Returns the currency symbol to be used - by default this is looked up from
 	 * the session, with a fallback to the system property "default.currency.symbol"
 	 *
-	 * @return
+	 * @return the currency symbol
 	 */
 	public static String getCurrencySymbol() {
-		String cs = SystemPropertyUtils.getDefaultCurrencySymbol();
+		String currencySymbol = SystemPropertyUtils.getDefaultCurrencySymbol();
 
 		VaadinSession vs = VaadinSession.getCurrent();
 		if (vs != null && vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL) != null) {
-			cs = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
+			currencySymbol = (String) vs.getAttribute(DynamoConstants.CURRENCY_SYMBOL);
 		}
-		return cs;
+		return currencySymbol;
 	}
 
 	/**
@@ -238,23 +218,23 @@ public final class VaadinUtils {
 	 * the presence of the DynamoConstants.DATE_LOCALE setting on the session. If
 	 * this is not set, it falls back to the normal locale mechanism
 	 * 
-	 * @return
+	 * @return the Date locale
 	 */
 	public static Locale getDateLocale() {
 		if (VaadinSession.getCurrent() != null
 				&& VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE) != null) {
 			return (Locale) VaadinSession.getCurrent().getAttribute(DynamoConstants.DATE_LOCALE);
 		}
-		return new Locale(SystemPropertyUtils.getDefaultDateLocale());
+		return SystemPropertyUtils.getDefaultDateLocale();
 	}
 
 	/**
-	 * Returns the first child of the provide component that is of the specified
+	 * Returns the first child of the provided component that is of the specified
 	 * class (or is a subclass of the specified class)
 	 * 
-	 * @param component
-	 * @param clazz
-	 * @return
+	 * @param component the component
+	 * @param clazz the class to look for
+	 * @return the first child component that is of the specified class
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T getFirstChildOfClass(Component component, Class<T> clazz) {
@@ -266,7 +246,7 @@ public final class VaadinUtils {
 	 *
 	 * @param map the map
 	 * @param key the map key
-	 * @return
+	 * @return the first value
 	 */
 	public static String getFirstValueFromCollection(Map<String, Object> map, String key) {
 		if (map != null) {
@@ -289,13 +269,13 @@ public final class VaadinUtils {
 	/**
 	 * Returns the locale associated with the current Vaadin session
 	 *
-	 * @return
+	 * @return the locale
 	 */
 	public static Locale getLocale() {
 		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getLocale() != null) {
 			return VaadinSession.getCurrent().getLocale();
 		}
-		return new Locale(SystemPropertyUtils.getDefaultLocale());
+		return SystemPropertyUtils.getDefaultLocale();
 	}
 
 	/**
@@ -304,13 +284,13 @@ public final class VaadinUtils {
 	 *
 	 * @param component the component
 	 * @param clazz     the class
-	 * @return
+	 * @return the first parent component that was found
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> T getParentOfClass(Component component, Class<T> clazz) {
 		while (component.getParent().isPresent()) {
-			component = component.getParent().orElse(null);
-			if (component != null && clazz.isAssignableFrom(component.getClass())) {
+			component = component.getParent().get();
+			if (clazz.isAssignableFrom(component.getClass())) {
 				return (T) component;
 			}
 		}
@@ -322,7 +302,7 @@ public final class VaadinUtils {
 	 *
 	 * @param attributeName the name of the attribute that holds the map
 	 * @param key           the map key
-	 * @return
+	 * @return the attribute value
 	 */
 	@SuppressWarnings("unchecked")
 	public static String getSessionAttributeValueFromMap(String attributeName, String key) {
@@ -332,11 +312,23 @@ public final class VaadinUtils {
 	}
 
 	/**
+	 * Returns the time zone ID that is set for the session
+	 * 
+	 * @return zone id
+	 */
+	public static ZoneId getTimeZoneId() {
+		if (VaadinSession.getCurrent() != null && VaadinSession.getCurrent().getAttribute("zoneId") != null) {
+			return (ZoneId) VaadinSession.getCurrent().getAttribute("zoneId");
+		}
+		return ZoneId.systemDefault();
+	}
+
+	/**
 	 * Converts an Integer to a String, using the Vaadin converters
 	 *
 	 * @param grouping indicates whether grouping separators must be used
 	 * @param value    the value to convert
-	 * @return
+	 * @return the String value
 	 */
 	public static String integerToString(boolean grouping, boolean percentage, Integer value) {
 		return integerToString(grouping, percentage, value, getLocale());
@@ -348,16 +340,10 @@ public final class VaadinUtils {
 	 * @param grouping indicates whether grouping separators must be used
 	 * @param value    the value to convert
 	 * @param locale   the locale
-	 * @return
+	 * @return the String value
 	 */
 	public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
-		if (value == null) {
-			return null;
-		}
-		NumberFormat format = NumberFormat.getInstance(locale);
-		format.setGroupingUsed(grouping);
-		String s = format.format(value);
-		return appendPercentage(s, percentage);
+		return NumberUtils.integerToString(grouping, percentage, value, locale);
 	}
 
 	/**
@@ -380,38 +366,22 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
-		if (value == null) {
-			return null;
-		}
-
-		NumberFormat format = NumberFormat.getInstance(locale);
-		format.setGroupingUsed(grouping);
-		String s = format.format(value);
-		return appendPercentage(s, percentage);
+		return NumberUtils.longToString(grouping, percentage, value, locale);
 	}
 
 	/**
-	 * Converts a number to a String
-	 * 
-	 * @param am
-	 * @param type
+	 * Converts a number to a String based on an
+	 * @param am the attribute model
 	 * @param value
 	 * @param grouping
 	 * @param locale
 	 * @param currencySymbol
+	 * @param <T>
 	 * @return
 	 */
 	public static <T> String numberToString(AttributeModel am, T value, boolean grouping, Locale locale,
 			String currencySymbol) {
-		if (NumberUtils.isInteger(am.getNormalizedType())) {
-			return integerToString(grouping, am.isPercentage(), (Integer) value);
-		} else if (NumberUtils.isLong(am.getNormalizedType())) {
-			return longToString(grouping, am.isPercentage(), (Long) value);
-		} else if (NumberUtils.isDouble(am.getNormalizedType()) || BigDecimal.class.equals(am.getNormalizedType())) {
-			return fractionalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(), (Number) value,
-					locale, currencySymbol);
-		}
-		return null;
+		return NumberUtils.numberToString(am, value, grouping, locale, currencySymbol);
 	}
 
 	/**
@@ -435,6 +405,8 @@ public final class VaadinUtils {
 	public static void setLabel(Component component, String label) {
 		if (component instanceof TextField) {
 			((TextField) component).setLabel(label);
+		} else if (component instanceof IntegerField) {
+			((IntegerField) component).setLabel(label);
 		} else if (component instanceof Checkbox) {
 			((Checkbox) component).setLabel(label);
 		} else if (component instanceof CustomField) {
@@ -447,22 +419,54 @@ public final class VaadinUtils {
 			((DatePicker) component).setLabel(label);
 		} else if (component instanceof TimePicker) {
 			((TimePicker) component).setLabel(label);
+		} else if (component instanceof EmailField) {
+			((EmailField) component).setLabel(label);
+		} else if (component instanceof DateTimePicker) {
+			((DateTimePicker) component).setLabel(label);
+		} else if (component instanceof PasswordField) {
+			((PasswordField) component).setLabel(label);
+		}
+	}
+
+	/**
+	 * Set the "clear button visible" setting for a component
+	 * 
+	 * @param component the component
+	 * @param visible   the desired visibility
+	 */
+	public static void setClearButtonVisible(Component component, boolean visible) {
+		if (component instanceof TextField) {
+			((TextField) component).setClearButtonVisible(visible);
+		} else if (component instanceof IntegerField) {
+			((IntegerField) component).setClearButtonVisible(visible);
+		} else if (component instanceof ComboBox) {
+			((ComboBox<?>) component).setClearButtonVisible(visible);
+		} else if (component instanceof TextArea) {
+			((TextArea) component).setClearButtonVisible(visible);
+		} else if (component instanceof DatePicker) {
+			((DatePicker) component).setClearButtonVisible(visible);
+		} else if (component instanceof TimePicker) {
+			((TimePicker) component).setClearButtonVisible(visible);
+		} else if (component instanceof EmailField) {
+			((EmailField) component).setClearButtonVisible(visible);
+		} else if (component instanceof QuickAddEntityField) {
+			((QuickAddEntityField<?, ?, ?>) component).setClearButtonVisible(visible);
+		} else if (component instanceof PasswordField) {
+			((PasswordField) component).setClearButtonVisible(visible);
 		}
 	}
 
 	/**
 	 * Sets the placeholder for the specified component
 	 * 
-	 * @param component
-	 * @param placeHolder
+	 * @param component   the component
+	 * @param placeHolder the placeholder to set
 	 */
 	public static void setPlaceHolder(Component component, String placeHolder) {
-		if (component instanceof TextField) {
-			TextField textField = (TextField) component;
+		if (component instanceof TextField textField) {
 			textField.setPlaceholder(placeHolder);
-		} else if (component instanceof DatePicker) {
+		} else if (component instanceof DatePicker dateField) {
 			// set a separate format for a date field
-			DatePicker dateField = (DatePicker) component;
 			dateField.setPlaceholder(placeHolder);
 		} else if (component instanceof TimePicker) {
 			((TimePicker) component).setPlaceholder(placeHolder);
@@ -476,13 +480,15 @@ public final class VaadinUtils {
 			((URLField) component).setPlaceholder(placeHolder);
 		} else if (component instanceof ComboBox) {
 			((ComboBox<?>) component).setPlaceholder(placeHolder);
+		} else if (component instanceof EmailField) {
+			((EmailField) component).setPlaceholder(placeHolder);
 		}
 	}
 
 	/**
 	 * Sets a tool tip on a component
 	 * 
-	 * @param field   the component
+	 * @param component   the component
 	 * @param tooltip the tool tip to set
 	 */
 	public static void setTooltip(Component component, String tooltip) {
@@ -510,7 +516,7 @@ public final class VaadinUtils {
 	public static void showConfirmDialog(String question, Runnable whenConfirmed, Runnable whenCanceled) {
 		if (UI.getCurrent() != null) {
 			com.ocs.dynamo.ui.composite.dialog.ConfirmDialog dialog = new com.ocs.dynamo.ui.composite.dialog.ConfirmDialog(
-					question, whenConfirmed, null);
+					question, whenConfirmed, whenCanceled);
 			dialog.buildAndOpen();
 		} else {
 			whenConfirmed.run();
@@ -575,6 +581,14 @@ public final class VaadinUtils {
 	 */
 	public static void storeLocale(Locale locale) {
 		VaadinSession.getCurrent().setLocale(locale);
+	}
+
+	/**
+	 * 
+	 * @param zoneId
+	 */
+	public static void storeTimeZone(ZoneId zoneId) {
+		VaadinSession.getCurrent().setAttribute("zoneId", zoneId);
 	}
 
 	/**
@@ -650,8 +664,7 @@ public final class VaadinUtils {
 	 */
 	public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
 		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
-		return converter.convertToModel(value, new ValueContext(getLocale()))
-				.getOrThrow(r -> new OCSRuntimeException());
+		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
 	}
 
 	/**
@@ -662,9 +675,7 @@ public final class VaadinUtils {
 	 * @return
 	 */
 	public static Long stringToLong(boolean grouping, String value) {
-		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);
-		return converter.convertToModel(value, new ValueContext(getLocale()))
-				.getOrThrow(r -> new OCSRuntimeException());
+		return stringToLong(grouping, value, getLocale());
 	}
 
 	/**
@@ -680,15 +691,6 @@ public final class VaadinUtils {
 		return converter.convertToModel(value, new ValueContext(locale)).getOrThrow(r -> new OCSRuntimeException());
 	}
 
-	public static VerticalLayout createOverflowLayout(String height) {
-		VerticalLayout restricted = new DefaultVerticalLayout(false, false);
-		restricted.getStyle().set("overflow", "auto");
-		restricted.setHeight(height);
-		return restricted;
-	}
 
-	private VaadinUtils() {
-		// hidden constructor
-	}
 
 }

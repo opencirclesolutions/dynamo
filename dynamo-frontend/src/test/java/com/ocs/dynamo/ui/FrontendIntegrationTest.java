@@ -1,6 +1,7 @@
 package com.ocs.dynamo.ui;
 
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.TestPropertySource;
 
 import com.ocs.dynamo.test.BaseIntegrationTest;
 
@@ -11,6 +12,7 @@ import com.ocs.dynamo.test.BaseIntegrationTest;
  *
  */
 @SpringBootTest(classes = FrontendIntegrationTestConfig.class)
+@TestPropertySource(value = "classpath:application-it.properties")
 public abstract class FrontendIntegrationTest extends BaseIntegrationTest {
 
 }

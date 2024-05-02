@@ -18,185 +18,141 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.ui.composite.form.process.ProgressForm.ProgressMode;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.server.Command;
 import com.vaadin.flow.server.VaadinSession;
 
 public class ProgressFormTest extends BaseMockitoTest {
 
-    @Mock
-    private UI ui;
+	@Mock
+	private UI ui;
 
-    @Mock
-    private VaadinSession session;
+	@Mock
+	private VaadinSession session;
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    private int called = 0;
+	private int called = 0;
 
-    private boolean afterWorkCalled = false;
+	private boolean afterWorkCalled = false;
 
-    @BeforeEach
-    public void setUp() {
-        when(ui.getSession()).thenReturn(session);
-    }
+	@BeforeEach
+	public void setUp() {
+		when(ui.getSession()).thenReturn(session);
+	}
 
-    @Test
-    public void testCreateSimple() throws InterruptedException {
-        called = 0;
-        afterWorkCalled = false;
-        ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE) {
+	@Test
+	public void testCreateSimple() throws InterruptedException {
+		called = 0;
+		afterWorkCalled = false;
+		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE);
+		pf.setEstimateSize(Object -> 100);
+		pf.setProcess((o, estimatedSize) -> {
+			for (int i = 0; i < 100; i++) {
+				pf.getCounter().increment();
+			}
+			called++;
+		});
 
-            private static final long serialVersionUID = -3009623960109461650L;
+		pf.setAfterWorkComplete(exceptionOccurred -> {
+			assertFalse(exceptionOccurred);
+			afterWorkCalled = true;
+		});
 
-            @Override
-            protected void process(Object t, int estimatedSize) {
-                for (int i = 0; i < 100; i++) {
-                    getCounter().increment();
-                }
-                called++;
-            }
+		MockUtil.injectUI(pf, ui);
+		pf.build();
 
-            @Override
-            protected int estimateSize(Object t) {
-                return 100;
-            }
+		assertEquals(0, pf.getCounter().getCurrent());
 
-            @Override
-            protected void doBuildLayout(VerticalLayout main) {
+		assertEquals(0, called);
+		pf.startWork(null);
 
-            }
+		Thread.sleep(1000);
 
-            @Override
-            protected void afterWorkComplete(boolean exceptionOccurred) {
-                assertFalse(exceptionOccurred);
-                afterWorkCalled = true;
-            }
-        };
-        MockUtil.injectUI(pf, ui);
-        pf.build();
+		assertEquals(1, called);
+		assertEquals(100, pf.getCounter().getCurrent());
+		assertTrue(afterWorkCalled);
+	}
 
-        assertEquals(0, pf.getCounter().getCurrent());
+	@Test
+	public void testCreateProgressBar() throws InterruptedException {
+		when(ui.access(any())).thenAnswer(a -> {
+			Command c = (Command) a.getArgument(0);
+			c.execute();
+			return null;
+		});
 
-        assertEquals(0, called);
-        pf.startWork(null);
+		called = 0;
+		afterWorkCalled = false;
+		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.PROGRESSBAR);
 
-        Thread.sleep(1000);
+		pf.setAfterWorkComplete(exceptionOccurred -> {
+			assertFalse(exceptionOccurred);
+			afterWorkCalled = true;
+		});
+		pf.setProcess((t, estimatedSize) -> {
+			for (int i = 0; i < 100; i++) {
+				try {
+					Thread.sleep(20);
+				} catch (InterruptedException e) {
 
-        assertEquals(1, called);
-        assertEquals(100, pf.getCounter().getCurrent());
-        assertTrue(afterWorkCalled);
-    }
+				}
+				pf.getCounter().increment();
+			}
+			called++;
+		});
+		pf.setEstimateSize(est -> 100);
 
-    @Test
-    public void testCreateProgressBar() throws InterruptedException {
-        when(ui.access(any())).thenAnswer(a -> {
-            Command c = (Command) a.getArgument(0);
-            c.execute();
-            return null;
-        });
+		MockUtil.injectUI(pf, ui);
+		pf.build();
 
-        called = 0;
-        afterWorkCalled = false;
-        ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.PROGRESSBAR) {
+		assertEquals(0, pf.getCounter().getCurrent());
 
-            private static final long serialVersionUID = -3009623960109461650L;
+		assertEquals(0, called);
+		pf.startWork(null);
 
-            @Override
-            protected void process(Object t, int estimatedSize) {
-                for (int i = 0; i < 100; i++) {
-                    try {
-                        Thread.sleep(20);
-                    } catch (InterruptedException e) {
+		Thread.sleep(5000);
 
-                    }
-                    getCounter().increment();
-                }
-                called++;
-            }
+		verify(ui, atLeast(1)).access(any(Command.class));
 
-            @Override
-            protected int estimateSize(Object t) {
-                return 100;
-            }
+		assertEquals(1, called);
+		assertEquals(100, pf.getCounter().getCurrent());
+		assertTrue(afterWorkCalled);
+	}
 
-            @Override
-            protected void doBuildLayout(VerticalLayout main) {
+	@Test
+	public void testException() throws InterruptedException {
 
-            }
+		when(ui.access(any())).thenAnswer(a -> {
+			Command c = (Command) a.getArgument(0);
+			c.execute();
+			return null;
+		});
 
-            @Override
-            protected void afterWorkComplete(boolean exceptionOccurred) {
-                assertFalse(exceptionOccurred);
-                afterWorkCalled = true;
-            }
-        };
-        MockUtil.injectUI(pf, ui);
-        pf.build();
+		called = 0;
+		afterWorkCalled = false;
+		ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE);
+		MockUtil.injectUI(pf, ui);
+		pf.setEstimateSize(est -> 100);
+		pf.setProcess((t, estimatedSize) -> {
+			throw new OCSRuntimeException("Test");
+		});
+		pf.setAfterWorkComplete(exceptionOccurred -> {
+			assertTrue(exceptionOccurred);
+			afterWorkCalled = true;
+		});
 
-        assertEquals(0, pf.getCounter().getCurrent());
+		pf.build();
 
-        assertEquals(0, called);
-        pf.startWork(null);
+		assertEquals(0, pf.getCounter().getCurrent());
 
-        Thread.sleep(5000);
+		assertEquals(0, called);
+		pf.startWork(null);
 
-        verify(ui, atLeast(1)).access(any(Command.class));
+		Thread.sleep(1000);
 
-        assertEquals(1, called);
-        assertEquals(100, pf.getCounter().getCurrent());
-        assertTrue(afterWorkCalled);
-    }
-
-    @Test
-    public void testException() throws InterruptedException {
-
-        when(ui.access(any())).thenAnswer(a -> {
-            Command c = (Command) a.getArgument(0);
-            c.execute();
-            return null;
-        });
-
-        called = 0;
-        afterWorkCalled = false;
-        ProgressForm<Object> pf = new ProgressForm<Object>(UI.getCurrent(), ProgressMode.SIMPLE) {
-
-            private static final long serialVersionUID = -3009623960109461650L;
-
-            @Override
-            protected void process(Object t, int estimatedSize) {
-                throw new OCSRuntimeException("Test");
-            }
-
-            @Override
-            protected int estimateSize(Object t) {
-                return 100;
-            }
-
-            @Override
-            protected void doBuildLayout(VerticalLayout main) {
-
-            }
-
-            @Override
-            protected void afterWorkComplete(boolean exceptionOccurred) {
-                assertTrue(exceptionOccurred);
-                afterWorkCalled = true;
-            }
-        };
-        MockUtil.injectUI(pf, ui);
-        pf.build();
-
-        assertEquals(0, pf.getCounter().getCurrent());
-
-        assertEquals(0, called);
-        pf.startWork(null);
-
-        Thread.sleep(1000);
-
-        assertEquals(0, called);
-        assertEquals(0, pf.getCounter().getCurrent());
-        assertTrue(afterWorkCalled);
-    }
+		assertEquals(0, called);
+		assertEquals(0, pf.getCounter().getCurrent());
+		assertTrue(afterWorkCalled);
+	}
 }

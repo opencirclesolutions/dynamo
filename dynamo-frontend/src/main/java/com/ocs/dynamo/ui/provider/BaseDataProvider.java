@@ -23,6 +23,7 @@ import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.filter.FilterConverter;
@@ -40,6 +41,9 @@ import com.vaadin.flow.data.provider.QuerySortOrder;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Abstract class for data providers
  * 
@@ -49,224 +53,229 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <T>  the type of the entity
  */
 public abstract class BaseDataProvider<ID extends Serializable, T extends AbstractEntity<ID>>
-        extends AbstractDataProvider<T, SerializablePredicate<T>> {
+		extends AbstractDataProvider<T, SerializablePredicate<T>> {
 
-    private static final long serialVersionUID = 7409567551591729117L;
+	private static final long serialVersionUID = 7409567551591729117L;
 
-    private final EntityModel<T> entityModel;
+	@Getter
+	private final EntityModel<T> entityModel;
 
-    private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
+	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
-    private final FetchJoinInformation[] joins;
+	@Getter
+	private final FetchJoinInformation[] joins;
 
-    /**
-     * The maximum number of search results to include in the results table
-     */
-    private Integer maxResults;
+	/**
+	 * The maximum number of search results to include in the results table
+	 */
+	@Getter
+	@Setter
+	private Integer maxResults;
 
-    /**
-     * The message service
-     */
-    private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	/**
+	 * The message service
+	 */
+	@Getter
+	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
-    /**
-     * The service used to query the DB
-     */
-    private final BaseService<ID, T> service;
+	/**
+	 * The service used to query the database
+	 */
+	@Getter
+	private final BaseService<ID, T> service;
 
-    /**
-     * ID of the currently selected item
-     */
-    private ID currentlySelectedId;
+	/**
+	 * ID of the currently selected item
+	 */
+	@Getter
+	@Setter
+	private ID currentlySelectedId;
 
-    /**
-     * Sort orders to fall back to when no sort orders are defined directly on the
-     * grid
-     */
-    private List<com.vaadin.flow.data.provider.SortOrder<?>> fallBackSortOrders;
+	/**
+	 * Sort orders to fall back to when no sort orders are defined directly on the
+	 * grid
+	 */
+	@Getter
+	@Setter
+	private List<com.vaadin.flow.data.provider.SortOrder<?>> fallbackSortOrders;
 
-    /**
-     * The IDs of the entities to display
-     */
-    protected List<ID> ids;
+	/**
+	 * The IDs of the entities to display
+	 */
+	protected List<ID> ids;
 
-    /**
-     * Code to carry out after the count query completes
-     */
-    private Consumer<Integer> afterCountCompleted;
+	/**
+	 * Code to carry out after the count query completes
+	 */
+	@Getter
+	@Setter
+	private Consumer<Integer> afterCountCompleted;
 
-    /**
-     * Constructor
-     * 
-     * @param service     the service used for retrieving data from the database
-     * @param entityModel the entity model
-     * @param joins       the join data to use
-     */
-    public BaseDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.joins = joins;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service     the service used for retrieving data from the database
+	 * @param entityModel the entity model
+	 * @param joins       the join data to use
+	 */
+	protected BaseDataProvider(BaseService<ID, T> service, EntityModel<T> entityModel, FetchJoinInformation... joins) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.joins = joins;
+	}
 
-    /**
-     * Creates the desired sort order
-     * 
-     * @param query the query predicate
-     * @return
-     */
-    protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
-        List<QuerySortOrder> orders = query.getSortOrders();
-        SortOrders so = new SortOrders();
+	/**
+	 * Creates the desired sort order
+	 * 
+	 * @param query the query predicate
+	 * @return
+	 */
+	protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
+		List<QuerySortOrder> orders = query.getSortOrders();
+		SortOrders so = new SortOrders();
 
-        if (!orders.isEmpty()) {
-            for (QuerySortOrder order : orders) {
-                so.addSortOrder(new SortOrder(order.getSorted(),
-                        SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
-            }
-        } else if (fallBackSortOrders != null && !fallBackSortOrders.isEmpty()) {
-            for (com.vaadin.flow.data.provider.SortOrder<?> order : fallBackSortOrders) {
-                so.addSortOrder(new SortOrder(order.getSorted().toString(),
-                        SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
-            }
-        }
+		if (!orders.isEmpty()) {
+			addExplicitSortOrders(orders, so);
+		} else if (fallbackSortOrders != null && !fallbackSortOrders.isEmpty()) {
+			addFallbackSortOrders(so);
+		}
 
-        // if no sort order defined, order descending on ID
-        if (so.getNrOfSortOrders() == 0) {
-            so.addSortOrder(new SortOrder(DynamoConstants.ID, Direction.DESC));
-        }
+		// if no sort order defined, order descending on ID
+		if (so.getNrOfSortOrders() == 0) {
+			so.addSortOrder(new SortOrder(DynamoConstants.ID, Direction.DESC));
+		}
 
-        return so;
-    }
+		return so;
+	}
 
-    public abstract ID firstItemId();
+	private void addFallbackSortOrders(SortOrders so) {
+		for (com.vaadin.flow.data.provider.SortOrder<?> order : fallbackSortOrders) {
+			String sorted = order.getSorted().toString();
+			AttributeModel am = entityModel.getAttributeModel(sorted);
+			if (am != null && am.isSortable()) {
+				sorted = am.getActualSortPath();
+			} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
+				// it is possible that a sort order was preserved that is not valid for this
+				// provider. In that case,
+				// do not sort
+				sorted = null;
+			}
 
-    public Consumer<Integer> getAfterCountCompleted() {
-        return afterCountCompleted;
-    }
+			if (sorted != null) {
+				so.addSortOrder(new SortOrder(sorted,
+						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+			}
+		}
+	}
 
-    protected ID getCurrentlySelectedId() {
-        return currentlySelectedId;
-    }
+	private void addExplicitSortOrders(List<QuerySortOrder> orders, SortOrders so) {
+		for (QuerySortOrder order : orders) {
+			String sorted = order.getSorted();
+			AttributeModel am = entityModel.getAttributeModel(sorted);
+			if (am != null && am.isSortable()) {
+				sorted = am.getActualSortPath();
+			} else if (entityModel.getAttributeModelByActualSortPath(sorted) == null) {
+				// it is possible that a sort order was preserved that is not valid for this
+				// provider. In that case,
+				// do not sort
+				sorted = null;
+			}
+			if (sorted != null) {
+				so.addSortOrder(new SortOrder(sorted,
+						SortDirection.ASCENDING.equals(order.getDirection()) ? Direction.ASC : Direction.DESC));
+			}
+		}
+	}
 
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	public abstract ID firstItemId();
 
-    public List<com.vaadin.flow.data.provider.SortOrder<?>> getFallBackSortOrders() {
-        return fallBackSortOrders;
-    }
+	protected FilterConverter<T> getFilterConverter() {
+		EntityModel<T> em = getEntityModel();
+		if (em == null) {
+			em = entityModelFactory.getModel(getService().getEntityClass());
+		}
+		return new FilterConverter<>(em);
+	}
 
-    protected FilterConverter<T> getFilterConverter() {
-        EntityModel<T> em = getEntityModel();
-        if (em == null) {
-            em = entityModelFactory.getModel(getService().getEntityClass());
-        }
-        return new FilterConverter<>(em);
-    }
+	public ID getNextItemId() {
+		if (ids == null) {
+			return null;
+		}
 
-    public FetchJoinInformation[] getJoins() {
-        return joins;
-    }
+		int index = ids.indexOf(currentlySelectedId);
+		if (index < ids.size() - 1) {
+			currentlySelectedId = ids.get(index + 1);
+			return currentlySelectedId;
+		}
+		return null;
+	}
 
-    public Integer getMaxResults() {
-        return maxResults;
-    }
+	public ID getPreviousItemId() {
+		if (ids == null) {
+			return null;
+		}
 
-    public MessageService getMessageService() {
-        return messageService;
-    }
+		int index = ids.indexOf(currentlySelectedId);
+		if (index > 0) {
+			currentlySelectedId = ids.get(index - 1);
+			return currentlySelectedId;
+		}
+		return null;
+	}
 
-    public ID getNextItemId() {
-        int index = ids.indexOf(currentlySelectedId);
-        if (index < ids.size() - 1) {
-            currentlySelectedId = ids.get(index + 1);
-            return currentlySelectedId;
-        }
-        return null;
-    }
+	/**
+	 * Returns the number of items in the provider
+	 * 
+	 * @return
+	 */
+	public abstract int getSize();
 
-    public ID getPreviousItemId() {
-        int index = ids.indexOf(currentlySelectedId);
-        if (index > 0) {
-            currentlySelectedId = ids.get(index - 1);
-            return currentlySelectedId;
-        }
-        return null;
-    }
+	/**
+	 * 
+	 * @return whether the data set contains a next item
+	 */
+	public boolean hasNextItemId() {
+		if (ids == null) {
+			return false;
+		}
+		int index = ids.indexOf(currentlySelectedId);
+		return index < ids.size() - 1;
+	}
 
-    public BaseService<ID, T> getService() {
-        return service;
-    }
+	/**
+	 * 
+	 * @return whether the data set contains a previous item
+	 */
+	public boolean hasPreviousItemId() {
+		if (ids == null) {
+			return false;
+		}
+		int index = ids.indexOf(currentlySelectedId);
+		return index > 0;
+	}
 
-    /**
-     * Returns the number of items in the provider
-     * 
-     * @return
-     */
-    public abstract int getSize();
+	/**
+	 * Returns the index of the item identified by the specified ID
+	 * 
+	 * @param id
+	 * @return
+	 */
+	public abstract int indexOf(ID id);
 
-    /**
-     * 
-     * @return whether the data set contains a next item
-     */
-    public boolean hasNextItemId() {
-        if (ids == null) {
-            return false;
-        }
-        int index = ids.indexOf(currentlySelectedId);
-        return index < ids.size() - 1;
-    }
+	@Override
+	public boolean isInMemory() {
+		return false;
+	}
 
-    /**
-     * 
-     * @return whether the data set contains a previous item
-     */
-    public boolean hasPreviousItemId() {
-        if (ids == null) {
-            return false;
-        }
-        int index = ids.indexOf(currentlySelectedId);
-        return index > 0;
-    }
-
-    /**
-     * Returns the index of the item identified by the specified ID
-     * 
-     * @param id
-     * @return
-     */
-    public abstract int indexOf(ID id);
-
-    @Override
-    public boolean isInMemory() {
-        return false;
-    }
-
-    public void setAfterCountCompleted(Consumer<Integer> afterCountCompleted) {
-        this.afterCountCompleted = afterCountCompleted;
-    }
-
-    public void setCurrentlySelectedId(ID id) {
-        this.currentlySelectedId = id;
-    }
-
-    public void setFallBackSortOrders(List<com.vaadin.flow.data.provider.SortOrder<?>> fallBackSortOrders) {
-        this.fallBackSortOrders = fallBackSortOrders;
-    }
-
-    public void setMaxResults(final Integer maxResults) {
-        this.maxResults = maxResults;
-    }
-
-    /**
-     * Shows a notification message
-     * 
-     * @param message the message to show
-     */
-    protected void showNotification(String message) {
-        if (UI.getCurrent() != null) {
-            Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
-                    .addThemeVariants(NotificationVariant.LUMO_ERROR);
-        }
-    }
+	/**
+	 * Shows a notification message
+	 * 
+	 * @param message the message to show
+	 */
+	protected void showNotification(String message) {
+		if (UI.getCurrent() != null) {
+			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
+					.addThemeVariants(NotificationVariant.LUMO_ERROR);
+		}
+	}
 }

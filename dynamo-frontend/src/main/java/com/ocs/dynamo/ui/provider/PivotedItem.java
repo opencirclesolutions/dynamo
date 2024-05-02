@@ -13,42 +13,110 @@
  */
 package com.ocs.dynamo.ui.provider;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+
+/**
+ * A data container class that represents a single row in a pivoted grid
+ * 
+ * @author Bas Rutten
+ *
+ */
 public class PivotedItem {
 
-    private final Object rowKeyValue;
+	private final Object rowKeyValue;
 
-    private Map<Object, Map<String, Object>> values = new HashMap<>();
+	private Map<Object, Map<String, Object>> values = new HashMap<>();
 
-    private Map<Object, Object> fixedValues = new HashMap<>();
+	private Map<Object, Object> fixedValues = new HashMap<>();
 
-    public PivotedItem(Object rowKeyValue) {
-        this.rowKeyValue = rowKeyValue;
-    }
+	private Map<String, BigDecimal> sumValues = new HashMap<>();
 
-    public Object getRowKeyValue() {
-        return rowKeyValue;
-    }
+	private Map<String, Integer> countValues = new HashMap<>();
 
-    public void setValue(Object columnKey, String propertyValue, Object value) {
-        values.putIfAbsent(columnKey, new HashMap<>());
-        values.get(columnKey).put(propertyValue, value);
-    }
+	public PivotedItem(Object rowKeyValue) {
+		this.rowKeyValue = rowKeyValue;
+	}
 
-    public Object getValue(Object columnKey, String propertyValue) {
-        if (!values.containsKey(columnKey)) {
-            return null;
-        }
-        return values.get(columnKey).get(propertyValue);
-    }
+	/**
+	 * Returns the average value for a property
+	 * 
+	 * @param property the property name
+	 * @return
+	 */
+	public BigDecimal getAverageValue(String property) {
+		BigDecimal bv = sumValues.get(property);
+		if (bv != null) {
+			int cv = countValues.get(property);
+			if (cv > 0) {
+				return bv.divide(BigDecimal.valueOf(cv), 2, RoundingMode.HALF_UP);
+			}
+			return BigDecimal.ZERO;
+		}
+		return null;
+	}
 
-    public void setFixedValue(Object key, Object value) {
-        fixedValues.put(key, value);
-    }
+	public Integer getCountValue(String property) {
+		return countValues.get(property);
+	}
 
-    public Object getFixedValue(Object key) {
-        return fixedValues.get(key);
-    }
+	public Object getFixedValue(Object key) {
+		return fixedValues.get(key);
+	}
+
+	public String getFormattedValue(Object columnKey, String propertyValue) {
+		if (!values.containsKey(columnKey)) {
+			return null;
+		}
+		Object obj = values.get(columnKey).get(propertyValue);
+		if (obj instanceof BigDecimal) {
+			return VaadinUtils.bigDecimalToString(false, true, (BigDecimal) obj);
+		} else if (obj instanceof Long) {
+			return VaadinUtils.longToString(true, false, (Long) obj);
+		} else if (obj instanceof Integer) {
+			return VaadinUtils.integerToString(true, false, (Integer) obj);
+		}
+		return obj == null ? "" : obj.toString();
+	}
+
+	public Object getRowKeyValue() {
+		return rowKeyValue;
+	}
+
+	public BigDecimal getSumValue(String property) {
+		return sumValues.get(property);
+	}
+
+	public Object getValue(Object columnKey, String propertyValue) {
+		if (!values.containsKey(columnKey)) {
+			return null;
+		}
+		return values.get(columnKey).get(propertyValue);
+	}
+
+	public void setFixedValue(Object key, Object value) {
+		fixedValues.put(key, value);
+	}
+
+	public void setValue(Object columnKey, String propertyValue, Object value) {
+		values.putIfAbsent(columnKey, new HashMap<>());
+		values.get(columnKey).put(propertyValue, value);
+
+		// also update running sum
+		if (value != null && value instanceof Number) {
+			Number n = (Number) value;
+			sumValues.putIfAbsent(propertyValue, BigDecimal.ZERO);
+			BigDecimal cv = sumValues.get(propertyValue);
+			cv = cv.add(BigDecimal.valueOf(n.doubleValue()));
+			sumValues.put(propertyValue, cv);
+
+			// increase count
+			countValues.putIfAbsent(propertyValue, 0);
+			countValues.put(propertyValue, countValues.get(propertyValue) + 1);
+		}
+	}
 }

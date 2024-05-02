@@ -2,7 +2,6 @@ package com.ocs.dynamo.ui.composite.grid;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +10,6 @@ import javax.inject.Inject;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.service.TestEntity2Service;
@@ -22,155 +20,136 @@ import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
 
 public class InMemoryTreeGridTest extends FrontendIntegrationTest {
 
-    @Inject
-    private TestEntityService testEntityService;
+	@Inject
+	private TestEntityService testEntityService;
 
-    @Inject
-    private TestEntity2Service testEntity2Service;
+	@Inject
+	private TestEntity2Service testEntity2Service;
 
-    private TestEntity e1;
+	private TestEntity e1;
 
-    private TestEntity e2;
+	private TestEntity e2;
 
-    private TestEntity2 child1;
+	private TestEntity2 child1;
 
-    private TestEntity2 child2;
+	private TestEntity2 child2;
 
-    @BeforeEach
-    public void setup() {
-        e1 = new TestEntity("Bob", 11L);
-        e1 = testEntityService.save(e1);
+	private static final String VALUE = "value";
 
-        e2 = new TestEntity("Harry", 12L);
-        e2 = testEntityService.save(e2);
+	private static final String VALUE_2 = "value2";
 
-        child1 = new TestEntity2();
-        child1.setName("child1");
-        child1.setTestEntity(e1);
+	private static final String VALUE_SUM = "valueSum";
 
-        child1.setValueSum(9);
+	private static final String NAME = "name";
 
-        child1 = testEntity2Service.save(child1);
+	private static final String LONG_VALUE = "longValue";
 
-        child2 = new TestEntity2();
-        child2.setName("child2");
-        child2.setTestEntity(e2);
-        child2.setValueSum(11);
+	@BeforeEach
+	public void setup() {
+		e1 = new TestEntity("Bob", 11L);
+		e1 = testEntityService.save(e1);
 
-        child2 = testEntity2Service.save(child2);
-    }
+		e2 = new TestEntity("Harry", 12L);
+		e2 = testEntityService.save(e2);
 
-    @Test
-    public void testBuildGrid() {
+		child1 = new TestEntity2();
+		child1.setName("child1");
+		child1.setTestEntity(e1);
 
-        final List<TestEntity> parents = Lists.newArrayList(e1, e2);
-        final List<TestEntity2> children = Lists.newArrayList(child1, child2);
+		child1.setValueSum(9);
 
-        InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity> grid = new InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity>() {
+		child1 = testEntity2Service.save(child1);
 
-            private static final long serialVersionUID = -3834741496353866628L;
+		child2 = new TestEntity2();
+		child2.setName("child2");
+		child2.setTestEntity(e2);
+		child2.setValueSum(11);
 
-            private static final String VALUE = "value";
+		child2 = testEntity2Service.save(child2);
+	}
 
-            private static final String VALUE_2 = "value2";
+	@Test
+	public void testBuildGrid() {
 
-            private static final String VALUE_SUM = "valueSum";
+		final List<TestEntity> parents = List.of(e1, e2);
+		final List<TestEntity2> children = List.of(child1, child2);
 
-            private static final String NAME = "name";
+		InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity> grid = new InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity>();
 
-            private static final String LONG_VALUE = "longValue";
+		grid.setSumCellValueCreator((row, index, columnName, value) -> {
+			if (grid.getEditablePropertyClassCollector().apply(columnName).equals(Integer.class)) {
+				ClassUtils.setFieldValue(row, columnName, value.intValue());
+			} else {
+				ClassUtils.setFieldValue(row, columnName, value.longValue());
+			}
+		});
 
-            @Override
-            protected List<TestEntity2> getChildren(TestEntity parent) {
-                List<TestEntity2> result = new ArrayList<>();
-                for (TestEntity2 child : children) {
-                    if (child.getTestEntity().equals(parent)) {
-                        result.add(child);
-                    }
-                }
-                return result;
-            }
+		grid.setSumColumns(new String[] { VALUE, VALUE_2, VALUE_SUM, LONG_VALUE });
+		grid.setSumCellExtractor((t, index, columnName) -> {
+			return (Number) ClassUtils.getFieldValue(t, columnName);
+		});
+		grid.setParentCollector(() -> parents);
+		grid.setChildCollector(parent -> {
+			List<TestEntity2> result = new ArrayList<>();
+			for (TestEntity2 child : children) {
+				if (child.getTestEntity().equals(parent)) {
+					result.add(child);
+				}
+			}
+			return result;
+		});
 
-            @Override
-            protected Class<?> getEditablePropertyClass(String columnName) {
-                if (LONG_VALUE.equals(columnName)) {
-                    return Long.class;
-                }
-                return Integer.class;
-            }
+		grid.setColumnCreator(() -> {
+			grid.addReadOnlyColumn(NAME, "Name", false);
+			grid.addReadOnlyColumn(VALUE, "Value", false);
+			grid.addReadOnlyColumn(VALUE_2, "Value2", false);
+			grid.addReadOnlyColumn(VALUE_SUM, "Value Sum", false);
+			grid.addReadOnlyColumn(LONG_VALUE, "Long Value", false);
+		});
 
-            @Override
-            protected String[] getSumColumns() {
-                return new String[] { VALUE, VALUE_2, VALUE_SUM, LONG_VALUE };
-            }
+		grid.setParentRowCreator(entity -> {
+			TreeGridRow row = new TreeGridRow();
+			row.setName(entity.getName());
+			return row;
+		});
+		grid.setChildRowCreator((childEntity, parent) -> {
+			TreeGridRow row = new TreeGridRow();
 
-            @Override
-            protected void addColumns() {
-                addReadOnlyColumn(NAME, "Name", false);
-                addReadOnlyColumn(VALUE, "Value", false);
-                addReadOnlyColumn(VALUE_2, "Value2", false);
-                addReadOnlyColumn(VALUE_SUM, "Value Sum", false);
-                addReadOnlyColumn(LONG_VALUE, "Long Value", false);
-            }
+			row.setName(childEntity.getName());
+			row.setValue(childEntity.getValue());
+			row.setValue2(childEntity.getValue2());
+			row.setValueSum(childEntity.getValueSum());
+			row.setLongValue(4L);
+			return row;
+		});
 
-            @Override
-            protected TreeGridRow createChildRow(TestEntity2 childEntity, TestEntity parentEntity) {
-                TreeGridRow row = new TreeGridRow();
+		grid.setEditablePropertyClassCollector(columnName -> {
+			if (LONG_VALUE.equals(columnName)) {
+				return Long.class;
+			}
+			return Integer.class;
+		});
 
-                row.setName(childEntity.getName());
-                row.setValue(childEntity.getValue());
-                row.setValue2(childEntity.getValue2());
-                row.setValueSum(childEntity.getValueSum());
-                row.setLongValue(4L);
-                return row;
-            }
+		grid.build();
 
-            @Override
-            protected TreeGridRow createParentRow(TestEntity entity) {
-                TreeGridRow row = new TreeGridRow();
-                row.setName(entity.getName());
-                return row;
-            }
+		assertEquals(5, grid.getColumns().size());
 
-            @Override
-            protected List<TestEntity> getParentCollection() {
-                return parents;
-            }
+		TreeDataProvider<TreeGridRow> provider = (TreeDataProvider<TreeGridRow>) grid.getDataProvider();
 
-            @Override
-            protected Number extractSumCellValue(TreeGridRow t, int index, String columnName) {
-                return (Number) ClassUtils.getFieldValue(t, columnName);
-            }
+		List<TreeGridRow> parentRows = provider.getTreeData().getRootItems();
+		assertEquals(2, parentRows.size());
 
-            @Override
-            protected void setSumCellValue(TreeGridRow t, int index, String columnName, BigDecimal value) {
-                if (getEditablePropertyClass(columnName).equals(Integer.class)) {
-                    ClassUtils.setFieldValue(t, columnName, value.intValue());
-                } else {
-                    ClassUtils.setFieldValue(t, columnName, value.longValue());
-                }
-            }
-        };
-        grid.build();
+		TreeGridRow parent1 = parentRows.get(0);
+		assertEquals(9, parent1.getValueSum().intValue());
+		assertEquals(9, parent1.getValueSum().intValue());
+		assertEquals(4L, parent1.getLongValue().longValue());
 
-        assertEquals(5, grid.getColumns().size());
+		TreeGridRow parent2 = parentRows.get(1);
+		assertEquals(11, parent2.getValueSum().intValue());
+		assertEquals(4L, parent2.getLongValue().longValue());
 
-        TreeDataProvider<TreeGridRow> provider = (TreeDataProvider<TreeGridRow>) grid.getDataProvider();
+		List<TreeGridRow> childRows = provider.getTreeData().getChildren(parent1);
+		assertEquals(1, childRows.size());
 
-        List<TreeGridRow> parentRows = provider.getTreeData().getRootItems();
-        assertEquals(2, parentRows.size());
-
-        TreeGridRow parent1 = parentRows.get(0);
-        assertEquals(9, parent1.getValueSum().intValue());
-        assertEquals(9, parent1.getValueSum().intValue());
-        assertEquals(4L, parent1.getLongValue().longValue());
-
-        TreeGridRow parent2 = parentRows.get(1);
-        assertEquals(11, parent2.getValueSum().intValue());
-        assertEquals(4L, parent2.getLongValue().longValue());
-
-        List<TreeGridRow> childRows = provider.getTreeData().getChildren(parent1);
-        assertEquals(1, childRows.size());
-
-    }
+	}
 }

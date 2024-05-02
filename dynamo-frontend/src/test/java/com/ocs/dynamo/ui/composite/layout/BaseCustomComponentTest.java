@@ -13,6 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 import java.math.BigDecimal;
@@ -20,8 +21,9 @@ import java.text.DecimalFormatSymbols;
 import java.time.LocalTime;
 import java.util.Locale;
 
-import javax.persistence.OptimisticLockException;
+import jakarta.persistence.OptimisticLockException;
 
+import com.github.mvysny.kaributesting.v10.MockVaadin;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -60,7 +62,9 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 	@BeforeEach
 	public void setupBaseCustomComponentTest() throws NoSuchFieldException {
-		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "de");
+		// Reset vaadin session locale for unit test
+		MockVaadin.tearDown();
+		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "en");
 		MockUtil.mockMessageService(messageService);
 		ReflectionTestUtils.setField(component, "messageService", messageService);
 	}
@@ -69,7 +73,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 	public void test() {
 		EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
 
-		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("nl"));
+		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("en"));
 
 		TestEntity e = new TestEntity("Kevin", 12L);
 		e.setDiscount(BigDecimal.valueOf(12.34));
@@ -122,7 +126,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 		// enum
 		text = (Span) component.constructLabel(e, model.getAttributeModel("someEnum"));
-		assertEquals("Value A", text.getText());
+		assertEquals("A", text.getText());
 
 		// entity collection
 		text = (Span) component.constructLabel(e, model.getAttributeModel("testEntities"));
@@ -139,10 +143,12 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 
 	@Test
 	public void testHandleSaveException() {
-		component.handleSaveException(new OCSValidationException("Some error"));
-		component.handleSaveException(new OCSRuntimeException("Some error"));
-		component.handleSaveException(new OptimisticLockException());
-		component.handleSaveException(new RuntimeException());
+		assertDoesNotThrow(() -> {
+			component.handleSaveException(new OCSValidationException("Some error"));
+			component.handleSaveException(new OCSRuntimeException("Some error"));
+			component.handleSaveException(new OptimisticLockException());
+			component.handleSaveException(new RuntimeException());
+		});
 	}
 
 }

@@ -20,6 +20,7 @@ package com.ocs.dynamo.dao;
  *
  */
 public enum QueryFunction {
+	
 	/**
 	 * Aggregate function for average on a property
 	 */

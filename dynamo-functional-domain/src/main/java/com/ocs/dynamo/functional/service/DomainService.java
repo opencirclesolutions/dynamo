@@ -37,20 +37,20 @@ public interface DomainService extends BaseService<Integer, Domain> {
     <D extends Domain> List<D> findAllByType(Class<D> type);
 
     /**
-     * Find a domain based on type and unique property value
+     * Find a domain entity based on type and unique property value
      * 
-     * @param type
-     * @param propertyName
-     * @param value
-     * @param caseSensitive
-     * @return
+     * @param clazz the class of the entity
+     * @param propertyName the property value
+     * @param value the property value
+     * @param caseSensitive whether the comparison is case-sensitive
+     * @return the domain value
      */
-    <D extends Domain> D findByTypeAndUniqueProperty(Class<D> type, String propertyName, Object value, boolean caseSensitive);
+    <D extends Domain> D findByTypeAndUniqueProperty(Class<D> clazz, String propertyName, Object value, boolean caseSensitive);
 
     /**
      * Query the children for a given parent
      * 
-     * @param parent
+     * @param parent the parent entity
      * @return the children for the given parent
      */
     <C extends DomainChild<C, P>, P extends DomainParent<C, P>> List<C> findChildren(P parent);

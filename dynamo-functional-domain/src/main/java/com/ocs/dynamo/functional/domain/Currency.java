@@ -13,12 +13,14 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.persistence.DiscriminatorValue;
-import javax.persistence.Entity;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import lombok.NoArgsConstructor;
 
 /**
  * A currency identified by an ISO currency code
@@ -28,22 +30,17 @@ import com.ocs.dynamo.domain.model.annotation.Model;
  */
 @Entity
 @DiscriminatorValue("CURRENCY")
-@Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc")
+@Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc", filterProperty = "name")
+@NoArgsConstructor
 public class Currency extends Domain {
 
 	private static final long serialVersionUID = 3270223599926941961L;
 
-	public Currency() {
-		// default constructor
-	}
-
 	/**
 	 * Constructor
 	 * 
-	 * @param code
-	 *            the code of the currency
-	 * @param name
-	 *            the name of the currency
+	 * @param code the code of the currency
+	 * @param name the name of the currency
 	 */
 	public Currency(String code, String name) {
 		super(code, name);
@@ -53,7 +50,8 @@ public class Currency extends Domain {
 	 * Overridden so we can modify the attribute model
 	 */
 	@Override
-	@Attribute(visible = VisibilityType.SHOW, required = true)
+	@NotNull
+	@Attribute(visible = VisibilityType.SHOW)
 	public String getCode() {
 		return super.getCode();
 	}

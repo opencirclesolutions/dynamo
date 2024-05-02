@@ -16,6 +16,9 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.BiConsumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -31,6 +34,9 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.tabs.Tab;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A layout that contains a tab sheet with tabs that are lazily loaded. Use the
  * getTabCaptions method to specify the captions of the tabs, and (implicitly)
@@ -41,30 +47,58 @@ import com.vaadin.flow.component.tabs.Tab;
  * @param <ID> type of the primary key
  * @param <T>  type of the entity
  */
-public abstract class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
+public class TabLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseCustomComponent
 		implements Reloadable {
 
 	private static final long serialVersionUID = 3788799136302802727L;
+
+	@Getter
+	@Setter
+	private BiConsumer<Integer, Component> beforeReload;
 
 	/**
 	 * The caption to display above the tabs
 	 */
 	private Span caption;
 
+	@Getter
+	@Setter
+	private String[] captions;
+
 	/**
 	 * The indices of the tabs that have already been constructed
 	 */
 	private Set<Integer> constructedTabs = new HashSet<>();
 
+	@Getter
+	@Setter
+	private Function<Integer, String> descriptionCreator;
+
 	/**
-	 * The entity that is being shown
+	 * The entity that is being displayed
 	 */
+	@Getter
 	private T entity;
+
+	/**
+	 * The code that is used to construct an icon for a tab
+	 */
+	@Getter
+	@Setter
+	private Function<Integer, Icon> iconCreator;
 
 	/**
 	 * The tab sheet component
 	 */
 	private TabWrapper tabs;
+
+	@Getter
+	@Setter
+	private Function<Integer, Component> tabCreator;
+
+	@Getter
+	@Setter
+	private Supplier<String> titleCreator = () -> "";
 
 	/**
 	 * Constructor
@@ -78,26 +112,15 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 		this.entity = entity;
 	}
 
-	/**
-	 * Callback method that is called before a tab is reloaded - use this to make
-	 * sure the correct data is available in the tab
-	 * 
-	 * @param index     the index of the selected tab
-	 * @param component
-	 */
-	protected void beforeReload(int index, Component component) {
-		// overwrite in subclasses
-	}
-
 	@Override
 	public void build() {
 		if (tabs == null) {
 			VerticalLayout main = new DefaultVerticalLayout();
 			add(main);
 
-			String title = createTitle();
+			String title = titleCreator.get();
 			if (!StringUtils.isEmpty(title)) {
-				caption = new Span(createTitle());
+				caption = new Span(title);
 				main.add(caption);
 			}
 
@@ -110,36 +133,19 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Constructs the title of the page. If this method returns null then no title
-	 * will be displayed
-	 * 
-	 * @return
-	 */
-	protected abstract String createTitle();
-
-	/**
 	 * Returns the tab identified by a certain index
 	 * 
 	 * @param index the index
-	 * @return
+	 * @return the tab identified by the index
 	 */
 	@Override
 	public Component getComponentAt(int index) {
 		return tabs.getComponentAt(index);
 	}
 
-	public T getEntity() {
-		return entity;
+	public Tab getTabByIndex(int index) {
+		return tabs.getTabByIndex(index);
 	}
-
-	protected abstract Icon getIconForTab(int index);
-
-	/**
-	 * Returns the captions of the tabs
-	 * 
-	 * @return
-	 */
-	protected abstract String[] getTabCaptions();
 
 	/**
 	 * Constructs or reloads a tab
@@ -153,7 +159,7 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 		if (!constructedTabs.contains(index)) {
 			constructedTabs.add(index);
 			// paste the real tab into the placeholder
-			Component constructed = initTab(index);
+			Component constructed = tabCreator.apply(index);
 			tabs.setComponent(index, constructed);
 		} else {
 			// reload the tab if needed
@@ -162,19 +168,15 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 				if (component instanceof CanAssignEntity) {
 					((CanAssignEntity<?, T>) component).assignEntity(getEntity());
 				}
-				beforeReload(index, component);
+
+				if (beforeReload != null) {
+					beforeReload.accept(index, component);
+				}
+
 				((Reloadable) component).reload();
 			}
 		}
 	}
-
-	/**
-	 * Lazily creates a certain tab
-	 * 
-	 * @param index the zero-based index of the tab to create
-	 * @return
-	 */
-	protected abstract Component initTab(int index);
 
 	@Override
 	protected void onAttach(AttachEvent attachEvent) {
@@ -188,11 +190,14 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
+	 * Selects the tab specified by the provided index
 	 * 
-	 * @param index
+	 * @param index the index
 	 */
 	public void selectTab(int index) {
-		tabs.setSelectedIndex(index);
+		if (tabs != null) {
+			tabs.setSelectedIndex(index);
+		}
 	}
 
 	/**
@@ -211,7 +216,7 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 
 		// update title
 		if (caption != null) {
-			caption.setText(createTitle());
+			caption.setText(titleCreator.get());
 		}
 	}
 
@@ -228,35 +233,28 @@ public abstract class TabLayout<ID extends Serializable, T extends AbstractEntit
 	}
 
 	/**
-	 * Sets up
+	 * Sets up the various tabs
 	 * 
-	 * @param tabs
+	 * @param tabs the tab wrapper that holds the various tabs
 	 */
 	private void setupSheets(TabWrapper tabs) {
 
 		// build up placeholder tabs that only contain an empty layout
 		int index = 0;
-		for (String cap : getTabCaptions()) {
+		for (String cap : getCaptions()) {
 			VerticalLayout dummy = new DefaultVerticalLayout(false, false);
-			String description = getTabDescription(index);
-			tabs.addTab(cap, description, dummy, getIconForTab(index++));
+			String description = descriptionCreator == null ? "" : descriptionCreator.apply(index);
+			tabs.addTab(cap, description, dummy, iconCreator == null ? null : iconCreator.apply(index));
+			index++;
 		}
 
 		// construct first tab
-		Component component = initTab(0);
+		Component component = tabCreator.apply(0);
 		constructedTabs.add(0);
 		tabs.setComponent(0, component);
 
 		// respond to a tab change by actually loading the sheet
 		tabs.addSelectedChangeListener(event -> initOrReload(event.getSource().getSelectedIndex()));
-	}
-
-	protected String getTabDescription(int index) {
-		return null;
-	}
-
-	public Tab getTabByIndex(int index) {
-		return tabs.getTabByIndex(index);
 	}
 
 }

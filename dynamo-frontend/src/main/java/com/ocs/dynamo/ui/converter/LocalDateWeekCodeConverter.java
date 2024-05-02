@@ -24,7 +24,7 @@ import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.converter.Converter;
 
 /**
- * Converter for converting between a String (representing a week code) and a
+ * Converter for converting between a String (representing a week code, e.g. '2018-01') and a
  * LocalDate
  * 
  * @author bas.rutten

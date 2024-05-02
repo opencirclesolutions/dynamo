@@ -15,6 +15,8 @@ package com.ocs.dynamo.filter;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
+import lombok.Getter;
+
 /**
  * A predicate for checking whether a String value matches a predicate
  * 
@@ -26,6 +28,7 @@ public class LikePredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -5077087872701525001L;
 
+	@Getter
 	private boolean caseSensitive;
 
 	public LikePredicate(String property, String value, boolean caseSensitive) {
@@ -50,8 +53,5 @@ public class LikePredicate<T> extends PropertyPredicate<T> {
 		return ((String) v).toUpperCase().matches(pattern.toUpperCase());
 	}
 
-	public boolean isCaseSensitive() {
-		return caseSensitive;
-	}
 
 }

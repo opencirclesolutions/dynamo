@@ -15,6 +15,7 @@ package com.ocs.dynamo.ui.composite.export.impl;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.springframework.stereotype.Service;
 
@@ -43,78 +44,80 @@ import com.vaadin.flow.function.SerializablePredicate;
 @Service
 public class ExportServiceImpl implements ExportService {
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel, ExportMode mode,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
-        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-                .getServiceForEntity(entityModel.getEntityClass());
-        FilterConverter<T> converter = new FilterConverter<>(entityModel);
-        Filter filter = converter.convert(predicate);
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsv(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			FetchJoinInformation... joins) {
+		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(entityModel.getEntityClass());
+		FilterConverter<T> converter = new FilterConverter<>(entityModel);
+		Filter filter = converter.convert(predicate);
 
-        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(service, entityModel, mode,
-                SortUtils.translateSortOrders(sortOrders), filter, null, joins);
-        return template.process();
-    }
+		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(service, entityModel, mode,
+				SortUtils.translateSortOrders(sortOrders), filter, joins);
+		return template.process();
+	}
 
-    @Override
-    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel, ExportMode mode,
-            List<T> items) {
-        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(null, entityModel, mode, null, null, null);
-        return template.processFixed(items);
-    }
+	@Override
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
+			ExportMode mode, List<T> items) {
+		ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(null, entityModel, mode, null,
+				null);
+		return template.processFixed(items);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel, ExportMode mode,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
-            FetchJoinInformation... joins) {
-        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-                .getServiceForEntity(entityModel.getEntityClass());
-        FilterConverter<T> converter = new FilterConverter<>(entityModel);
-        Filter filter = converter.convert(predicate);
-        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(service, entityModel, mode,
-                SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()),
-                customGenerator, joins);
-        return template.process();
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcel(EntityModel<T> entityModel,
+			ExportMode mode, SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, FetchJoinInformation... joins) {
+		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(entityModel.getEntityClass());
+		FilterConverter<T> converter = new FilterConverter<>(entityModel);
+		Filter filter = converter.convert(predicate);
+		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(service, entityModel, mode,
+				SortUtils.translateSortOrders(sortOrders), filter,
+				entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator, joins);
+		return template.process();
+	}
 
-    @Override
-    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel, ExportMode mode,
-            CustomXlsStyleGenerator<ID, T> customGenerator, List<T> items) {
-        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(null, entityModel, mode, null, null,
-                entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator);
-        return template.processFixed(items);
-    }
+	@Override
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
+			ExportMode mode, Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, List<T> items) {
+		ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(null, entityModel, mode,
+				null, null, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator);
+		return template.processFixed(items);
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelPivot(EntityModel<T> entityModel,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, CustomXlsStyleGenerator<ID, T> customGenerator,
-            PivotParameters pivotParameters, FetchJoinInformation... joins) {
-        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-                .getServiceForEntity(entityModel.getEntityClass());
-        FilterConverter<T> converter = new FilterConverter<>(entityModel);
-        Filter filter = converter.convert(predicate);
-        ModelBasedExcelPivotExportTemplate<ID, T> template = new ModelBasedExcelPivotExportTemplate<>(service, entityModel,
-                SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()),
-                customGenerator, pivotParameters, joins);
-        return template.process();
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelPivot(EntityModel<T> entityModel,
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders,
+			Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, PivotParameters pivotParameters,
+			FetchJoinInformation... joins) {
+		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(entityModel.getEntityClass());
+		FilterConverter<T> converter = new FilterConverter<>(entityModel);
+		Filter filter = converter.convert(predicate);
+		ModelBasedExcelPivotExportTemplate<ID, T> template = new ModelBasedExcelPivotExportTemplate<>(service,
+				entityModel, SortUtils.translateSortOrders(sortOrders), filter,
+				entityModel.getDisplayNamePlural(VaadinUtils.getLocale()), customGenerator, pivotParameters, joins);
+		return template.process();
+	}
 
-    @Override
-    @SuppressWarnings("unchecked")
-    public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvPivot(EntityModel<T> entityModel,
-            SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivotParameters,
-            FetchJoinInformation... joins) {
-        BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
-                .getServiceForEntity(entityModel.getEntityClass());
-        FilterConverter<T> converter = new FilterConverter<>(entityModel);
-        Filter filter = converter.convert(predicate);
-        ModelBasedCsvPivotExportTemplate<ID, T> template = new ModelBasedCsvPivotExportTemplate<>(service, entityModel,
-                SortUtils.translateSortOrders(sortOrders), filter, entityModel.getDisplayNamePlural(VaadinUtils.getLocale()),
-                pivotParameters, joins);
-        return template.process();
-    }
+	@Override
+	@SuppressWarnings("unchecked")
+	public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvPivot(EntityModel<T> entityModel,
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivotParameters,
+			FetchJoinInformation... joins) {
+		BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
+				.getServiceForEntity(entityModel.getEntityClass());
+		FilterConverter<T> converter = new FilterConverter<>(entityModel);
+		Filter filter = converter.convert(predicate);
+		ModelBasedCsvPivotExportTemplate<ID, T> template = new ModelBasedCsvPivotExportTemplate<>(service, entityModel,
+				SortUtils.translateSortOrders(sortOrders), filter, pivotParameters, joins);
+		return template.process();
+	}
 
 }

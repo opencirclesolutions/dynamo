@@ -15,18 +15,16 @@ package com.ocs.dynamo.filter;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
+import lombok.Getter;
+
 public class SimpleStringPredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -5077087872701525001L;
 
-	/**
-	 * Whether to perform case-sensitive search
-	 */
+	@Getter
 	private final boolean caseSensitive;
 
-	/**
-	 * Whether to only match the prefix
-	 */
+	@Getter
 	private final boolean onlyMatchPrefix;
 
 	public SimpleStringPredicate(String property, String value, boolean onlyMatchPrefix, boolean caseSensitive) {
@@ -54,12 +52,5 @@ public class SimpleStringPredicate<T> extends PropertyPredicate<T> {
 		}
 	}
 
-	public boolean isOnlyMatchPrefix() {
-		return onlyMatchPrefix;
-	}
-
-	public boolean isCaseSensitive() {
-		return caseSensitive;
-	}
 
 }

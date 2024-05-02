@@ -12,7 +12,7 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.FieldFactoryContext;
+import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.filter.GreaterOrEqualPredicate;
@@ -41,7 +41,7 @@ public class FilterGroupTest extends FrontendIntegrationTest {
 
     private Component constructField(String name) {
         AttributeModel am = model.getAttributeModel(name);
-        FieldFactoryContext context = FieldFactoryContext.create().setSearch(true).setAttributeModel(am);
+        FieldCreationContext context = FieldCreationContext.create().search(true).attributeModel(am).build();
         return factory.constructField(context);
     }
 

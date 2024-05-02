@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.composite.layout;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
@@ -40,20 +41,11 @@ public class TabWrapper extends DefaultVerticalLayout {
 
 	private static final long serialVersionUID = -3247803933862947954L;
 
-	/**
-	 * The layout that serves as the container for the currently selected tab
-	 */
 	private VerticalLayout displayedPage;
 
-	/**
-	 * The tab component
-	 */
-	private Tabs tabs;
+	private final Tabs tabs;
 
-	/**
-	 * Mapping between tab and selected page
-	 */
-	private Map<Tab, Component> tabsToPages = new HashMap<>();
+	private final Map<Tab, Component> tabsToPages = new HashMap<>();
 
 	public TabWrapper() {
 		setMargin(false);
@@ -66,7 +58,8 @@ public class TabWrapper extends DefaultVerticalLayout {
 			}
 		});
 		add(tabs);
-		displayedPage = new DefaultVerticalLayout(true, true);
+		displayedPage = new DefaultVerticalLayout(true, false);
+		displayedPage.setClassName(DynamoConstants.CSS_TAB_LAYOUT_DISPLAY_PAGE);
 		displayedPage.setMargin(true);
 		add(displayedPage);
 	}
@@ -74,8 +67,8 @@ public class TabWrapper extends DefaultVerticalLayout {
 	/**
 	 * Adds a selection change listener
 	 * 
-	 * @param listener
-	 * @return
+	 * @param listener the listener to add
+	 * @return the registration
 	 */
 	public Registration addSelectedChangeListener(ComponentEventListener<SelectedChangeEvent> listener) {
 		return tabs.addSelectedChangeListener(listener);
@@ -87,8 +80,8 @@ public class TabWrapper extends DefaultVerticalLayout {
 	 * @param caption     the caption of the tab
 	 * @param description the tool tip/description of the tab
 	 * @param component   the component to display inside the tab
-	 * @param icon        the icon (optional)
-	 * @return
+	 * @param icon        the icon to display on the tab(optional)
+	 * @return the tab that was added
 	 */
 	public Tab addTab(String caption, String description, Component component, Icon icon) {
 		Button button = new Button(caption);
@@ -123,7 +116,11 @@ public class TabWrapper extends DefaultVerticalLayout {
 	}
 
 	public Tab getTabByIndex(int index) {
-		return (Tab) tabs.getComponentAt(index);
+		return tabs.getTabAt(index);
+	}
+
+	public int getTabCount() {
+		return tabsToPages.size();
 	}
 
 	/**

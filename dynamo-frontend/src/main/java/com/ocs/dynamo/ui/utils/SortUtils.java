@@ -32,8 +32,7 @@ public final class SortUtils {
     /**
      * Translates one or more (non) transient Vaadin sort orders to OCS sort orders
      * 
-     * @param model
-     * @param originalOrders
+     * @param originalOrders the sort order that must be translated
      * @return the sort orders for which transient is equal to the given isTransient
      *         value
      */

@@ -15,6 +15,8 @@ package com.ocs.dynamo.filter;
 
 import com.ocs.dynamo.utils.ClassUtils;
 
+import lombok.Getter;
+
 /**
  * A predicate for filtering on a value that is between a lower and an upper
  * bound. The bounds are inclusive
@@ -27,6 +29,7 @@ public class BetweenPredicate<T> extends PropertyPredicate<T> {
 
 	private static final long serialVersionUID = -5077087872701525001L;
 
+	@Getter
 	private Comparable<?> toValue;
 
 	public BetweenPredicate(String property, Comparable<?> fromValue, Comparable<?> toValue) {
@@ -52,7 +55,4 @@ public class BetweenPredicate<T> extends PropertyPredicate<T> {
 		return (Comparable<?>) getValue();
 	}
 
-	public Comparable<?> getToValue() {
-		return toValue;
-	}
 }

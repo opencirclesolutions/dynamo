@@ -15,11 +15,11 @@ package com.ocs.dynamo.ui.utils;
 
 import java.util.Locale;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import com.vaadin.flow.component.HasValue.ValueChangeEvent;
 import com.vaadin.flow.component.grid.Grid;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * A template for handling a paste into a text field. The template will try to
@@ -30,69 +30,73 @@ import com.vaadin.flow.component.grid.Grid;
  * 
  * @author bas.rutten
  */
+@Slf4j
 public abstract class PasteTemplate<T> {
 
-    private static final Logger LOG = LoggerFactory.getLogger(PasteTemplate.class);
+	private ValueChangeEvent<String> event;
 
-    private ValueChangeEvent<String> event;
+	private Locale locale;
 
-    private Locale locale;
+	@Getter
+	private Grid<T> grid;
 
-    private Grid<T> grid;
+	private String value;
 
-    /**
-     * @param locale
-     * @param event
-     */
-    public PasteTemplate(Locale locale, Grid<T> grid, ValueChangeEvent<String> event) {
-        this.locale = locale;
-        this.event = event;
-        this.grid = grid;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param locale the locale used for the formatting
+	 * @param grid   the grid to which to apply the pasting
+	 * @param event  the value change event
+	 * @param value  the value
+	 */
+	protected PasteTemplate(Locale locale, Grid<T> grid, ValueChangeEvent<String> event, String value) {
+		this.locale = locale;
+		this.event = event;
+		this.grid = grid;
+		this.value = value;
+	}
 
-    public void execute() {
-        String text = event.getValue();
-        if (text != null) {
-            // replace tabs and other whitespace
-            String[] values = PasteUtils.split(text);
-            if (values.length > 1) {
-                // clear the source field
-                clearSourceField(event);
+	public void execute() {
+		String text = value;
+		if (text != null) {
+			// replace tabs and other whitespace
+			String[] values = PasteUtils.split(text);
+			if (values.length > 1) {
+				// clear the source field
+				clearSourceField(event);
 
-                for (int i = 0; i < values.length; i++) {
-                    try {
-                        String temp = values[i];
-                        temp = PasteUtils.translateSeparators(temp, locale);
-                        // strip off any percent signs
-                        String s = temp.replaceAll("%", "");
-                        process(i, s);
+				for (int i = 0; i < values.length; i++) {
+					try {
+						String temp = values[i];
+						temp = PasteUtils.translateSeparators(temp, locale);
+						// strip off any percent signs
+						String s = temp.replaceAll("%", "");
+						process(i, s);
 
-                    } catch (Exception ex) {
-                        LOG.error(ex.getMessage(), ex);
-                    }
-                }
-            }
-        }
-    }
+					} catch (Exception ex) {
+						log.error(ex.getMessage(), ex);
+					}
+				}
+			}
+		}
+	}
 
-    /**
-     * Processes a single value
-     * 
-     * @param index the index of the value in the list
-     * @param value
-     */
-    protected abstract void process(int index, String value);
+	/**
+	 * Processes a single value
+	 * 
+	 * @param index the index of the value in the list
+	 * @param value
+	 */
+	protected abstract void process(int index, String value);
 
-    /**
-     * Clears the source field. This can be used if the values are pasted in a cell
-     * that should be emptied after the paste action
-     * 
-     * @param event
-     */
-    protected abstract void clearSourceField(ValueChangeEvent<String> event);
+	/**
+	 * Clears the source field. This can be used if the values are pasted in a cell
+	 * that should be emptied after the paste action
+	 * 
+	 * @param event
+	 */
+	protected abstract void clearSourceField(ValueChangeEvent<String> event);
 
-    public Grid<T> getGrid() {
-        return grid;
-    }
 
 }

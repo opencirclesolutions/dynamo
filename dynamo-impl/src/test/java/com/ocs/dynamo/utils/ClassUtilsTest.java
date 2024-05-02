@@ -25,8 +25,8 @@ import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.Entity;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Size;
 
 import org.junit.jupiter.api.Test;
 

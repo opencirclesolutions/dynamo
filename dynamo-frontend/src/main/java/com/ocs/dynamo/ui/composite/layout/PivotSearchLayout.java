@@ -14,26 +14,30 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.composite.grid.GridWrapper;
 import com.ocs.dynamo.ui.composite.grid.PivotGridWrapper;
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * Layout for searching in a pivoted grid
@@ -48,23 +52,83 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	private static final long serialVersionUID = 9118254267715180544L;
 
+	@Getter
+	@Setter
 	private String columnKeyProperty;
 
+	@Getter
+	@Setter
 	private List<String> fixedColumnKeys;
 
-	private PivotGridWrapper<ID, T> gridWrapper;
+	private PivotGridWrapper<ID, T> pivotGridWrapper;
 
+	/**
+	 * Header mapping function. Expects the column key and the property
+	 */
+	@Getter
+	@Setter
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
+	/**
+	 * Sub header mapping function. Expects the column key and the property
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
+
+	/**
+	 * Explicitly overridden header mapper used for exporting only
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> exportHeaderMapper = null;
+
+	/**
+	 * Bifunction used to map pivot column subheaders for export only
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> exportSubHeaderMapper = null;
+
+	@Getter
+	@Setter
 	private Function<String, String> fixedHeaderMapper = Function.identity();
 
-	private List<String> pivotedProperties;
+	@Getter
+	@Setter
+	private BiFunction<String, Object, String> customFormatter;
 
+	@Getter
+	@Setter
+	private List<String> pivotedProperties = new ArrayList<>();
+
+	@Getter
+	@Setter
+	private List<String> hiddenPivotedProperties = new ArrayList<>();
+
+	@Getter
+	@Setter
 	private List<Object> possibleColumnKeys;
 
+	@Getter
+	@Setter
 	private String rowKeyProperty;
 
+	@Getter
+	@Setter
 	private Supplier<Integer> sizeSupplier;
+
+	@Getter
+	@Setter
+	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
+
+	@Getter
+	@Setter
+	private boolean includeAggregateRow;
 
 	/**
 	 * 
@@ -79,10 +143,22 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		super(service, entityModel, QueryType.ID_BASED, formOptions, sortOrder, joins);
 	}
 
+	public void addAggregation(String property, PivotAggregationType type, Class<?> clazz) {
+		aggregationMap.put(property, type);
+		aggregationClassMap.put(property, clazz);
+	}
+
+	@Override
+	public void clearGridWrapper() {
+		super.clearGridWrapper();
+		this.pivotGridWrapper = null;
+	}
+
 	public PivotGridWrapper<ID, T> constructGridWrapper() {
 
 		PivotGridWrapper<ID, T> wrapper = new PivotGridWrapper<ID, T>(getService(), getEntityModel(),
-				QueryType.ID_BASED, getFormOptions(), getSearchForm().extractFilter(), getSortOrders(), getJoins()) {
+				QueryType.ID_BASED, getFormOptions(), getComponentContext(), getSearchForm().extractFilter(),
+				getSortOrders(), getJoins()) {
 
 			private static final long serialVersionUID = -7522369124218869608L;
 
@@ -100,11 +176,19 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		wrapper.setRowKeyProperty(getRowKeyProperty());
 		wrapper.setColumnKeyProperty(getColumnKeyProperty());
 		wrapper.setPivotedProperties(getPivotedProperties());
+		wrapper.setHiddenPivotedProperties(getHiddenPivotedProperties());
 		wrapper.setHeaderMapper(getHeaderMapper());
+		wrapper.setSubHeaderMapper(getSubHeaderMapper());
 		wrapper.setFixedHeaderMapper(getFixedHeaderMapper());
+		wrapper.setCustomFormatter(getCustomFormatter());
 		wrapper.setSizeSupplier(getSizeSupplier());
 		wrapper.setPossibleColumnKeys(getPossibleColumnKeys());
 		wrapper.setFixedColumnKeys(getFixedColumnKeys());
+		wrapper.setAggregationMap(aggregationMap);
+		wrapper.setAggregationClassMap(aggregationClassMap);
+		wrapper.setIncludeAggregateRow(isIncludeAggregateRow());
+		wrapper.setExportHeaderMapper(getExportHeaderMapper());
+		wrapper.setExportSubHeaderMapper(getExportSubHeaderMapper());
 
 		postConfigureGridWrapper(wrapper);
 		wrapper.build();
@@ -116,49 +200,14 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		return wrapper;
 	}
 
-	/**
-	 * Constructs the search form
-	 * 
-	 * @return the search form
-	 */
 	@Override
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-		// by default, do not pass a searchable object, in order to prevent an
-		// unnecessary and
-		// potentially unfiltered search
-		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-				this.getDefaultFilters(), this.getFieldFilters()) {
+		ModelBasedSearchForm<ID, T> searchForm = new ModelBasedSearchForm<ID, T>(null, getEntityModel(),
+				getFormOptions(), getComponentContext(), this.getDefaultFilters(), this.getFieldFilters());
 
-			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected void afterSearchFieldToggle(boolean visible) {
-				PivotSearchLayout.this.afterSearchFieldToggle(visible);
-			}
-
-			@Override
-			protected void afterSearchPerformed() {
-				PivotSearchLayout.this.afterSearchPerformed();
-			}
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return PivotSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-			}
-
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar) {
-				PivotSearchLayout.this.postProcessSearchButtonBar(buttonBar);
-			}
-
-			@Override
-			protected void validateBeforeSearch() {
-				PivotSearchLayout.this.validateBeforeSearch();
-			}
-		};
-		result.setFieldEntityModels(getFieldEntityModels());
-		result.build();
-		return result;
+		initSearchForm(searchForm);
+		searchForm.build();
+		return searchForm;
 	}
 
 	@Override
@@ -166,36 +215,12 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		// not supported
 	}
 
-	public String getColumnKeyProperty() {
-		return columnKeyProperty;
-	}
-
-	public List<String> getFixedColumnKeys() {
-		return fixedColumnKeys;
-	}
-
 	@Override
 	public GridWrapper<ID, T, PivotedItem> getGridWrapper() {
-		if (gridWrapper == null) {
-			gridWrapper = constructGridWrapper();
+		if (pivotGridWrapper == null) {
+			pivotGridWrapper = constructGridWrapper();
 		}
-		return gridWrapper;
-	}
-
-	public BiFunction<Object, Object, String> getHeaderMapper() {
-		return headerMapper;
-	}
-
-	public List<String> getPivotedProperties() {
-		return pivotedProperties;
-	}
-
-	public List<Object> getPossibleColumnKeys() {
-		return possibleColumnKeys;
-	}
-
-	public String getRowKeyProperty() {
-		return rowKeyProperty;
+		return pivotGridWrapper;
 	}
 
 	@Override
@@ -203,32 +228,14 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 		return (ModelBasedSearchForm<ID, T>) super.getSearchForm();
 	}
 
-	public Supplier<Integer> getSizeSupplier() {
-		return sizeSupplier;
-	}
-
-	public void setColumnKeyProperty(String columnKeyProperty) {
-		this.columnKeyProperty = columnKeyProperty;
-	}
-
-	public void setFixedColumnKeys(List<String> fixedColumnKeys) {
-		this.fixedColumnKeys = fixedColumnKeys;
-	}
-
-	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
-		this.headerMapper = headerMapper;
-	}
-
-	public void setPivotedProperties(List<String> pivotedProperties) {
-		this.pivotedProperties = pivotedProperties;
-	}
-
-	public void setPossibleColumnKeys(List<Object> possibleColumnKeys) {
-		this.possibleColumnKeys = possibleColumnKeys;
-	}
-
-	public void setRowKeyProperty(String rowKeyProperty) {
-		this.rowKeyProperty = rowKeyProperty;
+	/**
+	 * Select one or more items
+	 * 
+	 * @param selectedItems the item or items to select
+	 */
+	@Override
+	public void select(Object selectedItems) {
+		// do nothing (not supported)
 	}
 
 	/**
@@ -252,18 +259,6 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	@Override
 	public void setSearchValue(String propertyId, Object value, Object auxValue) {
 		getSearchForm().setSearchValue(propertyId, value, auxValue);
-	}
-
-	public void setSizeSupplier(Supplier<Integer> sizeSupplier) {
-		this.sizeSupplier = sizeSupplier;
-	}
-
-	public Function<String, String> getFixedHeaderMapper() {
-		return fixedHeaderMapper;
-	}
-
-	public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
-		this.fixedHeaderMapper = fixedHeaderMapper;
 	}
 
 }

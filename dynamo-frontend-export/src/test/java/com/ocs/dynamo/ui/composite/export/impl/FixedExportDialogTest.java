@@ -1,5 +1,6 @@
 package com.ocs.dynamo.ui.composite.export.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.mockito.Mockito.when;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -21,7 +22,7 @@ public class FixedExportDialogTest extends BaseMockitoTest {
     @Mock
     private ExportService exportService;
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
+    private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
     @BeforeEach
     public void setup() {
@@ -30,14 +31,13 @@ public class FixedExportDialogTest extends BaseMockitoTest {
 
     @Test
     public void test() {
-        EntityModel<TestEntity> em = emf.getModel(TestEntity.class);
+        EntityModel<TestEntity> em = entityModelFactory.getModel(TestEntity.class);
 
         when(exportService.exportCsvFixed(em, ExportMode.FULL, null)).thenReturn(new byte[] { 1, 2, 3 });
         when(exportService.exportExcelFixed(em, ExportMode.FULL, null, null)).thenReturn(new byte[] { 1, 2, 3 });
 
         FixedExportDialog<Integer, TestEntity> dialog = new FixedExportDialog<>(exportService, em, ExportMode.FULL, null, null);
-        dialog.build();
-        dialog.open();
+        assertDoesNotThrow(() -> dialog.buildAndOpen());
 
     }
 }

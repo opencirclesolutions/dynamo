@@ -15,10 +15,12 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.springframework.util.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -26,13 +28,21 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.LikePredicate;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.composite.dialog.ModelBasedSearchDialog;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.provider.QueryType;
+import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A split layout - contains both a grid and a details view - that uses a
@@ -42,31 +52,36 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <ID> type of the primary key
  * @param <T>  type of the entity
  */
-@SuppressWarnings("serial")
 public class ServiceBasedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>>
 		extends BaseSplitLayout<ID, T> {
 
 	private static final long serialVersionUID = 1068860513192819804L;
 
 	/**
-	 * The search filter to apply
+	 * The search filter used to limit the results
 	 */
+	@Getter
 	protected SerializablePredicate<T> filter;
 
 	/**
 	 * Supplier for creating the filter when needed
 	 */
-	private Supplier<SerializablePredicate<T>> filterSupplier;
+	@Getter
+	@Setter
+	private Supplier<SerializablePredicate<T>> filterCreator;
 
 	/**
 	 * The query type (ID based or paging) used to query the database
 	 */
-	private QueryType queryType;
+	@Getter
+	private final QueryType queryType;
 
 	/**
 	 * Supplier for creating the quick search filter
 	 */
-	private Function<String, SerializablePredicate<T>> quickSearchFilterSupplier;
+	@Getter
+	@Setter
+	private Function<String, SerializablePredicate<T>> quickSearchFilterCreator;
 
 	/**
 	 * Constructor
@@ -76,7 +91,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	 * @param queryType   the desired query type
 	 * @param formOptions the form options
 	 * @param sortOrder   the sort order
-	 * @param joins
+	 * @param joins the fetch joints to use
 	 */
 	public ServiceBasedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
@@ -86,13 +101,24 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 
 	@Override
 	protected void buildFilter() {
-		filter = filterSupplier == null ? null : filterSupplier.get();
+		filter = filterCreator == null ? null : filterCreator.get();
 	}
 
 	@Override
 	protected BaseGridWrapper<ID, T> constructGridWrapper() {
-		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<ID, T>(getService(), getEntityModel(),
-				getQueryType(), getFormOptions(), filter, getFieldFilters(), getSortOrders(), false, getJoins()) {
+
+		// restore stored sort orders
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			List<SortOrder<?>> retrievedOrders = helper.retrieveSortOrders();
+			if (getFormOptions().isPreserveSortOrders() && retrievedOrders != null && !retrievedOrders.isEmpty()) {
+				setSortOrders(retrievedOrders);
+			}
+		}
+
+		ServiceBasedGridWrapper<ID, T> wrapper = new ServiceBasedGridWrapper<>(getService(), getEntityModel(),
+				getQueryType(), getFormOptions(), getComponentContext(), filter, getFieldFilters(), getSortOrders(),
+				false, getJoins()) {
 
 			@Override
 			protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
@@ -124,25 +150,13 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	protected final TextField constructSearchField() {
 		if (getFormOptions().isShowQuickSearchField()) {
 			TextField searchField = new TextField(message("ocs.search"));
+			searchField.addClassName("quickSearchField");
 
 			// respond to the user entering a search term
 			searchField.addValueChangeListener(event -> {
 				String text = event.getValue();
 				if (!StringUtils.isEmpty(text)) {
-					SerializablePredicate<T> quickFilter = quickSearchFilterSupplier == null ? null
-							: quickSearchFilterSupplier.apply(text);
-
-					// if no custom filter is defined, filter on main attribute
-					if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
-						quickFilter = new LikePredicate<>(getEntityModel().getMainAttributeModel().getPath(),
-								"%" + text + "%", false);
-					}
-
-					SerializablePredicate<T> temp = quickFilter;
-					if (getFilter() != null) {
-						temp = new AndPredicate<>(quickFilter, getFilter());
-					}
-					getGridWrapper().search(temp);
+					executeQuickSearch(text);
 				} else {
 					getGridWrapper().search(filter);
 				}
@@ -156,25 +170,9 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		return getGridWrapper().getDataProvider();
 	}
 
-	public SerializablePredicate<T> getFilter() {
-		return filter;
-	}
-
-	public Supplier<SerializablePredicate<T>> getFilterSupplier() {
-		return filterSupplier;
-	}
-
 	@Override
 	public ServiceBasedGridWrapper<ID, T> getGridWrapper() {
 		return (ServiceBasedGridWrapper<ID, T>) super.getGridWrapper();
-	}
-
-	public QueryType getQueryType() {
-		return queryType;
-	}
-
-	public Function<String, SerializablePredicate<T>> getQuickSearchFilterSupplier() {
-		return quickSearchFilterSupplier;
 	}
 
 	/**
@@ -189,31 +187,11 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		getGridWrapper().setFilter(filter);
 	}
 
-	/**
-	 * Sets the function (supplier) used for constructing the default filter
-	 * 
-	 * @param filterSupplier
-	 */
-	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
-		this.filterSupplier = filterSupplier;
-	}
-
-	/**
-	 * Sets the function used for constructing the quick search filter. This will
-	 * override the default quick search filter that searches on the main attribute
-	 * 
-	 * @param quickSearchFilterSupplier
-	 */
-	public void setQuickSearchFilterSupplier(Function<String, SerializablePredicate<T>> quickSearchFilterSupplier) {
-		this.quickSearchFilterSupplier = quickSearchFilterSupplier;
-	}
-
 	@SuppressWarnings("unchecked")
 	@Override
 	public void setSelectedItems(Object selectedItems) {
 		if (selectedItems != null) {
-			if (selectedItems instanceof Collection<?>) {
-				Collection<?> col = (Collection<?>) selectedItems;
+			if (selectedItems instanceof Collection<?> col) {
 				if (!col.isEmpty()) {
 					T t = (T) col.iterator().next();
 					setSelectedItem(getService().fetchById(t.getId(), getDetailJoins()));
@@ -232,4 +210,87 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 		}
 	}
 
+	/**
+	 * Executes a quick search
+	 * 
+	 * @param text the text string to search form
+	 */
+	private void executeQuickSearch(String text) {
+		SerializablePredicate<T> quickFilter = quickSearchFilterCreator == null ? null
+				: quickSearchFilterCreator.apply(text);
+
+		// if no custom filter is defined, filter on main attribute
+		if (quickFilter == null && getEntityModel().getMainAttributeModel() != null) {
+			quickFilter = new LikePredicate<>(getEntityModel().getMainAttributeModel().getPath(), "%" + text + "%",
+					false);
+		}
+
+		SerializablePredicate<T> temp = quickFilter;
+		if (getFilter() != null) {
+			temp = new AndPredicate<>(quickFilter, getFilter());
+		}
+		emptyDetailView();
+		getGridWrapper().search(temp);
+	}
+
+	protected List<SerializablePredicate<T>> createSearchDialogFilter() {
+		return filterCreator == null ? Collections.emptyList() : List.of(filterCreator.get());
+	}
+
+	@Override
+	protected Button constructPopupSearchButton() {
+		if (getFormOptions().isShowSplitLayoutSearchButton()) {
+			Button button = new Button(message("ocs.search"));
+			button.setIcon(VaadinIcon.SEARCH.create());
+			button.addClickListener(event -> {
+				ModelBasedSearchDialog<ID, T> searchDialog = new ModelBasedSearchDialog<>(getService(),
+						getEntityModel(), createSearchDialogFilter(), getSortOrders(),
+						SearchOptions.builder().multiSelect(false).advancedSearchMode(false).build(), getDetailJoins());
+				searchDialog.setOnClose(() -> onSearchDialogClose(searchDialog));
+				searchDialog.buildAndOpen();
+			});
+
+			return button;
+		}
+		return null;
+	}
+
+	@Override
+	protected Button constructPopupClearButton() {
+		if (getFormOptions().isShowSplitLayoutSearchButton()) {
+			Button button = new Button(message("ocs.clear"));
+			button.setIcon(VaadinIcon.ERASER.create());
+			button.addClickListener(event -> {
+				if (getQuickSearchField() != null) {
+					getQuickSearchField().clear();
+				}
+				reload();
+			});
+
+			return button;
+		}
+		return null;
+	}
+
+	/**
+	 * Respond to the user closing the search dialog by applying the search filters
+	 * from the dialog to the grid
+	 * 
+	 * @param dialog the search dialog
+	 * @return whether to close the dialog
+	 */
+	private boolean onSearchDialogClose(ModelBasedSearchDialog<ID, T> dialog) {
+
+		if (getQuickSearchField() != null) {
+			getQuickSearchField().clear();
+		}
+
+		SerializablePredicate<T> filter = dialog.getSearchLayout().getSearchForm().extractFilter();
+		this.filter = filter;
+		refresh();
+		getGridWrapper().setFilter(filter);
+		emptyDetailView();
+
+		return true;
+	}
 }

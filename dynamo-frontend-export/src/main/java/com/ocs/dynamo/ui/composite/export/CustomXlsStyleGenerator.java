@@ -26,24 +26,20 @@ import com.ocs.dynamo.domain.model.AttributeModel;
  * 
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T>  the type of the entity
  */
 @FunctionalInterface
 public interface CustomXlsStyleGenerator<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-    /**
-     * Returns the cell style for a certain cell
-     * 
-     * @param workbook
-     *            the workbook
-     * @param entity
-     *            the entity that is displayed in the row
-     * @param value
-     *            the cell value
-     * @return
-     */
-    CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am);
+	/**
+	 * Returns the cell style for a certain cell
+	 * 
+	 * @param workbook the workbook
+	 * @param entity   the entity that is displayed in the row
+	 * @param value    the cell value
+	 * @param am       the attribute model. Can be empty
+	 * @return the desired style
+	 */
+	CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value, AttributeModel am, Object pivotColumnKey);
 }

@@ -14,18 +14,15 @@
 package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.form.ModelBasedSearchForm;
 import com.ocs.dynamo.ui.provider.QueryType;
-import com.vaadin.flow.component.Component;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.data.provider.SortOrder;
 
 /**
@@ -42,11 +39,6 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	private static final long serialVersionUID = 4606800218149558500L;
 
 	/**
-	 * Column width thresholds
-	 */
-	private List<String> columnThresholds = new ArrayList<>();
-
-	/**
 	 * Constructor - only the most important attributes
 	 * 
 	 * @param service     the service that is used to query the database
@@ -60,15 +52,7 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	public SimpleSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
 			FormOptions formOptions, SortOrder<?> sortOrder, FetchJoinInformation... joins) {
 		super(service, entityModel, queryType, formOptions, sortOrder, joins);
-	}
-
-	/**
-	 * Method that is used to construct any extra search fields. These will be added
-	 * at the front of the search form
-	 */
-	protected List<Component> constructExtraSearchFields() {
-		// overwrite in subclasses
-		return new ArrayList<>();
+		addClassName(DynamoConstants.CSS_SIMPLE_SEARCH_LAYOUT);
 	}
 
 	/**
@@ -78,47 +62,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 	 */
 	@Override
 	protected ModelBasedSearchForm<ID, T> constructSearchForm() {
-		// by default, do not pass a searchable object, in order to prevent an
-		// unnecessary and
-		// potentially unfiltered search
-		ModelBasedSearchForm<ID, T> result = new ModelBasedSearchForm<ID, T>(null, getEntityModel(), getFormOptions(),
-				this.getDefaultFilters(), this.getFieldFilters()) {
+		ModelBasedSearchForm<ID, T> searchForm = new ModelBasedSearchForm<ID, T>(null, getEntityModel(),
+				getFormOptions(), getComponentContext(), getDefaultFilters(), getFieldFilters());
 
-			private static final long serialVersionUID = 8929442625027442714L;
-
-			@Override
-			protected void afterSearchFieldToggle(boolean visible) {
-				SimpleSearchLayout.this.afterSearchFieldToggle(visible);
-			}
-
-			@Override
-			protected void afterSearchPerformed() {
-				SimpleSearchLayout.this.afterSearchPerformed();
-			}
-
-			@Override
-			protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-				return SimpleSearchLayout.this.constructCustomField(entityModel, attributeModel, false, true);
-			}
-
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar) {
-				SimpleSearchLayout.this.postProcessSearchButtonBar(buttonBar);
-			}
-
-			@Override
-			protected void validateBeforeSearch() {
-				SimpleSearchLayout.this.validateBeforeSearch();
-			}
-		};
-		result.setFieldEntityModels(getFieldEntityModels());
-		result.setColumnThresholds(getColumnThresholds());
-		result.build();
-		return result;
-	}
-
-	public List<String> getColumnThresholds() {
-		return this.columnThresholds;
+		initSearchForm(searchForm);
+		searchForm.build();
+		return searchForm;
 	}
 
 	@Override
@@ -126,8 +75,12 @@ public class SimpleSearchLayout<ID extends Serializable, T extends AbstractEntit
 		return (ModelBasedSearchForm<ID, T>) super.getSearchForm();
 	}
 
-	public void setColumnThresholds(List<String> columnThresholds) {
-		this.columnThresholds = columnThresholds;
+	public void setSearchColumnThresholds(List<String> searchColumnThresholds) {
+		getComponentContext().setSearchColumnThresholds(searchColumnThresholds);
+	}
+
+	public void setMaxSearchFormWidth(String maxSearchFormWidth) {
+		getComponentContext().setMaxSearchFormWidth(maxSearchFormWidth);
 	}
 
 	/**

@@ -15,7 +15,9 @@ package com.ocs.dynamo.ui.composite.grid;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -24,11 +26,13 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.export.PivotParameters;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.IdBasedDataProvider;
 import com.ocs.dynamo.ui.provider.PagingDataProvider;
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
 import com.ocs.dynamo.ui.provider.PivotDataProvider;
 import com.ocs.dynamo.ui.provider.PivotedItem;
 import com.ocs.dynamo.ui.provider.QueryType;
@@ -44,6 +48,9 @@ import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * Wrapper around a pivot grid
  * 
@@ -57,6 +64,14 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 	private static final long serialVersionUID = -4691108261565306844L;
 
+	@Getter
+	@Setter
+	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
+
 	/**
 	 * The label that displays the table caption
 	 */
@@ -66,7 +81,13 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * The name of the property that contains the values that lead to the pivoted
 	 * columns
 	 */
+	@Getter
+	@Setter
 	private String columnKeyProperty;
+
+	@Getter
+	@Setter
+	private BiFunction<String, Object, String> customFormatter = null;
 
 	/**
 	 * The data provider
@@ -74,13 +95,31 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	private PivotDataProvider<ID, T> dataProvider;
 
 	/**
+	 * Bifunction used to map pivot column headers for export only
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> exportHeaderMapper;
+
+	/**
+	 * Bifunction used to map pivot column subheaders for export only
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> exportSubHeaderMapper;
+
+	/**
 	 * The names of the fixed/frozen columns
 	 */
+	@Getter
+	@Setter
 	private List<String> fixedColumnKeys;
 
 	/**
 	 * Function for mapping for fixed property name to grid header
 	 */
+	@Getter
+	@Setter
 	private Function<String, String> fixedHeaderMapper = Function.identity();
 
 	/**
@@ -91,7 +130,23 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * Bifunction used to map pivot column headers
 	 */
+	@Getter
+	@Setter
 	private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
+
+	/**
+	 * The properties to display in the pivoted columns
+	 */
+	@Getter
+	@Setter
+	private List<String> hiddenPivotedProperties;
+
+	/**
+	 * Whether to include an aggregate row at the bottom
+	 */
+	@Getter
+	@Setter
+	private boolean includeAggregateRow;
 
 	/**
 	 * The layout that contains the grid
@@ -101,22 +156,38 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * The properties to display in the pivoted columns
 	 */
+	@Getter
+	@Setter
 	private List<String> pivotedProperties;
 
 	/**
 	 * The possible values of the columnPropertyKey property.
 	 */
+	@Getter
+	@Setter
 	private List<Object> possibleColumnKeys;
 
 	/**
 	 * The property that is checked to determine whether a new row is reached
 	 */
+	@Getter
+	@Setter
 	private String rowKeyProperty;
 
 	/**
 	 * Supplier that is used to determine the number of rows in the pivot table
 	 */
+	@Getter
+	@Setter
 	private Supplier<Integer> sizeSupplier;
+
+	/**
+	 * Mapping function for determining the sub header from the column key value and
+	 * pivot property
+	 */
+	@Getter
+	@Setter
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
 
 	/**
 	 * The wrapped data provider
@@ -131,9 +202,9 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @param joins       options list of fetch joins to include in the query
 	 */
 	public PivotGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, filter, sortOrders, joins);
+			FormOptions formOptions, ComponentContext<ID, T> componentContext, SerializablePredicate<T> filter,
+			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
+		super(service, entityModel, queryType, formOptions, componentContext, filter, sortOrders, joins);
 	}
 
 	/**
@@ -163,8 +234,10 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 		}
 
 		PivotDataProvider<ID, T> pivotDataProvider = new PivotDataProvider<>(wrappedProvider, rowKeyProperty,
-				columnKeyProperty, fixedColumnKeys, pivotedProperties, sizeSupplier);
-		pivotDataProvider.setAfterCountCompleted(x -> updateCaption(x));
+				columnKeyProperty, fixedColumnKeys, pivotedProperties, hiddenPivotedProperties, sizeSupplier);
+		pivotDataProvider.setAggregationMap(aggregationMap);
+		pivotDataProvider.setAggregationClassMap(aggregationClassMap);
+		pivotDataProvider.setAfterCountCompleted(count -> updateCaption(count));
 		postProcessDataProvider(pivotDataProvider);
 		return pivotDataProvider;
 	}
@@ -176,11 +249,8 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	 * @return
 	 */
 	protected PivotGrid<ID, T> constructGrid() {
-		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper);
-	}
-
-	public String getColumnKeyProperty() {
-		return columnKeyProperty;
+		return new PivotGrid<>(dataProvider, possibleColumnKeys, fixedHeaderMapper, headerMapper, subHeaderMapper,
+				customFormatter);
 	}
 
 	public DataProvider<PivotedItem, SerializablePredicate<PivotedItem>> getDataProvider() {
@@ -190,14 +260,6 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public int getDataProviderSize() {
 		return dataProvider.getSize();
-	}
-
-	public List<String> getFixedColumnKeys() {
-		return fixedColumnKeys;
-	}
-
-	public Function<String, String> getFixedHeaderMapper() {
-		return fixedHeaderMapper;
 	}
 
 	/**
@@ -210,26 +272,6 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 			grid = constructGrid();
 		}
 		return grid;
-	}
-
-	public BiFunction<Object, Object, String> getHeaderMapper() {
-		return headerMapper;
-	}
-
-	public List<String> getPivotedProperties() {
-		return pivotedProperties;
-	}
-
-	public List<Object> getPossibleColumnKeys() {
-		return possibleColumnKeys;
-	}
-
-	public String getRowKeyProperty() {
-		return rowKeyProperty;
-	}
-
-	public Supplier<Integer> getSizeSupplier() {
-		return sizeSupplier;
 	}
 
 	/**
@@ -257,7 +299,7 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 
 		// set fall back sort orders
 		if (wrappedProvider instanceof BaseDataProvider) {
-			((BaseDataProvider<ID, T>) wrappedProvider).setFallBackSortOrders(fallbackOrders);
+			wrappedProvider.setFallbackSortOrders(fallbackOrders);
 		}
 
 		if (getFormOptions().isExportAllowed() && getExportDelegate() != null) {
@@ -271,14 +313,21 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 					orders.add(new SortOrder<String>(gso.getSorted().getKey(), gso.getDirection()));
 				}
 
-				PivotParameters pars = new PivotParameters();
-				pars.setColumnKeyProperty(columnKeyProperty);
-				pars.setFixedColumnKeys(fixedColumnKeys);
-				pars.setHeaderMapper(headerMapper);
-				pars.setFixedHeaderMapper(fixedHeaderMapper);
-				pars.setPivotedProperties(pivotedProperties);
-				pars.setPossibleColumnKeys(possibleColumnKeys);
-				pars.setRowKeyProperty(rowKeyProperty);
+				PivotParameters pars = PivotParameters.builder() //
+						.columnKeyProperty(columnKeyProperty) //
+						.fixedColumnKeys(fixedColumnKeys) //
+						.fixedHeaderMapper(fixedHeaderMapper) //
+						.pivotedProperties(pivotedProperties) //
+						.possibleColumnKeys(possibleColumnKeys) //
+						.rowKeyProperty(rowKeyProperty) //
+						.hiddenPivotedProperties(hiddenPivotedProperties) //
+						.aggregationMap(aggregationMap) //
+						.aggregationClassMap(aggregationClassMap) //
+						.includeAggregateRow(includeAggregateRow) //
+						.subHeaderMapper(subHeaderMapper) //
+						.headerMapper(exportHeaderMapper != null ? exportHeaderMapper : headerMapper) //
+						.subHeaderMapper(exportSubHeaderMapper != null ? exportSubHeaderMapper : subHeaderMapper)
+						.build();
 
 				// use the fallback sort orders here
 				getExportDelegate().exportPivoted(
@@ -311,38 +360,6 @@ public class PivotGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	@Override
 	public void reloadDataProvider() {
 		// not needed
-	}
-
-	public void setColumnKeyProperty(String columnKeyProperty) {
-		this.columnKeyProperty = columnKeyProperty;
-	}
-
-	public void setFixedColumnKeys(List<String> fixedColumnKeys) {
-		this.fixedColumnKeys = fixedColumnKeys;
-	}
-
-	public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
-		this.fixedHeaderMapper = fixedHeaderMapper;
-	}
-
-	public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
-		this.headerMapper = headerMapper;
-	}
-
-	public void setPivotedProperties(List<String> pivotedProperties) {
-		this.pivotedProperties = pivotedProperties;
-	}
-
-	public void setPossibleColumnKeys(List<Object> possibleColumnKeys) {
-		this.possibleColumnKeys = possibleColumnKeys;
-	}
-
-	public void setRowKeyProperty(String rowKeyProperty) {
-		this.rowKeyProperty = rowKeyProperty;
-	}
-
-	public void setSizeSupplier(Supplier<Integer> sizeSupplier) {
-		this.sizeSupplier = sizeSupplier;
 	}
 
 	/**

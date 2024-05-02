@@ -1,7 +1,7 @@
 package com.ocs.dynamo.envers.domain;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,14 +10,14 @@ public class RevisionKeyTest {
 	@Test
 	public void testEquals() {
 		RevisionKey<Integer> key1 = new RevisionKey<>(1, 1);
-		assertTrue(key1.equals(key1));
-		assertFalse(key1.equals(null));
-		assertFalse(key1.equals(new Object()));
+		assertEquals(key1, key1);
+		assertNotEquals(null, key1);
+		assertNotEquals(key1, new Object());
 
 		RevisionKey<Integer> key2 = new RevisionKey<>(1, 2);
-		assertFalse(key1.equals(key2));
+		assertNotEquals(key1, key2);
 
 		RevisionKey<Integer> key3 = new RevisionKey<>(2, 1);
-		assertFalse(key1.equals(key3));
+		assertNotEquals(key1, key3);
 	}
 }

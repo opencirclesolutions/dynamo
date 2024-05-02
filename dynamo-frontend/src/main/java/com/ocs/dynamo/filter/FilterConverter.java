@@ -18,20 +18,40 @@ import org.springframework.core.convert.converter.Converter;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.RequiredArgsConstructor;
+
 /**
- * Converts a Vaadin filter into an Open Circle filter
+ * Converts a Vaadin predicate into a Dynamo filter
  * 
  * @author bas.rutten
  */
+@RequiredArgsConstructor
 public class FilterConverter<T> implements Converter<SerializablePredicate<T>, com.ocs.dynamo.filter.Filter> {
 
-	/**
-	 * Entity model used when converting filters for detail collections
-	 */
-	private EntityModel<T> entityModel;
+	private final EntityModel<T> entityModel;
 
-	public FilterConverter(EntityModel<T> entityModel) {
-		this.entityModel = entityModel;
+	private Filter convertAnd(SerializablePredicate<T> filter) {
+		AndPredicate<T> p = (AndPredicate<T>) filter;
+		And and = new And();
+		for (SerializablePredicate<T> operand : p.getOperands()) {
+			Filter converted = convert(operand);
+			if (converted != null) {
+				and.getFilters().add(converted);
+			}
+		}
+		return and;
+	}
+
+	private Filter convertOr(SerializablePredicate<T> filter) {
+		OrPredicate<T> p = (OrPredicate<T>) filter;
+		Or or = new Or();
+		for (SerializablePredicate<T> operand : p.getOperands()) {
+			Filter converted = convert(operand);
+			if (converted != null) {
+				or.getFilters().add(converted);
+			}
+		}
+		return or;
 	}
 
 	@Override
@@ -58,25 +78,9 @@ public class FilterConverter<T> implements Converter<SerializablePredicate<T>, c
 			LessThanPredicate<T> p = (LessThanPredicate<T>) filter;
 			result = new Compare.Less(p.getProperty(), p.getValue());
 		} else if (filter instanceof AndPredicate) {
-			AndPredicate<T> p = (AndPredicate<T>) filter;
-			And and = new And();
-			for (SerializablePredicate<T> operand : p.getOperands()) {
-				Filter converted = convert(operand);
-				if (converted != null) {
-					and.getFilters().add(converted);
-				}
-			}
-			result = and;
+			result = convertAnd(filter);
 		} else if (filter instanceof OrPredicate) {
-			OrPredicate<T> p = (OrPredicate<T>) filter;
-			Or or = new Or();
-			for (SerializablePredicate<T> operand : p.getOperands()) {
-				Filter converted = convert(operand);
-				if (converted != null) {
-					or.getFilters().add(converted);
-				}
-			}
-			result = or;
+			result = convertOr(filter);
 		} else if (filter instanceof GreaterOrEqualPredicate) {
 			GreaterOrEqualPredicate<T> p = (GreaterOrEqualPredicate<T>) filter;
 			result = new Compare.GreaterOrEqual(p.getProperty(), p.getValue());

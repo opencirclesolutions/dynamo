@@ -13,17 +13,25 @@
  */
 package com.ocs.dynamo.ui.composite.export;
 
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.io.Serializable;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.ui.component.DownloadButton;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.type.ExportMode;
+import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.icon.VaadinIcon;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
+import com.vaadin.flow.component.progressbar.ProgressBar;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Base class for export dialogs
@@ -33,86 +41,98 @@ import com.vaadin.flow.component.orderedlayout.VerticalLayout;
  * @param <ID> the type of the ID of the entity to export
  * @param <T>  the type of the entity to export
  */
+@Slf4j
 public abstract class BaseExportDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
-
-	private static final long serialVersionUID = 2066899457738401866L;
 
 	protected static final String EXTENSION_CSV = ".csv";
 
 	protected static final String EXTENSION_XLS = ".xlsx";
 
-	private final ExportService exportService;
+	private static final long serialVersionUID = 2066899457738401866L;
 
-	private final ExportMode exportMode;
-
+	@Getter
 	private final EntityModel<T> entityModel;
 
+	@Getter
 	private DownloadButton exportCsvButton;
 
+	@Getter
 	private DownloadButton exportExcelButton;
+
+	@Getter
+	private final ExportMode exportMode;
+
+	@Getter
+	private final ExportService exportService;
+
+	@Getter
+	private ProgressBar progressBar;
+
+	@Getter
+	private final UI ui;
 
 	/**
 	 * Constructor
 	 * 
 	 * @param exportService the export button
 	 * @param entityModel   the entity model of the entity to export
-	 * @param exportMode    the export mode
+	 * @param exportMode    the desired export mode
 	 */
-	public BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
+	protected BaseExportDialog(ExportService exportService, EntityModel<T> entityModel, ExportMode exportMode) {
+		super("ocsDownloadDialog");
 		this.entityModel = entityModel;
 		this.exportService = exportService;
 		this.exportMode = exportMode;
+		this.ui = UI.getCurrent();
+
+		setTitle(message("ocs.export"));
+		setBuildMainLayout(this::buildMainLayout);
+
+		setBuildButtonBar(buttonBar -> {
+			Button cancelButton = new Button(message("ocs.cancel"));
+			cancelButton.addClickListener(event -> close());
+			cancelButton.setIcon(VaadinIcon.BAN.create());
+			buttonBar.add(cancelButton);
+		});
 	}
 
 	protected abstract DownloadButton createDownloadCSVButton();
 
 	protected abstract DownloadButton createDownloadExcelButton();
 
-	@Override
-	protected void doBuild(VerticalLayout parent) {
+	/**
+	 * Creates the download stream
+	 * 
+	 * @param supplier supplier function
+	 * @return an input stream that can be used to download
+	 */
+	protected InputStream download(Supplier<ByteArrayInputStream> supplier) {
+		try {
+			ByteArrayInputStream stream = supplier.get();
+			getProgressBar().setVisible(false);
+			this.close();
+			return stream;
+		} catch (Exception ex) {
+			log.error(ex.getMessage(), ex);
+			getUi().access(() -> VaadinUtils.showErrorNotification(ex.getMessage()));
+			return null;
+		} finally {
+			this.close();
+		}
+	}
+
+	private void buildMainLayout(VerticalLayout parent) {
+		progressBar = new ProgressBar();
+		progressBar.setIndeterminate(true);
+		progressBar.setVisible(false);
+
 		exportExcelButton = createDownloadExcelButton();
 		parent.add(exportExcelButton);
 
 		exportCsvButton = createDownloadCSVButton();
 		parent.add(exportCsvButton);
-	}
 
-	@Override
-	protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-		Button cancelButton = new Button(message("ocs.cancel"));
-		cancelButton.addClickListener(event -> close());
-		cancelButton.setIcon(VaadinIcon.BAN.create());
-		buttonBar.add(cancelButton);
+		UI.getCurrent().setPollInterval(100);
+		parent.add(progressBar);
 	}
-
-	public EntityModel<T> getEntityModel() {
-		return entityModel;
-	}
-
-	public ExportMode getExportMode() {
-		return exportMode;
-	}
-
-	public ExportService getExportService() {
-		return exportService;
-	}
-
-	@Override
-	protected String getTitle() {
-		return message("ocs.export");
-	}
-
-	@Override
-	protected String getStyleName() {
-		return "ocsDownloadDialog";
-	}
-
-	public DownloadButton getExportCsvButton() {
-		return exportCsvButton;
-	}
-
-	public DownloadButton getExportExcelButton() {
-		return exportExcelButton;
-	}
-
 }

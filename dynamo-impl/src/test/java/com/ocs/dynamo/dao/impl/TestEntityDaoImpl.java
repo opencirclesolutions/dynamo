@@ -25,7 +25,7 @@ import com.querydsl.jpa.impl.JPAQuery;
 
 @Repository("testEntityDao")
 @Transactional
-public class TestEntityDaoImpl extends TreeDaoImpl<Integer, TestEntity> implements TestEntityDao {
+public class TestEntityDaoImpl extends BaseDaoImpl<Integer, TestEntity> implements TestEntityDao {
 
 	@Override
 	protected EntityPathBase<TestEntity> getDslRoot() {
@@ -35,11 +35,6 @@ public class TestEntityDaoImpl extends TreeDaoImpl<Integer, TestEntity> implemen
 	@Override
 	public Class<TestEntity> getEntityClass() {
 		return TestEntity.class;
-	}
-
-	@Override
-	protected EntityPathBase<TestEntity> getParentPath() {
-		return QTestEntity.testEntity.parent;
 	}
 
 	@Override

@@ -24,106 +24,66 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * A custom field that can be used to edit an AbstractEntity or collection
- * thereof
+ * of AbstractEntities
  * 
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
- * @param <U> the type of the value of the component (can typically be an entity
- *        or a collection of entities)
+ * @param <T>  the type of the entity
+ * @param <U>  the type of the value of the component (can typically be an
+ *             entity or a collection of entities)
  */
 public abstract class CustomEntityField<ID extends Serializable, T extends AbstractEntity<ID>, U> extends CustomField<U>
-        implements Cascadable<T> {
+		implements Cascadable<T> {
 
-    private static final long serialVersionUID = 8898382056620026384L;
+	private static final long serialVersionUID = 8898382056620026384L;
 
-    /**
-     * The filter used to limit the entities to choose from
-     */
-    private SerializablePredicate<T> filter;
+	@Getter
+	private SerializablePredicate<T> filter;
 
-    /**
-     * The service
-     */
-    private final BaseService<ID, T> service;
+	@Getter
+	private final BaseService<ID, T> service;
 
-    /**
-     * The message service
-     */
-    private final MessageService messageService;
+	@Getter
+	private final MessageService messageService;
 
-    /**
-     * The entity model of the entities that are displayed in the component
-     */
-    private final EntityModel<T> entityModel;
+	@Getter
+	private final EntityModel<T> entityModel;
 
-    /**
-     * The attribute model used to define the behaviour of the component
-     */
-    private final AttributeModel attributeModel;
+	@Getter
+	private final AttributeModel attributeModel;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     * @param attributeModel
-     * @param filter
-     */
-    public CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
-            SerializablePredicate<T> filter) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.attributeModel = attributeModel;
-        this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-        setFilter(filter);
-    }
+	protected CustomEntityField(BaseService<ID, T> service, EntityModel<T> entityModel, AttributeModel attributeModel,
+			SerializablePredicate<T> filter) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.attributeModel = attributeModel;
+		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+		setFilter(filter);
+	}
 
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
+	/**
+	 * Sets the search filter to the provided filter then refreshes the data
+	 * provider
+	 * 
+	 * @param filter the new filter
+	 */
+	public abstract void refresh(SerializablePredicate<T> filter);
 
-    public EntityModel<T> getEntityModel() {
-        return entityModel;
-    }
+	/**
+	 * Sets the filter to apply to the component
+	 * @param filter the filter to set
+	 */
+	public void setFilter(SerializablePredicate<T> filter) {
+		this.filter = filter;
+	}
 
-    public SerializablePredicate<T> getFilter() {
-        return filter;
-    }
-
-    public MessageService getMessageService() {
-        return messageService;
-    }
-
-    public BaseService<ID, T> getService() {
-        return service;
-    }
-
-    /**
-     * Sets the search filter to the provided filter then updates the lookup list
-     * 
-     * @param filter the new filter
-     */
-    public abstract void refresh(SerializablePredicate<T> filter);
-
-    /**
-     * 
-     * @param filter
-     */
-    public void setFilter(SerializablePredicate<T> filter) {
-        this.filter = filter;
-    }
-
-    /**
-     * Sets the placeholder/prompt text
-     * 
-     * @param placeholder
-     */
-    public void setPlaceholder(String placeholder) {
-        // do nothing - override when subclass if needed
-    }
+	public void setPlaceholder(String placeholder) {
+		// override in subclass
+	}
 
 }

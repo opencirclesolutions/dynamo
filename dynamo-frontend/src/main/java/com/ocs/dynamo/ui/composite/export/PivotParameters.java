@@ -13,9 +13,18 @@
  */
 package com.ocs.dynamo.ui.composite.export;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 import java.util.function.Function;
+
+import com.ocs.dynamo.ui.provider.PivotAggregationType;
+
+import lombok.Builder;
+import lombok.Getter;
 
 /**
  * Parameter object that contains data about how to export pivoted data
@@ -23,79 +32,57 @@ import java.util.function.Function;
  * @author Bas Rutten
  *
  */
+@Getter
+@Builder(toBuilder = true)
 public class PivotParameters {
 
 	/**
 	 * The property that uniquely identifies a row in the pivoted data set
 	 */
-    private String rowKeyProperty;
+	private final String rowKeyProperty;
 
-    private String columnKeyProperty;
+	private final String columnKeyProperty;
 
-    private List<String> fixedColumnKeys;
+	private final List<String> fixedColumnKeys;
 
-    private List<String> pivotedProperties;
+	private final List<String> pivotedProperties;
 
-    private List<Object> possibleColumnKeys;
+	@Builder.Default
+	private List<String> hiddenPivotedProperties = new ArrayList<>();
 
-    private Function<String, String> fixedHeaderMapper = Function.identity();
+	@Builder.Default
+	private final Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
 
-    private BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
+	private final List<Object> possibleColumnKeys;
 
-    public String getRowKeyProperty() {
-        return rowKeyProperty;
-    }
+	@Builder.Default
+	private final Function<String, String> fixedHeaderMapper = Function.identity();
 
-    public void setRowKeyProperty(String rowKeyProperty) {
-        this.rowKeyProperty = rowKeyProperty;
-    }
+	@Builder.Default
+	private final BiFunction<Object, Object, String> headerMapper = (a, b) -> a.toString();
 
-    public String getColumnKeyProperty() {
-        return columnKeyProperty;
-    }
+	@Builder.Default
+	private BiFunction<Object, Object, String> subHeaderMapper = (a, b) -> b.toString();
 
-    public void setColumnKeyProperty(String columnKeyProperty) {
-        this.columnKeyProperty = columnKeyProperty;
-    }
+	private final boolean includeAggregateRow;
 
-    public List<String> getFixedColumnKeys() {
-        return fixedColumnKeys;
-    }
+	@Builder.Default
+	private final Map<String, Class<?>> aggregationClassMap = new HashMap<>();
 
-    public void setFixedColumnKeys(List<String> fixedColumnKeys) {
-        this.fixedColumnKeys = fixedColumnKeys;
-    }
+	public List<String> getShownAndHiddenProperties() {
+		List<String> allProps = new ArrayList<>();
+		allProps.addAll(getPivotedProperties());
+		if (getHiddenPivotedProperties() != null) {
+			allProps.addAll(getHiddenPivotedProperties());
+		}
+		return allProps;
+	}
 
-    public List<String> getPivotedProperties() {
-        return pivotedProperties;
-    }
+	public int getTotalNumberOfVariableColumns() {
+		return possibleColumnKeys.size() * pivotedProperties.size();
+	}
 
-    public void setPivotedProperties(List<String> pivotedProperties) {
-        this.pivotedProperties = pivotedProperties;
-    }
-
-    public Function<String, String> getFixedHeaderMapper() {
-        return fixedHeaderMapper;
-    }
-
-    public void setFixedHeaderMapper(Function<String, String> fixedHeaderMapper) {
-        this.fixedHeaderMapper = fixedHeaderMapper;
-    }
-
-    public BiFunction<Object, Object, String> getHeaderMapper() {
-        return headerMapper;
-    }
-
-    public void setHeaderMapper(BiFunction<Object, Object, String> headerMapper) {
-        this.headerMapper = headerMapper;
-    }
-
-    public List<Object> getPossibleColumnKeys() {
-        return possibleColumnKeys;
-    }
-
-    public void setPossibleColumnKeys(List<Object> possibleColumnKeys) {
-        this.possibleColumnKeys = possibleColumnKeys;
-    }
-
+	public List<String> getHiddenPivotProperties() {
+		return hiddenPivotedProperties == null ? Collections.emptyList() : hiddenPivotedProperties;
+	}
 }

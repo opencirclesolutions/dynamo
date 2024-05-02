@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>2.5-SNAPSHOT</version>
+		<version>3.0.3-SNAPSHOT</version>
 	</parent>
 	<organization>
 		<name>Open Circle Solutions</name>
@@ -22,7 +22,7 @@
 		</license>
 	</licenses>
 	<properties>
-		<camel.version>2.25.1</camel.version>
+		<camel.version>4.0.0-M2</camel.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -40,10 +40,16 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.apache.logging.log4j</groupId>
+					<artifactId>log4j-to-slf4j</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<!-- Camel -->
 		<dependency>
-			<groupId>org.apache.camel</groupId>
+			<groupId>org.apache.camel.springboot</groupId>
 			<artifactId>camel-spring-boot-starter</artifactId>
 		</dependency>
 		<dependency>
@@ -104,7 +110,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
-			</plugin>			
+			</plugin>
 		</plugins>
 	</build>
 </project>

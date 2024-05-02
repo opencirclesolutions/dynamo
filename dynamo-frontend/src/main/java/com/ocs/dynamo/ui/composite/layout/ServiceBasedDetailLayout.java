@@ -26,40 +26,52 @@ import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A split layout that contains a reference to the parent object
  * 
  * @author bas.rutten
- * @param <ID> type of the primary key
- * @param <T> type of the entity
+ * @param <ID>  type of the primary key
+ * @param <T>   type of the entity
  * @param <ID2> type of the primary key of the parent
- * @param <Q> type of the parent entity
+ * @param <Q>   type of the parent entity
  */
 public class ServiceBasedDetailLayout<ID extends Serializable, T extends AbstractEntity<ID>, ID2 extends Serializable, Q extends AbstractEntity<ID2>>
 		extends ServiceBasedSplitLayout<ID, T> implements CanAssignEntity<ID2, Q> {
 
 	private static final long serialVersionUID = 1068860513192819804L;
 
+	@Getter
 	private final BaseService<ID2, Q> parentService;
 
+	@Getter
+	@Setter
 	private Q parentEntity;
 
 	/**
 	 * The joins to use when refreshing the parent entity
 	 */
+	@Getter
+	@Setter
 	private FetchJoinInformation[] parentJoins;
 
-	private Function<Q, SerializablePredicate<T>> parentFilterSupplier;
+	@Getter
+	@Setter
+	private Function<Q, SerializablePredicate<T>> parentFilterCreator;
 
 	/**
 	 * Constructor
-	 * 
-	 * @param service
-	 * @param parentEntity
-	 * @param parentService
-	 * @param formOptions
-	 * @param sortOrder
-	 * @param joins
+	 *
+	 * @param service     the service for retrieving data from the database
+	 * @param parentEntity the parent entity
+	 * @param parentService the service for retrieving the parent entity from the database
+	 * @param entityModel the entity model
+	 * @param queryType   the desired query type
+	 * @param formOptions the form options
+	 * @param sortOrder   the sort order
+	 * @param joins the fetch joints to use
 	 */
 	public ServiceBasedDetailLayout(BaseService<ID, T> service, Q parentEntity, BaseService<ID2, Q> parentService,
 			EntityModel<T> entityModel, QueryType queryType, FormOptions formOptions, SortOrder<?> sortOrder,
@@ -76,23 +88,7 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 
 	@Override
 	protected void buildFilter() {
-		filter = parentFilterSupplier == null ? null : parentFilterSupplier.apply(getParentEntity());
-	}
-
-	public Q getParentEntity() {
-		return parentEntity;
-	}
-
-	public Function<Q, SerializablePredicate<T>> getParentFilterSupplier() {
-		return parentFilterSupplier;
-	}
-
-	public FetchJoinInformation[] getParentJoins() {
-		return parentJoins;
-	}
-
-	public BaseService<ID2, Q> getParentService() {
-		return parentService;
+		filter = parentFilterCreator == null ? null : parentFilterCreator.apply(getParentEntity());
 	}
 
 	@Override
@@ -102,19 +98,8 @@ public class ServiceBasedDetailLayout<ID extends Serializable, T extends Abstrac
 	}
 
 	@Override
-	public void setFilterSupplier(Supplier<SerializablePredicate<T>> filterSupplier) {
-		throw new UnsupportedOperationException("Use the setParentFilterSupplier method instead");
+	public void setFilterCreator(Supplier<SerializablePredicate<T>> filterCreator) {
+		throw new UnsupportedOperationException("Use the setParentFilterCreator method instead");
 	}
 
-	public void setParentEntity(Q parentEntity) {
-		this.parentEntity = parentEntity;
-	}
-	
-	public void setParentFilterSupplier(Function<Q, SerializablePredicate<T>> parentFilterSupplier) {
-		this.parentFilterSupplier = parentFilterSupplier;
-	}
-
-	public void setParentJoins(FetchJoinInformation[] parentJoins) {
-		this.parentJoins = parentJoins;
-	}
 }

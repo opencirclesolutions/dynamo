@@ -17,8 +17,11 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -30,8 +33,11 @@ import com.ocs.dynamo.filter.PredicateUtils;
 import com.ocs.dynamo.filter.PropertyPredicate;
 import com.ocs.dynamo.filter.listener.FilterChangeEvent;
 import com.ocs.dynamo.filter.listener.FilterListener;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.UIHelper;
+import com.ocs.dynamo.ui.component.CustomFieldContext;
 import com.ocs.dynamo.ui.component.DefaultFlexLayout;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
@@ -48,6 +54,9 @@ import com.vaadin.flow.component.orderedlayout.FlexLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * An abstract model search form that servers as the basis for other model based
  * search forms
@@ -63,94 +72,125 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	private static final long serialVersionUID = 2146875385041665280L;
 
-	/**
-	 * Whether the screen is in advanced search mode
-	 */
+	@Getter
+	@Setter
 	private boolean advancedSearchMode = false;
+
+	/**
+	 * Callback method that is executed after advanced mode is toggle on or off
+	 */
+	@Getter
+	@Setter
+	private Consumer<Boolean> afterAdvancedModeToggled;
+
+	/**
+	 * Callback method that is executed after the clear button is clicked
+	 */
+	@Getter
+	@Setter
+	public Runnable afterClear;
 
 	/**
 	 * Additional code to execute after the clear button is pressed
 	 */
+	@Getter
+	@Setter
 	private Consumer<ClickEvent<Button>> afterClearConsumer;
 
 	/**
-	 * The button bar
+	 * Callback method that is executed after the search form is toggled (between
+	 * shown and hidden)
 	 */
+	@Getter
+	@Setter
+	public Consumer<Boolean> afterSearchFormToggled;
+
+	/**
+	 * Callback method that is executed after a search has been performed
+	 */
+	@Getter
+	@Setter
+	public Runnable afterSearchPerformed;
+
+	@Getter
 	private FlexLayout buttonBar;
 
-	/**
-	 * Button to clear the search form
-	 */
+	@Getter
 	private Button clearButton;
 
-	/**
-	 * The list of currently active search filters
-	 */
-	private List<SerializablePredicate<T>> currentFilters = new ArrayList<>();
+	@Getter
+	private final List<SerializablePredicate<T>> currentFilters = new ArrayList<>();
 
 	/**
 	 * Any filters that will always be applied to any search query (use these to
 	 * restrict the result set beforehand)
 	 */
-	private List<SerializablePredicate<T>> defaultFilters = new ArrayList<>();
+	@Getter
+	@Setter
+	private List<SerializablePredicate<T>> defaultFilters;
 
-	/**
-	 * Field factory singleton for constructing fields
-	 */
-	private FieldFactory fieldFactory = FieldFactory.getInstance();
+	@Getter
+	private final FieldFactory fieldFactory = FieldFactory.getInstance();
 
-	/**
-	 * The layout that holds the various filters
-	 */
+	@Getter
 	private HasComponents filterLayout;
 
-	/**
-	 * The main layout (constructed only once)
-	 */
 	private VerticalLayout main;
 
 	/**
-	 * The component on which the search will be carried out after the user presses
+	 * Callback method that is executed after the button bar has been created
+	 */
+	@Getter
+	@Setter
+	private Consumer<FlexLayout> postProcessButtonBar;
+
+	/**
+	 * Callback method that is executed after the entire layout has been created
+	 */
+	@Getter
+	@Setter
+	private Consumer<VerticalLayout> afterLayoutBuilt;
+
+	/**
+	 * The component on which the search will be carried out after the user clicks
 	 * the "search" button
 	 */
+	@Getter
+	@Setter
 	private Searchable<T> searchable;
 
-	/**
-	 * Search any button
-	 */
+	@Getter
 	private Button searchAnyButton;
 
-	/**
-	 * The search button
-	 */
+	@Getter
 	private Button searchButton;
 
-	/**
-	 * The button to toggle the advanced search mode
-	 */
+	@Getter
 	private Button toggleAdvancedModeButton;
 
-	/**
-	 * The toggle button (hides/shows the search form)
-	 */
 	private Button toggleButton;
 
 	/**
-	 * The panel that wraps around the filter form
+	 * Callback method that is executed to validate the search form before searching
 	 */
+	@Getter
+	@Setter
+	private Runnable validateBeforeSearch;
+
 	private VerticalLayout wrapperPanel;
 
 	/**
 	 * Constructor
 	 *
-	 * @param searchable
-	 * @param entityModel
-	 * @param formOptions
-	 * @param defaultFilters
-	 * @param fieldFilters
+	 * @param searchable the component to execute the search on
+	 * @param entityModel the entity model on which to base the search form
+	 * @param formOptions form options that govern the behaviour of the form
+	 * @param defaultFilters default filters that are applied to any search
+	 * @param fieldFilters field filters to apply to the search components
 	 */
-	public AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel, FormOptions formOptions,
-			List<SerializablePredicate<T>> defaultFilters, Map<String, SerializablePredicate<?>> fieldFilters) {
+	protected AbstractModelBasedSearchForm(Searchable<T> searchable, EntityModel<T> entityModel,
+			FormOptions formOptions, List<SerializablePredicate<T>> defaultFilters,
+			Map<String, SerializablePredicate<?>> fieldFilters) {
 		super(formOptions, fieldFilters, entityModel);
 		this.advancedSearchMode = formOptions.isStartInAdvancedMode();
 		this.defaultFilters = defaultFilters == null ? new ArrayList<>() : defaultFilters;
@@ -158,35 +198,18 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		this.searchable = searchable;
 	}
 
-	/**
-	 * Callback method that is called when the user toggles the visibility of the
-	 * search form
-	 *
-	 * @param visible indicates if the search fields are visible now
-	 */
-	protected void afterSearchFieldToggle(boolean visible) {
-		// override in subclasses
-	}
-
-	/**
-	 * Callback method that is called after a successful search has been performed
-	 */
-	protected void afterSearchPerformed() {
-		// override in subclasses
-	}
-
 	@Override
 	public void build() {
 		if (main == null) {
 			main = new DefaultVerticalLayout(false, true);
-			preProcessLayout(main);
+			main.addClassName(DynamoConstants.CSS_SEARCH_FORM_LAYOUT);
 
-			// create the search form
 			filterLayout = constructFilterLayout();
 			if (((Component) filterLayout).isVisible()) {
 
 				// add a wrapper for adding an action handlers
-				wrapperPanel = new DefaultVerticalLayout(false, true);
+				wrapperPanel = new DefaultVerticalLayout(false, false);
+				wrapperPanel.addClassName(DynamoConstants.CSS_SEARCH_FORM_WRAPPER);
 				main.add(wrapperPanel);
 
 				wrapperPanel.add((Component) filterLayout);
@@ -195,15 +218,22 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 				buttonBar = new DefaultFlexLayout();
 				main.add(buttonBar);
 				constructButtonBar(buttonBar);
-				// add custom buttons
-				postProcessButtonBar(buttonBar);
+
+				if (postProcessButtonBar != null) {
+					postProcessButtonBar.accept(buttonBar);
+				}
 
 				searchButton.setEnabled(isSearchAllowed());
 			}
 
-			// add any custom functionality
-			postProcessLayout(main);
+			if (afterLayoutBuilt != null) {
+				afterLayoutBuilt.accept(main);
+			}
 			add(main);
+
+			if (getFormOptions().isPreserveSearchTerms() && !getComponentContext().isPopup()) {
+				restoreSearchValues();
+			}
 		}
 	}
 
@@ -211,6 +241,11 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Clears any search filters (and re-applies the default filters afterwards)
 	 */
 	public void clear() {
+		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+		if (helper != null) {
+			helper.clearSearchTerms();
+			helper.clearSortOrders();
+		}
 		currentFilters.clear();
 		currentFilters.addAll(getDefaultFilters());
 	}
@@ -218,7 +253,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the "toggle advanced search mode" button
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
 	protected final Button constructAdvancedSearchModeButton() {
 		toggleAdvancedModeButton = new Button(
@@ -240,32 +275,20 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the "clear" button
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
-	protected Button constructClearButton() {
+	protected final Button constructClearButton() {
 		clearButton = new Button(message("ocs.clear"));
 		clearButton.setIcon(VaadinIcon.ERASER.create());
 		clearButton.addClickListener(this);
-		clearButton.setVisible(!getFormOptions().isHideClearButton());
+		clearButton.setVisible(getFormOptions().isShowClearButton());
 		return clearButton;
-	}
-
-	/**
-	 * Creates a custom field - override in subclasses if needed
-	 *
-	 * @param entityModel    the entity model of the entity to search for
-	 * @param attributeModel the attribute model the attribute model of the property
-	 *                       that is bound to the field
-	 * @return
-	 */
-	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
-		return null;
 	}
 
 	/**
 	 * Constructs the layout that holds all the filter components
 	 *
-	 * @return
+	 * @return the constructed layout
 	 */
 	protected abstract HasComponents constructFilterLayout();
 
@@ -273,7 +296,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Construct the "search any" button which allows the user to search on entities
 	 * that match any (rather than all) of the search criteria
 	 * 
-	 * @return
+	 * @return the constructed button
 	 */
 	protected final Button constructSearchAnyButton() {
 		searchAnyButton = new Button(message("ocs.search.any"));
@@ -286,7 +309,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the Search button
 	 * 
-	 * @return
+	 * @return the constructed search button
 	 */
 	protected final Button constructSearchButton() {
 		searchButton = new Button(message("ocs.search"));
@@ -299,17 +322,17 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Constructs the "toggle" button which shows/hides the search form
 	 * 
-	 * @return
+	 * @return the toggle button
 	 */
 	protected final Button constructToggleButton() {
 		toggleButton = new Button(message("ocs.hide"));
-		toggleButton.setIcon(VaadinIcon.ARROWS.create());
+		toggleButton.setIcon(VaadinIcon.ARROW_CIRCLE_UP.create());
 		toggleButton.addClickListener(this);
 		toggleButton.setVisible(getFormOptions().isShowToggleButton());
 		return toggleButton;
 	}
 
-	public SerializablePredicate<T> extractFilter() {
+	public final SerializablePredicate<T> extractFilter() {
 		return extractFilter(false);
 	}
 
@@ -322,12 +345,13 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			}
 			List<SerializablePredicate<T>> customFilters = new ArrayList<>(currentFilters);
 			customFilters.removeAll(defaultFilters);
-			if (currentFilters.isEmpty()) {
+			if (customFilters.isEmpty()) {
 				return defaultFilter;
 			}
 			SerializablePredicate<T> currentFilter = matchAny
 					? new OrPredicate<>(currentFilters.toArray(new SerializablePredicate[0]))
 					: new AndPredicate<>(currentFilters.toArray(new SerializablePredicate[0]));
+
 			if (defaultFilter != null) {
 				return new AndPredicate<>(defaultFilter, currentFilter);
 			}
@@ -336,75 +360,40 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		return null;
 	}
 
-	public Consumer<ClickEvent<Button>> getAfterClearConsumer() {
-		return afterClearConsumer;
-	}
-
-	public FlexLayout getButtonBar() {
-		return buttonBar;
-	}
-
-	public Button getClearButton() {
-		return clearButton;
-	}
-
-	public List<SerializablePredicate<T>> getCurrentFilters() {
-		return currentFilters;
-	}
-
-	public List<SerializablePredicate<T>> getDefaultFilters() {
-		return defaultFilters;
-	}
-
-	public FieldFactory getFieldFactory() {
-		return fieldFactory;
+	/**
+	 * Looks up and creates a custom field for the provided attribute model
+	 * 
+	 * @param entityModel    the entity model of the entity
+	 * @param attributeModel the attribute model of the attribute
+	 * @return the constructed component
+	 */
+	protected final Optional<Component> constructCustomComponent(EntityModel<?> entityModel, AttributeModel attributeModel) {
+		Function<CustomFieldContext, Component> customFieldCreator = getComponentContext()
+				.getCustomFieldCreator(attributeModel.getPath());
+		if (customFieldCreator != null) {
+			return Optional.of(customFieldCreator.apply(CustomFieldContext.builder().entityModel(entityModel)
+					.attributeModel(attributeModel).searchMode(true).build()));
+		}
+		return Optional.empty();
 	}
 
 	/**
 	 *
-	 * @return the number of filters
+	 * @return the number of currently active search filters
 	 */
-	public int getFilterCount() {
+	public final int getFilterCount() {
 		return currentFilters.size();
-	}
-
-	public HasComponents getFilterLayout() {
-		return filterLayout;
-	}
-
-	public Searchable<T> getSearchable() {
-		return searchable;
-	}
-
-	public Button getSearchAnyButton() {
-		return searchAnyButton;
-	}
-
-	public Button getSearchButton() {
-		return searchButton;
-	}
-
-	public Button getToggleAdvancedModeButton() {
-		return toggleAdvancedModeButton;
-	}
-
-	public boolean isAdvancedSearchMode() {
-		return advancedSearchMode;
 	}
 
 	/**
 	 * Checks whether a filter has been set for a certain attribute
 	 *
 	 * @param path the path of the attribute
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
-	public boolean isFilterSet(String path) {
-		for (SerializablePredicate<T> filter : currentFilters) {
-			if (filter instanceof PropertyPredicate && ((PropertyPredicate<T>) filter).appliesToProperty(path)) {
-				return true;
-			}
-		}
-		return false;
+	public final boolean isFilterSet(String path) {
+		return currentFilters.stream().filter(p -> p instanceof PropertyPredicate).map(p -> (PropertyPredicate<T>) p)
+				.anyMatch(p -> p.appliesToProperty(path));
 	}
 
 	/**
@@ -444,6 +433,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 		build();
 	}
 
+	/**
+	 * Respond to button clicks
+	 */
 	@Override
 	public void onComponentEvent(ClickEvent<Button> event) {
 		if (event.getSource() == searchButton) {
@@ -454,14 +446,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			if (getFormOptions().isConfirmClear()) {
 				VaadinUtils.showConfirmDialog(message("ocs.confirm.clear"), () -> {
 					clear();
-
-					if (afterClearConsumer != null) {
-						afterClearConsumer.accept(event);
-					}
-
-					if (getFormOptions().isSearchImmediately()) {
-						search(true);
-					}
+					handleAfterClear(event);
 				});
 			} else {
 				clear();
@@ -471,8 +456,27 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			}
 		} else if (event.getSource() == toggleButton) {
 			toggle(!wrapperPanel.isVisible());
+			
 		} else if (event.getSource() == toggleAdvancedModeButton) {
 			toggleAdvancedMode();
+			if (afterAdvancedModeToggled != null) {
+				afterAdvancedModeToggled.accept(advancedSearchMode);
+			}
+		}
+	}
+
+	/**
+	 * Execute the required logic after a form clear
+	 * 
+	 * @param event
+	 */
+	private void handleAfterClear(ClickEvent<Button> event) {
+		if (afterClearConsumer != null) {
+			afterClearConsumer.accept(event);
+		}
+
+		if (getFormOptions().isSearchImmediately()) {
+			search(true);
 		}
 	}
 
@@ -494,37 +498,14 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	}
 
 	/**
-	 * Callback method that allows the user to modify the button bar
-	 *
-	 * @param groups
+	 * Restores any previously cached search values
 	 */
-	protected void postProcessButtonBar(FlexLayout buttonBar) {
-		// Use in subclass to add additional buttons
-	}
-
-	/**
-	 * Perform any actions necessary after the layout has been build
-	 *
-	 * @param main the layout
-	 */
-	protected void postProcessLayout(VerticalLayout layout) {
-		// override in subclass
-	}
-
-	/**
-	 * Pre-process the layout - this method is called directly after the main layout
-	 * has been created
-	 *
-	 * @param main the layout
-	 */
-	protected void preProcessLayout(VerticalLayout layout) {
-		// override in subclass
-	}
+	protected abstract void restoreSearchValues();
 
 	/**
 	 * Performs a search that matches all of the search criteria
 	 * 
-	 * @return
+	 * @return whether the search was successful
 	 */
 	public boolean search() {
 		return search(false, false);
@@ -535,9 +516,9 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 *
 	 * @param skipValidation whether to skip validation before searching
 	 *
-	 * @return
+	 * @return whether the search was successful
 	 */
-	private boolean search(boolean skipValidation) {
+	public boolean search(boolean skipValidation) {
 		return search(skipValidation, false);
 	}
 
@@ -553,14 +534,16 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * @return
 	 */
 	private boolean search(boolean skipValidation, boolean matchAny) {
-		if (!isSearchAllowed()) {
+		if (!skipValidation && !isSearchAllowed()) {
 			return false;
 		}
 
 		if (searchable != null) {
 			if (!skipValidation) {
 				try {
-					validateBeforeSearch();
+					if (validateBeforeSearch != null) {
+						validateBeforeSearch.run();
+					}
 				} catch (OCSValidationException ex) {
 					showErrorNotification(ex.getErrors().get(0));
 					return false;
@@ -568,8 +551,12 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 			}
 
 			searchable.search(extractFilter(matchAny));
-			if (!skipValidation) {
-				afterSearchPerformed();
+
+			// store search filters for later use
+			storeSearchFilters();
+
+			if (!skipValidation && afterSearchPerformed != null) {
+				afterSearchPerformed.run();
 			}
 
 			return true;
@@ -580,40 +567,18 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Performs a search that matches any of the search criteria
 	 * 
-	 * @return
+	 * @return whether the search was successful
 	 */
 	public boolean searchAny() {
 		return search(false, true);
 	}
 
-	public void setAdvancedSearchMode(boolean advancedSearchMode) {
-		this.advancedSearchMode = advancedSearchMode;
-	}
-
-	public void setAfterClearConsumer(Consumer<ClickEvent<Button>> afterClearConsumer) {
-		this.afterClearConsumer = afterClearConsumer;
-	}
-
 	/**
-	 * Sets the default filters that will be added to every quer
-	 * 
-	 * @param defaultFilters the default filters
+	 * Stores any selected search filters for later use when the screen is reopened
 	 */
-	public void setDefaultFilters(List<SerializablePredicate<T>> defaultFilters) {
-		this.defaultFilters = defaultFilters;
-	}
+	protected abstract void storeSearchFilters();
 
 	/**
-	 * Sets the UI component on which the search will be carried out
-	 *
-	 * @param searchable the UI component on which the search will be carried out
-	 */
-	public void setSearchable(Searchable<T> searchable) {
-		this.searchable = searchable;
-	}
-
-	/**
-	 * 
 	 * @return whether advanced search mode is enabled
 	 */
 	protected abstract boolean supportsAdvancedSearchMode();
@@ -626,26 +591,21 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	protected void toggle(boolean show) {
 		if (!show) {
 			toggleButton.setText(message("ocs.show.search.fields"));
+			toggleButton.setIcon(VaadinIcon.ARROW_CIRCLE_DOWN.create());
 		} else {
 			toggleButton.setText(message("ocs.hide.search.fields"));
+			toggleButton.setIcon(VaadinIcon.ARROW_CIRCLE_UP.create());
 		}
 		wrapperPanel.setVisible(show);
-		afterSearchFieldToggle(wrapperPanel.isVisible());
+
+		if (afterSearchFormToggled != null) {
+			afterSearchFormToggled.accept(wrapperPanel.isVisible());
+		}
 	}
 
 	/**
 	 * Toggles the advanced search mode
 	 */
 	public abstract void toggleAdvancedMode();
-
-	/**
-	 * Callback method that is called before a search is carried out. The developer
-	 * can use this to carry out additional validation before searching. When this
-	 * method returns an OCSValidationException the search process will be aborted
-	 * and a message will be shown
-	 */
-	protected void validateBeforeSearch() {
-		// overwrite in subclass
-	}
 
 }

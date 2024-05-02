@@ -18,6 +18,9 @@ import java.util.List;
 
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+import lombok.ToString;
+
 /**
  * A predicate that joins multiple other predicates together
  * 
@@ -25,13 +28,12 @@ import com.vaadin.flow.function.SerializablePredicate;
  *
  * @param <T> the type of the entity to filter
  */
+@ToString
 public abstract class CompositePredicate<T> implements SerializablePredicate<T> {
 
 	private static final long serialVersionUID = 8690339909486826760L;
 
+	@Getter
 	private final List<SerializablePredicate<T>> operands = new ArrayList<>();
 
-	public List<SerializablePredicate<T>> getOperands() {
-		return operands;
-	}
 }

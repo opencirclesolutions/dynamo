@@ -28,6 +28,12 @@ import java.lang.annotation.Target;
 public @interface Model {
 
     /**
+     *
+     * @return additional context/instructions for auto-filling form
+     */
+    String autofillInstructions() default "";
+
+    /**
      * 
      * @return the display name of the entity
      */
@@ -51,6 +57,12 @@ public @interface Model {
      *         components
      */
     String displayProperty() default "";
+    
+    /**
+     * 
+     * @return the path of the property that will be used to filter inside lookup components
+     */
+    String filterProperty() default "";
 
     /**
      * 
@@ -58,4 +70,9 @@ public @interface Model {
      *         separate)
      */
     String sortOrder() default "";
+    
+    /**
+     * @return the default entity model nesting depth
+     */
+    int nestingDepth() default -1;
 }

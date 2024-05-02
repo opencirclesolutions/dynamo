@@ -41,7 +41,7 @@ public class PagingDataProviderTest extends BaseMockitoTest {
     @Mock
     private Query<TestEntity, SerializablePredicate<TestEntity>> query;
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
+    private final EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
     @BeforeEach
     public void setUp() {
@@ -52,12 +52,12 @@ public class PagingDataProviderTest extends BaseMockitoTest {
     public void testSizeWithoutFilter() {
         when(service.count(nullable(Filter.class), eq(false))).thenReturn(3L);
 
-        provider = new PagingDataProvider<>(service, emf.getModel(TestEntity.class), false);
+        provider = new PagingDataProvider<>(service, entityModelFactory.getModel(TestEntity.class), false);
         provider.size(query);
         assertEquals(3, provider.getSize());
 
         provider.fetch(query);
-        verify(service).fetch(isNull(), eq(0), eq(5), any(SortOrders.class), any());
+        verify(service).fetch(isNull(), eq(0), eq(5), any(SortOrders.class));
     }
 
     /**
@@ -67,7 +67,7 @@ public class PagingDataProviderTest extends BaseMockitoTest {
     public void testSizeWithoutFilterMaxResults() {
         when(service.count(nullable(Filter.class), eq(false))).thenReturn(5L);
 
-        provider = new PagingDataProvider<>(service, emf.getModel(TestEntity.class), false);
+        provider = new PagingDataProvider<>(service, entityModelFactory.getModel(TestEntity.class), false);
         provider.setMaxResults(2);
 
         provider.size(query);
@@ -75,19 +75,19 @@ public class PagingDataProviderTest extends BaseMockitoTest {
 
         // check that the number of results is limited to two
         provider.fetch(query);
-        verify(service).fetch(isNull(), eq(0), eq(2), any(SortOrders.class), any());
+        verify(service).fetch(isNull(), eq(0), eq(2), any(SortOrders.class));
     }
 
     @Test
     public void testSizeWithoutFilterOnlyReturnPart() {
         when(service.count(nullable(Filter.class), eq(false))).thenReturn(6L);
-        provider = new PagingDataProvider<>(service, emf.getModel(TestEntity.class), false);
+        provider = new PagingDataProvider<>(service, entityModelFactory.getModel(TestEntity.class), false);
         provider.size(query);
         assertEquals(6, provider.getSize());
 
         // only fetch the first 5 items
         provider.fetch(query);
-        verify(service).fetch(isNull(), eq(0), eq(5), any(SortOrders.class), any());
+        verify(service).fetch(isNull(), eq(0), eq(5), any(SortOrders.class));
 
     }
 
@@ -96,7 +96,7 @@ public class PagingDataProviderTest extends BaseMockitoTest {
         when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
         when(service.count(any(Filter.class), eq(false))).thenReturn(3L);
 
-        provider = new PagingDataProvider<>(service, emf.getModel(TestEntity.class), false);
+        provider = new PagingDataProvider<>(service, entityModelFactory.getModel(TestEntity.class), false);
         provider.size(query);
         assertEquals(3, provider.getSize());
 
@@ -104,17 +104,17 @@ public class PagingDataProviderTest extends BaseMockitoTest {
 
         provider.fetch(query);
         verify(service).fetch(eq(new Compare.Equal("name", "Bob")), eq(0), eq(5),
-                any(SortOrders.class), any());
+                any(SortOrders.class));
 
     }
 
     @Test
     public void testSizeWithFilterAndSortOrder() {
-        when(query.getFilter()).thenReturn(Optional.ofNullable(new EqualsPredicate<>("name", "Bob")));
+        when(query.getFilter()).thenReturn(Optional.of(new EqualsPredicate<>("name", "Bob")));
         when(query.getSortOrders()).thenReturn(List.of(new QuerySortOrder("name", SortDirection.DESCENDING)));
         when(service.count(any(Filter.class), eq(false))).thenReturn(3L);
 
-        provider = new PagingDataProvider<>(service, emf.getModel(TestEntity.class), false);
+        provider = new PagingDataProvider<>(service, entityModelFactory.getModel(TestEntity.class), false);
         provider.size(query);
         assertEquals(3, provider.getSize());
 
@@ -122,8 +122,7 @@ public class PagingDataProviderTest extends BaseMockitoTest {
 
         provider.fetch(query);
         ArgumentCaptor<SortOrders> captor = ArgumentCaptor.forClass(SortOrders.class);
-        verify(service).fetch(eq(new Compare.Equal("name", "Bob")), eq(0), eq(5), captor.capture(),
-                any());
+        verify(service).fetch(eq(new Compare.Equal("name", "Bob")), eq(0), eq(5), captor.capture());
 
         SortOrders so = captor.getValue();
         assertNotNull(so.getOrderFor("name"));

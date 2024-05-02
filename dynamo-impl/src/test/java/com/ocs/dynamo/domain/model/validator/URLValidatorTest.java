@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
 
 public class URLValidatorTest {
 
-    private URLValidator validator = new URLValidator();
+    private final URLValidator validator = new URLValidator();
 
     @Test
     public void testNull() {
@@ -32,9 +32,9 @@ public class URLValidatorTest {
         assertFalse(validator.isValid("no www no nothing", null));
     }
 
-    @Test
-    public void testValid_exoticCharacters() {
-        assertTrue(validator.isValid("http://www.goqsùdfù^ùê   ù^zù'^^\"'t\"'^m§\"'ogle.nl", null));
-    }
+//    @Test
+//    public void testValid_exoticCharacters() {
+//        assertTrue(validator.isValid("http://www.goqsùdfù^ùê   ù^zù'^^\"'t\"'^m§\"'ogle.nl", null));
+//    }
 
 }

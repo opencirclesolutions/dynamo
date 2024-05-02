@@ -16,19 +16,23 @@ package com.ocs.dynamo.ui.component;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 
-import com.google.common.collect.Sets;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
+import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+import com.vaadin.flow.shared.Registration;
 
 /**
  * 
@@ -41,52 +45,62 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @param <T>  the type of the entity that is being displayed
  */
 public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable {
+		extends QuickAddEntityField<ID, T, Collection<T>> implements Refreshable, SharedProvider<T> {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
 	/**
 	 * Whether direct navigation is allowed
 	 */
-	private boolean directNavigationAllowed;
+	private final boolean directNavigationAllowed;
 
 	/**
 	 * Whether quick adding is allowed
 	 */
-	private boolean quickAddAllowed;
+	private final boolean quickAddAllowed;
 
 	/**
 	 * The list select component
 	 */
-	private EntityTokenSelect<ID, T> tokenSelect;
+	private final EntityTokenSelect<ID, T> tokenSelect;
 
 	/**
 	 * Constructor
 	 * 
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param multiSelect
-	 * @param sortOrder
+	 * @param entityModel    the entity model of the entity that is being edited
+	 * @param attributeModel the attribute model the component is based on
+	 * @param service        service for database communication
+	 * @param filter         search filter to apply
+	 * @param sharedProvider shared data provider
+	 * @param search         whether the component is part of a search form
+	 * @param sortOrder      sort orders
 	 */
-	@SafeVarargs
 	public QuickAddTokenSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-			SerializablePredicate<T> filter, boolean search, SortOrder<?>... sortOrder) {
+			SelectMode selectMode, SerializablePredicate<T> filter,
+			DataProvider<T, SerializablePredicate<T>> sharedProvider, boolean search, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
-		tokenSelect = new EntityTokenSelect<>(entityModel, attributeModel, service, filter, sortOrder);
+		tokenSelect = new EntityTokenSelect<>(entityModel, attributeModel, service, selectMode, filter, null,
+				sharedProvider, sortOrder);
 		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
 		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
 		initContent();
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
+	public Registration addValueChangeListener(
+			ValueChangeListener<? super ComponentValueChangeEvent<CustomField<Collection<T>>, Collection<T>>> listener) {
+		if (tokenSelect != null) {
+			return tokenSelect
+					.addValueChangeListener(event -> listener.valueChanged(new ComponentValueChangeEvent<>(this, this,
+							event.getOldValue() == null ? null : new HashSet<>(event.getOldValue()),
+							event.isFromClient())));
+		}
+		return null;
+	}
+
+	@Override
 	protected void afterNewEntityAdded(T entity) {
-		// add to the container
-		ListDataProvider<T> provider = (ListDataProvider<T>) tokenSelect.getDataProvider();
-		provider.getItems().add(entity);
-		tokenSelect.select(entity);
+		tokenSelect.afterNewEntityAdded(entity);
 	}
 
 	@Override
@@ -107,6 +121,12 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	@Override
 	protected Collection<T> generateModelValue() {
 		return retrieveValue();
+	}
+
+	@Override
+	@SuppressWarnings("unchecked")
+	public DataProvider<T, SerializablePredicate<T>> getSharedProvider() {
+		return (DataProvider<T, SerializablePredicate<T>>) tokenSelect.getDataProvider();
 	}
 
 	public EntityTokenSelect<ID, T> getTokenSelect() {
@@ -174,13 +194,19 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (tokenSelect != null) {
-			tokenSelect.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
+			tokenSelect.setAdditionalFilter(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
+		}
+	}
+
+	@Override
+	public void setClearButtonVisible(boolean visible) {
+		if (tokenSelect != null) {
+			tokenSelect.setClearButtonVisible(visible);
 		}
 	}
 
 	@Override
 	public void setErrorMessage(String errorMessage) {
-		super.setErrorMessage(errorMessage);
 		if (tokenSelect != null) {
 			tokenSelect.setErrorMessage(errorMessage);
 		}
@@ -207,8 +233,21 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 			if (value == null) {
 				value = Collections.emptyList();
 			}
-			tokenSelect.setValue(Sets.newHashSet(value));
+			tokenSelect.setValue(new HashSet<>(value));
 		}
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		if (tokenSelect != null) {
+			tokenSelect.setReadOnly(readOnly);
+		}
+	}
+
+	@Override
+	public void setRequiredIndicatorVisible(boolean requiredIndicatorVisible) {
+		super.setRequiredIndicatorVisible(requiredIndicatorVisible);
+		tokenSelect.setRequiredIndicatorVisible(requiredIndicatorVisible);
 	}
 
 	@Override
@@ -217,8 +256,8 @@ public class QuickAddTokenSelect<ID extends Serializable, T extends AbstractEnti
 			if (value == null) {
 				value = Collections.emptyList();
 			}
-			tokenSelect.setValue(Sets.newHashSet(value));
+			tokenSelect.setValue(new HashSet<>(value));
 		}
+		super.setValue(value);
 	}
-
 }

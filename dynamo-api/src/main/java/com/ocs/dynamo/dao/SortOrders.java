@@ -15,8 +15,9 @@ package com.ocs.dynamo.dao;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import lombok.ToString;
 
 /**
  * A list of SortOrder objects
@@ -24,18 +25,20 @@ import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
  * @author bas.rutten
  *
  */
+@ToString
 public class SortOrders {
 
 	private List<SortOrder> orders = new ArrayList<>();
 
 	/**
 	 * Constructor
+	 * @param orders the sort orders that must be used
 	 */
 	public SortOrders(SortOrder... orders) {
 		if (orders != null) {
-			for (SortOrder o : orders) {
-				if (o != null && o.getProperty() != null) {
-					addSortOrder(o);
+			for (SortOrder order : orders) {
+				if (order != null && order.getProperty() != null) {
+					addSortOrder(order);
 				}
 			}
 		}
@@ -44,8 +47,8 @@ public class SortOrders {
 	/**
 	 * Adds a sort order
 	 * 
-	 * @param order the sort order to add
-	 * @return
+	 * @param order the sort order that must be added
+	 * @return the SortOrders object
 	 */
 	public SortOrders addSortOrder(SortOrder order) {
 		if (order != null && order.getProperty() != null) {
@@ -58,10 +61,10 @@ public class SortOrders {
 	 * Returns the first sort order for the specified property
 	 * 
 	 * @param property the property
-	 * @return
+	 * @return an Optional containing the sort order
 	 */
-	public SortOrder getOrderFor(String property) {
-		return orders.stream().filter(o -> o.getProperty().equals(property)).findAny().orElse(null);
+	public Optional<SortOrder> getOrderFor(String property) {
+		return orders.stream().filter(o -> o.getProperty().equals(property)).findFirst();
 	}
 
 	public SortOrder[] toArray() {
@@ -74,11 +77,10 @@ public class SortOrders {
 			return true;
 		}
 
-		if (!(obj instanceof SortOrders)) {
+		if (!(obj instanceof SortOrders other)) {
 			return false;
 		}
 
-		SortOrders other = (SortOrders) obj;
 		if (other.toArray().length != this.toArray().length) {
 			return false;
 		}
@@ -96,11 +98,6 @@ public class SortOrders {
 	@Override
 	public int hashCode() {
 		return super.hashCode();
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
 	}
 
 	public List<SortOrder> getOrders() {

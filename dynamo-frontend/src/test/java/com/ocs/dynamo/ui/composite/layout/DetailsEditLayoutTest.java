@@ -6,13 +6,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.when;
 
 import java.util.Comparator;
+import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -22,8 +22,6 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.ui.composite.layout.DetailsEditLayout.FormContainer;
 import com.vaadin.flow.component.UI;
-import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 
 public class DetailsEditLayoutTest extends BaseMockitoTest {
 
@@ -58,12 +56,12 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 	public void testEditable() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditLayout<Integer, TestEntity> layout = createLayout(em, em.getAttributeModel("testEntities"), false,
-				new FormOptions().setShowRemoveButton(true));
+		DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> layout = createLayout(em,
+				em.getAttributeModel("testEntities"), false, new FormOptions().setShowRemoveButton(true));
 		assertTrue(layout.getAddButton().isVisible());
 		assertTrue(buttonBarPostconstruct);
 
-		layout.setValue(Lists.newArrayList(e1, e2));
+		layout.setValue(List.of(e1, e2));
 		assertTrue(detailButtonBarPostconstruct);
 
 		assertEquals(2, layout.getFormCount().intValue());
@@ -75,13 +73,13 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 		layout.setDeleteEnabled(0, false);
 		@SuppressWarnings("rawtypes")
 		FormContainer container = layout.getFormContainer(0);
-		assertFalse(container.getDeleteButton().isEnabled());
+		assertFalse(container.getRemoveButton().isEnabled());
 
 		// out of bounds
 		layout.setDeleteEnabled(4, false);
 
 		layout.setDeleteVisible(0, false);
-		assertFalse(container.getDeleteButton().isVisible());
+		assertFalse(container.getRemoveButton().isVisible());
 
 		// disable field
 		layout.setFieldEnabled(0, "age", false);
@@ -100,36 +98,27 @@ public class DetailsEditLayoutTest extends BaseMockitoTest {
 	public void testReadOnly() {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-		DetailsEditLayout<Integer, TestEntity> layout = createLayout(em, em.getAttributeModel("testEntities"), true,
-				new FormOptions().setDetailsGridSearchMode(true));
+		DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> layout = createLayout(em,
+				em.getAttributeModel("testEntities"), true, new FormOptions().setDetailsGridSearchMode(true));
 
 		// adding is not possible
 		assertFalse(layout.getAddButton().isVisible());
 	}
 
-	private DetailsEditLayout<Integer, TestEntity> createLayout(EntityModel<TestEntity> em, AttributeModel am,
-			boolean viewMode, FormOptions fo) {
+	private DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> createLayout(EntityModel<TestEntity> em,
+			AttributeModel am, boolean viewMode, FormOptions fo) {
 
-		DetailsEditLayout<Integer, TestEntity> layout = new DetailsEditLayout<Integer, TestEntity>(service, em, am,
-				viewMode, fo, Comparator.comparing(TestEntity::getName)) {
-
-			private static final long serialVersionUID = -4333833542380882076L;
-
-			@Override
-			protected void postProcessButtonBar(FlexLayout buttonBar) {
-				buttonBarPostconstruct = true;
-			}
-
-			@Override
-			protected void postProcessDetailButtonBar(int index, HorizontalLayout buttonBar, boolean viewMode) {
-				detailButtonBarPostconstruct = true;
-			}
-		};
-		layout.setCreateEntitySupplier(p -> new TestEntity());
-		layout.setRemoveEntityConsumer((p, t) -> {
+		DetailsEditLayout<Integer, TestEntity, Integer, TestEntity> layout = new DetailsEditLayout<>(service, em, am,
+				viewMode, fo, Comparator.comparing(TestEntity::getName));
+		layout.setPostProcessButtonBar(buttonBar -> buttonBarPostconstruct = true);
+		layout.setPostProcessDetailButtonBar((index, buttonBar, vm) -> {
+			detailButtonBarPostconstruct = true;
+		});
+		layout.setCreateEntity(p -> new TestEntity());
+		layout.setRemoveEntity((p, t) -> {
 		});
 
-		layout.initContent();
+		layout.build();
 		return layout;
 	}
 }

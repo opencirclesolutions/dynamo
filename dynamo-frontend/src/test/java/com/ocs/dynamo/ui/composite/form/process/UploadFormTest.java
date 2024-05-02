@@ -17,43 +17,29 @@ import com.vaadin.flow.server.VaadinSession;
 
 public class UploadFormTest extends BaseMockitoTest {
 
-    @Mock
-    private UI ui;
+	@Mock
+	private UI ui;
 
-    @Mock
-    private VaadinSession session;
+	@Mock
+	private VaadinSession session;
 
-    @BeforeEach
-    public void test() {
-        MockVaadin.setup();
-    }
+	@BeforeEach
+	public void test() {
+		MockVaadin.setup();
+	}
 
-    @Test
-    public void testSimpleForm() throws IOException {
-        UploadForm form = new UploadForm(ui, ProgressMode.SIMPLE, false) {
+	@Test
+	public void testSimpleForm() throws IOException {
+		UploadForm form = new UploadForm(ui, ProgressMode.SIMPLE, false);
+		form.setTitle("title");
+		form.setProcess((t, estimatedSize) -> assertEquals(3, t.length));
+		form.setEstimateSize(t -> 0);
 
-            private static final long serialVersionUID = -2866860896190814120L;
+		MockUtil.injectUI(form, ui);
+		form.build();
 
-            @Override
-            protected void process(byte[] t, int estimatedSize) {
-                assertEquals(3, t.length);
-            }
+		form.getUpload().setAutoUpload(true);
+		form.getUpload().getReceiver().receiveUpload("test.txt", "text/plain");
 
-            @Override
-            protected String getTitle() {
-                return "Title";
-            }
-
-            @Override
-            protected int estimateSize(byte[] t) {
-                return 0;
-            }
-        };
-        MockUtil.injectUI(form, ui);
-        form.build();
-
-        form.getUpload().setAutoUpload(true);
-        form.getUpload().getReceiver().receiveUpload("test.txt", "text/plain");
-
-    }
+	}
 }

@@ -13,14 +13,16 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import org.apache.commons.lang3.StringUtils;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
+import com.vaadin.componentfactory.EnhancedFormLayout;
 import com.vaadin.flow.component.customfield.CustomField;
-import com.vaadin.flow.component.formlayout.FormLayout;
 import com.vaadin.flow.component.html.Anchor;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.textfield.TextField;
+
+import lombok.Getter;
+
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * A custom field for displaying a clickable URL
@@ -32,43 +34,22 @@ public class URLField extends CustomField<String> {
 
     private static final long serialVersionUID = -1899451186343723434L;
 
-    /**
-     * The underlying attribute model
-     */
-    private AttributeModel attributeModel;
+    @Getter
+    private final AttributeModel attributeModel;
 
-    /**
-     * Horizontal wrapper layout
-     */
-    private FormLayout bar;
+    private EnhancedFormLayout bar;
 
-    /**
-     * Whether the field is in editable mode
-     */
+    @Getter
     private boolean editable;
 
-    /**
-     * The clickable link
-     */
+    @Getter
     private Anchor link;
 
-    /**
-     * The main layout
-     */
     private HorizontalLayout main;
 
-    /**
-     * The text field for editing
-     */
-    private TextField textField;
+    @Getter
+    private final TextField textField;
 
-    /**
-     * Constructor
-     * 
-     * @param textField      the text field that this component wraps around
-     * @param attributeModel the attribute model used to construct the compoent
-     * @param editable       whether to display the field in editable mode
-     */
     public URLField(TextField textField, AttributeModel attributeModel, boolean editable) {
         setSizeFull();
         this.attributeModel = attributeModel;
@@ -84,14 +65,6 @@ public class URLField extends CustomField<String> {
         return textField.getValue();
     }
 
-    protected Anchor getLink() {
-        return link;
-    }
-
-    public TextField getTextField() {
-        return textField;
-    }
-
     @Override
     public String getValue() {
         return textField.getValue();
@@ -101,15 +74,11 @@ public class URLField extends CustomField<String> {
         main = new DefaultHorizontalLayout(false, false);
         main.setSizeFull();
 
-        bar = new FormLayout();
+        bar = new EnhancedFormLayout();
         bar.setSizeFull();
         updateLink(getValue());
         setMode();
         add(main);
-    }
-
-    public boolean isEditable() {
-        return editable;
     }
 
     public void setEditable(boolean editable) {
@@ -121,9 +90,16 @@ public class URLField extends CustomField<String> {
     public void setErrorMessage(String errorMessage) {
         if (textField != null) {
             textField.setErrorMessage(errorMessage);
-            textField.addClassName("dynamoError");
         }
     }
+
+    @Override
+	public void setInvalid(boolean invalid) {
+		super.setInvalid(invalid);
+		if (textField != null) {
+			textField.setInvalid(invalid);
+		}
+	}
 
     /**
      * Sets the correct mode (read only or editable)
@@ -136,6 +112,12 @@ public class URLField extends CustomField<String> {
             } else {
                 main.replace(textField, bar);
             }
+        }
+    }
+
+    public void setPlaceholder(String placeHolder) {
+        if (textField != null) {
+            textField.setPlaceholder(placeHolder);
         }
     }
 
@@ -155,12 +137,12 @@ public class URLField extends CustomField<String> {
         updateLink(newValue);
         textField.setValue(newValue);
     }
-
-    /**
+    
+	/**
      * Updates the field value - renders a clickable URL if the field value is not
      * empty
      * 
-     * @param value
+     * @param value the new value
      */
     private void updateLink(String value) {
         if (bar != null) {
@@ -173,16 +155,6 @@ public class URLField extends CustomField<String> {
             } else {
                 link = null;
             }
-        }
-    }
-
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
-
-    public void setPlaceholder(String placeHolder) {
-        if (textField != null) {
-            textField.setPlaceholder(placeHolder);
         }
     }
 

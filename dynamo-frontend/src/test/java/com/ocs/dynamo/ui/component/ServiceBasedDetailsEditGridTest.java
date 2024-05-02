@@ -8,6 +8,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 
+import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -22,89 +23,106 @@ import com.vaadin.flow.component.UI;
 
 public class ServiceBasedDetailsEditGridTest extends BaseMockitoTest {
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private EntityModelFactory factory = new EntityModelFactoryImpl();
 
-    @Mock
-    private UI ui;
+	@Mock
+	private UI ui;
 
-    private TestEntity e1;
+	private TestEntity e1;
 
-    private TestEntity e2;
+	private TestEntity e2;
 
-    private TestEntity2 parent;
+	private TestEntity2 parent;
 
-    @Mock
-    private TestEntityService service;
+	@Mock
+	private TestEntityService service;
 
-    @BeforeEach
-    public void setUp() {
-        e1 = new TestEntity(1, "Kevin", 12L);
-        e1.setId(1);
-        e2 = new TestEntity(2, "Bob", 14L);
-        e2.setId(2);
-        parent = new TestEntity2();
-    }
+	private boolean buttonBarProcessed = false;
 
-    /**
-     * Test a grid in editable mode
-     */
-    @Test
-    public void testEditable() {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+	@BeforeEach
+	public void setUp() {
+		
+		MockVaadin.setup();
+		
+		e1 = new TestEntity(1, "Kevin", 12L);
+		e1.setId(1);
+		e2 = new TestEntity(2, "Bob", 14L);
+		e2.setId(2);
+		parent = new TestEntity2();
+		buttonBarProcessed = false;
+	}
 
-        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, em.getAttributeModel("testEntities"),
-                false, false, new FormOptions().setShowRemoveButton(true));
-        assertTrue(grid.getAddButton().isVisible());
-        assertFalse(grid.getSearchDialogButton().isVisible());
+	/**
+	 * Test a grid in editable mode
+	 */
+	@Test
+	public void testEditable() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-        grid.setValue(parent);
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em,
+				em.getAttributeModel("testEntities"), false, false,
+				new FormOptions().setShowRemoveButton(true));
+		assertTrue(grid.getAddButton().isVisible());
+		assertFalse(grid.getSearchDialogButton().isVisible());
 
-    }
+		grid.setValue(parent);
 
-    /**
-     * Test read only with search functionality
-     */
-    @Test
-    @SuppressWarnings({ "unchecked" })
-    public void testReadOnlyWithSearch() {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		assertTrue(buttonBarProcessed);
+		
+		grid.getAddButton().click();
 
-        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, null, false, true,
-                new FormOptions().setDetailsGridSearchMode(true));
-        grid.setService(service);
+	}
 
-        IdBasedDataProvider<Integer, TestEntity> provider = (IdBasedDataProvider<Integer, TestEntity>) grid.getGrid().getDataProvider();
-        assertEquals(0, provider.getSize());
+	/**
+	 * Test read only with search functionality
+	 */
+	@Test
+	@SuppressWarnings({ "unchecked" })
+	public void testReadOnlyWithSearch() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-        // adding is not possible
-        assertFalse(grid.getAddButton().isVisible());
-        // but bringing up the search dialog is
-        assertTrue(grid.getSearchDialogButton().isVisible());
-    }
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, null, false, true,
+				new FormOptions().setDetailsGridSearchMode(true));
+		grid.setService(service);
 
-    @Test
-    public void testReadOnly() {
-        EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
+		IdBasedDataProvider<Integer, TestEntity> provider = (IdBasedDataProvider<Integer, TestEntity>) grid.getGrid()
+				.getDataProvider();
+		assertEquals(0, provider.getSize());
 
-        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em, em.getAttributeModel("testEntities"),
-                true, false, new FormOptions());
-        assertFalse(grid.getAddButton().isVisible());
-        assertFalse(grid.getSearchDialogButton().isVisible());
-    }
+		// adding is not possible
+		assertFalse(grid.getAddButton().isVisible());
+		// but bringing up the search dialog is
+		assertTrue(grid.getSearchDialogButton().isVisible());
+		assertTrue(buttonBarProcessed);
+	}
 
-    private ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> createGrid(EntityModel<TestEntity> em, AttributeModel am,
-            boolean viewMode, boolean readOnly, FormOptions fo) {
+	@Test
+	public void testReadOnly() {
+		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
 
-        if (readOnly) {
-            fo.setReadOnly(true);
-        }
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = createGrid(em,
+				em.getAttributeModel("testEntities"), true, false, new FormOptions());
+		assertFalse(grid.getAddButton().isVisible());
+		assertFalse(grid.getSearchDialogButton().isVisible());
+	}
 
-        ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> table = new ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2>(
-                service, em, am, viewMode, fo);
+	private ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> createGrid(
+			EntityModel<TestEntity> em, AttributeModel am, boolean viewMode, boolean readOnly, FormOptions fo) {
 
-        table.setCreateEntitySupplier(() -> new TestEntity());
-        table.initContent();
+		if (readOnly) {
+			fo.setReadOnly(true);
+		}
 
-        return table;
-    }
+		ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2> grid = new ServiceBasedDetailsEditGrid<Integer, TestEntity, Integer, TestEntity2>(
+				service, em, am, viewMode, fo);
+
+		grid.setCreateEntity(() -> new TestEntity());
+		grid.setPostProcessButtonBar((buttonBar, vm) -> {
+			buttonBarProcessed = true;
+		});
+
+		grid.postProcess();
+
+		return grid;
+	}
 }

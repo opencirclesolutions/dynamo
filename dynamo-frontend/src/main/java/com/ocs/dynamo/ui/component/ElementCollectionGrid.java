@@ -13,15 +13,6 @@
  */
 package com.ocs.dynamo.ui.component;
 
-import java.io.Serializable;
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.stream.Collectors;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
@@ -30,6 +21,7 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.ocs.dynamo.ui.NestedComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.converter.ConverterFactory;
+import com.ocs.dynamo.ui.converter.TrimSpacesConverter;
 import com.ocs.dynamo.ui.utils.ConvertUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
@@ -45,396 +37,361 @@ import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextField;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
+import com.vaadin.flow.data.binder.*;
 import com.vaadin.flow.data.binder.Binder.BindingBuilder;
-import com.vaadin.flow.data.binder.ValidationResult;
-import com.vaadin.flow.data.binder.Validator;
-import com.vaadin.flow.data.binder.ValueContext;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.validator.BigDecimalRangeValidator;
 import com.vaadin.flow.data.validator.IntegerRangeValidator;
 import com.vaadin.flow.data.validator.LongRangeValidator;
 import com.vaadin.flow.data.validator.StringLengthValidator;
 import com.vaadin.flow.function.ValueProvider;
+import lombok.Getter;
+import lombok.Setter;
+import org.apache.commons.lang3.StringUtils;
+
+import java.io.Serializable;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.function.Consumer;
 
 /**
- * A grid for editing a collection of simple values stored in a collection table
+ * A grid for editing a collection of simple values stored in a JPA collection
+ * table
  * 
  * @author Bas Rutten
  *
- * @param <ID> the type of the key of the entity
- * @param <U> the type of the entity on which the collection is stored
- * @param <T> the type of the elements in the collection
+ * @param <ID> the type of the key of the entity on which the element collection
+ *             is defined
+ * @param <U>  the type of the entity on which the collection is stored
+ * @param <T>  the type of the elements in the collection
  */
 public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEntity<ID>, T extends Serializable>
-        extends CustomField<Collection<T>> implements NestedComponent, CanAssignEntity<ID, U> {
+		extends CustomField<Collection<T>> implements NestedComponent, CanAssignEntity<ID, U> {
 
-    private static final long serialVersionUID = -1203245694503350276L;
+	private static final long serialVersionUID = -1203245694503350276L;
 
-    private static final String VALUE_TOO_LONG = "ocs.value.too.long";
+	private static final String VALUE_TOO_HIGH = "ocs.value.too.high";
 
-    private static final String VALUE_TOO_SHORT = "ocs.value.too.short";
+	private static final String VALUE_TOO_LONG = "ocs.value.too.long";
 
-    private static final String VALUE_TOO_LOW = "ocs.value.too.low";
+	private static final String VALUE_TOO_LOW = "ocs.value.too.low";
 
-    private static final String VALUE_TOO_HIGH = "ocs.value.too.high";
+	private static final String VALUE_TOO_SHORT = "ocs.value.too.short";
 
-    /**
-     * The attribute model
-     */
-    private final AttributeModel attributeModel;
+	@Getter
+	private Button addButton;
 
-    /**
-     * The message service
-     */
-    private final MessageService messageService;
+	private final AttributeModel attributeModel;
 
-    /**
-     * The data provider
-     */
-    private ListDataProvider<ValueHolder<T>> provider;
+	/**
+	 * Map of bindings. Contains one binding for each row
+	 */
+	private final Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
 
-    /**
-     * The grid for displaying the actual items
-     */
-    private Grid<ValueHolder<T>> grid;
+	/**
+	 * The entity on to which to store the values. This should not normally be
+	 * needed but for some reason the normal binding mechanisms don't work, so we
+	 * need to set the values ourselves
+	 */
+	@Getter
+	private U entity;
 
-    /**
-     * Button for adding new items to the grid
-     */
-    private Button addButton;
+	@Getter
+	private final FormOptions formOptions;
 
-    /**
-     * 
-     * Form options that determine which buttons and functionalities are* available
-     */
-    private FormOptions formOptions;
+	@Getter
+	private Grid<ValueHolder<T>> grid;
 
-    /**
-     * 
-     * The currently selected item in the grid
-     */
-    private Object selectedItem;
+	private final String gridHeight = SystemPropertyUtils.getDefaultEditGridHeight();
 
-    /**
-     * 
-     * Whether the grid is in view mode. If this is the case, editing is not*
-     * allowed
-     */
-    private boolean viewMode;
+	private final MessageService messageService;
 
-    /**
-     * The entity on to which to store the values. This should not normally be
-     * needed but for some reason the normal binding mechanisms don't work so we
-     * need to set the values ourselves
-     */
-    private U entity;
+	private final ListDataProvider<ValueHolder<T>> provider;
 
-    /**
-     * Map of bindings. Contains one binding for each row
-     */
-    private Map<ValueHolder<T>, Binder<ValueHolder<T>>> binders = new HashMap<>();
+	@Getter
+	@Setter
+	private Consumer<HorizontalLayout> postProcessButtonBar;
 
-    /**
-     * Constructor
-     * 
-     * @param attributeModel the attribute model
-     * @param formOptions    the form options that govern how the grid behaves
-     */
-    public ElementCollectionGrid(AttributeModel attributeModel, FormOptions formOptions) {
-        this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-        this.formOptions = formOptions;
-        this.attributeModel = attributeModel;
-        this.provider = new ListDataProvider<>(new ArrayList<>());
-        setSizeFull();
-        initContent();
-    }
+	/**
+	 * The currently selected item in the grid
+	 */
+	@Getter
+	@Setter
+	private T selectedItem;
 
-    /**
-     * Assigns the parent entity
-     */
-    @Override
-    public void assignEntity(U t) {
-        this.entity = t;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param attributeModel the attribute model
+	 * @param formOptions    the form options
+	 */
+	public ElementCollectionGrid(AttributeModel attributeModel, FormOptions formOptions) {
+		this.messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+		this.formOptions = formOptions;
+		this.attributeModel = attributeModel;
+		this.provider = new ListDataProvider<>(new ArrayList<>());
+		setSizeFull();
+		initContent();
+	}
 
-    /**
-     * Constructs the button that is used for adding new items
-     *
-     * @param buttonBar
-     */
-    protected void constructAddButton(HorizontalLayout buttonBar) {
-        addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
-        addButton.setIcon(VaadinIcon.PLUS.create());
-        addButton.addClickListener(event -> {
+	private void addBigDecimalConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
+				.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
+						attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
+						attributeModel.getPrecision(), attributeModel.getCurrencySymbol()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
+					BigDecimal.valueOf(attributeModel.getMaxValue())));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_LOW),
+					BigDecimal.valueOf(attributeModel.getMinValue()), null));
+		}
+	}
 
-            ValueHolder<T> vh = new ValueHolder<>(null);
-            provider.getItems().add(vh);
+	private void addIntegerConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder
+				.withConverter(ConverterFactory.createIntegerConverter(attributeModel.useThousandsGroupingInEditMode(),
+						attributeModel.isPercentage()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
+					null, attributeModel.getMaxValue().intValue()));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+					attributeModel.getMinValue().intValue(), null));
+		}
+	}
 
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
-            binder.setBean(vh);
-            binders.put(vh, binder);
-            provider.refreshAll();
+	private void addLongConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(ConverterFactory
+				.createLongConverter(attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
+		if (attributeModel.getMaxValue() != null) {
+			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
+					attributeModel.getMaxValue()));
+		}
+		if (attributeModel.getMinValue() != null) {
+			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+					attributeModel.getMinValue(), null));
+		}
+	}
 
-        });
-        buttonBar.add(addButton);
-    }
+	private void addStringConverters(BindingBuilder<ValueHolder<T>, String> builder) {
+		if (attributeModel.getMaxLength() != null) {
+			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_LONG, attributeModel.getMaxLength()),
+					null, attributeModel.getMaxLength()));
+		}
+		if (attributeModel.getMinLength() != null) {
+			builder.withValidator(new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
+					attributeModel.getMinLength(), null));
+		}
+		if (attributeModel.isTrimSpaces()) {
+			builder.withConverter(new TrimSpacesConverter());
+		}
+	}
 
-    /**
-     * Constructs the button bar
-     * 
-     * @param parent the parent layout
-     */
-    protected void constructButtonBar(VerticalLayout parent) {
-        HorizontalLayout buttonBar = new DefaultHorizontalLayout();
-        parent.add(buttonBar);
+	@Override
+	public void assignEntity(U entity) {
+		this.entity = entity;
+		provider.refreshAll();
 
-        // button for adding a row
-        if (!viewMode && !formOptions.isHideAddButton()) {
-            constructAddButton(buttonBar);
-        }
+	}
 
-        postProcessButtonBar(buttonBar);
-    }
+	/**
+	 * Constructs the button that is used for adding new items
+	 *
+	 * @param buttonBar the button bar to add the button to
+	 */
+	protected void constructAddButton(HorizontalLayout buttonBar) {
+		addButton = new Button(messageService.getMessage("ocs.add", VaadinUtils.getLocale()));
+		addButton.setIcon(VaadinIcon.PLUS.create());
+		addButton.addClickListener(event -> {
 
-    /**
-     * Constructs the column that holds the "remove" button
-     */
-    private void constructRemoveColumn() {
-        if (!viewMode && formOptions.isShowRemoveButton()) {
-            final String removeMsg = message("ocs.detail.remove");
-            grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) t -> {
-                Button remove = new Button();
-                remove.setIcon(VaadinIcon.TRASH.create());
-                remove.addClickListener(event -> {
-                    binders.remove(t);
-                    provider.getItems().remove(t);
-                    provider.refreshAll();
-                });
-                return remove;
-            }).setHeader(removeMsg).setKey(removeMsg);
-        }
-    }
+			ValueHolder<T> vh = new ValueHolder<>(null);
+			provider.getItems().add(vh);
 
-    public Button getAddButton() {
-        return addButton;
-    }
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
+			binder.setBean(vh);
+			binders.put(vh, binder);
+			provider.refreshAll();
 
-    public U getEntity() {
-        return entity;
-    }
+		});
+		buttonBar.add(addButton);
+	}
 
-    public FormOptions getFormOptions() {
-        return formOptions;
-    }
+	/**
+	 * Constructs the button bar
+	 * 
+	 * @param parent the parent layout to which to add the button bar
+	 */
+	protected void constructButtonBar(VerticalLayout parent) {
+		HorizontalLayout buttonBar = new DefaultHorizontalLayout();
+		parent.add(buttonBar);
 
-    public Integer getMaxLength() {
-        return attributeModel.getMaxLength();
-    }
+		if (formOptions.isShowAddButton()) {
+			constructAddButton(buttonBar);
+		}
 
-    public Long getMaxValue() {
-        return attributeModel.getMaxValue();
-    }
+		if (postProcessButtonBar != null) {
+			postProcessButtonBar.accept(buttonBar);
+		}
+	}
 
-    public Integer getMinLength() {
-        return attributeModel.getMinLength();
-    }
+	/**
+	 * Constructs the column that holds the "remove" button
+	 */
+	private void constructRemoveColumn() {
+		if (formOptions.isShowRemoveButton()) {
+			String removeMsg = message("ocs.detail.remove");
+			grid.addComponentColumn((ValueProvider<ValueHolder<T>, Component>) entity -> {
+				Button remove = new Button();
+				remove.setIcon(VaadinIcon.TRASH.create());
+				remove.addClickListener(event -> {
+					binders.remove(entity);
+					provider.getItems().remove(entity);
+					provider.refreshAll();
+				});
+				return remove;
+			}).setHeader(removeMsg).setKey(removeMsg);
+		}
+	}
 
-    public Long getMinValue() {
-        return attributeModel.getMinValue();
-    }
+	@Override
+	protected Collection<T> generateModelValue() {
+		return getValueInner();
+	}
 
-    public Object getSelectedItem() {
-        return selectedItem;
-    }
+	public Integer getMaxLength() {
+		return attributeModel.getMaxLength();
+	}
 
-    @Override
-    public Collection<T> getValue() {
-        Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
-        Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
-        if (entity != null) {
-            ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
-        }
-        return converted;
-    }
+	public Long getMaxValue() {
+		return attributeModel.getMaxValue();
+	}
 
-    /**
-     * Constructs the actual component
-     */
-    protected void initContent() {
+	public Integer getMinLength() {
+		return attributeModel.getMinLength();
+	}
 
-        VerticalLayout main = new VerticalLayout();
+	public Long getMinValue() {
+		return attributeModel.getMinValue();
+	}
 
-        grid = new Grid<>();
-        grid.setDataProvider(provider);
-        main.add(grid);
+	@Override
+	public Collection<T> getValue() {
+		return getValueInner();
+	}
 
-        Column<ValueHolder<T>> column = grid.addComponentColumn(vh -> {
-            TextField tf = new TextField("");
-            Binder<ValueHolder<T>> binder = binders.get(vh);
+	private Collection<T> getValueInner() {
+		Collection<T> col = provider.getItems().stream().map(ValueHolder::getValue).toList();
+		Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
+		if (entity != null) {
+			ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
+		}
+		return converted;
+	}
 
-            BindingBuilder<ValueHolder<T>, String> builder = binder.forField(tf);
-            builder.withNullRepresentation("");
+	/**
+	 * Constructs the actual component
+	 */
+	protected void initContent() {
 
-            // custom validator since the normal one apparently doesn't work properly here
-            // (note: add this before the converter!)
-            Validator<String> notEmpty = (String value, ValueContext v) -> {
-                if (value == null || "".equals(value)) {
-                    return ValidationResult.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
-                }
-                return ValidationResult.ok();
-            };
-            builder.asRequired(notEmpty);
+		VerticalLayout main = new VerticalLayout();
 
-            if (String.class.equals(attributeModel.getMemberType())) {
-                // string length validation
-                if (attributeModel.getMaxLength() != null) {
-                    builder.withValidator(new StringLengthValidator(message(VALUE_TOO_LONG, attributeModel.getMaxLength()), null,
-                            attributeModel.getMaxLength()));
-                }
-                if (attributeModel.getMinLength() != null) {
-                    builder.withValidator(new StringLengthValidator(message(VALUE_TOO_SHORT, attributeModel.getMinLength()),
-                            attributeModel.getMinLength(), null));
-                }
-            } else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
-                BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder.withConverter(ConverterFactory
-                        .createIntegerConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
-                if (attributeModel.getMaxValue() != null) {
-                    iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
-                            attributeModel.getMaxValue().intValue()));
-                }
-                if (attributeModel.getMinValue() != null) {
-                    iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
-                            attributeModel.getMinValue().intValue(), null));
-                }
-            } else if (NumberUtils.isLong(attributeModel.getMemberType())) {
-                BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(ConverterFactory
-                        .createLongConverter(SystemPropertyUtils.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
-                if (attributeModel.getMaxValue() != null) {
-                    iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
-                            attributeModel.getMaxValue()));
-                }
-                if (attributeModel.getMinValue() != null) {
-                    iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
-                            attributeModel.getMinValue(), null));
-                }
-            } else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
-                BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder.withConverter(ConverterFactory.createBigDecimalConverter(
-                        attributeModel.isCurrency(), attributeModel.isPercentage(), SystemPropertyUtils.useThousandsGroupingInEditMode(),
-                        attributeModel.getPrecision(), SystemPropertyUtils.getDefaultCurrencySymbol()));
-                if (attributeModel.getMaxValue() != null) {
-                    iBuilder.withValidator(
-                            new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null, BigDecimal.valueOf(attributeModel.getMaxValue())));
-                }
-                if (attributeModel.getMinValue() != null) {
-                    iBuilder.withValidator(
-                            new BigDecimalRangeValidator(message(VALUE_TOO_LOW), BigDecimal.valueOf(attributeModel.getMinValue()), null));
-                }
-            }
-            builder.bind("value");
-            tf.setSizeFull();
-            return tf;
-        });
+		grid = new Grid<>();
+		grid.setItems(provider);
+		main.add(grid);
 
-        column.setHeader(messageService.getMessage("ocs.value", VaadinUtils.getLocale()));
+		Column<ValueHolder<T>> column = grid.addComponentColumn(vh -> {
+			TextField tf = new TextField("");
+			Binder<ValueHolder<T>> binder = binders.get(vh);
 
-        grid.setHeight("200px");
-        grid.setSelectionMode(SelectionMode.SINGLE);
+			BindingBuilder<ValueHolder<T>, String> builder = binder.forField(tf);
+			builder.withNullRepresentation("");
 
-        // add a change listener (to make sure the buttons are correctly
-        // enabled/disabled)
-        grid.addSelectionListener(event -> {
-            if (grid.getSelectedItems().iterator().hasNext()) {
-                ValueHolder<T> vh = grid.getSelectedItems().iterator().next();
-                onSelect(vh.getValue());
-            }
-        });
+			// custom validator since the normal one apparently doesn't work properly here
+			// (must be added before the converters)
+			Validator<String> notEmptyValidator = (String value, ValueContext v) -> {
+				if (StringUtils.isEmpty(value)) {
+					return ValidationResult
+							.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
+				}
+				return ValidationResult.ok();
+			};
+			builder.asRequired(notEmptyValidator);
 
-        // add a remove button directly in the grid
-        constructRemoveColumn();
-        constructButtonBar(main);
+			if (String.class.equals(attributeModel.getMemberType())) {
+				addStringConverters(builder);
+			} else if (NumberUtils.isInteger(attributeModel.getMemberType())) {
+				addIntegerConverters(builder);
+			} else if (NumberUtils.isLong(attributeModel.getMemberType())) {
+				addLongConverters(builder);
+			} else if (BigDecimal.class.equals(attributeModel.getMemberType())) {
+				addBigDecimalConverters(builder);
+			}
+			builder.bind("value");
+			tf.setSizeFull();
+			return tf;
+		});
 
-        add(main);
-    }
+		column.setHeader(messageService.getMessage("ocs.value", VaadinUtils.getLocale()));
 
-    public boolean isViewMode() {
-        return viewMode;
-    }
+		grid.setHeight(gridHeight);
+		grid.setSelectionMode(SelectionMode.SINGLE);
 
-    private String message(String key, Object... values) {
-        return messageService.getMessage(key, VaadinUtils.getLocale(), values);
-    }
+		// add a change listener (to make sure the buttons are correctly
+		// enabled/disabled)
+		grid.addSelectionListener(event -> {
+			if (grid.getSelectedItems().iterator().hasNext()) {
+				ValueHolder<T> vh = grid.getSelectedItems().iterator().next();
+				onSelect(vh.getValue());
+			}
+		});
 
-    /**
-     * Respond to a selection of an item in the grid
-     */
-    protected void onSelect(final Object selected) {
-        // overwrite in subclass if needed
-    }
+		// add a remove button directly in the grid
+		constructRemoveColumn();
+		constructButtonBar(main);
 
-    /**
-     * Add additional buttons to the button bar
-     *
-     * @param buttonBar
-     */
-    protected void postProcessButtonBar(HorizontalLayout buttonBar) {
-        // overwrite in subclass if needed
-    }
+		add(main);
+	}
 
-    public void setEntity(U entity) {
-        this.entity = entity;
-    }
+	private String message(String key, Object... values) {
+		return messageService.getMessage(key, VaadinUtils.getLocale(), values);
+	}
 
-    public void setFormOptions(final FormOptions formOptions) {
-        this.formOptions = formOptions;
-    }
+	/**
+	 * Callback method that is executed after an item is selected in the grid
+	 */
+	protected void onSelect(T selected) {
+		// overwrite in subclass if needed
+	}
 
-    public void setSelectedItem(final String selectedItem) {
-        this.selectedItem = selectedItem;
-    }
+	public void setEntity(U entity) {
+		this.entity = entity;
+		provider.refreshAll();
+	}
 
-    public void setViewMode(final boolean viewMode) {
-        this.viewMode = viewMode;
-    }
+	@Override
+	protected void setPresentationValue(Collection<T> value) {
+		provider.getItems().clear();
+		provider.refreshAll();
+		binders.clear();
+		for (T entity : value) {
+			ValueHolder<T> vh = new ValueHolder<>(entity);
+			provider.getItems().add(vh);
+			@SuppressWarnings({ "rawtypes", "unchecked" })
+			Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
+			binder.setBean(vh);
+			binders.put(vh, binder);
+		}
+	}
 
-    @Override
-    public boolean validateAllFields() {
-        boolean error = false;
-        // refresh the bindings and validate
-        for (Entry<ValueHolder<T>, Binder<ValueHolder<T>>> entry : binders.entrySet()) {
-            error |= !entry.getValue().validate().isOk();
-        }
-        return error;
-    }
-
-    public Grid<ValueHolder<T>> getGrid() {
-        return grid;
-    }
-
-    @Override
-    protected Collection<T> generateModelValue() {
-        Collection<T> col = provider.getItems().stream().map(vh -> vh.getValue()).collect(Collectors.toList());
-        Collection<T> converted = ConvertUtils.convertCollection(col, attributeModel);
-        if (entity != null) {
-            ClassUtils.setFieldValue(entity, attributeModel.getPath(), converted);
-        }
-        return converted;
-    }
-
-    @Override
-    protected void setPresentationValue(Collection<T> value) {
-        provider.getItems().clear();
-        provider.refreshAll();
-        binders.clear();
-        for (T t : value) {
-            ValueHolder<T> vh = new ValueHolder<>(t);
-            provider.getItems().add(vh);
-            @SuppressWarnings({ "rawtypes", "unchecked" })
-            Binder<ValueHolder<T>> binder = new BeanValidationBinder(ValueHolder.class);
-            binder.setBean(vh);
-            binders.put(vh, binder);
-        }
-    }
+	@Override
+	public boolean validateAllFields() {
+		return binders.entrySet().stream().anyMatch(entry -> !entry.getValue().validate().isOk());
+	}
 }

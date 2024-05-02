@@ -1,9 +1,9 @@
 package com.ocs.dynamo.domain.model.impl;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.util.HashMap;
@@ -13,7 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.github.mvysny.kaributesting.v10.MockVaadin;
+//import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -21,10 +21,9 @@ import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.domain.model.FieldCreationContext;
 import com.ocs.dynamo.domain.model.FieldFactory;
-import com.ocs.dynamo.domain.model.FieldFactoryContext;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.EqualsPredicate;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.ui.component.ElementCollectionGrid;
@@ -38,11 +37,12 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.checkbox.Checkbox;
 import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.datepicker.DatePicker;
+import com.vaadin.flow.component.datetimepicker.DateTimePicker;
+import com.vaadin.flow.component.textfield.EmailField;
+import com.vaadin.flow.component.textfield.PasswordField;
 import com.vaadin.flow.component.textfield.TextArea;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.component.timepicker.TimePicker;
-import com.vaadin.flow.data.binder.BeanValidationBinder;
-import com.vaadin.flow.data.binder.Binder;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.function.SerializablePredicate;
 
@@ -55,21 +55,21 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
 	@BeforeEach
 	public void setUp() {
-		MockVaadin.setup();
+		//MockVaadin.setup();
 		fieldFactory = FieldFactory.getInstance();
 	}
 
 	private Component constructField(String name, boolean search) {
 		EntityModel<TestEntity> em = factory.getModel(TestEntity.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setSearch(search);
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
+				.search(search).build();
 		return fieldFactory.constructField(context);
 	}
 
 	private Component constructField(String name, String entityModelRef) {
 		EntityModel<TestEntity> em = factory.getModel(entityModelRef, TestEntity.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setSearch(false);
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
+				.search(false).build();
 		return fieldFactory.constructField(context);
 	}
 
@@ -79,24 +79,20 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 
 	private Component constructField2(String name, boolean search, boolean viewMode, boolean grid) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setSearch(search).setViewMode(viewMode).setEditableGrid(grid);
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
+				.search(search).viewMode(viewMode).editableGrid(grid).build();
 		return fieldFactory.constructField(context);
 	}
 
 	private Component constructField2(String name, Map<String, SerializablePredicate<?>> fieldFilters) {
 		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create().setAttributeModel(em.getAttributeModel(name))
-				.setFieldFilters(fieldFilters);
+		FieldCreationContext context = FieldCreationContext.create().attributeModel(em.getAttributeModel(name))
+				.fieldFilters(fieldFilters).build();
 		return fieldFactory.constructField(context);
 	}
 
-	/**
-	 * Test a text field
-	 */
 	@Test
 	public void testTextField() {
-
 		Component ac = constructField("name", false);
 		assertTrue(ac instanceof TextField);
 
@@ -104,9 +100,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 		assertEquals("Name", tf.getLabel());
 	}
 
-	/**
-	 * Test a URL field
-	 */
+	@Test
+	public void testPasswordField() {
+		Component ac = constructField("password", false);
+		assertTrue(ac instanceof PasswordField);
+
+		PasswordField tf = (PasswordField) ac;
+		assertEquals("Password", tf.getLabel());
+	}
+
 	@Test
 	public void testURLField() {
 		Component ac = constructField("url", false);
@@ -120,6 +122,15 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	public void testTextArea() {
 		Component ac = constructField("someTextArea", false);
 		assertTrue(ac instanceof TextArea);
+	}
+
+	/**
+	 * Test that in search mode, a text field is used rather than a text area
+	 */
+	@Test
+	public void testTextAreaNotInSearchMode() {
+		Component ac = constructField("someTextArea", true);
+		assertTrue(ac instanceof TextField);
 	}
 
 	/**
@@ -203,9 +214,18 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	 * Test the creation of a date field and verify the date format is correctly set
 	 */
 	@Test
-	public void testDateField() {
+	public void testLocalDateField() {
 		Component ac = constructField("birthDate", false);
 		assertTrue(ac instanceof DatePicker);
+	}
+
+	/**
+	 * Test the creation of a date field and verify the date format is correctly set
+	 */
+	@Test
+	public void testLocalDateTimeField() {
+		Component ac = constructField("lastLogin", false);
+		assertTrue(ac instanceof DateTimePicker);
 	}
 
 	/**
@@ -267,16 +287,16 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	@Test
 	public void testEmail() {
 		Component ac = constructField2("email", false, false);
+		assertTrue(ac instanceof EmailField);
+	}
+
+	/**
+	 * E-mail field in search mode
+	 */
+	@Test
+	public void testEmailSearhcMode() {
+		Component ac = constructField2("email", true, false);
 		assertTrue(ac instanceof TextField);
-
-		TextField tf = (TextField) ac;
-
-		Binder<TestEntity2> binder = new BeanValidationBinder<>(TestEntity2.class);
-		TestEntity2 t2 = new TestEntity2();
-		binder.setBean(t2);
-		EntityModel<TestEntity2> em = factory.getModel(TestEntity2.class);
-
-		fieldFactory.addConvertersAndValidators(binder.forField(tf), em.getAttributeModel("email"), null, null, null);
 	}
 
 	/**
@@ -367,9 +387,9 @@ public class FieldFactoryImplTest extends FrontendIntegrationTest {
 	@Test
 	public void testConstructEntityComboBoxMultipleSearch() {
 		EntityModel<TestEntity2> em = factory.getModel("TestEntity2Multi", TestEntity2.class);
-		FieldFactoryContext context = FieldFactoryContext.create()
-				.setAttributeModel(em.getAttributeModel("testEntityAlt")).setSearch(true);
-		assertThrows(OCSRuntimeException.class, () -> fieldFactory.constructField(context));
+		FieldCreationContext context = FieldCreationContext.create()
+				.attributeModel(em.getAttributeModel("testEntityAlt")).search(true).build();
+		assertDoesNotThrow(() -> fieldFactory.constructField(context));
 	}
 
 	/**

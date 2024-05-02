@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.filter;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
@@ -27,94 +25,67 @@ import com.ocs.dynamo.filter.Compare.Less;
 import com.ocs.dynamo.filter.Compare.LessOrEqual;
 
 /**
+ * Abstract base class for filters
+ *
  * @author bas.rutten
  */
 public abstract class AbstractFilter implements Filter {
 
     /**
-     * Wraps the filter in an And filter (if not already present)
-     * 
-     * @return
+     * @return the filter, wrapped in an And filter
      */
     public And and() {
         if (this instanceof And) {
-            // Do nothing
             return (And) this;
         }
-        // Else create And add current
         return new And(this);
     }
 
     /**
-     * Constructs a filter that is a conjunction of the provided filters
-     * 
-     * @param filters
-     * @return
+     * Wraps the provided filters in an And filter
+     *
+     * @param filters the filter to combine
+     * @return the provided filters, wrapped in an And filter
      */
     public And and(Collection<Filter> filters) {
-        And result = null;
+        And result;
         if (this instanceof And) {
             result = (And) this;
-            // Add filters to current
             result.getFilters().addAll(filters);
         } else {
-            // Create And and add current and given
             result = new And(this).and(filters);
         }
         return result;
     }
 
     /**
-     * Constructs a filter that is a conjunction of the provided filters
-     * 
-     * @param filters
-     * @return
+     * Wraps the provided filters in an And filter
+     *
+     * @param filters the filters
+     * @return the provided filters, wrapped in an And filter
      */
     public And and(Filter... filters) {
-        return and(Arrays.asList(filters));
+        return and(List.of(filters));
     }
 
     /**
-     * Applies the filter to a collection of objects and returns those that match the filter
-     * 
-     * @param collection
-     *            the collection to apply the filter to
-     */
-    @Override
-    public <T> List<T> applyFilter(Collection<T> collection) {
-        List<T> result = new ArrayList<>();
-        if (collection != null) {
-            for (T that : collection) {
-                if (this.evaluate(that)) {
-                    result.add(that);
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * Constructs a "between" for the provided property
-     * 
-     * @param propertyId
-     *            the property
-     * @param startValue
-     *            the start value (inclusive)
-     * @param endValue
-     *            the end value (inclusive)
-     * @return
+     * Constructs a "between" filter for the provided property
+     *
+     * @param propertyId the property
+     * @param startValue the start value (inclusive)
+     * @param endValue   the end value (inclusive)
+     * @return the constructed filter
      */
     public AbstractJunctionFilter between(String propertyId, Comparable<?> startValue, Comparable<?> endValue) {
         return newJunction(new Between(propertyId, startValue, endValue));
     }
 
     /**
-     * Get the value of a property of the given bean by use of optimized reflection by Spring.
-     * 
-     * @param bean
-     *            The bean
-     * @param propertyName
-     *            The name of the property to get
+     * Get the value of a property of the given bean by use of optimized reflection
+     * by Spring.
+     *
+     * @param bean         The bean
+     * @param propertyName The name of the property to get
      * @return The property value
      */
     protected Object getProperty(Object bean, String propertyName) {
@@ -125,72 +96,65 @@ public abstract class AbstractFilter implements Filter {
     }
 
     /**
-     * Constructs an "greater than" filter for a property
-     * 
-     * @param propertyId
-     *            the property
-     * @param value
-     *            the value to compare to
-     * @return
+     * Constructs a "greater than" filter for a property
+     *
+     * @param propertyId the property
+     * @param value      the value to compare to
+     * @return the constructed filter
      */
     public AbstractJunctionFilter greater(String propertyId, Object value) {
         return newJunction(new Greater(propertyId, value));
     }
 
     /**
-     * Constructs an "greater or equals" filter for a property
-     * 
-     * @param propertyId
-     *            the property
-     * @param value
-     *            the value to compare to
-     * @return
+     * Constructs a "greater or equals" filter for a property
+     *
+     * @param propertyId the property
+     * @param value      the value to compare to
+     * @return the constructed filter
      */
     public AbstractJunctionFilter greaterOrEqual(String propertyId, Object value) {
         return newJunction(new GreaterOrEqual(propertyId, value));
     }
 
     /**
-     * Constructs an "equals" filter
-     * 
-     * @param propertyId
-     *            the property
-     * @param value
-     *            the value to compare to
-     * @return
+     * Constructs an "equals" filter for a property
+     *
+     * @param propertyId the property
+     * @param value      the value to compare to
+     * @return the constructed filter
      */
     public AbstractJunctionFilter isEqual(String propertyId, Object value) {
         return newJunction(new Equal(propertyId, value));
     }
 
     /**
-     * Constructs a "isNull" filter for a property
-     * 
-     * @param propertyId
-     *            the property
-     * @return
+     * Constructs an "isNull" filter for a property
+     *
+     * @param propertyId the property
+     * @return the constructed filter
      */
     public AbstractJunctionFilter isNull(String propertyId) {
         return newJunction(new IsNull(propertyId));
     }
 
     /**
-     * Constructs an "less than" filter
-     * 
-     * @param propertyId
-     * @param value
-     * @return
+     * Constructs a "less than" filter for a property
+     *
+     * @param propertyId the property
+     * @param value      the property value
+     * @return the constructed filter
      */
     public AbstractJunctionFilter less(String propertyId, Object value) {
         return newJunction(new Less(propertyId, value));
     }
 
     /**
-     * Constructs a "less or equal" filter
-     * 
-     * @param propertyId
-     * @param value
-     * @return
+     * Constructs a "less or equal" filter for a property
+     *
+     * @param propertyId the property
+     * @param value      the property value
+     * @return the constructed filter
      */
     public AbstractJunctionFilter lessOrEqual(String propertyId, Object value) {
         return newJunction(new LessOrEqual(propertyId, value));
@@ -198,10 +162,10 @@ public abstract class AbstractFilter implements Filter {
 
     /**
      * Constructs a case-sensitive "like" filter
-     * 
-     * @param propertyId
-     * @param value
-     * @return
+     *
+     * @param propertyId the property
+     * @param value      the property value
+     * @return the constructed filter
      */
     public AbstractJunctionFilter like(String propertyId, String value) {
         return newJunction(new Like(propertyId, value, true));
@@ -209,16 +173,23 @@ public abstract class AbstractFilter implements Filter {
 
     /**
      * Constructs a "like" filter for string comparison
-     * 
-     * @param propertyId
-     * @param value
-     * @param caseSensitive
-     * @return
+     *
+     * @param propertyId    the property
+     * @param value         the property value
+     * @param caseSensitive whether the search is case-insensitive
+     * @return the constructed filter
      */
     public AbstractJunctionFilter like(String propertyId, String value, boolean caseSensitive) {
         return newJunction(new Like(propertyId, value, caseSensitive));
     }
 
+    /**
+     * Constructs a "like" filter (case insensitive) for string comparison
+     *
+     * @param propertyId the property
+     * @param value      the property value
+     * @return the constructed filter
+     */
     public AbstractJunctionFilter likeIgnoreCase(String propertyId, String value) {
         return newJunction(new Like(propertyId, value, false));
     }
@@ -232,19 +203,19 @@ public abstract class AbstractFilter implements Filter {
     }
 
     /**
-     * Constructs a negation filter
-     * 
-     * @param filter
-     * @return
+     * Constructs a filter that is the negation of the provided filter
+     *
+     * @param filter the filter to negate
+     * @return the constructed filter
      */
     public AbstractJunctionFilter not(Filter filter) {
         return newJunction(new Not(filter));
     }
 
     /**
-     * Wraps the filter in an Or filter (if not already present)
-     * 
-     * @return
+     * Wraps the current filter in an Or filter (if not already present)
+     *
+     * @return the current filter
      */
     public Or or() {
         if (this instanceof Or) {
@@ -256,32 +227,30 @@ public abstract class AbstractFilter implements Filter {
     }
 
     /**
-     * Constructs a filter that is a disjunction of the provided filters
-     * 
-     * @param filters
-     * @return
+     * Wraps the provided filters in a logical OR
+     *
+     * @param filters the filter to wrap
+     * @return the filters wrapped in a logical or
      */
     public Or or(Collection<Filter> filters) {
-        Or result = null;
+        Or result;
         if (this instanceof Or) {
             result = (Or) this;
-            // Add filters to current
             result.getFilters().addAll(filters);
         } else {
-            // Create And and add current and given
             result = new Or(this).or(filters);
         }
         return result;
     }
 
     /**
-     * Constructs a filter that is a disjunction of the provided filters
-     * 
-     * @param filters
-     * @return
+     * Wraps the provided filters in a logical OR
+     *
+     * @param filters the filter to wrap
+     * @return the filters wrapped in a logical or
      */
     public Or or(Filter... filters) {
-        return or(Arrays.asList(filters));
+        return or(List.of(filters));
     }
 
     @Override

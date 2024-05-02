@@ -15,17 +15,22 @@ package com.ocs.dynamo.ui.composite.layout;
 
 import java.io.Serializable;
 import java.util.Collection;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.composite.grid.BaseGridWrapper;
 import com.ocs.dynamo.ui.composite.grid.FixedGridWrapper;
+import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.textfield.TextField;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 /**
  * A layout for displaying a fixed collection of items, that contains both a
@@ -33,123 +38,132 @@ import com.vaadin.flow.function.SerializablePredicate;
  * 
  * @author bas.rutten
  * @param <ID> the type of the primary key
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
  */
-@SuppressWarnings("serial")
-public abstract class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseSplitLayout<ID, T> {
+public class FixedSplitLayout<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseSplitLayout<ID, T> {
 
-    private static final long serialVersionUID = 4606800218149558500L;
+	private static final long serialVersionUID = 4606800218149558500L;
 
-    /**
-     * The fixed collection of items that is displayed in the table
-     */
-    private Collection<T> items;
+	/**
+	 * The fixed collection of items that is displayed in the table
+	 */
+	@Getter
+	private Collection<T> items;
 
-    /**
-     * Constructor
-     * 
-     * @param service      the service
-     * @param entityModel  the entity model that is used to construct the layout
-     * @param formOptions  the form options that govern how the screen behaves
-     * @param fieldFilters field filters applied to fields in the detail view
-     * @param sortOrder    the sort order
-     */
-    public FixedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions, SortOrder<?> sortOrder) {
-        super(service, entityModel, formOptions, sortOrder);
-    }
+	/**
+	 * The code that is carried out to load the fixed collection of items
+	 */
+	@Getter
+	@Setter
+	private Supplier<Collection<T>> loadItemSupplier;
 
-    /**
-     * Callback method that is executed after reload
-     */
-    @Override
-    protected void afterReload(T t) {
-        if (t != null) {
-            getGridWrapper().getGrid().select(t);
-        } else {
-            getGridWrapper().getGrid().deselectAll();
-        }
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param service      the service
+	 * @param entityModel  the entity model that is used to construct the layout
+	 * @param formOptions  the form options that govern how the screen behaves
+	 * @param sortOrder    the sort order
+	 */
+	public FixedSplitLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
+			SortOrder<?> sortOrder) {
+		super(service, entityModel, formOptions, sortOrder);
+	}
 
-    /**
-     * The initialization consists of retrieving the required items
-     */
-    @Override
-    public void buildFilter() {
-        this.items = loadItems();
-    }
+	/**
+	 * Callback method that is executed after reload
+	 */
+	@Override
+	protected final void afterReload(T t) {
+		if (t != null) {
+			getGridWrapper().getGrid().select(t);
+		} else {
+			getGridWrapper().getGrid().deselectAll();
+		}
+	}
 
-    @Override
-    protected final BaseGridWrapper<ID, T> constructGridWrapper() {
-        FixedGridWrapper<ID, T> wrapper = new FixedGridWrapper<ID, T>(getService(), getEntityModel(), getFormOptions(), getFieldFilters(),
-                getItems(), getSortOrders()) {
+	/**
+	 * The initialization consists of retrieving the required items
+	 */
+	@Override
+	public void buildFilter() {
+		this.items = loadItemSupplier.get();
+	}
 
-            @Override
-            protected void onSelect(Object selected) {
-                setSelectedItems(selected);
-                checkComponentState(getSelectedItem());
-                if (getSelectedItem() != null) {
-                    detailsMode(getSelectedItem());
-                }
-            }
+	@Override
+	protected final BaseGridWrapper<ID, T> constructGridWrapper() {
+		FixedGridWrapper<ID, T> wrapper = new FixedGridWrapper<>(getService(), getEntityModel(), getFormOptions(),
+				getComponentContext(), getFieldFilters(), getItems(), getSortOrders()) {
 
-            @Override
-            protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
-                FixedSplitLayout.this.postProcessDataProvider(provider);
-            }
-        };
-        postConfigureGridWrapper(wrapper);
-        wrapper.build();
-        return wrapper;
-    }
+			@Override
+			protected void onSelect(Object selected) {
+				setSelectedItems(selected);
+				checkComponentState(getSelectedItem());
+				if (getSelectedItem() != null) {
+					detailsMode(getSelectedItem());
+				}
+			}
 
-    @Override
-    protected final TextField constructSearchField() {
-        // do nothing - not supported for this component
-        return null;
-    }
+			@Override
+			protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+				FixedSplitLayout.this.postProcessDataProvider(provider);
+			}
+		};
+		postConfigureGridWrapper(wrapper);
+		wrapper.build();
+		return wrapper;
+	}
 
-    public Collection<T> getItems() {
-        return items;
-    }
+	@Override
+	protected final TextField constructSearchField() {
+		// do nothing - not supported for this component
+		return null;
+	}
 
-    /**
-     * Loads the items that are to be displayed
-     */
-    protected abstract Collection<T> loadItems();
+	/**
+	 * Reloads the data after an update
+	 */
+	@Override
+	public void reload() {
+		buildFilter();
+		super.reload();
+		// remove all items from the container and add the new ones
+		ListDataProvider<T> provider = (ListDataProvider<T>) getGridWrapper().getDataProvider();
+		provider.getItems().clear();
+		provider.getItems().addAll(items);
+		provider.refreshAll();
+		setSelectedItem(null);
+	}
 
-    /**
-     * Reloads the data after an update
-     */
-    @Override
-    public void reload() {
-        buildFilter();
-        super.reload();
-        // remove all items from the container and add the new ones
-        ListDataProvider<T> provider = (ListDataProvider<T>) getGridWrapper().getDataProvider();
-        provider.getItems().clear();
-        provider.getItems().addAll(items);
-        provider.refreshAll();
-        setSelectedItem(null);
-    }
+	@SuppressWarnings("unchecked")
+	@Override
+	public void setSelectedItems(Object selectedItems) {
+		if (selectedItems != null) {
+			if (selectedItems instanceof Collection col) {
+				if (col.iterator().hasNext()) {
+					T t = (T) col.iterator().next();
+					// fetch the item again so that any details are loaded
+					setSelectedItem(t);
+				} else {
+					setSelectedItem(null);
+					emptyDetailView();
+				}
+			}
+		} else {
+			setSelectedItem(null);
+			emptyDetailView();
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void setSelectedItems(Object selectedItems) {
-        if (selectedItems != null) {
-            if (selectedItems instanceof Collection<?>) {
-                Collection<?> col = (Collection<?>) selectedItems;
-                if (col.iterator().hasNext()) {
-                    T t = (T) col.iterator().next();
-                    // fetch the item again so that any details are loaded
-                    setSelectedItem(t);
-                } else {
-                    setSelectedItem(null);
-                    emptyDetailView();
-                }
-            }
-        } else {
-            setSelectedItem(null);
-            emptyDetailView();
-        }
-    }
+	@Override
+	protected Button constructPopupSearchButton() {
+		// not needed
+		return null;
+	}
+
+	@Override
+	protected Button constructPopupClearButton() {
+		// not needed
+		return null;
+	}
 }

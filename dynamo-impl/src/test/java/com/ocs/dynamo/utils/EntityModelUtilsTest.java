@@ -13,17 +13,6 @@
  */
 package com.ocs.dynamo.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
-
-import java.math.BigDecimal;
-import java.util.Locale;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -33,6 +22,16 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Locale;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 
 public class EntityModelUtilsTest extends BaseMockitoTest {
 
@@ -67,7 +66,7 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
         TestEntity entity2 = new TestEntity();
         entity2.setName("test name 2");
 
-        String value = EntityModelUtils.getDisplayPropertyValue(Lists.newArrayList(entity, entity2), model, 2, messageService,
+        String value = EntityModelUtils.getDisplayPropertyValue(List.of(entity, entity2), model, 2, messageService,
                 Locale.ENGLISH);
         assertEquals("test name, test name 2", value);
     }
@@ -88,7 +87,7 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
         TestEntity entity3 = new TestEntity();
         entity3.setName("test name 3");
 
-        String value = EntityModelUtils.getDisplayPropertyValue(Lists.newArrayList(entity, entity2, entity3), model, 2, messageService,
+        String value = EntityModelUtils.getDisplayPropertyValue(List.of(entity, entity2, entity3), model, 2, messageService,
                 Locale.ENGLISH);
         assertEquals("test name, test name 2, ocs.and.others", value);
     }

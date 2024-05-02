@@ -13,8 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import java.util.function.Consumer;
 
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.service.MessageService;
@@ -33,20 +32,43 @@ import com.vaadin.flow.component.notification.NotificationVariant;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.extern.slf4j.Slf4j;
+
 /**
  * Base class for modal dialogs. This class has an empty button bar and no
- * content. Subclasses should implement the "doBuildButtonBar" method to add the
- * appropriate buttons and "doBuild" to add the appropriate content
+ * content. Subclasses should use the "setBuildMainLayout" and "setBuildButtonBar"
+ * methods to add actual content
  * 
  * @author bas.rutten
  */
+@Slf4j
+@Getter
+@Setter
 public abstract class BaseModalDialog extends Dialog implements Buildable {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BaseModalDialog.class);
 
 	private static final long serialVersionUID = -2265149201475495504L;
 
 	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+
+	private Consumer<VerticalLayout> buildMainLayout;
+
+	private Consumer<HorizontalLayout> buildButtonBar;
+
+	private String className;
+
+	private Consumer<HorizontalLayout> postProcessButtonBar;
+
+	private String title;
+
+	protected BaseModalDialog() {
+		this(DynamoConstants.CSS_DIALOG);
+	}
+
+	protected BaseModalDialog(String className) {
+		this.className = className;
+	}
 
 	@Override
 	public void build() {
@@ -58,66 +80,51 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 		build();
 		open();
 	}
+	
+	@Override
+	public void open() {
+		super.open();
+		UI.getCurrent().beforeClientResponse(this, executionContext -> {
+			UI.getCurrent().setChildComponentModal(this, false);
+		});
+	}
 
 	/**
 	 * Constructs the layout
 	 */
 	private void constructLayout() {
 		VerticalLayout main = new DefaultVerticalLayout(false, false);
-		main.addClassName(getStyleName());
+		main.addClassName(className);
 		add(main);
 
-		// differently colored title layout
 		VerticalLayout titleLayout = new DefaultVerticalLayout(false, false);
 		titleLayout.setPadding(true);
-		titleLayout.add(new Text(getTitle()));
+		titleLayout.add(new Text(title));
 		titleLayout.addClassName(DynamoConstants.CSS_DIALOG_TITLE);
 		main.add(titleLayout);
 
-		VerticalLayout parent = new DefaultVerticalLayout(true, true);
+		VerticalLayout parent = new DefaultVerticalLayout(true, false);
 		main.add(parent);
-		
-		doBuild(parent);
+
+		if (buildMainLayout != null) {
+			buildMainLayout.accept(parent);
+		}
 
 		DefaultHorizontalLayout buttonBar = new DefaultHorizontalLayout(true, false);
 		main.add(buttonBar);
+		if (buildButtonBar != null) {
+			buildButtonBar.accept(buttonBar);
+		}
 
-		doBuildButtonBar(buttonBar);
+		if (postProcessButtonBar != null) {
+			postProcessButtonBar.accept(buttonBar);
+		}
+
 	}
-
-	/**
-	 * Constructs the actual contents of the window
-	 * 
-	 * @param parent the parent layout to which to add the specific components
-	 */
-	protected abstract void doBuild(VerticalLayout parent);
-
-	/**
-	 * Constructs the button bar
-	 * 
-	 * @param buttonBar the button bar
-	 */
-	protected abstract void doBuildButtonBar(HorizontalLayout buttonBar);
 
 	public MessageService getMessageService() {
 		return messageService;
 	}
-
-	/**
-	 * Returns the CSS style name. Can be overridden in subclass to modify styling
-	 * 
-	 * @return
-	 */
-	protected String getStyleName() {
-		return DynamoConstants.CSS_DIALOG;
-	}
-
-	/**
-	 * Returns the title of the dialog
-	 * 
-	 * @return
-	 */
-	protected abstract String getTitle();
 
 	/**
 	 * Retrieves a localized message
@@ -146,14 +153,13 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 	 * the log instead
 	 * 
 	 * @param message the message
-	 * @param type    the type of the message
 	 */
 	protected void showNotification(String message) {
 		if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
 			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), Position.MIDDLE)
 					.addThemeVariants(NotificationVariant.LUMO_ERROR);
 		} else {
-			LOG.info(message);
+			log.info(message);
 		}
 	}
 }

@@ -39,31 +39,31 @@ public final class DomainUtil {
 	}
 
 	/**
-	 * Creates a new item if it does not exist. Otherwise, returns the existing item
+	 * Creates a new entity if it does not exist. Otherwise, returns the existing entity
 	 * 
 	 * @param service       the service used to retrieve the item
 	 * @param clazz         the domain class
 	 * @param value         the value of the "name" attribute
 	 * @param caseSensitive whether to check for case-sensitive values
-	 * @return
+	 * @return the existing or newly created entity
 	 */
 	public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
 			boolean caseSensitive) {
-		T t = service.findByUniqueProperty(Domain.ATTRIBUTE_NAME, value, caseSensitive);
-		if (t == null) {
-			t = ClassUtils.instantiateClass(clazz);
-			t.setName(value);
-			t = service.save(t);
+		T entity = service.findByUniqueProperty(Domain.ATTRIBUTE_NAME, value, caseSensitive);
+		if (entity == null) {
+			entity = ClassUtils.instantiateClass(clazz);
+			entity.setName(value);
+			entity = service.save(entity);
 		}
-		return t;
+		return entity;
 	}
 
 	/**
-	 * Returns all domain value that match the specified type
+	 * Returns all domain entities that match the specified type
 	 * 
 	 * @param clazz   the type
 	 * @param domains the set of all domain values
-	 * @return
+	 * @return the set of matching entities
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends Domain> Set<T> filterDomains(Class<T> clazz, Collection<Domain> domains) {
@@ -90,7 +90,7 @@ public final class DomainUtil {
 			Collection<T> newValues) {
 		domains.removeIf(domain -> domain != null && domain.getClass().isAssignableFrom(clazz));
 		if (newValues != null) {
-			newValues.stream().filter(Objects::nonNull).forEach(v -> domains.add(v));
+			newValues.stream().filter(Objects::nonNull).forEach(domains::add);
 		}
 	}
 
@@ -99,11 +99,11 @@ public final class DomainUtil {
 	 * (truncated after a number of items)
 	 * 
 	 * @param domains the domains
-	 * @return
+	 * @return the description string
 	 */
 	public static <T extends Domain> String getDomainDescriptions(MessageService messageService, Collection<T> domains,
 			Locale locale) {
-		String result = domains.stream().map(x -> x.getName()).sorted().limit(MAX_DESCRIPTION_ITEMS)
+		String result = domains.stream().map(Domain::getName).sorted().limit(MAX_DESCRIPTION_ITEMS)
 				.collect(Collectors.joining(", "));
 		if (domains.size() > MAX_DESCRIPTION_ITEMS) {
 			result += messageService.getMessage("ocs.and.others", locale, domains.size() - MAX_DESCRIPTION_ITEMS);

@@ -19,7 +19,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Annotation used to indicate how a field should be imported from an Excel file
+ * Annotation used to indicate how a field should be imported from an Excel or CSV file
  * 
  * @author bas.rutten
  */
@@ -27,13 +27,13 @@ import java.lang.annotation.Target;
 @Target({ ElementType.FIELD, ElementType.METHOD })
 public @interface ImportField {
 
-    // the index of the field in the row in the Excel sheet
+    // the index of the field in the row in the import file (zero-based)
     int index();
 
     // indicates whether the field is required
     boolean required() default false;
 
-    // gives the default value to be used when the cell is empty
+    // the default value to be used when the cell is empty
     String defaultValue() default "";
 
     // indicates whether the field is a percentage

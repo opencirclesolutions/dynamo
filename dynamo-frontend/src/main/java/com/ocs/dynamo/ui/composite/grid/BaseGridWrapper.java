@@ -13,20 +13,19 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.BaseDataProvider;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.Component;
+import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.Grid.SelectionMode;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -35,6 +34,12 @@ import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
 
 /**
  * A base class for objects that wrap around a ModelBasedTable
@@ -49,33 +54,31 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	private static final long serialVersionUID = -4691108261565306844L;
 
 	/**
-	 * The label that displays the table caption
+	 * The caption that displays the table caption
 	 */
-	private Span caption = new Span("");
+	private final Span caption = new Span("");
 
 	/**
 	 * The data provider
 	 */
+	@Setter
 	private DataProvider<T, SerializablePredicate<T>> dataProvider;
-
-	/**
-	 * Whether the grid is editable using a row editor
-	 */
-	private boolean editable;
 
 	/**
 	 * Field filter map
 	 */
-	private Map<String, SerializablePredicate<?>> fieldFilters;
+	private final Map<String, SerializablePredicate<?>> fieldFilters;
 
 	/**
 	 * The wrapped grid component
 	 */
-	private ModelBasedGrid<ID, T> grid;
+	@Setter
+	private Grid<T> grid;
 
 	/**
 	 * The layout that contains the grid
 	 */
+	@Getter
 	private VerticalLayout layout;
 
 	/**
@@ -88,13 +91,13 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 * @param sortOrders  the sort order
 	 * @param joins       the fetch joins to use when executing the query
 	 */
-	public BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SerializablePredicate<T> filter,
-			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders, boolean editable,
+	protected BaseGridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+			FormOptions formOptions, ComponentContext<ID, T> context, SerializablePredicate<T> filter,
+			Map<String, SerializablePredicate<?>> fieldFilters, List<SortOrder<?>> sortOrders,
 			FetchJoinInformation... joins) {
-		super(service, entityModel, queryType, formOptions, filter, sortOrders, joins);
+		super(service, entityModel, queryType, formOptions, context, filter, sortOrders, joins);
+		this.fieldFilters = fieldFilters;
 		setSpacing(false);
-		this.editable = editable;
 	}
 
 	/**
@@ -115,32 +118,77 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	}
 
 	/**
+	 * Callback method for constructing a custom field
+	 * 
+	 * @param entityModel    the entity model of the main entity
+	 * @param attributeModel the attribute model to base the field on
+	 * @return the constructed component
+	 */
+	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+		return null;
+	}
+
+	/**
 	 * Creates the container that holds the data
 	 * 
 	 * @return the container
 	 */
 	protected abstract DataProvider<T, SerializablePredicate<T>> constructDataProvider();
 
-	/**
-	 * Constructs the grid - override in subclasses if you need a different grid
-	 * implementation
-	 * 
-	 * @return
-	 */
-	protected ModelBasedGrid<ID, T> constructGrid() {
-		return new ModelBasedGrid<ID, T>(dataProvider, getEntityModel(), fieldFilters, editable,
-				getFormOptions().getGridEditMode()) {
+	protected Grid<T> constructGrid() {
+		if (getComponentContext().isUseCheckboxesForMultiSelect()) {
+			ModelBasedGrid<ID, T> newGrid = new ModelBasedGrid<>(dataProvider, getEntityModel(), fieldFilters,
+					getFormOptions(), getComponentContext()) {
 
-			private static final long serialVersionUID = -4559181057050230055L;
+				private static final long serialVersionUID = -4559181057050230055L;
 
-			@Override
-			protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
-				return BaseGridWrapper.this.doBind(t, field, attributeName);
-			}
-		};
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
+				}
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					return BaseGridWrapper.this.doBind(t, field, attributeName);
+				}
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					BaseGridWrapper.this.postProcessComponent(id, am, comp);
+				}
+
+			};
+
+			newGrid.build();
+			return newGrid;
+		} else {
+			ModelBasedSelectionGrid<ID, T> newGrid = new ModelBasedSelectionGrid<>(dataProvider, getEntityModel(),
+					fieldFilters, getFormOptions(), getComponentContext()) {
+
+				private static final long serialVersionUID = -4559181057050230055L;
+
+				@Override
+				protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
+					return BaseGridWrapper.this.constructCustomField(entityModel, attributeModel);
+				}
+
+				@Override
+				protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+					return BaseGridWrapper.this.doBind(t, field, attributeName);
+				}
+
+				@Override
+				protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
+					BaseGridWrapper.this.postProcessComponent(id, am, comp);
+				}
+
+			};
+			newGrid.build();
+			return newGrid;
+		}
 	}
 
-	protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+	protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
 		return null;
 	}
 
@@ -153,20 +201,11 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 		return dataProvider;
 	}
 
-	/**
-	 * Lazily construct and return the grid
-	 * 
-	 * @return
-	 */
-	public ModelBasedGrid<ID, T> getGrid() {
+	public Grid<T> getGrid() {
 		if (grid == null) {
 			grid = constructGrid();
 		}
 		return grid;
-	}
-
-	public VerticalLayout getLayout() {
-		return layout;
 	}
 
 	/**
@@ -183,30 +222,39 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	/**
 	 * Initializes the sorting and filtering for the grid
 	 */
-	@SuppressWarnings("unchecked")
 	@Override
 	protected List<SortOrder<?>> initSortingAndFiltering() {
 
-		List<SortOrder<?>> fallBackOrders = super.initSortingAndFiltering();
+		List<SortOrder<?>> fallbackOrders = super.initSortingAndFiltering();
 
 		// set fall back sort orders
 		if (dataProvider instanceof BaseDataProvider) {
-			((BaseDataProvider<ID, T>) dataProvider).setFallBackSortOrders(fallBackOrders);
+			((BaseDataProvider<ID, T>) dataProvider).setFallbackSortOrders(fallbackOrders);
 		}
-		return fallBackOrders;
+		return fallbackOrders;
 	}
 
 	/**
-	 * Respond to a selection of an item in the grid
+	 * Responds to a selection of an item in the grid
 	 */
 	protected void onSelect(Object selected) {
 		// overwrite in subclasses
 	}
 
 	/**
+	 * Callback method used to post process any component
+	 * @param id the ID of the entity
+	 * @param attributeModel the attribute model
+	 * @param component the component
+	 */
+	protected void postProcessComponent(ID id, AttributeModel attributeModel, Component component) {
+		// overwrite in subclasses
+	}
+
+	/**
 	 * Callback method used to modify data provider creation
 	 * 
-	 * @param container
+	 * @param provider the data provider
 	 */
 	protected void postProcessDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
 		// overwrite in subclasses
@@ -217,18 +265,10 @@ public abstract class BaseGridWrapper<ID extends Serializable, T extends Abstrac
 	 */
 	public abstract void reloadDataProvider();
 
-	public void setDataProvider(DataProvider<T, SerializablePredicate<T>> dataProvider) {
-		this.dataProvider = dataProvider;
-	}
-
-	protected void setGrid(ModelBasedGrid<ID, T> grid) {
-		this.grid = grid;
-	}
-
 	/**
 	 * Updates the caption above the grid that shows the number of items
 	 * 
-	 * @param size
+	 * @param size the number of items
 	 */
 	protected void updateCaption(int size) {
 		caption.setText(getEntityModel().getDisplayNamePlural(VaadinUtils.getLocale()) + " "

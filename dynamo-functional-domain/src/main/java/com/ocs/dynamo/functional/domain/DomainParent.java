@@ -17,10 +17,14 @@ import java.io.Serializable;
 import java.util.HashSet;
 import java.util.Set;
 
-import javax.persistence.CascadeType;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.OneToMany;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * A domain entity that is the parent of another domain entity
@@ -31,27 +35,19 @@ import javax.persistence.OneToMany;
  * @param <P> the parent entity class
  */
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor
 public abstract class DomainParent<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
 		implements Serializable {
 
 	private static final long serialVersionUID = 20446010658685722L;
 
-	@OneToMany(mappedBy = "parent", fetch = FetchType.LAZY, cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = DomainChild.class)
+	@OneToMany(mappedBy = "parent", fetch = FetchType.EAGER, cascade = CascadeType.ALL, orphanRemoval = true, targetEntity = DomainChild.class)
 	private Set<C> children = new HashSet<>();
 
-	public DomainParent() {
-	}
-
-	public DomainParent(String code, String name) {
+	protected DomainParent(String code, String name) {
 		super(code, name);
-	}
-
-	public Set<C> getChildren() {
-		return this.children;
-	}
-
-	public void setChildren(Set<C> children) {
-		this.children = children;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -64,7 +60,6 @@ public abstract class DomainParent<C extends DomainChild<C, P>, P extends Domain
 	public C removeChild(C child) {
 		getChildren().remove(child);
 		child.setParent(null);
-
 		return child;
 	}
 }

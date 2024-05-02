@@ -11,11 +11,11 @@ import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 
 public class PersonRevisionTest {
 
-    private EntityModelFactory emf = new EntityModelFactoryImpl();
+    private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
     @Test
     public void test() {
-        EntityModel<PersonRevision> model = emf.getModel(PersonRevision.class);
+        EntityModel<PersonRevision> model = entityModelFactory.getModel(PersonRevision.class);
 
         // check that a nested module is created
         AttributeModel am = model.getAttributeModel("entity.name");

@@ -20,22 +20,20 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.NumberUtils;
 import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.converter.StringToDoubleConverter;
 import com.vaadin.flow.data.converter.StringToIntegerConverter;
 import com.vaadin.flow.data.converter.StringToLongConverter;
 
+import lombok.experimental.UtilityClass;
+
+@UtilityClass
 public final class ConverterFactory {
 
 	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	private static final String CANNOT_CONVERT = "ocs.cannot.convert";
-	
-	private ConverterFactory() {
-		// hidden constructor
-	}
 
 	/**
 	 * Creates a BigDecimalConverter
@@ -75,12 +73,11 @@ public final class ConverterFactory {
 			return (Converter<String, T>) createLongConverter(grouping, attributeModel.isPercentage());
 		} else if (NumberUtils.isDouble(attributeModel.getType())) {
 			return (Converter<String, T>) createDoubleConverter(attributeModel.isCurrency(), grouping,
-					attributeModel.isPercentage(), attributeModel.getPrecision(),
-					SystemPropertyUtils.getDefaultCurrencySymbol());
+					attributeModel.isPercentage(), attributeModel.getPrecision(), attributeModel.getCurrencySymbol());
 		} else if (clazz.equals(BigDecimal.class)) {
 			return (Converter<String, T>) createBigDecimalConverter(attributeModel.isCurrency(),
 					attributeModel.isPercentage(), grouping, attributeModel.getPrecision(),
-					SystemPropertyUtils.getDefaultCurrencySymbol());
+					attributeModel.getCurrencySymbol());
 		}
 		return null;
 	}

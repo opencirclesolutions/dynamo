@@ -18,6 +18,10 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
+import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+
+import lombok.Getter;
+
 /**
  * Abstract class for composite filters
  * 
@@ -25,33 +29,25 @@ import java.util.List;
  */
 public abstract class AbstractJunctionFilter extends AbstractFilter {
 
+	@Getter
 	private final List<Filter> filters = new ArrayList<>();
 
 	/**
 	 * Constructor
 	 * 
-	 * @param filters
+	 * @param filters the filters to include
 	 */
-	public AbstractJunctionFilter(Filter... filters) {
-		this.filters.addAll(Arrays.asList(filters));
+	protected AbstractJunctionFilter(Filter... filters) {
+		this.filters.addAll(List.of(filters));
 	}
 
 	/**
 	 * Constructor
 	 * 
-	 * @param filters
+	 * @param filters the filters to include
 	 */
-	public AbstractJunctionFilter(Collection<Filter> filters) {
+	protected AbstractJunctionFilter(Collection<Filter> filters) {
 		this.filters.addAll(filters);
-	}
-
-	/**
-	 * Returns an collection of the sub-filters of this composite filter.
-	 * 
-	 * @return
-	 */
-	public List<Filter> getFilters() {
-		return filters;
 	}
 
 	@Override
@@ -75,27 +71,13 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 
 	@Override
 	public String toString() {
-		StringBuilder r = new StringBuilder();
-		int i = 1;
-		for (Filter f : filters) {
-			r.append("[");
-			r.append(f.toString());
-			r.append("]");
-			if (i < filters.size()) {
-				r.append(" ");
-				r.append(super.toString());
-				r.append(" ");
-			}
-			i++;
-		}
-		return r.toString();
+		return ReflectionToStringBuilder.toString(this);
 	}
 
 	/**
 	 * Removes a filter
 	 * 
-	 * @param filter
-	 *            the filter to remove
+	 * @param filter the filter to remove
 	 */
 	public void remove(Filter filter) {
 		filters.removeIf(next -> next.equals(filter));
@@ -105,12 +87,9 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	 * Replaces a filter by a new filter. Does nothing if the old filter is not
 	 * found
 	 * 
-	 * @param oldFilter
-	 *            the filter that must be replaced
-	 * @param newFilter
-	 *            the filter that must replace the old filter
-	 * @param firstOnly
-	 *            indicates whether only the first match must be replaced
+	 * @param oldFilter the filter that must be replaced
+	 * @param newFilter the filter that must replace the old filter
+	 * @param firstOnly indicates whether only the first match must be replaced
 	 */
 	public void replace(Filter oldFilter, Filter newFilter, boolean firstOnly) {
 		for (int i = 0; i < filters.size(); i++) {

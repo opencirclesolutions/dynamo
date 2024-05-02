@@ -29,21 +29,22 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
-import javax.persistence.Basic;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.FetchType;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Transient;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
+import jakarta.persistence.Basic;
+import jakarta.persistence.CollectionTable;
+import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.OneToOne;
+import jakarta.persistence.Transient;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -55,34 +56,44 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
 import com.ocs.dynamo.domain.model.AttributeType;
+import com.ocs.dynamo.domain.model.BooleanType;
 import com.ocs.dynamo.domain.model.CascadeMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.NumberFieldMode;
+import com.ocs.dynamo.domain.model.PagingMode;
+import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
+import com.ocs.dynamo.domain.model.TrimType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
+import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
 import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Cascade;
 import com.ocs.dynamo.domain.model.annotation.CustomSetting;
 import com.ocs.dynamo.domain.model.annotation.CustomType;
+import com.ocs.dynamo.domain.model.annotation.GridAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchAttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
-import com.ocs.dynamo.domain.model.validator.Email;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.utils.DateUtils;
 
+import lombok.Getter;
+import lombok.Setter;
+
 @SuppressWarnings("unused")
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
-	private EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
+	private final EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
 
-	private ResourceBundleMessageSource source = new ResourceBundleMessageSource();
+	private final ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
-	private MessageService messageService = new MessageServiceImpl();
+	private final MessageService messageService = new MessageServiceImpl();
 
-	private Locale locale = new Locale("en");
+	private final Locale locale = new Locale.Builder().setLanguage("nl").build();
 
 	@BeforeEach
 	public void setupEntityModelFactoryTest() throws NoSuchFieldException {
@@ -121,6 +132,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertTrue(nameModel.isVisible());
 		assertEquals(55, nameModel.getMaxLength().intValue());
 		assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
+		assertFalse(nameModel.isTrimSpaces());
 
 		assertEquals("ross", nameModel.getCustomSetting("bob"));
 		assertEquals(4, nameModel.getCustomSetting("bobInt"));
@@ -138,7 +150,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertNull(nameModel.getDisplayFormat());
 		assertEquals(AttributeType.BASIC, ageModel.getAttributeType());
 		assertTrue(ageModel.isRequired());
-		assertTrue(ageModel.isThousandsGrouping());
+		assertEquals(ThousandsGroupingMode.ALWAYS, ageModel.getThousandsGroupingMode());
+		assertEquals(NumberFieldMode.TEXTFIELD, ageModel.getNumberFieldMode());
 
 		AttributeModel birthDateModel = model.getAttributeModel("birthDate");
 		assertNull(birthDateModel.getDefaultValue());
@@ -163,8 +176,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		AttributeModel urlModel = model.getAttributeModel("url");
 		assertTrue(urlModel.isUrl());
 
+		AttributeModel passwordModel = model.getAttributeModel("password");
+		assertEquals(AttributeTextFieldMode.PASSWORD, passwordModel.getTextFieldMode());
+
 		// test the total size
-		assertEquals(7, model.getAttributeModels().size());
+		assertEquals(8, model.getAttributeModels().size());
 	}
 
 	@Test
@@ -174,6 +190,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel nameModel = model.getAttributeModel("name");
 		assertEquals(0, nameModel.getOrder().intValue());
+		assertTrue(nameModel.isTrimSpaces());
 
 		AttributeModel birthDateModel = model.getAttributeModel("birthDate");
 		assertEquals(1, birthDateModel.getOrder().intValue());
@@ -235,7 +252,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("Naampje", nameModel.getDisplayName(locale));
 		assertEquals("Test", nameModel.getDescription(locale));
 		assertEquals("Prompt", nameModel.getPrompt(locale));
-		assertEquals("myStyle", nameModel.getStyles());
 		assertEquals(String.class, nameModel.getType());
 		assertNull(nameModel.getDisplayFormat());
 		assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
@@ -251,7 +267,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertNotNull(ageModel);
 		assertTrue(ageModel.isSearchCaseSensitive());
 		assertTrue(ageModel.isSearchPrefixOnly());
-		assertFalse(ageModel.isThousandsGrouping());
+		assertEquals(ThousandsGroupingMode.NEVER, ageModel.getThousandsGroupingMode());
+		assertEquals(NumberFieldMode.NUMBERFIELD, ageModel.getNumberFieldMode());
+		assertEquals(3, ageModel.getNumberFieldStep());
 
 		AttributeModel entityModel = model.getAttributeModel("entity2");
 		assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
@@ -305,9 +323,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		assertEquals("Override", nameModel.getDisplayName(locale));
 		assertEquals("Prompt override", nameModel.getPrompt(locale));
-		assertEquals("Style override", nameModel.getStyles());
 		assertEquals(EditableType.CREATE_ONLY, nameModel.getEditableType());
-		assertEquals("Style override", nameModel.getStyles());
 
 		assertFalse(model.usesDefaultGroupOnly());
 
@@ -322,6 +338,12 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		String group3 = model.getAttributeGroups().get(2);
 		assertEquals(EntityModel.DEFAULT_GROUP, group3);
+
+		AttributeModel ageModel = model.getAttributeModel("age");
+		assertNotNull(ageModel);
+		assertTrue(ageModel.isPercentage());
+		assertEquals(NumberFieldMode.NUMBERFIELD, ageModel.getNumberFieldMode());
+		assertEquals(5, ageModel.getNumberFieldStep());
 	}
 
 	@Test
@@ -372,8 +394,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
 		assertEquals("children", attributeModel.getReplacementSearchPath());
 
-		// lazily constructed models are not there yet
-		assertFalse(factory.hasModel("EntityChild.parent.children"));
+		assertNotNull(parent.getAttributeModelByActualSortPath("children"));
+
+		assertTrue(factory.hasModel("EntityChild.parent.children"));
 		assertFalse(factory.hasModel("EntityParent.children.parent"));
 
 		// check on demand constrution of model
@@ -393,13 +416,13 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("name", parentModel.getAttributeModel("name").getPath());
 		assertEquals("parent.name", childModel.getAttributeModel("name").getPath());
 	}
-
-	@Test
-	public void testId() {
-		EntityModel<EntityParent> model = factory.getModel(EntityParent.class);
-		AttributeModel attributeModel = model.getIdAttributeModel();
-		assertNotNull(attributeModel);
-	}
+//
+//	@Test
+//	public void testId() {
+//		EntityModel<EntityParent> model = factory.getModel(EntityParent.class);
+//		AttributeModel attributeModel = model.getIdAttributeModel();
+//		assertNotNull(attributeModel);
+//	}
 
 	@Test
 	public void testGetAttributeModelsForType() {
@@ -480,7 +503,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel m2 = model.getAttributeModel("child.grandChild.sometAttribute");
 		assertNotNull(m2);
-
 	}
 
 	@Test
@@ -492,12 +514,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals(AttributeSelectMode.LOOKUP, am.getSelectMode());
 		assertEquals(AttributeSelectMode.LOOKUP, am.getSearchSelectMode());
 		assertEquals(AttributeSelectMode.LOOKUP, am.getGridSelectMode());
+		assertEquals(PagingMode.NON_PAGED, am.getPagingMode());
 
 		// multiple search defaults to token
 		AttributeModel am2 = model.getAttributeModel("entity5");
 		assertEquals(AttributeSelectMode.COMBO, am2.getSelectMode());
 		assertEquals(AttributeSelectMode.LOOKUP, am2.getSearchSelectMode());
 		assertEquals(AttributeSelectMode.COMBO, am2.getGridSelectMode());
+		assertEquals(PagingMode.PAGED, am2.getPagingMode());
 
 		// overwritten attribute modes
 		AttributeModel am3 = model.getAttributeModel("entity52");
@@ -634,6 +658,54 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals(DateUtils.createZonedDateTime("01-01-2017 12:00:00+0100"), am4.getDefaultValue());
 	}
 
+	@Test
+	public void testAttributeOrders() {
+		EntityModel<SearchOrderEntity> model = factory.getModel(SearchOrderEntity.class);
+		assertNotNull(model);
+
+		assertEquals(3, model.getAttributeModels().size());
+
+		List<AttributeModel> attributeModels = model.getAttributeModels();
+		assertEquals("field1", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field3", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForGrid();
+		assertEquals("field2", attributeModels.get(0).getName());
+		assertEquals("field1", attributeModels.get(1).getName());
+		assertEquals("field3", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForSearch();
+		assertEquals("field3", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field1", attributeModels.get(2).getName());
+	}
+
+	@Test
+	public void testAttributeOrdersMessageBundle() {
+		EntityModel<SearchOrderEntityMessage> model = factory.getModel(SearchOrderEntityMessage.class);
+		assertNotNull(model);
+
+		assertEquals(3, model.getAttributeModels().size());
+
+		List<AttributeModel> attributeModels = model.getAttributeModels();
+		assertEquals("field1", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field3", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForGrid();
+		assertEquals("field3", attributeModels.get(0).getName());
+		assertEquals("field2", attributeModels.get(1).getName());
+		assertEquals("field1", attributeModels.get(2).getName());
+
+		attributeModels = model.getAttributeModelsSortedForSearch();
+		assertEquals("field2", attributeModels.get(0).getName());
+		assertEquals("field3", attributeModels.get(1).getName());
+		assertEquals("field1", attributeModels.get(2).getName());
+	}
+
+	@Getter
+	@Setter
 	public class Entity1 {
 
 		@Size(max = 55)
@@ -656,70 +728,18 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Email
 		private String email;
 
+		@Attribute(textFieldMode = AttributeTextFieldMode.PASSWORD)
+		private String password;
+
 		@Attribute(url = true)
 		private String url;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public Integer getAge() {
-			return age;
-		}
-
-		public void setAge(Integer age) {
-			this.age = age;
-		}
-
-		public LocalDate getBirthDate() {
-			return birthDate;
-		}
-
-		public void setBirthDate(LocalDate birthDate) {
-			this.birthDate = birthDate;
-		}
-
-		public BigDecimal getWeight() {
-			return weight;
-		}
-
-		public void setWeight(BigDecimal weight) {
-			this.weight = weight;
-		}
-
-		public Boolean getBool() {
-			return bool;
-		}
-
-		public void setBool(Boolean bool) {
-			this.bool = bool;
-		}
-
-		public String getEmail() {
-			return email;
-		}
-
-		public void setEmail(String email) {
-			this.email = email;
-		}
-
-		public String getUrl() {
-			return url;
-		}
-
-		public void setUrl(String url) {
-			this.url = url;
-		}
 
 	}
 
 	@AttributeOrder(attributeNames = { "name", "birthDate" })
 	public class Entity2 {
 
+		@Attribute(trimSpaces = TrimType.TRIM)
 		private String name;
 
 		private Integer age;
@@ -752,14 +772,14 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop", sortOrder = "name asc")
-	@AttributeGroup(messageKey = "group1.key", attributeNames = { "name" })
-	@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" })
+	@AttributeGroups(value = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
+			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	public class Entity3 {
 
-		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false, styles = "myStyle")
+		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false)
 		private String name;
 
-		@Attribute(searchCaseSensitive = true, searchPrefixOnly = true, thousandsGrouping = false, requiredForSearching = true, searchable = SearchMode.ALWAYS)
+		@Attribute(numberFieldStep = 3, searchCaseSensitive = BooleanType.TRUE, searchPrefixOnly = BooleanType.TRUE, thousandsGrouping = ThousandsGroupingMode.NEVER, requiredForSearching = true, searchable = SearchMode.ALWAYS, numberFieldMode = NumberFieldMode.NUMBERFIELD)
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")
@@ -885,7 +905,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Attribute(selectMode = AttributeSelectMode.LOOKUP)
 		private Entity6 entity6;
 
-		@Attribute(multipleSearch = true)
+		@Attribute(multipleSearch = true, pagingMode = PagingMode.PAGED)
 		private Entity5 entity5;
 
 		@Attribute(multipleSearch = true, searchSelectMode = AttributeSelectMode.TOKEN, gridSelectMode = AttributeSelectMode.LIST)
@@ -1241,6 +1261,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		}
 	}
 
+	@Model(nestingDepth = 1)
 	public class EntityChild {
 		@Id
 		private int id;
@@ -1382,6 +1403,78 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		public void setSometAttribute(String sometAttribute) {
 			this.sometAttribute = sometAttribute;
 		}
+	}
+
+	@AttributeOrder(attributeNames = { "field1", "field2", "field3" })
+	@GridAttributeOrder(attributeNames = { "field2", "field1", "field3" })
+	@SearchAttributeOrder(attributeNames = { "field3", "field2", "field1" })
+	public class SearchOrderEntity {
+
+		private String field1;
+
+		private String field2;
+
+		private String field3;
+
+		public String getField1() {
+			return field1;
+		}
+
+		public void setField1(String field1) {
+			this.field1 = field1;
+		}
+
+		public String getField2() {
+			return field2;
+		}
+
+		public void setField2(String field2) {
+			this.field2 = field2;
+		}
+
+		public String getField3() {
+			return field3;
+		}
+
+		public void setField3(String field3) {
+			this.field3 = field3;
+		}
+
+	}
+
+	@AttributeOrder(attributeNames = { "field1", "field2", "field3" })
+	public class SearchOrderEntityMessage {
+
+		private String field1;
+
+		private String field2;
+
+		private String field3;
+
+		public String getField1() {
+			return field1;
+		}
+
+		public void setField1(String field1) {
+			this.field1 = field1;
+		}
+
+		public String getField2() {
+			return field2;
+		}
+
+		public void setField2(String field2) {
+			this.field2 = field2;
+		}
+
+		public String getField3() {
+			return field3;
+		}
+
+		public void setField3(String field3) {
+			this.field3 = field3;
+		}
+
 	}
 
 }

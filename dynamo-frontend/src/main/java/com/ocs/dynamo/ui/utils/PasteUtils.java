@@ -74,7 +74,7 @@ public final class PasteUtils {
 		if (input == null) {
 			return null;
 		}
-		input = input.replace(",", "").replaceAll("\\.", "");
+		input = input.replace(",", "").replace(".", "");
 		return StringUtils.isEmpty(input) ? null : Integer.parseInt(input);
 	}
 
@@ -112,6 +112,6 @@ public final class PasteUtils {
 		if (input == null) {
 			return null;
 		}
-		return input.replaceAll("\\.", "").replace(",", "");
+		return input.replace(".", "").replace(",", "");
 	}
 }

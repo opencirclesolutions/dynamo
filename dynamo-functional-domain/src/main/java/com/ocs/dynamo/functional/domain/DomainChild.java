@@ -13,48 +13,41 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 /**
  * A domain object that is the child of another domain object
  * 
  * @author Bas Rutten
  *
- * @param <C>
- *            the type of the child
- * @param <P>
- *            the type of the parent
+ * @param <C> the type of the child
+ * @param <P> the type of the parent
  */
 @Entity
+@Getter
+@Setter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class DomainChild<C extends DomainChild<C, P>, P extends DomainParent<C, P>> extends Domain
 		implements Serializable {
 
 	private static final long serialVersionUID = 2615942460028599211L;
 
-	@NotNull
-	@ManyToOne(fetch = FetchType.LAZY, targetEntity = DomainParent.class)
+	@ManyToOne(fetch = FetchType.EAGER, targetEntity = DomainParent.class)
 	@JoinColumn(name = "parent")
 	private P parent;
 
-	public DomainChild() {
-		super();
-	}
-
-	public DomainChild(String code, String name) {
+	protected DomainChild(String code, String name) {
 		super(code, name);
-	}
-
-	public P getParent() {
-		return this.parent;
-	}
-
-	public void setParent(P parent) {
-		this.parent = parent;
 	}
 
 }

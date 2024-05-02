@@ -14,15 +14,10 @@
 package com.ocs.dynamo.ui.component;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 
-import org.vaadin.gatanaso.MultiselectComboBox;
-
-import com.google.common.collect.Sets;
+import com.vaadin.flow.component.combobox.MultiSelectComboBox;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -41,130 +36,128 @@ import com.vaadin.flow.function.SerializablePredicate;
  * @author bas.rutten
  *
  * @param <ID> the type of the primary key
- * @param <S> the type of the entity
- * @param <T> the type of the basic property
+ * @param <S>  the type of the entity
+ * @param <T>  the type of the basic property
  */
 public class SimpleTokenFieldSelect<ID extends Serializable, S extends AbstractEntity<ID>, T extends Comparable<T>>
-        extends CustomField<Collection<T>> implements Refreshable {
+		extends CustomField<Collection<T>> implements Refreshable {
 
-    private static final long serialVersionUID = -1490179285573442827L;
+	private static final long serialVersionUID = -1490179285573442827L;
 
-    /**
-     * The attribute model
-     */
-    private AttributeModel attributeModel;
+	/**
+	 * The attribute model
+	 */
+	private final AttributeModel attributeModel;
 
-    /**
-     * 
-     */
-    private String distinctField;
+	/**
+	 * The name of the field for which to list the distinct values
+	 */
+	private final String distinctField;
 
-    /**
-     * Whether to take the values from an element collection grid
-     */
-    private final boolean elementCollection;
+	/**
+	 * Whether to take the values from an element collection grid
+	 */
+	private final boolean elementCollection;
 
-    /**
-     * 
-     */
-    private Class<T> elementType;
+	/**
+	 * The type of the element that is being displayed, e.g. String
+	 */
+	private final Class<T> elementType;
 
-    /**
-     * The entity model
-     */
-    private EntityModel<S> entityModel;
+	/**
+	 * The entity model
+	 */
+	private final EntityModel<S> entityModel;
 
-    /**
-     * The token field
-     */
-    private final MultiselectComboBox<T> multiComboBox;
+	/**
+	 * The field filter
+	 */
+	private final SerializablePredicate<S> fieldFilter;
 
-    /**
-     * 
-     */
-    private SerializablePredicate<S> fieldFilter;
+	/**
+	 * The token field
+	 */
+	private final MultiSelectComboBox<T> multiComboBox;
 
-    /**
-     * Service for querying the database
-     */
-    private BaseService<ID, S> service;
+	/**
+	 * Service for querying the database
+	 */
+	private final BaseService<ID, S> service;
 
-    /**
-     * Constructor
-     * 
-     * @param service
-     * @param entityModel
-     * @param attributeModel
-     * @param fieldFilter
-     * @param distinctField
-     * @param elementType
-     * @param elementCollection
-     */
-    public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel, AttributeModel attributeModel,
-            SerializablePredicate<S> fieldFilter, String distinctField, Class<T> elementType, boolean elementCollection) {
-        this.service = service;
-        this.entityModel = entityModel;
-        this.fieldFilter = fieldFilter;
-        this.distinctField = distinctField;
-        this.elementType = elementType;
-        this.elementCollection = elementCollection;
-        this.attributeModel = attributeModel;
+	public SimpleTokenFieldSelect(BaseService<ID, S> service, EntityModel<S> entityModel, AttributeModel attributeModel,
+			SerializablePredicate<S> fieldFilter, String distinctField, Class<T> elementType,
+			boolean elementCollection) {
+		this.service = service;
+		this.entityModel = entityModel;
+		this.fieldFilter = fieldFilter;
+		this.distinctField = distinctField;
+		this.elementType = elementType;
+		this.elementCollection = elementCollection;
+		this.attributeModel = attributeModel;
 
-        setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+		multiComboBox = new MultiSelectComboBox<>();
+		if (attributeModel != null) {
+			setLabel(attributeModel.getDisplayName(VaadinUtils.getLocale()));
+			String prompt = attributeModel.getPrompt(VaadinUtils.getLocale());
+			if (prompt != null) {
+				multiComboBox.setPlaceholder(prompt);
+			}
+		}
+		initContent();
+	}
 
-        multiComboBox = new MultiselectComboBox<>();
-        initContent();
-    }
+	@Override
+	protected Collection<T> generateModelValue() {
+		return multiComboBox.getValue();
+	}
 
-    /**
-     * Fills the combo box with the available values
-     * 
-     * @param elementCollection whether to query an element collection
-     */
-    private void retrieveValues(boolean elementCollection) {
-        List<T> items = null;
-        if (elementCollection) {
-            // search element collection table
-            items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
-                    attributeModel.getCollectionTableFieldName(), elementType);
-        } else {
-            // search field in regular table
-            items = service.findDistinct(new FilterConverter<S>(entityModel).convert(fieldFilter), distinctField, elementType);
-        }
+	@Override
+	public Collection<T> getValue() {
+		return multiComboBox.getValue();
+	}
 
-        items = items.stream().filter(i -> i != null).collect(Collectors.toList());
-        items.sort(Comparator.naturalOrder());
-        ListDataProvider<T> provider = new ListDataProvider<>(items);
-        multiComboBox.setDataProvider(provider);
-    }
+	protected void initContent() {
+		extractValues(this.elementCollection);
+		multiComboBox.addValueChangeListener(event -> setValue(event.getValue()));
+		multiComboBox.setSizeFull();
+		add(multiComboBox);
+	}
 
-    @Override
-    public Collection<T> getValue() {
-        return multiComboBox.getValue();
-    }
+	@Override
+	public void refresh() {
+		extractValues(elementCollection);
+	}
 
-    protected void initContent() {
-        retrieveValues(this.elementCollection);
-        multiComboBox.addValueChangeListener(event -> setValue(event.getValue()));
-        add(multiComboBox);
-    }
+	/**
+	 * Fills the combo box with the available values
+	 * 
+	 * @param elementCollection whether to query an element collection
+	 */
+	private void extractValues(boolean elementCollection) {
+		List<T> items;
+		if (elementCollection) {
+			// search element collection table
+			items = service.findDistinctInCollectionTable(attributeModel.getCollectionTableName(),
+					attributeModel.getCollectionTableFieldName(), elementType);
+		} else {
+			// search field in regular table
+			items = service.findDistinctValues(new FilterConverter<>(entityModel).convert(fieldFilter), distinctField,
+					elementType);
+		}
 
-    @Override
-    public void refresh() {
-        retrieveValues(elementCollection);
-    }
+		items = items.stream().filter(Objects::nonNull).collect(Collectors.toList());
+		items.sort(Comparator.naturalOrder());
+		ListDataProvider<T> provider = new ListDataProvider<>(items);
 
-    @Override
-    protected Collection<T> generateModelValue() {
-        return multiComboBox.getValue();
-    }
+		multiComboBox.setItems(provider);
+	}
 
-    @Override
-    protected void setPresentationValue(Collection<T> value) {
-        if (value == null) {
-            value = Collections.emptyList();
-        }
-        multiComboBox.setValue(Sets.newHashSet(value));
-    }
+	@Override
+	protected void setPresentationValue(Collection<T> value) {
+		if (value == null) {
+			value = Collections.emptyList();
+		}
+		multiComboBox.setValue(new HashSet<>(value));
+	}
 
 }

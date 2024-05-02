@@ -13,185 +13,169 @@
  */
 package com.ocs.dynamo.ui.composite.dialog;
 
-import java.io.Serializable;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocatorFactory;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.composite.layout.SimpleEditLayout;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.TriConsumer;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.orderedlayout.FlexLayout;
-import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.function.SerializablePredicate;
+import lombok.Getter;
+import lombok.Setter;
+
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 /**
  * A pop-up dialog for adding a new entity or viewing the details of an existing
  * entry
- * 
- * @author bas.rutten
  *
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
+ * @author bas.rutten
  */
 public class EntityPopupDialog<ID extends Serializable, T extends AbstractEntity<ID>> extends BaseModalDialog {
 
     private static final long serialVersionUID = -2012972894321597214L;
 
-    /**
-     * The entity to add/modify
-     */
-    private T entity;
+    @Getter
+    @Setter
+    private TriConsumer<Boolean, Boolean, T> afterEditDone;
 
-    /**
-     * The entity model
-     */
-    private EntityModel<T> entityModel;
+    private final ComponentContext<ID, T> componentContext;
 
-    private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
-
-    /**
-     * The form options
-     */
-    private FormOptions formOptions;
-
-    /**
-     * The layout used to create/modify the entity
-     */
-    private SimpleEditLayout<ID, T> layout;
-
-    private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
-
-    /**
-     * The OK button used to close the dialog in read-only mode
-     */
-    private Button okButton;
-
-    /**
-     * The service used to query the database
-     */
+    @Getter
     private BaseService<ID, T> service;
 
+    @Getter
+    @Setter
+    private Supplier<T> createEntity = () -> service.createNewEntity();
+
+    private final T entity;
+
+    private final EntityModel<T> entityModel;
+
+    @Getter
+    private final Map<String, SerializablePredicate<?>> fieldFilters;
+
+    @Getter
+    private final FormOptions formOptions;
+
+    @Getter
+    private final FetchJoinInformation[] joins;
+
+    @Getter
+    private SimpleEditLayout<ID, T> layout;
+
+    private final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+
+    @Getter
+    private Button okButton;
+
+    @Getter
+    @Setter
+    private BiConsumer<FlexLayout, Boolean> postProcessDetailButtonBar;
+
     /**
-     * Constructor
-     * 
-     * @param service
-     * @param entity
-     * @param entityModel
-     * @param formOptions
+     * @param service          the service used for communicating with the database
+     * @param entity           the entity to display
+     * @param entityModel      the entity model of the entity
+     * @param fieldFilters     field filters to apply to the individual components
+     * @param formOptions      the form options
+     * @param componentContext the component context
+     * @param joins            any joins to apply when querying the database
      */
     public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
-            Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions) {
+                             Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
+                             ComponentContext<ID, T> componentContext, FetchJoinInformation... joins) {
         this.service = service;
         this.entityModel = entityModel;
         this.formOptions = formOptions;
         this.entity = entity;
         this.fieldFilters = fieldFilters;
+        this.joins = joins;
+        this.componentContext = componentContext.toBuilder().popup(true).build();
+        setTitle(entityModel.getDisplayName(VaadinUtils.getLocale()));
+
+        setBuildButtonBar(buttonBar -> {
+            buttonBar.setVisible(formOptions.isReadOnly());
+            if (formOptions.isReadOnly()) {
+                okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
+                okButton.addClickListener(event -> close());
+                buttonBar.add(okButton);
+            }
+        });
+        buildMain();
     }
 
     /**
-     * Callback method that is called after the user is done editing the entry
-     * 
-     * @param cancel    whether the edit action was cancelled
-     * @param newEntity whether the user was adding a new entity
-     * @param entity    the entity that was being edited
+     * @param service      the service used for communicating with the database
+     * @param entity       the entity to display
+     * @param entityModel  the entity model of the entity
+     * @param fieldFilters field filters to apply to the individual components
+     * @param formOptions  the form options
+     * @param joins        any joins to apply when querying the database
      */
-    public void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-        // override in subclasses
+    public EntityPopupDialog(BaseService<ID, T> service, T entity, EntityModel<T> entityModel,
+                             Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
+                             FetchJoinInformation... joins) {
+        this(service, entity, entityModel, fieldFilters, formOptions, ComponentContext.<ID, T>builder().build(), joins);
     }
 
     /**
-     * Creates a new entity
-     * 
-     * @return
+     * Adds a custom entity model for a specified field
+     * @param path the path to the field
+     * @param reference the reference of the entity model
      */
-    protected T createEntity() {
-        return service.createNewEntity();
-    }
-
-    @Override
-    protected void doBuild(VerticalLayout parent) {
-
-        // cancel button makes no sense in a popup
-        formOptions.setHideCancelButton(false);
-
-        layout = new SimpleEditLayout<ID, T>(entity, service, entityModel, formOptions) {
-
-            private static final long serialVersionUID = -2965981316297118264L;
-
-            @Override
-            protected void afterEditDone(boolean cancel, boolean newEntity, T entity) {
-                super.afterEditDone(cancel, newEntity, entity);
-                EntityPopupDialog.this.close();
-                EntityPopupDialog.this.afterEditDone(cancel, newEntity, entity);
-            }
-
-            @Override
-            protected T createEntity() {
-                return EntityPopupDialog.this.createEntity();
-            }
-
-            @Override
-            protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-                EntityPopupDialog.this.postProcessButtonBar(buttonBar, viewMode);
-            }
-
-            @Override
-            protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-                EntityPopupDialog.this.postProcessEditFields(editForm);
-            }
-
-        };
-        layout.setFieldFilters(fieldFilters);
-        parent.add(layout);
-    }
-
-    @Override
-    protected void doBuildButtonBar(HorizontalLayout buttonBar) {
-        // in read-only mode, display only an "OK" button that closes the dialog
-        buttonBar.setVisible(formOptions.isReadOnly());
-        if (formOptions.isReadOnly()) {
-            okButton = new Button(messageService.getMessage("ocs.ok", VaadinUtils.getLocale()));
-            okButton.addClickListener(event -> close());
-            buttonBar.add(okButton);
-        }
+    public void addFieldEntityModel(String path, String reference) {
+        componentContext.addFieldEntityModel(path, reference);
     }
 
     public T getEntity() {
         return layout.getEntity();
     }
 
-    public SimpleEditLayout<ID, T> getLayout() {
-        return layout;
-    }
-
-    public Button getOkButton() {
-        return okButton;
-    }
-
     public List<Button> getSaveButtons() {
         return layout.getEditForm().getSaveButtons();
     }
 
-    @Override
-    protected String getTitle() {
-        return entityModel.getDisplayName(VaadinUtils.getLocale());
+    public void setColumnThresholds(List<String> thresholds) {
+        componentContext.setEditColumnThresholds(thresholds);
     }
 
-    protected void postProcessButtonBar(FlexLayout buttonBar, boolean viewMode) {
-        // overwrite in subclasses when needed
+    public void setPostProcessEditFields(Consumer<ModelBasedEditForm<ID, T>> postProcessEditFields) {
+        componentContext.setPostProcessEditFields(postProcessEditFields);
     }
 
-    protected void postProcessEditFields(ModelBasedEditForm<ID, T> editForm) {
-        // overwrite in subclasses when needed
-    }
+    private void buildMain() {
+        setBuildMainLayout(parent -> {
+            formOptions.setShowCancelButton(true);
 
+            layout = new SimpleEditLayout<>(entity, service, entityModel, formOptions);
+            layout.setComponentContext(componentContext);
+            layout.setAfterEditDone((cancel, isNew, ent) -> {
+                if (getAfterEditDone() != null) {
+                    getAfterEditDone().accept(cancel, isNew, ent);
+                }
+                EntityPopupDialog.this.close();
+            });
+            layout.setCreateEntity(getCreateEntity());
+            layout.setPostProcessButtonBar(getPostProcessDetailButtonBar());
+            layout.setFieldFilters(fieldFilters);
+            layout.setJoins(joins);
+            parent.add(layout);
+        });
+    }
 }

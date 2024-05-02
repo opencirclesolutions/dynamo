@@ -21,10 +21,8 @@ package com.ocs.dynamo.filter;
 @FunctionalInterface
 public interface PropertyFilter {
 
-    /**
-     * The name of the property
-     * 
-     * @return
-     */
-    String getPropertyId();
+	/**
+	 * @return the name of the property
+	 */
+	String getPropertyId();
 }

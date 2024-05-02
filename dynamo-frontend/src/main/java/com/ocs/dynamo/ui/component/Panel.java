@@ -28,7 +28,7 @@ public class Panel extends DefaultVerticalLayout {
 
     private static final long serialVersionUID = -4620931565010614799L;
 
-    private Text captionText;
+    private final Text captionText;
 
     public Panel() {
         this("");

@@ -14,14 +14,15 @@
 package com.ocs.dynamo.importer.impl;
 
 import static java.lang.Float.valueOf;
+import static java.lang.String.format;
 
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
-import org.springframework.util.StringUtils;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.ImportField;
@@ -44,8 +45,8 @@ public abstract class BaseImporter<R, U> {
 	 * Counts the number of rows in the input. This method will count all rows,
 	 * including the header, and will not check if any of the rows are valid
 	 * 
-	 * @param bytes the byte representation of the input file
-	 * @param index the index of the sheet (if appropriate)
+	 * @param bytes      the byte representation of the input file
+	 * @param sheetIndex the index of the sheet (if appropriate)
 	 * @return
 	 */
 	public abstract int countRows(byte[] bytes, int sheetIndex);
@@ -54,7 +55,7 @@ public abstract class BaseImporter<R, U> {
 	 * Retrieves a boolean value from the input and falls back to a default if the
 	 * value is empty or not defined
 	 * 
-	 * @param unit  the unit of data value to process
+	 * @param unit  the unit of data value to process (string, Excel cell etc)
 	 * @param field the field definition
 	 * @return
 	 */
@@ -134,9 +135,9 @@ public abstract class BaseImporter<R, U> {
 				}
 			}
 		} else if (Boolean.class.isAssignableFrom(d.getPropertyType())) {
-			return getBooleanValueWithDefault(unit, field);
+			obj = getBooleanValueWithDefault(unit, field);
 		} else if (LocalDate.class.isAssignableFrom(d.getPropertyType())) {
-			return getDateValueWithDefault(unit, field);
+			obj = getDateValueWithDefault(unit, field);
 		}
 		return obj;
 	}
@@ -206,28 +207,29 @@ public abstract class BaseImporter<R, U> {
 	 * @return
 	 */
 	public <T extends AbstractDTO> T processRow(int rowNum, R row, Class<T> clazz) {
-		T t = ClassUtils.instantiateClass(clazz);
-		t.setRowNum(rowNum);
+		T dto = ClassUtils.instantiateClass(clazz);
+		dto.setRowNum(rowNum);
 
 		PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);
-		for (PropertyDescriptor d : descriptors) {
-			ImportField field = ClassUtils.getAnnotation(clazz, d.getName(), ImportField.class);
+		for (PropertyDescriptor descriptor : descriptors) {
+			ImportField field = ClassUtils.getAnnotation(clazz, descriptor.getName(), ImportField.class);
 			if (field != null) {
 				if (isWithinRange(row, field)) {
 					U unit = getUnit(row, field);
 
-					Object obj = getFieldValue(d, unit, field);
+					Object obj = getFieldValue(descriptor, unit, field);
 					if (obj != null) {
-						ClassUtils.setFieldValue(t, d.getName(), obj);
+						ClassUtils.setFieldValue(dto, descriptor.getName(), obj);
 					} else if (field.required()) {
 						// a required value is missing!
-						throw new OCSImportException("Required value for field '" + d.getName() + "' is missing");
+						throw new OCSImportException(
+								format("Required value for field '%s' is missing", descriptor.getName()));
 					}
 				} else {
-					throw new OCSImportException("Row doesn't have enough columns");
+					throw new OCSImportException(format("Row %d doesn't have enough columns", rowNum));
 				}
 			}
 		}
-		return t;
+		return dto;
 	}
 }

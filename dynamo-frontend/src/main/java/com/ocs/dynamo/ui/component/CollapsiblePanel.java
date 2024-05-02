@@ -20,8 +20,11 @@ import com.vaadin.flow.component.icon.Icon;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
- * A collapsible panel for grouping attributes
+ * A panel that can be collapsed for grouping attributes
  * 
  * @author Bas Rutten
  *
@@ -30,16 +33,18 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 
 	private static final long serialVersionUID = -7979238391035057707L;
 
-	private Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
+	@Getter
+	private final Icon closedIcon = VaadinIcon.PLUS_CIRCLE.create();
 
+	@Getter
+	private final VerticalLayout contentWrapper = new DefaultVerticalLayout();
+
+	@Getter
+	@Setter
 	private Icon openIcon = VaadinIcon.MINUS_CIRCLE.create();
 
-	/**
-	 * The button that serves as the "header" for the panel
-	 */
-	private Button toggle = new Button(openIcon);
-
-	private VerticalLayout contentWrapper = new DefaultVerticalLayout();
+	@Getter
+	private final Button toggle = new Button(openIcon);
 
 	public CollapsiblePanel() {
 
@@ -62,37 +67,25 @@ public class CollapsiblePanel extends DefaultVerticalLayout {
 		return toggle.getIcon() == openIcon;
 	}
 
-	public CollapsiblePanel setOpen(boolean open) {
+	/**
+	 * Sets the desired content for the panel
+	 * 
+	 * @param content the component that is to serve as the new content
+	 */
+	public void setContent(Component content) {
+		this.contentWrapper.removeAll();
+		this.contentWrapper.add(content);
+	}
+
+	/**
+	 * Sets the opened status of the panel
+	 * 
+	 * @param open the desired status
+	 */
+	public void setOpen(boolean open) {
 		contentWrapper.setVisible(open);
 		contentWrapper.getChildren().forEach(c -> c.setVisible(open));
 		toggle.setIcon(open ? getOpenIcon() : getClosedIcon());
-		return this;
-	}
-
-	public CollapsiblePanel setContent(Component content) {
-		this.contentWrapper.removeAll();
-		this.contentWrapper.add(content);
-		return this;
-	}
-
-	public VerticalLayout getContentWrapper() {
-		return contentWrapper;
-	}
-
-	public Icon getClosedIcon() {
-		return closedIcon;
-	}
-
-	public void setClosedIcon(Icon closedIcon) {
-		this.closedIcon = closedIcon;
-	}
-
-	public Icon getOpenIcon() {
-		return openIcon;
-	}
-
-	public void setOpenIcon(Icon openIcon) {
-		this.openIcon = openIcon;
 	}
 
 }

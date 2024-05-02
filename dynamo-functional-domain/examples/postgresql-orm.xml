@@ -12,13 +12,4 @@
 			</id>
 		</attributes>
 	</entity>
-	<!-- 
-	<entity class="com.ocs.dynamo.functional.domain.Parameter">
-		<attributes>
-			<id name="id">
-				<generated-value strategy="SEQUENCE" generator="parameter_id_seq" />
-			</id>
-		</attributes>
-	</entity>
-	-->
 </entity-mappings>

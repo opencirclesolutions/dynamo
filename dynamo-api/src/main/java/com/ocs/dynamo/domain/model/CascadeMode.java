@@ -21,5 +21,5 @@ package com.ocs.dynamo.domain.model;
  */
 public enum CascadeMode {
 
-	SEARCH, EDIT, BOTH;
+	SEARCH, EDIT, BOTH
 }

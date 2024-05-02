@@ -18,14 +18,14 @@ import java.io.Serializable;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
-import com.ocs.dynamo.ui.SharedProvider;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
-import com.vaadin.flow.data.provider.ListDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
 import com.vaadin.flow.shared.Registration;
@@ -39,43 +39,31 @@ import com.vaadin.flow.shared.Registration;
  * @param <T>  the type of the entity that is being displayed
  */
 public class QuickAddListSingleSelect<ID extends Serializable, T extends AbstractEntity<ID>>
-		extends QuickAddEntityField<ID, T, T> implements Refreshable, SharedProvider<T> {
+		extends QuickAddEntityField<ID, T, T> implements Refreshable {
 
 	private static final long serialVersionUID = 4246187881499965296L;
 
 	/**
 	 * Whether direct navigation is allowed
 	 */
-	private boolean directNavigationAllowed;
+	private final boolean directNavigationAllowed;
 
 	/**
 	 * The list select component
 	 */
-	private EntityListSingleSelect<ID, T> listSelect;
+	private final EntityListSingleSelect<ID, T> listSelect;
 
 	/**
 	 * Whether quick adding is allowed
 	 */
-	private boolean quickAddAllowed;
+	private final boolean quickAddAllowed;
 
-	/**
-	 * Constructor
-	 *
-	 * @param entityModel
-	 * @param attributeModel
-	 * @param service
-	 * @param filter
-	 * @param multiSelect
-	 * @param rows
-	 * @param sortOrder
-	 */
-	@SafeVarargs
 	public QuickAddListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel,
-			BaseService<ID, T> service, SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider,
-			boolean search, SortOrder<?>... sortOrder) {
+			BaseService<ID, T> service, SelectMode selectMode, SerializablePredicate<T> filter,
+			DataProvider<T, SerializablePredicate<T>> sharedProvider, boolean search, SortOrder<?>... sortOrder) {
 		super(service, entityModel, attributeModel, filter);
-		listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, filter, sharedProvider,
-				sortOrder);
+		listSelect = new EntityListSingleSelect<>(entityModel, attributeModel, service, selectMode, filter, null,
+				sharedProvider, sortOrder);
 		this.quickAddAllowed = !search && attributeModel != null && attributeModel.isQuickAddAllowed();
 		this.directNavigationAllowed = !search && attributeModel != null && attributeModel.isNavigable();
 		initContent();
@@ -93,12 +81,8 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void afterNewEntityAdded(T entity) {
-		// add to the container
-		ListDataProvider<T> provider = (ListDataProvider<T>) listSelect.getDataProvider();
-		provider.getItems().add(entity);
-		listSelect.setValue(entity);
+		listSelect.afterNewEntityAdded(entity);
 	}
 
 	@Override
@@ -129,12 +113,6 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public ListDataProvider<T> getSharedProvider() {
-		return (ListDataProvider<T>) listSelect.getDataProvider();
-	}
-
-	@Override
 	public T getValue() {
 		if (listSelect != null) {
 			return listSelect.getValue();
@@ -143,35 +121,25 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	}
 
 	protected void initContent() {
-		if (!quickAddAllowed && !directNavigationAllowed) {
-			// just add the list select, no need for any buttons
-			listSelect.setWidthFull();
-			add(listSelect);
-		} else {
-			HorizontalLayout bar = new HorizontalLayout();
-			bar.setSizeFull();
+		HorizontalLayout bar = new HorizontalLayout();
+		bar.setSizeFull();
 
-			if (this.getAttributeModel() != null) {
-				this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
-			}
-
-			listSelect.addValueChangeListener(event -> setValue(event.getValue()));
-
-			bar.add(listSelect);
-			if (quickAddAllowed) {
-				Button addButton = constructAddButton();
-				addButton.setSizeFull();
-				bar.add(addButton);
-
-			}
-			if (directNavigationAllowed) {
-				Button directNavigationButton = constructDirectNavigationButton();
-				directNavigationButton.setSizeFull();
-				bar.add(directNavigationButton);
-			}
-
-			add(bar);
+		if (this.getAttributeModel() != null) {
+			this.setLabel(getAttributeModel().getDisplayName(VaadinUtils.getLocale()));
 		}
+
+		listSelect.setWidthFull();
+		bar.add(listSelect);
+		if (quickAddAllowed) {
+			Button addButton = constructAddButton();
+			bar.add(addButton);
+		}
+		if (directNavigationAllowed) {
+			Button directNavigationButton = constructDirectNavigationButton();
+			bar.add(directNavigationButton);
+		}
+
+		add(bar);
 	}
 
 	/**
@@ -196,20 +164,28 @@ public class QuickAddListSingleSelect<ID extends Serializable, T extends Abstrac
 	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
 		super.setAdditionalFilter(additionalFilter);
 		if (listSelect != null) {
-			listSelect.refresh(getFilter() == null ? additionalFilter : getFilter().and(additionalFilter));
+			listSelect.setAdditionalFilter(additionalFilter);
 		}
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	protected void setPresentationValue(T value) {
 		if (listSelect != null) {
-			// select the item if it's included in the item list
-			ListDataProvider<T> provider = (ListDataProvider<T>) listSelect.getDataProvider();
-			if (provider.getItems().contains(value)) {
-				listSelect.setValue(value);
-			}
+			listSelect.setValue(value);
 		}
+	}
+
+	@Override
+	public void setReadOnly(boolean readOnly) {
+		setEnabled(!readOnly);
+		if (listSelect != null) {
+			listSelect.setEnabled(!readOnly);
+		}
+	}
+
+	@Override
+	public void setClearButtonVisible(boolean visible) {
+		// do nothing
 	}
 
 }

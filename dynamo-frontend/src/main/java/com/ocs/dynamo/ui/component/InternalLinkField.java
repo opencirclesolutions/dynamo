@@ -18,7 +18,7 @@ import java.io.Serializable;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.ui.utils.FormatUtils;
+import com.ocs.dynamo.utils.FormatUtils;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.customfield.CustomField;
 
@@ -38,27 +38,14 @@ public class InternalLinkField<ID extends Serializable, T extends AbstractEntity
 
     private T value;
 
-    private AttributeModel attributeModel;
+    private final AttributeModel attributeModel;
 
-    private EntityModel<T> entityModel;
+    private final EntityModel<T> entityModel;
 
-    /**
-     * Constructor
-     * 
-     * @param attributeModel
-     * @param entityModel
-     */
     public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel) {
         this(attributeModel, entityModel, null);
     }
 
-    /**
-     * Constructor
-     * 
-     * @param attributeModel
-     * @param entityModel
-     * @param value
-     */
     public InternalLinkField(AttributeModel attributeModel, EntityModel<T> entityModel, T value) {
         this.value = value;
         this.attributeModel = attributeModel;

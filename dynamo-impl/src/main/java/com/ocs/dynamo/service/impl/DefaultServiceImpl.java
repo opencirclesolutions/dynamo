@@ -32,17 +32,17 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	/**
 	 * The DAO
 	 */
-	private BaseDao<ID, T> dao;
+	private final BaseDao<ID, T> dao;
 
 	/**
 	 * The name of the property that is used to check if a value is unique
 	 */
-	private String[] uniquePropertyIds;
+	private final String[] uniquePropertyIds;
 
 	/**
-	 * Whether the unique value is case sensitive
+	 * Whether the unique values are case-sensitive
 	 */
-	private boolean uniqueCaseSensitive;
+	private final boolean uniqueCaseSensitive;
 
 	/**
 	 * Constructor - no unique property
@@ -55,7 +55,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	}
 
 	/**
-	 * Constructor - with unique property, not case sensitive
+	 * Constructor - with unique property, not case-sensitive
 	 * 
 	 * @param dslRoot           the DSL root
 	 * @param entityClass       the entity class
@@ -70,8 +70,8 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	 * 
 	 * @param dslRoot             the QueryDSL root
 	 * @param entityClass         the entity class
-	 * @param uniquePropertyIds
-	 * @param uniqueCaseSensitive
+	 * @param uniquePropertyIds   the unique property names
+	 * @param uniqueCaseSensitive whether the unique property values are case-sensitive
 	 */
 	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds,
 			boolean uniqueCaseSensitive) {
@@ -81,8 +81,8 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	}
 
 	/**
-	 * 
-	 * @param dao
+	 * Constructor
+	 * @param dao the dao to delegate to
 	 */
 	public DefaultServiceImpl(BaseDao<ID, T> dao) {
 		this(dao, (String[]) null);
@@ -103,7 +103,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	 * 
 	 * @param dao                 the DAO used to retrieve the data
 	 * @param uniquePropertyIds   the unique property
-	 * @param uniqueCaseSensitive whether the unique property is case sensitive
+	 * @param uniqueCaseSensitive whether the unique property is case-sensitive
 	 */
 	public DefaultServiceImpl(BaseDao<ID, T> dao, String[] uniquePropertyIds, boolean uniqueCaseSensitive) {
 		this.dao = dao;

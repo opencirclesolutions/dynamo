@@ -13,10 +13,8 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import javax.persistence.OptimisticLockException;
+import jakarta.persistence.OptimisticLockException;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.orm.ObjectOptimisticLockingFailureException;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -28,15 +26,18 @@ import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.Buildable;
 import com.ocs.dynamo.ui.UIHelper;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-import com.ocs.dynamo.ui.utils.FormatUtils;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.FormatUtils;
 import com.vaadin.flow.component.UI;
 import com.vaadin.flow.component.html.Span;
 import com.vaadin.flow.component.notification.Notification;
 import com.vaadin.flow.component.notification.Notification.Position;
 import com.vaadin.flow.component.notification.NotificationVariant;
+
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
 
 /**
  * Base class for custom components - contains convenience methods for getting
@@ -44,35 +45,32 @@ import com.vaadin.flow.component.notification.NotificationVariant;
  * 
  * @author bas.rutten
  */
+@Slf4j
 public abstract class BaseCustomComponent extends DefaultVerticalLayout implements Buildable {
-
-	private static final Logger LOG = LoggerFactory.getLogger(BaseCustomComponent.class);
 
 	private static final long serialVersionUID = -8982555842423738005L;
 
-	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private final UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 
-	private UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
+	@Getter
+	private final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * Constructs a (formatted) label based on the attribute model
 	 *
 	 * @param entity         the entity that is being displayed
 	 * @param attributeModel the attribute model
-	 * @return
+	 * @return the span containing the label value
 	 */
 	protected Span constructLabel(Object entity, AttributeModel attributeModel) {
 		Object value = ClassUtils.getFieldValue(entity, attributeModel.getName());
-		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), attributeModel, value, ", ");
+		String formatted = FormatUtils.formatPropertyValue(getEntityModelFactory(), getMessageService(), attributeModel,
+				value, ", ", VaadinUtils.getLocale(), VaadinUtils.getTimeZoneId());
 		return new Span(formatted == null ? "" : formatted);
 	}
 
 	protected EntityModelFactory getEntityModelFactory() {
 		return ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
-	}
-
-	protected MessageService getMessageService() {
-		return messageService;
 	}
 
 	protected <T> T getService(Class<T> clazz) {
@@ -84,22 +82,22 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 *
 	 * @param ex the exception that occurred
 	 */
-	protected void handleSaveException(RuntimeException ex) {
+	public void handleSaveException(RuntimeException ex) {
 		if (ex instanceof OCSValidationException) {
 			// validation exception
-			LOG.warn(ex.getMessage(), ex);
+			log.warn(ex.getMessage(), ex);
 			showErrorNotification(((OCSValidationException) ex).getErrors().get(0));
 		} else if (ex instanceof OCSRuntimeException) {
 			// any other OCS runtime exception
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 			showErrorNotification(ex.getMessage());
-		} else if (ex instanceof OptimisticLockException | ex instanceof ObjectOptimisticLockingFailureException) {
+		} else if (ex instanceof OptimisticLockException || ex instanceof ObjectOptimisticLockingFailureException) {
 			// optimistic lock
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 			showErrorNotification(message("ocs.optimistic.lock"));
 		} else {
 			// any other save exception
-			LOG.error(ex.getMessage(), ex);
+			log.error(ex.getMessage(), ex);
 			showErrorNotification(message("ocs.error.occurred"));
 		}
 	}
@@ -108,7 +106,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * Retrieves a message from the message bundle
 	 *
 	 * @param key the key of the message
-	 * @return
+	 * @return the retrieved message
 	 */
 	protected String message(String key) {
 		return getMessageService().getMessage(key, VaadinUtils.getLocale());
@@ -119,7 +117,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 *
 	 * @param key  the key of the message
 	 * @param args any arguments that are used in the message
-	 * @return
+	 * @return the retrieved message
 	 */
 	protected String message(String key, Object... args) {
 		return getMessageService().getMessage(key, VaadinUtils.getLocale(), args);
@@ -128,7 +126,7 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	/**
 	 * Navigates to the specified view
 	 *
-	 * @param view the ID of the view
+	 * @param viewName the name of the view to navigate to
 	 */
 	protected void navigate(String viewName) {
 		helper.navigate(viewName);
@@ -137,11 +135,20 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	/**
 	 * Navigates to the specified view with the specified mode
 	 * 
-	 * @param viewName
-	 * @param mode
+	 * @param viewName the name of the view
+	 * @param mode     the desired mode
 	 */
 	protected void navigate(String viewName, String mode) {
 		helper.navigate(viewName, mode);
+	}
+
+	/**
+	 * Shows an error message
+	 * 
+	 * @param message the message to show
+	 */
+	protected void showErrorNotification(String message) {
+		showNotification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
 	}
 
 	/**
@@ -150,23 +157,34 @@ public abstract class BaseCustomComponent extends DefaultVerticalLayout implemen
 	 * the log instead
 	 *
 	 * @param message the message
-	 * @param type    the type of the message (error, warning, tray etc.)
+	 * @param position the screen position at which to show the notification
+	 * @param variant the variant (e.g. warning, error)
 	 */
-	protected void showNotifification(String message, Position position, NotificationVariant variant) {
+	protected void showNotification(String message, Position position, NotificationVariant variant) {
 		if (UI.getCurrent() != null && UI.getCurrent().getPage() != null) {
 			Notification.show(message, SystemPropertyUtils.getDefaultMessageDisplayTime(), position)
 					.addThemeVariants(variant);
 		} else {
-			LOG.info(message);
+			log.info(message);
 		}
 	}
 
-	protected void showErrorNotification(String message) {
-		showNotifification(message, Position.MIDDLE, NotificationVariant.LUMO_ERROR);
+	/**
+	 * Shows a success message
+	 * 
+	 * @param message the message to show
+	 */
+	protected void showSuccessNotification(String message) {
+		showNotification(message, Position.MIDDLE, NotificationVariant.LUMO_SUCCESS);
 	}
 
+	/**
+	 * Shows a tray message
+	 * 
+	 * @param message the message to show
+	 */
 	protected void showTrayNotification(String message) {
-		showNotifification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
+		showNotification(message, Position.BOTTOM_END, NotificationVariant.LUMO_SUCCESS);
 	}
 
 }

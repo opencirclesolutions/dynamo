@@ -23,6 +23,6 @@ public enum EditableType {
 
 	READ_ONLY, // never
 	CREATE_ONLY, // only when creating a new entity
-	EDITABLE; // always
+	EDITABLE // always
 
 }

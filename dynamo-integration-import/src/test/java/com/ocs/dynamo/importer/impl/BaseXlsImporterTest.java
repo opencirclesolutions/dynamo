@@ -26,17 +26,15 @@ import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.impl.PersonDTO.Gender;
 import com.ocs.dynamo.utils.DateUtils;
 
-@Disabled
 public class BaseXlsImporterTest {
 
-	private BaseXlsImporter importer = new BaseXlsImporter();
+	private final BaseXlsImporter importer = new BaseXlsImporter();
 
 	/**
 	 * Test that a simple row count works
@@ -156,7 +154,7 @@ public class BaseXlsImporterTest {
 		try {
 			importer.processRow(0, sheet.getRow(0), PersonDTO.class);
 		} catch (OCSImportException ex) {
-			assertEquals("Row doesn't have enough columns", ex.getMessage());
+			assertEquals("Row 0 doesn't have enough columns", ex.getMessage());
 		}
 
 	}

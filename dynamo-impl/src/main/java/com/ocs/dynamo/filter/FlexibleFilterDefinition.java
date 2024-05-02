@@ -13,60 +13,30 @@
  */
 package com.ocs.dynamo.filter;
 
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
 
+import lombok.Builder;
+import lombok.Getter;
+import lombok.ToString;
+
 /**
- * Flexible filter definition
+ * Flexible filter definitions for use with a flexible search layout
  * 
  * @author bas.rutten
  *
  */
+@Getter
+@Builder(toBuilder = true)
+@ToString
 public class FlexibleFilterDefinition {
 
-    private AttributeModel attributeModel;
+	private AttributeModel attributeModel;
 
-    private FlexibleFilterType flexibleFilterType;
+	private FlexibleFilterType flexibleFilterType;
 
-    private Object value;
+	private Object value;
 
-    private Object valueTo;
+	private Object valueTo;
 
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
-
-    public FlexibleFilterType getFlexibleFilterType() {
-        return flexibleFilterType;
-    }
-
-    public Object getValue() {
-        return value;
-    }
-
-    public Object getValueTo() {
-        return valueTo;
-    }
-
-    public void setAttributeModel(AttributeModel attributeModel) {
-        this.attributeModel = attributeModel;
-    }
-
-    public void setFlexibleFilterType(FlexibleFilterType flexibleFilterType) {
-        this.flexibleFilterType = flexibleFilterType;
-    }
-
-    public void setValue(Object value) {
-        this.value = value;
-    }
-
-    public void setValueTo(Object valueTo) {
-        this.valueTo = valueTo;
-    }
-
-    @Override
-    public String toString() {
-        return ReflectionToStringBuilder.toString(this);
-    }
+	
 }

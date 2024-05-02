@@ -13,15 +13,9 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import java.util.Objects;
-
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.validation.constraints.AssertTrue;
-import javax.validation.constraints.NotNull;
-
-import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.AssertTrue;
+import jakarta.validation.constraints.NotNull;
 
 import com.ocs.dynamo.domain.AbstractAuditableEntity;
 import com.ocs.dynamo.domain.model.EditableType;
@@ -30,12 +24,19 @@ import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
 
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+
 /**
- * Base class for reference information.
- *
- * @author R.E.M. Claassen (ruud@opencircle.solutions)
+ * Reusable parameter class
+ * 
+ * @author BasRutten
  *
  */
+@Getter
+@Setter
+@ToString
 @Entity
 @AttributeOrder(attributeNames = { "name", "parameterType", "value", "createdBy", "createdOn" })
 @Model(displayProperty = "name", sortOrder = "name asc")
@@ -45,8 +46,8 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
 
 	public static final String ATTRIBUTE_NAME = "name";
 
-    @Id
-    private Integer id;
+	@Id
+	private Integer id;
 
 	@NotNull
 	@Attribute(main = true, maxLength = 100, searchable = SearchMode.ALWAYS, editable = EditableType.READ_ONLY)
@@ -55,79 +56,12 @@ public class Parameter extends AbstractAuditableEntity<Integer> {
 	@NotNull
 	@Attribute(searchable = SearchMode.ALWAYS, editable = EditableType.READ_ONLY)
 	@Column(name = "type")
+	@Enumerated(EnumType.STRING)
 	private ParameterType parameterType;
 
 	@NotNull
 	@Attribute(maxLength = 50)
 	private String value;
-
-	public ParameterType getParameterType() {
-		return parameterType;
-	}
-
-	public void setParameterType(ParameterType parameterType) {
-		this.parameterType = parameterType;
-	}
-
-	public String getValue() {
-		return value;
-	}
-
-	public void setValue(String value) {
-		this.value = value;
-	}
-
-	@Override
-	public Integer getId() {
-		return this.id;
-	}
-
-	@Override
-	public void setId(Integer id) {
-		this.id = id;
-	}
-
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hashCode(id);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Parameter)) {
-			return false;
-		}
-
-		if (!this.getClass().equals(obj.getClass())) {
-			return false;
-		}
-
-		Parameter other = (Parameter) obj;
-		if (this.id != null && other.id != null) {
-			// first, check if the IDs match
-			return Objects.equals(this.id, other.id);
-		} else {
-			// if this is not the case, check for code and type
-			return Objects.equals(this.name, other.name);
-		}
-
-	}
-
-	@Override
-	public String toString() {
-		return ReflectionToStringBuilder.toString(this);
-	}
 
 	@AssertTrue(message = "{Parameter.type.valid}")
 	public boolean isValueCorrect() {

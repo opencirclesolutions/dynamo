@@ -1,23 +1,18 @@
 package com.ocs.dynamo.filter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.util.List;
-
-import org.junit.jupiter.api.Test;
-
-import com.google.common.collect.Lists;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class DynamoFilterUtilTest {
 
-	private EntityModelFactoryImpl emf = new EntityModelFactoryImpl();
+	private EntityModelFactoryImpl entityModelFactory = new EntityModelFactoryImpl();
 
 	@Test
 	public void testReplaceFilter() {
@@ -145,7 +140,7 @@ public class DynamoFilterUtilTest {
 	@Test
 	public void testExtractFilter_In() {
 
-		com.ocs.dynamo.filter.In in = new com.ocs.dynamo.filter.In("prop1", Lists.newArrayList("a", "b"));
+		com.ocs.dynamo.filter.In in = new com.ocs.dynamo.filter.In("prop1", List.of("a", "b"));
 		com.ocs.dynamo.filter.And and = new com.ocs.dynamo.filter.And(in,
 				new com.ocs.dynamo.filter.Compare.Equal("prop3", "someString"));
 
@@ -235,9 +230,9 @@ public class DynamoFilterUtilTest {
 	 */
 	@Test
 	public void testReplaceMasterAndDetailFilters1() {
-		EntityModel<TestEntity> model = emf.getModel(TestEntity.class);
+		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 
-		And and = new And(new Compare.Equal("tags", Lists.newArrayList("abc")));
+		And and = new And(new Compare.Equal("tags", List.of("abc")));
 
 		// check that the equals filter is replaced by an Or-filter that consists of
 		// "contains"
@@ -267,9 +262,9 @@ public class DynamoFilterUtilTest {
 	 */
 	@Test
 	public void testReplaceMasterAndDetailFilters2() {
-		EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);
+		EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
 
-		And and = new And(new Compare.Equal("testEntity", Lists.newArrayList(new TestEntity(), new TestEntity())));
+		And and = new And(new Compare.Equal("testEntity", List.of(new TestEntity(), new TestEntity())));
 
 		// check that the equals filter is replaced by an "in" filter
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);
@@ -287,9 +282,9 @@ public class DynamoFilterUtilTest {
 
 	@Test
 	public void testReplaceMasterAndDetailFilters3() {
-		EntityModel<TestEntity2> model = emf.getModel(TestEntity2.class);
+		EntityModel<TestEntity2> model = entityModelFactory.getModel(TestEntity2.class);
 
-		And and = new And(new Compare.Equal("testEntity", Lists.newArrayList(new TestEntity(), new TestEntity())));
+		And and = new And(new Compare.Equal("testEntity", List.of(new TestEntity(), new TestEntity())));
 
 		// check that the equals filter is replaced by an "in" filter
 		DynamoFilterUtil.replaceMasterAndDetailFilters(and, model);

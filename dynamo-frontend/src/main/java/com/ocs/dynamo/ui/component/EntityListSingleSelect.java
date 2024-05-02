@@ -16,237 +16,237 @@ package com.ocs.dynamo.ui.component;
 import java.io.Serializable;
 import java.util.List;
 
+import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.SelectMode;
 import com.ocs.dynamo.filter.AndPredicate;
 import com.ocs.dynamo.filter.FilterConverter;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Refreshable;
 import com.ocs.dynamo.ui.utils.SortUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.EntityModelUtils;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.listbox.ListBox;
+import com.vaadin.flow.data.provider.CallbackDataProvider;
+import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.ListDataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.data.renderer.ComponentRenderer;
 import com.vaadin.flow.function.SerializablePredicate;
 
+import lombok.Getter;
+
 /**
  * Custom ListSelect component for selecting a single item from a list
  *
  * @param <ID> type of the primary key of the entity
- * @param <T> type of the entity
+ * @param <T>  type of the entity
  */
 public class EntityListSingleSelect<ID extends Serializable, T extends AbstractEntity<ID>> extends ListBox<T>
-        implements Refreshable, Cascadable<T> {
+		implements Refreshable, Cascadable<T> {
 
-    public enum SelectMode {
-        ALL, FILTERED, FIXED;
-    }
+	private static final long serialVersionUID = 3041574615271340579L;
 
-    private static final long serialVersionUID = 3041574615271340579L;
+	@Getter
+	private SerializablePredicate<T> additionalFilter;
 
-    /**
-     * The attribute model that governs how to build the component
-     */
-    private final AttributeModel attributeModel;
+	@Getter
+	private final AttributeModel attributeModel;
 
-    /**
-     * The select mode (filtered, all, or fixed)
-     */
-    private SelectMode selectMode = SelectMode.FILTERED;
+	private int count;
 
-    /**
-     * The sort orders
-     */
-    private final SortOrder<?>[] sortOrders;
+	private final EntityModel<T> entityModel;
 
-    /**
-     * The service for querying the database
-     */
-    private BaseService<ID, T> service;
+	@Getter
+	private SerializablePredicate<T> filter;
 
-    /**
-     * The search filter to use in filtered mode
-     */
-    private SerializablePredicate<T> filter;
+	@Getter
+	private SerializablePredicate<T> originalFilter;
 
-    /**
-     * The original search filter
-     */
-    private SerializablePredicate<T> originalFilter;
+	@Getter
+	private final SelectMode selectMode;
 
-    /**
-     * The addition search filter for cascading
-     */
-    private SerializablePredicate<T> additionalFilter;
+	private final BaseService<ID, T> service;
 
-    /**
-     * The entity model of the entities being displayed
-     */
-    private EntityModel<T> targetEntityModel;
+	@Getter
+	private final SortOrder<?>[] sortOrders;
 
-    /**
-     * Constructor
-     *
-     * @param targetEntityModel
-     * @param attributeModel
-     * @param service
-     * @param mode
-     * @param filter
-     * @param items
-     * @param itemCaptionPropertyId
-     * @param sortOrder
-     */
-    @SafeVarargs
-    public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            SelectMode mode, SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, List<T> items,
-            SortOrder<?>... sortOrders) {
-        this.targetEntityModel = targetEntityModel;
-        this.service = service;
-        this.selectMode = mode;
-        this.sortOrders = sortOrders;
-        this.attributeModel = attributeModel;
-        this.filter = filter;
-        setHeight("100px");
+	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+			SelectMode mode, SerializablePredicate<T> filter, List<T> items,
+			DataProvider<T, SerializablePredicate<T>> sharedProvider, SortOrder<?>... sortOrders) {
+		this.entityModel = entityModel;
+		this.service = service;
+		this.selectMode = mode;
+		this.sortOrders = sortOrders;
+		this.attributeModel = attributeModel;
+		this.filter = filter;
+		setHeight(SystemPropertyUtils.getDefaultListSelectHeight());
 
-        ListDataProvider<T> provider = sharedProvider;
-        if (provider == null) {
-            if (SelectMode.ALL.equals(mode)) {
-                // add all items (but sorted)
-                provider = new ListDataProvider<>(service.findAll(SortUtils.translateSortOrders(sortOrders)));
-            } else if (SelectMode.FILTERED.equals(mode)) {
-                // add a filtered selection of items
-                items = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), SortUtils.translateSortOrders(sortOrders));
-                provider = new ListDataProvider<>(items);
-            } else if (SelectMode.FIXED.equals(mode)) {
-                provider = new ListDataProvider<>(items);
-            }
-        }
-        setDataProvider(provider);
+		initProvider(sharedProvider, items, mode);
 
-        // non-standard way of setting captions
-        setRenderer(new ComponentRenderer<Text, T>(t -> {
-            String label = EntityModelUtils.getDisplayPropertyValue(t, targetEntityModel);
-            return new Text(label == null ? "" : label);
-        }));
-    }
+		// non-standard way of setting captions
+		setRenderer(new ComponentRenderer<>(entity -> {
+			String label = EntityModelUtils.getDisplayPropertyValue(entity, entityModel);
+			return new Text(label == null ? "" : label);
+		}));
+	}
 
-    /**
-     * Constructor - for the "FILTERED" mode
-     *
-     * @param targetEntityModel the entity model of the entities that are to be
-     *                          displayed
-     * @param attributeModel    the attribute model for the property that is bound
-     *                          to this component
-     * @param service           the service used to retrieve the entities
-     * @param filter            the filter used to filter the entities
-     * @param sortOrder         the sort order used to sort the entities
-     */
-    @SafeVarargs
-    public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            SerializablePredicate<T> filter, ListDataProvider<T> sharedProvider, SortOrder<?>... sortOrder) {
-        this(targetEntityModel, attributeModel, service, SelectMode.FILTERED, filter, sharedProvider, null, sortOrder);
-    }
+	/**
+	 * Constructor - for the "FILTERED" mode
+	 *
+	 * @param entityModel    the entity model of the entities that are to be
+	 *                       displayed
+	 * @param attributeModel the attribute model for the property that is bound to
+	 *                       this component
+	 * @param service        the service used to retrieve the entities
+	 * @param filter         the filter used to filter the entities
+	 * @param sortOrder      the sort order used to sort the entities
+	 */
+	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+			SerializablePredicate<T> filter, SortOrder<?>... sortOrder) {
+		this(entityModel, attributeModel, service, SelectMode.FILTERED_PAGED, filter, null, null, sortOrder);
+	}
 
-    /**
-     * Constructor - for the "ALL" mode
-     *
-     * @param targetEntityModel the entity model of the entities that are to be
-     *                          displayed
-     * @param attributeModel    the attribute model for the property that is bound
-     *                          to this component
-     * @param service           the service used to retrieve entities
-     */
-    @SafeVarargs
-    public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, BaseService<ID, T> service,
-            SortOrder<?>... sortOrder) {
-        this(targetEntityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
-    }
+	/**
+	 * Constructor - for the "ALL" mode
+	 *
+	 * @param entityModel    the entity model of the entities that are to be
+	 *                       displayed
+	 * @param attributeModel the attribute model for the property that is bound to
+	 *                       this component
+	 * @param service        the service used to retrieve entities
+	 * @param sortOrder      the sort order
+	 */
+	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
+			SortOrder<?>... sortOrder) {
+		this(entityModel, attributeModel, service, SelectMode.ALL, null, null, null, sortOrder);
+	}
 
-    /**
-     * Constructor - for the "FIXED" mode
-     *
-     * @param targetEntityModel the entity model of the entities that are to be
-     *                          displayed
-     * @param attributeModel    the attribute model for the property that is bound
-     *                          to this component
-     * @param items             the list of entities to display
-     */
-    public EntityListSingleSelect(EntityModel<T> targetEntityModel, AttributeModel attributeModel, List<T> items) {
-        this(targetEntityModel, attributeModel, null, SelectMode.FIXED, null, null, items);
-    }
+	/**
+	 * Constructor - for the "FIXED" mode
+	 *
+	 * @param entityModel    the entity model of the entities that are to be
+	 *                       displayed
+	 * @param attributeModel the attribute model for the property that is bound to
+	 *                       this component
+	 * @param items          the list of entities to display
+	 */
+	public EntityListSingleSelect(EntityModel<T> entityModel, AttributeModel attributeModel, List<T> items) {
+		this(entityModel, attributeModel, null, SelectMode.FIXED, null, items, null);
+	}
 
-    @Override
-    public void clearAdditionalFilter() {
-        this.additionalFilter = filter;
-        this.filter = originalFilter;
-        refresh();
-    }
+	public void afterNewEntityAdded(T entity) {
+		if (usesFixedProvider()) {
+			getListDataView().addItem(entity);
+		} else {
+			setItems(createCallbackProvider());
+		}
+		setValue(entity);
+	}
 
-    @Override
-    public SerializablePredicate<T> getAdditionalFilter() {
-        return additionalFilter;
-    }
+	@SuppressWarnings({ "unchecked" })
+	private void castAndSetDataProvider(DataProvider<T, SerializablePredicate<T>> provider) {
+		if (provider instanceof ListDataProvider ldp) {
+			setItems(ldp.getItems());
+		}
+		else if (provider instanceof CallbackDataProvider cdp) {
+			setItems(cdp);
+		}
+	}
 
-    public AttributeModel getAttributeModel() {
-        return attributeModel;
-    }
+	@Override
+	public void clearAdditionalFilter() {
+		this.additionalFilter = filter;
+		this.filter = originalFilter;
+		refresh();
+	}
 
-    @SuppressWarnings("unchecked")
-    public int getDataProviderSize() {
-        ListDataProvider<T> bic = (ListDataProvider<T>) this.getDataProvider();
-        return bic.getItems().size();
-    }
+	private CallbackDataProvider<T, Void> createCallbackProvider() {
+		return CallbackProviderHelper.createCallbackProviderNoFiltering(service,
+				new SortOrders(SortUtils.translateSortOrders(sortOrders)), c -> this.count = c);
+	}
 
-    public SerializablePredicate<T> getFilter() {
-        return filter;
-    }
+	public int getDataProviderSize() {
+		if (usesFixedProvider()) {
+			return getListDataView().getItemCount();
+		} else {
+			return count;
+		}
+	}
+	
+	/**
+	 * Initializes the data provider
+	 *
+	 * @param provider already existing provider (in case of shared provider)
+	 * @param items    fixed list of items to display
+	 * @param mode     the desired mode
+	 */
+	private void initProvider(DataProvider<T, SerializablePredicate<T>> provider, List<T> items, SelectMode mode) {
+		if (provider == null) {
+			if (SelectMode.ALL.equals(mode)) {
+				ListDataProvider<T> listProvider = new ListDataProvider<>(
+						service.findAll(SortUtils.translateSortOrders(sortOrders)));
+				setItems(listProvider);
+			} else if (SelectMode.FILTERED_PAGED.equals(mode)) {
+				CallbackDataProvider<T, Void> callbackProvider = createCallbackProvider();
+				setItems(callbackProvider);
+			} else if (SelectMode.FILTERED_ALL.equals(mode)) {
+				// add a filtered selection of items
+				items = service.find(new FilterConverter<>(entityModel).convert(filter),
+						SortUtils.translateSortOrders(sortOrders));
+				setItems(new ListDataProvider<>(items));
+			} else if (SelectMode.FIXED.equals(mode)) {
+				setItems(new ListDataProvider<>(items));
+			}
+		} else {
+			castAndSetDataProvider(provider);
+		}
+	}
+	
+	@Override
+	public void refresh() {
+		T stored = this.getValue();
+		clear();
+		updateProvider();
+		setValue(stored);
+	}
 
-    public SelectMode getSelectMode() {
-        return selectMode;
-    }
+	public void refresh(SerializablePredicate<T> filter) {
+		this.originalFilter = filter;
+		this.filter = filter;
+		refresh();
+	}
 
-    public SortOrder<?>[] getSortOrders() {
-        return sortOrders;
-    }
+	@Override
+	public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
+		clear();
+		this.additionalFilter = additionalFilter;
+		this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
+		refresh();
+	}
+   
+	/**
+	 * Updates the data provider after a refresh
+	 */
+	private void updateProvider() {
+		if (SelectMode.ALL.equals(selectMode)) {
+			setItems(service.findAll(SortUtils.translateSortOrders(sortOrders)));
+		} else if (SelectMode.FILTERED_PAGED.equals(selectMode)) {
+			setItems(createCallbackProvider());
+		} else if (SelectMode.FILTERED_ALL.equals(selectMode)) {
+			List<T> items = service.find(new FilterConverter<>(entityModel).convert(filter),
+					SortUtils.translateSortOrders(sortOrders));
+			setItems(items);
+			//reloadDataProvider(listProvider, items);
+		}
+	}
 
-    @SuppressWarnings("unchecked")
-    @Override
-    public void refresh() {
-        ListDataProvider<T> provider = (ListDataProvider<T>) getDataProvider();
-        if (SelectMode.ALL.equals(selectMode)) {
-            // add all items (but sorted)
-            provider.getItems().clear();
-            provider.getItems().addAll(service.findAll(SortUtils.translateSortOrders(sortOrders)));
-        } else if (SelectMode.FILTERED.equals(selectMode)) {
-            // add a filtered selection of items
-            provider.getItems().clear();
-            com.ocs.dynamo.dao.SortOrder[] orders = SortUtils.translateSortOrders(sortOrders);
-            if (orders != null) {
-                List<T> list = service.find(new FilterConverter<T>(targetEntityModel).convert(filter), orders);
-                provider.getItems().addAll(list);
-            } else {
-                List<T> list = service.find(new FilterConverter<T>(targetEntityModel).convert(filter));
-                provider.getItems().addAll(list);
-            }
-
-        }
-    }
-
-    public void refresh(SerializablePredicate<T> filter) {
-        this.originalFilter = filter;
-        this.filter = filter;
-        refresh();
-    }
-
-    @Override
-    public void setAdditionalFilter(SerializablePredicate<T> additionalFilter) {
-        setValue(null);
-        this.additionalFilter = additionalFilter;
-        this.filter = originalFilter == null ? additionalFilter : new AndPredicate<>(originalFilter, additionalFilter);
-        refresh();
-    }
+	private boolean usesFixedProvider() {
+		return SelectMode.ALL.equals(selectMode) || SelectMode.FILTERED_ALL.equals(selectMode) || 
+				SelectMode.FIXED.equals(selectMode);
+	}
 
 }

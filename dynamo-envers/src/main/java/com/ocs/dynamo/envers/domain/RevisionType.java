@@ -26,19 +26,15 @@ public enum RevisionType {
 	/**
 	 * Translates the Envers revision type to the Dynamo revision type
 	 * 
-	 * @param t the revision type to translate
-	 * @return
+	 * @param type the revision type to translate
+	 * @return the resulting revision type
 	 */
-	public static RevisionType fromInternal(org.hibernate.envers.RevisionType t) {
-		switch (t) {
-		case ADD:
-			return ADD;
-		case MOD:
-			return MOD;
-		case DEL:
-			return DEL;
-		default:
-			return null;
-		}
+	public static RevisionType fromInternal(org.hibernate.envers.RevisionType type) {
+		return switch (type) {
+			case ADD -> ADD;
+			case MOD -> MOD;
+			case DEL -> DEL;
+			default -> null;
+		};
 	}
 }

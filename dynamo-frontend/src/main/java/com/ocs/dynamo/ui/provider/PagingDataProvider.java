@@ -46,7 +46,7 @@ public class PagingDataProvider<ID extends Serializable, T extends AbstractEntit
     /**
      * Whether iteration through the data set is required
      */
-    private boolean iterationRequired;
+    private final boolean iterationRequired;
 
     /**
      * Constructor

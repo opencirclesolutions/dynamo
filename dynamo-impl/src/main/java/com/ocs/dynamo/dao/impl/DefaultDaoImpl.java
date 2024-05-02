@@ -18,68 +18,64 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
+
 /**
- * A default DAO implementation
+ * A default DAO implementation for handling database access for a simple
  *
  * @author bas.rutten
  *
- * @param <ID>
- *            the type of the primary key
- * @param <T>
- *            the type of the entity
+ * @param <ID> the type of the primary key
+ * @param <T>  the type of the entity
  */
 @Transactional
 public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T> {
 
-    private EntityPathBase<T> dslRoot;
+    private final EntityPathBase<T> dslRoot;
 
-    private Class<T> entityClass;
+    private final Class<T> entityClass;
 
-    private String[] fetchPropertyIds;
+    private final String[] fetchPropertyIds;
 
-    public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
-        this(dslRoot, entityClass, (String[]) null);
-    }
+	/**
+	 * Constructor
+	 * @param dslRoot          the query DSL root path
+	 * @param entityClass      the entity class
+	 */
+	public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
+		this(dslRoot, entityClass, (String[]) null);
+	}
 
-    /**
-     * Constructor
-     * 
-     * @param dslRoot
-     *            the query DSL root path
-     * @param entityClass
-     *            the entity class
-     * @param fetchPropertyIds
-     *            the IDs of the properties to fetch
-     */
-    public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass,
-            String... fetchPropertyIds) {
-        this.dslRoot = dslRoot;
-        this.entityClass = entityClass;
-        this.fetchPropertyIds = fetchPropertyIds;
-    }
+	/**
+	 * Constructor
+	 * 
+	 * @param dslRoot          the query DSL root path
+	 * @param entityClass      the entity class
+	 * @param fetchPropertyIds the IDs of the properties to fetch
+	 */
+	public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String... fetchPropertyIds) {
+		this.dslRoot = dslRoot;
+		this.entityClass = entityClass;
+		this.fetchPropertyIds = fetchPropertyIds;
+	}
 
-    @Override
-    public EntityPathBase<T> getDslRoot() {
-        return dslRoot;
-    }
+	@Override
+	public EntityPathBase<T> getDslRoot() {
+		return dslRoot;
+	}
 
-    @Override
-    public Class<T> getEntityClass() {
-        return entityClass;
-    }
+	@Override
+	public Class<T> getEntityClass() {
+		return entityClass;
+	}
 
-    @Override
-    protected FetchJoinInformation[] getFetchJoins() {
-        if (fetchPropertyIds == null || fetchPropertyIds.length == 0) {
-            return super.getFetchJoins();
-        }
+	@Override
+	protected FetchJoinInformation[] getFetchJoins() {
+		if (fetchPropertyIds == null || fetchPropertyIds.length == 0) {
+			return super.getFetchJoins();
+		}
 
-        FetchJoinInformation[] joins = new FetchJoinInformation[fetchPropertyIds.length];
-        int i = 0;
-        for (String s : fetchPropertyIds) {
-            joins[i] = new FetchJoinInformation(s);
-            i++;
-        }
-        return joins;
-    }
+		return Arrays.stream(fetchPropertyIds).map(FetchJoinInformation::new).toList()
+				.toArray(new FetchJoinInformation[0]);
+	}
 }

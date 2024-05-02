@@ -16,7 +16,10 @@ package com.ocs.dynamo.ui.composite.grid;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Supplier;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -24,16 +27,22 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.ui.Searchable;
+import com.ocs.dynamo.ui.composite.ComponentContext;
 import com.ocs.dynamo.ui.composite.export.ExportDelegate;
 import com.ocs.dynamo.ui.composite.layout.BaseCustomComponent;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.component.grid.Grid;
 import com.vaadin.flow.component.grid.GridSortOrderBuilder;
+import com.vaadin.flow.data.binder.Validator;
+import com.vaadin.flow.data.converter.Converter;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
+
+import lombok.Getter;
+import lombok.Setter;
 
 public abstract class GridWrapper<ID extends Serializable, T extends AbstractEntity<ID>, U> extends BaseCustomComponent
 		implements Searchable<T> {
@@ -68,7 +77,11 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * The form options
 	 */
+	@Getter
 	private FormOptions formOptions;
+
+	@Getter
+	private ComponentContext<ID, T> componentContext;
 
 	/**
 	 * The fetch joins to use when querying
@@ -85,14 +98,22 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	 */
 	private final BaseService<ID, T> service;
 
+	@Getter
+	@Setter
+	private Map<String, Supplier<Converter<?, ?>>> customConverters = new HashMap<>();
+
+	@Getter
+	@Setter
+	private Map<String, Supplier<Validator<?>>> customValidators = new HashMap<>();
+
 	/**
 	 * The sort orders
 	 */
 	private List<SortOrder<?>> sortOrders = new ArrayList<>();
 
-	public GridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
-			FormOptions formOptions, SerializablePredicate<T> filter, List<SortOrder<?>> sortOrders,
-			FetchJoinInformation... joins) {
+	protected GridWrapper(BaseService<ID, T> service, EntityModel<T> entityModel, QueryType queryType,
+			FormOptions formOptions, ComponentContext<ID, T> componentContext, SerializablePredicate<T> filter,
+			List<SortOrder<?>> sortOrders, FetchJoinInformation... joins) {
 		setSpacing(false);
 		setPadding(false);
 		this.entityModel = entityModel;
@@ -100,6 +121,7 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 		this.service = service;
 		this.queryType = queryType;
 		this.formOptions = formOptions;
+		this.componentContext = componentContext;
 		this.sortOrders = sortOrders != null ? sortOrders : new ArrayList<>();
 		this.joins = joins;
 	}
@@ -141,10 +163,6 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 		return filter;
 	}
 
-	public FormOptions getFormOptions() {
-		return formOptions;
-	}
-
 	public abstract Grid<U> getGrid();
 
 	public FetchJoinInformation[] getJoins() {
@@ -170,42 +188,59 @@ public abstract class GridWrapper<ID extends Serializable, T extends AbstractEnt
 	protected List<SortOrder<?>> initSortingAndFiltering() {
 
 		List<SortOrder<?>> fallBackOrders = new ArrayList<>();
+		GridSortOrderBuilder<U> builder = new GridSortOrderBuilder<>();
+		boolean missing = false;
+
 		if (getSortOrders() != null && !getSortOrders().isEmpty()) {
-			GridSortOrderBuilder<U> builder = new GridSortOrderBuilder<>();
-			for (SortOrder<?> o : getSortOrders()) {
-				if (getGrid().getColumnByKey((String) o.getSorted()) != null) {
-					// only include column in sort order if it is present in the grid
-					if (SortDirection.ASCENDING.equals(o.getDirection())) {
-						builder.thenAsc(getGrid().getColumnByKey(o.getSorted().toString()));
-					} else {
-						builder.thenDesc(getGrid().getColumnByKey(o.getSorted().toString()));
-					}
-				} else {
-					// not present in grid, add to backup
-					fallBackOrders.add(o);
-				}
-			}
-			getGrid().sort(builder.build());
+			missing = initExplicitSortOrders(fallBackOrders, builder);
 		} else if (getEntityModel().getSortOrder() != null && !getEntityModel().getSortOrder().keySet().isEmpty()) {
-			// sort based on the entity model
-			GridSortOrderBuilder<U> builder = new GridSortOrderBuilder<>();
-			for (AttributeModel am : entityModel.getSortOrder().keySet()) {
-				boolean asc = entityModel.getSortOrder().get(am);
-				if (getGrid().getColumnByKey(am.getPath()) != null) {
-					if (asc) {
-						builder.thenAsc(getGrid().getColumnByKey(am.getPath()));
-					} else {
-						builder.thenDesc(getGrid().getColumnByKey(am.getPath()));
-					}
-				} else {
-					fallBackOrders.add(new SortOrder<String>(am.getActualSortPath(),
-							asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
-				}
-			}
+			missing = initDefaultSortOrders(fallBackOrders, builder);
+		}
+
+		// use grid sorting only if all columns are present, otherwise use fallback
+		if (!missing) {
 			getGrid().sort(builder.build());
 		}
+
 		return fallBackOrders;
 
+	}
+
+	private boolean initDefaultSortOrders(List<SortOrder<?>> fallBackOrders, GridSortOrderBuilder<U> builder) {
+		boolean missing = false;
+		for (AttributeModel am : getEntityModel().getSortOrder().keySet()) {
+			boolean asc = getEntityModel().getSortOrder().get(am);
+			if (getGrid().getColumnByKey(am.getPath()) != null) {
+				if (asc) {
+					builder.thenAsc(getGrid().getColumnByKey(am.getPath()));
+				} else {
+					builder.thenDesc(getGrid().getColumnByKey(am.getPath()));
+				}
+			} else {
+				missing = true;
+			}
+			fallBackOrders.add(new SortOrder<>(am.getActualSortPath(),
+					asc ? SortDirection.ASCENDING : SortDirection.DESCENDING));
+		}
+		return missing;
+	}
+
+	private boolean initExplicitSortOrders(List<SortOrder<?>> fallBackOrders, GridSortOrderBuilder<U> builder) {
+		boolean missing = false;
+		for (SortOrder<?> o : getSortOrders()) {
+			if (getGrid().getColumnByKey((String) o.getSorted()) != null) {
+				// only include column in sort order if it is present in the grid
+				if (SortDirection.ASCENDING.equals(o.getDirection())) {
+					builder.thenAsc(getGrid().getColumnByKey(o.getSorted().toString()));
+				} else {
+					builder.thenDesc(getGrid().getColumnByKey(o.getSorted().toString()));
+				}
+			} else {
+				missing = true;
+			}
+			fallBackOrders.add(o);
+		}
+		return missing;
 	}
 
 	public abstract void reloadDataProvider();
