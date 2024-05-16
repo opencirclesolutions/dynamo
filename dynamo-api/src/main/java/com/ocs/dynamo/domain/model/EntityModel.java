@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.domain.model;
 
+import com.ocs.dynamo.dao.FetchJoinInformation;
+
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -163,6 +165,26 @@ public interface EntityModel<T> {
 	 * The String representation for the boolean "false" value
 	 */
 	String FALSE_REPRESENTATION = "falseRepresentation";
+
+	/**
+	 * Master join
+	 */
+	String JOIN = "join";
+
+	/**
+	 * Detail join
+	 */
+	String DETAIL_JOIN = "detailJoin";
+
+	/**
+	 * Detail join attribute
+	 */
+	String ATTRIBUTE = "attribute";
+
+	/**
+	 * Detail join type
+	 */
+	String JOIN_TYPE = "joinType";
 
 	/**
 	 * The property to use for filtering when using paged mode for lookup
@@ -598,4 +620,8 @@ public interface EntityModel<T> {
 	 * @return the auto-fill instructions
 	 */
 	String getAutofillInstructions();
+
+	List<FetchJoinInformation> getFetchJoins();
+
+	List<FetchJoinInformation> getDetailJoins();
 }

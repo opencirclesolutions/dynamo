@@ -184,7 +184,12 @@ public class FormFiller {
      * @return the corrected response
      */
     private String correctResponse(String response) {
-        return response.replaceAll(",\\R}", "}");
+
+
+        response =  response.replaceAll(",\\R}", "}");
+        response =  response.replaceAll("```json", "");
+        response =  response.replaceAll("```", "");
+        return response;
     }
 
     public Map<Component, String> getComponentInstructions() {

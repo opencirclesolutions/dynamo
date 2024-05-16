@@ -4,7 +4,7 @@
 	<groupId>org.dynamoframework</groupId>
 	<artifactId>dynamo-parent</artifactId>
 	<packaging>pom</packaging>
-	<version>3.0.3-SNAPSHOT</version>
+	<version>3.0.5-SNAPSHOT</version>
 	<name>Dynamo Framework</name>
 	<description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
 	<url>https://github.com/opencirclesolutions/dynamo</url>
@@ -81,14 +81,14 @@
 		<project.build.compiler.version>21</project.build.compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<vaadin.version>24.3.3</vaadin.version>
+		<vaadin.version>24.3.10</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
 		<commons.io.version>2.15.1</commons.io.version>
 		<commons.text.version>1.11.0</commons.text.version>
 		<poi.version>5.2.5</poi.version>
 		<opencsv.version>5.9</opencsv.version>
-		<spring.boot.version>3.2.2</spring.boot.version>
-		<karibu.testing.version>2.1.2</karibu.testing.version>
+		<spring.boot.version>3.2.5</spring.boot.version>
+		<karibu.testing.version>2.1.5</karibu.testing.version>
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.12.1</org.apache.maven.plugins.compiler.version>
 		<org.apache.maven.plugins.jar.version>3.3.0</org.apache.maven.plugins.jar.version>
@@ -101,12 +101,11 @@
 		<org.jacoco.maven.plugins.version>0.8.11</org.jacoco.maven.plugins.version>
 		<github-release-plugin.version>1.4.0</github-release-plugin.version>
 		<org.sonatype.plugins.version>1.6.13</org.sonatype.plugins.version>
-		<junit.version>5.10.1</junit.version>
-		<spotbugs.version>4.8.3.0</spotbugs.version>
-		<guava.version>33.0.0-jre</guava.version>
+		<junit.version>5.10.2</junit.version>
+		<spotbugs.version>4.8.4.0</spotbugs.version>
 		<h2.version>2.2.224</h2.version>
-		<lombok.version>1.18.30</lombok.version>
-		<querydsl.version>5.0.0</querydsl.version>
+		<lombok.version>1.18.32</lombok.version>
+		<querydsl.version>5.1.0</querydsl.version>
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
@@ -122,7 +121,7 @@
 			<dependency>
 				<groupId>com.vaadin.componentfactory</groupId>
 				<artifactId>enhancedformlayout</artifactId>
-				<version>1.5.1</version>
+				<version>1.6.0</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -188,11 +187,11 @@
 				<artifactId>selection-grid-flow</artifactId>
 				<version>3.0.3</version>
 			</dependency>
-			<dependency>
-				<groupId>com.google.guava</groupId>
-				<artifactId>guava</artifactId>
-				<version>${guava.version}</version>
-			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>com.google.guava</groupId>-->
+<!--				<artifactId>guava</artifactId>-->
+<!--				<version>${guava.version}</version>-->
+<!--			</dependency>-->
 			<dependency>
 				<groupId>org.projectlombok</groupId>
 				<artifactId>lombok</artifactId>
@@ -474,9 +473,9 @@
 				<plugins>
 					<!-- Create javadoc jars. -->
 					<plugin>
-						<groupId>org.apache.maven.plugins</groupId>
-						<artifactId>maven-javadoc-plugin</artifactId>
-						<version>${org.apache.maven.plugins.javadoc.version}</version>
+							<groupId>org.apache.maven.plugins</groupId>
+							<artifactId>maven-javadoc-plugin</artifactId>
+							<version>3.6.3</version>
 						<configuration>
 							<failOnError>false</failOnError>
 						</configuration>

@@ -27,6 +27,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import com.ocs.dynamo.dao.FetchJoinInformation;
 import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
@@ -86,6 +87,10 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	private boolean searchOrderSet;
 
 	private String autofillInstructions;
+
+	private List<FetchJoinInformation> fetchJoins;
+
+	private List<FetchJoinInformation> detailJoins;
 
 	@Builder.Default
 	private Map<AttributeModel, Boolean> sortOrder = new LinkedHashMap<>();

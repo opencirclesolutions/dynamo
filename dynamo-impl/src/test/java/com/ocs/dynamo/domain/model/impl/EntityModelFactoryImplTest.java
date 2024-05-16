@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
+import com.ocs.dynamo.dao.JoinType;
+import com.ocs.dynamo.domain.model.*;
 import jakarta.persistence.Basic;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
@@ -51,20 +53,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.ocs.dynamo.domain.model.AttributeDateType;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.BooleanType;
-import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.NumberFieldMode;
-import com.ocs.dynamo.domain.model.PagingMode;
-import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
-import com.ocs.dynamo.domain.model.TrimType;
-import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
@@ -203,6 +191,13 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	public void testAttributeGroups() {
 		EntityModel<Entity3> model = factory.getModel(Entity3.class);
 		assertNotNull(model);
+
+		assertEquals(2, model.getFetchJoins().size());
+		assertEquals("entity2", model.getFetchJoins().get(0).getProperty());
+		assertEquals(JoinType.LEFT, model.getFetchJoins().get(0).getJoinType());
+
+		assertEquals("entity3", model.getFetchJoins().get(1).getProperty());
+		assertEquals(JoinType.INNER, model.getFetchJoins().get(1).getJoinType());
 
 		assertEquals(3, model.getAttributeGroups().size());
 		String group1 = model.getAttributeGroups().get(0);
@@ -416,13 +411,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("name", parentModel.getAttributeModel("name").getPath());
 		assertEquals("parent.name", childModel.getAttributeModel("name").getPath());
 	}
-//
-//	@Test
-//	public void testId() {
-//		EntityModel<EntityParent> model = factory.getModel(EntityParent.class);
-//		AttributeModel attributeModel = model.getIdAttributeModel();
-//		assertNotNull(attributeModel);
-//	}
 
 	@Test
 	public void testGetAttributeModelsForType() {
@@ -501,7 +489,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		// nested embedding
 		assertNull(model.getAttributeModel("child.grandChild"));
 
-		AttributeModel m2 = model.getAttributeModel("child.grandChild.sometAttribute");
+		AttributeModel m2 = model.getAttributeModel("child.grandChild.someAttribute");
 		assertNotNull(m2);
 	}
 
@@ -706,7 +694,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	@Getter
 	@Setter
-	public class Entity1 {
+	public static class Entity1 {
 
 		@Size(max = 55)
 		@Attribute(main = true, textFieldMode = AttributeTextFieldMode.TEXTAREA, custom = {
@@ -737,7 +725,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@AttributeOrder(attributeNames = { "name", "birthDate" })
-	public class Entity2 {
+	public static class Entity2 {
 
 		@Attribute(trimSpaces = TrimType.TRIM)
 		private String name;
@@ -774,7 +762,10 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop", sortOrder = "name asc")
 	@AttributeGroups(value = { @AttributeGroup(messageKey = "group1.key", attributeNames = { "name" }),
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
-	public class Entity3 {
+	@Getter
+	@Setter
+	//@FetchJoins(joins = @FetchJoin(attribute = "entity2"))
+	public static class Entity3 {
 
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false)
 		private String name;
@@ -798,101 +789,21 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Attribute(searchable = SearchMode.ADVANCED)
 		private Integer advancedAge;
 
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public Integer getAge() {
-			return age;
-		}
-
-		public void setAge(Integer age) {
-			this.age = age;
-		}
-
-		public LocalDate getBirthDate() {
-			return birthDate;
-		}
-
-		public void setBirthDate(LocalDate birthDate) {
-			this.birthDate = birthDate;
-		}
-
-		public Entity2 getEntity2() {
-			return entity2;
-		}
-
-		public void setEntity2(Entity2 entity2) {
-			this.entity2 = entity2;
-		}
-
-		public List<Entity4> getEntityList() {
-			return entityList;
-		}
-
-		public void setEntityList(List<Entity4> entityList) {
-			this.entityList = entityList;
-		}
-
 		@Attribute(displayName = "deri")
 		public String getDerived() {
 			return "test";
 		}
-
-		public BigDecimal getWeight() {
-			return weight;
-		}
-
-		public void setWeight(BigDecimal weight) {
-			this.weight = weight;
-		}
-
-		public Integer getAdvancedAge() {
-			return advancedAge;
-		}
-
-		public void setAdvancedAge(Integer advancedAge) {
-			this.advancedAge = advancedAge;
-		}
-
 	}
 
-	public class Entity6 {
+	@Getter
+	@Setter
+	public static class Entity6 {
 
 		private String name;
 
 		private Integer age;
 
 		private LocalDate birthDate;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public Integer getAge() {
-			return age;
-		}
-
-		public void setAge(Integer age) {
-			this.age = age;
-		}
-
-		public LocalDate getBirthDate() {
-			return birthDate;
-		}
-
-		public void setBirthDate(LocalDate birthDate) {
-			this.birthDate = birthDate;
-		}
-
 	}
 
 	/**
@@ -900,7 +811,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	 * 
 	 * @author bas.rutten
 	 */
-	public class Entity7 {
+	@Getter
+	@Setter
+	public static class Entity7 {
 
 		@Attribute(selectMode = AttributeSelectMode.LOOKUP)
 		private Entity6 entity6;
@@ -910,34 +823,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@Attribute(multipleSearch = true, searchSelectMode = AttributeSelectMode.TOKEN, gridSelectMode = AttributeSelectMode.LIST)
 		private Entity5 entity52;
-
-		public Entity6 getEntity6() {
-			return entity6;
-		}
-
-		public void setEntity6(Entity6 entity6) {
-			this.entity6 = entity6;
-		}
-
-		public Entity5 getEntity5() {
-			return entity5;
-		}
-
-		public void setEntity5(Entity5 entity5) {
-			this.entity5 = entity5;
-		}
-
-		public Entity5 getEntity52() {
-			return entity52;
-		}
-
-		public void setEntity52(Entity5 entity52) {
-			this.entity52 = entity52;
-		}
-
 	}
 
-	public class Entity8 {
+	@Getter
+	@Setter
+	public static class Entity8 {
 
 		private LocalDate date1;
 
@@ -954,57 +844,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@Attribute
 		private LocalDate date6;
+   }
 
-		public LocalDate getDate1() {
-			return date1;
-		}
-
-		public void setDate1(LocalDate date1) {
-			this.date1 = date1;
-		}
-
-		public LocalDateTime getDate2() {
-			return date2;
-		}
-
-		public void setDate2(LocalDateTime date2) {
-			this.date2 = date2;
-		}
-
-		public LocalTime getDate3() {
-			return date3;
-		}
-
-		public void setDate3(LocalTime date3) {
-			this.date3 = date3;
-		}
-
-		public LocalTime getDate4() {
-			return date4;
-		}
-
-		public void setDate4(LocalTime date4) {
-			this.date4 = date4;
-		}
-
-		public LocalDate getDate5() {
-			return date5;
-		}
-
-		public void setDate5(LocalDate date5) {
-			this.date5 = date5;
-		}
-
-		public LocalDate getDate6() {
-			return date6;
-		}
-
-		public void setDate6(LocalDate date6) {
-			this.date6 = date6;
-		}
-	}
-
-	public class Entity9 {
+	@Getter
+	@Setter
+	public static class Entity9 {
 
 		@ElementCollection
 		@CollectionTable(name = "element_table")
@@ -1016,100 +860,38 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Column(name = "element")
 		@Attribute(minValue = 100, maxValue = 500)
 		private Set<Long> longElements = new HashSet<>();
-
-		public Set<String> getElements() {
-			return elements;
-		}
-
-		public void setElements(Set<String> elements) {
-			this.elements = elements;
-		}
-
-		public Set<Long> getLongElements() {
-			return longElements;
-		}
-
-		public void setLongElements(Set<Long> longElements) {
-			this.longElements = longElements;
-		}
-
 	}
 
-	public class Entity10 {
+	@Getter
+	@Setter
+	public static class Entity10 {
 
 		@Attribute(groupTogetherWith = "attribute2")
 		private String attribute1;
 
 		@Transient
 		private String attribute2;
-
-		public String getAttribute1() {
-			return attribute1;
-		}
-
-		public void setAttribute1(String attribute1) {
-			this.attribute1 = attribute1;
-		}
-
-		public String getAttribute2() {
-			return attribute2;
-		}
-
-		public void setAttribute2(String attribute2) {
-			this.attribute2 = attribute2;
-		}
-
 	}
 
 	@AttributeOrder(attributeNames = { "attribute1", "attribute2" })
-	public class Entity11 {
+	@Getter
+	@Setter
+	public static class Entity11 {
 
 		private String attribute1;
 
 		@Attribute(groupTogetherWith = "attribute1")
 		private String attribute2;
-
-		public String getAttribute1() {
-			return attribute1;
-		}
-
-		public void setAttribute1(String attribute1) {
-			this.attribute1 = attribute1;
-		}
-
-		public String getAttribute2() {
-			return attribute2;
-		}
-
-		public void setAttribute2(String attribute2) {
-			this.attribute2 = attribute2;
-		}
-
 	}
 
-	public class Entity12 {
+	@Getter
+	@Setter
+	public static class Entity12 {
 
 		@Attribute(cascade = @Cascade(cascadeTo = "attribute2", filterPath = "somePath"))
 		private String attribute1;
 
 		private String attribute2;
-
-		public String getAttribute1() {
-			return attribute1;
-		}
-
-		public void setAttribute1(String attribute1) {
-			this.attribute1 = attribute1;
-		}
-
-		public String getAttribute2() {
-			return attribute2;
-		}
-
-		public void setAttribute2(String attribute2) {
-			this.attribute2 = attribute2;
-		}
-
 	}
 
 	/**
@@ -1118,31 +900,19 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	 * @author bas.rutten
 	 *
 	 */
-	public class Entity13 {
+	@Getter
+	@Setter
+	public static class Entity13 {
 
 		private String attribute1;
 
 		private String attribute2;
 
-		public String getAttribute1() {
-			return attribute1;
-		}
-
-		public void setAttribute1(String attribute1) {
-			this.attribute1 = attribute1;
-		}
-
-		public String getAttribute2() {
-			return attribute2;
-		}
-
-		public void setAttribute2(String attribute2) {
-			this.attribute2 = attribute2;
-		}
-
 	}
 
-	public class Entity14 {
+	@Getter
+	@Setter
+	public static class Entity14 {
 
 		@Attribute(displayFormat = "dd/MM/yyyy", defaultValue = "01/01/1980")
 		private LocalDate localDate;
@@ -1155,59 +925,20 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@Attribute(defaultValue = "01-01-2017 12:00:00+0100")
 		private ZonedDateTime zonedDateTime;
+	}
 
-		public LocalDate getLocalDate() {
-			return localDate;
-		}
-
-		public void setLocalDate(LocalDate localDate) {
-			this.localDate = localDate;
-		}
-
-		public LocalDateTime getLocalDateTime() {
-			return localDateTime;
-		}
-
-		public void setLocalDateTime(LocalDateTime localDateTime) {
-			this.localDateTime = localDateTime;
-		}
-
-		public LocalTime getLocalTime() {
-			return localTime;
-		}
-
-		public void setLocalTime(LocalTime localTime) {
-			this.localTime = localTime;
-		}
-
-		public ZonedDateTime getZonedDateTime() {
-			return zonedDateTime;
-		}
-
-		public void setZonedDateTime(ZonedDateTime zonedDateTime) {
-			this.zonedDateTime = zonedDateTime;
-		}
+	public static class Entity4 {
 
 	}
 
-	public class Entity4 {
-
-	}
-
-	public class Entity5 {
+	@Getter
+	@Setter
+	public static class Entity5 {
 
 		@Lob
 		@Basic(fetch = FetchType.LAZY)
 		@Attribute(image = true, allowedExtensions = { "gif", "bmp" })
 		private byte[] logo;
-
-		public byte[] getLogo() {
-			return logo;
-		}
-
-		public void setLogo(byte[] logo) {
-			this.logo = logo;
-		}
 
 		@AssertTrue
 		public boolean isSomeValidation() {
@@ -1216,6 +947,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(sortOrder = "name desc, id asc")
+	@Getter
+	@Setter
 	public class EntityParent {
 
 		@Id
@@ -1226,30 +959,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@OneToMany
 		private List<EntityChild> children;
-
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public List<EntityChild> getChildren() {
-			return children;
-		}
-
-		public void setChildren(List<EntityChild> children) {
-			this.children = children;
-		}
 
 		@Attribute(memberType = EntityGrandChild.class, replacementSearchPath = "children")
 		public List<EntityGrandChild> getCalculatedChildren() {
@@ -1262,44 +971,19 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(nestingDepth = 1)
+	@Getter
+	@Setter
 	public class EntityChild {
+
 		@Id
 		private int id;
+
 		private String name;
+
 		private EntityParent parent;
+
 		private EntityParent parent2;
 
-		public int getId() {
-			return id;
-		}
-
-		public void setId(int id) {
-			this.id = id;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public EntityParent getParent() {
-			return parent;
-		}
-
-		public void setParent(EntityParent parent) {
-			this.parent = parent;
-		}
-
-		public EntityParent getParent2() {
-			return parent2;
-		}
-
-		public void setParent2(EntityParent parent2) {
-			this.parent2 = parent2;
-		}
 	}
 
 	public class EntityGrandChild extends EntityChild {
@@ -1307,55 +991,30 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(sortOrder = "code unknown, unknown asc")
-	public class EntitySortError {
+	@Getter
+	@Setter
+	public static class EntitySortError {
+
 		private String code;
+
 		private String name;
-
-		public String getCode() {
-			return code;
-		}
-
-		public void setCode(String code) {
-			this.code = code;
-		}
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
 	}
 
 	@AttributeOrder(attributeNames = { "child.embedded1", "child.embedded2", "name" })
-	public class EmbeddedParent {
+	@Getter
+	@Setter
+	public static class EmbeddedParent {
 
 		private String name;
 
 		@Embedded
 		private EmbeddedChild child;
-
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public EmbeddedChild getChild() {
-			return child;
-		}
-
-		public void setChild(EmbeddedChild child) {
-			this.child = child;
-		}
-
 	}
 
 	@Embeddable
-	public class EmbeddedChild {
+	@Getter
+	@Setter
+	public static class EmbeddedChild {
 
 		@Attribute(visible = VisibilityType.HIDE)
 		private String embedded1;
@@ -1365,116 +1024,40 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@Embedded
 		private EmbeddedGrandChild grandChild;
-
-		public String getEmbedded1() {
-			return embedded1;
-		}
-
-		public void setEmbedded1(String embedded1) {
-			this.embedded1 = embedded1;
-		}
-
-		public String getEmbedded2() {
-			return embedded2;
-		}
-
-		public void setEmbedded2(String embedded2) {
-			this.embedded2 = embedded2;
-		}
-
-		public EmbeddedGrandChild getGrandChild() {
-			return grandChild;
-		}
-
-		public void setGrandChild(EmbeddedGrandChild grandChild) {
-			this.grandChild = grandChild;
-		}
 	}
 
 	@Embeddable
-	public class EmbeddedGrandChild {
+	@Getter
+	@Setter
+	public static class EmbeddedGrandChild {
 
-		private String sometAttribute;
-
-		public String getSometAttribute() {
-			return sometAttribute;
-		}
-
-		public void setSometAttribute(String sometAttribute) {
-			this.sometAttribute = sometAttribute;
-		}
+		private String someAttribute;
 	}
 
 	@AttributeOrder(attributeNames = { "field1", "field2", "field3" })
 	@GridAttributeOrder(attributeNames = { "field2", "field1", "field3" })
 	@SearchAttributeOrder(attributeNames = { "field3", "field2", "field1" })
-	public class SearchOrderEntity {
+	@Getter
+	@Setter
+	public static class SearchOrderEntity {
 
 		private String field1;
 
 		private String field2;
 
 		private String field3;
-
-		public String getField1() {
-			return field1;
-		}
-
-		public void setField1(String field1) {
-			this.field1 = field1;
-		}
-
-		public String getField2() {
-			return field2;
-		}
-
-		public void setField2(String field2) {
-			this.field2 = field2;
-		}
-
-		public String getField3() {
-			return field3;
-		}
-
-		public void setField3(String field3) {
-			this.field3 = field3;
-		}
-
 	}
 
 	@AttributeOrder(attributeNames = { "field1", "field2", "field3" })
-	public class SearchOrderEntityMessage {
+	@Getter
+	@Setter
+	public static class SearchOrderEntityMessage {
 
 		private String field1;
 
 		private String field2;
 
 		private String field3;
-
-		public String getField1() {
-			return field1;
-		}
-
-		public void setField1(String field1) {
-			this.field1 = field1;
-		}
-
-		public String getField2() {
-			return field2;
-		}
-
-		public void setField2(String field2) {
-			this.field2 = field2;
-		}
-
-		public String getField3() {
-			return field3;
-		}
-
-		public void setField3(String field3) {
-			this.field3 = field3;
-		}
-
 	}
 
 }

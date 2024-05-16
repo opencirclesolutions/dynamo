@@ -149,7 +149,7 @@ public class ServiceBasedSplitLayout<ID extends Serializable, T extends Abstract
 	@Override
 	protected final TextField constructSearchField() {
 		if (getFormOptions().isShowQuickSearchField()) {
-			TextField searchField = new TextField(message("ocs.search"));
+			TextField searchField = new TextField("");
 			searchField.addClassName("quickSearchField");
 
 			// respond to the user entering a search term

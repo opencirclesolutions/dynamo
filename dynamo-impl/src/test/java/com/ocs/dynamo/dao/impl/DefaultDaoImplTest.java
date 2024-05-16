@@ -14,37 +14,59 @@
 package com.ocs.dynamo.dao.impl;
 
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import org.junit.jupiter.api.Test;
-
 import com.ocs.dynamo.domain.QTestEntity;
 import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
+import com.ocs.dynamo.test.BaseMockitoTest;
+import org.aspectj.lang.annotation.Before;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.Mockito;
+import org.springframework.test.util.ReflectionTestUtils;
 
-public class DefaultDaoImplTest {
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
+public class DefaultDaoImplTest extends BaseMockitoTest {
 
     private DefaultDaoImpl<Integer, TestEntity> dao;
 
+    @Mock
+    private EntityModelFactory entityModelFactory;
+
+    @Mock
+    private EntityModel<TestEntity> entityModel;
+
+    @BeforeEach
+    void beforeEach() {
+    }
+
     @Test
-    public void testCreateWithout() {
+    public void testCreateWithoutFetch() {
         dao = new DefaultDaoImpl<>(QTestEntity.testEntity, TestEntity.class);
+        Mockito.when(entityModelFactory.getModel(TestEntity.class)).thenReturn(entityModel);
+        ReflectionTestUtils.setField(dao, "entityModelFactory", entityModelFactory);
+
         assertEquals(QTestEntity.testEntity, dao.getDslRoot());
         assertEquals(TestEntity.class, dao.getEntityClass());
 
         // no fetch joins
-        assertEquals(0, dao.getFetchJoins().length);
+        assertEquals(0, dao.getJoins().length);
     }
 
     @Test
     public void testCreateWithFetch() {
         dao = new DefaultDaoImpl<>(QTestEntity.testEntity, TestEntity.class,
                 "testEntities");
+        ReflectionTestUtils.setField(dao, "entityModelFactory", entityModelFactory);
+
         assertEquals(QTestEntity.testEntity, dao.getDslRoot());
         assertEquals(TestEntity.class, dao.getEntityClass());
 
         // check that the fetch joins are properly set
-        assertEquals(1, dao.getFetchJoins().length);
-        assertEquals("testEntities", dao.getFetchJoins()[0].getProperty());
+        assertEquals(1, dao.getJoins().length);
+        assertEquals("testEntities", dao.getJoins()[0].getProperty());
     }
 
 }

@@ -44,7 +44,7 @@
     "lit-html": "1.4.1",
     "@vaadin/router": "1.7.5",
     "@vaadin/common-frontend": "0.0.19",
-    "lit": "3.1.0"
+    "lit": "3.1.2"
   },
   "devDependencies": {
     "webpack": "4.46.0",
@@ -77,18 +77,18 @@
     "workbox-precaching": "7.0.0",
     "workbox-webpack-plugin": "6.5.0",
     "workbox-build": "7.0.0",
-    "@rollup/plugin-replace": "5.0.4",
+    "@rollup/plugin-replace": "5.0.5",
     "async": "3.2.4",
     "mkdirp": "1.0.4",
-    "vite": "5.0.6",
+    "vite": "5.1.7",
     "rollup-plugin-brotli": "3.1.0",
-    "@rollup/pluginutils": "5.0.5",
-    "vite-plugin-checker": "0.6.2",
+    "@rollup/pluginutils": "5.1.0",
+    "vite-plugin-checker": "0.6.4",
     "transform-ast": "2.4.4",
     "strip-css-comments": "5.0.0",
     "@vitejs/plugin-react-swc": "3.5.0",
-    "rollup-plugin-visualizer": "5.9.2",
-    "@vitejs/plugin-react": "4.2.0"
+    "rollup-plugin-visualizer": "5.12.0",
+    "@vitejs/plugin-react": "4.2.1"
   },
   "vaadin": {
     "dependencies": {
@@ -134,7 +134,7 @@
       "lit-html": "1.4.1",
       "@vaadin/router": "1.7.5",
       "@vaadin/common-frontend": "0.0.19",
-      "lit": "3.1.0"
+      "lit": "3.1.2"
     },
     "devDependencies": {
       "webpack-babel-multi-target-plugin": "2.5.0",
@@ -167,18 +167,18 @@
       "workbox-precaching": "7.0.0",
       "workbox-webpack-plugin": "6.5.0",
       "workbox-build": "7.0.0",
-      "@rollup/plugin-replace": "5.0.4",
+      "@rollup/plugin-replace": "5.0.5",
       "async": "3.2.4",
       "mkdirp": "1.0.4",
-      "vite": "5.0.6",
+      "vite": "5.1.7",
       "rollup-plugin-brotli": "3.1.0",
-      "@rollup/pluginutils": "5.0.5",
-      "vite-plugin-checker": "0.6.2",
+      "@rollup/pluginutils": "5.1.0",
+      "vite-plugin-checker": "0.6.4",
       "transform-ast": "2.4.4",
       "strip-css-comments": "5.0.0",
       "@vitejs/plugin-react-swc": "3.5.0",
-      "rollup-plugin-visualizer": "5.9.2",
-      "@vitejs/plugin-react": "4.2.0"
+      "rollup-plugin-visualizer": "5.12.0",
+      "@vitejs/plugin-react": "4.2.1"
     },
     "hash": "1cd933f27da9ba4ac84b3e1961b094fb3cab7610dda02091d399cb1489b7ac7f"
   }

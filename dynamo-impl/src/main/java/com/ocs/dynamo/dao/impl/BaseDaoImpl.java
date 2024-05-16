@@ -15,6 +15,7 @@ package com.ocs.dynamo.dao.impl;
 
 import com.ocs.dynamo.dao.*;
 import com.ocs.dynamo.domain.AbstractEntity;
+import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.filter.Filter;
 import com.querydsl.core.types.dsl.EntityPathBase;
@@ -24,6 +25,7 @@ import com.querydsl.jpa.impl.JPAUpdateClause;
 
 import jakarta.persistence.*;
 import jakarta.persistence.criteria.CriteriaQuery;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -36,6 +38,9 @@ import java.util.stream.Collectors;
  * @param <T>  type parameter, the entity class
  */
 public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements BaseDao<ID, T> {
+
+	@Autowired
+	private EntityModelFactory entityModelFactory;
 
 	@PersistenceContext
 	private EntityManager entityManager;
@@ -127,7 +132,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	 */
 	private List<T> fetch(Filter filter, Pageable pageable, SortOrders sortOrders, FetchJoinInformation... joins) {
 		TypedQuery<T> query = JpaQueryBuilder.createSelectQuery(filter, entityManager, getEntityClass(),
-				(joins == null || joins.length == 0) ? getFetchJoins() : joins,
+				(joins == null || joins.length == 0) ? getJoins() : joins,
 				sortOrders == null ? null : sortOrders.toArray());
 
 		if (pageable != null) {
@@ -145,7 +150,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	@Override
 	public T fetchById(ID id, FetchJoinInformation... joins) {
 		TypedQuery<T> query = JpaQueryBuilder.createFetchSingleObjectQuery(entityManager, getEntityClass(), id,
-				(joins != null && joins.length > 0) ? joins : getFetchJoins());
+				(joins != null && joins.length > 0) ? joins : getDetailJoins());
 		return getFirstValue(query.getResultList());
 	}
 
@@ -156,7 +161,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 			return Collections.emptyList();
 		}
 		TypedQuery<T> query = JpaQueryBuilder.createFetchQuery(entityManager, getEntityClass(), ids, additionalFilter,
-				sortOrders, (joins != null && joins.length > 0) ? joins : getFetchJoins());
+				sortOrders, (joins != null && joins.length > 0) ? joins : getJoins());
 		return query.getResultList();
 	}
 
@@ -169,7 +174,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
 			FetchJoinInformation... joins) {
 		CriteriaQuery<T> cq = JpaQueryBuilder.createUniquePropertyFetchQuery(entityManager, getEntityClass(),
-				(joins == null || joins.length == 0) ? getFetchJoins() : joins, propertyName, value, caseSensitive);
+				(joins == null || joins.length == 0) ? getDetailJoins() : joins, propertyName, value, caseSensitive);
 		TypedQuery<T> query = entityManager.createQuery(cq);
 		try {
 			return query.getSingleResult();
@@ -297,15 +302,16 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		return entityManager;
 	}
 
-	/**
-	 * Returns the fetch joins that must be included in a query to fetch the IDs.
-	 * This method return an empty array by default - override when needed
-	 * 
-	 * @return the fetch joins
-	 */
-	protected FetchJoinInformation[] getFetchJoins() {
-		return new FetchJoinInformation[] {};
+	protected FetchJoinInformation[] getJoins() {
+		return entityModelFactory.getModel(getEntityClass())
+				.getFetchJoins().toArray(new FetchJoinInformation[0]);
 	}
+
+	protected FetchJoinInformation[] getDetailJoins() {
+		return entityModelFactory.getModel(getEntityClass())
+				.getDetailJoins().toArray(new FetchJoinInformation[0]);
+	}
+
 
 	/**
 	 * Returns the first value of a list

@@ -35,27 +35,14 @@ import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.JoinType;
+import com.ocs.dynamo.domain.model.*;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.AttributeDateType;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.BooleanType;
-import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.MultiSelectMode;
-import com.ocs.dynamo.domain.model.NumberFieldMode;
-import com.ocs.dynamo.domain.model.PagingMode;
-import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
-import com.ocs.dynamo.domain.model.TrimType;
-import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
 import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
@@ -464,9 +451,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         validateGroupTogetherSettings(entityModel);
 
         String sortOrder = null;
-        Model annot = entityClass.getAnnotation(Model.class);
-        if (annot != null && !StringUtils.isEmpty(annot.sortOrder())) {
-            sortOrder = annot.sortOrder();
+        Model modelAnnotation = entityClass.getAnnotation(Model.class);
+        if (modelAnnotation != null && !StringUtils.isEmpty(modelAnnotation.sortOrder())) {
+            sortOrder = modelAnnotation.sortOrder();
         }
 
         String sortOrderMsg = getEntityMessage(reference, EntityModel.SORT_ORDER);
@@ -474,9 +461,44 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             sortOrder = sortOrderMsg;
         }
         setSortOrder(entityModel, sortOrder);
-        cache.put(reference, entityModel);
 
+        entityModel.setFetchJoins(new ArrayList<>());
+        entityModel.setDetailJoins(new ArrayList<>());
+
+        FetchJoins joins = entityClass.getAnnotation(FetchJoins.class);
+        if (joins != null) {
+            List<FetchJoinInformation> mapped = Arrays.stream(joins.joins())
+                    .map(join -> FetchJoinInformation.of(join.attribute(), join.type()))
+                    .toList();
+            entityModel.setFetchJoins(mapped);
+            entityModel.setDetailJoins(mapped);
+
+            if (joins.detailJoins() != null && joins.detailJoins().length > 0) {
+                mapped = Arrays.stream(joins.detailJoins())
+                        .map(join -> FetchJoinInformation.of(join.attribute(), join.type()))
+                        .toList();
+                entityModel.setDetailJoins(mapped);
+            }
+        }
+
+        processMessageBundleJoinOverrides(entityModel);
+
+        cache.put(reference, entityModel);
         return entityModel;
+    }
+
+    private <T> void processMessageBundleJoinOverrides(EntityModelImpl<T> entityModel) {
+        List<FetchJoinInformation> overrideJoins = processMessageBundleFetchJoinOverrides(
+                entityModel, EntityModel.JOIN);
+        if (!overrideJoins.isEmpty()) {
+            entityModel.setFetchJoins(overrideJoins);
+        }
+
+        List<FetchJoinInformation> overrideDetailJoins = processMessageBundleFetchJoinOverrides(
+                entityModel, EntityModel.DETAIL_JOIN);
+        if (!overrideDetailJoins.isEmpty()) {
+            entityModel.setDetailJoins(overrideDetailJoins);
+        }
     }
 
     /**
@@ -526,6 +548,42 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 groupName = messageService.getEntityMessage(model.getReference(),
                         EntityModel.ATTRIBUTE_GROUP + "." + i + "." + EntityModel.MESSAGE_KEY, getLocale());
             }
+        }
+        return result;
+    }
+
+    /**
+     * Processes message bundle fetch joins
+     * @param model the entity model
+     * @param name the name to look for in the message bundle
+     * @param <T> type parameter
+     * @return the list of fetch joins (possibly empty)
+     */
+    protected <T> List<FetchJoinInformation> processMessageBundleFetchJoinOverrides(EntityModel<T> model,
+                                                                                    String name) {
+        List<FetchJoinInformation> result = new ArrayList<>();
+
+        // look for message bundle overwrites
+        int i = 1;
+        if (messageService != null) {
+            String key = name + "." + i + "." + EntityModel.ATTRIBUTE;
+            String joinAttribute = messageService.getEntityMessage(model.getReference(),
+                    key, getLocale());
+            while (joinAttribute != null) {
+                String joinType = messageService.getEntityMessage(model.getReference(),
+                        name + "." + i + "." + EntityModel.JOIN_TYPE, getLocale());
+
+                if (joinType != null) {
+                    result.add(new FetchJoinInformation(joinAttribute,
+                            JoinType.valueOf(joinType)));
+                } else {
+                    result.add(new FetchJoinInformation(joinAttribute));
+                }
+                i++;
+                joinAttribute = messageService.getEntityMessage(model.getReference(),
+                        name + "." + i + "." + EntityModel.ATTRIBUTE, getLocale());
+            }
+
         }
         return result;
     }

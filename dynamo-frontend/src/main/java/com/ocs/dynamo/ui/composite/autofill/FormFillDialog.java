@@ -71,7 +71,7 @@ public class FormFillDialog extends BaseModalDialog {
                 }
 
                 try {
-                    FormFiller formFiller = new FormFiller(targetComponent, instructions, contextInstructions, new ChatGPTChatCompletionService());
+                    FormFiller formFiller = new FormFiller(targetComponent, instructions, contextInstructions, new ChatGPT4Service());
                     formFiller.fill(content.getValue(), entityModel);
                     this.close();
                 } catch (Exception ex) {
