@@ -37,7 +37,7 @@ import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 /**
- * A form that displays of a progress bar while some time consuming process is
+ * A form that displays of a progress bar while some time-consuming process is
  * taking place
  * 
  * @author bas.rutten
@@ -49,7 +49,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProgressForm<T> extends BaseCustomComponent implements Progressable {
 
 	public enum ProgressMode {
-		PROGRESSBAR, SIMPLE;
+		PROGRESSBAR, SIMPLE
 	}
 
 	/**
@@ -82,7 +82,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	};
 
 	@Getter
-	private ProgressCounter counter = new DefaultProgressCounter();
+	private final ProgressCounter counter = new DefaultProgressCounter();
 
 	/**
 	 * Callback method that is used to estimate the total size of the data set to
@@ -114,7 +114,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 
 	private VerticalLayout progressLayout;
 
-	private ProgressMode progressMode;
+	private final ProgressMode progressMode;
 
 	/**
 	 * The label that is used to display the status (current completion percentage)
@@ -127,7 +127,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	private String title;
 
 	@Getter
-	private UI ui;
+	private final UI ui;
 
 	/**
 	 * Constructor
@@ -177,7 +177,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 * Estimates the current progress based on the counter - override in case of
 	 * custom progress calculation
 	 * 
-	 * @return
+	 * @return the estimated progress
 	 */
 	@Override
 	public int estimateCurrentProgress() {
@@ -244,14 +244,14 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	/**
 	 * Extracts the OCSRuntimeException from the provided exception
 	 * 
-	 * @param t the exception
-	 * @return
+	 * @param throwable the exception
+	 * @return the extracted exception
 	 */
-	protected OCSRuntimeException extractRuntimeException(Throwable t) {
-		if (t instanceof OCSRuntimeException) {
-			return (OCSRuntimeException) t;
-		} else if (t.getCause() != null) {
-			return extractRuntimeException(t.getCause());
+	protected OCSRuntimeException extractRuntimeException(Throwable throwable) {
+		if (throwable instanceof OCSRuntimeException) {
+			return (OCSRuntimeException) throwable;
+		} else if (throwable.getCause() != null) {
+			return extractRuntimeException(throwable.getCause());
 		}
 		return null;
 	}
@@ -329,7 +329,6 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 * Locks the UI and displays a notification
 	 * 
 	 * @param message the message
-	 * @param type    the type of the notification
 	 */
 	protected void showNotification(String message) {
 		if (ui != null) {
@@ -354,7 +353,7 @@ public class ProgressForm<T> extends BaseCustomComponent implements Progressable
 	 * Start the actual work - this is the method that must be called in order to
 	 * actually start the processing
 	 * 
-	 * @param t the (optional) object that is being processed
+	 * @param input the (optional) object that is being processed
 	 */
 	protected final void startWork(T input) {
 		if (isFormValid == null || isFormValid.test(input)) {

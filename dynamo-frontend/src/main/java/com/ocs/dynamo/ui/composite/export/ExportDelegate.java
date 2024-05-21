@@ -39,7 +39,7 @@ public interface ExportDelegate {
 	 * @param entityModel the entity model of the entity that is being exported
 	 * @param mode        the export mode
 	 * @param predicate   filter predicate to limit the results
-	 * @param sortOrders  sort orders to used to order the results
+	 * @param sortOrders  sort orders that are used to sort the results
 	 * @param joins       the fetch joins to apply when fetching data
 	 */
 	<ID extends Serializable, T extends AbstractEntity<ID>> void export(EntityModel<T> entityModel, ExportMode mode,
@@ -67,7 +67,7 @@ public interface ExportDelegate {
 	 * @param joins           the joins to use
 	 */
 	<ID extends Serializable, T extends AbstractEntity<ID>> void exportPivoted(EntityModel<T> entityModel,
-			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivoParameters,
+			SerializablePredicate<T> predicate, List<SortOrder<?>> sortOrders, PivotParameters pivotParameters,
 			FetchJoinInformation... joins);
 
 }

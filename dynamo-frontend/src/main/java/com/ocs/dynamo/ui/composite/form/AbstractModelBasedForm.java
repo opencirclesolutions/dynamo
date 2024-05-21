@@ -46,7 +46,7 @@ public abstract class AbstractModelBasedForm<ID extends Serializable, T extends 
 
 	@Getter
 	@Setter
-	private Map<String, SerializablePredicate<?>> fieldFilters = new HashMap<>();
+	private Map<String, SerializablePredicate<?>> fieldFilters;
 
 	@Getter
 	private final FormOptions formOptions;

@@ -184,8 +184,6 @@ public class FormFiller {
      * @return the corrected response
      */
     private String correctResponse(String response) {
-
-
         response =  response.replaceAll(",\\R}", "}");
         response =  response.replaceAll("```json", "");
         response =  response.replaceAll("```", "");

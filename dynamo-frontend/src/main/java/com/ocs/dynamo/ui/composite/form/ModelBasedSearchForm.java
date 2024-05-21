@@ -81,7 +81,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	private EnhancedFormLayout form;
 
 	@Getter
-	private Map<String, FilterGroup<T>> groups = new HashMap<>();
+	private final Map<String, FilterGroup<T>> groups = new HashMap<>();
 
 	/**
 	 * Constructor
@@ -339,11 +339,11 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 					ca.clearAdditionalFilter();
 				} else {
 					if (event.getValue() instanceof Collection) {
-						ca.setAdditionalFilter(new InPredicate<S>(am.getCascadeFilterPath(cascadePath),
+						ca.setAdditionalFilter(new InPredicate<>(am.getCascadeFilterPath(cascadePath),
 								(Collection<S>) event.getValue()));
 					} else {
 						ca.setAdditionalFilter(
-								new EqualsPredicate<S>(am.getCascadeFilterPath(cascadePath), event.getValue()));
+								new EqualsPredicate<>(am.getCascadeFilterPath(cascadePath), event.getValue()));
 					}
 				}
 			} else {
@@ -385,7 +385,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	 * @return whether the search field for the attribute model must be shown
 	 */
 	private boolean mustShowSearchField(AttributeModel attributeModel) {
-		boolean mustShow = false;
+		boolean mustShow;
 		if (isAdvancedSearchMode()) {
 			// in advanced search mode, show all searchable fields
 			mustShow = attributeModel.isSearchable();
@@ -405,8 +405,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		for (FilterGroup<?> group : getGroups().values()) {
 			if (group.getField() instanceof Refreshable) {
 				if (getFieldFilters().containsKey(group.getPropertyId())
-						&& group.getField() instanceof CustomEntityField) {
-					CustomEntityField cef = (CustomEntityField) group.getField();
+						&& group.getField() instanceof CustomEntityField cef) {
 					Object oldValue = cef.getValue();
 					SerializablePredicate<?> ff = getFieldFilters().get(group.getPropertyId());
 					cef.refresh(ff);
@@ -521,7 +520,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 		groups.clear();
 		iterate(getEntityModel().getAttributeModelsSortedForSearch());
 
-		// restore search values (some fields might not be there any more)
+		// restore search values (some fields might not be there anymore)
 		for (Entry<String, Object> entry : oldValues.entrySet()) {
 			FilterGroup<T> filterGroup = groups.get(entry.getKey());
 			if (filterGroup != null) {
@@ -558,25 +557,22 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	/**
 	 * Restores a single search value based on a predicate
 	 * 
-	 * @param predicate
+	 * @param predicate the predicate
 	 */
 	protected void restoreSearchValue(SerializablePredicate<T> predicate) {
-		if (predicate instanceof BetweenPredicate) {
-			BetweenPredicate<T> bp = (BetweenPredicate<T>) predicate;
+		if (predicate instanceof BetweenPredicate bp) {
 			AttributeModel am = getEntityModel().getAttributeModel(bp.getProperty());
 			Object fromValue = ConvertUtils.convertToPresentationValue(am, bp.getFromValue());
 			Object toValue = ConvertUtils.convertToPresentationValue(am, bp.getToValue());
 			setSearchValue(bp.getProperty(), fromValue, toValue);
-		} else if (predicate instanceof LessOrEqualPredicate) {
-			LessOrEqualPredicate<T> bp = (LessOrEqualPredicate<T>) predicate;
-			AttributeModel am = getEntityModel().getAttributeModel(bp.getProperty());
-			Object auxValue = ConvertUtils.convertToPresentationValue(am, bp.getValue());
-			setSearchAuxValue(bp.getProperty(), auxValue);
-		} else if (predicate instanceof PropertyPredicate) {
-			PropertyPredicate<T> c = (PropertyPredicate<T>) predicate;
-			AttributeModel am = getEntityModel().getAttributeModel(c.getProperty());
-			Object value = ConvertUtils.convertToPresentationValue(am, c.getValue());
-			setSearchValue(c.getProperty(), value);
+		} else if (predicate instanceof LessOrEqualPredicate loe) {
+			AttributeModel am = getEntityModel().getAttributeModel(loe.getProperty());
+			Object auxValue = ConvertUtils.convertToPresentationValue(am, loe.getValue());
+			setSearchAuxValue(loe.getProperty(), auxValue);
+		} else if (predicate instanceof PropertyPredicate pp) {
+			AttributeModel am = getEntityModel().getAttributeModel(pp.getProperty());
+			Object value = ConvertUtils.convertToPresentationValue(am, pp.getValue());
+			setSearchValue(pp.getProperty(), value);
 		}
 	}
 
@@ -590,7 +586,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 				SerializablePredicate<T> predicate = (SerializablePredicate<T>) s;
 				if (s instanceof CompositePredicate) {
 					CompositePredicate<T> cp = (CompositePredicate<T>) s;
-					cp.getOperands().stream().forEach(ap -> restoreSearchValue(ap));
+					cp.getOperands().forEach(ap -> restoreSearchValue(ap));
 				} else {
 					restoreSearchValue(predicate);
 				}
@@ -602,8 +598,7 @@ public class ModelBasedSearchForm<ID extends Serializable, T extends AbstractEnt
 	protected void storeSearchFilters() {
 		UIHelper helper = ServiceLocatorFactory.getServiceLocator().getService(UIHelper.class);
 		if (helper != null) {
-			List<SerializablePredicate<?>> list = new ArrayList<>();
-			list.addAll(getCurrentFilters());
+			List<SerializablePredicate<?>> list = new ArrayList<>(getCurrentFilters());
 			helper.storeSearchTerms(list);
 		}
 	}

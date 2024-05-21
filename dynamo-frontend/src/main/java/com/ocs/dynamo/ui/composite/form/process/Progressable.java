@@ -27,21 +27,21 @@ public interface Progressable {
 	/**
 	 * Estimates the current progress of the process
 	 * 
-	 * @return
+	 * @return an estimate of the current progress (as a percentage)
 	 */
 	int estimateCurrentProgress();
 
 	/**
 	 * Retrieves the progress bar
 	 * 
-	 * @return
+	 * @return the progress bar
 	 */
 	ProgressBar getProgressBar();
 
 	/**
 	 * Retrieves the status label
 	 * 
-	 * @return
+	 * @return the label describing the status of the process
 	 */
 	Text getStatusLabel();
 }

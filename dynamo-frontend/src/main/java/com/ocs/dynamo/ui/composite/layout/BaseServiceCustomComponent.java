@@ -284,8 +284,8 @@ public abstract class BaseServiceCustomComponent<ID extends Serializable, T exte
 	 * Specifies the code that will be carried out after the edit form has been
 	 * constructed
 	 */
-	public void setAfterEditFormBuilt(BiConsumer<HasComponents, Boolean> aFterEditFormBuilt) {
-		componentContext.setAfterEditFormBuilt(aFterEditFormBuilt);
+	public void setAfterEditFormBuilt(BiConsumer<HasComponents, Boolean> afterEditFormBuilt) {
+		componentContext.setAfterEditFormBuilt(afterEditFormBuilt);
 	}
 
 	public void setAfterModeChanged(BiConsumer<ModelBasedEditForm<ID, T>, Boolean> afterModeChanged) {

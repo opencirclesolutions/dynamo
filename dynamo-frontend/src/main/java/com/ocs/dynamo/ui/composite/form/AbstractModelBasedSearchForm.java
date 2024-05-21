@@ -74,7 +74,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 
 	@Getter
 	@Setter
-	private boolean advancedSearchMode = false;
+	private boolean advancedSearchMode;
 
 	/**
 	 * Callback method that is executed after advanced mode is toggle on or off
@@ -400,7 +400,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 * Searching is allowed when there are no required attributes or all required
 	 * attributes are in the composite filter.
 	 *
-	 * @return
+	 * @return true if searching is allowed, false otherwise
 	 */
 	@SuppressWarnings("unchecked")
 	public boolean isSearchAllowed() {
@@ -468,7 +468,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	/**
 	 * Execute the required logic after a form clear
 	 * 
-	 * @param event
+	 * @param event the button click event
 	 */
 	private void handleAfterClear(ClickEvent<Button> event) {
 		if (afterClearConsumer != null) {
@@ -503,7 +503,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	protected abstract void restoreSearchValues();
 
 	/**
-	 * Performs a search that matches all of the search criteria
+	 * Performs a search that matches all the search criteria
 	 * 
 	 * @return whether the search was successful
 	 */
@@ -531,7 +531,7 @@ public abstract class AbstractModelBasedSearchForm<ID extends Serializable, T ex
 	 *                       predicate are returned and in the latter case all
 	 *                       results matching all predicates are returned.
 	 *
-	 * @return
+	 * @return true if a successful search was carried out, false otherwise
 	 */
 	private boolean search(boolean skipValidation, boolean matchAny) {
 		if (!skipValidation && !isSearchAllowed()) {

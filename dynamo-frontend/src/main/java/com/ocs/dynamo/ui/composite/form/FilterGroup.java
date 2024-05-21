@@ -133,7 +133,7 @@ public class FilterGroup<T> {
         if (field instanceof HasValue) {
             ValueChangeListener<ValueChangeEvent<?>> listener = event -> {
                 Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
-                result.ifError(r -> ((HasValidation) field).setErrorMessage(r));
+                result.ifError(error -> ((HasValidation) field).setErrorMessage(error));
                 result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.field, r));
             };
             ((HasValue<?, ?>) field).addValueChangeListener(listener);
@@ -143,7 +143,7 @@ public class FilterGroup<T> {
         if (auxField instanceof HasValue) {
             ValueChangeListener<ValueChangeEvent<?>> auxListener = event -> {
                 Result<?> result = ConvertUtils.convertToModelValue(FilterGroup.this.attributeModel, event.getValue());
-                result.ifError(r -> ((HasValidation) auxField).setErrorMessage(r));
+                result.ifError(error -> ((HasValidation) auxField).setErrorMessage(error));
                 result.ifOk(r -> FilterGroup.this.valueChange(FilterGroup.this.auxField, r));
             };
             ((HasValue<?, ?>) auxField).addValueChangeListener(auxListener);

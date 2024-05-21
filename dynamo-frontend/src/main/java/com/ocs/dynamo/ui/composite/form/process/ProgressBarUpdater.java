@@ -22,22 +22,22 @@ import com.ocs.dynamo.utils.MathUtils;
 import com.vaadin.flow.component.UI;
 
 /**
- * A Runnable that is used to update a progress bar during a long running
+ * A Runnable that is used to update a progress bar during a long-running
  * process
  * 
  * @author bas.rutten
  */
 public class ProgressBarUpdater implements Runnable {
 
-	private Progressable progressable;
+	private final Progressable progressable;
 
-	private int estimatedSize;
+	private final int estimatedSize;
 
 	private volatile float progress;
 
 	private volatile boolean stopped;
 
-	private UI ui;
+	private final UI ui;
 
 	/**
 	 * Constructor

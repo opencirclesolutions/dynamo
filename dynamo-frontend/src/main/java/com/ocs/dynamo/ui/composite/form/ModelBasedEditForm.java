@@ -878,7 +878,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
                 addSingleAttribute(parent, attributeModel, field);
             }
 
-            // store a reference to the first field so we can give it focus
+            // store a reference to the first field, so we can give it focus
             if (!isViewMode() && firstFields.get(tabIndex) == null && ((HasEnabled) field).isEnabled()
                     && !(field instanceof Checkbox) && (field instanceof Focusable)) {
                 firstFields.put(tabIndex, (Focusable<?>) field);
