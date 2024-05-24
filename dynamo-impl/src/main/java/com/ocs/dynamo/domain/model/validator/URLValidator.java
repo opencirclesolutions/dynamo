@@ -52,7 +52,7 @@ public class URLValidator implements ConstraintValidator<URL, String> {
 
 			// assume at least 2 dots
 			int matches = StringUtils.countMatches(value, ".");
-			if (matches < 2) {
+			if (matches < 1) {
 				return false;
 			}
 		} catch (MalformedURLException ex) {

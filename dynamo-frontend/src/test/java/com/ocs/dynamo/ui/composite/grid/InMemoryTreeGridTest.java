@@ -17,13 +17,14 @@ import com.ocs.dynamo.service.TestEntityService;
 import com.ocs.dynamo.ui.FrontendIntegrationTest;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.vaadin.flow.data.provider.hierarchy.TreeDataProvider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 public class InMemoryTreeGridTest extends FrontendIntegrationTest {
 
-	@Inject
+	@Autowired
 	private TestEntityService testEntityService;
 
-	@Inject
+	@Autowired
 	private TestEntity2Service testEntity2Service;
 
 	private TestEntity e1;
@@ -74,7 +75,7 @@ public class InMemoryTreeGridTest extends FrontendIntegrationTest {
 		final List<TestEntity> parents = List.of(e1, e2);
 		final List<TestEntity2> children = List.of(child1, child2);
 
-		InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity> grid = new InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity>();
+		InMemoryTreeGrid<TreeGridRow, Integer, TestEntity2, Integer, TestEntity> grid = new InMemoryTreeGrid<>();
 
 		grid.setSumCellValueCreator((row, index, columnName, value) -> {
 			if (grid.getEditablePropertyClassCollector().apply(columnName).equals(Integer.class)) {

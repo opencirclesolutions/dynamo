@@ -14,6 +14,7 @@
 package com.ocs.dynamo.ui.validator;
 
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,13 +59,13 @@ public class URLValidator implements Validator<String> {
 		}
 
 		try {
-			new java.net.URL(str);
-		} catch (MalformedURLException ex) {
+			new java.net.URI(str);
+		} catch (URISyntaxException ex) {
 			return ValidationResult.error(message);
 		}
 
-		// assume at least 2 dots
-		if (StringUtils.countMatches(str, ".") < 2) {
+		// assume at least 1 dot
+		if (StringUtils.countMatches(str, ".") < 1) {
 			return ValidationResult.error(message);
 		}
 

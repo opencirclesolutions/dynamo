@@ -13,20 +13,21 @@
  */
 package com.ocs.dynamo.ui.composite.autofill;
 
+import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
-import com.vaadin.flow.ai.formfiller.services.ChatGPTChatCompletionService;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
+import com.vaadin.flow.component.combobox.ComboBox;
 import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.component.textfield.TextArea;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,13 +42,23 @@ import static java.util.stream.Collectors.toMap;
 @Slf4j
 public class FormFillDialog extends BaseModalDialog {
 
+    private ComboBox<AIServiceType> supportedTypes;
+
     private TextArea content;
 
     private TextArea context;
 
+    private final List<AIServiceType> types;
+
+    private final AIServiceOrchestrator orchestrator = ServiceLocatorFactory
+            .getServiceLocator().getService(AIServiceOrchestrator.class);
+
     public FormFillDialog(Component targetComponent, EntityModel<?> entityModel,
                           ModelBasedEditForm<?, ?> form) {
         setTitle(message("ocs.fill.form"));
+
+        types = orchestrator.findSupportedServices();
+
         buildMainLayout(entityModel);
         buildButtonBar(targetComponent, entityModel, form);
     }
@@ -63,6 +74,11 @@ public class FormFillDialog extends BaseModalDialog {
                     return;
                 }
 
+                if (supportedTypes.getValue() == null) {
+                    VaadinUtils.showErrorNotification(message("ocs.fill.type.not.empty"));
+                    return;
+                }
+
                 Map<Component, String> instructions = extractInstructions(entityModel, form);
 
                 List<String> contextInstructions = new ArrayList<>();
@@ -71,8 +87,9 @@ public class FormFillDialog extends BaseModalDialog {
                 }
 
                 try {
-                    FormFiller formFiller = new FormFiller(targetComponent, instructions, contextInstructions, new ChatGPT4Service());
-                    formFiller.fill(content.getValue(), entityModel);
+                    FormFiller formFiller = new FormFiller(targetComponent, instructions, contextInstructions,
+                            orchestrator);
+                    formFiller.fill(content.getValue(), supportedTypes.getValue(), entityModel);
                     this.close();
                 } catch (Exception ex) {
                     log.error(ex.getMessage(), ex);
@@ -80,6 +97,7 @@ public class FormFillDialog extends BaseModalDialog {
                 }
             });
             buttonBar.add(fillButton);
+            fillButton.setEnabled(!supportedTypes.isEmpty());
 
             Button cancelButton = new Button(message("ocs.cancel"));
             cancelButton.setIcon(VaadinIcon.BAN.create());
@@ -91,6 +109,13 @@ public class FormFillDialog extends BaseModalDialog {
     private void buildMainLayout(EntityModel<?> entityModel) {
         setBuildMainLayout(parent -> {
             VerticalLayout layout = new DefaultVerticalLayout();
+
+            supportedTypes = new ComboBox<>(message("ocs.fill.form.model"));
+            supportedTypes.setItems(types);
+            if (!types.isEmpty()) {
+                supportedTypes.setValue(types.get(0));
+            }
+            layout.add(supportedTypes);
 
             content = new TextArea();
             content.setLabel(message("ocs.fill.form.contents"));
@@ -111,11 +136,10 @@ public class FormFillDialog extends BaseModalDialog {
         });
     }
 
-    @NotNull
     private Map<Component, String> extractInstructions(EntityModel<?> entityModel, ModelBasedEditForm<?, ?> form) {
         return entityModel.getAttributeModels().stream().filter(
                 am -> !StringUtils.isEmpty(am.getAutoFillInstructions())
-        ).filter(am -> form.getField(am.getPath()) != null).collect(toMap(am -> form.getField(am.getPath()), am -> am.getAutoFillInstructions()
+        ).filter(am -> form.getField(am.getPath()) != null).collect(toMap(am -> form.getField(am.getPath()), AttributeModel::getAutoFillInstructions
         ));
     }
 

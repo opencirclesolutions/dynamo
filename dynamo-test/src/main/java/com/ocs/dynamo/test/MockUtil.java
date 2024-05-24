@@ -13,39 +13,28 @@
  */
 package com.ocs.dynamo.test;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.eq;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.lenient;
-import static org.mockito.Mockito.spy;
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
-import java.lang.reflect.Field;
-import java.util.List;
-import java.util.Locale;
-
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.context.support.ResourceBundleMessageSource;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
+import lombok.experimental.UtilityClass;
+import org.mockito.ArgumentCaptor;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.List;
+import java.util.Locale;
+
+import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.Mockito.*;
 
 /**
  * Utility class for registering service and DAO related mock functionality
  * 
  * @author bas.rutten
  */
+@UtilityClass
 public final class MockUtil {
 
 	private static final String UI_FIELD_NAME = "ui";
@@ -94,7 +83,7 @@ public final class MockUtil {
 	 * Capture the call of the "save" method on a service
 	 * 
 	 * @param service the service
-	 * @return
+	 * @return the captured value
 	 */
 	public static <ID, X extends AbstractEntity<ID>> X captureServiceSave(BaseService<ID, X> service, Class<X> clazz) {
 		ArgumentCaptor<X> captor = ArgumentCaptor.forClass(clazz);
@@ -119,7 +108,7 @@ public final class MockUtil {
 	 * 
 	 * @param service the service
 	 * @param times   the number of times the method is supposed to be called
-	 * @return
+	 * @return the captured values
 	 */
 	public static <ID, X extends AbstractEntity<ID>> List<X> captureServiceSaves(BaseService<ID, X> service,
 			Class<X> clazz, int times) {
@@ -129,7 +118,7 @@ public final class MockUtil {
 	}
 
 	/**
-	 * Util method to initialize the messageservice and inject it into the target
+	 * Util method to initialize the message service and inject it into the target
 	 * object when @Inject can not be used.
 	 * 
 	 * @param target   Object with the field messageService of type MessageService
@@ -157,7 +146,8 @@ public final class MockUtil {
 	 * Mocks the "fetchById" method of a DAO by returning the provided entity
 	 */
 	public static <ID, X extends AbstractEntity<ID>> void mockFetchById(BaseDao<ID, X> dao, ID id, X entity) {
-		when(dao.fetchById(eq(id), (FetchJoinInformation[]) any())).thenReturn(entity);
+		lenient().when(dao.fetchById(eq(id), any(FetchJoinInformation[].class))).thenReturn(entity);
+		lenient().when(dao.fetchById(id)).thenReturn(entity);
 	}
 
 	/**
@@ -170,7 +160,7 @@ public final class MockUtil {
 	public static void mockMessageService(MessageService messageService) {
 		// use somewhat wonky new varargs syntax
 		lenient().when(messageService.getMessage(anyString(), nullable(Locale.class),
-						Mockito.any(Object[].class)))
+						any(Object[].class)))
 				.thenAnswer(invocation -> invocation.getArguments()[0]);
 
 		// method for retrieving enum message
@@ -198,7 +188,7 @@ public final class MockUtil {
 	 */
 	@SuppressWarnings("unchecked")
 	public static <ID, X extends AbstractEntity<ID>> void mockSaveList(BaseDao<ID, X> dao) {
-		when(dao.save(any(List.class))).thenAnswer(invocation -> (List<X>) invocation.getArgument(0));
+		when(dao.save(any(List.class))).thenAnswer(invocation -> invocation.getArgument(0));
 	}
 
 	/**
@@ -221,44 +211,44 @@ public final class MockUtil {
 		when(service.save(any(List.class))).thenAnswer(invocation -> invocation.getArgument(0));
 	}
 
-	/**
-	 * Registers all fields that are annotated with "@Mock" as beans in the Spring
-	 * context
-	 * 
-	 * @param factory
-	 * @param subject
-	 */
-	public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject) {
-		registerMocks(factory, subject, subject.getClass());
-	}
-
-	/**
-	 * Registers all fields that are annotated with "@Mock" as beans in the Spring
-	 * context
-	 * 
-	 * @param factory
-	 * @param subject
-	 * @param clazz
-	 */
-	public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject, Class<?> clazz) {
-		try {
-			Field[] fields = clazz.getDeclaredFields();
-			for (Field field : fields) {
-				field.setAccessible(true);
-				if (field.getAnnotation(Mock.class) != null) {
-					factory.registerSingleton(field.getName(), field.get(subject));
-				}
-			}
-			if (clazz.getSuperclass() != null) {
-				registerMocks(factory, subject, clazz.getSuperclass());
-			}
-		} catch (Exception e) {
-			throw new OCSRuntimeException(e.getMessage(), e);
-		}
-	}
-
-	private MockUtil() {
-		// hidden constructor
-	}
+//	/**
+//	 * Registers all fields that are annotated with "@Mock" as beans in the Spring
+//	 * context
+//	 *
+//	 * @param factory
+//	 * @param subject
+//	 */
+//	public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject) {
+//		registerMocks(factory, subject, subject.getClass());
+//	}
+//
+//	/**
+//	 * Registers all fields that are annotated with "@Mock" as beans in the Spring
+//	 * context
+//	 *
+//	 * @param factory
+//	 * @param subject
+//	 * @param clazz
+//	 */
+//	public static void registerMocks(ConfigurableListableBeanFactory factory, Object subject, Class<?> clazz) {
+//		try {
+//			Field[] fields = clazz.getDeclaredFields();
+//			for (Field field : fields) {
+//				field.setAccessible(true);
+//				if (field.getAnnotation(Mock.class) != null) {
+//					factory.registerSingleton(field.getName(), field.get(subject));
+//				}
+//			}
+//			if (clazz.getSuperclass() != null) {
+//				registerMocks(factory, subject, clazz.getSuperclass());
+//			}
+//		} catch (Exception e) {
+//			throw new OCSRuntimeException(e.getMessage(), e);
+//		}
+//	}
+//
+//	private MockUtil() {
+//		// hidden constructor
+//	}
 
 }

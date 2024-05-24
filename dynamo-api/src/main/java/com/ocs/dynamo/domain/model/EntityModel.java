@@ -79,12 +79,6 @@ public interface EntityModel<T> {
 	String CLEAR_BUTTON_VISIBLE = "clearButtonVisible";
 
 	/**
-	 * Whether the attribute (of type MASTER, DETAIL or ELEMENT_TABLE) can be edited
-	 * when inside an edit form
-	 */
-	String COMPLEX_EDITABLE = "complexEditable";
-
-	/**
 	 * Whether an amount represents a currency
 	 */
 	String CURRENCY = "currency";
@@ -425,9 +419,9 @@ public interface EntityModel<T> {
 	String URL = "url";
 
 	/**
-	 * Indicated whether the field is visible
+	 * Indicated whether the field is visible in an edit form
 	 */
-	String VISIBLE = "visible";
+	String VISIBLE_IN_FORM = "visibleInForm";
 
 	/**
 	 * Whether to show an attribute inside a grid
@@ -445,19 +439,6 @@ public interface EntityModel<T> {
 	 * @param attributeGroup the name of the attribute group
 	 */
 	void addAttributeGroup(String attributeGroup);
-
-	/**
-	 * Adds a new attribute model on the position of the given existing attribute
-	 * model. The existing model will shift one position to the back of the list.
-	 * When the existing model is not found the attribute will be added to the end of
-	 * the list.
-	 * 
-	 * @param attributeGroup The group to which the attribute model should be
-	 *                       registered
-	 * @param model          The model of the attribute
-	 * @param existingModel  The existing attribute model
-	 */
-	void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
 
 	/**
 	 * @return the attribute groups that are defined for this entity

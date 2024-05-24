@@ -60,8 +60,10 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		FormOptions fo = new FormOptions().setPreserveSortOrders(true).setGridEditMode(GridEditMode.SINGLE_ROW);
 
 		ModelBasedGrid<Integer, TestEntity> grid = new ModelBasedGrid<>(provider, model,
-				new HashMap<String, SerializablePredicate<?>>(), fo, cc);
+				new HashMap<>(), fo, cc);
 		grid.build();
+
+		grid.getColumns().forEach(col -> System.out.println(col.getId()));
 
 		assertEquals(19, grid.getColumns().size());
 		assertNotNull(grid.getDataProvider().getId(entity));
@@ -74,7 +76,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
 				QueryType.ID_BASED, new FormOptions(), ComponentContext.<Integer, TestEntity>builder().build(), null,
-				new HashMap<String, SerializablePredicate<?>>(), null, false);
+				new HashMap<>(), null, false);
 		wrapper.build();
 
 		assertNotNull(wrapper.getGrid());
@@ -94,7 +96,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		wrapper.forceSearch();
 		assertEquals(2, wrapper.getDataProviderSize());
 
-		wrapper.search(new EqualsPredicate<TestEntity>("name", "John"));
+		wrapper.search(new EqualsPredicate<>("name", "John"));
 		wrapper.forceSearch();
 		assertEquals(0, wrapper.getDataProviderSize());
 	}
@@ -106,7 +108,7 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
 				QueryType.ID_BASED, new FormOptions(), ComponentContext.<Integer, TestEntity>builder().build(), null,
 				new HashMap<>(),
-				List.of(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
+				List.of(new SortOrder<>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
 		assertNotNull(wrapper.getGrid());
@@ -124,8 +126,8 @@ public class ModelBasedGridIntegrationTest extends FrontendIntegrationTest {
 		EntityModel<TestEntity> model = entityModelFactory.getModel(TestEntity.class);
 		ServiceBasedGridWrapper<Integer, TestEntity> wrapper = new ServiceBasedGridWrapper<>(testEntityService, model,
 				QueryType.PAGING, new FormOptions(), ComponentContext.<Integer, TestEntity>builder().build(), null,
-				new HashMap<String, SerializablePredicate<?>>(),
-				List.of(new SortOrder<String>("name", SortDirection.ASCENDING)), false);
+				new HashMap<>(),
+				List.of(new SortOrder<>("name", SortDirection.ASCENDING)), false);
 		wrapper.build();
 
 		assertTrue(wrapper.getDataProvider() instanceof PagingDataProvider);

@@ -128,10 +128,7 @@ public class MenuService extends BaseMenuService<MenuItem, MenuBar> {
 
 		// look up any messages of the form "rootName.i"
 		int i = 1;
-		while (true) {
-			if (constructMenu(mainMenu, mainMenu, rootName + "." + i) == null) {
-				break;
-			}
+		while (constructMenu(mainMenu, mainMenu, rootName + "." + i) != null) {
 			i++;
 		}
 

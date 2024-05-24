@@ -27,25 +27,19 @@ public class PivotGridIntegrationTest extends FrontendIntegrationTest {
 	@Inject
 	private EntityModelFactory entityModelFactory;
 
-	private TestEntity entity1;
-
-	private TestEntity entity2;
-
-	private TestEntity entity3;
-
 	@BeforeEach
 	public void setup() {
-		entity1 = new TestEntity("Bob", 45L);
+		TestEntity entity1 = new TestEntity("Bob", 45L);
 		entity1.setSomeEnum(TestEnum.A);
-		entity1 = testEntityService.save(entity1);
+		testEntityService.save(entity1);
 
-		entity2 = new TestEntity("Bob", 45L);
+		TestEntity entity2 = new TestEntity("Bob", 45L);
 		entity2.setSomeEnum(TestEnum.B);
-		entity2 = testEntityService.save(entity1);
+		testEntityService.save(entity1);
 
-		entity3 = new TestEntity("Bob", 45L);
+		TestEntity entity3 = new TestEntity("Bob", 45L);
 		entity3.setSomeEnum(TestEnum.C);
-		entity3 = testEntityService.save(entity1);
+		testEntityService.save(entity1);
 	}
 
 	@Test

@@ -86,7 +86,7 @@ public class HorizontalDisplayLayout<ID extends Serializable, T extends Abstract
 		}
 
 		for (AttributeModel attributeModel : getEntityModel().getAttributeModels()) {
-			if (attributeModel.isVisible() && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
+			if (attributeModel.isVisibleInForm() && AttributeType.BASIC.equals(attributeModel.getAttributeType())) {
 				Span label = constructLabel(entity, attributeModel);
 				layout.addFormItem(label, attributeModel.getDisplayName(VaadinUtils.getLocale()));
 			}

@@ -400,12 +400,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isClearButtonVisible();
 
 	/**
-	 * @return whether the attribute is present inside an edit form. By default,
-	 *         this is switched off for complex (i.e. MASTER or DETAIL) objects
-	 */
-	boolean isComplexEditable();
-
-	/**
 	 * @return whether the attribute represents a currency
 	 */
 	boolean isCurrency();
@@ -532,12 +526,12 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isUrl();
 
 	/**
-	 * @return whether the attribute is visible
+	 * @return whether the attribute is visible in a form
 	 */
-	boolean isVisible();
+	boolean isVisibleInForm();
 
 	/**
-	 * @return whether the attribute must be shown in a table
+	 * @return whether the attribute must be shown in a grid
 	 */
 	boolean isVisibleInGrid();
 

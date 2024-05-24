@@ -34,19 +34,15 @@ import com.ocs.dynamo.utils.DateUtils;
 @SpringBootTest(classes = FrontendIntegrationTestConfig.class)
 public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 
-	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
+	private final EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
 	@Autowired
 	private TestEntityService testEntityService;
 
-	private TestEntity e1;
-
-	private TestEntity e2;
-
 	@BeforeEach
 	public void setup() {
 		System.setProperty("ocs.default.locale", "de");
-		e1 = new TestEntity("Bob", 11L);
+		TestEntity e1 = new TestEntity("Bob", 11L);
 		e1.setRate(BigDecimal.valueOf(4));
 		e1.setBirthDate(DateUtils.createLocalDate("01042014"));
 		e1.setBirthWeek(DateUtils.createLocalDate("01042014"));
@@ -65,7 +61,7 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 		e1.setSomeDouble(44.44);
 		e1.setPassword("secret");
 
-		e2 = new TestEntity("Harry", 12L);
+		TestEntity e2 = new TestEntity("Harry", 12L);
 		e2.setRate(BigDecimal.valueOf(3));
 		e2 = testEntityService.save(e2);
 

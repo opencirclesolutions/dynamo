@@ -41,14 +41,14 @@ public final class GridFormatUtils {
 	private static final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
-	 * local Extracts a field value from an object and formats it
+	 * Extracts a field value from an object and formats it
 	 * 
 	 * @param am             the attribute model
 	 * @param obj            the object from which to extract the value
 	 * @param locale         the locale
 	 * @param zoneId         the time zone ID
 	 * @param currencySymbol the currency symbol
-	 * @return
+	 * @return the result of the format action
 	 */
 	public static String extractAndFormat(AttributeModel am, Object obj, Locale locale, ZoneId zoneId,
 			String currencySymbol) {
@@ -67,7 +67,7 @@ public final class GridFormatUtils {
 	 * @param locale         the locale used for the formatting
 	 * @param zoneId         the zoneId used for formatting time zone
 	 * @param currencySymbol the currency symbol to use
-	 * @return
+	 * @return the result of the format action
 	 */
 	public static String formatPropertyValue(AttributeModel am, Object value, String separator, Locale locale,
 			ZoneId zoneId, String currencySymbol) {
@@ -81,7 +81,7 @@ public final class GridFormatUtils {
 	 *
 	 * @param input the input value
 	 * @param am    the attribute model
-	 * @return
+	 * @return the result of the restriction
 	 */
 	private static String restrictToMaxLength(String input, AttributeModel am) {
 		if (am.getMaxLengthInGrid() != null && input != null && input.length() > am.getMaxLengthInGrid()) {

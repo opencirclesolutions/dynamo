@@ -25,6 +25,13 @@ public class URLValidatorTest {
     }
 
     @Test
+    public void testFalse3() {
+        URLValidator validator = new URLValidator("test");
+        ValidationResult result = validator.apply("44", new ValueContext());
+        assertTrue(result.isError());
+    }
+
+    @Test
     public void testCorrect1() {
         URLValidator validator = new URLValidator("Not a valid URL");
         ValidationResult result = validator.apply("http://www.google.nl", new ValueContext());

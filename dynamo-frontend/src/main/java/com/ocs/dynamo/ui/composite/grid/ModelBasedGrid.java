@@ -110,8 +110,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	@Override
 	public void build() {
 		if (!built) {
-
-			ModelBasedGridBuilder<ID, T> gridBuilder = new ModelBasedGridBuilder<ID, T>(this, entityModel, fieldFilters,
+			ModelBasedGridBuilder<ID, T> gridBuilder = new ModelBasedGridBuilder<>(this, entityModel, fieldFilters,
 					formOptions, componentContext) {
 
 				@Override

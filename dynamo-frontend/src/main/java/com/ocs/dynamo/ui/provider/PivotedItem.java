@@ -28,15 +28,30 @@ import com.ocs.dynamo.ui.utils.VaadinUtils;
  */
 public class PivotedItem {
 
+	/**
+	 * Unique identifying key for this row
+	 */
 	private final Object rowKeyValue;
 
-	private Map<Object, Map<String, Object>> values = new HashMap<>();
+	/**
+	 * Mapping from column names to values
+	 */
+	private final Map<Object, Map<String, Object>> values = new HashMap<>();
 
-	private Map<Object, Object> fixedValues = new HashMap<>();
+	/**
+	 * Mapping from fixed column name to fixed column value
+	 */
+	private final Map<Object, Object> fixedValues = new HashMap<>();
 
-	private Map<String, BigDecimal> sumValues = new HashMap<>();
+	/**
+	 * Mapping from property name to sum of values
+	 */
+	private final Map<String, BigDecimal> sumValues = new HashMap<>();
 
-	private Map<String, Integer> countValues = new HashMap<>();
+	/**
+	 * Mapping from property name to sum of values
+	 */
+	private final Map<String, Integer> countValues = new HashMap<>();
 
 	public PivotedItem(Object rowKeyValue) {
 		this.rowKeyValue = rowKeyValue;
@@ -46,7 +61,7 @@ public class PivotedItem {
 	 * Returns the average value for a property
 	 * 
 	 * @param property the property name
-	 * @return
+	 * @return the resulting average
 	 */
 	public BigDecimal getAverageValue(String property) {
 		BigDecimal bv = sumValues.get(property);
@@ -106,15 +121,12 @@ public class PivotedItem {
 		values.putIfAbsent(columnKey, new HashMap<>());
 		values.get(columnKey).put(propertyValue, value);
 
-		// also update running sum
-		if (value != null && value instanceof Number) {
-			Number n = (Number) value;
+		if (value instanceof Number number) {
 			sumValues.putIfAbsent(propertyValue, BigDecimal.ZERO);
-			BigDecimal cv = sumValues.get(propertyValue);
-			cv = cv.add(BigDecimal.valueOf(n.doubleValue()));
-			sumValues.put(propertyValue, cv);
+			BigDecimal bd = sumValues.get(propertyValue);
+			bd = bd.add(BigDecimal.valueOf(number.doubleValue()));
+			sumValues.put(propertyValue, bd);
 
-			// increase count
 			countValues.putIfAbsent(propertyValue, 0);
 			countValues.put(propertyValue, countValues.get(propertyValue) + 1);
 		}

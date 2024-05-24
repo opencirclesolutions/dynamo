@@ -17,12 +17,9 @@ import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.ocs.dynamo.domain.model.EntityModel;
-import com.vaadin.flow.ai.formfiller.services.ChatGPTChatCompletionService;
-import com.vaadin.flow.ai.formfiller.services.LLMService;
 import com.vaadin.flow.component.Component;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -68,7 +65,7 @@ public class FormFiller {
     /**
      * The AI module service to use.
      */
-    private final LLMService llmService;
+    private final AIServiceOrchestrator orchestrator;
 
     /**
      * Creates a FormFiller to fill the target component or
@@ -84,53 +81,14 @@ public class FormFiller {
      * @param contextInstructions   additional instructions for the AI module (i.e.: target language, vocabulary explanation, etc.).
      *                              Use these instructions to provide additional information to the AI module about the context of the
      *                              input source in general.
-     * @param llmService            the AI module service to use. By default, this service would use OpenAI ChatGPT.
+     * @param orchestrator          The AI service orchestrator
      */
-    public FormFiller(Component target, Map<Component, String> componentInstructions, List<String> contextInstructions, LLMService llmService) {
-        this.llmService = llmService;
+    public FormFiller(Component target, Map<Component, String> componentInstructions, List<String> contextInstructions,
+                      AIServiceOrchestrator orchestrator) {
+        this.orchestrator = orchestrator;
         this.target = target;
         this.componentInstructions = componentInstructions;
         this.contextInstructions = contextInstructions;
-    }
-
-    /**
-     * Creates a FormFiller with default llmService.
-     * Check {@link #FormFiller(Component, Map, List, LLMService) FormFiller} for more information.
-     */
-    public FormFiller(Component target, Map<Component, String> componentInstructions, List<String> contextInstructions) {
-        this(target, componentInstructions, contextInstructions, new ChatGPTChatCompletionService());
-    }
-
-    /**
-     * Creates a FormFiller with default llmService and empty context instructions.
-     * Check {@link #FormFiller(Component, Map, List, LLMService) FormFiller} for more information.
-     */
-    public FormFiller(Component target, Map<Component, String> componentInstructions) {
-        this(target, componentInstructions, new ArrayList<>(), new ChatGPTChatCompletionService());
-    }
-
-    /**
-     * Creates a FormFiller with default llmService and empty field instructions.
-     * Check {@link #FormFiller(Component, Map, List, LLMService) FormFiller} for more information.
-     */
-    public FormFiller(Component target, List<String> contextInstructions) {
-        this(target, new HashMap<>(), contextInstructions, new ChatGPTChatCompletionService());
-    }
-
-    /**
-     * Creates a FormFiller with default llmService, empty field instructions and empty context instructions.
-     * Check {@link #FormFiller(Component, Map, List, LLMService) FormFiller} for more information.
-     */
-    public FormFiller(Component target) {
-        this(target, new HashMap<>(), new ArrayList<>(), new ChatGPTChatCompletionService());
-    }
-
-    /**
-     * Creates a FormFiller with empty context instructions and empty context instructions with the given llmService.
-     * Check {@link #FormFiller(Component, Map, List, LLMService) FormFiller} for more information.
-     */
-    public FormFiller(Component target, LLMService llmService) {
-        this(target, new HashMap<>(), new ArrayList<>(), llmService);
     }
 
     /**
@@ -139,18 +97,19 @@ public class FormFiller {
      * @param input Text input to send to the AI module
      * @return result of the query including request and response
      */
-    public FormFillerResult fill(String input, EntityModel<?> entityModel) {
+    public String fill(String input, AIServiceType aiServiceType, EntityModel<?> entityModel) {
 
         mapping = FormFillUtils.createMapping(target, entityModel);
-        String prompt = llmService.getPromptTemplate(input, mapping.componentsJSONMap(), mapping.componentsTypesJSONMap(), componentInstructions, contextInstructions);
-        log.debug("Generated Prompt: {}", prompt);
 
-        String aiResponse = llmService.getGeneratedResponse(prompt);
+        String aiResponse = orchestrator.execute(aiServiceType,
+                input, mapping.componentsJSONMap(), mapping.componentsTypesJSONMap(),
+                componentInstructions, contextInstructions);
+
         FormFillUtils.fillComponents(mapping.componentInfoList(), promptJsonToMapHierarchyValues(aiResponse),
                 entityModel);
         log.debug("AI response: " + aiResponse.trim());
 
-        return new FormFillerResult(prompt, aiResponse);
+        return aiResponse;
     }
 
     /**
@@ -184,6 +143,12 @@ public class FormFiller {
      * @return the corrected response
      */
     private String correctResponse(String response) {
+        // strip away all nonsense in front of the JSON
+        int p = response.indexOf('{');
+        if (p > 0) {
+            response = response.substring(p);
+        }
+
         response =  response.replaceAll(",\\R}", "}");
         response =  response.replaceAll("```json", "");
         response =  response.replaceAll("```", "");

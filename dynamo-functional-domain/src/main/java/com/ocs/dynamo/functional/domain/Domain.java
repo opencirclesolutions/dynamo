@@ -63,14 +63,14 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	@ToString.Include
 	private Integer id;
 
-	@Attribute(visible = VisibilityType.HIDE, editable = EditableType.READ_ONLY)
+	@Attribute(visibleInForm = VisibilityType.HIDE, visibleInGrid = VisibilityType.HIDE, editable = EditableType.READ_ONLY)
 	@Column(name = "type", insertable = false, updatable = false)
 	private String type;
 
 	/**
 	 * By default, we only use "name" so the code is hidden
 	 */
-	@Attribute(visible = VisibilityType.HIDE)
+	@Attribute(visibleInForm = VisibilityType.HIDE)
 	@Size(max = 5)
 	@ToString.Include
 	private String code;

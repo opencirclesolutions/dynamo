@@ -48,20 +48,20 @@ public class Locale extends Domain {
 		super(code, name);
 	}
 
-	@Attribute(visible = VisibilityType.HIDE)
+	@Attribute(visibleInForm = VisibilityType.HIDE)
 	public String getCodeAndName() {
 		return getCode() + " - " + getName();
 	}
 
 	@Override
 	@NotNull
-	@Attribute(visible = VisibilityType.SHOW)
+	@Attribute(visibleInForm = VisibilityType.SHOW)
 	public String getCode() {
 		return super.getCode();
 	}
 
 	@Override
-	@Attribute(visible = VisibilityType.SHOW)
+	@Attribute(visibleInForm = VisibilityType.SHOW)
 	public String getName() {
 		return super.getName();
 	}

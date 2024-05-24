@@ -106,16 +106,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		attributeModels.get(attributeGroup).add(model);
 	}
 
-	@Override
-	public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
-		List<AttributeModel> group = attributeModels.get(attributeGroup);
-		if (group.contains(existingModel)) {
-			group.add(group.indexOf(existingModel), model);
-		} else {
-			group.add(model);
-		}
-	}
-
 	private Stream<AttributeModel> constructAttributeModelStream(Comparator<AttributeModel> comp) {
 		return attributeModels.values().stream().flatMap(List::stream).sorted(comp);
 	}
@@ -266,9 +256,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	@Override
 	public boolean isAttributeGroupVisible(String group, boolean readOnly) {
 		return attributeModels.get(group).stream()
-				.filter(m -> AttributeType.BASIC.equals(m.getAttributeType())
-						|| AttributeType.LOB.equals(m.getAttributeType()) || m.isComplexEditable())
-				.anyMatch(m -> m.isVisible() && (readOnly || !m.getEditableType().equals(EditableType.READ_ONLY)));
+				.anyMatch(am -> am.isVisibleInForm() && (readOnly || !am.getEditableType().equals(EditableType.READ_ONLY)));
 	}
 
 	/**

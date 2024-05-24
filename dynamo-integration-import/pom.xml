@@ -88,10 +88,6 @@
 			<groupId>com.github.pjfanning</groupId>
 			<artifactId>excel-streaming-reader</artifactId>
 		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>com.monitorjbl</groupId>-->
-<!--			<artifactId>xlsx-streamer</artifactId>-->
-<!--		</dependency>-->
 	</dependencies>
 	<build>
 		<plugins>

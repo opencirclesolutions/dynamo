@@ -1,18 +1,5 @@
 package com.ocs.dynamo.ui.composite.form;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-
-import javax.inject.Inject;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-
 import com.github.mvysny.kaributesting.v10.MockVaadin;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -28,6 +15,17 @@ import com.ocs.dynamo.ui.composite.grid.ServiceBasedGridWrapper;
 import com.ocs.dynamo.ui.composite.layout.FormOptions;
 import com.ocs.dynamo.ui.provider.QueryType;
 import com.vaadin.flow.function.SerializablePredicate;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+
+import javax.inject.Inject;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class ModelBasedFlexibleSearchFormTest extends FrontendIntegrationTest {
 
@@ -36,10 +34,6 @@ public class ModelBasedFlexibleSearchFormTest extends FrontendIntegrationTest {
 
 	@Inject
 	private EntityModelFactory entityModelFactory;
-
-	private TestEntity e1;
-
-	private TestEntity e2;
 
 	private ServiceBasedGridWrapper<Integer, TestEntity> wrapper;
 
@@ -52,13 +46,13 @@ public class ModelBasedFlexibleSearchFormTest extends FrontendIntegrationTest {
 	@BeforeEach
 	public void setup() {
 		MockVaadin.setup();
-		e1 = new TestEntity("Bob", 11L);
-		e1.setRate(BigDecimal.valueOf(4));
-		e1 = testEntityService.save(e1);
+		TestEntity entity1 = new TestEntity("Bob", 11L);
+		entity1.setRate(BigDecimal.valueOf(4));
+		testEntityService.save(entity1);
 
-		e2 = new TestEntity("Harry", 12L);
-		e2.setRate(BigDecimal.valueOf(3));
-		e2 = testEntityService.save(e2);
+		TestEntity entity2 = new TestEntity("Harry", 12L);
+		entity2.setRate(BigDecimal.valueOf(3));
+		testEntityService.save(entity2);
 
 		entityModelFactory.getModel(TestEntity.class);
 
@@ -74,7 +68,6 @@ public class ModelBasedFlexibleSearchFormTest extends FrontendIntegrationTest {
 
 	private void clear() {
 		form.getClearButton().click();
-		// wrapper.getGrid().getDataCommunicator().getDataProviderSize();
 	}
 
 	@Test

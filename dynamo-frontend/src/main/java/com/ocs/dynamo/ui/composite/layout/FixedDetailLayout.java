@@ -22,7 +22,7 @@ import com.ocs.dynamo.ui.CanAssignEntity;
 import com.vaadin.flow.data.provider.SortOrder;
 
 /**
- * Split layout that displays a fixed set of items related to a parent entity
+ * A split layout that displays a fixed set of items related to a parent entity
  *
  * @param <ID>  the type of the primary key
  * @param <T>   the type of the entity

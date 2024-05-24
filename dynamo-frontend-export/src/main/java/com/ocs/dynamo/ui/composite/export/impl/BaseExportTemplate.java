@@ -41,118 +41,116 @@ import lombok.Getter;
 
 /**
  * Base class for entity model based exports to Excel or CSV
- * 
- * @author bas.rutten
  *
  * @param <ID> the type of the primary key of the entity to export
  * @param <T>  the type of the entity to export
+ * @author bas.rutten
  */
 public abstract class BaseExportTemplate<ID extends Serializable, T extends AbstractEntity<ID>> {
 
-	protected static final int PAGE_SIZE = 1000;
+    protected static final int PAGE_SIZE = 1000;
 
-	@Getter(AccessLevel.PROTECTED)
-	private final EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
-			.getEntityModelFactory();
+    @Getter(AccessLevel.PROTECTED)
+    private final EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator()
+            .getEntityModelFactory();
 
-	@Getter(AccessLevel.PROTECTED)
-	private final Filter filter;
+    @Getter(AccessLevel.PROTECTED)
+    private final Filter filter;
 
-	@Getter(AccessLevel.PROTECTED)
-	private final FetchJoinInformation[] joins;
+    @Getter(AccessLevel.PROTECTED)
+    private final FetchJoinInformation[] joins;
 
-	@Getter(AccessLevel.PROTECTED)
-	private final BaseService<ID, T> service;
+    @Getter(AccessLevel.PROTECTED)
+    private final BaseService<ID, T> service;
 
-	@Getter(AccessLevel.PROTECTED)
-	private final SortOrder[] sortOrders;
+    @Getter(AccessLevel.PROTECTED)
+    private final SortOrder[] sortOrders;
 
-	@Getter(AccessLevel.PROTECTED)
-	private final String title;
+    @Getter(AccessLevel.PROTECTED)
+    private final String title;
 
-	@Getter(AccessLevel.PROTECTED)
-	private final EntityModel<T> entityModel;
+    @Getter(AccessLevel.PROTECTED)
+    private final EntityModel<T> entityModel;
 
-	@Getter(AccessLevel.PROTECTED)
-	private final ExportMode exportMode;
+    @Getter(AccessLevel.PROTECTED)
+    private final ExportMode exportMode;
 
-	/**
-	 * Constructor
-	 * 
-	 * @param service     the service used for contacting the database
-	 * @param entityModel the entity model of the entity to export
-	 * @param exportMode  the desired export mode
-	 * @param sortOrders  the sort orders
-	 * @param filter      the filter used to restrict the result set
-	 * @param title       the title of the sheet
-	 * @param joins       the joins to use when retrieving data
-	 */
-	protected BaseExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
-			SortOrder[] sortOrders, Filter filter, String title, FetchJoinInformation... joins) {
-		this.service = service;
-		this.exportMode = exportMode;
-		this.entityModel = entityModel;
-		// if no sort order specified, then sort by id descending
-		this.sortOrders = sortOrders != null ? sortOrders
-				: new SortOrder[] { new SortOrder(DynamoConstants.ID, Direction.DESC) };
-		this.filter = filter;
-		this.title = title;
-		this.joins = joins;
-	}
+    /**
+     * Constructor
+     *
+     * @param service     the service used for contacting the database
+     * @param entityModel the entity model of the entity to export
+     * @param exportMode  the desired export mode
+     * @param sortOrders  the sort orders
+     * @param filter      the filter used to restrict the result set
+     * @param title       the title of the sheet
+     * @param joins       the joins to use when retrieving data
+     */
+    protected BaseExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+                                 SortOrder[] sortOrders, Filter filter, String title, FetchJoinInformation... joins) {
+        this.service = service;
+        this.exportMode = exportMode;
+        this.entityModel = entityModel;
+        // if no sort order specified, then sort by id descending
+        this.sortOrders = sortOrders != null ? sortOrders
+                : new SortOrder[]{new SortOrder(DynamoConstants.ID, Direction.DESC)};
+        this.filter = filter;
+        this.title = title;
+        this.joins = joins;
+    }
 
-	/**
-	 * Generates the content to export
-	 *
-	 * @param iterator data set iterator that contains the rows to include
-	 * @return the byte representation of the exported data
-	 * @throws IOException when the data cannot be written
-	 */
-	protected abstract byte[] generate(DataSetIterator<ID, T> iterator) throws IOException;
+    /**
+     * Generates the content to export
+     *
+     * @param iterator data set iterator that contains the rows to include
+     * @return the byte representation of the exported data
+     * @throws IOException when the data cannot be written
+     */
+    protected abstract byte[] generate(DataSetIterator<ID, T> iterator) throws IOException;
 
-	/**
-	 * Check whether a certain attribute model must be included in the export
-	 *
-	 * @param am the attribute model
-	 * @return <code>true</code> if the attribute must be included,
-	 *         <code>false</code> otherwise
-	 */
-	protected boolean mustShow(AttributeModel am) {
-		boolean visible = ExportMode.FULL.equals(exportMode) ? am.isVisible() : am.isVisibleInGrid();
-		// never show invisible or LOB attributes
-		return visible && !AttributeType.LOB.equals(am.getAttributeType());
-	}
+    /**
+     * Check whether a certain attribute model must be included in the export
+     *
+     * @param am the attribute model
+     * @return <code>true</code> if the attribute must be included,
+     * <code>false</code> otherwise
+     */
+    protected boolean mustShow(AttributeModel am) {
+        boolean visible = ExportMode.FULL.equals(exportMode) ? am.isVisibleInForm() : am.isVisibleInGrid();
+        return visible && !AttributeType.LOB.equals(am.getAttributeType());
+    }
 
-	/**
-	 * Carries out the export
-	 * 
-	 * @return the byte representation of the export
-	 */
-	public final byte[] process() {
-		try {
-			// retrieve all store series based on the IDs
-			List<ID> ids = service.findIds(getFilter(), sortOrders);
-			PagingDataSetIterator<ID, T> iterator = new PagingDataSetIterator<>(ids,
-					page -> service.fetchByIds(page, new SortOrders(sortOrders), joins), PAGE_SIZE);
-			return generate(iterator);
-		} catch (IOException ex) {
-			throw new OCSRuntimeException(ex.getMessage(), ex);
-		}
-	}
+    /**
+     * Carries out the export
+     *
+     * @return the byte representation of the export
+     */
+    public final byte[] process() {
+        try {
+            // retrieve all store series based on the IDs
+            List<ID> ids = service.findIds(getFilter(), sortOrders);
+            PagingDataSetIterator<ID, T> iterator = new PagingDataSetIterator<>(ids,
+                    page -> service.fetchByIds(page, new SortOrders(sortOrders), joins), PAGE_SIZE);
+            return generate(iterator);
+        } catch (IOException ex) {
+            throw new OCSRuntimeException(ex.getMessage(), ex);
+        }
+    }
 
-	/**
-	 * Processes a fixed set of data
-	 * 
-	 * @param items the set of data to process
-	 * @return the byte representation
-	 */
-	public final byte[] processFixed(List<T> items) {
-		try {
-			// retrieve all store series based on the IDs
-			FixedDataSetIterator<ID, T> iterator = new FixedDataSetIterator<>(items);
-			return generate(iterator);
-		} catch (IOException ex) {
-			throw new OCSRuntimeException(ex.getMessage(), ex);
-		}
-	}
+    /**
+     * Processes a fixed set of data
+     *
+     * @param items the set of data to process
+     * @return the byte representation
+     */
+    public final byte[] processFixed(List<T> items) {
+        try {
+            // retrieve all store series based on the IDs
+            FixedDataSetIterator<ID, T> iterator = new FixedDataSetIterator<>(items);
+            return generate(iterator);
+        } catch (IOException ex) {
+            throw new OCSRuntimeException(ex.getMessage(), ex);
+        }
+    }
 
 }

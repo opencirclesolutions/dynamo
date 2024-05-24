@@ -124,7 +124,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
     private Button saveButton;
 
     /**
-     * Whether the screen is in view mode
+     * Whether the component is in view mode
      */
     @Getter
     private boolean viewMode;
@@ -136,7 +136,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
      * @param entityModel the entity model to base the grid on
      * @param formOptions the form options
      * @param sortOrder   the sort order that must be used
-     * @param joins       the joins
+     * @param joins       the fetch joins to use when retrieving data
      */
     public EditableGridLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
                               SortOrder<?> sortOrder, FetchJoinInformation... joins) {
@@ -146,8 +146,8 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Adds a column that contains a button that opens up the editor the selected
-     * row
+     * Adds a column that contains a button that opens the editor for the
+     * associated row
      *
      * @param editor the editor
      */
@@ -169,8 +169,7 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
     }
 
     /**
-     * Adds a column that contains a button for saving the row that is currently
-     * open in the editor
+     * Adds a column that contains a save button for the row that is currently being edited
      *
      * @param editor the editor
      */
@@ -297,6 +296,9 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         currentWrapper = wrapper;
     }
 
+    /**
+     * Adds a column containing a remove button to the grid
+     */
     private void addRemoveColumn() {
         if (getFormOptions().isShowRemoveButton() && checkEditAllowed() && !isViewMode()) {
             String defaultMsg = message("ocs.remove");
@@ -428,8 +430,10 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         getButtonBar().add(cancelButton);
     }
 
+    /**
+     * Creates a button for switching the grid to edit mode
+     */
     private void createEditButton() {
-        // button for switching to edit mode
         editButton = new Button(message("ocs.edit"));
         editButton.setIcon(VaadinIcon.EDIT.create());
         editButton.addClickListener(event -> toggleViewMode(false));
@@ -437,13 +441,15 @@ public class EditableGridLayout<ID extends Serializable, T extends AbstractEntit
         getButtonBar().add(editButton);
     }
 
+    /**
+     * Creates a button for saving multiple rows simultaneously
+     */
     private void createSaveButton() {
         saveButton = new Button(message("ocs.save"));
         saveButton.addClickListener(event -> {
 
-            // perform validation
             List<T> toSave = new ArrayList<>(binders.keySet());
-            boolean valid = binders.values().stream().map(b -> b.validate()).allMatch(s -> s.isOk());
+            boolean valid = binders.values().stream().map(binder -> binder.validate()).allMatch(s -> s.isOk());
             if (valid) {
                 if (getFormOptions().isConfirmSave()) {
                     askConfirmationBeforeSave(toSave);

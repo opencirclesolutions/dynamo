@@ -45,7 +45,7 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	/**
 	 * Indicates whether to show notification in case of too many results. Can be
-	 * temporarily set to false to prevent duplicate messages
+	 * temporarily set to false in order to prevent duplicate messages
 	 */
 	private boolean showNotification = true;
 
@@ -99,20 +99,20 @@ public class IdBasedDataProvider<ID extends Serializable, T extends AbstractEnti
 
 	@Override
 	public int size(Query<T, SerializablePredicate<T>> query) {
-		SortOrders so = createSortOrder(query);
+		SortOrders sortOrders = createSortOrder(query);
 
 		FilterConverter<T> converter = getFilterConverter();
 		Filter filter = converter.convert(query.getFilter().orElse(null));
 		extraFilter = filter;
 
 		if (getMaxResults() != null) {
-			Long count = getService().count(filter, false);
+			long count = getService().count(filter, false);
 			if (showNotification && count >= getMaxResults()) {
 				showNotification(getMessageService().getMessage("ocs.too.many.results", VaadinUtils.getLocale(),
 						getMaxResults()));
 			}
 		}
-		ids = getService().findIds(filter, getMaxResults(), so.toArray());
+		ids = getService().findIds(filter, getMaxResults(), sortOrders.toArray());
 		if (getAfterCountCompleted() != null) {
 			getAfterCountCompleted().accept(ids.size());
 		}

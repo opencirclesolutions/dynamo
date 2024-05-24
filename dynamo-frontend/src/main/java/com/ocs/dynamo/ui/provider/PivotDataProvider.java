@@ -67,15 +67,15 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	 * The name of the property that contains the identifying value for a column
 	 */
 	@Getter
-	private String columnKeyProperty;
+	private final String columnKeyProperty;
 
 	/**
 	 * Cache for keeping track of current page of data
 	 */
-	private Queue<T> dataCache = new LinkedList<>();
+	private final Queue<T> dataCache = new LinkedList<>();
 
 	@Getter
-	private List<String> fixedColumnKeys;
+	private final List<String> fixedColumnKeys;
 
 	/**
 	 * The offset of the latest page that was fetched from the wrapped provider
@@ -95,7 +95,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Mapping from requested offset to offset in the wrapped provider
 	 */
-	private Map<Integer, Integer> offsetMap = new HashMap<>();
+	private final Map<Integer, Integer> offsetMap = new HashMap<>();
 
 	/**
 	 * The pivoted item that is currently being constructed
@@ -106,24 +106,24 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	 * The list of pivoted properties
 	 */
 	@Getter
-	private List<String> pivotedProperties;
+	private final List<String> pivotedProperties;
 
 	/**
 	 * The list of hidden pivoted properties
 	 */
 	@Getter
-	private List<String> hiddenPivotedProperties = new ArrayList<>();
+	private final List<String> hiddenPivotedProperties;
 
 	/**
 	 * The data provider that is being wrapped
 	 */
-	private BaseDataProvider<ID, T> provider;
+	private final BaseDataProvider<ID, T> provider;
 
 	/**
 	 * The property that is checked to see if a new row has been reached
 	 */
 	@Getter
-	private String rowKeyProperty;
+	private final String rowKeyProperty;
 
 	@Getter
 	private int size;
@@ -131,7 +131,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Supplier to carry out to retrieve size of pivoted data set
 	 */
-	private Supplier<Integer> sizeSupplier;
+	private final Supplier<Integer> sizeSupplier;
 
 	@Setter
 	private Map<String, PivotAggregationType> aggregationMap = new HashMap<>();
@@ -140,7 +140,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	private Map<String, Class<?>> aggregationClassMap = new HashMap<>();
 
 	/**
-	 * 
+	 * Constructor
 	 * @param provider                the wrapped data provider
 	 * @param rowKeyProperty          the property to check for unique row values
 	 * @param columnKeyProperty       the property to check for the column key
@@ -184,8 +184,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
 			lastRequestedOffset = requestedOffset;
 
-			// fetch next page
-			fetchNextPage(query, requestedOffset, predicate);
+			fetchNextPageIfNeeded(query, requestedOffset, predicate.orElse(null));
 
 			if (dataCache.isEmpty()) {
 				// no more records left before end of page, abort
@@ -260,7 +259,7 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	/**
 	 * Handles a single row from the underlying result set
 	 * 
-	 * @param result
+	 * @param result the current list of pivoted items
 	 */
 	private void handleRow(List<PivotedItem> result) {
 		T entity = dataCache.poll();
@@ -270,34 +269,29 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 
 		// create new pivoted item if needed and add existing one to result set
 		if (lastRowKeyValue == null || !Objects.equals(rowKeyValue, lastRowKeyValue)) {
-			// add previous item
 			if (pivotedItem != null) {
 				result.add(pivotedItem);
 			}
-			// create new item
 			pivotedItem = new PivotedItem(rowKeyValue);
 			lastRowKeyValue = rowKeyValue;
 		}
 
 		// add fixed columns
-		for (int i = 0; i < fixedColumnKeys.size(); i++) {
-			String fixedColumnKey = fixedColumnKeys.get(i);
+		for (String fixedColumnKey : fixedColumnKeys) {
 			Object value = ClassUtils.getFieldValue(entity, fixedColumnKey);
 			pivotedItem.setFixedValue(fixedColumnKey, value);
 		}
 
 		// extract the useful values from this row
 		Object colKeyValue = ClassUtils.getFieldValue(entity, columnKeyProperty);
-		for (int i = 0; i < pivotedProperties.size(); i++) {
-			String propertyName = pivotedProperties.get(i);
+		for (String propertyName : pivotedProperties) {
 			Object value = ClassUtils.getFieldValue(entity, propertyName);
 			pivotedItem.setValue(colKeyValue, propertyName, value);
 		}
 
 		// extract additional useful (but invisible) values
 		if (hiddenPivotedProperties != null) {
-			for (int i = 0; i < hiddenPivotedProperties.size(); i++) {
-				String propertyName = hiddenPivotedProperties.get(i);
+			for (String propertyName : hiddenPivotedProperties) {
 				Object value = ClassUtils.getFieldValue(entity, propertyName);
 				pivotedItem.setValue(colKeyValue, propertyName, value);
 			}
@@ -305,19 +299,19 @@ public class PivotDataProvider<ID extends Serializable, T extends AbstractEntity
 	}
 
 	/**
-	 * Fetches the next page of data from the underlying provider
+	 * Fetches the next page of data from the underlying provider if needed
 	 * 
 	 * @param query           the incoming query object
 	 * @param requestedOffset the requested offset
 	 * @param predicate       the filter predicate
 	 */
-	private void fetchNextPage(Query<PivotedItem, SerializablePredicate<PivotedItem>> query, int requestedOffset,
-			Optional<SerializablePredicate<T>> predicate) {
+	private void fetchNextPageIfNeeded(Query<PivotedItem, SerializablePredicate<PivotedItem>> query, int requestedOffset,
+									   SerializablePredicate<T> predicate) {
 		if (dataCache.isEmpty()) {
 			offsetMap.put(requestedOffset, lastPivotOffset);
 			Query<T, SerializablePredicate<T>> newQuery = new Query<>(lastPivotOffset, PAGE_SIZE, query.getSortOrders(),
-					null, predicate.orElse(null));
-			provider.fetch(newQuery).forEach(t -> dataCache.add(t));
+					null, predicate);
+			provider.fetch(newQuery).forEach(dataCache::add);
 			lastPivotOffset = lastPivotOffset + PAGE_SIZE;
 		}
 	}

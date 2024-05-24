@@ -13,69 +13,38 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.beans.PropertyDescriptor;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.Map.Entry;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentMap;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.stream.Collectors;
-
+import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
 import com.ocs.dynamo.dao.JoinType;
-import com.ocs.dynamo.domain.model.*;
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
-
 import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.AttributeGroup;
-import com.ocs.dynamo.domain.model.annotation.AttributeGroups;
-import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.Cascade;
-import com.ocs.dynamo.domain.model.annotation.CustomSetting;
-import com.ocs.dynamo.domain.model.annotation.CustomType;
-import com.ocs.dynamo.domain.model.annotation.GridAttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.Model;
-import com.ocs.dynamo.domain.model.annotation.SearchAttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.SearchMode;
+import com.ocs.dynamo.domain.model.*;
+import com.ocs.dynamo.domain.model.annotation.*;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
-
-import jakarta.persistence.CollectionTable;
-import jakarta.persistence.Column;
-import jakarta.persistence.ElementCollection;
-import jakarta.persistence.Embedded;
-import jakarta.persistence.Id;
-import jakarta.persistence.Lob;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.OneToMany;
-import jakarta.validation.constraints.AssertFalse;
-import jakarta.validation.constraints.AssertTrue;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.beans.PropertyDescriptor;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.ZonedDateTime;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 /**
  * Implementation of the entity model factory - creates models that hold
@@ -296,13 +265,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         setAttributeModelDefaults(descriptor, entityModel, parentClass, prefix, fieldName, model);
         setNestedEntityModel(entityModel, model);
 
-        // only basic attributes are shown in the grid by default
-        model.setVisibleInGrid(!nested && model.isVisible() && (AttributeType.BASIC.equals(model.getAttributeType())));
-
         if (getMessageService() != null) {
             model.setDefaultTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
             model.setDefaultFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
         }
+
+        boolean isId = model.getName().equals(DynamoConstants.ID);
+        model.setVisibleInGrid(!isId && !nested && (AttributeType.BASIC.equals(model.getAttributeType())));
+        model.setVisibleInForm(!isId && AttributeType.BASIC.equals(model.getAttributeType()) ||
+                AttributeType.LOB.equals(model.getAttributeType()));
+
+        boolean isIdOrNestedId = model.getName().equals(DynamoConstants.ID) ||
+                model.getName().endsWith(DynamoConstants.ID);
+        model.setEditableType(isIdOrNestedId ? EditableType.READ_ONLY : EditableType.EDITABLE);
+
 
         AttributeSelectMode defaultMode = AttributeType.DETAIL.equals(model.getAttributeType())
                 ? AttributeSelectMode.TOKEN
@@ -396,9 +372,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         // Delegate to other factories first
         EntityModelImpl<T> entityModel = null;
         if (delegatedModelFactories != null) {
-            for (EntityModelFactory demf : delegatedModelFactories) {
-                if (demf.canProvideModel(reference, entityClass)) {
-                    entityModel = (EntityModelImpl<T>) demf.getModel(reference, entityClass);
+            for (EntityModelFactory delegate : delegatedModelFactories) {
+                if (delegate.canProvideModel(reference, entityClass)) {
+                    entityModel = (EntityModelImpl<T>) delegate.getModel(reference, entityClass);
                     if (entityModel != null) {
                         break;
                     }
@@ -462,6 +438,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         }
         setSortOrder(entityModel, sortOrder);
 
+        processFetchJoinAnnotations(entityClass, entityModel);
+        processMessageBundleJoinOverrides(entityModel);
+
+        cache.put(reference, entityModel);
+        return entityModel;
+    }
+
+    /**
+     * Translate @FetchJoin annotations to settings on the entity model
+     * @param entityClass the entity class
+     * @param entityModel the entity model
+     * @param <T> type parameter, the entity class
+     */
+    private <T> void processFetchJoinAnnotations(Class<T> entityClass, EntityModelImpl<T> entityModel) {
         entityModel.setFetchJoins(new ArrayList<>());
         entityModel.setDetailJoins(new ArrayList<>());
 
@@ -480,11 +470,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 entityModel.setDetailJoins(mapped);
             }
         }
-
-        processMessageBundleJoinOverrides(entityModel);
-
-        cache.put(reference, entityModel);
-        return entityModel;
     }
 
     private <T> void processMessageBundleJoinOverrides(EntityModelImpl<T> entityModel) {
@@ -600,9 +585,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     protected <T> void determineAttributeOrder(Class<T> entityClass, String reference,
                                                List<AttributeModel> attributeModels) {
         List<String> explicitAttributeNames = new ArrayList<>();
-        AttributeOrder orderAnnot = entityClass.getAnnotation(AttributeOrder.class);
-        if (orderAnnot != null) {
-            explicitAttributeNames = List.of(orderAnnot.attributeNames());
+        AttributeOrder orderAnnotation = entityClass.getAnnotation(AttributeOrder.class);
+        if (orderAnnotation != null) {
+            explicitAttributeNames = List.of(orderAnnotation.attributeNames());
         }
 
         determineAttributeOrderInner(reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames, attributeModels,
@@ -1009,9 +994,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     private void setAnnotationVisibilityOverrides(Attribute attribute, AttributeModelImpl model, boolean nested) {
         // set visibility (hide nested attribute by default; they must be shown using
         // the message bundle)
-        if (attribute.visible() != null && !VisibilityType.INHERIT.equals(attribute.visible()) && !nested) {
-            model.setVisible(VisibilityType.SHOW.equals(attribute.visible()));
-            model.setVisibleInGrid(model.isVisible());
+        if (attribute.visibleInForm() != null && !VisibilityType.INHERIT.equals(attribute.visibleInForm()) && !nested) {
+            model.setVisibleInForm(VisibilityType.SHOW.equals(attribute.visibleInForm()));
         }
 
         // set grid visibility
@@ -1064,7 +1048,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setMainAttribute(true);
             }
 
-            setBooleanTrueSetting(attribute.complexEditable(), model::setComplexEditable);
             setBooleanTrueSetting(attribute.image(), model::setImage);
             setBooleanTrueSetting(attribute.percentage(), model::setPercentage);
             setBooleanTrueSetting(attribute.currency(), model::setCurrency);
@@ -1079,7 +1062,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
 
             if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
-                Set<String> set = Arrays.stream(attribute.allowedExtensions()).map(extension -> extension.toLowerCase())
+                Set<String> set = Arrays.stream(attribute.allowedExtensions()).map(String::toLowerCase)
                         .collect(Collectors.toSet());
                 model.setAllowedExtensions(set);
             }
@@ -1202,7 +1185,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         model.setImage(false);
         model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
         model.setSortable(true);
-        model.setComplexEditable(false);
         model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
         model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
         model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
@@ -1213,7 +1195,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 : MultiSelectMode.ROWSELECT);
         model.setPagingMode(SystemPropertyUtils.getDefaultPagingMode());
 
-        setIdAttribute(entityModel, model, fieldName);
         model.setType(descriptor.getPropertyType());
         model.setDateType(determineDateType(model.getType()));
         model.setDisplayFormat(determineDefaultDisplayFormat(model.getType()));
@@ -1260,8 +1241,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 attributeModel::setRequiredForSearching);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),
                 attributeModel::setSortable);
-        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.COMPLEX_EDITABLE),
-                attributeModel::setComplexEditable);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),
                 attributeModel::setImage);
 
@@ -1288,11 +1267,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
         }
         setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.EDITABLE), EditableType.class,
-                value -> attributeModel.setEditableType(value));
+                attributeModel::setEditableType);
 
-        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE);
+        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_FORM);
         if (!StringUtils.isEmpty(msg)) {
-            attributeModel.setVisible(isVisible(msg));
+            attributeModel.setVisibleInForm(isVisible(msg));
         }
         msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_GRID);
         if (!StringUtils.isEmpty(msg)) {
@@ -1532,21 +1511,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         if (!exclude.equals(value)) {
             consumer.accept(value);
         }
-    }
-
-    /**
-     * Sets the attribute model as the "ID" attribute model if needed
-     *
-     * @param <T>            the type of the class
-     * @param entityModel    the entity model
-     * @param attributeModel the attribute model for the ID
-     * @param fieldName      the name of the field
-     */
-    private <T> void setIdAttribute(EntityModelImpl<T> entityModel, AttributeModelImpl attributeModel,
-                                    String fieldName) {
-        Id idAttr = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Id.class);
-        // the ID column is hidden. details collections are also hidden by default
-        attributeModel.setVisible(idAttr == null);
     }
 
     /**

@@ -52,7 +52,6 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-
 @UtilityClass
 @Slf4j
 public class FormFillUtils {
@@ -123,17 +122,15 @@ public class FormFillUtils {
                 componentInfoList.add(new ComponentInfo(childComponent.getId().orElse(null), childComponent.getClass().getSimpleName(), childComponent));
             }
 
+            // in case of a tab wrapper, we need to process the actual components, not the tabs
             if (component instanceof TabWrapper wrapper) {
                 for (int i = 0; i < wrapper.getTabCount(); i++) {
-                    // in case of a tab wrapper, we need to process the actual components, not the tabs
                     Component tabComponent = wrapper.getComponentAt(i);
                     findChildComponents(tabComponent, componentInfoList);
                 }
             } else {
                 findChildComponents(childComponent, componentInfoList);
             }
-
-
         });
     }
 
@@ -192,7 +189,11 @@ public class FormFillUtils {
                         || (componentInfo.component instanceof TextArea)
                         || (componentInfo.component instanceof EmailField)
                         || (componentInfo.component instanceof PasswordField)) {
-                    inputFieldMap.put(componentInfo.id, "a String");
+                    if (am.isNumerical()) {
+                        inputFieldMap.put(componentInfo.id, "a Number");
+                    } else {
+                        inputFieldMap.put(componentInfo.id, "a String");
+                    }
                 } else if ((componentInfo.component instanceof NumberField)) {
                     inputFieldMap.put(componentInfo.id, "a Number");
                 } else if ((componentInfo.component instanceof IntegerField)) {
@@ -392,7 +393,6 @@ public class FormFillUtils {
                                     .findFirst()
                                     .ifPresent(val -> field.setValue((AbstractEntity<?>) val));
                         }
-
                     } else if (componentInfo.component instanceof QuickAddTokenSelect field) {
                         if (!fillBasedOnAttributeModel(responseValue, attributeModel, field, true)) {
                             field.getTokenSelect().getListDataView().getItems()

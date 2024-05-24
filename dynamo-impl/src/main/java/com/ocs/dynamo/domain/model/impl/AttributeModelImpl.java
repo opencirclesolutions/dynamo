@@ -73,8 +73,6 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private String collectionTableName;
 
-	private boolean complexEditable;
-
 	private boolean currency;
 
 	private String currencySymbol;
@@ -206,7 +204,7 @@ public class AttributeModelImpl implements AttributeModel {
 
 	private boolean url;
 
-	private boolean visible;
+	private boolean visibleInForm;
 
 	private boolean visibleInGrid;
 

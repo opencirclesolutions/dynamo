@@ -66,11 +66,6 @@ public @interface Attribute {
 	BooleanType clearButtonVisible() default BooleanType.INHERIT;
 
 	/**
-	 * @return whether the attribute will show up inside an edit form
-	 */
-	boolean complexEditable() default false;
-
-	/**
 	 * @return whether a currency symbol will be prepended to the value
 	 */
 	boolean currency() default false;
@@ -362,9 +357,9 @@ public @interface Attribute {
 
 	/**
 	 * 
-	 * @return whether the attribute is visible
+	 * @return whether the attribute is visible inside a form
 	 */
-	VisibilityType visible() default VisibilityType.INHERIT;
+	VisibilityType visibleInForm() default VisibilityType.INHERIT;
 
 	/**
 	 * @return whether the attribute is visible inside a grid

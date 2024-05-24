@@ -44,7 +44,7 @@ public class UIHelper {
 	/**
 	 * Mapping for navigating to pages after clicking on a link
 	 */
-	private Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
+	private final Map<Class<?>, Consumer<?>> entityOnViewMapping = new HashMap<>();
 
 	@Getter
 	@Setter
@@ -89,22 +89,22 @@ public class UIHelper {
 	/**
 	 * Search value cache
 	 */
-	private Map<Class<?>, List<SerializablePredicate<?>>> searchValueCache = new HashMap<>();
+	private final Map<Class<?>, List<SerializablePredicate<?>>> searchValueCache = new HashMap<>();
 
 	/**
 	 * Search filter cache for flexible search layouts
 	 */
-	private Map<Class<?>, List<FlexibleFilterDefinition>> searchFilterDefinitionCache = new HashMap<>();
+	private final Map<Class<?>, List<FlexibleFilterDefinition>> searchFilterDefinitionCache = new HashMap<>();
 
 	/**
 	 * Sort order cache
 	 */
-	private Map<Class<?>, List<SortOrder<?>>> sortOrderCache = new HashMap<>();
+	private final Map<Class<?>, List<SortOrder<?>>> sortOrderCache = new HashMap<>();
 
 	/**
 	 * Advanced mode cache
 	 */
-	private Map<Class<?>, Boolean> advancedModeCache = new HashMap<>();
+	private final Map<Class<?>, Boolean> advancedModeCache = new HashMap<>();
 
 	/**
 	 * Adds a mapping for carrying out navigation within the application
@@ -179,25 +179,24 @@ public class UIHelper {
 	}
 
 	/**
-	 * Navigate to a screen based on the actual type of parameter o. During
+	 * Navigate to a screen based on the actual type of parameter selectedObject. During
 	 * initialization of the UI of your project a mapping from type to consumer must
 	 * have been provided by adding it through the method addEntityOnViewMapping.
 	 * 
-	 * @param o The selected object to be displayed on the target screen.
+	 * @param selectedObject The selected object to be displayed on the target screen.
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public void navigateToEntityScreen(Object o) {
-		if (o != null) {
-			Consumer navigateToView = entityOnViewMapping.getOrDefault(o.getClass(),
-					err -> VaadinUtils.showNotification("No view mapping registered for class: " + o.getClass(),
+	public void navigateToEntityScreen(Object selectedObject) {
+		if (selectedObject != null) {
+			Consumer navigateToView = entityOnViewMapping.getOrDefault(selectedObject.getClass(),
+					err -> VaadinUtils.showNotification("No view mapping registered for class: %s".formatted(selectedObject.getClass()),
 							Position.MIDDLE, NotificationVariant.LUMO_ERROR));
 			if (navigateToView != null) {
 				try {
-					navigateToView.accept(o);
+					navigateToView.accept(selectedObject);
 				} catch (Exception e) {
 					VaadinUtils.showNotification(
-							"An exception occurred while executing the mapped action for class: " + o.getClass()
-									+ " with message: " + e.getMessage(),
+							"An exception occurred while executing the mapped action for class: %s with message: %s".formatted(selectedObject.getClass(), e.getMessage()),
 							Position.MIDDLE, NotificationVariant.LUMO_ERROR);
 					throw e;
 				}
@@ -289,7 +288,7 @@ public class UIHelper {
 	 * Stores the search terms that have been entered in a search screen for later
 	 * use
 	 * 
-	 * @param filters
+	 * @param filters the search filters
 	 */
 	public void storeSearchTerms(List<SerializablePredicate<?>> filters) {
 		if (this.selectedView != null) {
@@ -300,7 +299,7 @@ public class UIHelper {
 	/**
 	 * Stores the sort order that have been used in a grid for later use
 	 * 
-	 * @param sortOrder
+	 * @param sortOrder the sort order
 	 */
 	public void storeSortOrders(List<SortOrder<?>> sortOrder) {
 		if (this.selectedView != null) {

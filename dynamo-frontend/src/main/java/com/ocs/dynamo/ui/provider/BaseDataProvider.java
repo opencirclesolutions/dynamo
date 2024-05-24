@@ -60,7 +60,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	@Getter
 	private final EntityModel<T> entityModel;
 
-	private EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
+	private final EntityModelFactory entityModelFactory = ServiceLocatorFactory.getServiceLocator().getEntityModelFactory();
 
 	@Getter
 	private final FetchJoinInformation[] joins;
@@ -76,7 +76,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 * The message service
 	 */
 	@Getter
-	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * The service used to query the database
@@ -128,7 +128,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	 * Creates the desired sort order
 	 * 
 	 * @param query the query predicate
-	 * @return
+	 * @return the resulting sort orders
 	 */
 	protected SortOrders createSortOrder(Query<T, SerializablePredicate<T>> query) {
 		List<QuerySortOrder> orders = query.getSortOrders();
@@ -226,7 +226,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	/**
 	 * Returns the number of items in the provider
 	 * 
-	 * @return
+	 * @return the number of items
 	 */
 	public abstract int getSize();
 
@@ -257,8 +257,8 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	/**
 	 * Returns the index of the item identified by the specified ID
 	 * 
-	 * @param id
-	 * @return
+	 * @param id the desired ID
+	 * @return the index
 	 */
 	public abstract int indexOf(ID id);
 

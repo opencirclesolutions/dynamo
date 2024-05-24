@@ -22,10 +22,9 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.flow.data.binder.Result;
 
-@Disabled
 public class ConvertUtilsTest extends BaseMockitoTest {
 
-    private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
+    private final EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
     @BeforeAll
     public static void beforeClass() {
@@ -69,13 +68,13 @@ public class ConvertUtilsTest extends BaseMockitoTest {
         assertEquals("17.79", s);
 
         s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("id"), 1234);
-        assertEquals("1234", s);
+        assertEquals("1,234", s);
 
         s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("birthWeek"), DateUtils.createLocalDate("01022015"));
         assertEquals("2015-05", s);
 
         s = ConvertUtils.convertToPresentationValue(model.getAttributeModel("someDouble"), 1234.56);
-        assertEquals("1234.56", s);
+        assertEquals("1,234.56", s);
     }
 
     @Test

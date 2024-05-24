@@ -349,9 +349,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private void addField(HasComponents parent, EntityModel<T> entityModel, AttributeModel attributeModel,
                           int tabIndex) {
         AttributeType type = attributeModel.getAttributeType();
-        if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath()) && attributeModel.isVisible()
-                && (AttributeType.BASIC.equals(type) || AttributeType.LOB.equals(type)
-                || attributeModel.isComplexEditable())) {
+        if (!alreadyBound.get(isViewMode()).contains(attributeModel.getPath()) && attributeModel.isVisibleInForm()) {
             if (EditableType.READ_ONLY.equals(attributeModel.getEditableType()) || isViewMode()) {
                 if (AttributeType.LOB.equals(type)) {
                     // image preview (or label if no preview is available)

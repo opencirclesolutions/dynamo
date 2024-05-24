@@ -51,12 +51,12 @@ public class Currency extends Domain {
 	 */
 	@Override
 	@NotNull
-	@Attribute(visible = VisibilityType.SHOW)
+	@Attribute(visibleInForm = VisibilityType.SHOW)
 	public String getCode() {
 		return super.getCode();
 	}
 
-	@Attribute(visible = VisibilityType.HIDE)
+	@Attribute(visibleInForm = VisibilityType.HIDE)
 	public String getCodeAndName() {
 		return getCode() + " - " + getName();
 	}

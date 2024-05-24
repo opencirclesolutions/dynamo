@@ -207,7 +207,7 @@ public class VerticalMenuService extends BaseMenuService<Button, Accordion> {
 	 * Checks whether the menu item with the specified key has any children
 	 * 
 	 * @param key the key of the menu item
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	private boolean hasChildren(String key) {
 		int index = 1;

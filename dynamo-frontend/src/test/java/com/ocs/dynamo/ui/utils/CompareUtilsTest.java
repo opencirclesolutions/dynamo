@@ -1,18 +1,5 @@
 package com.ocs.dynamo.ui.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.ArgumentMatchers.nullable;
-import static org.mockito.Mockito.lenient;
-
-import java.util.List;
-import java.util.Locale;
-
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentMatchers;
-import org.mockito.Mock;
-
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
@@ -21,7 +8,18 @@ import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
 import org.mockito.Mockito;
+
+import java.util.List;
+import java.util.Locale;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.ArgumentMatchers.nullable;
+import static org.mockito.Mockito.lenient;
 
 public class CompareUtilsTest extends BaseMockitoTest {
 

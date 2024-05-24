@@ -33,14 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class PasteTemplate<T> {
 
-	private ValueChangeEvent<String> event;
+	private final ValueChangeEvent<String> event;
 
-	private Locale locale;
+	private final Locale locale;
 
 	@Getter
-	private Grid<T> grid;
+	private final Grid<T> grid;
 
-	private String value;
+	private final String value;
 
 	/**
 	 * Constructor
@@ -86,7 +86,7 @@ public abstract class PasteTemplate<T> {
 	 * Processes a single value
 	 * 
 	 * @param index the index of the value in the list
-	 * @param value
+	 * @param value the value to process
 	 */
 	protected abstract void process(int index, String value);
 
@@ -94,7 +94,7 @@ public abstract class PasteTemplate<T> {
 	 * Clears the source field. This can be used if the values are pasted in a cell
 	 * that should be emptied after the paste action
 	 * 
-	 * @param event
+	 * @param event the value change event
 	 */
 	protected abstract void clearSourceField(ValueChangeEvent<String> event);
 

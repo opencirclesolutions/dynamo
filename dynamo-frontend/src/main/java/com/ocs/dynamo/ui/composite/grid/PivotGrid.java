@@ -51,13 +51,13 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 
 	private static final long serialVersionUID = -1302975905471267532L;
 
-	private MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	/**
 	 * Constructor
 	 * 
 	 * @param provider           the data provider
-	 * @param possibleColumnKeys the possible column kyes
+	 * @param possibleColumnKeys the possible column keys
 	 * @param fixedHeaderMapper  the fixed header mapper
 	 * @param headerMapper       the header mapper
 	 * @param subHeaderMapper    the sub header mapper
@@ -70,9 +70,9 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 		addThemeVariants(GridVariant.LUMO_ROW_STRIPES, GridVariant.LUMO_COMPACT);
 
 		for (int i = 0; i < provider.getFixedColumnKeys().size(); i++) {
-			String fk = provider.getFixedColumnKeys().get(i);
-			addColumn(t -> t.getFixedValue(fk)).setHeader(fixedHeaderMapper.apply(fk)).setFrozen(true)
-					.setResizable(true).setAutoWidth(true).setKey(fk).setId(fk);
+			String fixedColumn = provider.getFixedColumnKeys().get(i);
+			addColumn(row -> row.getFixedValue(fixedColumn)).setHeader(fixedHeaderMapper.apply(fixedColumn)).setFrozen(true)
+					.setResizable(true).setAutoWidth(true).setKey(fixedColumn).setId(fixedColumn);
 		}
 
 		HeaderRow headerRow = null;
@@ -83,8 +83,44 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 		addColumns(provider, possibleColumnKeys, headerMapper, subHeaderMapper, customFormatter, headerRow);
 		List<String> allProperties = provider.getAllPrivotProperties();
 
-		long totalsColumns = allProperties.stream().filter(a -> provider.getAggregation(a) != null).count();
+		addTotalsColumns(provider, subHeaderMapper, headerRow, allProperties);
+	}
 
+	/**
+	 * Adds the (non-fixed) columns to the grid
+	 * @param provider the data provider
+	 * @param possibleColumnKeys the possible column keys (distinct values)
+	 * @param headerMapper column header mapper
+	 * @param subHeaderMapper column sub-header mapper
+	 * @param customFormatter custom formatter
+	 * @param headerRow the grid header row
+	 */
+	private void addColumns(PivotDataProvider<ID, T> provider, List<Object> possibleColumnKeys,
+			BiFunction<Object, Object, String> headerMapper, BiFunction<Object, Object, String> subHeaderMapper,
+			BiFunction<String, Object, String> customFormatter, HeaderRow headerRow) {
+		for (Object columnKey : possibleColumnKeys) {
+			for (String property : provider.getPivotedProperties()) {
+				addColumn(row -> {
+					// first check for a custom formatter. Otherwise, fall back to default formatting
+					String value = null;
+					if (customFormatter != null) {
+						value = customFormatter.apply(property, row.getValue(columnKey, property));
+					}
+					if (StringUtils.isEmpty(value)) {
+						value = row.getFormattedValue(columnKey, property);
+					}
+					return value;
+				}).setHeader(headerMapper.apply(columnKey, property)).setAutoWidth(true)
+						.setKey(calculateColumnKey(columnKey, property)).setResizable(true)
+						.setId(calculateColumnKey(columnKey, property));
+
+				addSubHeaderRow(subHeaderMapper, headerRow, columnKey, property);
+			}
+		}
+	}
+
+	private void addTotalsColumns(PivotDataProvider<ID, T> provider, BiFunction<Object, Object, String> subHeaderMapper, HeaderRow headerRow, List<String> allProperties) {
+		long totalsColumns = allProperties.stream().filter(prop -> provider.getAggregation(prop) != null).count();
 		for (String property : allProperties) {
 			// add aggregate column
 			PivotAggregationType type = provider.getAggregation(property);
@@ -94,7 +130,7 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 				String colId = "aggregate_" + type.toString().toLowerCase() + "_" + property;
 
 				addColumn(t -> {
-					BigDecimal bd = null;
+					BigDecimal bd;
 					if (PivotAggregationType.SUM.equals(type)) {
 						bd = t.getSumValue(property);
 					} else if (PivotAggregationType.AVERAGE.equals(type)) {
@@ -109,31 +145,6 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 				if (headerRow != null && totalsColumns > 1) {
 					headerRow.getCell(getColumnByKey(colId)).setText(subHeaderMapper.apply("", property));
 				}
-			}
-		}
-	}
-
-	private void addColumns(PivotDataProvider<ID, T> provider, List<Object> possibleColumnKeys,
-			BiFunction<Object, Object, String> headerMapper, BiFunction<Object, Object, String> subHeaderMapper,
-			BiFunction<String, Object, String> customFormatter, HeaderRow headerRow) {
-		for (int i = 0; i < possibleColumnKeys.size(); i++) {
-			Object columnKey = possibleColumnKeys.get(i);
-			for (String property : provider.getPivotedProperties()) {
-				addColumn(t -> {
-					// first check for a custom formatter. Otherwise fall back to default formatting
-					String value = null;
-					if (customFormatter != null) {
-						value = customFormatter.apply(property, t.getValue(columnKey, property));
-					}
-					if (StringUtils.isEmpty(value)) {
-						value = t.getFormattedValue(columnKey, property);
-					}
-					return value;
-				}).setHeader(headerMapper.apply(columnKey, property)).setAutoWidth(true)
-						.setKey(calculateColumnKey(columnKey, property)).setResizable(true)
-						.setId(calculateColumnKey(columnKey, property));
-
-				addSubHeaderRow(subHeaderMapper, headerRow, columnKey, property);
 			}
 		}
 	}
@@ -170,15 +181,11 @@ public class PivotGrid<ID extends Serializable, T extends AbstractEntity<ID>> ex
 	 * @return the header
 	 */
 	private String getAggregateHeader(PivotAggregationType type) {
-		switch (type) {
-		case SUM:
-			return messageService.getMessage("ocs.sum", VaadinUtils.getLocale());
-		case AVERAGE:
-			return messageService.getMessage("ocs.average", VaadinUtils.getLocale());
-		case COUNT:
-			return messageService.getMessage("ocs.count", VaadinUtils.getLocale());
-		}
-		return null;
+		return switch (type) {
+			case SUM -> messageService.getMessage("ocs.sum", VaadinUtils.getLocale());
+			case AVERAGE -> messageService.getMessage("ocs.average", VaadinUtils.getLocale());
+			case COUNT -> messageService.getMessage("ocs.count", VaadinUtils.getLocale());
+		};
 	}
 
 	public String getFormattedAggregateValue(BigDecimal bd, Class<?> clazz) {

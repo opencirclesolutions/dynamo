@@ -18,25 +18,23 @@ import java.util.List;
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.vaadin.flow.data.provider.SortDirection;
 import com.vaadin.flow.data.provider.SortOrder;
+import lombok.experimental.UtilityClass;
 
 /**
  * 
  * @author Bas Rutten
  *
  */
+@UtilityClass
 public final class SortUtils {
 
-    private SortUtils() {
-    }
-
     /**
-     * Translates one or more (non) transient Vaadin sort orders to OCS sort orders
-     * 
+     * Translates one or more Vaadin sort orders to OCS sort orders
+     *
      * @param originalOrders the sort order that must be translated
      * @return the sort orders for which transient is equal to the given isTransient
      *         value
      */
-    @SafeVarargs
     public static com.ocs.dynamo.dao.SortOrder[] translateSortOrders(SortOrder<?>... originalOrders) {
         if (originalOrders != null && originalOrders.length > 0) {
             final com.ocs.dynamo.dao.SortOrder[] orders = new com.ocs.dynamo.dao.SortOrder[originalOrders.length];
@@ -50,9 +48,11 @@ public final class SortUtils {
     }
 
     /**
-     * 
-     * @param sortOrders
-     * @return
+     * Translates one or more Vaadin sort orders to OCS sort orders
+     *
+     * @param sortOrders the sort order that must be translated
+     * @return the sort orders for which transient is equal to the given isTransient
+     *         value
      */
     public static com.ocs.dynamo.dao.SortOrder[] translateSortOrders(List<SortOrder<?>> sortOrders) {
         if (sortOrders == null) {

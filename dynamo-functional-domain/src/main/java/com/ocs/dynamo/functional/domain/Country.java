@@ -55,7 +55,7 @@ public class Country extends DomainChild<Country, Region> {
 	 * The region - note that this is not a JPA attribute and you must use "parent"
 	 * instead in queries
 	 * 
-	 * @return
+	 * @return the region
 	 */
 	public Region getRegion() {
 		return getParent();
@@ -64,9 +64,8 @@ public class Country extends DomainChild<Country, Region> {
 	/**
 	 * Overridden so we can modify the attribute model
 	 */
-//	@Nullable
 	@Override
-	@Attribute(complexEditable = true, displayName = "Region", visibleInGrid = VisibilityType.SHOW)
+	@Attribute(visibleInForm = VisibilityType.SHOW, displayName = "Region", visibleInGrid = VisibilityType.SHOW)
 	public Region getParent() {
 		return (Region) Hibernate.unproxy(super.getParent());
 	}
@@ -76,7 +75,7 @@ public class Country extends DomainChild<Country, Region> {
 	 */
 	@Override
 	@NotNull
-	@Attribute(visible = VisibilityType.SHOW)
+	@Attribute(visibleInForm = VisibilityType.SHOW)
 	public String getCode() {
 		return super.getCode();
 	}

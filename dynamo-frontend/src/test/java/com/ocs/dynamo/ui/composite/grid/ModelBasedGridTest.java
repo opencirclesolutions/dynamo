@@ -44,7 +44,7 @@ import com.vaadin.flow.function.SerializablePredicate;
 
 public class ModelBasedGridTest extends BaseMockitoTest {
 
-	private EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
+	private final EntityModelFactory entityModelFactory = new EntityModelFactoryImpl();
 
 	@Mock
 	private MessageService messageService;
@@ -55,7 +55,6 @@ public class ModelBasedGridTest extends BaseMockitoTest {
 	@BeforeEach
 	public void setUp() {
 		ReflectionTestUtils.setField(entityModelFactory, "messageService", messageService);
-		//MockVaadin.setup();
 	}
 
 	@Test

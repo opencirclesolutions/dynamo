@@ -19,7 +19,7 @@ public class URLValidatorTest {
         assertTrue(validator.isValid("http://www.google.nl", null));
         assertTrue(validator.isValid("www.google.nl", null));
         assertTrue(validator.isValid("mijn.site.nl", null));
-        assertFalse(validator.isValid("mijn.site", null));
+        assertTrue(validator.isValid("mijn.site", null));
     }
 
     @Test
@@ -31,10 +31,5 @@ public class URLValidatorTest {
         assertFalse(validator.isValid("no@www@no@nothing", null));
         assertFalse(validator.isValid("no www no nothing", null));
     }
-
-//    @Test
-//    public void testValid_exoticCharacters() {
-//        assertTrue(validator.isValid("http://www.goqsùdfù^ùê   ù^zù'^^\"'t\"'^m§\"'ogle.nl", null));
-//    }
 
 }

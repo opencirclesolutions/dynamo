@@ -115,7 +115,7 @@ public final class VaadinUtils {
 	 * 
 	 * @param currency       whether to include a currency symbol
 	 * @param percentage     whether to include a percentage sign
-	 * @param useGrouping    whether to use a thousands grouping separator
+	 * @param useGrouping    whether to use a thousand grouping separator
 	 * @param precision      the desired precision
 	 * @param value          the value to convert
 	 * @param locale         the locale to use
@@ -185,7 +185,7 @@ public final class VaadinUtils {
 	 * 
 	 * @param currency       whether to include a currency symbol
 	 * @param percentage     whether to include a percentage sign
-	 * @param useGrouping    whether to use a thousands grouping separator
+	 * @param useGrouping    whether to use a thousand grouping separator
 	 * @param precision      the desired precision
 	 * @param value          the value to convert
 	 * @param locale         the locale to use
@@ -347,37 +347,37 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * Converts an Long to a String, using the Vaadin converters
+	 * Converts a Long to a String, using the Vaadin converters
 	 *
 	 * @param grouping indicates whether grouping separators must be used
 	 * @param value    the value to convert
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static String longToString(boolean grouping, boolean percentage, Long value) {
 		return longToString(grouping, percentage, value, getLocale());
 	}
 
 	/**
-	 * Converts an Long to a String, using the Vaadin converters
+	 * Converts a Long to a String, using the Vaadin converters
 	 *
 	 * @param grouping indicates whether grouping separators must be used
 	 * @param value    the value to convert
 	 * @param locale   the locale
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
 		return NumberUtils.longToString(grouping, percentage, value, locale);
 	}
 
 	/**
-	 * Converts a number to a String based on an
+	 * Converts a number to a String based on an attribute model
 	 * @param am the attribute model
-	 * @param value
-	 * @param grouping
-	 * @param locale
-	 * @param currencySymbol
-	 * @param <T>
-	 * @return
+	 * @param value the number value
+	 * @param grouping whether to use a thousand grouping
+	 * @param locale the locale to use
+	 * @param currencySymbol the currency symbol to use
+	 * @param <T> type parameter, type of the number
+	 * @return the result of the conversion
 	 */
 	public static <T> String numberToString(AttributeModel am, T value, boolean grouping, Locale locale,
 			String currencySymbol) {
@@ -584,8 +584,8 @@ public final class VaadinUtils {
 	}
 
 	/**
-	 * 
-	 * @param zoneId
+	 * Stores the time zone of the user in the session
+	 * @param zoneId the zone ID
 	 */
 	public static void storeTimeZone(ZoneId zoneId) {
 		VaadinSession.getCurrent().setAttribute("zoneId", zoneId);
@@ -595,12 +595,12 @@ public final class VaadinUtils {
 	 * Converts a String to a BigDecimal
 	 * 
 	 * @param percentage  whether a percentage sign might be included
-	 * @param useGrouping whether a thousands grouping separator might be included
+	 * @param useGrouping whether a thousand grouping separator might be included
 	 * @param currency    whether a currency symbol might be included
 	 * @param precision   the precision
 	 * @param value       the String value to convert
 	 * @param locale      the locale to use
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping, boolean currency,
 			int precision, String value, Locale locale) {
@@ -613,10 +613,10 @@ public final class VaadinUtils {
 	 * Converts a String to a BigDecimal
 	 * 
 	 * @param percentage  whether a percentage sign might be included
-	 * @param useGrouping whether a thousands grouping separator might be included
+	 * @param useGrouping whether a thousand grouping separator might be included
 	 * @param currency    whether a currency symbol might be included
 	 * @param value       the value to include
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static BigDecimal stringToBigDecimal(boolean percentage, boolean useGrouping, boolean currency,
 			String value) {
@@ -628,12 +628,12 @@ public final class VaadinUtils {
 	 * Converts a String to a Double
 	 * 
 	 * @param percentage  whether a percentage sign might be included
-	 * @param useGrouping whether a thousands grouping separator might be included
+	 * @param useGrouping whether a thousand grouping separator might be included
 	 * @param currency    whether a currency symbol might be included
 	 * @param precision   the precision
 	 * @param value       the String value to convert
 	 * @param locale      the locale to use
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static Double stringToDouble(boolean percentage, boolean useGrouping, boolean currency, int precision,
 			String value, Locale locale) {
@@ -645,9 +645,9 @@ public final class VaadinUtils {
 	/**
 	 * Converts a String to an Integer
 	 *
-	 * @param grouping whether to include a thousands grouping separator
+	 * @param grouping whether to include a thousand grouping separator
 	 * @param value    the String to convert
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static Integer stringToInteger(boolean grouping, String value) {
 		return stringToInteger(grouping, value, getLocale());
@@ -660,7 +660,7 @@ public final class VaadinUtils {
 	 *                 separators
 	 * @param value    the String to convert
 	 * @param locale   the locale to use for the conversion
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static Integer stringToInteger(boolean grouping, String value, Locale locale) {
 		StringToIntegerConverter converter = ConverterFactory.createIntegerConverter(grouping, false);
@@ -670,9 +670,9 @@ public final class VaadinUtils {
 	/**
 	 * Converts a String to a Long
 	 *
-	 * @param grouping indicates if a thousands separator is used
+	 * @param grouping indicates if a thousand separator is used
 	 * @param value    the String to convert
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static Long stringToLong(boolean grouping, String value) {
 		return stringToLong(grouping, value, getLocale());
@@ -681,10 +681,10 @@ public final class VaadinUtils {
 	/**
 	 * Converts a String to a Long
 	 *
-	 * @param grouping indicates if a thousands separator is used
-	 * @param value    the String to convert to convert
+	 * @param grouping indicates if a thousand separator is used
+	 * @param value    the String to convert
 	 * @param locale   the locale to use
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static Long stringToLong(boolean grouping, String value, Locale locale) {
 		StringToLongConverter converter = ConverterFactory.createLongConverter(grouping, false);

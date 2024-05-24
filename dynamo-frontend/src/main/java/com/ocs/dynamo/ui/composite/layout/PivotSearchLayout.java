@@ -84,12 +84,15 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	private BiFunction<Object, Object, String> exportHeaderMapper = null;
 
 	/**
-	 * Bifunction used to map pivot column subheaders for export only
+	 * Bi-function used to map pivot column sub-headers for export only
 	 */
 	@Getter
 	@Setter
 	private BiFunction<Object, Object, String> exportSubHeaderMapper = null;
 
+	/**
+	 * Mapper for translating from fixed column name to description
+	 */
 	@Getter
 	@Setter
 	private Function<String, String> fixedHeaderMapper = Function.identity();
@@ -131,12 +134,12 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 	private boolean includeAggregateRow;
 
 	/**
-	 * 
-	 * @param service
-	 * @param entityModel
-	 * @param formOptions
-	 * @param sortOrder
-	 * @param joins
+	 * Constructor
+	 * @param service the service used to retrieve data from the database
+	 * @param entityModel the entity model
+	 * @param formOptions the form options
+	 * @param sortOrder the sort order
+	 * @param joins the fetch joins that are applied to the query
 	 */
 	public PivotSearchLayout(BaseService<ID, T> service, EntityModel<T> entityModel, FormOptions formOptions,
 			SortOrder<?> sortOrder, FetchJoinInformation... joins) {
@@ -156,7 +159,7 @@ public class PivotSearchLayout<ID extends Serializable, T extends AbstractEntity
 
 	public PivotGridWrapper<ID, T> constructGridWrapper() {
 
-		PivotGridWrapper<ID, T> wrapper = new PivotGridWrapper<ID, T>(getService(), getEntityModel(),
+		PivotGridWrapper<ID, T> wrapper = new PivotGridWrapper<>(getService(), getEntityModel(),
 				QueryType.ID_BASED, getFormOptions(), getComponentContext(), getSearchForm().extractFilter(),
 				getSortOrders(), getJoins()) {
 

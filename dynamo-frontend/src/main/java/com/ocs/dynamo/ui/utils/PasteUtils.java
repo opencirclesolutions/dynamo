@@ -16,6 +16,7 @@ package com.ocs.dynamo.ui.utils;
 import java.text.DecimalFormat;
 import java.util.Locale;
 
+import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
 
 /**
@@ -23,10 +24,8 @@ import org.apache.commons.lang3.StringUtils;
  * 
  * @author bas.rutten
  */
+@UtilityClass
 public final class PasteUtils {
-
-	private PasteUtils() {
-	}
 
 	/**
 	 * Splits an input object into its separate values - the values can be separated
@@ -42,13 +41,13 @@ public final class PasteUtils {
 		String temp = input.toString();
 		StringBuilder b = new StringBuilder();
 		for (int i = 0; i < temp.length(); i++) {
-			String s = new String(new char[] { temp.charAt(i) });
+			String s = String.valueOf(temp.charAt(i));
 			if (StringUtils.isWhitespace(s)) {
 				if (i == 0) {
 					b.append("#");
 				} else {
-					String t = new String(new char[] { temp.charAt(i - 1) });
-					if (StringUtils.isWhitespace(t)) {
+					String value = String.valueOf(temp.charAt(i - 1));
+					if (StringUtils.isWhitespace(value)) {
 						b.append("#");
 					}
 				}
@@ -64,11 +63,11 @@ public final class PasteUtils {
 	}
 
 	/**
-	 * Converts a string to an integer, conveniently removing all grouping
+	 * Converts a string to an integer, removing all grouping
 	 * separators
 	 * 
-	 * @param input
-	 * @return
+	 * @param input the input string
+	 * @return the resulting integer
 	 */
 	public static Integer toInt(String input) {
 		if (input == null) {
@@ -80,12 +79,12 @@ public final class PasteUtils {
 
 	/**
 	 * Translates the decimal separator in the input to the format that is
-	 * appropriate for the provided Locale Note - this only works for input that
-	 * does not contain any grouping separators!
+	 * appropriate for the provided Locale Note - this only works for an input that
+	 * does not contain any grouping separators
 	 * 
-	 * @param input
-	 * @param locale
-	 * @return
+	 * @param input the input string
+	 * @param locale the locale
+	 * @return the result of the conversion
 	 */
 	public static String translateSeparators(String input, Locale locale) {
 		if (input == null) {
@@ -105,8 +104,8 @@ public final class PasteUtils {
 	/**
 	 * Strips all separators (dots and commas) from the input
 	 * 
-	 * @param input
-	 * @return
+	 * @param input the input string
+	 * @return the result of the strip operation
 	 */
 	public static String stripSeparators(String input) {
 		if (input == null) {

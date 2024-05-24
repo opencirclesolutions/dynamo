@@ -252,6 +252,10 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
 		return messageService.getMessage(key, Locale.getDefault(), args);
 	}
 
+	protected String messageWithLocale(String key, Locale locale, Object... args) {
+		return messageService.getMessage(key, locale, args);
+	}
+
 	@Override
 	@Transactional
 	public List<T> save(List<T> list) {

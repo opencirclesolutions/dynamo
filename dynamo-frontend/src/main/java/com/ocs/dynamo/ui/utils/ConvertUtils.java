@@ -48,7 +48,7 @@ public final class ConvertUtils {
 	 * 
 	 * @param am    the attribute model
 	 * @param input the input value
-	 * @return
+	 * @return the result of the conversion
 	 */
 	public static Object convertToPresentationValue(AttributeModel am, Object input) {
 		if (input == null) {
@@ -75,11 +75,9 @@ public final class ConvertUtils {
 		} else if (am.isSearchDateOnly()) {
 			// special case, in case of "search date only" we need to convert to a local
 			// date
-			if (input instanceof ZonedDateTime) {
-				ZonedDateTime zdt = (ZonedDateTime) input;
+			if (input instanceof ZonedDateTime zdt) {
 				return zdt.toLocalDate();
-			} else if (input instanceof LocalDateTime) {
-				LocalDateTime ldt = (LocalDateTime) input;
+			} else if (input instanceof LocalDateTime ldt) {
 				return ldt.toLocalDate();
 			}
 		}
@@ -93,7 +91,7 @@ public final class ConvertUtils {
 	 * @param value the search value to convert
 	 * @return the result of the conversion
 	 */
-	public static Result<? extends Object> convertToModelValue(AttributeModel am, Object value) {
+	public static Result<?> convertToModelValue(AttributeModel am, Object value) {
 		if (value == null) {
 			return Result.ok(null);
 		}

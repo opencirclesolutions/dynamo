@@ -117,7 +117,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertNull(nameModel.getDisplayFormat());
 		assertEquals(AttributeType.BASIC, nameModel.getAttributeType());
 		assertFalse(nameModel.isRequired());
-		assertTrue(nameModel.isVisible());
+		assertTrue(nameModel.isVisibleInForm());
 		assertEquals(55, nameModel.getMaxLength().intValue());
 		assertEquals(AttributeTextFieldMode.TEXTAREA, nameModel.getTextFieldMode());
 		assertFalse(nameModel.isTrimSpaces());
@@ -268,7 +268,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		AttributeModel entityModel = model.getAttributeModel("entity2");
 		assertEquals(AttributeType.MASTER, entityModel.getAttributeType());
-		assertTrue(entityModel.isComplexEditable());
+		assertTrue(entityModel.isVisibleInForm());
 		assertTrue(entityModel.isNavigable());
 
 		AttributeModel entityListModel = model.getAttributeModel("entityList");
@@ -484,7 +484,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertTrue(m.isSearchable());
 
 		// visible attribute is overridden using message bundle
-		assertFalse(m.isVisible());
+		assertFalse(m.isVisibleInForm());
 
 		// nested embedding
 		assertNull(model.getAttributeModel("child.grandChild"));
@@ -725,6 +725,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@AttributeOrder(attributeNames = { "name", "birthDate" })
+	@Getter
+	@Setter
 	public static class Entity2 {
 
 		@Attribute(trimSpaces = TrimType.TRIM)
@@ -734,29 +736,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		private LocalDate birthDate;
 
-		public String getName() {
-			return name;
-		}
-
-		public void setName(String name) {
-			this.name = name;
-		}
-
-		public Integer getAge() {
-			return age;
-		}
-
-		public void setAge(Integer age) {
-			this.age = age;
-		}
-
-		public LocalDate getBirthDate() {
-			return birthDate;
-		}
-
-		public void setBirthDate(LocalDate birthDate) {
-			this.birthDate = birthDate;
-		}
 	}
 
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop", sortOrder = "name asc")
@@ -764,7 +743,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 			@AttributeGroup(messageKey = "group2.key", attributeNames = { "age" }) })
 	@Getter
 	@Setter
-	//@FetchJoins(joins = @FetchJoin(attribute = "entity2"))
 	public static class Entity3 {
 
 		@Attribute(defaultValue = "Bas", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, main = true, sortable = false)
@@ -777,7 +755,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private LocalDate birthDate;
 
 		@OneToOne
-		@Attribute(complexEditable = true, navigable = true)
+		@Attribute(visibleInForm = VisibilityType.SHOW, navigable = true)
 		private Entity2 entity2;
 
 		@OneToMany
@@ -806,11 +784,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private LocalDate birthDate;
 	}
 
-	/**
-	 * For testing attribute lookup mode
-	 * 
-	 * @author bas.rutten
-	 */
 	@Getter
 	@Setter
 	public static class Entity7 {
@@ -1016,7 +989,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	@Setter
 	public static class EmbeddedChild {
 
-		@Attribute(visible = VisibilityType.HIDE)
+		@Attribute(visibleInForm = VisibilityType.HIDE)
 		private String embedded1;
 
 		@Attribute(searchable = SearchMode.ALWAYS)

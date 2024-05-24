@@ -13,22 +13,7 @@
  */
 package com.ocs.dynamo.ui.composite.layout;
 
-import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-
-import java.math.BigDecimal;
-import java.text.DecimalFormatSymbols;
-import java.time.LocalTime;
-import java.util.Locale;
-
-import jakarta.persistence.OptimisticLockException;
-
 import com.github.mvysny.kaributesting.v10.MockVaadin;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
-import org.mockito.Mock;
-import org.springframework.test.util.ReflectionTestUtils;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.TestEntity.TestEnum;
@@ -43,12 +28,25 @@ import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import com.ocs.dynamo.utils.DateUtils;
 import com.vaadin.flow.component.html.Span;
+import jakarta.persistence.OptimisticLockException;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormatSymbols;
+import java.time.LocalTime;
+import java.util.Locale;
+
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class BaseCustomComponentTest extends BaseMockitoTest {
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private final EntityModelFactory factory = new EntityModelFactoryImpl();
 
-	private BaseCustomComponent component = new BaseCustomComponent() {
+	private final BaseCustomComponent component = new BaseCustomComponent() {
 
 		private static final long serialVersionUID = -714656253533978108L;
 
@@ -61,7 +59,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 	private MessageService messageService;
 
 	@BeforeEach
-	public void setupBaseCustomComponentTest() throws NoSuchFieldException {
+	public void setupBaseCustomComponentTest() {
 		// Reset vaadin session locale for unit test
 		MockVaadin.tearDown();
 		System.setProperty(DynamoConstants.SP_DEFAULT_LOCALE, "en");
@@ -73,7 +71,7 @@ public class BaseCustomComponentTest extends BaseMockitoTest {
 	public void test() {
 		EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
 
-		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale("en"));
+		DecimalFormatSymbols sym = DecimalFormatSymbols.getInstance(new Locale.Builder().setLanguage("en").build());
 
 		TestEntity e = new TestEntity("Kevin", 12L);
 		e.setDiscount(BigDecimal.valueOf(12.34));
