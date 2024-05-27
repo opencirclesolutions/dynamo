@@ -80,22 +80,7 @@ public class BedrockService implements AIService {
                         "Fill out \"N/A\" in the JSON value if the user did not specify a value. " +
                         "Return only a valid JSON object in this format: '%s'."
                 , input, objectMap));
-        if (!componentInstructions.isEmpty() || !typesMap.isEmpty()) {
-            request.append("\nAdditional instructions about some of the JSON fields to be filled: ");
-            for (Map.Entry<String, String> entry : typesMap.entrySet()) {
-                request.append("\n").append(entry.getKey()).append(": Format this JSON field as ").append(entry.getValue()).append(".");
-            }
-            for (Map.Entry<Component, String> entry : componentInstructions.entrySet()) {
-                if (entry.getKey().getId().isPresent())
-                    request.append("\n").append(entry.getKey().getId().get()).append(": ").append(entry.getValue()).append(".");
-            }
-            if (!contextInstructions.isEmpty()) {
-                request.append("\nAdditional instructions about the context and desired JSON output response:  ");
-                for (String contextInstruction : contextInstructions) {
-                    request.append(" ").append(contextInstruction).append(".");
-                }
-            }
-        }
+        appendInstructions(request, typesMap, componentInstructions, contextInstructions);
 
         log.debug("AI request: {}", request);
 

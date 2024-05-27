@@ -517,6 +517,10 @@ public final class SystemPropertyUtils {
 		return getBooleanProperty(DynamoConstants.SP_FORM_AUTO_FILL_ENABLED, false);
 	}
 
+	public static String getDefaultAiService() {
+		return getStringProperty(DynamoConstants.SP_DEFAULT_AI_SERVICE, "CHAT_GPT");
+	}
+
 	private SystemPropertyUtils() {
 		// default constructor
 	}

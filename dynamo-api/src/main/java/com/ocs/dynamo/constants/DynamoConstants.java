@@ -530,4 +530,9 @@ public class DynamoConstants {
 	 */
 	public static final String SP_FORM_AUTO_FILL_ENABLED = "ocs.form.auto-fill.enabled";
 
+	/**
+	 *
+	 */
+	public static final String SP_DEFAULT_AI_SERVICE = "ocs.default.ai.service";
+
 }

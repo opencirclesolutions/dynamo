@@ -15,7 +15,8 @@ package com.ocs.dynamo.ui.composite.autofill;
 
 public enum AIServiceType {
 
-    BEDROCK("Bedrock"), CHAT_GPT("Chat GPT (OpenAI)"), VERTEX_AI("Google VertexAI");
+    BEDROCK("Bedrock"), CHAT_GPT("Chat GPT (OpenAI)"), VERTEX_AI("Google VertexAI"),
+    OLLAMA("Ollama");
 
     private final String description;
 
@@ -25,6 +26,6 @@ public enum AIServiceType {
 
     @Override
     public String toString() {
-       return this.description;
+        return this.description;
     }
 }

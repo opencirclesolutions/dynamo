@@ -20,6 +20,7 @@ import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
 import com.ocs.dynamo.ui.composite.dialog.BaseModalDialog;
 import com.ocs.dynamo.ui.composite.form.ModelBasedEditForm;
 import com.ocs.dynamo.ui.utils.VaadinUtils;
+import com.ocs.dynamo.util.SystemPropertyUtils;
 import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.button.Button;
 import com.vaadin.flow.component.combobox.ComboBox;
@@ -113,7 +114,13 @@ public class FormFillDialog extends BaseModalDialog {
             supportedTypes = new ComboBox<>(message("ocs.fill.form.model"));
             supportedTypes.setItems(types);
             if (!types.isEmpty()) {
-                supportedTypes.setValue(types.get(0));
+                if (!StringUtils.isEmpty(SystemPropertyUtils.getDefaultAiService())) {
+                    supportedTypes.setValue(
+                            AIServiceType.valueOf(SystemPropertyUtils.getDefaultAiService()));
+                }
+                if (supportedTypes.getValue() == null) {
+                    supportedTypes.setValue(types.get(0));
+                }
             }
             layout.add(supportedTypes);
 

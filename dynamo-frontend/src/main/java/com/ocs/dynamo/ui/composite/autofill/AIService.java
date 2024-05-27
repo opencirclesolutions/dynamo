@@ -31,13 +31,42 @@ public interface AIService {
 
     /**
      * Executes a request
-     * @param input the user input
-     * @param objectMap mapping of fields to include
-     * @param typesMap mapping of field name to data type
+     *
+     * @param input                 the user input
+     * @param objectMap             mapping of fields to include
+     * @param typesMap              mapping of field name to data type
      * @param componentInstructions instructions per component
-     * @param contextInstructions general instructions
+     * @param contextInstructions   general instructions
      * @return a string containing the resulting JSON object
      */
     String execute(String input, Map<String, Object> objectMap, Map<String, String> typesMap, Map<Component, String> componentInstructions, List<String> contextInstructions);
 
+    default void appendInstructions(StringBuilder request, Map<String, String> typesMap, Map<Component, String> componentInstructions, List<String> contextInstructions) {
+        if (!componentInstructions.isEmpty() || !typesMap.isEmpty()) {
+            request.append("\nAdditional instructions about some of the JSON fields to be filled: ");
+            for (Map.Entry<String, String> entry : typesMap.entrySet()) {
+                request.append("\n").append(entry.getKey()).append(": Format this JSON field as ").append(entry.getValue()).append(".");
+            }
+            for (Map.Entry<Component, String> entry : componentInstructions.entrySet()) {
+                if (entry.getKey().getId().isPresent())
+                    request.append("\n").append(entry.getKey().getId().get()).append(": ").append(entry.getValue()).append(".");
+            }
+            if (!contextInstructions.isEmpty()) {
+                request.append("\nAdditional instructions about the context and desired JSON output response:  ");
+                for (String contextInstruction : contextInstructions) {
+                    request.append(" ").append(contextInstruction).append(".");
+                }
+            }
+        }
+    }
+
+    default StringBuilder createRequest(String input, Map<String, Object> objectMap) {
+        return new StringBuilder(String.format(
+                "Based on the user input: \n \"%s\", " +
+                        "generate a JSON object according to these instructions: " +
+                        "Never include duplicate keys, in case of duplicate keys just keep the first occurrence in the response. " +
+                        "Fill out \"N/A\" in the JSON value if the user did not specify a value. " +
+                        "Return only a valid JSON object in this format: '%s'."
+                , input, objectMap));
+    }
 }
