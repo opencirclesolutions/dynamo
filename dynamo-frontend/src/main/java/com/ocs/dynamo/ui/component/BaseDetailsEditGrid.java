@@ -197,7 +197,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private final MessageService messageService;
 
 	/**
-	 * Biconsumer that is used to determine whether a component must be enabled. Takes
+	 * Bi-consumer that is used to determine whether a component must be enabled. Takes
 	 * as its parameters the component and the currently selected entity
 	 */
 	@Getter
@@ -205,7 +205,7 @@ public abstract class BaseDetailsEditGrid<U, ID extends Serializable, T extends 
 	private BiPredicate<Component, T> mustEnableComponent;
 
 	/**
-	 * Biconsumer that is used to post-process the button bar below the grid. Takes as
+	 * Bi-consumer that is used to post-process the button bar below the grid. Takes as
 	 * its parameters the button bar layout and a boolean that indicates whether the
 	 * component is in view mode
 	 */

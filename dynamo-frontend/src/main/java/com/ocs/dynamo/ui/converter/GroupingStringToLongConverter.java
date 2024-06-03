@@ -29,7 +29,7 @@ public class GroupingStringToLongConverter extends StringToLongConverter {
 
 	private static final long serialVersionUID = -281060172465120956L;
 
-	private boolean useGrouping;
+	private final boolean useGrouping;
 
 	public GroupingStringToLongConverter(String message, boolean useGrouping) {
 		super(message);

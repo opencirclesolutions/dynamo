@@ -79,9 +79,9 @@ public class ProgressBarUpdater implements Runnable {
 				String progressString = VaadinUtils.bigDecimalToString(true, false,
 						BigDecimal.valueOf(progress).multiply(MathUtils.HUNDRED));
 
-				MessageService ms = ServiceLocatorFactory.getServiceLocator().getMessageService();
+				MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 				progressable.getStatusLabel()
-						.setText(ms.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
+						.setText(messageService.getMessage("ocs.progress.done", VaadinUtils.getLocale(), progressString));
 			});
 
 		}

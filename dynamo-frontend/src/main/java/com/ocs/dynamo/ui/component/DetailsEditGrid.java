@@ -68,7 +68,6 @@ public class DetailsEditGrid<ID extends Serializable, T extends AbstractEntity<I
 		super(null, entityModel, attributeModel, viewMode, false, formOptions);
 		this.provider = new ListDataProvider<>(new ArrayList<>());
 
-		// add a row containing a new entity
 		setOnAdd(() -> {
 			T entity = getCreateEntity().get();
 			provider.getItems().add(entity);

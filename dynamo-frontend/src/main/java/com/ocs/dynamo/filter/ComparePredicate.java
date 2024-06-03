@@ -39,7 +39,7 @@ public abstract class ComparePredicate<T> extends PropertyPredicate<T> {
      * @param value1 the value to compare
      * @return the result of the comparison
      */
-    @SuppressWarnings({"unchecked", "rawtypes"})
+    @SuppressWarnings({"unchecked"})
     protected int compareValue(Object value1) {
         if (null == getValue()) {
             return null == value1 ? 0 : -1;

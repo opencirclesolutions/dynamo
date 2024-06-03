@@ -252,7 +252,7 @@ public class UIHelper {
 	}
 
 	/**
-	 * Selects an entity an then navigates to the screen to display it
+	 * Selects an entity and then navigates to the screen to display it
 	 * 
 	 * @param selectedEntity the selected entity
 	 * @param viewName       the name of the view to navigate to

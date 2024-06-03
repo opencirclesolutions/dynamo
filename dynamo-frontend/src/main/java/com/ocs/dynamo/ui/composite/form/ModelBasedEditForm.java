@@ -130,11 +130,6 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     private final Map<Boolean, Map<String, List<Button>>> buttons = new HashMap<>();
 
     /**
-     * Indicates whether all details tables for editing complex fields are valid
-     */
-    private final Map<NestedComponent, Boolean> detailComponentsValid = new HashMap<>();
-
-    /**
      * The relations to fetch when selecting a single detail relation
      */
     private FetchJoinInformation[] detailJoins;
@@ -1194,7 +1189,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
     /**
      * Returns the binding for a field
      *
-     * @param path the the path of the property
+     * @param path the path of the property
      * @return the binding for the field that is used for editing the property
      */
     public Binding<T, ?> getBinding(String path) {
@@ -1403,9 +1398,7 @@ public class ModelBasedEditForm<ID extends Serializable, T extends AbstractEntit
      * @return true if this is the case, false otherwise
      */
     public boolean isValid() {
-        boolean valid = groups.get(isViewMode()).isValid();
-        valid &= detailComponentsValid.values().stream().allMatch(x -> x);
-        return valid;
+        return groups.get(isViewMode()).isValid();
     }
 
     public boolean isViewMode() {

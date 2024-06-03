@@ -52,7 +52,6 @@ public final class FilterChangeEvent<T> implements Serializable {
 	 * @param propertyId the name of the property
 	 * @param oldFilter  the old filter
 	 * @param newFilter  the new filter
-	 * @param value      the new value
 	 */
 	@Builder
 	private FilterChangeEvent(String propertyId, SerializablePredicate<T> oldFilter,

@@ -131,20 +131,6 @@ public class DateUtilsTest {
 	}
 
 	@Test
-	@Disabled
-	public void testFormatZonedDateTime() {
-		ZonedDateTime date = DateUtils.createZonedDateTime("01-12-2013 11:14:15+0000");
-
-		assertNull(DateUtils.formatZonedDateTime(null, "dd-MM-yyyy HH:mm:ssz", ZoneId.of("Europe/London")));
-		assertNull(DateUtils.formatZonedDateTime(date, null, ZoneId.of("Europe/London")));
-
-		assertEquals("01-12-2013 11:14:15+00:00",
-				DateUtils.formatZonedDateTime(date, "dd-MM-yyyy HH:mm:ssz", ZoneId.of("Europe/London")));
-		assertEquals("01-12-2013 12:14:15+01:00",
-				DateUtils.formatZonedDateTime(date, "dd-MM-yyyy HH:mm:ssZ", ZoneId.of("Europe/Amsterdam")));
-	}
-
-	@Test
 	public void testFormatJava8Date() {
 		assertEquals("31-03-2014", DateUtils.formatJava8Date(LocalDate.class, DateUtils.createLocalDate("31032014"),
 				"dd-MM-yyyy", ZoneId.systemDefault()));

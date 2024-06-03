@@ -29,7 +29,7 @@ public class LikePredicate<T> extends PropertyPredicate<T> {
 	private static final long serialVersionUID = -5077087872701525001L;
 
 	@Getter
-	private boolean caseSensitive;
+	private final boolean caseSensitive;
 
 	public LikePredicate(String property, String value, boolean caseSensitive) {
 		super(property, value);
@@ -42,15 +42,15 @@ public class LikePredicate<T> extends PropertyPredicate<T> {
 			return false;
 		}
 
-		Object v = ClassUtils.getFieldValue(t, getProperty());
-		if (v == null || !v.getClass().isAssignableFrom(String.class)) {
+		Object value = ClassUtils.getFieldValue(t, getProperty());
+		if (value == null || !value.getClass().isAssignableFrom(String.class)) {
 			return false;
 		}
 		String pattern = getValue().toString().replace("%", ".*");
 		if (isCaseSensitive()) {
-			return ((String) v).matches(pattern);
+			return ((String) value).matches(pattern);
 		}
-		return ((String) v).toUpperCase().matches(pattern.toUpperCase());
+		return ((String) value).toUpperCase().matches(pattern.toUpperCase());
 	}
 
 

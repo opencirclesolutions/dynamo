@@ -59,7 +59,7 @@ public class ModuloPredicate<T> extends PropertyPredicate<T> {
 
 		long temp = ((Number) value).longValue();
 
-		long modVal = 0;
+		long modVal;
 		if (getModExpression() != null) {
 			modVal = ((Number) ClassUtils.getFieldValue(t, getModExpression())).longValue();
 		} else {

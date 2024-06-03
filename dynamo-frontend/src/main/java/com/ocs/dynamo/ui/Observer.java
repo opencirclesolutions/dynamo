@@ -27,7 +27,7 @@ public interface Observer<T extends AbstractEntity<?>> {
     /**
      * Call this to notify the observer of a change to the observed entity
      * 
-     * @param entity
+     * @param entity the entity
      */
     void notify(T entity);
 }

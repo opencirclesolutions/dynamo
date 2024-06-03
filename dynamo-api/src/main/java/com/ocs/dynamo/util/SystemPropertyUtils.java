@@ -13,20 +13,15 @@
  */
 package com.ocs.dynamo.util;
 
+import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.model.*;
+import lombok.extern.slf4j.Slf4j;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.Locale;
 import java.util.Properties;
-
-import com.ocs.dynamo.constants.DynamoConstants;
-import com.ocs.dynamo.domain.model.GroupTogetherMode;
-import com.ocs.dynamo.domain.model.NumberFieldMode;
-import com.ocs.dynamo.domain.model.PagingMode;
-import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
-import com.ocs.dynamo.domain.model.VisibilityType;
-
-import lombok.extern.slf4j.Slf4j;
 
 /**
  * Utility methods for retrieving system property values
@@ -327,7 +322,7 @@ public final class SystemPropertyUtils {
 	}
 
 	/**
-	 * @return whether searches on text fields will be case sensitive by default
+	 * @return whether searches on text fields will be case-sensitive by default
 	 */
 	public static boolean getDefaultSearchCaseSensitive() {
 		return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE, false);

@@ -34,14 +34,14 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
     private static final long serialVersionUID = -6491010958762673241L;
 
     /**
-     * Whether to use a thousands grouping separator
+     * Whether to use a thousand grouping separator
      */
-    private boolean useGrouping;
+    private final boolean useGrouping;
 
     /**
      * The desired decimal precision
      */
-    private int precision;
+    private final int precision;
 
     /**
      * Constructor - for use with a precision and grouping setting
@@ -73,7 +73,7 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
      * Constructs the DecimalFormat to use for formatting the values
      * 
      * @param locale the desired locale to use for the formatting
-     * @return
+     * @return the decimal format to use
      */
     public DecimalFormat getDecimalFormat(Locale locale) {
         locale = locale != null ? locale : VaadinUtils.getLocale();
@@ -88,7 +88,7 @@ public class BigDecimalConverter extends StringToBigDecimalConverter {
      * Constructs the number format - overwrite in subclasses if needed
      * 
      * @param locale the locale
-     * @return
+     * @return the decimal format to use
      */
     protected DecimalFormat constructFormat(Locale locale) {
         return (DecimalFormat) DecimalFormat.getInstance(locale);

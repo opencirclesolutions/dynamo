@@ -53,7 +53,7 @@ public abstract class PropertyPredicate<T> implements SerializablePredicate<T> {
 	 * Checks whether the predicate applies to the specified property
 	 * 
 	 * @param property the property
-	 * @return
+	 * @return true if the predicate applies, false otherwise
 	 */
 	public boolean appliesToProperty(String property) {
 		return this.property.equals(property);

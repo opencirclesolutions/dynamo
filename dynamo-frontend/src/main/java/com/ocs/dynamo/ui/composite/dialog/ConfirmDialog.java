@@ -38,7 +38,6 @@ public class ConfirmDialog extends BaseModalDialog {
 			Span questionSpan = new Span(question);
 			parent.add(questionSpan);
 		});
-
 		buildButtonBar(whenConfirmed, whenCancelled);
 	}
 

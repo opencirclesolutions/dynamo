@@ -37,15 +37,6 @@ public class CurrencyBigDecimalConverter extends BigDecimalConverter {
 	 */
 	private String currencySymbol;
 
-	/**
-	 * 
-	 * Constructor for CurrencyBigDecimalConverter.
-	 * 
-	 * @param message
-	 * @param precision
-	 * @param useGrouping
-	 * @param currencySymbol
-	 */
 	public CurrencyBigDecimalConverter(String message, int precision, boolean useGrouping, String currencySymbol) {
 		super(message, precision, useGrouping);
 		this.currencySymbol = currencySymbol;

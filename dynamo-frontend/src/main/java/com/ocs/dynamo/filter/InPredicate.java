@@ -42,11 +42,11 @@ public class InPredicate<T> extends PropertyPredicate<T> {
         if (t == null) {
             return false;
         }
-        Object v = ClassUtils.getFieldValue(t, getProperty());
-        if (v == null) {
+        Object value = ClassUtils.getFieldValue(t, getProperty());
+        if (value == null) {
             return false;
         }
         Collection<?> values = getValue();
-        return values.contains(v);
+        return values.contains(value);
     }
 }

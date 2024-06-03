@@ -31,7 +31,7 @@ import lombok.experimental.UtilityClass;
 @UtilityClass
 public final class ConverterFactory {
 
-	private static MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
+	private static final MessageService messageService = ServiceLocatorFactory.getServiceLocator().getMessageService();
 
 	private static final String CANNOT_CONVERT = "ocs.cannot.convert";
 
@@ -40,10 +40,10 @@ public final class ConverterFactory {
 	 * 
 	 * @param currency       whether the field is a currency field
 	 * @param percentage     whether to include a percentage sign
-	 * @param useGrouping    whether to uses a thousands grouping
+	 * @param useGrouping    whether to use a thousand grouping
 	 * @param precision      the desired decimal precision
 	 * @param currencySymbol the currency symbol to include
-	 * @return
+	 * @return the BigDecimalConverter
 	 */
 	public static BigDecimalConverter createBigDecimalConverter(boolean currency, boolean percentage,
 			boolean useGrouping, int precision, String currencySymbol) {
@@ -62,7 +62,7 @@ public final class ConverterFactory {
 	 * 
 	 * @param clazz          the type
 	 * @param attributeModel the attribute model
-	 * @return
+	 * @return the converter
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T> Converter<String, T> createConverterFor(Class<T> clazz, AttributeModel attributeModel,
@@ -86,7 +86,7 @@ public final class ConverterFactory {
 	 * Creates a converter for converting between integer and String
 	 * 
 	 * @param useGrouping whether to use the thousands grouping separator
-	 * @return
+	 * @return the converter
 	 */
 	public static StringToIntegerConverter createIntegerConverter(boolean useGrouping, boolean percentage) {
 		String msg = messageService.getMessage(CANNOT_CONVERT, VaadinUtils.getLocale());
@@ -97,9 +97,9 @@ public final class ConverterFactory {
 	/**
 	 * Creates a converter for converting between long and String
 	 * 
-	 * @param useGrouping whether to include a thousands grouping separator
+	 * @param useGrouping whether to include a thousand grouping separator
 	 * @param percentage  whether to include a percentage sign
-	 * @return
+	 * @return converter
 	 */
 	public static StringToLongConverter createLongConverter(boolean useGrouping, boolean percentage) {
 		String msg = messageService.getMessage(CANNOT_CONVERT, VaadinUtils.getLocale());
@@ -111,10 +111,10 @@ public final class ConverterFactory {
 	 * Creates a converter for converting between a double and a String
 	 * 
 	 * @param currency    whether to include a currency sign
-	 * @param useGrouping whether to include a thousands grouping separator
+	 * @param useGrouping whether to include a thousand grouping separator
 	 * @param percentage  whether to include a percentage sign
 	 * @param precision   the precision to use
-	 * @return
+	 * @return the converter
 	 */
 	public static StringToDoubleConverter createDoubleConverter(boolean currency, boolean percentage,
 			boolean useGrouping, int precision, String currencySymbol) {
@@ -131,7 +131,7 @@ public final class ConverterFactory {
 	/**
 	 * Creates a converter for a ZonedDateTime
 	 * 
-	 * @return
+	 * @return converter
 	 */
 	public static ZonedDateTimeToLocalDateTimeConverter createZonedDateTimeConverter(ZoneId zoneId) {
 		return new ZonedDateTimeToLocalDateTimeConverter(zoneId);

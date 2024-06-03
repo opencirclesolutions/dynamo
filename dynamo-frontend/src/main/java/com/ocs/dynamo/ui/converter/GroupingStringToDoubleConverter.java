@@ -32,22 +32,15 @@ public class GroupingStringToDoubleConverter extends StringToDoubleConverter {
 	private static final long serialVersionUID = -6491010958762673241L;
 
 	/**
-	 * Whether to use a thousands grouping separator
+	 * Whether to use a thousand grouping separator
 	 */
-	private boolean useGrouping;
+	private final boolean useGrouping;
 
 	/**
 	 * The desired decimal precision
 	 */
-	private int precision;
+	private final int precision;
 
-	/**
-	 * Constructor - for use with a precision and grouping setting
-	 * 
-	 * @param message     the message
-	 * @param precision   the precision
-	 * @param useGrouping
-	 */
 	public GroupingStringToDoubleConverter(String message, int precision, boolean useGrouping) {
 		super(message);
 		this.precision = precision;

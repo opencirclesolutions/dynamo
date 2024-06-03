@@ -33,15 +33,6 @@ public class CurrencyDoubleConverter extends GroupingStringToDoubleConverter {
 
     private String currencySymbol;
 
-    /**
-     * 
-     * Constructor
-     * 
-     * @param message        the validation message
-     * @param precision
-     * @param useGrouping
-     * @param currencySymbol
-     */
     public CurrencyDoubleConverter(String message, int precision, boolean useGrouping, String currencySymbol) {
         super(message, precision, useGrouping);
         this.currencySymbol = currencySymbol;

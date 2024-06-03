@@ -13,14 +13,12 @@
  */
 package com.ocs.dynamo.ui.validator;
 
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-
-import org.apache.commons.lang3.StringUtils;
-
 import com.vaadin.flow.data.binder.ValidationResult;
 import com.vaadin.flow.data.binder.Validator;
 import com.vaadin.flow.data.binder.ValueContext;
+import org.apache.commons.lang3.StringUtils;
+
+import java.net.URISyntaxException;
 
 /**
  * Vaadin validator for checking if an field value is a valid URL

@@ -64,14 +64,8 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
 
     private final EntityModel<T> entityModel;
 
-    /**
-     * The field factory
-     */
     private final FieldFactory fieldFactory;
 
-    /**
-     * The field filter mapping
-     */
     private final Map<String, SerializablePredicate<?>> fieldFilters;
 
     private final FormOptions formOptions;
@@ -82,7 +76,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
      * Map from attribute path to "shared provider" that can be shared by all
      * components in the same column in a grid
      */
-    private Map<String, DataProvider<?, SerializablePredicate<?>>> sharedProviders = new HashMap<>();
+    private final Map<String, DataProvider<?, SerializablePredicate<?>>> sharedProviders = new HashMap<>();
 
     /**
      * Constructor
@@ -116,6 +110,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
                 column = addUrlColumn(am);
             } else if (!componentContext.isPopup() && am.isNavigable()
                     && AttributeType.MASTER.equals(am.getAttributeType())) {
+                // internal link
                 column = grid.addComponentColumn(
                         entity -> generateInternalLinkField(am, ClassUtils.getFieldValue(entity, am.getPath())));
             } else {
@@ -142,11 +137,11 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
     }
 
     /**
-     * Indicates whether the attribute is editable using a single row at a time
+     * Indicates whether an attribute is editable using a single row at a time
      * editor
      *
-     * @param am
-     * @return
+     * @param am the attribute model
+     * @return true if this is the case, false otherwise
      */
     private boolean isSingleRowEditMode(AttributeModel am) {
         return componentContext.isEditable() && GridEditMode.SINGLE_ROW.equals(formOptions.getGridEditMode())
@@ -156,8 +151,8 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
     /**
      * Creates the editor component for the provided attribute model and column
      *
-     * @param am
-     * @param column
+     * @param am the attribute model
+     * @param column the column to create the component for
      */
     @SuppressWarnings("unchecked")
     private void setEditorComponent(AttributeModel am, Column<T> column) {
@@ -199,7 +194,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
             // always hide label inside grid
             VaadinUtils.setLabel(comp, "");
 
-            // store shared date provider so it can be used by multiple components
+            // store shared date provider, so it can be used by multiple components
             storeSharedProvider(am, comp);
 
             if (comp instanceof HasSize) {
@@ -256,11 +251,11 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
     }
 
     /**
-     * Callback method. override in subclasses
+     * Method that is used to create custom components
      *
-     * @param entityModel
-     * @param attributeModel
-     * @return
+     * @param entityModel the entity model
+     * @param attributeModel the attribute model for which to create the component
+     * @return the created component
      */
     protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
         return null;
@@ -272,7 +267,7 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
      *
      * @param entity the entity
      * @param field  the field to bind
-     * @return
+     * @return the created binding builder
      */
     protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
         return null;
@@ -295,11 +290,11 @@ public abstract class ModelBasedGridBuilder<ID extends Serializable, T extends A
     }
 
     /**
-     * Post process the component. Callback method that can be used from a component
+     * Post-process the component. Callback method that can be used from a component
      * that includes the grid
      *
-     * @param am
-     * @param comp
+     * @param am the attribute model
+     * @param comp the component to post process
      */
     protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
         // override in subclass

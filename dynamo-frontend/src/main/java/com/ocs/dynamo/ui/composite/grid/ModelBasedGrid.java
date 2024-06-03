@@ -13,11 +13,6 @@
  */
 package com.ocs.dynamo.ui.composite.grid;
 
-import java.io.Serializable;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Stream;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.EntityModel;
@@ -37,11 +32,14 @@ import com.vaadin.flow.data.binder.Binder.BindingBuilder;
 import com.vaadin.flow.data.provider.DataProvider;
 import com.vaadin.flow.data.provider.SortOrder;
 import com.vaadin.flow.function.SerializablePredicate;
-
 import lombok.Getter;
 
+import java.io.Serializable;
+import java.util.List;
+import java.util.Map;
+
 /**
- * A Grid that bases its columns on the meta model of an entity
+ * A Grid that bases its columns on the meta-model of an entity
  * 
  * @author bas.rutten
  * @param <ID> type of the primary key
@@ -56,27 +54,19 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * The entity model of the entities to display in the grid
 	 */
 	@Getter
-	private EntityModel<T> entityModel;
+	private final EntityModel<T> entityModel;
 
 	@Getter
-	private MessageService messageService;
+	private final MessageService messageService;
 
-	private Map<String, SerializablePredicate<?>> fieldFilters;
+	private final Map<String, SerializablePredicate<?>> fieldFilters;
 
 	private boolean built;
 
-	private ComponentContext<ID, T> componentContext;
+	private final ComponentContext<ID, T> componentContext;
 
-	private FormOptions formOptions;
+	private final FormOptions formOptions;
 
-	/**
-	 * 
-	 * @param dataProvider
-	 * @param model
-	 * @param fieldFilters
-	 * @param formOptions
-	 * @param componentContext
-	 */
 	public ModelBasedGrid(DataProvider<T, SerializablePredicate<T>> dataProvider, EntityModel<T> model,
 			Map<String, SerializablePredicate<?>> fieldFilters, FormOptions formOptions,
 			ComponentContext<ID, T> componentContext) {
@@ -93,7 +83,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 		setColumnReorderingAllowed(true);
 		setSelectionMode(SelectionMode.SINGLE);
 
-		// in Vaadin 14, we explicitly need to set the binder
+		// in Vaadin 14+, we explicitly need to set the binder
 		Binder<T> binder = new BeanValidationBinder<>(entityModel.getEntityClass());
 		getEditor().setBinder(binder);
 		getEditor().setBuffered(false);
@@ -148,7 +138,7 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * 
 	 * @param entityModel    the entity model of the main entity
 	 * @param attributeModel the attribute model to base the field on
-	 * @return
+	 * @return the resulting component
 	 */
 	protected Component constructCustomField(EntityModel<T> entityModel, AttributeModel attributeModel) {
 		return null;
@@ -158,20 +148,21 @@ public class ModelBasedGrid<ID extends Serializable, T extends AbstractEntity<ID
 	 * Callback method for components that incorporate this grid component but do
 	 * the binding themselves
 	 * 
-	 * @param t     the entity
+	 * @param entity     the entity
 	 * @param field the field to bind
-	 * @return
+	 * @return the resulting binding builder
 	 */
-	protected BindingBuilder<T, ?> doBind(T t, Component field, String attributeName) {
+	protected BindingBuilder<T, ?> doBind(T entity, Component field, String attributeName) {
 		return null;
 	}
 
 	/**
-	 * Post process the component. Callback method that can be used from a component
+	 * Post-process the component. Callback method that can be used from a component
 	 * that includes the grid
-	 * 
-	 * @param am
-	 * @param comp
+	 *
+	 * @param id the ID of the entity
+	 * @param am the attribute model
+	 * @param comp the component to post-process
 	 */
 	protected void postProcessComponent(ID id, AttributeModel am, Component comp) {
 		// override in subclass

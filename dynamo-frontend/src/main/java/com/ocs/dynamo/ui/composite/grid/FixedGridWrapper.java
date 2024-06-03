@@ -45,7 +45,7 @@ public class FixedGridWrapper<ID extends Serializable, T extends AbstractEntity<
 	/**
 	 * The items to display in the grid
 	 */
-	private Collection<T> items;
+	private final Collection<T> items;
 
 	/**
 	 * Constructor

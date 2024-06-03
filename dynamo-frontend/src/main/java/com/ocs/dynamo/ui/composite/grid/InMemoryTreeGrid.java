@@ -50,12 +50,13 @@ import lombok.Setter;
  * everything in memory
  * 
  * @author bas.rutten
+ * @param <T>  type of the primary key of the child entity
  * @param <ID>  type of the primary key of the child entity
- * @param <U>   type of the child entity
+ * @param <C>   type of the child entity
  * @param <ID2> type of the primary key of the parent entity
- * @param <V>   type of the parent entity
+ * @param <P>   type of the parent entity
  */
-@SuppressWarnings({ "serial", "unchecked" })
+@SuppressWarnings({ "unchecked" })
 public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extends AbstractEntity<ID2>>
 		extends TreeGrid<T> implements Buildable {
 
@@ -110,7 +111,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	private T lastClickedRow;
 
 	@Getter
-	private MessageService messageService;
+	private final MessageService messageService;
 
 	/**
 	 * The code that is carried out to collect the data that is used to create the
@@ -154,7 +155,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	 * @param alignRight   whether to align the column to the right
 	 */
 	public Column<?> addReadOnlyColumn(String propertyName, String caption, boolean alignRight) {
-		Column<?> col = null;
+		Column<?> col;
 		if (this.getColumns().isEmpty()) {
 			col = this.addHierarchyColumn(t -> {
 				Object value = ClassUtils.getFieldValue(t, propertyName);
@@ -228,7 +229,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	}
 
 	public boolean checkEditAllowed() {
-		return editAllowed == null ? true : editAllowed.getAsBoolean();
+		return editAllowed == null || editAllowed.getAsBoolean();
 	}
 
 	/**
@@ -237,7 +238,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	 * 
 	 * @param value      the value
 	 * @param propertyId the ID of the property
-	 * @return
+	 * @return the result of the conversion
 	 */
 	protected Number convertNumber(BigDecimal value, String propertyId) {
 		Class<?> clazz = editablePropertyClassCollector.apply(propertyId);
@@ -256,7 +257,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	 * 
 	 * @param value        the BigDecimal value
 	 * @param propertyName the name of the property
-	 * @return
+	 * @return the result of the conversion
 	 */
 	private String convertToString(Number value, String propertyName) {
 		if (value == null) {
@@ -275,17 +276,18 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	}
 
 	/**
-	 * Extracts the sum cell value
+	 * Extracts the cell value to use in a summuation
 	 * 
-	 * @param t
-	 * @param columnName
-	 * @return
+	 * @param entity the entity to extract the value from
+	 * @param index the index of the row
+	 * @param columnName the name of the value
+	 * @return the resulting number
 	 */
-	private Number extractSumCellValue(T t, int index, String columnName) {
+	private Number extractSumCellValue(T entity, int index, String columnName) {
 		if (sumCellExtractor == null) {
 			return null;
 		}
-		return sumCellExtractor.apply(t, index, columnName);
+		return sumCellExtractor.apply(entity, index, columnName);
 	}
 
 	@Override
@@ -298,7 +300,7 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 	 * Converts a numeric value to a BigDecimal
 	 * 
 	 * @param value the value to convert
-	 * @return
+	 * @return the result of the conversion
 	 */
 	protected BigDecimal toBigDecimal(Number value) {
 		return value == null ? BigDecimal.ZERO : BigDecimal.valueOf(value.doubleValue());
@@ -321,13 +323,13 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 			List<T> cRows = data.getChildren(pRow);
 			int j = index;
 			sum = cRows.stream().map(c -> extractSumCellValue(c, j, column)).map(n -> toBigDecimal(n))
-					.reduce(BigDecimal.ZERO, (a, b) -> a.add(b));
+					.reduce(BigDecimal.ZERO, BigDecimal::add);
 			sumCellValueCreator.accept(pRow, index, column, sum);
 			provider.refreshItem(pRow);
+			index++;
 		}
-		index++;
 
-		FooterRow footerRow = null;
+		FooterRow footerRow ;
 		if (getFooterRows().isEmpty()) {
 			footerRow = appendFooterRow();
 		} else {
@@ -338,7 +340,6 @@ public class InMemoryTreeGrid<T, ID, C extends AbstractEntity<ID>, ID2, P extend
 		if (columnByKey != null) {
 			footerRow.getCell(columnByKey).setText(convertToString(sum, column));
 		}
-
 	}
 
 	public void updateSums() {

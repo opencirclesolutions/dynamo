@@ -15,8 +15,7 @@ package com.ocs.dynamo.ui;
 
 /**
  * Marker interface to indicate that a component can be reloaded. Reloading the
- * component will cause the data grid to be refreshed to make sure it is up to
- * date with the database
+ * component will cause the data grid to be refreshed to make sure it is up-to-date with the database
  * 
  * @author bas.rutten
  */

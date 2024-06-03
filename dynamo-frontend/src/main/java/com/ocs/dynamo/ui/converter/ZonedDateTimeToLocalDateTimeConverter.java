@@ -31,7 +31,7 @@ public class ZonedDateTimeToLocalDateTimeConverter implements Converter<LocalDat
 
 	private static final long serialVersionUID = -830307549693107753L;
 
-	private ZoneId zoneId;
+	private final ZoneId zoneId;
 
 	public ZonedDateTimeToLocalDateTimeConverter(ZoneId zoneId) {
 		this.zoneId = zoneId;

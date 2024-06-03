@@ -138,43 +138,43 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 	}
 
 	private void addBigDecimalConverters(BindingBuilder<ValueHolder<T>, String> builder) {
-		BindingBuilder<ValueHolder<T>, BigDecimal> iBuilder = builder
+		BindingBuilder<ValueHolder<T>, BigDecimal> bindingBuilder = builder
 				.withConverter(ConverterFactory.createBigDecimalConverter(attributeModel.isCurrency(),
 						attributeModel.isPercentage(), attributeModel.useThousandsGroupingInEditMode(),
 						attributeModel.getPrecision(), attributeModel.getCurrencySymbol()));
 		if (attributeModel.getMaxValue() != null) {
-			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
+			bindingBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_HIGH), null,
 					BigDecimal.valueOf(attributeModel.getMaxValue())));
 		}
 		if (attributeModel.getMinValue() != null) {
-			iBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_LOW),
+			bindingBuilder.withValidator(new BigDecimalRangeValidator(message(VALUE_TOO_LOW),
 					BigDecimal.valueOf(attributeModel.getMinValue()), null));
 		}
 	}
 
 	private void addIntegerConverters(BindingBuilder<ValueHolder<T>, String> builder) {
-		BindingBuilder<ValueHolder<T>, Integer> iBuilder = builder
+		BindingBuilder<ValueHolder<T>, Integer> bindingBuilder = builder
 				.withConverter(ConverterFactory.createIntegerConverter(attributeModel.useThousandsGroupingInEditMode(),
 						attributeModel.isPercentage()));
 		if (attributeModel.getMaxValue() != null) {
-			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
+			bindingBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()),
 					null, attributeModel.getMaxValue().intValue()));
 		}
 		if (attributeModel.getMinValue() != null) {
-			iBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+			bindingBuilder.withValidator(new IntegerRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
 					attributeModel.getMinValue().intValue(), null));
 		}
 	}
 
 	private void addLongConverters(BindingBuilder<ValueHolder<T>, String> builder) {
-		BindingBuilder<ValueHolder<T>, Long> iBuilder = builder.withConverter(ConverterFactory
+		BindingBuilder<ValueHolder<T>, Long> bindingBuilder = builder.withConverter(ConverterFactory
 				.createLongConverter(attributeModel.useThousandsGroupingInEditMode(), attributeModel.isPercentage()));
 		if (attributeModel.getMaxValue() != null) {
-			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
+			bindingBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_HIGH, attributeModel.getMaxValue()), null,
 					attributeModel.getMaxValue()));
 		}
 		if (attributeModel.getMinValue() != null) {
-			iBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
+			bindingBuilder.withValidator(new LongRangeValidator(message(VALUE_TOO_LOW, attributeModel.getMinValue()),
 					attributeModel.getMinValue(), null));
 		}
 	}
@@ -306,16 +306,16 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 		grid.setItems(provider);
 		main.add(grid);
 
-		Column<ValueHolder<T>> column = grid.addComponentColumn(vh -> {
-			TextField tf = new TextField("");
-			Binder<ValueHolder<T>> binder = binders.get(vh);
+		Column<ValueHolder<T>> column = grid.addComponentColumn(valueHolder -> {
+			TextField textField = new TextField("");
+			Binder<ValueHolder<T>> binder = binders.get(valueHolder);
 
-			BindingBuilder<ValueHolder<T>, String> builder = binder.forField(tf);
+			BindingBuilder<ValueHolder<T>, String> builder = binder.forField(textField);
 			builder.withNullRepresentation("");
 
-			// custom validator since the normal one apparently doesn't work properly here
+			// custom validator since the normal one does not work properly here
 			// (must be added before the converters)
-			Validator<String> notEmptyValidator = (String value, ValueContext v) -> {
+			Validator<String> notEmptyValidator = (String value, ValueContext context) -> {
 				if (StringUtils.isEmpty(value)) {
 					return ValidationResult
 							.error(messageService.getMessage("ocs.may.not.be.null", VaadinUtils.getLocale()));
@@ -334,8 +334,8 @@ public class ElementCollectionGrid<ID extends Serializable, U extends AbstractEn
 				addBigDecimalConverters(builder);
 			}
 			builder.bind("value");
-			tf.setSizeFull();
-			return tf;
+			textField.setSizeFull();
+			return textField;
 		});
 
 		column.setHeader(messageService.getMessage("ocs.value", VaadinUtils.getLocale()));

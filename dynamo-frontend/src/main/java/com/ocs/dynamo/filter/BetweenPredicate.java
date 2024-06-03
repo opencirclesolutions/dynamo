@@ -30,7 +30,7 @@ public class BetweenPredicate<T> extends PropertyPredicate<T> {
 	private static final long serialVersionUID = -5077087872701525001L;
 
 	@Getter
-	private Comparable<?> toValue;
+	private final Comparable<?> toValue;
 
 	public BetweenPredicate(String property, Comparable<?> fromValue, Comparable<?> toValue) {
 		super(property, fromValue);

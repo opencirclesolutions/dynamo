@@ -62,49 +62,36 @@ public class FilterConverter<T> implements Converter<SerializablePredicate<T>, c
 
 		Filter result = null;
 
-		if (filter instanceof LikePredicate) {
-			LikePredicate<T> p = (LikePredicate<T>) filter;
+		if (filter instanceof LikePredicate<T> p) {
 			result = new Like(p.getProperty(), (String) p.getValue(), p.isCaseSensitive());
-		} else if (filter instanceof IsNullPredicate) {
-			IsNullPredicate<T> p = (IsNullPredicate<T>) filter;
+		} else if (filter instanceof IsNullPredicate<T> p) {
 			result = new IsNull(p.getProperty());
-		} else if (filter instanceof EqualsPredicate) {
-			EqualsPredicate<T> p = (EqualsPredicate<T>) filter;
+		} else if (filter instanceof EqualsPredicate<T> p) {
 			result = new Compare.Equal(p.getProperty(), p.getValue());
-		} else if (filter instanceof GreaterThanPredicate) {
-			GreaterThanPredicate<T> p = (GreaterThanPredicate<T>) filter;
+		} else if (filter instanceof GreaterThanPredicate<T> p) {
 			result = new Compare.Greater(p.getProperty(), p.getValue());
-		} else if (filter instanceof LessThanPredicate) {
-			LessThanPredicate<T> p = (LessThanPredicate<T>) filter;
+		} else if (filter instanceof LessThanPredicate<T> p) {
 			result = new Compare.Less(p.getProperty(), p.getValue());
 		} else if (filter instanceof AndPredicate) {
 			result = convertAnd(filter);
 		} else if (filter instanceof OrPredicate) {
 			result = convertOr(filter);
-		} else if (filter instanceof GreaterOrEqualPredicate) {
-			GreaterOrEqualPredicate<T> p = (GreaterOrEqualPredicate<T>) filter;
+		} else if (filter instanceof GreaterOrEqualPredicate<T> p) {
 			result = new Compare.GreaterOrEqual(p.getProperty(), p.getValue());
-		} else if (filter instanceof LessOrEqualPredicate) {
-			LessOrEqualPredicate<T> p = (LessOrEqualPredicate<T>) filter;
+		} else if (filter instanceof LessOrEqualPredicate<T> p) {
 			result = new Compare.LessOrEqual(p.getProperty(), p.getValue());
-		} else if (filter instanceof NotPredicate) {
-			NotPredicate<T> p = (NotPredicate<T>) filter;
+		} else if (filter instanceof NotPredicate<T> p) {
 			result = new Not(convert(p.getOperand()));
-		} else if (filter instanceof BetweenPredicate) {
-			BetweenPredicate<T> p = (BetweenPredicate<T>) filter;
+		} else if (filter instanceof BetweenPredicate<T> p) {
 			result = new Between(((BetweenPredicate<T>) filter).getProperty(), p.getFromValue(), p.getToValue());
-		} else if (filter instanceof SimpleStringPredicate) {
-			SimpleStringPredicate<T> p = (SimpleStringPredicate<T>) filter;
+		} else if (filter instanceof SimpleStringPredicate<T> p) {
 			result = new Like(p.getProperty(), (p.isOnlyMatchPrefix() ? "" : "%") + p.getValue() + "%",
 					p.isCaseSensitive());
-		} else if (filter instanceof InPredicate) {
-			InPredicate<T> p = (InPredicate<T>) filter;
+		} else if (filter instanceof InPredicate<T> p) {
 			result = new In(p.getProperty(), p.getValue());
-		} else if (filter instanceof ContainsPredicate) {
-			ContainsPredicate<T> p = (ContainsPredicate<T>) filter;
+		} else if (filter instanceof ContainsPredicate<T> p) {
 			result = new Contains(p.getProperty(), p.getValue());
-		} else if (filter instanceof ModuloPredicate) {
-			ModuloPredicate<T> p = (ModuloPredicate<T>) filter;
+		} else if (filter instanceof ModuloPredicate<T> p) {
 			if (p.getModExpression() != null) {
 				result = new Modulo(p.getProperty(), p.getModExpression(), p.getValue());
 			} else {

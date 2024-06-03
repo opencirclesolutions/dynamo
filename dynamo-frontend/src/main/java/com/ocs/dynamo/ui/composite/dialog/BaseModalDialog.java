@@ -84,9 +84,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 	@Override
 	public void open() {
 		super.open();
-		UI.getCurrent().beforeClientResponse(this, executionContext -> {
-			UI.getCurrent().setChildComponentModal(this, false);
-		});
+		UI.getCurrent().beforeClientResponse(this, executionContext -> UI.getCurrent().setChildComponentModal(this, false));
 	}
 
 	/**
@@ -130,7 +128,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 	 * Retrieves a localized message
 	 * 
 	 * @param key the message key
-	 * @return
+	 * @return the message
 	 */
 	protected String message(String key) {
 		return messageService.getMessage(key, VaadinUtils.getLocale());
@@ -141,7 +139,7 @@ public abstract class BaseModalDialog extends Dialog implements Buildable {
 	 * 
 	 * @param key  the key of the message
 	 * @param args any arguments to pass to the message
-	 * @return
+	 * @return the message
 	 */
 	protected String message(String key, Object... args) {
 		return messageService.getMessage(key, VaadinUtils.getLocale(), args);

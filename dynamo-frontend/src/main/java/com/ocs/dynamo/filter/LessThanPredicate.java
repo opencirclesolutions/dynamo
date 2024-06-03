@@ -13,6 +13,8 @@
  */
 package com.ocs.dynamo.filter;
 
+import com.ocs.dynamo.utils.ClassUtils;
+
 /**
  * A predicate that is used to indicate that a value is greater than the
  * provided value
@@ -34,8 +36,8 @@ public class LessThanPredicate<T> extends ComparePredicate<T> {
 		if (t == null) {
 			return false;
 		}
-		Object v = com.ocs.dynamo.utils.ClassUtils.getFieldValue(t, getProperty());
-		return compareValue(v) < 0;
+		Object value = ClassUtils.getFieldValue(t, getProperty());
+		return compareValue(value) < 0;
 	}
 
 }

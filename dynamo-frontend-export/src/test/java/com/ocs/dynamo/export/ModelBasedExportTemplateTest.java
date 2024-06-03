@@ -70,7 +70,7 @@ public class ModelBasedExportTemplateTest extends FrontendIntegrationTest {
 
 	@Test
 	public void testExcel() throws IOException {
-		ModelBasedExcelExportTemplate<Integer, TestEntity> template = new ModelBasedExcelExportTemplate<Integer, TestEntity>(
+		ModelBasedExcelExportTemplate<Integer, TestEntity> template = new ModelBasedExcelExportTemplate<>(
 				testEntityService, entityModelFactory.getModel(TestEntity.class), ExportMode.ONLY_VISIBLE_IN_GRID,
 				new SortOrder[] { new SortOrder("name", Direction.ASC) }, null, "Sheet name", null);
 		byte[] bytes = template.process();

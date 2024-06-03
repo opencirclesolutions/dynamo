@@ -21,7 +21,7 @@ import com.vaadin.flow.data.converter.StringToIntegerConverter;
 
 /**
  * A string to integer converter that allows support the user to specify whether
- * a thousands separator must be used
+ * a thousand separator must be used
  * 
  * @author bas.rutten
  */
@@ -29,7 +29,7 @@ public class GroupingStringToIntegerConverter extends StringToIntegerConverter {
 
 	private static final long serialVersionUID = -281060172465120956L;
 
-	private boolean useGrouping;
+	private final boolean useGrouping;
 
 	public GroupingStringToIntegerConverter(String message, boolean useGrouping) {
 		super(message);

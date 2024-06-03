@@ -83,7 +83,6 @@ public class EntityComboBox<ID extends Serializable, T extends AbstractEntity<ID
 	 *                       grid
 	 * @param items          the items to display (in fixed mode)
 	 * @param sortOrders     the sort order(s) to apply
-	 * 
 	 */
 	public EntityComboBox(EntityModel<T> entityModel, AttributeModel attributeModel, BaseService<ID, T> service,
 			SelectMode mode, SerializablePredicate<T> filter, List<T> items,

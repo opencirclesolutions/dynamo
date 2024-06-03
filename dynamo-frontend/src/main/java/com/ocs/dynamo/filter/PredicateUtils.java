@@ -33,29 +33,25 @@ public final class PredicateUtils {
 	 *
 	 * @param predicate   the predicate from which to extract a certain part
 	 * @param propertyId  the propertyId of the predicate to extract
-	 * @param typesToFind
-	 * @return
+	 * @param typesToFind the types/classes of the predicates to look for
+	 * @return the predicate that results
 	 */
-	@SafeVarargs
 	public static <T> SerializablePredicate<T> extractPredicate(SerializablePredicate<T> predicate, String propertyId,
 			Class<?>... typesToFind) {
 		List<Class<?>> types = typesToFind == null || typesToFind.length == 0
 				|| (typesToFind.length == 1 && typesToFind[0] == null) ? null : List.of(typesToFind);
-		if (predicate instanceof CompositePredicate) {
-			CompositePredicate<T> comp = (CompositePredicate<T>) predicate;
+		if (predicate instanceof CompositePredicate<T> comp) {
 			for (SerializablePredicate<T> child : comp.getOperands()) {
 				SerializablePredicate<T> found = extractPredicate(child, propertyId, typesToFind);
 				if (found != null) {
 					return found;
 				}
 			}
-		} else if (predicate instanceof PropertyPredicate && (types == null || types.contains(predicate.getClass()))) {
-			PropertyPredicate<T> prop = (PropertyPredicate<T>) predicate;
+		} else if (predicate instanceof PropertyPredicate<T> prop && (types == null || types.contains(predicate.getClass()))) {
 			if (prop.getProperty().equals(propertyId)) {
 				return prop;
 			}
-		} else if (predicate instanceof NotPredicate) {
-			NotPredicate<T> not = (NotPredicate<T>) predicate;
+		} else if (predicate instanceof NotPredicate<T> not) {
 			return extractPredicate(not.getOperand(), propertyId);
 		}
 		return null;
@@ -69,12 +65,10 @@ public final class PredicateUtils {
 	 * @param propertyId the propertyId of the predicate to extract
 	 * @return typesToFind can be used to limit the types of predicates to check
 	 */
-	@SafeVarargs
 	public static <T> Object extractPredicateValue(SerializablePredicate<T> predicate, String propertyId,
 			Class<?>... typesToFind) {
 		SerializablePredicate<T> extracted = extractPredicate(predicate, propertyId, typesToFind);
-		if (extracted instanceof PropertyPredicate) {
-			PropertyPredicate<T> prop = (PropertyPredicate<T>) extracted;
+		if (extracted instanceof PropertyPredicate<T> prop) {
 			return prop.getValue();
 		}
 		return null;
@@ -86,12 +80,11 @@ public final class PredicateUtils {
 	 *
 	 * @param predicate  the root predicate
 	 * @param propertyId the property ID
-	 * @return
+	 * @return whether the predicate evaluates to true
 	 */
 	public static <T> boolean isTrue(SerializablePredicate<T> predicate, String propertyId) {
 		SerializablePredicate<T> extracted = extractPredicate(predicate, propertyId);
-		if (extracted instanceof EqualsPredicate) {
-			EqualsPredicate<T> equal = (EqualsPredicate<T>) extracted;
+		if (extracted instanceof EqualsPredicate<T> equal) {
 			return Boolean.TRUE.equals(equal.getValue());
 		}
 		return false;
@@ -104,29 +97,25 @@ public final class PredicateUtils {
 	 * @param ignore the list of properties to ignore when checking (even if a value
 	 *               for one or more of these properties is set, this will not cause
 	 *               a return value of <code>true</code>)
-	 * @return
+	 * @return true if the predicate value has been set, false otherwise
 	 */
 	public static <T> boolean isPredicateValueSet(SerializablePredicate<T> predicate, Set<String> ignore) {
 		boolean result = false;
-		if (predicate instanceof CompositePredicate) {
-			CompositePredicate<T> jf = (CompositePredicate<T>) predicate;
-			for (SerializablePredicate<T> f : jf.getOperands()) {
-				result |= isPredicateValueSet(f, ignore);
+		if (predicate instanceof CompositePredicate<T> composite) {
+			for (SerializablePredicate<T> pred : composite.getOperands()) {
+				result |= isPredicateValueSet(pred, ignore);
 			}
-		} else if (predicate instanceof BetweenPredicate) {
-			BetweenPredicate<T> between = (BetweenPredicate<T>) predicate;
+		} else if (predicate instanceof BetweenPredicate<T> between) {
 			if (ignore.contains(between.getProperty())) {
 				return false;
 			}
 			return between.getValue() != null || between.getToValue() != null;
-		} else if (predicate instanceof PropertyPredicate) {
-			PropertyPredicate<T> eq = (PropertyPredicate<T>) predicate;
+		} else if (predicate instanceof PropertyPredicate<T> eq) {
 			if (ignore.contains(eq.getProperty())) {
 				return false;
 			}
 			return eq.getValue() != null;
 		}
-
 		return result;
 	}
 

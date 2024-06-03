@@ -92,7 +92,7 @@ public abstract class BaseDataProvider<ID extends Serializable, T extends Abstra
 	private ID currentlySelectedId;
 
 	/**
-	 * Sort orders to fall back to when no sort orders are defined directly on the
+	 * Sort orders to which to fall back to when no sort orders are defined directly on the
 	 * grid
 	 */
 	@Getter

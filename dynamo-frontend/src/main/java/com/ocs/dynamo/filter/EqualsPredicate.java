@@ -37,7 +37,7 @@ public class EqualsPredicate<T> extends ComparePredicate<T> {
 		if (t == null) {
 			return false;
 		}
-		Object v = ClassUtils.getFieldValue(t, getProperty());
-		return Objects.equals(getValue(), v);
+		Object value = ClassUtils.getFieldValue(t, getProperty());
+		return Objects.equals(getValue(), value);
 	}
 }
