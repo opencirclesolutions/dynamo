@@ -40,6 +40,8 @@ dynamo-showcase/target
 .travis.yml
 .idea
 *.log
+**/generated/**
+.sdkmanrc
 
 dynamo-archetype-modules/target
 dynamo-archetype/target

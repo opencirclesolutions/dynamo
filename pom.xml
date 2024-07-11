@@ -81,14 +81,22 @@
 		<project.build.compiler.version>21</project.build.compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+		<!-- framework versions -->
 		<vaadin.version>24.3.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
+		<vaadin.form-filler-addon.version>1.1.0</vaadin.form-filler-addon.version>
+		<vaadin.selection-grid-flow.version>3.0.3</vaadin.selection-grid-flow.version>
+		<vaadin.enhancedformlayout.version>1.5.1</vaadin.enhancedformlayout.version>
+
 		<commons.io.version>2.15.1</commons.io.version>
 		<commons.text.version>1.11.0</commons.text.version>
 		<poi.version>5.2.5</poi.version>
 		<opencsv.version>5.9</opencsv.version>
 		<spring.boot.version>3.2.2</spring.boot.version>
 		<karibu.testing.version>2.1.2</karibu.testing.version>
+		<jakarta.persistence-api.version>3.1.0</jakarta.persistence-api.version>
+
 		<!-- Maven plugin versions. -->
 		<org.apache.maven.plugins.compiler.version>3.12.1</org.apache.maven.plugins.compiler.version>
 		<org.apache.maven.plugins.jar.version>3.3.0</org.apache.maven.plugins.jar.version>
@@ -98,15 +106,23 @@
 		<org.apache.maven.plugins.release.version>3.0.0-M7</org.apache.maven.plugins.release.version>
 		<org.apache.maven.plugins.checkstyle.version>3.3.1</org.apache.maven.plugins.checkstyle.version>
 		<org.apache.maven.plugins.gpg.version>3.1.0</org.apache.maven.plugins.gpg.version>
+		<maven-surefire-plugin.version>3.3.0</maven-surefire-plugin.version>
+		<maven-clean-plugin.version>3.4.0</maven-clean-plugin.version>
+		<maven-enforcer-plugin.version>3.5.0</maven-enforcer-plugin.version>
 		<org.jacoco.maven.plugins.version>0.8.11</org.jacoco.maven.plugins.version>
 		<github-release-plugin.version>1.4.0</github-release-plugin.version>
 		<org.sonatype.plugins.version>1.6.13</org.sonatype.plugins.version>
-		<junit.version>5.10.1</junit.version>
+
+		<junit.version>5.10.3</junit.version>
 		<spotbugs.version>4.8.3.0</spotbugs.version>
 		<guava.version>33.0.0-jre</guava.version>
 		<h2.version>2.2.224</h2.version>
 		<lombok.version>1.18.30</lombok.version>
 		<querydsl.version>5.0.0</querydsl.version>
+		<mockito.version>5.10.0</mockito.version>
+		<checkstyle.version>9.2.1</checkstyle.version>
+		<excel-streaming-reader.version>4.2.1</excel-streaming-reader.version>
+
 		<maven.compiler.source>21</maven.compiler.source>
 		<maven.compiler.target>21</maven.compiler.target>
 	</properties>
@@ -122,7 +138,7 @@
 			<dependency>
 				<groupId>com.vaadin.componentfactory</groupId>
 				<artifactId>enhancedformlayout</artifactId>
-				<version>1.5.1</version>
+				<version>${vaadin.enhancedformlayout.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
@@ -140,7 +156,7 @@
 			<dependency>
 				<groupId>jakarta.persistence</groupId>
 				<artifactId>jakarta.persistence-api</artifactId>
-				<version>3.1.0</version>
+				<version>${jakarta.persistence-api.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.poi</groupId>
@@ -160,7 +176,7 @@
 			<dependency>
 				<groupId>com.github.pjfanning</groupId>
 				<artifactId>excel-streaming-reader</artifactId>
-				<version>4.2.1</version>
+				<version>${excel-streaming-reader.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
@@ -186,7 +202,7 @@
 			<dependency>
 				<groupId>com.vaadin.componentfactory</groupId>
 				<artifactId>selection-grid-flow</artifactId>
-				<version>3.0.3</version>
+				<version>${vaadin.selection-grid-flow.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.guava</groupId>
@@ -224,13 +240,13 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-core</artifactId>
-				<version>5.10.0</version>
+				<version>${mockito.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>com.vaadin.flow.ai</groupId>
 				<artifactId>form-filler-addon</artifactId>
-				<version>1.1.0</version>
+				<version>${vaadin.form-filler-addon.version}</version>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
@@ -306,7 +322,7 @@
 						<dependency>
 							<groupId>com.puppycrawl.tools</groupId>
 							<artifactId>checkstyle</artifactId>
-							<version>9.2.1</version>
+							<version>${checkstyle.version}</version>
 						</dependency>
 					</dependencies>
 					<configuration>
@@ -357,7 +373,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-clean-plugin</artifactId>
-					<version>3.1.0</version>
+					<version>${maven-clean-plugin.version}</version>
 				</plugin>
 				<plugin>
 					<groupId>com.vaadin</groupId>
@@ -399,8 +415,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-<!--					<version>${spring.boot.version}</version>-->
-					<version>3.0.0-M9</version>
+					<version>${maven-surefire-plugin.version}</version>
 					<dependencies>
 						<dependency>
 							<groupId>org.junit.jupiter</groupId>
@@ -431,7 +446,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-enforcer-plugin</artifactId>
-				<version>3.0.0-M3</version>
+				<version>${maven-enforcer-plugin.version}</version>
 				<executions>
 					<execution>
 						<id>enforce-versions</id>
