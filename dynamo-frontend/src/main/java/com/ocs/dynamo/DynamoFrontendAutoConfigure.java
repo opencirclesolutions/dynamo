@@ -53,7 +53,7 @@ import com.ocs.dynamo.ui.menu.MenuService;
 import com.ocs.dynamo.ui.menu.VerticalMenuService;
 
 /**
- * Spring Boot auto configuration for the UI module
+ * Spring Boot auto-configuration for the UI module
  * 
  * @author Bas Rutten
  *

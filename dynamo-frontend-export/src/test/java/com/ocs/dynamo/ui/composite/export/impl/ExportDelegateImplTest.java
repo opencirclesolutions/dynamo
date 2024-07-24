@@ -27,9 +27,9 @@ public class ExportDelegateImplTest extends BaseMockitoTest {
 	@Mock
 	private ExportService exportService;
 
-	private ExportDelegateImpl delegate = new ExportDelegateImpl();
+	private final ExportDelegateImpl delegate = new ExportDelegateImpl();
 
-	private EntityModelFactory factory = new EntityModelFactoryImpl();
+	private final EntityModelFactory factory = new EntityModelFactoryImpl();
 
 	@Test
 	public void testExport() {
