@@ -1,4 +1,4 @@
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image1.png[image,width=19,height=19]image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image2.png[image,width=256,height=53]
+image:media/image1.png[image,width=19,height=19]image:media/image2.png[image,width=256,height=53]
 _ +
 _
 
@@ -1111,7 +1111,7 @@ VisibilityType.*_SHOW_*, searchable = *true*, groupTogetherWith =
 
 And this is the input form that will be generated:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image3.png[image,width=560,height=64]
+image:media/image3.png[image,width=560,height=64]
 
 You can still use all available settings to modify the behaviour of the
 components for the “extra” attributes that are placed behind the first
@@ -1300,7 +1300,7 @@ visibleInForm = VisibilityType.*_SHOW_*)
 
 *private* Country countryOfOrigin;
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image4.png[image,width=508,height=140]
+image:media/image4.png[image,width=508,height=140]
 
 Multiple search enabled –> lookup field:
 
@@ -1312,7 +1312,7 @@ multipleSearch = *true*, visibleInForm = VisibilityType.*_SHOW_*)
 Multiple search on *MASTER* attributes is currently only supported when
 using *LOOKUP* select mode (*TOKEN* is not supported).
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image5.png[image,width=498,height=71]
+image:media/image5.png[image,width=498,height=71]
 
 You can also use the *multipleSearch* setting for searching on distinct
 String values – As you have seen before, by default the framework will
@@ -1328,7 +1328,7 @@ AttributeSelectMode.*_TOKEN_*)
 
 *private* String name;
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image6.png[image,width=499,height=271]
+image:media/image6.png[image,width=499,height=271]
 
 === Navigable
 
@@ -1372,7 +1372,7 @@ it is still possible to input non-numeric characters. When set to
 used instead. This component only accepts numeric input and also comes
 with a set of plus and minus buttons.
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image7.png[image,width=560,height=70]
+image:media/image7.png[image,width=560,height=70]
 
 The default value of this setting can be modified by changing the system
 variable *ocs.default.number.field.mode*.
@@ -1484,7 +1484,7 @@ application, they will see an “Add” button behind the field that can be
 used to create a new country. Once pressed, the button will bring up the
 following dialog:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image8.png[image,width=559,height=203]
+image:media/image8.png[image,width=559,height=203]
 
 The user can now enter the properties of the country in the popup – once
 the user presses the “OK” button the application will store the new
@@ -1689,7 +1689,7 @@ When this setting has the value *true,* a button to toggle between an
 unobscured and obscured view is displayed at the end of the input
 component.
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image9.png[image,width=197,height=68]
+image:media/image9.png[image,width=197,height=68]
 
 === Sortable
 
@@ -2008,7 +2008,7 @@ members.
 
 The grid component will look like this:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image10.png[image,width=560,height=198]
+image:media/image10.png[image,width=560,height=198]
 
 == Data access, Service layers and general concepts
 
@@ -3898,7 +3898,7 @@ the desired orientation.
 
 An example of a split layout in horizontal mode can be seen here:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image11.png[image,width=560,height=312]
+image:media/image11.png[image,width=560,height=312]
 
 Note that there are several variants of the *SplitLayout*:
 
@@ -4038,7 +4038,7 @@ performance of the application. We advise using the *SINGLE_ROW* mode by
 default and only using the *SIMULTANEOUS* mode when you know that the
 amount of data that will be shown in the grid is limited.
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image12.png[image,width=560,height=143]
+image:media/image12.png[image,width=560,height=143]
 
 It may be tricky to display components that take up more than a single
 line (e.g. *TokenFieldSelect*). We advise sticking to components that
@@ -4069,7 +4069,7 @@ When you want to add a new entity to using the *EditableGridLayout*, you
 can do this (as usual) by clicking the *Add* button. This will bring up
 a dialog that can be used to create the new entity:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image13.png[image,width=560,height=439]
+image:media/image13.png[image,width=560,height=439]
 
 === HorizontalDisplayLayout
 
@@ -4534,7 +4534,7 @@ parameters as the other composite components:
 The code above will open a modal dialog that allows you to edit the
 selected entity:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image14.png[image,width=560,height=543]
+image:media/image14.png[image,width=560,height=543]
 
 By default, the popup will open in edit mode. You can modify this by
 using the *FormOptions* and setting *openInViewMode* to true.
@@ -5157,7 +5157,7 @@ entire request
 will try to translate the user input to valid property values, which
 will be pre-filled into the form.
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image15.png[image,width=558,height=245]
+image:media/image15.png[image,width=558,height=245]
 
 Pressing the “OK”-button will send a request to the LLM service, which
 will try to translate the user input to valid property values, which
@@ -5208,7 +5208,7 @@ can use the *setExportAllowed* setting on the FormOptions to true.
 The result of this will be that when the user right-clicks on a search
 results grid in the application, the following dialog will appear:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image16.png[image,width=186,height=189]
+image:media/image16.png[image,width=186,height=189]
 
 Clicking on the buttons will respectively export the data in the grid to
 Excel or CSV. Note that the export that will be created contains all the
@@ -5450,7 +5450,7 @@ You can simply pass a list of the domain classes you want to manage to
 the *MultiDomainEditLayout’s* constructor. This will then result in a
 screen that looks as follows:
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image17.png[image,width=559,height=226]
+image:media/image17.png[image,width=559,height=226]
 
 This component consists of a combo box that allows a user to select the
 lookup table they want to edit. Selecting a value in the combo box will
@@ -5954,7 +5954,7 @@ history – it is not possible to search for attributes of type DETAIL
 
 == Composite components class diagram
 
-image:vertopal_0f938764fe03462c8cbc671a6c777f31/media/image18.png[image,width=560,height=629]
+image:media/image18.png[image,width=560,height=629]
 
 The diagram above displays the most important classes that play a role
 in the generation of composite user interface components.
