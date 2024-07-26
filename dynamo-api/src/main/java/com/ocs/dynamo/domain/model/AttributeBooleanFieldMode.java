@@ -15,5 +15,5 @@ package com.ocs.dynamo.domain.model;
 
 public enum AttributeBooleanFieldMode {
 
-    INHERIT, CHECKBOX, TOGGLE, SWITCH;
+    INHERIT, CHECKBOX, TOGGLE, SWITCH
 }

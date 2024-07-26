@@ -15,5 +15,5 @@ package com.ocs.dynamo.rest.model;
 
 public enum AttributeTextFieldModeExternal {
 
-    TEXTFIELD, TEXTAREA, PASSWORD;
+    TEXTFIELD, TEXTAREA, PASSWORD
 }

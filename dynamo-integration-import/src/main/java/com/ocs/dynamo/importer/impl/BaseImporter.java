@@ -13,22 +13,20 @@
  */
 package com.ocs.dynamo.importer.impl;
 
-import static java.lang.Float.valueOf;
-import static java.lang.String.format;
+import com.ocs.dynamo.exception.OCSImportException;
+import com.ocs.dynamo.importer.ImportField;
+import com.ocs.dynamo.importer.dto.AbstractDTO;
+import com.ocs.dynamo.utils.ClassUtils;
+import com.ocs.dynamo.utils.NumberUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.BeanUtils;
 
 import java.beans.PropertyDescriptor;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 
-import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeanUtils;
-
-import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.importer.ImportField;
-import com.ocs.dynamo.importer.dto.AbstractDTO;
-import com.ocs.dynamo.utils.ClassUtils;
-import com.ocs.dynamo.utils.NumberUtils;
+import static java.lang.String.format;
 
 /**
  * Base class for smart upload functionality
@@ -47,7 +45,7 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param bytes      the byte representation of the input file
 	 * @param sheetIndex the index of the sheet (if appropriate)
-	 * @return
+	 * @return the number of rows
 	 */
 	public abstract int countRows(byte[] bytes, int sheetIndex);
 
@@ -57,7 +55,7 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param unit  the unit of data value to process (string, Excel cell etc)
 	 * @param field the field definition
-	 * @return
+	 * @return the Boolean value
 	 */
 	protected abstract Boolean getBooleanValueWithDefault(U unit, ImportField field);
 
@@ -67,7 +65,7 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param unit  the unit of data to process
 	 * @param field the field definition
-	 * @return
+	 * @return the LocalDate value
 	 */
 	protected abstract LocalDate getDateValueWithDefault(U unit, ImportField field);
 
@@ -78,7 +76,7 @@ public abstract class BaseImporter<R, U> {
 	 *              value to retrieve
 	 * @param unit  the unit of data to process
 	 * @param field the field definition
-	 * @return
+	 * @return the field value
 	 */
 	@SuppressWarnings("unchecked")
 	protected Object getFieldValue(PropertyDescriptor d, U unit, ImportField field) {
@@ -127,7 +125,7 @@ public abstract class BaseImporter<R, U> {
 				} else if (NumberUtils.isLong(pType)) {
 					obj = rounded.longValue();
 				} else if (NumberUtils.isFloat(pType)) {
-					obj = valueOf(value.floatValue());
+					obj = value.floatValue();
 				} else if (NumberUtils.isDouble(pType)) {
 					obj = value;
 				} else if (BigDecimal.class.equals(pType)) {
@@ -148,7 +146,7 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param unit  the input unit
 	 * @param field the field definition
-	 * @return
+	 * @return the Double value
 	 */
 	protected abstract Double getNumericValueWithDefault(U unit, ImportField field);
 
@@ -158,7 +156,7 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param unit  the input unit
 	 * @param field the field definition
-	 * @return
+	 * @return the String value
 	 */
 	protected abstract String getStringValueWithDefault(U unit, ImportField field);
 
@@ -167,7 +165,7 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param row   the row
 	 * @param field the field definition
-	 * @return
+	 * @return the retrieved unit
 	 */
 	protected abstract U getUnit(R row, ImportField field);
 
@@ -175,7 +173,7 @@ public abstract class BaseImporter<R, U> {
 	 * Check if the class is a numeric class
 	 * 
 	 * @param clazz the class to check
-	 * @return
+	 * @return true if the value is numeric, false otherwise
 	 */
 	private boolean isNumeric(Class<?> clazz) {
 		return Number.class.isAssignableFrom(clazz) || int.class.equals(clazz) || long.class.equals(clazz)
@@ -185,7 +183,7 @@ public abstract class BaseImporter<R, U> {
 	/**
 	 * Indicates whether fraction values are automatically converted to percentages
 	 * 
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	public abstract boolean isPercentageCorrectionSupported();
 
@@ -194,7 +192,7 @@ public abstract class BaseImporter<R, U> {
 	 * 
 	 * @param row   the row to check
 	 * @param field the field definition
-	 * @return
+	 * @return true if this is the case, false otherwise
 	 */
 	protected abstract boolean isWithinRange(R row, ImportField field);
 

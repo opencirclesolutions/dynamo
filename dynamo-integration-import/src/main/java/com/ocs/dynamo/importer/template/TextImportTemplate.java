@@ -13,17 +13,15 @@
  */
 package com.ocs.dynamo.importer.template;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.utils.SystemPropertyUtils;
-
 import lombok.extern.slf4j.Slf4j;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Template class for importing data from a text (CSV or fixed width) file and
@@ -37,7 +35,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class TextImportTemplate<ID, T> {
 
-	private List<String[]> lines;
+	private final List<String[]> lines;
 
 	private final boolean checkForDuplicates;
 
@@ -65,10 +63,10 @@ public abstract class TextImportTemplate<ID, T> {
 	/**
 	 * Indicates whether the row is appropriate and can be processed
 	 * 
-	 * @param line
-	 * @return
+	 * @param row the representation of the row
+	 * @return true if this is the case, false otherwise
 	 */
-	protected abstract boolean isAppropriateRow(String[] line);
+	protected abstract boolean isAppropriateRow(String[] row);
 
 	/**
 	 * Processes a row
@@ -76,20 +74,20 @@ public abstract class TextImportTemplate<ID, T> {
 	 * @param rowNum the row number of the row
 	 * @param row    the row (as an array of strings denoting the individual field
 	 *               values)
-	 * @return
+	 * @return the result of the processing
 	 */
 	protected abstract T process(int rowNum, String[] row);
 
 	/**
-	 * 
-	 * @param t
-	 * @return
+	 * Extracts a primary key value from a row
+	 * @param row the row
+	 * @return the key value
 	 */
-	protected abstract ID getKeyFromRow(T t);
+	protected abstract ID getKeyFromRow(T row);
 
 	/**
-	 * 
-	 * @return
+	 * Executes the template
+	 * @return the result of the processing
 	 */
 	public List<T> execute() {
 		List<T> results = new ArrayList<>();

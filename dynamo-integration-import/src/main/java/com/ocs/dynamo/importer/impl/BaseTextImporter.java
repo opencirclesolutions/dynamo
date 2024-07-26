@@ -35,14 +35,13 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	 * 
 	 * @param unit
 	 *            the String
-	 * @return
+	 * @return the Boolean value
 	 */
 	protected Boolean getBooleanValue(String unit) {
-		String value = unit;
-		if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isEmpty(unit)) {
 			return Boolean.FALSE;
 		}
-		return Boolean.valueOf(value);
+		return Boolean.valueOf(unit);
 	}
 
 	/**
@@ -62,12 +61,11 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	 * 
 	 * @param unit
 	 *            the String value to convert
-	 * @return
+	 * @return the LocalDate value
 	 */
 	protected LocalDate getDateValue(String unit) {
-		String value = unit;
-		if (!StringUtils.isEmpty(value)) {
-			return LocalDate.parse(value, DateTimeFormatter.ofPattern(SystemPropertyUtils.getDefaultDateFormat()));
+        if (!StringUtils.isEmpty(unit)) {
+			return LocalDate.parse(unit, DateTimeFormatter.ofPattern(SystemPropertyUtils.getDefaultDateFormat()));
 
 		}
 		return null;
@@ -90,17 +88,16 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	 * 
 	 * @param unit
 	 *            the String value to convert
-	 * @return
+	 * @return the Double value
 	 */
 	protected Double getNumericValue(String unit) {
-		String value = unit;
-		if (StringUtils.isEmpty(value)) {
+        if (StringUtils.isEmpty(unit)) {
 			return null;
 		}
 		try {
-			return Double.valueOf(value);
+			return Double.valueOf(unit);
 		} catch (NumberFormatException ex) {
-			throw new OCSImportException(value + " cannot be converted to a number");
+			throw new OCSImportException(unit + " cannot be converted to a number");
 		}
 	}
 

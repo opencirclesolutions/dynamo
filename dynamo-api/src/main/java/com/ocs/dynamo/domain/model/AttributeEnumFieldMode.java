@@ -15,5 +15,5 @@ package com.ocs.dynamo.domain.model;
 
 public enum AttributeEnumFieldMode {
 
-    INHERIT, DROPDOWN, RADIO;
+    INHERIT, DROPDOWN, RADIO
 }

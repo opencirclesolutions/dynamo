@@ -15,5 +15,5 @@ package com.ocs.dynamo.rest.model;
 
 public enum AttributeEnumFieldModeExternal {
 
-    DROPDOWN, RADIO;
+    DROPDOWN, RADIO
 }

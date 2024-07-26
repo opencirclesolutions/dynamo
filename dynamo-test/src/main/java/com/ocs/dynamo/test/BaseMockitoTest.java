@@ -13,7 +13,6 @@
  */
 package com.ocs.dynamo.test;
 
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 

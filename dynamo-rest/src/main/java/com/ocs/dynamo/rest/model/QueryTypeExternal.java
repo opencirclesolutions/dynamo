@@ -15,5 +15,5 @@ package com.ocs.dynamo.rest.model;
 
 public enum QueryTypeExternal {
 
-    PAGING, ID_BASED;
+    PAGING, ID_BASED
 }

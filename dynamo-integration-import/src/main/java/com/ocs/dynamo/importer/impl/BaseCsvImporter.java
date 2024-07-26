@@ -48,7 +48,7 @@ public class BaseCsvImporter extends BaseTextImporter {
      * @param bytes     the raw content of the CSV file
      * @param separator the record separator
      * @param quote     the quote char
-     * @return
+     * @return the result of the read action
      */
     protected List<String[]> readCsvFile(byte[] bytes, String separator, String quote) {
         try (CharSequenceReader seq = new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8));

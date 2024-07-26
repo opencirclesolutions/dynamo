@@ -15,6 +15,6 @@ package com.ocs.dynamo.export.type;
 
 public enum ExportMode {
 
-	FULL, ONLY_VISIBLE_IN_GRID;
+	FULL, ONLY_VISIBLE_IN_GRID
 
 }

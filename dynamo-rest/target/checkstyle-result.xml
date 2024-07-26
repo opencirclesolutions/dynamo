@@ -11,24 +11,14 @@
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\openapi\OpenApiTagsCustomizer.java">
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\BaseController.java">
-<error line="53" column="71" severity="warning" message="&apos;:&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\ControllerExceptionHandler.java">
-<error line="113" column="46" severity="warning" message="&apos;+&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\crud\CrudController.java">
-<error line="21" column="35" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - com.ocs.dynamo.domain.model.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="27" column="30" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - com.ocs.dynamo.service.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="37" column="47" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - org.springframework.web.bind.annotation.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="41" column="17" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - java.util.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="440" column="88" severity="warning" message="&apos;==&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
-<error line="450" column="87" severity="warning" message="&apos;||&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 <error line="518" column="58" severity="warning" message="&apos;typecast&apos; is not followed by whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAfterCheck"/>
 <error line="519" column="59" severity="warning" message="&apos;typecast&apos; is not followed by whitespace." source="com.puppycrawl.tools.checkstyle.checks.whitespace.WhitespaceAfterCheck"/>
-<error line="522" column="94" severity="warning" message="&apos;:&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\crud\EntityCopier.java">
-<error line="173" column="88" severity="warning" message="&apos;==&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\crud\search\DateRangeFilterModel.java">
 </file>
@@ -65,15 +55,8 @@
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\crud\search\TimeRangeFilterModel.java">
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\crud\SearchService.java">
-<error line="24" column="29" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - com.ocs.dynamo.filter.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="25" column="39" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - com.ocs.dynamo.rest.crud.search.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="75" column="57" severity="warning" message="&apos;*&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
-<error line="115" column="62" severity="warning" message="&apos;*&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
-<error line="197" column="88" severity="warning" message="&apos;!=&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\FileController.java">
-<error line="38" column="47" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - org.springframework.web.bind.annotation.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="156" column="111" severity="warning" message="&apos;&amp;&amp;&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\model\AttributeBooleanFieldModeExternal.java">
 </file>
@@ -96,19 +79,10 @@
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\model\EntityModelActionResponse.java">
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\model\EntityModelAttributeMapper.java">
-<error line="16" column="35" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - com.ocs.dynamo.domain.model.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="27" column="17" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - java.util.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
-<error line="84" column="72" severity="warning" message="&apos;?&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
-<error line="102" column="62" severity="warning" message="&apos;||&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
-<error line="112" column="62" severity="warning" message="&apos;||&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
-<error line="184" column="77" severity="warning" message="&apos;:&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
-<error line="214" column="62" severity="warning" message="&apos;||&apos; should be on a new line." source="com.puppycrawl.tools.checkstyle.checks.whitespace.OperatorWrapCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\model\EntityModelController.java">
-<error line="26" column="47" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - org.springframework.web.bind.annotation.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\model\EntityModelMapper.java">
-<error line="30" column="17" severity="warning" message="Using the &apos;.*&apos; form of import should be avoided - java.util.*." source="com.puppycrawl.tools.checkstyle.checks.imports.AvoidStarImportCheck"/>
 </file>
 <file name="C:\workspace\dynamo\dynamo-rest\src\main\java\com\ocs\dynamo\rest\model\EntityModelResponse.java">
 </file>

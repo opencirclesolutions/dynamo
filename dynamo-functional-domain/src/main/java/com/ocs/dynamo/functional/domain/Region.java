@@ -21,7 +21,6 @@ public class Region extends DomainParent<Country, Region> {
         super(code, name);
     }
 
-    //@JsonBackReference("region-country")
     public Set<Country> getCountries() {
         return this.getChildren();
     }

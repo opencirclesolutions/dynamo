@@ -15,5 +15,5 @@ package com.ocs.dynamo.rest.model;
 
 public enum AttributeBooleanFieldModeExternal {
 
-    CHECKBOX, TOGGLE, SWITCH;
+    CHECKBOX, TOGGLE, SWITCH
 }
