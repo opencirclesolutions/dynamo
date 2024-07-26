@@ -1,0 +1,2 @@
+- name: asciidoctor-ghpages
+  uses: manoelcampos/asciidoctor-ghpages-action@v2.3.0
