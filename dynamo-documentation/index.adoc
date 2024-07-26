@@ -11,7 +11,7 @@ image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
 
 Main committer: Bas Rutten
 
-Copyright © 2014 - 2023 Open Circle Solutions BV.
+Copyright © 2014 - 2024 Open Circle Solutions BV.
 
 Nothing from this document may be copied and/or made public by use of
 print, photocopy, microfilm or by any other means, without prior
@@ -28,7 +28,7 @@ configuration, model-driven development and DRY (don’t repeat yourself).
 At the core of Dynamo is the concept of the _Entity Model_. The Entity
 Model describes the attributes and behaviour of an entity (or domain
 object) in your application. This Entity Model can then be used as the
-basis for creating forms, , search screens etc.
+basis for creating forms, tables, search screens etc.
 
 The _Entity Model_ of an entity is automatically constructed based on
 the properties of the attributes of the entity (using sensible defaults
@@ -46,8 +46,9 @@ productive set of technologies:
 
 * JPA2 for ORM
 * QueryDSL for type-safe query generation
-* Spring Boot as the application framework
-* Vaadin 24 as the user interface framework
+* Spring Core & Spring Boot as the application framework
+* Angular & PrimeNG as the user interface framework
+* Apache Camel for integration
 
 == The Entity Model
 
@@ -235,7 +236,7 @@ Some examples:
 --
 Organization.displayName=Criminal Organization
 --
-Sets the display name of the Organization entity to “Crimal
+Sets the display name of the Organization entity to “Criminal
 Organization”.
 [source,properties]
 --
