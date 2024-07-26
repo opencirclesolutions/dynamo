@@ -1,291 +1,22 @@
-image:media/image1.png[image,width=19,height=19]image:media/image2.png[image,width=256,height=53]
-_ +
-_
+= Dynamo
+:toc:
 
-*Dynamo – Web Application Accelerator Framework*
+image:media/logo-dynamo.png[image]
 
-Open Circle Solutions BV.
+Web Application Accelerator Framework
 
-Bas Rutten
+Developed, maintained and sponsered by
 
-Copyright © 2024 Open Circle Solutions BV.
+image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
+
+Main committer: Bas Rutten
+
+Copyright © 2014 - 2023 Open Circle Solutions BV.
 
 Nothing from this document may be copied and/or made public by use of
 print, photocopy, microfilm or by any other means, without prior
 permission of Open Circle Solutions BV.
 
-== Table of contents
-
-1 Introduction link:#introduction[6]
-
-2 The Entity Model link:#the-entity-model[7]
-
-2.1 Basics link:#basics[7]
-
-2.2 Entity level settings link:#entity-level-settings[7]
-
-2.3 Attributes link:#attributes[8]
-
-2.4 Defaults and attribute overrides
-link:#defaults-and-attribute-overrides[9]
-
-2.5 Message bundle overrides link:#message-bundle-overrides[9]
-
-3 Attribute Model settings link:#attribute-model-settings[11]
-
-3.1 AllowedExtensions link:#allowedextensions[11]
-
-3.2 AttributeType link:#attributetype[11]
-
-3.3 AutofillInstructions link:#autofillinstructions[13]
-
-3.4 Cascade link:#cascade[13]
-
-3.5 ClearButtonVisible link:#clearbuttonvisible[14]
-
-3.6 CollectionTableFieldName link:#collectiontablefieldname[15]
-
-3.7 CollectionTableName link:#collectiontablename[15]
-
-3.8 Currency link:#currency[15]
-
-3.9 CurrencySymbol link:#currencysymbol[16]
-
-3.10 Custom link:#custom[16]
-
-3.11 DateType link:#datetype[16]
-
-3.12 DefaultValue link:#defaultvalue[17]
-
-3.13 Description link:#description[17]
-
-3.14 DisplayFormat link:#displayformat[17]
-
-3.15 DisplayName link:#displayname[18]
-
-3.16 EditableType link:#editabletype[18]
-
-3.17 Email link:#email[18]
-
-3.18 Embedded link:#embedded[19]
-
-3.19 FileNameProperty link:#filenameproperty[19]
-
-3.20 GridSelectMode link:#gridselectmode[20]
-
-3.21 GroupTogetherWith link:#grouptogetherwith[20]
-
-3.22 IgnoreInSearchFilter link:#ignoreinsearchfilter[21]
-
-3.23 Image link:#image[21]
-
-3.24 Main link:#main[21]
-
-3.25 MaxLength link:#maxlength[22]
-
-3.26 MaxLengthInGrid link:#maxlengthingrid[22]
-
-3.27 MaxValue link:#maxvalue[22]
-
-3.28 MemberType link:#membertype[22]
-
-3.29 MinLength link:#minlength[23]
-
-3.30 MinValue link:#minvalue[23]
-
-3.31 MultiSelectMode link:#multiselectmode[23]
-
-3.32 MultipleSearch link:#multiplesearch[23]
-
-3.33 Navigable link:#navigable[25]
-
-3.34 NumberFieldMode link:#numberfieldmode[25]
-
-3.35 NumberFieldStep link:#numberfieldstep[26]
-
-3.36 PagingMode link:#pagingmode[26]
-
-3.37 Percentage link:#percentage[26]
-
-3.38 Precision link:#precision[27]
-
-3.39 Prompt link:#prompt[27]
-
-3.40 QuickAddAllowed link:#quickaddallowed[27]
-
-3.41 ReplacementSearchPath link:#replacementsearchpath[28]
-
-3.42 ReplacementSortPath link:#replacementsortpath[29]
-
-3.43 RequiredForSearching link:#requiredforsearching[29]
-
-3.44 Searchable link:#searchable[29]
-
-3.45 SearchCaseSensitive link:#searchcasesensitive[30]
-
-3.46 SearchDateOnly link:#searchdateonly[30]
-
-3.47 SearchForExactValue link:#searchforexactvalue[30]
-
-3.48 SearchPrefixOnly link:#searchprefixonly[31]
-
-3.49 SearchSelectMode link:#searchselectmode[31]
-
-3.50 ShowPassword link:#showpassword[31]
-
-3.51 Sortable link:#sortable[31]
-
-3.52 TextAreaHeight link:#textareaheight[32]
-
-3.53 TextFieldMode link:#textfieldmode[32]
-
-3.54 ThousandsGroupingMode link:#thousandsgroupingmode[32]
-
-3.55 TrimSpaces link:#trimspaces[32]
-
-3.56 TrueRepresentation and FalseRepresentation
-link:#truerepresentation-and-falserepresentation[33]
-
-3.57 Type link:#type[33]
-
-3.58 URL link:#url[33]
-
-3.59 VisibleInForm link:#visibleinform[33]
-
-3.60 VisibleInGrid link:#visibleingrid[34]
-
-3.61 Week link:#week[34]
-
-4 Attribute ordering and grouping
-link:#attribute-ordering-and-grouping[35]
-
-4.1 Attribute ordering link:#attribute-ordering[35]
-
-4.2 Grid and search form attribute ordering
-link:#grid-and-search-form-attribute-ordering[35]
-
-4.3 Attribute grouping link:#attribute-grouping[36]
-
-5 Advanced entity model topics link:#advanced-entity-model-topics[38]
-
-5.1 Nested entity models link:#nested-entity-models[38]
-
-5.2 Element collections link:#element-collections[38]
-
-6 Data access, Service layers and general concepts
-link:#data-access-service-layers-and-general-concepts[40]
-
-6.1 Data access layer and entities
-link:#data-access-layer-and-entities[40]
-
-6.2 Service link:#service[41]
-
-6.3 Commonly used service methods
-link:#commonly-used-service-methods[41]
-
-6.4 Fetching and paging link:#fetching-and-paging[43]
-
-6.5 Validation link:#validation[44]
-
-6.6 Filtering link:#filtering[45]
-
-6.7 Default Services and DAOs link:#default-services-and-daos[46]
-
-7 Project Setup link:#project-setup[48]
-
-7.1 Project structure link:#project-structure[48]
-
-7.2 Message bundles link:#message-bundles[48]
-
-7.3 Spring Boot configuration link:#spring-boot-configuration[50]
-
-7.4 System properties link:#system-properties[52]
-
-7.5 DatePicker Customization link:#datepicker-customization[56]
-
-8 UIs, Views, Menus, and authorization
-link:#uis-views-menus-and-authorization[58]
-
-8.1 Basic UI setup link:#basic-ui-setup[58]
-
-8.2 Views link:#views[59]
-
-8.3 Navigation link:#navigation[60]
-
-8.4 View authorization link:#view-authorization[60]
-
-8.5 Menu Construction link:#menu-construction[61]
-
-8.6 Vertical menu link:#vertical-menu[63]
-
-8.7 View scoping link:#view-scoping[63]
-
-8.8 Preserving search filters during navigation
-link:#preserving-search-filters-during-navigation[64]
-
-8.9 Sharing state between views link:#sharing-state-between-views[64]
-
-8.10 Asking for confirmation before navigation
-link:#asking-for-confirmation-before-navigation[65]
-
-8.11 Localization link:#localization[65]
-
-9 Composite UI components link:#composite-ui-components[68]
-
-9.1 SimpleSearchLayout link:#simplesearchlayout[68]
-
-9.2 FlexibleSearchLayout link:#flexiblesearchlayout[73]
-
-9.3 SplitLayout link:#splitlayout[74]
-
-9.4 SimpleEditLayout link:#simpleeditlayout[75]
-
-9.5 EditableGridLayout link:#editablegridlayout[76]
-
-9.6 HorizontalDisplayLayout link:#horizontaldisplaylayout[78]
-
-9.7 TabLayout link:#tablayout[78]
-
-9.8 ProgressForm and UploadForm link:#progressform-and-uploadform[79]
-
-9.9 DetailsEditGrid link:#detailseditgrid[80]
-
-9.10 ServiceBasedDetailsEditGrid link:#servicebaseddetailseditgrid[82]
-
-9.11 DetailsEditLayout link:#detailseditlayout[83]
-
-9.12 EntityPopupDialog link:#entitypopupdialog[84]
-
-9.13 CompositionLayout link:#compositionlayout[85]
-
-10 Callbacks and method overrides
-link:#callbacks-and-method-overrides[87]
-
-10.1 Initialization methods link:#initialization-methods[88]
-
-10.2 Listeners link:#listeners[91]
-
-10.3 Operational methods link:#operational-methods[92]
-
-10.4 Further clarification link:#further-clarification[93]
-
-11 Additional Functionality link:#additional-functionality[96]
-
-11.1 Automatic form filling link:#automatic-form-filling[96]
-
-11.2 Excel and CSV Export link:#excel-and-csv-export[98]
-
-11.3 Lookup tables and parameters
-link:#lookup-tables-and-parameters[100]
-
-11.4 Field Factory link:#field-factory[103]
-
-12 Styling link:#styling[106]
-
-13 Hibernate Envers Integration link:#hibernate-envers-integration[108]
-
-14 Composite components class diagram
-link:#composite-components-class-diagram[112]
 
 == Introduction
 
@@ -452,11 +183,11 @@ annotations:
 * On the attribute level, you can use the *@Attribute* annotation.
 
 The *@Model* annotation can be used like this:
-
+[source,java]
+--
 @Model(displayProperty = "description")
-
-*public* *class* Meeting *extends* AbstractEntity<Integer> \{
-
+public class Meeting extends AbstractEntity<Integer> {
+--
 The *@Attribute* annotation can be placed either directly on the
 property, or on its getter method. Annotations placed on the getter
 method override those placed on the property, to easily allow you to
@@ -479,9 +210,10 @@ locale-specific version of this file if you need to; the normal Java
 message bundle mechanic is supported).
 
 Message bundle entries in general have the following structure:
-
-*[Reference].[Attribute Model Name].[Attribute]=[Value]*
-
+[source,properties]
+--
+[Reference].[Attribute Model Name].[Attribute]=[Value]
+--
 Where:
 
 * *[Reference]* is the reference to the attribute model. This is the
@@ -499,23 +231,29 @@ The *[Attribute Model Name]* part must be omitted when you want to
 directly set an attribute of the Entity Model itself.
 
 Some examples:
-
-*Organization.displayName=Criminal Organization*
-
+[source,properties]
+--
+Organization.displayName=Criminal Organization
+--
 Sets the display name of the Organization entity to “Crimal
 Organization”.
-
-*Person2.displayName=Gang Member*
-
+[source,properties]
+--
+Person2.displayName=Gang Member
+--
 Sets the display name for Person in the “Person2” entity model to “Gang
 Member”
 
-*Person.name.visibleInForm=true*
+[source,properties]
+--
+Person.name.visible=true
+--
+Sets the visibility of the “name” attribute model to true
 
-Sets the visibility of the “name” attribute model to *true*
-
-*Person.address.street.readOnly=true*
-
+[source,properties]
+--
+Person.address.street.readOnly=true
+--
 Sets the “read only” setting of the *address.street* attribute model (a
 nested attribute model) to false.
 
@@ -661,18 +399,18 @@ properties.
 When displaying an enumeration value inside a combo box, the values that
 are displayed inside the combo box are taken from the message bundle:
 
-*[Simple Class Name].[Enumeration Value]=[desired value]*
-
+[source,properties]
+--
+[Simple Class Name].[Enumeration Value]=[desired value]
+--
 E.g.:
-
+[source,properties]
+--
 Reputation.REALLY_NOT_FEARSOME=Really not [.underline]#fearsome#
-
 Reputation.MILDLY_FEARSOME=Mildly [.underline]#fearsome#
-
 Reputation.FEARSOME=[.underline]#Fearsome#
-
 Reputation.EXTREMELY_FEARSOME=Extremely [.underline]#fearsome#
-
+--
 === AutofillInstructions
 
 In message bundle: *autofillInstructions = [String]*
@@ -685,13 +423,12 @@ in a later section.
 === Cascade
 
 In message bundle:
-
-*cascade.[index] = [path to attribute]*
-
-*cascadeFilterPath.[index] = [path to attribute]*
-
-*cascadeMode.[index] = BOTH | EDIT | SEARCH*
-
+[source,properties]
+--
+cascade.[index] = [path to attribute]
+cascadeFilterPath.[index] = [path to attribute]
+cascadeMode.[index] = BOTH | EDIT | SEARCH
+--
 The *cascade* setting can be used to define “cascading search” for
 selection components. Cascading search means that when you select a
 value in a certain selection component, the available values in another
@@ -717,26 +454,26 @@ the *countryOfOrigin* property of the person so this is our filter path.
 * *mode* - this specifies whether cascading should be enabled in search
 forms, in edit forms, or in both cases. The default is *BOTH*.
 
-@Attribute(visibleInGrid = VisibilityType.*_SHOW_*, searchable =
-*SearchMode.ALWAYS*, visibleInForm = VisibilityType.*_SHOW_*, cascade =
-@Cascade(cascadeTo = "members", filterPath = "countryOfOrigin", mode =
-CascadeMode.*_EDIT_*))
 
-*private* Country countryOfOrigin;
+[source,java]
+--
+@Attribute(visibleInGrid = VisibilityType.SHOW, searchable = SearchMode.ALWAYS, visibleInForm = VisibilityType.SHOW, cascade =
+    @Cascade(cascadeTo = "members", filterPath = "countryOfOrigin", mode = CascadeMode.EDIT))
+private Country countryOfOrigin;
 
-@Attribute(searchable = *true*, visibleInForm = VisibilityType.*_SHOW_*)
-
-*private* Set<Person> members = *new* HashSet<>();
-
+@Attribute(searchable = true, complexEditable = true)
+private Set<Person> members = new HashSet<>();
+--
 Setting up cascading in a message bundle is a bit more involved. You can
 do so by defining two or three messages like this:
-
+[source,properties]
+--
 Organization.countryOfOrigin.cascade.1=members
 
 Organization.countryOfOrigin.cascadeFilterPath.1=countryOfOrigin
 
 Organization.countryOfOrigin.cascadeMode.1=EDIT
-
+--
 The *cascade* message defines the property to apply the cascading to –
 the *cascadeFilterPath* is the property path to filter on and the
 optional *cascadeMode* determines when to apply the cascading. Each
@@ -744,13 +481,14 @@ message must end with a number that is used to group the messages
 together. The numbering starts at “1” and must use increments of 1, so
 if e.g. you want to define another cascade for the same attribute, that
 would look like this:
-
+[source,properties]
+--
 Organization.cascade.2=[some other property to cascade]
 
 Organization.cascadeFilterPath.2=[some other path]
 
 Organization.cascadeMode.2=EDIT
-
+--
 === ClearButtonVisible
 
 In message bundle: *clearButtonVisible = true | false*
@@ -770,18 +508,14 @@ This setting is used to store the value of the name of the field inside
 the collection table that is used to store an attribute of type
 *ELEMENT_COLLECTION*. The value for this setting is normally determined
 by the “name” specified on the *@Column* annotation. E.g., in this case:
-
+[source,java]
+--
 @ElementCollection
-
 @CollectionTable(name = "person_lucky_numbers")
-
 @Column(name = "lucky_number")
-
-@Attribute(visibleInForm = VisibilityType.*_SHOW_*, minValue = 10,
-maxValue = 25)
-
-*private* Set<Integer> luckyNumbers = *new* HashSet<>();
-
+@Attribute(visibleInForm = VisibilityType.VISIBLE, minValue = 10, maxValue = 25)
+private Set<Integer> luckyNumbers = new HashSet<>();
+--
 the value of the *collectionTableFieldName* setting is automatically set
 to “lucky_number”
 
@@ -796,18 +530,14 @@ This setting is used to store the value of the name of the collection
 table that is used to store an attribute of type *ELEMENT*_*COLLECTION*.
 The value for this setting is normally determined by *name* specified on
 the *@CollectionTable* annotation. E.g., in this case:
-
+[source,java]
+--
 @ElementCollection
-
 @CollectionTable(name = "person_lucky_numbers")
-
 @Column(name = "lucky_number")
-
-@Attribute(visibleInForm = VisibilityType.*_SHOW_*, minValue = 10,
-maxValue = 25)
-
-*private* Set<Integer> luckyNumbers = *new* HashSet<>();
-
+@Attribute(complexEditable = true, minValue = 10, maxValue = 25)
+private Set<Integer> luckyNumbers = new HashSet<>();
+--
 the value of the *collectionTableName* setting is set to
 “person_lucky_numbers”.
 
@@ -840,20 +570,14 @@ The default value is the value of the system property
 It is also possible to specify custom attribute settings. This can be
 done by using the *@CustomSetting* annotation which can be applied as
 follows:
-
-@Attribute(main = *true*, textFieldMode =
-AttributeTextFieldMode.*_TEXTAREA_*, custom = \{
-
-@CustomSetting(name = "customString", value = "string"),
-
-@CustomSetting(name = "customInt", value = "4", type =
-CustomType.*_INT_*),
-
-@CustomSetting(name = "customBool", value = "true", type =
-CustomType.*_BOOLEAN_*) })
-
-*private* String name;
-
+[source,java]
+--
+@Attribute(main = true, textFieldMode = AttributeTextFieldMode.TEXTAREA, custom = {
+    @CustomSetting(name = "customString", value = "string"),
+    @CustomSetting(name = "customInt", value = "4", type =  CustomType.INT),
+    @CustomSetting(name = "customBool", value = "true", type =  CustomType.BOOLEAN) })
+private String name;
+--
 In the above, we specify three custom settings named “customString”,
 “customInt” and “customBool”. Each setting consists of a name, a value
 and a type. The type can be omitted in which case it defaults to
@@ -864,13 +588,12 @@ You can retrieve the value of a custom setting by calling the
 
 You can also add custom settings via the message bundle. This looks as
 follows:
-
+[source,properties]
+--
 Organization.name.custom.1=customString
-
 Organization.name.customValue.1=countryOfOrigin
-
 Organization.name.customType.1=INT
-
+--
 For each custom setting, you specify three properties, “custom”,
 “customValue” and “customType”. Each property must contain a number,
 starting at 1, to indicate which properties belong together. Custom
@@ -1002,30 +725,23 @@ entity model is created for an embedded attribute.
 By default, any attribute annotated with the JPA *@Embedded* attribute
 will have its *embedded* setting set to true but you can override this
 using the *@Attribute* annotation or a message bundle.
-
+[source,java]
+--
 // inside Gift.java
-
-@Attribute(embedded = *true*)
-
+@Attribute(embedded = true)
 @JoinColumn(name = "logo")
-
-@OneToOne(fetch = FetchType.*_LAZY_*, optional = *false*, cascade =
-CascadeType.*_ALL_*)
-
-*private* GiftLogo logo = *new* GiftLogo();
+@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
+private GiftLogo logo = new GiftLogo();
 
 // inside GiftLogo.java
 
 @Lob
+@Attribute(image = true, fileNameProperty = "logo.fileName")
+private byte[] image;
 
-@Attribute(image = *true*, fileNameProperty = "logo.fileName")
-
-*private* *byte*[] image;
-
-@Attribute(readOnly = *true*, showInTable = VisibilityType.*_HIDE_*)
-
-*private* String fileName;
-
+@Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
+private String fileName;
+--
 In the example above, we see a *Gift* class with an embedded attribute
 “logo” of type *GiftLogo.* The *GiftLogo* class contains several fields
 like “image” and “filename”.
@@ -1044,19 +760,16 @@ In message bundle: *fileNameProperty = [property name]*
 The *fileNameProperty* setting can be used to specify the name of the
 property that is used to store the name of an uploaded file after a file
 upload. This setting is intended to be used on attributes of type *LOB*:
-
+[source,java]
+--
 @Lob
-
-@Attribute(image = *true*, fileNameProperty = "logo.fileName")
-
-*private* *byte*[] image;
+@Attribute(image = true, fileNameProperty = "logo.fileName")
+private byte[] image;
 
 // hide in grid to prevent fetch issues
-
-@Attribute(readOnly = *true*, visibleInGrid = VisibilityType.*_HIDE_*)
-
-*private* String fileName;
-
+@Attribute(readOnly = true, visibleInGrid = VisibilityType.HIDE)
+private String fileName;
+--
 By default, if you define an attribute of type LOB, then the application
 will render a file upload component for editing this attribute. The byte
 content of the uploaded file will be stored in the property itself, but
@@ -1102,13 +815,11 @@ components for these attributes will be placed behind the original
 attribute, in the order in which they are defined.
 
 Here you see an example of how the “region” attribute
-
-@Attribute(visibleInForm = VisibilityType.*_SHOW_*, visibleInGrid =
-VisibilityType.*_SHOW_*, searchable = *true*, groupTogetherWith =
-\{"region"})
-
-*private* Country country;
-
+[source,java]
+--
+@Attribute(complexEditable = true, visibleInGrid = VisibilityType.SHOW, searchable = true, groupTogetherWith = {"region"})
+private Country country;
+--
 And this is the input form that will be generated:
 
 image:media/image3.png[image,width=560,height=64]
@@ -1200,18 +911,14 @@ of the individual numeric values that make up the value of a property of
 type *ELEMENT_COLLECTION*.
 
 This is an example of the use of *maxValue* on a collection of Integers:
-
+[source,java]
+--
 @ElementCollection
-
 @CollectionTable(name = "person_lucky_numbers")
-
 @Column(name = "lucky_number")
-
-@Attribute(visibleInForm = VisibilityType.*_SHOW_*, minValue = 10,
-maxValue = 25)
-
-*private* Set<Integer> luckyNumbers = *new* HashSet<>();
-
+@Attribute(complexEditable = true, minValue = 10, maxValue = 25)
+private Set<Integer> luckyNumbers = new HashSet<>();
+--
 === MemberType
 
 In message bundle: *N/A*
@@ -1248,18 +955,14 @@ of the individual numeric values that make up the value of a property of
 type *ELEMENT_COLLECTION*.
 
 An example of the use of *minValue* on a collection of Integers:
-
+[source,java]
+--
 @ElementCollection
-
 @CollectionTable(name = "person_lucky_numbers")
-
 @Column(name = "lucky_number")
-
-@Attribute(visibleInForm = VisibilityType.*_SHOW_*, minValue = 10,
-maxValue = 25)
-
-*private* Set<Integer> luckyNumbers = *new* HashSet<>();
-
+@Attribute(complexEditable = true, minValue = 10, maxValue = 25)
+private Set<Integer> luckyNumbers = new HashSet<>();
+--
 This specifies that the individual values inside the collection must all
 be greater than or equal to 10.
 
@@ -1294,21 +997,19 @@ You can use the *searchSelectMode* to further modify the type of the
 search component that is rendered (you can also use a lookup field).
 
 Default searching for many-to-one property *–>* combo box:
-
-@Attribute(visibleInGrid = VisibilityType.*_SHOW_*, searchable = *true*,
-visibleInForm = VisibilityType.*_SHOW_*)
-
-*private* Country countryOfOrigin;
-
+[source,java]
+--
+@Attribute(visibleInGrid = VisibilityType.SHOW, searchable = true, complexEditable = true)
+private Country countryOfOrigin;
+--
 image:media/image4.png[image,width=508,height=140]
 
 Multiple search enabled –> lookup field:
-
-@Attribute(visibleInGrid = VisibilityType.*_SHOW_*, searchable = *true*,
-multipleSearch = *true*, visibleInForm = VisibilityType.*_SHOW_*)
-
-*private* Country countryOfOrigin;
-
+[source,java]
+--
+@Attribute(visibleInGrid = VisibilityType.SHOW, searchable = true, multipleSearch = true, complexEditable = true)
+private Country countryOfOrigin;
+--
 Multiple search on *MASTER* attributes is currently only supported when
 using *LOOKUP* select mode (*TOKEN* is not supported).
 
@@ -1321,13 +1022,11 @@ generate a text field. However, if you set *multipleSearch* to true and
 field that allows you to enter multiple values to search on. The token
 field will contain a list of all distinct values of the property from
 which the user can choose.
-
-@Attribute(searchable = *true*, main = *true*, maxLengthInGrid = 10,
-multipleSearch = *true*, searchSelectMode =
-AttributeSelectMode.*_TOKEN_*)
-
-*private* String name;
-
+[source,java]
+--
+@Attribute(searchable = true, main = true, maxLengthInGrid = 10, multipleSearch = true, searchSelectMode = AttributeSelectMode.TOKEN)
+private String name;
+--
 image:media/image6.png[image,width=499,height=271]
 
 === Navigable
@@ -1397,7 +1096,7 @@ items will be retrieved at once. If there are many items in the
 collection, this might cause memory issues.
 
 With regard to filtering the items within the component, when you use
-the *NON*_*PAGED* setting, the application will simply search inside the
+the *NON_PAGED* setting, the application will simply search inside the
 descriptions of the items (which are simply the values of the
 *displayProperties* of the items). When using the PAGED setting, the
 value of the *filterProperty* setting of the entity model will be used
@@ -1466,18 +1165,14 @@ an automatic check for duplicate values, provided you have configured
 this on the underlying service.
 
 As an example, consider the following:
-
+[source,java]
+--
 @NotNull
-
 @JoinColumn(name = "country_of_origin")
-
-@ManyToOne(fetch = FetchType.*_LAZY_*)
-
-@Attribute(visibleInForm = VisibilityType.*_SHOW_*, quickAddAllowed =
-*true*, selectMode = AttributeSelectMode.*_LOOKUP_*)
-
-*private* Country countryOfOrigin;
-
+@ManyToOne(fetch = FetchType.LAZY)
+@Attribute(complexEditable = true, quickAddAllowed = true, selectMode = AttributeSelectMode.LOOKUP)
+private Country countryOfOrigin;
+--
 Here, we define a “countryOfOrigin” property that is of type “Country”..
 We set the *quickAddAllowed* to “true”. Once the user now starts the
 application, they will see an “Add” button behind the field that can be
@@ -1516,32 +1211,26 @@ from the *dynamo-functional-domain* module, and you have multiple
 many-to-many relations from an entity to various Domain subclasses. In
 this case, you can model a single many-to-many relation between the
 entity and the domain table as follows:
-
+[source,java]
+--
 @ManyToMany
-
-@JoinTable(name = "product_domain", joinColumns = \{ @JoinColumn(name =
-"programme") }, inverseJoinColumns = \{ @JoinColumn(name = "domain") })
-
-*private* Set<Domain> domains = *new* HashSet<>();
-
+@JoinTable(name = "product_domain", joinColumns = { @JoinColumn(name = "programme") }, inverseJoinColumns = { @JoinColumn(name = "domain") })
+private Set<Domain> domains = new HashSet<>();
+--
 You can then retrieve and set the values for a certain domain subclass
 as follows:
 
-@[.underline]#Attribute#(memberType = Channel.*class,*
-replacementSearchPath = "domains")
-
-*public* Set<Channel> getChannels() \{
-
-*return* DomainUtil._filterDomains_(Channel.*class*, domains);
-
+[source,java]
+--
+@Attribute(memberType = Channel.class,replacementSearchPath = "domains")
+public Set<Channel> getChannels() {
+    return DomainUtil.filterDomains(Channel.class, domains);
 }
 
-*public* *void* setChannels(Set<Channel> channels) \{
-
-DomainUtil._updateDomains_(Channel.*class*, domains, channels);
-
+public void setChannels(Set<Channel> channels) {
+    DomainUtil.updateDomains(Channel.class, domains, channels);
 }
-
+--
 In the above, we explicitly set the *memberType* so that the framework
 knows the type of the elements of the collection, and set the
 *replacementSearchPath* to “domains” so that when the framework
@@ -1754,17 +1443,15 @@ attribute.
 
 === TrueRepresentation and FalseRepresentation
 
-In message bundle: *trueRepresentation = [desired value]*
-
-____
+In message bundle:
+*trueRepresentation = [desired value]*
 *falseRepresentation = [desired value]*
-____
 
 The *trueRepresentation* and *falseRepresentation* settings can be used
 to modify how a boolean value is displayed in read-only mode. By
 default, such a value will simply by displayed as “true” or “false”, but
 this can be overruled by setting respectively the *trueRepresentation*
-and *falseRepresentation* values**.**
+and *falseRepresentation* values.
 
 This setting does nothing in edit mode, since in that case a checkbox
 will be rendered.
@@ -1856,12 +1543,11 @@ The *@AttributeOrder* annotation takes a single parameter, named
 *attributeNames* which contains an array of field names – the order in
 which the attributes appear in the array is the order in which they will
 appear in the application.
-
-@AttributeOrder(attributeNames = \{ "name", "headQuarters", "address",
-"countryOfOrigin", "reputation" })
-
-*public* *class* Organization *extends* AbstractEntity<Integer> \{
-
+[source,java]
+--
+@AttributeOrder(attributeNames = { "name", "headQuarters", "address", "countryOfOrigin", "reputation" })
+public class Organization extends AbstractEntity<Integer> {
+--
 You can achieve the same effect by including a message like
 *Organization.attributeOrder=name,headquarters,address,countryOfOrigin,reputation*
 in the message bundle (use commas to separate the values). The message
@@ -1880,15 +1566,12 @@ Also by default, the attribute order in a search form and in results
 grid is the same as the default attribute order (see the previous
 paragraph). You can override this by using the *@GridAttributeOrder* and
 *@SearchAttributeOrder* annotations.
-
-@GridAttributeOrder(attributeNames = \{ "name", "headQuarters",
-"address", "countryOfOrigin", "reputation" })
-
-@SearchAttributeOrder(attributeNames = \{ "name", "headQuarters",
-"address", "countryOfOrigin", "reputation" })
-
-*public* *class* Organization *extends* AbstractEntity<Integer> \{
-
+[source,java]
+--
+@GridAttributeOrder(attributeNames = { "name", "headQuarters", "address", "countryOfOrigin", "reputation" })
+@SearchAttributeOrder(attributeNames = { "name", "headQuarters", "address", "countryOfOrigin", "reputation" })
+public class Organization extends AbstractEntity<Integer> {
+--
 These annotations do the following:
 
 * *GridAttributeOrder* sets the order of the attributes in the search
@@ -1902,11 +1585,11 @@ order you want to see them. Any attributes that are not explicitly
 mentioned are included at the end in alphabetical order.
 
 You can also overwrite using message bundles:
-
-*Organization.searchAttributeOrder=name,headquarters,address,countryOfOrigin,reputation*
-
-*Organization.gridAttributeOrder=name,headquarters,address,countryOfOrigin,reputation*
-
+[source,properties]
+--
+Organization.searchAttributeOrder=name,headquarters,address,countryOfOrigin,reputation
+Organization.gridAttributeOrder=name,headquarters,address,countryOfOrigin,reputation
+--
 === Attribute grouping
 
 In addition to ordering the attributes, they can also be grouped
@@ -1917,38 +1600,30 @@ on your class definition, which can in turn include any number of
 Each *@AttributeGroup* annotation contains the name of the group and an
 array that contains the names of the properties that must be included in
 the group. As an example, consider:
-
-@AttributeGroup(messageKey = "Organization.first", attributeNames = \{
-"name", "address", "headQuarters", "countryOfOrigin" }),
-
-@AttributeGroup(messageKey = "Organization.second", attributeNames = \{
-"reputation" })
-
-@AttributeOrder(attributeNames = \{ "name", "headQuarters", "address",
-"countryOfOrigin", "reputation" })
-
-*public* *class* Organization *extends* AbstractEntity<Integer> \{
-
+[source,java]
+--
+@AttributeGroup(messageKey = "Organization.first", attributeNames = {"name", "address", "headQuarters", "countryOfOrigin" }),
+@AttributeGroup(messageKey = "Organization.second", attributeNames = {"reputation" })
+@AttributeOrder(attributeNames = { "name", "headQuarters", "address", "countryOfOrigin", "reputation" })
+public class Organization extends AbstractEntity<Integer> {
+--
 The above defines two attribute groups identified by the message keys
 “Organization.first” and “Organization.second”. The display names of the
 groups can be defined in the message bundle:
-
-*Organization.first=First*
-
-*Organization.second=Second*
-
+[source,properties]
+--
+Organization.first=First
+Organization.second=Second
+--
 When you want to achieve the same using a message bundle, you can do
 this in the following way:
-
-*Organization.attributeGroup.1.messageKey=Organization.first*
-
-*Organization.attributeGroup.1.attributeNames=name,address,headquarters,countryOf
-Origin*
-
-*Organization.attributeGroup.2.displayName=Organization.second*
-
-*Organization.attributeGroup.2.attributeNames=reputation*
-
+[source,properties]
+--
+Organization.attributeGroup.1.messageKey=Organization.first
+Organization.attributeGroup.1.attributeNames=name,address,headquarters,countryOfOrigin
+Organization.attributeGroup.2.displayName=Organization.second
+Organization.attributeGroup.2.attributeNames=reputation
+--
 I.e. you include two messages for every attribute group: one containing
 the message bundle key and one containing the attribute names as a list
 of comma-separated attribute names. The messages are numbered starting
@@ -2025,51 +1700,42 @@ denotes the technical primary key. The type of this id field is
 configurable via the type parameter of the *AbstractEntity* class.
 
 An example Entity class looks like this:
-
+[source,java]
+--
 @Entity
-
 @Model(displayProperty = "name")
-
 @Table(name = "organization")
-
-*public* *class* Organization *extends* AbstractEntity<Integer> \{
-
+public class Organization extends AbstractEntity<Integer> {
+--
 For every Entity class, you must (normally) create a Data Access Object
 (DAO) interface and the accompanying implementation. The DAO must
 inherit from the *BaseDao* interface:
-
-*public* *interface* OrganizationDao *extends* BaseDao<Integer,
-Organization> \{
-
+[source,java]
+--
+public interface OrganizationDao extends BaseDao<Integer, Organization> {
 }
-
+--
 And the implementation must inherit from *BaseDaoImpl*:
-
+[source,java]
+--
 @Repository("organizationDao")
+public class OrganizationDaoImpl
+    extends BaseDaoImpl<Integer,Organization>
+    implements OrganizationDao {
 
-*public* *class* OrganizationDaoImpl *extends* BaseDaoImpl<Integer,
-Organization> *implements* OrganizationDao \{
+    private QOrganization qOrganization = QOrganization.organization;
 
-*private* QOrganization qOrganization = QOrganization.*_organization_*;
+    @Override
+    public Class<Organization> getEntityClass() {
+        return Organization.class;
+    }
 
-@Override
-
-*public* Class<Organization> getEntityClass() \{
-
-*return* Organization.*class*;
-
+    @Override
+    protected EntityPathBase<Organization> getDslRoot() {
+        return qOrganization;
+    }
 }
-
-@Override
-
-*protected* EntityPathBase<Organization> getDslRoot() \{
-
-*return* qOrganization;
-
-}
-
-}
-
+--
 The minimal implementation contains just two methods: getEntityClass()
 which returns the type of the entity that is managed by the DAO, and
 getDslRoot() which returns the QueryDSL root.
@@ -2094,34 +1760,28 @@ business logic.
 
 The declaration of a service interface is very easy; the service must
 extend *BaseService*.
-
-*public* *interface* OrganizationService *extends* BaseService<Integer,
-Organization> \{
-
+[source,java]
+--
+public interface OrganizationService
+    extends BaseService<Integer, Organization> {
 }
-
+--
 The implementation is equally simple:
-
+[source,java]
+--
 @Service("organizationService")
+public class OrganizationServiceImpl
+    extends BaseServiceImpl<Integer, Organization>
+    implements OrganizationService {
 
-*public* *class* OrganizationServiceImpl *extends*
-BaseServiceImpl<Integer, Organization> *implements* OrganizationService
-\{
+    @Inject private OrganizationDao dao;
 
-@Inject
-
-*private* OrganizationDao dao;
-
-@Override
-
-*protected* BaseDao<Integer, Organization> getDao() \{
-
-*return* dao;
-
+    @Override
+    protected BaseDao<Integer, Organization> getDao() {
+        return dao;
+    }
 }
-
-}
-
+--
 In its most basic form, you can defined a service by extending the
 *BaseServiceImpl* class and inject the appropriate DAO. This DAO must
 also be returned by the *getDao* method. Note that the service must be
@@ -2212,21 +1872,22 @@ specify with relations to fetch as part of the query.
 
 Note e.g. the following method defined in *BaseService*:
 
-*public* T fetchById(ID id, FetchJoinInformation... joins);
+public T fetchById(ID id, FetchJoinInformation... joins);
 
 As you can see, this method accepts a _vararg_ parameter that specifies
 which relations to fetch. If left empty, the application will use the
 default setup, which you can specify by using the *@FetchJoins*
 annotation on an entity class.
+[source,java]
+--
+@ToString
+@FetchJoins(joins = {@FetchJoin(attribute = "countryOfOrigin"),
 
-@ToString +
-@FetchJoins(joins = \{@FetchJoin(attribute = "countryOfOrigin"),
-
-@FetchJoin(attribute = "mainActivity")}, +
-detailJoins = \{@FetchJoin(attribute = "countryOfOrigin"),
-@FetchJoin(attribute = "neighbourhoods")}) +
-public class Organization extends AbstractEntity<Integer> \{
-
+@FetchJoin(attribute = "mainActivity")},
+detailJoins = {@FetchJoin(attribute = "countryOfOrigin"),
+@FetchJoin(attribute = "neighbourhoods")})
+public class Organization extends AbstractEntity<Integer> {
+--
 This means that whenever you perform a fetch query (for multiple
 entities) using a standard service method, and you do not explicitly
 specify which relations to fetch, all relations specified by the “joins”
@@ -2328,15 +1989,13 @@ If the method returns a non-null value, then the framework will throw an
 Consider the following example that checks if there already is an
 organization with the same name as the organization you are trying to
 save (which is passed as a parameter to the method):
-
+[source,java]
+--
 @Override
-
-*protected* Organization findIdenticalEntity(Organization entity) \{
-
-*return* dao.fetchByUniqueProperty("name", entity.getName(), *false*);
-
+protected Organization findIdenticalEntity(Organization entity) {
+    return dao.fetchByUniqueProperty("name", entity.getName(), false);
 }
-
+--
 Note that you do not have to check if the entity being returned is equal
 to the entity being validated, the framework will take care of this for
 you.
@@ -2403,27 +2062,19 @@ need the default methods provided by *BaseService*_._ If this is the
 case, then you do not have to go through the trouble of creating a DAO
 and Service class. Instead, you can configure a *DefaultServiceImpl*
 and/or *DefaultDaoImpl* in a configuration class. This looks as follows:
-
+[source,java]
+--
 @Bean
-
-*public* BaseDao<Integer, Region> regionDao() \{
-
-*return* *new* DefaultDaoImpl<>(QRegion.*_region_*, Region.*class*);
-
+public BaseDao<Integer, Region> regionDao() {
+    return new DefaultDaoImpl<Integer, Region>(QRegion.region, Region.class);
 }
 
 @Bean
-
-*public* BaseService<Integer, Region> regionService(BaseDao<Integer,
-Region> regionDao) \{
-
-DefaultServiceImpl<Integer, Region> regionService = *new*
-DefaultServiceImpl<>(regionDao, "code");
-
-*return* regionService;
-
+public BaseService<Integer, Region> regionService(BaseDao<Integer,
+Region> regionDao) {
+    return new DefaultServiceImpl<Integer, Region>(regionDao, "code");
 }
-
+--
 As you can see, you can configure a bean that is an instance of
 *DefaultServiceImpl* and supply the necessary arguments to the
 constructor. This includes:
@@ -2444,13 +2095,12 @@ the unique value is case sensitive (defaults to *false*).
 After you have configured a service like this, you can inject it into
 your code as follows. Note that an *@Qualifier* annotation that matches
 the name of the bean is required:
-
+[source,java]
+--
 @Autowired
-
 @Qualifier("countryService")
-
-*private* BaseService<Integer, Country> countryService;
-
+private BaseService<Integer, Country> countryService;
+--
 == Project Setup
 
 === Project structure 
@@ -2512,36 +2162,32 @@ purposes:
 * *ui.messages.properties* is the message bundle that must be used for
 all text messages that actually appear on your screens. E.g. if you want
 a button to show the text “Click me” then you could include a message
-like
-
-____
-*mybutton.caption=Click me*
-
-In the message bundle and then use the
+like *mybutton.caption=Click me* in the message bundle and then use the
 *messageService.getMessage(“mybutton.caption”)* method in order to
 retrieve the message. Note that you can use the standard features of the
 Java message bundle mechanism to provide internationalization, e.g. you
 can create a message bundle “messages_fr.properties” and fill that with
 the French translations of your messages. This bundle will then be
 picked up if the locale of the application is set to French.
-____
 
 * *ValidationMessages.properties* is the message bundle used configuring
 Bean Validation error messages. You can refer to messages from this
 bundle in the following way. Suppose that in your bundle you have the
 following message:
 
-____
+[source,properties]
+--
 product.aliases.different=Duplicate product aliases found. Please make
 sure they are all different
-
+--
 Then in the code you can refer to this message by placing the message
 name within curly brackets:
 
-@AssertTrue(message = "\{product.aliases.different}")
-
-*public* *boolean* isAliasesDifferent() \{
-____
+[source,java]
+--
+@AssertTrue(message = "{product.aliases.different}")
+*public* *boolean* isAliasesDifferent() {
+--
 
 * *entitymodel.properties* is the message bundle that is used to
 override the default behaviour of the Entity Model factory. See section
@@ -2575,68 +2221,50 @@ A Dynamo application uses Spring boot as its application framework. This
 means that there must be a main class that is annotated with
 *@SpringBootApplication*.
 
+[source,java]
+--
 @SpringBootApplication
+@Import(ApplicationConfig.class)
+public class GtsApplication {
 
-@Import(ApplicationConfig.*class*)
-
-*public* *class* GtsApplication \{
-
-*public* *static* *void* main(String[] args) \{
-
-SpringApplication._run_(GtsApplication.*class*, args);
+    public static void main(String[] args) {
+        SpringApplication.run(GtsApplication.class, args);
+    }
 
 }
 
-}
-
+--
 As you can see, we use the @Import annotation to import the main
 configuration file. Strictly speaking this is optional (you can add the
 configuration directly in the main class) but using this setup allows
 you to use a base class from Dynamo that will take care of instantiating
 the basic Dynamo components.
 
-The ApplicationConfig class looks as follows:
+[source,java]
+--
+@ComponentScan(basePackages = { "com.ocs.gts", "com.ocs.dynamo" })
+@EntityScan(basePackages = { "com.ocs.gts.domain", "com.ocs.dynamo.functional.domain" })
+public class ApplicationConfig extends ApplicationConfigurationSupport {
 
-@ComponentScan(basePackages = \{ "com.ocs.gts", "com.ocs.dynamo" })
+    @Override
+    protected String[] getBaseNames() {
+        return new String[] { "classpath:/META-INF/entitymodel", "classpath:/menu", "classpath:/ui.messages", "classpath:/ocscommon",
+                "classpath:/ValidationMessages"};
+    }
 
-@EntityScan(basePackages = \{ "com.ocs.gts.domain",
-"com.ocs.dynamo.functional.domain" })
+    @Bean
+    @UIScope
+    public UIHelper uiHelper() {
+        return new UIHelper();
+    }
 
-*public* *class* ApplicationConfig *extends*
-ApplicationConfigurationSupport \{
 
-@Override
-
-*protected* String[] getBaseNames() \{
-
-*return* *new* String[] \{ "classpath:/META-INF/entitymodel",
-"classpath:/menu", "classpath:/ui.messages", "classpath:/ocscommon",
-
-"classpath:/ValidationMessages"};
-
+    @Bean
+    public BaseDao<Integer, Region> regionDao() {
+        return new DefaultDaoImpl<>(QRegion.region, Region.class);
+    }
 }
-
-@Bean
-
-@UIScope
-
-*public* UIHelper uiHelper() \{
-
-*return* *new* UIHelper();
-
-}
-
-@Bean
-
-*public* BaseDao<Integer, Region> regionDao() \{
-
-*return* *new* DefaultDaoImpl<>(QRegion.*_region_*, Region.*class*);
-
-}
-
-….other declarations
-
-}
+--
 
 * Use @*ComponentScan* to specify which packages to scan for classes to
 be instantiated by Spring.
@@ -2667,45 +2295,34 @@ configuration, which is normally done by overwriting the
 
 This is an example for Basic authentication with one in-memory user.
 
+[source,java]
+--
 @EnableWebSecurity
-
 @Configuration
+public class GtsSecurityAdapter extends WebSecurityConfigurerAdapter {
 
-*public* *class* GtsSecurityAdapter *extends*
-WebSecurityConfigurerAdapter \{
+    @Autowired
+    private MyBasicAuthenticationEntryPoint entryPoint;
 
-@Autowired
+    @Autowired
+    public void configureGlobal(AuthenticationManagerBuilder auth) throws Exception {
+        auth.inMemoryAuthentication().withUser("Dynamo").password("{noop}Dynamo").authorities("user");
+    }
 
-*private* MyBasicAuthenticationEntryPoint entryPoint;
+    @Override
+    protected void configure(HttpSecurity http) throws Exception {
+        // disable CSRF (already provided by Vaadin)
+        http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic().authenticationEntryPoint(entryPoint);
+    }
 
-@Autowired
-
-*public* *void* configureGlobal(AuthenticationManagerBuilder auth)
-*throws* Exception \{
-
-auth.inMemoryAuthentication().withUser("Dynamo").password("\{noop}Dynamo").authorities("user");
-
-}
-
-@Override
-
-*protected* *void* configure(HttpSecurity http) *throws* Exception \{
-
-// disable CSRF (already provided by [.underline]#Vaadin#)
-
-http.csrf().disable().authorizeRequests().anyRequest().authenticated().and().httpBasic().authenticationEntryPoint(entryPoint);
+    @Bean
+    GrantedAuthorityDefaults grantedAuthorityDefaults() {
+        return new GrantedAuthorityDefaults("");
+    }
 
 }
+--
 
-@Bean
-
-GrantedAuthorityDefaults grantedAuthorityDefaults() \{
-
-*return* *new* GrantedAuthorityDefaults("");
-
-}
-
-}
 
 Most of this set-up is not specific to Dynamo, but a couple of things
 are worth mentioning:
@@ -2943,79 +2560,55 @@ basically a class that implements the Vaadin *RouterLayout* interface
 and defines the basic page structure. A simplified version may look as
 follows:
 
-@UIScope
-
-@Theme(Lumo.*class*)
-
+[source,java]
+--
+UIScope
+@Theme(Lumo.class)
 @CssImport("./styles/shared-styles.css")
+@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes")
+@CssImport(value = "./styles/vaadin-custom-field.css", themeFor = "vaadin-custom-field")
+@CssImport(value = "./styles/vaadin-dialog-overlay.css", themeFor = "vaadin-dialog-overlay")
+@CssImport(value = "./styles/vaadin-combo-box.css", themeFor = "vaadin-combo-box")
+@CssImport(value = "./styles/vaadin-button.css", themeFor = "vaadin-button")
+@CssImport(value = "./styles/vaadin-text-field.css", themeFor = "vaadin-text-field")
+public class GtsUI extends VerticalLayout implements RouterLayout {
 
-@Viewport("width=device-width, minimum-scale=1.0, initial-scale=1.0,
-user-scalable=yes")
+    private static final long serialVersionUID = -4652393330832382449L;
 
-@CssImport(value = "./styles/vaadin-custom-field.css", themeFor =
-"vaadin-custom-field")
+    private MenuBar menu;
 
-@CssImport(value = "./styles/vaadin-dialog-overlay.css", themeFor =
-"vaadin-dialog-overlay")
+    @Autowired
+    private MenuService menuService;
 
-@CssImport(value = "./styles/vaadin-combo-box.css", themeFor =
-"vaadin-combo-box")
+    @Autowired
+    private MessageService messageService;
 
-@CssImport(value = "./styles/vaadin-button.css", themeFor =
-"vaadin-button")
+    @Autowired
+    private UIHelper uiHelper;
 
-@CssImport(value = "./styles/vaadin-text-field.css", themeFor =
-"vaadin-text-field")
+    @PostConstruct
+    protected void init() {
 
-*public* *class* GtsUI *extends* VerticalLayout *implements*
-RouterLayout \{
+        VaadinUtils.storeLocale(new Locale("nl"));
+        VaadinUtils.storeDateLocale(new Locale("nl"));
 
-*private* *static* *final* *long* *_serialVersionUID_* =
--4652393330832382449L;
+        // construct your title bar
 
-*private* MenuBar menu;
+        // construct the menu
+        menu = menuService.constructMenu("gts.menu");
+        add(menu);
 
-@Autowired
+        menuService.setLastVisited(menu, Views.ORGANIZATION_VIEW);
 
-*private* MenuService menuService;
+        uiHelper.addEntityNavigationMapping(Organization.class, item -> {
+            uiHelper.setSelectedEntity(item);
+            uiHelper.navigate(Views.ORGANIZATION_VIEW);
+        });
 
-@Autowired
-
-*private* MessageService messageService;
-
-@Autowired
-
-*private* UIHelper uiHelper;
-
-@PostConstruct
-
-*protected* *void* init() \{
-
-VaadinUtils._storeLocale_(*new* Locale("nl"));
-
-VaadinUtils._storeDateLocale_(*new* Locale("nl"));
-
-// construct your title bar
-
-// construct the menu
-
-menu = menuService.constructMenu("gts.menu");
-
-add(menu);
-
-menuService.setLastVisited(menu, Views.*_ORGANIZATION_VIEW_*);
-
-uiHelper.addEntityNavigationMapping(Organization.*class*, item -> \{
-
-uiHelper.setSelectedEntity(item);
-
-uiHelper.navigate(Views.*_ORGANIZATION_VIEW_*);
-
-});
-
+    }
 }
 
-}
+--
 
 * The class must be annotated with *@UIScope* to specify that it is
 scoped to a single browser tab.
@@ -3064,32 +2657,27 @@ method, you must construct your screen. You can add your own components
 to the *VerticalLayout* that is passed as the constructor argument
 (don’t forget this).
 
+[source,java]
+--
 @UIScope
-
-@Route(value = Views.*_ORGANIZATION_VIEW_*, layout = GtsUI.*class*)
-
-@RouteAlias(value = "", layout = GtsUI.*class*)
-
+@Route(value = Views.ORGANIZATION_VIEW, layout = GtsUI.class)
+@RouteAlias(value = "", layout = GtsUI.class)
 @PageTitle("Organizations")
+public class OrganizationView extends BaseView {
 
-*public* *class* OrganizationView *extends* BaseView \{
+    @Autowired
+    private OrganizationService organizationService;
 
-@Autowired
+    private static final long serialVersionUID = 3310122000037867336L;
 
-*private* OrganizationService organizationService;
+    @Override
+    protected void doInit(VerticalLayout main) {
 
-*private* *static* *final* *long* *_serialVersionUID_* =
-3310122000037867336L;
-
-@Override
-
-*protected* *void* doInit(VerticalLayout main) \{
-
-.. your code goes here
+        .. your code goes here
+    }
 
 }
-
-}
+--
 
 === Navigation
 
@@ -3107,9 +2695,11 @@ By default, all views inside a Dynamo application are accessible to all
 users. In order to protect one or more views, you must first ensure that
 two application properties are properly set:
 
+[source,properties]
+--
 ocs.enable.view.authorization=true
-
 ocs.view.package=com.ocs.gts
+--
 
 *ocs.enable.view.authorization* makes sure the view based authorization
 is enabled. *ocs.view.package* must be set to the base package that
@@ -3128,17 +2718,17 @@ authorized.
 
 You can then annotate a view as follows:
 
+[source,java]
+--
 @UIScope
-
-@Route(value = Views.*_PERSON_VIEW_*, layout = GtsUI.*class*)
-
+@Route(value = Views.PERSON_VIEW, layout = GtsUI.class)
 @Authorized(roles = "admin")
+public class PersonView extends BaseView {
 
-*public* *class* PersonView *extends* BaseView \{
+	@Autowired
+	private PersonService personService;
 
-@Autowired
-
-*private* PersonService personService;
+--
 
 The above shows an example of a view definition. The view is annotated
 with *@Route* as we’ve seen before. It is also annotated with
@@ -3153,49 +2743,38 @@ that view then they will be taken to the error view instead.
 Note that for this to work properly, you must create an appropriate
 error view in your application. This can looks as follows:
 
+[source,java]
+--
 package com.ocs.gts.ui;
 
 import com.ocs.dynamo.constants.DynamoConstants;
-
 import com.ocs.dynamo.ui.component.DefaultVerticalLayout;
-
 import com.ocs.dynamo.ui.view.BaseView;
-
 import com.vaadin.flow.component.html.Label;
-
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
-
 import com.vaadin.flow.router.Route;
-
 import com.vaadin.flow.spring.annotation.UIScope;
 
 @UIScope
-
 @Route(value = DynamoConstants.ERROR_VIEW, layout = GtsUI.class)
+public class GtsErrorView extends BaseView {
 
-public class GtsErrorView extends BaseView \{
+    private static final long serialVersionUID = 3955677765990706688L;
 
-private static final long serialVersionUID = 3955677765990706688L;
+    @Override
+    protected void doInit(VerticalLayout main) {
+        VerticalLayout main = new DefaultVerticalLayout(true, true);
 
-@Override
+        VerticalLayout inside = new DefaultVerticalLayout(true, true);
+        main.add(inside);
 
-*protected* *void* doInit(VerticalLayout [.underline]#main#) \{
-
-VerticalLayout main = new DefaultVerticalLayout(true, true);
-
-VerticalLayout inside = new DefaultVerticalLayout(true, true);
-
-main.add(inside);
-
-Label errorLabel = new Label(message("ocs.view.unknown"));
-
-inside.add(errorLabel);
-
-add(main);
+        Label errorLabel = new Label(message("ocs.view.unknown"));
+        inside.add(errorLabel);
+        add(main);
+    }
 
 }
-
-}
+--
 
 The error view should container an *@Route* annotation with a value of
 “errorView”. Other than that, it is up to you to determine what the view
@@ -3210,23 +2789,18 @@ The *MenuService* is a Spring-managed bean which contains a
 *constructMenu* method that you can use to construct the menu bar. The
 *menuService* is configured using the *menu.properties* message bundle:
 
+[source,properties]
+--
 gts.menu.1.displayName=Top Level Menu
-
 gts.menu.1.1.displayName=Organizations
-
 gts.menu.1.1.destination=organizationView
-
 gts.menu.1.2.displayName=Members
-
 gts.menu.1.2.destination=personView
-
 gts.menu.1.3.displayName=Gifts
-
 gts.menu.1.3.destination=giftView
-
 gts.menu.2.displayName=Deliveries
-
 gts.menu.2.destination=deliveryView
+--
 
 When calling the *constructMenu* service, you must pass along a prefix
 that will be used to retrieve the messages from the bundle. In the above
@@ -3239,19 +2813,20 @@ on the fly.
 The following code suffices to create a menu and add it to the UI (main
 refers to the main layout of the UI):
 
+[source,java]
+--
 menu = menuService.constructMenu("gts.menu");
-
 main.add(menu);
+--
 
-You can switch the menu bar at any time by using Vaadin’s support for
-replacing components (“menu” refers to a field on the UI that holds the
-reference to the current menu).
+You can switch the menu bar at any time by using Vaadin’s support for replacing components (“menu” refers to a field on the UI that holds the reference to the current menu).
 
+[source,java]
+--
 MenuBar other = menuService.constructMenu("gts.other", getNavigator());
-
 main.replace(menu, other);
-
 menu = other;
+--
 
 The *MenuService* will iterate over the messages, starting at
 “gts.menu.1”, followed by “gts.menu.2”, “gts.menu.3” etc., and try to
@@ -3315,7 +2890,10 @@ in nearly exactly the same way as the regular horizontal menu bar,
 except that you need to insert a reference to the *VerticalMenuService*
 in your code. You can then construct the menu in much the same way:
 
+[source,java]
+--
 Accordion verticalMenu = verticalMenuService.constructMenu("blip.menu");
+--
 
 The component returned by this method (the Accordion) can be added
 anywhere in your layout to create a menu that displays the various
@@ -3387,13 +2965,14 @@ item. Another example occurs when you mark a property of an entity as
 *navigable.* When you do this, you must also provide an
 EntityNavigationMapping as follows:
 
-uiHelper.addEntityNavigationMapping(Organization.*class*, item -> \{
-
-uiHelper.setSelectedEntity(item);
-
-uiHelper.navigate(Views.*_ORGANIZATION_VIEW_*);
-
+[source,java]
+--
+uiHelper.addEntityNavigationMapping(Organization.class, item -> {
+  uiHelper.setSelectedEntity(item);
+  uiHelper.navigate(Views.ORGANIZATION_VIEW);
 });
+--
+
 
 This ensures that the application knows which view to navigate to (and
 potentially which other actions to take) when the user clicks on a link
@@ -3409,17 +2988,15 @@ E.g. you can place the following code at the bottom of your view to
 check if an entity has been set on the UIHelper, and then navigate to
 the detail screen if needed.
 
-*if* (getUiHelper().getSelectedEntity() *instanceof* Organization) \{
-
-Organization org = (Organization) getUiHelper().getSelectedEntity();
-
-org = organizationService.fetchById(org.getId());
-
-layout.edit(org);
-
-getUIHeler().clearState();
-
+[source,java]
+--
+if (getUiHelper().getSelectedEntity() instanceof Organization) {
+  Organization org = (Organization) getUiHelper().getSelectedEntity();
+  org = organizationService.fetchById(org.getId());
+  layout.edit(org);
+  getUIHeler().clearState();
 }
+--
 
 The *clearState* method removes any state stored in the UIHelper. It is
 recommended to use this to clear up after yourself.
@@ -3451,8 +3028,10 @@ user’s session:
 E.g. the following will make sure that the locale from the user’s
 browser is used:
 
-VaadinUtils._storeLocale_(VaadinRequest.getCurrent().getLocale());
-
+[source,java]
+--
+VaadinUtils.storeLocale(VaadinRequest.getCurrent().getLocale());
+--
 Note that for date field (i.e. for displaying month names), Dynamo uses
 a separate locale setting. By default, the value of the system property
 *ocs.default.date.locale* is used for localization in date components.
@@ -3481,21 +3060,17 @@ the Netherlands, or “entitymodel_en_US.properties”.
 you would include regular message bundle overrides. For example, these
 are some lines that could be included in *entitymodel_es.properties*
 
-Organization.displayName=[.underline]#Organización#
+[source,properties]
+--
+Organization.displayName=Organización
+Organization.displayNamePlural=Organizaciones
+Organization.description=Una empresa criminal
+Person.displayName=Persona
+Person.displayNamePlural=Personas
+Organization.name.displayName=Nombre
 
-Organization.displayNamePlural=[.underline]#Organizaciones#
-
-Organization.description=[.underline]#Una# [.underline]#empresa#
-criminal
-
-Person.displayName=[.underline]#Persona#
-
-Person.displayNamePlural=[.underline]#Personas#
-
-Organization.name.displayName=[.underline]#Nombre#
-
+--
 Dynamo uses the following algorithm to determine the appropriate value:
-
 * First, look if the appropriate message can be found in
 *entitymodel_<locale>.properties*
 * If this is not the case, revert to the generic
@@ -3545,17 +3120,13 @@ The Dynamo framework offers the *SimpleSearchLayout* component for
 creating search screens. A basic application of this
 *SimpleSearchLayout* looks as follows:
 
-EntityModel<Organization> em =
-getModelFactory().getModel(Organization.*class*);
-
-FormOptions fo = *new*
-FormOptions().setAttributeGroupMode(AttributeGroupMode.*_TABSHEET_*).setShowIterationButtons(*true*);
-
-SimpleSearchLayout<Integer, Organization> layout = *new*
-SimpleSearchLayout<>(organizationService, em, QueryType.*_ID_BASED_*,
-fo,
-
-*new* SortOrder<String>("name", SortDirection.*_ASCENDING_*));
+[source,java]
+--
+EntityModel<Organization> em = getModelFactory().getModel(Organization.class);
+FormOptions fo = new FormOptions().setAttributeGroupMode(AttributeGroupMode.TABSHEET).setShowIterationButtons(true);
+SimpleSearchLayout<Integer, Organization> layout = new      SimpleSearchLayout<>(organizationService, em, QueryType.ID_BASED, fo,
+            new SortOrder<String>("name", SortDirection.ASCENDING));
+--
 
 As you can see, you create a new instance of the *SimpleSearchLayout*
 and declare both the class of the primary key of the entity and the
@@ -3753,10 +3324,11 @@ search field for attribute “country” that displays a list of countries.
 Say you only want to display countries whose name contains the string
 “ab” then you can add the following field filter:
 
-____
-layout.addFieldFilter("countryOfOrigin", *new*
-LikePredicate<String>("name", "%au%", *false*));
-____
+[source,java]
+--
+layout.addFieldFilter("countryOfOrigin", new
+LikePredicate<String>("name", "%au%", false));
+--
 
 * *detailJoins* is used to pass along the relations that must be fetched
 when retrieving a single entity when displaying the details screen. If
@@ -3818,30 +3390,30 @@ Next, you must call the *setDetailModeTabCaptions* to set the caption of
 the individual tabs. Implicitly this will also specify the number of
 tabs.
 
+[source,java]
+--
 layout.setDetailsModeTabCaptions(*new* String[] \{ "Organizations",
 "Members" });
+--
 
 You can then use the *addDetailTabCreator* method to specify what the
 individual tabs must look like:
 
-layout.addDetailTabCreator(0, (formOptions, isNew) -> \{
-
-EntityModel<Organization> em2 =
-getModelFactory().getModel(Organization.*class*);
-
-*return* *new* SimpleEditLayout<Integer,
-Organization>(layout.getSelectedItem(), organizationService, em2,
-
-formOptions, *new* FetchJoinInformation("members"), *new*
-FetchJoinInformation("countryOfOrigin"));
-
+[source,java]
+--
+layout.addDetailTabCreator(0, (formOptions, isNew) -> {
+    EntityModel<Organization> em2 = getModelFactory().getModel(Organization.class);
+    return new SimpleEditLayout<Integer, Organization>(layout.getSelectedItem(), organizationService, em2,
+            formOptions, new FetchJoinInformation("members"), new FetchJoinInformation("countryOfOrigin"));
 });
 
+--
+
 This method takes two parameters: the zero-based index of the tab and a
-bifunction that takes the form options and a boolen that indicates
+bifunction that takes the form options and a boolean that indicates
 whether a new entity is being created, and must return the component
 that is to be constructed (in the example above this is a
-SimpleEditLayout). You must call this method once for every tab you want
+*SimpleEditLayout*). You must call this method once for every tab you want
 to add.
 
 Now, when you select a row in the search results grid, you will be taken
@@ -3922,6 +3494,8 @@ organisation as the parent object.
 
 A simple example of a *ServiceBasedSplitLayout* looks as follows:
 
+[source,java]
+--
 EntityModel<Person> em = getModelFactory().getModel(Person.*class*);
 
 FormOptions fo = *new* FormOptions();
@@ -3931,6 +3505,7 @@ ServiceBasedSplitLayout<Integer, Person>(personService, em,
 QueryType.ID_BASED, fo, *null);*
 
 main.addComponent(layout);
+--
 
 You can specify the following parameters when creating the layout:
 
@@ -3946,7 +3521,7 @@ you want to apply a filter to the data, you can do so by using the
 *setFilterCreator* method.
 
 Like the *SimpleSearchLayout*, the *SplitLayout* supports the use of
-field filters__.__
+field filters
 
 The *SplitLayout* components support the use of the *FormOptions*
 parameter object. Of special interest is the *screenMode* setting, which
@@ -3977,6 +3552,8 @@ search screen or results grid.
 Creating a *SimpleEditLayout* is similar to creating the other composite
 components and looks as follows:
 
+[source,java]
+--
 EntityModel<Organization> em =
 getModelFactory().getModel(Organization.class)
 
@@ -3986,6 +3563,7 @@ FormOptions().setOpenInViewMode(*true*).setEditAllowed(*true*);
 SimpleEditLayout<Integer, Organization> editLayout = *new*
 SimpleEditLayout<Integer, Organization>(getEntity(),
 organizationService, em, fo);
+--
 
 You can pass the following parameters to the constructor:
 
@@ -4006,15 +3584,18 @@ The *EditableGridLayout* component can be used to display and edit a
 collection of entities inside a grid. The constructor for the
 *EditableGridLayout* constructor looks as follows:
 
+[source,java]
+--
 *public* EditableGridLayout(BaseService<ID, T> service, EntityModel<T>
 entityModel,
 
 FormOptions formOptions, SortOrder sortOrder, FetchJoinInformation...
-joins) \{
+joins) {
 
 *super*(service, entityModel, formOptions, sortOrder, joins);
 
 }
+--
 
 This results in a grid in which items can directly be edited, added, and
 deleted.
@@ -4091,79 +3672,46 @@ To use this component, you need to create an instance of it and then set
 a number of methods that define the captions, icons, and actual tab
 contents:
 
-tabLayout = *new* TabLayout<Integer, ProgrammeSelection>(selection);
+[source,java]
+--
+tabLayout = new TabLayout<Integer, ProgrammeSelection>(selection);
 
-tabLayout.setDescriptionsCreator(index -> \{
+	 tabLayout.setDescriptionsCreator(index -> {
+			switch (index) {
+			case INDEX_PROGRAM_LIST:
+				return message("blip.programme.list.description");
+			case INDEX_PROGRAM_COUNT:
+				return message("blip.programme.count.layout.description");
+			default:
+				return null;
+			}
+		});
+		tabLayout.setIconCreator(index -> {
+			switch (index) {
+			case INDEX_PROGRAM_LIST:
+				return VaadinIcon.LIST.create();
+			case INDEX_PROGRAM_COUNT:
+				return VaadinIcon.ABACUS.create();
+			default:
+				return null;
+			}
+		});
+		tabLayout.setCaptions(new String[] { message("blip.programme.list"), message("blip.programme.count.layout") });
+		tabLayout.setTabCreator(index -> {
+			SerializablePredicate<Programme> filter = fsf.extractFilter() == null ? statusFilter
+					: new AndPredicate<>(fsf.extractFilter(), statusFilter);
 
-*switch* (index) \{
-
-*case* *_INDEX_PROGRAM_LIST_*:
-
-*return* message("blip.programme.list.description");
-
-*case* *_INDEX_PROGRAM_COUNT_*:
-
-*return* message("blip.programme.count.layout.description");
-
-*default*:
-
-*return* *null*;
-
-}
-
-});
-
-tabLayout.setIconCreator(index -> \{
-
-*switch* (index) \{
-
-*case* *_INDEX_PROGRAM_LIST_*:
-
-*return* VaadinIcon.*_LIST_*.create();
-
-*case* *_INDEX_PROGRAM_COUNT_*:
-
-*return* VaadinIcon.*_ABACUS_*.create();
-
-*default*:
-
-*return* *null*;
-
-}
-
-});
-
-tabLayout.setCaptions(*new* String[] \{ message("blip.programme.list"),
-message("blip.programme.count.layout") });
-
-tabLayout.setTabCreator(index -> \{
-
-SerializablePredicate<Programme> filter = fsf.extractFilter() == *null*
-? statusFilter
-
-: *new* AndPredicate<>(fsf.extractFilter(), statusFilter);
-
-*switch* (index) \{
-
-*case* *_INDEX_PROGRAM_LIST_*:
-
-*return* constructProgrammeListLayout(() -> fsf.extractFilter() ==
-*null* ? statusFilter
-
-: *new* AndPredicate<>(fsf.extractFilter(), statusFilter),
-tabLayout.getEntity());
-
-*case* *_INDEX_PROGRAM_COUNT_*:
-
-*return* constructProgrammeCountLayout(filter);
-
-*default*:
-
-*return* *null*;
-
-}
-
-});
+			switch (index) {
+			case INDEX_PROGRAM_LIST:
+				return constructProgrammeListLayout(() -> fsf.extractFilter() == null ? statusFilter
+						: new AndPredicate<>(fsf.extractFilter(), statusFilter), tabLayout.getEntity());
+			case INDEX_PROGRAM_COUNT:
+				return constructProgrammeCountLayout(filter);
+			default:
+				return null;
+			}
+		});
+--
 
 These methods mostly follow a similar structure: they take a lambda
 function as an argument – the lambda in turn takes the input of the tab
@@ -4251,40 +3799,28 @@ which you want to add the DetailsEditGrid.
 
 This looks as follows:
 
-addCustomField("translations", context -> \{
+[source,java]
+--
+addCustomField("translations", context -> {
+    FormOptions fo = new FormOptions().setShowRemoveButton(true).setDetailsEditLayoutButtonsOnSameRow(false)
+            .setDetailsGridSearchMode(false);
 
-FormOptions fo = *new*
-FormOptions().setShowRemoveButton(*true*).setDetailsEditLayoutButtonsOnSameRow(*false*)
+    EntityModel<GiftTranslation> model = getEntityModelFactory().getModel(GiftTranslation.class);
+    DetailsEditGrid<Integer, GiftTranslation> dt = new DetailsEditGrid<>(model, context.getAttributeModel(),
+            context.isViewMode(), fo);
+    dt.setService(giftTranslationService);
 
-.setDetailsGridSearchMode(*false*);
+dt.setCreateEntity(() -> {
+        GiftTranslation translation = new GiftTranslation();
+        translation.setDescription("desc");
+        getSelectedItem().addTranslation(translation);
 
-EntityModel<GiftTranslation> model =
-getEntityModelFactory().getModel(GiftTranslation.*class*);
-
-DetailsEditGrid<Integer, GiftTranslation> dt = *new*
-DetailsEditGrid<>(model, context.getAttributeModel(),
-
-context.isViewMode(), fo);
-
-dt.setService(giftTranslationService);
-
-dt.setCreateEntity(() -> \{
-
-GiftTranslation translation = *new* GiftTranslation();
-
-translation.setDescription("desc");
-
-getSelectedItem().addTranslation(translation);
-
-*return* translation;
-
+        return translation;
+    });
+    return dt;
 });
+--
 
-*return* dt;
-
-});
-
-[arabic]
 . The *DetailsEditGrid*, like many composite components, takes two type
 parameters: the type of the primary key of the entity and the type of
 the entity itself.
@@ -4304,7 +3840,10 @@ Note that it is also possible to use the *DetailsEditGrid* as a lookup
 component for a many-to-many relation. You can do so by setting the
 *detailsGridSearchMode* on the FormOptions parameter object to *true:*
 
-FormOptions fo = *new* FormOptions().setDetailsGridSearchMode(*true*);
+[source,java]
+--
+FormOptions fo = new FormOptions().setDetailsGridSearchMode(true);
+--
 
 This will display the *DetailsEditGrid* in read-only mode and will also
 add a *Search* button below the grid that will bring up a dialog that
@@ -4341,13 +3880,13 @@ component to show up.
 
 You can start by adding a property like this to your (parent) entity:
 
-@Attribute(visibleInGrid = VisibilityType.*_HIDE_*)
-
-*public* Integer getOrganizationId() \{
-
-*return* id;
-
+[source,java]
+--
+@Attribute(visibleInGrid = VisibilityType.HIDE)
+public Integer getOrganizationId() {
+	return id;
 }
+--
 
 This is simply a getter that has the same value as the entity’s primary
 key. It is simply used as a hook for starting the custom field
@@ -4356,39 +3895,23 @@ construction.
 Next, you can use the following code to instantiate the custom component
 inside the *addCustomField* method:
 
-____
-ServiceBasedDetailsEditGrid<Integer, Person, Integer, Organization> grid
-= *new* ServiceBasedDetailsEditGrid<>(
-
-personService, getModelFactory().getModel(Person.*class*),
-attributeModel, viewMode,
-
-*new*
-FormOptions().setDetailsGridSearchMode(*false*).setShowRemoveButton(*true*));
-
-grid.setFilterCreator(org -> *new* EqualsPredicate<>("organization.id",
-org.getId()));
-
-grid.setCreateEntity(() -> \{
-
-Person person = *new* Person();
-
-person.setOrganization(getSelectedItem());
-
-*return* person;
-
-});
-
-grid.setRemoveEntity(person -> \{
-
-person.setOrganization(*null*);
-
-personService.save(person);
-
-});
-
-*return* grid;
-____
+[source,java]
+--
+ServiceBasedDetailsEditGrid<Integer, Person, Integer, Organization> grid = new ServiceBasedDetailsEditGrid<>(
+							personService, getModelFactory().getModel(Person.class), attributeModel, viewMode,
+							new FormOptions().setDetailsGridSearchMode(false).setShowRemoveButton(true));
+grid.setFilterCreator(org -> new EqualsPredicate<>("organization.id", org.getId()));
+	grid.setCreateEntity(() -> {
+		Person person = new Person();
+		person.setOrganization(getSelectedItem());
+		return person;
+	});
+	grid.setRemoveEntity(person -> {
+		person.setOrganization(null);
+		personService.save(person);
+	});
+	return grid;
+--
 
 As you can see, the *ServiceBasedDetailsEditGrid* takes four type
 parameters; the first two are identical to the ones used by the basic
@@ -4422,7 +3945,10 @@ want to couple to the entity being edited (a many-to-many relation) you
 can use the grid in couple mode as well. As with the basic
 *DetailsEditGrid* you can specify this via the form options.
 
-FormOptions fo = *new* FormOptions().setDetailsGridSearchMode(*true*);
+[source,java]
+--
+FormOptions fo = new FormOptions().setDetailsGridSearchMode(true);
+--
 
 In this mode, there will not be any *Add* or *Edit* buttons, but instead
 you will see a *Search* button below the grid. Clicking this button will
@@ -4463,30 +3989,20 @@ As is the case with the *DetailsEditGrid,* you can use the
 *setCreateEntity* and *setRemoveEntity* methods to specify what to do in
 order to add a new entity or remove a coupled entity.
 
-DetailsEditLayout<Integer, GiftTranslation> dt = *new*
-DetailsEditLayout<Integer, GiftTranslation>(giftTranslationService,
-getEntityModelFactory().getModel(GiftTranslation.*class*),
-attributeModel,
-
-viewMode, fo, *new* AttributeComparator<>("description"));
-
-dt.setCreateEntity(() -> \{
-
-GiftTranslation gt = *new* GiftTranslation();
-
-GiftLayout.*this*.getSelectedItem().addTranslation(gt);
-
-*return* gt;
-
+[source,java]
+--
+DetailsEditLayout<Integer, GiftTranslation> dt = new DetailsEditLayout<Integer, GiftTranslation>(giftTranslationService, getEntityModelFactory().getModel(GiftTranslation.class), attributeModel,
+					viewMode, fo, new AttributeComparator<>("description"));
+dt.setCreateEntity(() -> {
+	GiftTranslation gt = new GiftTranslation();
+	GiftLayout.this.getSelectedItem().addTranslation(gt);
+	return gt;
 });
-
-dt.setRemoveEntity(gt -> \{
-
-Gift gift = GiftLayout.*this*.getSelectedItem();
-
-gift.removeTranslation(gt);
-
+dt.setRemoveEntity(gt -> {
+	Gift gift = GiftLayout.this.getSelectedItem();
+	gift.removeTranslation(gt);
 s});
+--
 
 As described above, the framework will render a sub-form that is nested
 within the main edit form for every entity. For each sub-form a *Remove*
@@ -4502,26 +4018,18 @@ form is clicked.
 The *EntityPopupDialog* is a simple modal dialog that can be used to
 add, modify, or view a single entity. It can be used as follows:
 
-Button popupButton = *new* Button("Popup");
-
-popupButton.addClickListener(event -> \{
-
-EntityPopupDialog<Integer, Organization> popupDialog = *new*
-EntityPopupDialog<Integer, Organization>(organizationService,
-
-getSelectedItem(),
-getEntityModelFactory().getModel(Organization.*class*), *new*
-HashMap<>(), *new* FormOptions());
-
-popupDialog.build();
-
-popupDialog.open();
-
-});
-
-buttonBar.add(popupButton);
-
-registerComponent(popupButton);
+[source,java]
+--
+ Button popupButton = new Button("Popup");
+   popupButton.addClickListener(event -> {
+   EntityPopupDialog<Integer, Organization> popupDialog = new         EntityPopupDialog<Integer, Organization>(organizationService,
+                            getSelectedItem(), getEntityModelFactory().getModel(Organization.class), new HashMap<>(), new    FormOptions());
+    popupDialog.build();
+    popupDialog.open();
+ });
+ buttonBar.add(popupButton);
+ registerComponent(popupButton);
+--
 
 As you can see, the *EntityPopupDialog* takes many of the same
 parameters as the other composite components:
@@ -4881,42 +4389,29 @@ create.
 ____
 * {blank}
 +
-____
+
 The *setFindParentGroup* method can be used to link an existing
 attribute group (as defined on your entity) to the newly created top
 level group.
-____
 
+[source,java]
+--
 setParentGroupHeaders(
-
-*new* String[] \{ "blip.attributes.main", *_MSG_ATTRIBUTES_PROMOTED_*,
-"blip.attributes.other" });
-
-setFindParentGroup(childGroup -> \{
-
-*switch* (childGroup) \{
-
-*case* Constants.*_AUDIT_DATA_*:
-
-*return* "blip.attributes.other";
-
-*case* Constants.*_PROMOTED_MAIN_*:
-
-*case* Constants.*_PROJECTED_FINAL_*:
-
-*case* Constants.*_OTHER_ATTRIBUTES_PROMOTED_*:
-
-// display on the promoted tab
-
-*return* *_MSG_ATTRIBUTES_PROMOTED_*;
-
-*default*:
-
-*return* "blip.attributes.main";
-
-}
-
+        new String[] { "blip.attributes.main", MSG_ATTRIBUTES_PROMOTED, "blip.attributes.other" });
+setFindParentGroup(childGroup -> {
+    switch (childGroup) {
+    case Constants.AUDIT_DATA:
+        return "blip.attributes.other";
+    case Constants.PROMOTED_MAIN:
+    case Constants.PROJECTED_FINAL:
+    case Constants.OTHER_ATTRIBUTES_PROMOTED:
+        // display on the promoted tab
+        return MSG_ATTRIBUTES_PROMOTED;
+    default:
+        return "blip.attributes.main";
+    }
 });
+--
 
 The value of the *attributeGroupMode* from the *FormOptions* determines
 the top-level attribute grouping – so if this is e.g. set to *TABSHEET*
@@ -4952,33 +4447,24 @@ the button is enabled, use the *setMustEnableComponent* method.
 
 As an example, consider the following:
 
-layout.setPostProcessMainButtonBar(buttonBar -> \{
-
-Button notificationButton = *new* Button("Show name");
-
-notificationButton.addClickListener(event -> \{
-
-showErrorNotification(layout.getSelectedItem().getNickName());
-
-});
-
-buttonBar.add(notificationButton);
-
-layout.registerComponent("notificationButton", notificationButton);
+[source,java]
+--
+layout.setPostProcessMainButtonBar(buttonBar -> {
+    Button notificationButton = new Button("Show name");
+    notificationButton.addClickListener(event -> {
+        showErrorNotification(layout.getSelectedItem().getNickName());
+    });
+    buttonBar.add(notificationButton);
+    layout.registerComponent("notificationButton", notificationButton);
 
 });
-
-layout.setMustEnableComponent((com, ent) -> \{
-
-*if* (layout.isRegisteredComponent("notificationButton", com)) \{
-
-*return* ent.getFirstName().startsWith("M");
-
-}
-
-*return* *true*;
-
+layout.setMustEnableComponent((com, ent) -> {
+    if (layout.isRegisteredComponent("notificationButton", com)) {
+        return ent.getFirstName().startsWith("M");
+    }
+    return true;
 });
+--
 
 First, we create a button (“notificationButton”) that simply shows a
 notification message when clicked. We then register this button under
@@ -5052,11 +4538,14 @@ simply by setting the *ocs.openai.enabled* application property to
 “true”. IN addition, values for the API key, the desired model, and the
 maximum number of tokens must be provided.
 
+[source,properties]
+--
 ocs.openai.enabled=true +
 ocs.openai.api.key=[SECRET]
 
 ocs.openai.model=gpt-4-turbo +
 ocs.openai.maxtokens=4096
+--
 
 To use the service, a (paid) subscription with OpenAI is required; given
 such a subscription, the user can generate an API key (token) that can
@@ -5082,9 +4571,12 @@ Configuring ollama is relatively easy since it is running locally and
 does not require an external account. The configuration needs a URL (the
 default is localhost:11434) and a model name (llama3 or mistral).
 
+[source,properties]
+--
 ocs.ollama.enabled=true +
 ocs.ollama.url=http://localhost:11434 +
 ocs.ollama.model=llama3
+--
 
 *Google VertexAI Gemini (and PALM)*
 
@@ -5100,10 +4592,13 @@ does require that you set up a Google Gloud account
 card. You can then create a project and enable the Vertex API for this
 project.
 
+[source,properties]
+--
 ocs.vertexai.enabled=true +
 ocs.vertexai.project.id=[SECRET] +
 ocs.vertexai.project.region=europe-west1 +
 ocs.vertexai.model=gemini-1.5-flash-preview-0514
+--
 
 With this in place, the configuration is pretty straightforward: you
 need to provide the application with your project ID, Google Cloud
@@ -5129,6 +4624,8 @@ the service from your application.
 
 Configuration can then be done as follows:
 
+[source,properties]
+--
 ocs.bedrock.enabled=true
 
 ocs.bedrock.access.key=AKIA5FTY7NWAPH2I7CGV +
@@ -5136,6 +4633,7 @@ ocs.bedrock.access.secret=[SECRET]
 
 ocs.bedrock.model.id=arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-v2 +
 ocs.bedrock.region=eu-central-1
+--
 
 The configuration for Bedrock can unfortunately be a bit messy, since
 the available models are region-dependent and also must be explicitly
@@ -5179,25 +4677,20 @@ format.
 In order to use this functionality, you will first have to add the
 appropriate dependencies to your project:
 
+[source,xml]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-frontend-export</artifactId>
-
-<version>$\{dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-frontend-export</artifactId>
+    <version>${dynamo.version}</version>
+</dependency>
+<dependency>
+    <groupId>com.github.pjfanning</groupId>
+    <artifactId>excel-streaming-reader</artifactId>
+    <version>4.3.1</version>
 </dependency>
 
-<dependency>
-
-<groupId>com.monitorjbl</groupId>
-
-<artifactId>xlsx-streamer</artifactId>
-
-<version>2.1.0</version>
-
-</dependency>
+--
 
 Next, to enable the export for all applications in the table, you will
 have to set the system property *ocs.allow.list.export* to true. This
@@ -5220,7 +4713,10 @@ By default, only the columns that are visible in the grid will be
 exported. You can switch to a full export of all the (visible)
 attributes by using the FormOptions object:
 
+[source,java]
+--
 FormOptions fo = *new* FormOptions().setExportMode(ExportMode.*_FULL_*);
+--
 
 Note that if you set the export mode to full, this might mean that the
 application will try to export related entities that have not been
@@ -5246,8 +4742,11 @@ mapping between an entity model and a style generator.
 The style generator is a fairly straightforward functional interface
 that defines a method with the following signature:
 
+[source,java]
+--
 CellStyle getCustomCellStyle(Workbook workbook, T entity, Object value,
 AttributeModel am, Object pivotColumnKey);
+--
 
 This method allows you to define custom style (that e.g. allows you to
 change the color, font, border etc.) for a cell based on the entity that
@@ -5267,42 +4766,39 @@ If you want to use Dynamo’s functionality for easily managing lookup
 tables, you will have to include the following dependency in your
 pom.xml file:
 
+[source,xml]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-functional-domain</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-functional-domain</artifactId>
+    <version>$\{com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 This will give you access to a number of bases entities, DAO’s, and
 services for managing lookup tables/domains. The most important one is
 arguably the *Domain* entity which serves as the base for all your
 lookup tables.
 
+[source,java]
+--
 @Inheritance
-
 @DiscriminatorColumn(name = "type")
-
 @Entity(name = "domain")
-
 @Model(displayProperty = "name", sortOrder = "name asc")
-
-*public* *abstract* *class* Domain *extends* AbstractEntity<Integer> \{
+public abstract class Domain extends AbstractEntity<Integer> {
+--
 
 The idea is that you can define a lookup table class by subclassing this
 class as follows:
 
+[source,java]
+--
 @Entity
-
 @DiscriminatorValue("COUNTRY")
-
-@Model(displayNamePlural = "Countries", displayProperty = "name",
-sortOrder = "name asc")
-
-*public* *class* Country *extends* DomainChild<Country, Region> \{
+@Model(displayNamePlural = "Countries", displayProperty = "name", sortOrder = "name asc")
+public class Country extends DomainChild<Country, Region> {
+--
 
 As you can see, this example uses JPA inheritance to define a new entity
 that will be stored in the “domain” table using JPA’s “single table”
@@ -5312,26 +4808,19 @@ You can then define simple DAO and service objects for your domain class
 as follows (you would normally place these in a class annotated with
 @Configuration).
 
+[source,java]
+--
 @Bean
-
-*public* BaseDao<Integer, Country> countryDao() \{
-
-*return* *new* DefaultDaoImpl<>(QCountry.*_country_*, Country.*class*,
-"parent");
-
+public BaseDao<Integer, Country> countryDao() {
+	return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
 }
 
 @Bean
-
-*public* BaseService<Integer, Country> countryService(BaseDao<Integer,
-Country> dao) \{
-
-DefaultServiceImpl<Integer, Country> countryService = *new*
-DefaultServiceImpl<>(dao, "code");
-
-*return* countryService;
-
+public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> dao) {
+	DefaultServiceImpl<Integer, Country> countryService = new DefaultServiceImpl<>(dao, "code");
+	return countryService;
 }
+--
 
 Note that the *DefaultDaoImpl* and *DefaultServiceImpl* classes are part
 of the core dynamo implementation so you can use them without adding the
@@ -5344,15 +4833,14 @@ that can be used to manage lookup tables with simple hierarchies.
 Dynamo also comes with simply functionality for managing a list of
 parametes. To use this functionality, add the following dependency:
 
+[source,xml]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-parameter</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+	<groupId>org.dynamoframework</groupId>
+	<artifactId>dynamo-parameter</artifactId>
+	<version>${com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 This makes the *Parameter* class as well as the associated
 *ParameterDao* and *ParameterService* available to your application.
@@ -5366,85 +4854,58 @@ This configuration can be included in the *orm.xml* file that can be
 included in the *src/main/resources/META-INF* directory. The following
 shows the configuration for PostgreSQL:
 
-<?xml version=__"1.0"__ encoding=__"UTF-8"__ ?>
-
-<entity-mappings xmlns=__"http://java.sun.com/xml/ns/persistence/orm"__
-
-xmlns:xsi=__"http://www.w3.org/2001/XMLSchema-instance"__
-
-xsi:schemaLocation=__"http://java.sun.com/xml/ns/persistence/orm
-http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"__
-
-version=__"1.0"__>
-
-<sequence-generator name=__"domain_id_seq"__
-
-allocation-size=__"1"__ sequence-name=__"domain_id_seq"__ />
-
-<sequence-generator name=__"parameter_id_seq"__
-
-allocation-size=__"1"__ sequence-name=__"parameter_id_seq"__ />
-
-<entity class=__"com.ocs.dynamo.functional.domain.Domain"__>
-
-<attributes>
-
-<id name=__"id"__>
-
-<generated-value strategy=__"SEQUENCE"__ generator=__"domain_id_seq"__
-/>
-
-</id>
-
-</attributes>
-
-</entity>
-
-<entity class=__"com.ocs.dynamo.functional.domain.Parameter"__>
-
-<attributes>
-
-<id name=__"id"__>
-
-<generated-value strategy=__"SEQUENCE"__
-generator=__"parameter_id_seq"__ />
-
-</id>
-
-</attributes>
-
-</entity>
-
+[source,xml]
+--
+<?xml version="1.0" encoding="UTF-8" ?>
+<entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+	version="1.0">
+	<sequence-generator name="domain_id_seq"
+		allocation-size="1" sequence-name="domain_id_seq" />
+	<sequence-generator name="parameter_id_seq"
+		allocation-size="1" sequence-name="parameter_id_seq" />
+	<entity class="com.ocs.dynamo.functional.domain.Domain">
+		<attributes>
+			<id name="id">
+				<generated-value strategy="SEQUENCE" generator="domain_id_seq" />
+			</id>
+		</attributes>
+	</entity>
+	<entity class="com.ocs.dynamo.functional.domain.Parameter">
+		<attributes>
+			<id name="id">
+				<generated-value strategy="SEQUENCE" generator="parameter_id_seq" />
+			</id>
+		</attributes>
+	</entity>
 </entity-mappings>
+--
 
 Dynamo also contains some functionality for managing your lookup tables
 in the user interface. To use this functionality you must include the
 *dynamo-functional-domain-frontend* dependency:
 
+[source,xml]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-functional-domain-frontend</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+	<groupId>org.dynamoframework</groupId>
+	<artifactId>dynamo-functional-domain-frontend</artifactId>
+	<version>${com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 This dependency includes a single component named
 *MultiDomainEditLayout* which offers a simple screen for managing your
 lookup tables.
 
-The initialization of this component looks as follows:
-
-List<Class<? *extends* Domain>> domains = *new* ArrayList<>();
-
-domains.add(Country.*class*);
-
-domains.add(Region.*class*);
-
-MultiDomainEditLayout dom = *new* MultiDomainEditLayout(*new*
-FormOptions(), domains);
+[source,java]
+--
+List<Class<? extends Domain>> domains = new ArrayList<>();
+domains.add(Country.class);
+domains.add(Region.class);
+MultiDomainEditLayout dom = new MultiDomainEditLayout(new FormOptions(), domains);
+--
 
 You can simply pass a list of the domain classes you want to manage to
 the *MultiDomainEditLayout’s* constructor. This will then result in a
@@ -5502,10 +4963,12 @@ In addition to the *constructField*-methods the Field Factory also
 offers the *addConvertersAndValidators* method. This method has the
 following signature:
 
-<U> *void* addConvertersAndValidators(BindingBuilder<U, ?> builder,
-AttributeModel am,
-
-Converter<String, ?> customConverter);
+[source,java]
+--
+addConvertersAndValidators method. This method has the following signature:
+<U> void addConvertersAndValidators(BindingBuilder<U, ?> builder, AttributeModel am,
+			Converter<String, ?> customConverter);
+--
 
 This method is used internally by the framework in order to add
 converters and validators to a field, but in case you are creating your
@@ -5539,7 +5002,7 @@ process, the FieldFactory also calls the *addConverters* and
 (well, technically to the binding between the component and the backing
 bean, but you get the point).
 
-When you fire up a Dynamo application, Spring Boot auto-configures all
+When you fire up a Dynamo application, Spring Boot autoconfigures all
 of the relevant ComponentCreators and the FieldFactory, so there is
 nothing you have to do for this to work out of the box. However, note
 that you have two (obvious) options to interfere in the component
@@ -5582,10 +5045,12 @@ To make sure the application can actually find your style sheet you must
 pace an @CssLayout on the class in your application that imlements
 RouterLayout:
 
+[source,java]
+--
+@CssLayout on the class in your application that imlements RouterLayout:
 @CssImport("./styles/shared-styles.css")
-
-*public* *class* GtsUI *extends* VerticalLayout *implements*
-RouterLayout \{
+public class GtsUI extends VerticalLayout implements RouterLayout {
+--
 
 Inside this css file you can place your custom styles or make changes to
 the default styles.
@@ -5598,16 +5063,20 @@ https://cdn.vaadin.com/vaadin-lumo-styles/1.5.0/demo/index.html.
 In order to modify a variable, you can include an html element in your
 style sheet and then assign a new value as follows:
 
-*html* \{
-
---lumo-primary-color: _#f99d34_;
-
+[source,html]
+--
+html {
+	--lumo-primary-color: #f99d34;
 }
+--
 
 You can then refer to the variable in the remainder of the style sheet
 as follows:
 
-border: _1px_ _solid_ _var(_-_-lumo-primary-color)_ _!important_;
+[source,html]
+--
+border: 1px solid var(--lumo-primary-color) !important;
+--
 
 As you can see, you use the name of the variable enclosed in a *var()*
 construct.
@@ -5629,11 +5098,11 @@ Inside this file, you can place any valid CSS that you want.
 Next, add another CssImport annotation to your RouterLayout class and
 make sure the value matches the name of the file you created.
 
-@CssImport(value = "./styles/vaadin-custom-field.css", themeFor =
-"vaadin-custom-field")
-
-*public* *class* GtsUI *extends* VerticalLayout *implements*
-RouterLayout \{
+[source,java]
+--
+@CssImport(value = "./styles/vaadin-custom-field.css", themeFor = "vaadin-custom-field")
+public class GtsUI extends VerticalLayout implements RouterLayout {
+--
 
 == Hibernate Envers Integration
 
@@ -5655,31 +5124,27 @@ to the framework and stores the revision info in a table named
 “RevisionEntity” instead. The definition for this table (MySQL) is as
 follows:
 
-*CREATE* *TABLE* `RevisionEntity` (
-
-`id` *int*(11) *NOT* *NULL* AUTO_INCREMENT,
-
-`**timestamp**` bigint(20) *NOT* *NULL*,
-
-`username` *varchar*(255) *DEFAULT* *NULL*,
-
-*PRIMARY* *KEY* (`id`)
-
+[source,sql]
+--
+CREATE TABLE `RevisionEntity` (
+  `id` int(11) NOT NULL AUTO_INCREMENT,
+  `timestamp` bigint(20) NOT NULL,
+  `username` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 );
+--
 
 And for Postgresql:
 
-CREATE TABLE IF NOT EXISTS public.revisionentity(
-
+[source,sql]
+--
+CREATE TABLE IF NOT EXISTS revisionentity(
 id integer NOT NULL DEFAULT nextval('revision_entity_id_seq'::regclass),
-
-"timestamp" bigint NOT NULL,
-
+ "timestamp" bigint NOT NULL,
 username character varying(255) ,
-
-CONSTRAINT revisionentity_pkey PRIMARY KEY (id)
-
+  CONSTRAINT revisionentity_pkey PRIMARY KEY (id)
 )
+--
 
 You must provide implementations for the shadow tables yourself. For
 more information on this, consult the Hibernate Envers documentation.
@@ -5702,34 +5167,35 @@ application starts.
 In order to use the Dynamo Envers functionality in your code, add the
 following to your POM file:
 
+[source,xml]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-envers</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-envers</artifactId>
+    <version>${com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 Also, add the following to the UI project:
 
+[source,xml]
+--
 <dependency>
-
-<groupId>org.dynamoframework</groupId>
-
-<artifactId>dynamo-envers-frontend</artifactId>
-
-<version>$\{com.ocs.dynamo.version}</version>
-
+    <groupId>org.dynamoframework</groupId>
+    <artifactId>dynamo-envers-frontend</artifactId>
+    <version>${com.ocs.dynamo.version}</version>
 </dependency>
+--
 
 You will probably also explicitly have to add the hibernate-envers
 dependency to the POM of your UI project.
 
 Then, add the following to your application.properties:
 
-[.underline]#spring.jpa.properties.org.hibernate.envers.revision_listener#=com.ocs.dynamo.envers.listener.DynamoRevisionListener
+[source,properties]
+--
+spring.jpa.properties.org.hibernate.envers.revision_listener=com.ocs.dynamo.envers.listener.DynamoRevisionListener
+--
 
 This will make sure the framework uses the custom Dynamo revision
 listener rather than the default Hibernate listener.
@@ -5738,14 +5204,12 @@ Next, update the *@EntityScan* so that the
 “com.ocs.dynamo.envers.domain” package is included. This will make sure
 the “RevisionEntity” entity is recognized.
 
-@ComponentScan(basePackages = \{ "com.ocs.gts", "com.ocs.dynamo", "
-com.ocs.dynamo.envers.domain" })
-
-@EntityScan(basePackages = \{ "com.ocs.gts.domain",
-"com.ocs.dynamo.functional.domain", "com.ocs.dynamo.envers.domain" })
-
-*public* *class* ApplicationConfig *extends*
-ApplicationConfigurationSupport \{
+[source,java]
+--
+@ComponentScan(basePackages = { "com.ocs.gts", "com.ocs.dynamo", " com.ocs.dynamo.envers.domain" })
+@EntityScan(basePackages = { "com.ocs.gts.domain", "com.ocs.dynamo.functional.domain", "com.ocs.dynamo.envers.domain" })
+public class ApplicationConfig extends ApplicationConfigurationSupport {
+--
 
 After that, make sure to annotate your entity classes with *@Audited*
 and you should be good to go – whenever one of the audited entities
@@ -5762,39 +5226,29 @@ functionality. In order to use this class, take the following steps:
 Create a *VersionedXXX* class, where XXX is the name of the original
 class:
 
-@Model(displayName = "Organization revision", displayNamePlural =
-"Organization revisions", displayProperty = "entity.name")
+[source,java]
+--
+@Model(displayName = "Organization revision", displayNamePlural = "Organization revisions", displayProperty = "entity.name")
+public class VersionedOrganization extends VersionedEntity<Integer, Organization> {
 
-*public* *class* VersionedOrganization *extends*
-VersionedEntity<Integer, Organization> \{
+	private static final long serialVersionUID = 4271855110308393329L;
 
-*private* *static* *final* *long* *_serialVersionUID_* =
-4271855110308393329L;
+	public VersionedOrganization(Organization entity, int revision) {
+		super(entity, revision);
+	}
 
-*public* VersionedOrganization(Organization entity, *int* revision) \{
+	@Attribute(embedded = true)
+	public Organization getEntity() {
+		return super.getEntity();
+	}
 
-*super*(entity, revision);
-
+	@Attribute(visible = VisibilityType.HIDE)
+	public String getDescription() {
+		return RevisionType.DEL.equals(getRevisionType()) ? "Deleted" : getEntity().getName();
+	}
 }
 
-@Attribute(embedded = *true*)
-
-*public* Organization getEntity() \{
-
-*return* *super*.getEntity();
-
-}
-
-@Attribute(visible = VisibilityType.*_HIDE_*)
-
-*public* String getDescription() \{
-
-*return* RevisionType.*_DEL_*.equals(getRevisionType()) ? "Deleted" :
-getEntity().getName();
-
-}
-
-}
+--
 
 * Have the class extend *VersionedEntity* from the Dynamo framework.
 * Override the *getEntity* method an annotate it with
@@ -5811,72 +5265,50 @@ the notification).
 
 Next, create a DAO like this:
 
-*public* *interface* VersionedOrganizationDao *extends*
-VersionedEntityDao<Integer, Organization, VersionedOrganization> \{
-
+[source,java]
+--
+public interface VersionedOrganizationDao extends VersionedEntityDao<Integer, Organization, VersionedOrganization> {
 }
+--
 
 And the implementation associated with it:
 
+[source,java]
+--
 @Repository
+public class VersionedOrganizationDaoImpl extends VersionedEntityDaoImpl<Integer, Organization, VersionedOrganization>
+		implements VersionedOrganizationDao {
 
-*public* *class* VersionedOrganizationDaoImpl *extends*
-VersionedEntityDaoImpl<Integer, Organization, VersionedOrganization>
+	@Override
+	public Class<VersionedOrganization> getEntityClass() {
+		return VersionedOrganization.class;
+	}
 
-*implements* VersionedOrganizationDao \{
+	@Override
+	protected VersionedOrganization createVersionedEntity(Organization t, int revision) {
+		return new VersionedOrganization(t, revision);
+	}
 
-@Override
+	@Override
+	public Class<Organization> getBaseEntityClass() {
+		return Organization.class;
+	}
 
-*public* Class<VersionedOrganization> getEntityClass() \{
-
-*return* VersionedOrganization.*class*;
-
+	@Override
+	protected void doMap(VersionedOrganization u) {
+		super.doMap(u);
+		if (u.getEntity().getCountryOfOrigin() != null) {
+			u.getEntity().getCountryOfOrigin().getName();
+		}
+		if (u.getEntity().getMembers() != null) {
+			u.getEntity().getMembers().forEach(c -> c.getFirstName());
+		}
+		if (u.getEntity().getMainActivity() != null) {
+			u.getEntity().getMainActivity().getName();
+		}
+	}
 }
-
-@Override
-
-*protected* VersionedOrganization createVersionedEntity(Organization t,
-*int* revision) \{
-
-*return* *new* VersionedOrganization(t, revision);
-
-}
-
-@Override
-
-*public* Class<Organization> getBaseEntityClass() \{
-
-*return* Organization.*class*;
-
-}
-
-@Override
-
-*protected* *void* doMap(VersionedOrganization u) \{
-
-*super*.doMap(u);
-
-*if* (u.getEntity().getCountryOfOrigin() != *null*) \{
-
-u.getEntity().getCountryOfOrigin().getName();
-
-}
-
-*if* (u.getEntity().getMembers() != *null*) \{
-
-u.getEntity().getMembers().forEach(c -> c.getFirstName());
-
-}
-
-*if* (u.getEntity().getMainActivity() != *null*) \{
-
-u.getEntity().getMainActivity().getName();
-
-}
-
-}
-
-}
+--
 
 Most of this implementation is very straightforward. Only the *doMap*
 method requires some additional clarification. In this method, you
@@ -5885,63 +5317,50 @@ revision.
 
 Finally, you must create a *Service* and *ServiceImpl* for you entity:
 
-*public* *interface* VersionedOrganizationService *extends*
-BaseService<RevisionKey<Integer>, VersionedOrganization> \{
+[source,java]
+--
+public interface VersionedOrganizationService extends BaseService<RevisionKey<Integer>, VersionedOrganization> {
 
 }
 
 @Service
+public class VersionedOrganizationServiceImpl extends BaseServiceImpl<RevisionKey<Integer>, VersionedOrganization>
+		implements VersionedOrganizationService {
 
-*public* *class* VersionedOrganizationServiceImpl *extends*
-BaseServiceImpl<RevisionKey<Integer>, VersionedOrganization>
+	@Autowired
+	private VersionedOrganizationDao dao;
 
-*implements* VersionedOrganizationService \{
-
-@Autowired
-
-*private* VersionedOrganizationDao dao;
-
-@Override
-
-*protected* BaseDao<RevisionKey<Integer>, VersionedOrganization>
-getDao() \{
-
-*return* dao;
+	@Override
+	protected BaseDao<RevisionKey<Integer>, VersionedOrganization> getDao() {
+		return dao;
+	}
 
 }
-
-}
+--
 
 After this, you can use the entity like you would use any other entity
 with regard to the creation of custom components. E.g. to create a
 simple search layout for browsing the revision table, do the following:
 
-SimpleSearchLayout<RevisionKey<Integer>, VersionedOrganization>
-versLayout = *new* SimpleSearchLayout<>(
-
-versionService,
-getModelFactory().getModel(VersionedOrganization.*class*),
-QueryType.*_ID_BASED_*,
-
-*new* FormOptions().setReadOnly(*true*), *null*);
-
-main.add(versLayout);
+[source,java]
+--
+		SimpleSearchLayout<RevisionKey<Integer>, VersionedOrganization> versLayout = new SimpleSearchLayout<>(
+				versionService, getModelFactory().getModel(VersionedOrganization.class), QueryType.ID_BASED,
+				new FormOptions().setReadOnly(true), null);
+		main.add(versLayout);
+--
 
 Dynamo offers one more convenient feature for showing the revision
 history of a single entity. This is the *ViewRevisionDialog*:
 
-ViewRevisionDialog<Integer, Organization, VersionedOrganization> dialog
-= [.underline]#*new* ViewRevisionDialog(#
-
-[.underline]#versionService,
-getModelFactory().getModel(VersionedOrganization.*class*),#
-
-[.underline]#*new*
-FormOptions().setAttributeGroupMode(AttributeGroupMode.*_TABSHEET_*),#
-
-[.underline]#layout.getSelectedItem().getId())#;
-
-dialog.buildAndOpen();
+[source,java]
+--
+ViewRevisionDialog<Integer, Organization, VersionedOrganization> dialog = new ViewRevisionDialog(
+  versionService, getModelFactory().getModel(VersionedOrganization.class),
+	new FormOptions().setAttributeGroupMode(AttributeGroupMode.TABSHEET),
+	layout.getSelectedItem().getId());
+	dialog.buildAndOpen();
+--
 
 The code above will create and open a popup dialog that displays the
 revisions for just the selected entity. The FormOptions parameter can be
