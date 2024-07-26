@@ -52,11 +52,11 @@ Please note that there currently two different Dynamo versions:
 
 2. The older version 3.x that implements the generated UI with Vaadin
 
-The master branch will focus on innovation for Dynamo v4 and beyond. Dynamo V3.x will be maintained with updates of dependencies when needed, but new functions of Dynamo V4 will only be backported when demand and business requirements is sufficient.
+The master branch will focus on innovation for Dynamo v4 and beyond. Dynamo V3.x will be maintained with updates of dependencies when needed, but new functions of Dynamo V4 will only be backported when demand and business requirements are sufficient.
 
 === Features and benefits of the different Dynamo versions
 
-Dynamo has many features and functionality, which is not covered fully in this summary. But this overview is intended to summarize the most notable features and benefits.
+Dynamo has many features and functionality, which are not covered fully in this summary. But this overview is intended to summarize the most notable features and benefits.
 
 ==== Features in both Dynamo versions
 
@@ -70,7 +70,6 @@ Dynamo has many features and functionality, which is not covered fully in this s
 ** A _search dialog_ to filter and select one or more entities from a potential large resultset
 ** The _FlexibleSearchLayout_ is a search layout that allows the user to create complex search query’s by adding/removing search criteria
 ** The _EntityPopupDialog_ is a popup dialog that allows the user to create or modify a single entity.
-** The _MultiDomainEditLayout_ is a layout that can be used to easily edit multiple types of simple domain (code table) entities
 * Automatic form filler using AI (LLM), copy your unstructured data to the form filler dialog and the AI will interpret the data and automatically translate, transform, convert and fill in the form fields
 * Automatic generation of applicable components for fields based on datatype and/or declaration:
 ** Nested detail table (children)
@@ -95,6 +94,7 @@ Dynamo has many features and functionality, which is not covered fully in this s
 * The option to post-process the edit form after the components have been created (e.g. to add dependencies between fields)
 * The option to export data from a table to CSV or Excel
 * Nested entities and entity collections are supported
+* Can be styled by using themes or custom
 
 *Backend features*
 
@@ -103,14 +103,16 @@ Dynamo has many features and functionality, which is not covered fully in this s
 * No need to write query or persistence logic (extensible)
 * Simple but powerful fluent filter logic
 * Paging and Lazy loading of large resultsets
-* Entity query optimazation by the use of declarative (fetch)joins which promotes the JPA advise of lazy loading of relationsships
-* Search results can furthermore be limited
-* The _MultiDomainEditLayout_ provides a default backend implementation with JPA entities and entity model
+* Entity query optimization by the use of declarative (fetch)joins which promotes the JPA advise of lazy loading of relationships
+* Search results can furthermore be limited to prevent large results and timeouts
 * Services are transactional by default
 
 *Additonal (optional) features*
 
-*
+* The _MultiDomainEditLayout_ is a layout that can be used to easily edit multiple types of simple domain (code table) entities
+* The _MultiDomainEditLayout_ provides a default backend implementation with JPA entities and entity model
+* The Hibernate envers module adds supports history on entities
+* The parameters module adds form to manage parameter lists
 
 ==== Differences between the Dynamo versions
 
