@@ -5,5 +5,6 @@ on:
       - master
       - main
 jobs:
-  generate-gh-pages-from-asciidoc:
-    uses: manoelcampos/asciidoctor-ghpages-action@v2.3.0
+    steps:
+      name: generate-gh-pages-from-asciidoc
+      uses: manoelcampos/asciidoctor-ghpages-action@v2.3.0
