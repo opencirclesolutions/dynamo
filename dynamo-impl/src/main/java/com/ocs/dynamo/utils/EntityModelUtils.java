@@ -81,7 +81,7 @@ public final class EntityModelUtils {
 
         int i = 0;
         for (T entity : entities) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
                 result.append(", ");
             }
 
