@@ -461,7 +461,7 @@ forms, in edit forms, or in both cases. The default is *BOTH*.
     @Cascade(cascadeTo = "members", filterPath = "countryOfOrigin", mode = CascadeMode.EDIT))
 private Country countryOfOrigin;
 
-@Attribute(searchable = true, complexEditable = true)
+@Attribute(searchable = true, visibleInForm = VisibilityType.SHOW)
 private Set<Person> members = new HashSet<>();
 --
 Setting up cascading in a message bundle is a bit more involved. You can
@@ -535,7 +535,7 @@ the *@CollectionTable* annotation. E.g., in this case:
 @ElementCollection
 @CollectionTable(name = "person_lucky_numbers")
 @Column(name = "lucky_number")
-@Attribute(complexEditable = true, minValue = 10, maxValue = 25)
+@Attribute(visibleInGrid = VisibilityType.SHOW, minValue = 10, maxValue = 25)
 private Set<Integer> luckyNumbers = new HashSet<>();
 --
 the value of the *collectionTableName* setting is set to
@@ -817,7 +817,7 @@ attribute, in the order in which they are defined.
 Here you see an example of how the “region” attribute
 [source,java]
 --
-@Attribute(complexEditable = true, visibleInGrid = VisibilityType.SHOW, searchable = true, groupTogetherWith = {"region"})
+@Attribute(visibleInGrid = VisibilityType.SHOW visibleInGrid = VisibilityType.SHOW, searchable = true, groupTogetherWith = {"region"})
 private Country country;
 --
 And this is the input form that will be generated:
@@ -916,7 +916,7 @@ This is an example of the use of *maxValue* on a collection of Integers:
 @ElementCollection
 @CollectionTable(name = "person_lucky_numbers")
 @Column(name = "lucky_number")
-@Attribute(complexEditable = true, minValue = 10, maxValue = 25)
+@Attribute(visibleInGrid = VisibilityType.SHOW, minValue = 10, maxValue = 25)
 private Set<Integer> luckyNumbers = new HashSet<>();
 --
 === MemberType
@@ -960,7 +960,7 @@ An example of the use of *minValue* on a collection of Integers:
 @ElementCollection
 @CollectionTable(name = "person_lucky_numbers")
 @Column(name = "lucky_number")
-@Attribute(complexEditable = true, minValue = 10, maxValue = 25)
+@Attribute(visibleInGrid = VisibilityType.SHOW, minValue = 10, maxValue = 25)
 private Set<Integer> luckyNumbers = new HashSet<>();
 --
 This specifies that the individual values inside the collection must all
@@ -999,7 +999,7 @@ search component that is rendered (you can also use a lookup field).
 Default searching for many-to-one property *–>* combo box:
 [source,java]
 --
-@Attribute(visibleInGrid = VisibilityType.SHOW, searchable = true, complexEditable = true)
+@Attribute(visibleInGrid = VisibilityType.SHOW, searchable = true, visibleInGrid = VisibilityType.SHOW)
 private Country countryOfOrigin;
 --
 image:media/image4.png[image,width=508,height=140]
@@ -1007,7 +1007,7 @@ image:media/image4.png[image,width=508,height=140]
 Multiple search enabled –> lookup field:
 [source,java]
 --
-@Attribute(visibleInGrid = VisibilityType.SHOW, searchable = true, multipleSearch = true, complexEditable = true)
+@Attribute(visibleInGrid = VisibilityType.SHOW, searchable = true, multipleSearch = true, visibleInGrid = VisibilityType.SHOW)
 private Country countryOfOrigin;
 --
 Multiple search on *MASTER* attributes is currently only supported when
@@ -1170,7 +1170,7 @@ As an example, consider the following:
 @NotNull
 @JoinColumn(name = "country_of_origin")
 @ManyToOne(fetch = FetchType.LAZY)
-@Attribute(complexEditable = true, quickAddAllowed = true, selectMode = AttributeSelectMode.LOOKUP)
+@Attribute(visibleInGrid = VisibilityType.SHOW, quickAddAllowed = true, selectMode = AttributeSelectMode.LOOKUP)
 private Country countryOfOrigin;
 --
 Here, we define a “countryOfOrigin” property that is of type “Country”..
