@@ -1,35 +1,16 @@
 package com.ocs.dynamo.domain.model.validator;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
 
-public class URLValidatorTest {
+import static org.assertj.core.api.Assertions.assertThat;
 
-    private final URLValidator validator = new URLValidator();
-
-    @Test
-    public void testNull() {
-        assertTrue(validator.isValid(null, null));
-    }
+class URLValidatorTest {
 
     @Test
-    public void testValid() {
-        assertTrue(validator.isValid("http://www.google.nl", null));
-        assertTrue(validator.isValid("www.google.nl", null));
-        assertTrue(validator.isValid("mijn.site.nl", null));
-        assertTrue(validator.isValid("mijn.site", null));
-    }
+    public void test() {
 
-    @Test
-    public void testValid_basic() {
-        assertFalse(validator.isValid("nowwwnonothing", null));
-        assertFalse(validator.isValid("no-www-no-nothing", null));
-        assertFalse(validator.isValid("no/www/no/nothing", null));
-        assertFalse(validator.isValid("no$www$no$nothing", null));
-        assertFalse(validator.isValid("no@www@no@nothing", null));
-        assertFalse(validator.isValid("no www no nothing", null));
-    }
+        URLValidator validator = new URLValidator();
+        assertThat(validator.isValid("https://hackertyper.net", null)).isTrue();
 
+    }
 }

@@ -13,24 +13,39 @@
  */
 package com.ocs.dynamo.service;
 
+import com.ocs.dynamo.domain.model.EntityModel;
+
 /**
  * Service for retrieving the details of the logged-in user
- * 
+ *
  * @author bas.rutten
  */
 public interface UserDetailsService {
 
     /**
-     * Retrieve the name of the currently logged-in user
-     */
-    String getCurrentUserName();
-
-    /**
      * Returns true when the user is in (at least one of) the provided roles
-     * 
+     *
      * @param roles the collection of roles
      * @return true if the user is in at least one of the provided roles, false otherwise
      */
     boolean isUserInRole(String... roles);
+
+    /**
+     * Checks whether the user is allowed to perform read/search actions for the provided entity model
+     * @param model the model to check for
+     */
+    void validateReadAllowed(EntityModel<?> model);
+
+    /**
+     * Checks whether the user is allowed to perform write actions for the provided entity model
+     * @param model the model to check for
+     */
+    void validateWriteAllowed(EntityModel<?> model);
+
+    /**
+     * Checks whether the user is allowed to perform delete actions for the provided entity model
+     * @param model the model to check for
+     */
+    void validateDeleteAllowed(EntityModel<?> model);
 
 }

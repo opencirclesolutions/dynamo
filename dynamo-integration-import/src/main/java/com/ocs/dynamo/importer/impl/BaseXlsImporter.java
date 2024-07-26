@@ -18,7 +18,7 @@ import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.importer.ImportField;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
-import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.ocs.dynamo.utils.ClassUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;

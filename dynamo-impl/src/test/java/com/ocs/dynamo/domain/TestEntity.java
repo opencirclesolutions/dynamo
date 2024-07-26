@@ -13,27 +13,25 @@
  */
 package com.ocs.dynamo.domain;
 
-import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZonedDateTime;
-import java.util.HashSet;
-import java.util.Set;
-
+import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
+import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.domain.model.annotation.Model;
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
-
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.Model;
-import com.ocs.dynamo.domain.model.annotation.SearchMode;
-
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Entity used for testing purposes - has to be included in src/main/java
@@ -57,10 +55,11 @@ public class TestEntity extends AbstractEntity<Integer> {
 
 	@Id
 	@GeneratedValue
+	@Attribute(visibleInForm = VisibilityType.HIDE, visibleInGrid = VisibilityType.HIDE)
 	private Integer id;
 
 	@Size(max = 25)
-	@Attribute(main = true, searchable = SearchMode.ALWAYS)
+	@Attribute(searchable = SearchMode.ALWAYS)
 	@NotNull
 	private String name;
 
@@ -79,9 +78,6 @@ public class TestEntity extends AbstractEntity<Integer> {
 	private LocalTime registrationTime;
 
 	private LocalDateTime lastLogin;
-
-	@Attribute(week = true)
-	private LocalDate birthWeek;
 
 	@Attribute(searchable = SearchMode.ALWAYS)
 	@Column(columnDefinition = "smallint")
@@ -126,8 +122,6 @@ public class TestEntity extends AbstractEntity<Integer> {
 	@ElementCollection
 	@Attribute(minValue = 34)
 	private Set<Long> longTags = new HashSet<>();
-
-	private ZonedDateTime zoned;
 
 	private Double someDouble;
 

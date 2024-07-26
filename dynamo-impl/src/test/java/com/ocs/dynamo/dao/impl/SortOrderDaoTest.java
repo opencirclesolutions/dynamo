@@ -13,16 +13,12 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-
-import org.junit.jupiter.api.Test;
-
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrder.Direction;
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class SortOrderDaoTest {
 

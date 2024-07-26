@@ -13,18 +13,14 @@
  */
 package com.ocs.dynamo.filter;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.TestEntity2;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
-import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.TestEntity2;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class FilterTest {
 

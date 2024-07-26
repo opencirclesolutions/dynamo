@@ -16,7 +16,7 @@ package com.ocs.dynamo.importer.impl;
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.dto.AbstractDTO;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 

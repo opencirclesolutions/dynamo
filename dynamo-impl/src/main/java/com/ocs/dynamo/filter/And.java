@@ -16,7 +16,7 @@ package com.ocs.dynamo.filter;
 import java.util.Collection;
 
 /**
- * A composite filter that evaluates to true if all of the subfilters match
+ * A composite filter that evaluates to true if all the subfilters match
  * 
  * @author bas.rutten
  */

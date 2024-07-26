@@ -13,21 +13,15 @@
  */
 package com.ocs.dynamo.domain;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.Table;
-import jakarta.validation.constraints.Email;
-
 import com.ocs.dynamo.domain.model.AttributeSelectMode;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "test_entity2")
@@ -58,13 +52,13 @@ public class TestEntity2 extends AbstractEntity<Integer> {
     private TestEntity testEntityAlt;
 
     @ManyToOne
-    @Attribute(selectMode = AttributeSelectMode.LIST, gridSelectMode = AttributeSelectMode.LIST)
+    @Attribute(selectMode = AttributeSelectMode.LOOKUP)
     private TestEntity testEntityAlt2;
 
-    @Attribute(selectMode = AttributeSelectMode.TOKEN)
+    @Attribute
     private String basicToken;
 
-    @Attribute(currency = true)
+    @Attribute(currencyCode = "EUR")
     private BigDecimal currency;
 
     @Attribute

@@ -13,16 +13,14 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import java.util.Locale;
-
+import com.ocs.dynamo.domain.model.AttributeModel;
+import com.ocs.dynamo.service.MessageService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.MessageSource;
 import org.springframework.context.NoSuchMessageException;
 
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.service.MessageService;
-
-import lombok.extern.slf4j.Slf4j;
+import java.util.Locale;
 
 /**
  * Implementation of the simple message service

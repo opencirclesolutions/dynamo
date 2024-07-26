@@ -13,12 +13,12 @@
  */
 package com.ocs.dynamo.domain.model.annotation;
 
+import com.ocs.dynamo.domain.model.CascadeMode;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
-
-import com.ocs.dynamo.domain.model.CascadeMode;
 
 /**
  * Annotation used to define a cascade between components

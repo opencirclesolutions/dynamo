@@ -14,8 +14,7 @@
 package com.ocs.dynamo.service;
 
 import com.ocs.dynamo.exception.OCSRuntimeException;
-import com.ocs.dynamo.util.SystemPropertyUtils;
-
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 

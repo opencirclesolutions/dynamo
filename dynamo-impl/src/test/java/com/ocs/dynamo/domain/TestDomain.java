@@ -13,11 +13,10 @@
  */
 package com.ocs.dynamo.domain;
 
+import com.ocs.dynamo.domain.model.annotation.Model;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-
-import com.ocs.dynamo.domain.model.annotation.Model;
 
 @Entity
 @Table(name = "test_domain")

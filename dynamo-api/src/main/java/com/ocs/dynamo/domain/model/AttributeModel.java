@@ -13,11 +13,12 @@
  */
 package com.ocs.dynamo.domain.model;
 
+import com.ocs.dynamo.domain.model.annotation.SearchMode;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
-
-import com.ocs.dynamo.domain.model.annotation.SearchMode;
 
 /**
  * An attribute model represents how a certain attribute of an entity will
@@ -49,6 +50,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	void addGroupTogetherWith(String path);
 
 	/**
+	 * @return the field-specific auto-fill instructions
+	 */
+	String getAutofillInstructions();
+
+	/**
 	 * @return the actual path to search on. This uses the replacementSearchPath
 	 *         when set or the default search path otherwise
 	 */
@@ -71,7 +77,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	AttributeType getAttributeType();
 
 	/**
-	 * 
+	 * @return the boolean field mode to use
+	 */
+	AttributeBooleanFieldMode getBooleanFieldMode();
+
+	/**
 	 * @return the attributes to cascade to when the value of this attribute changes
 	 */
 	Set<String> getCascadeAttributes();
@@ -108,10 +118,10 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	String getCollectionTableName();
 
 	/**
-	 * 
-	 * @return the currency symbol to use
+	 *
+	 * @return the currency code to use
 	 */
-	String getCurrencySymbol();
+	String getCurrencyCode();
 
 	/**
 	 * Returns the value for a custom setting
@@ -128,11 +138,25 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	AttributeDateType getDateType();
 
 	/**
-	 * Returns the default value
-	 * 
 	 * @return The default value of the attribute
 	 */
 	Object getDefaultValue();
+
+	/**
+	 *
+	 * @return the default search value of the attribute
+	 */
+	Object getDefaultSearchValue();
+
+	/**
+	 * @return the default search value (lower bound)
+	 */
+	Object getDefaultSearchValueFrom();
+
+	/**
+	 * @return the default search value (upper bound)
+	 */
+	Object getDefaultSearchValueTo();
 
 	/**
 	 * Returns the description of the attribute for a certain locale
@@ -147,7 +171,7 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * 
 	 * @return the display format of the attribute (used in date formatting)
 	 */
-	String getDisplayFormat();
+	String getDisplayFormat(Locale locale);
 
 	/**
 	 * Returns the display name of the attribute for a certain locale
@@ -168,6 +192,16 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return the EntityModel for the entity that contains this attribute
 	 */
 	EntityModel<?> getEntityModel();
+
+	/**
+	 * @return the component to use for rendering an enum
+	 */
+	AttributeEnumFieldMode getEnumFieldMode();
+
+	/**
+	 * @return the desired mode to use for element collection fields
+	 */
+	ElementCollectionMode getElementCollectionMode();
 
 	/**
 	 * Returns the textual representation of a "false" value for a certain locale
@@ -191,11 +225,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Integer getGridOrder();
 
 	/**
-	 * @return the select mode to use when editing the attribute inside a grid
-	 */
-	AttributeSelectMode getGridSelectMode();
-
-	/**
 	 * 
 	 * @return the paths to the other attributes that must appear on the same line
 	 *         in an edit form
@@ -203,15 +232,19 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	List<String> getGroupTogetherWith();
 
 	/**
-	 * 
-	 * @return whether to display captions in the lookup field buttons
+	 * @return the entity model reference used in lookup components
 	 */
-	VisibilityType getLookupFieldCaptions();
+	String getLookupEntityReference();
+
+	/**
+	 *
+	 * @return the maximum collection size for element collection
+	 */
+	Integer getMaxCollectionSize();
 
 	/**
 	 * 
-	 * @return The maximum allowed length of the attribute (inside a collection
-	 *         grid)
+	 * @return The maximum allowed length of a String attribute
 	 */
 	Integer getMaxLength();
 
@@ -224,9 +257,9 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the maximum allowed value of the attribute (inside a collection grid)
+	 * @return the maximum allowed value of a numeric attribute
 	 */
-	Long getMaxValue();
+	BigDecimal getMaxValue();
 
 	/**
 	 * 
@@ -236,31 +269,33 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	Class<?> getMemberType();
 
 	/**
+	 *
+	 * @return the minimum collection size for element collections
+	 */
+	Integer getMinCollectionSize();
+
+	/**
 	 * 
-	 * @return the minimum allowed length of the attribute (inside a collection
-	 *         table)
+	 * @return the minimum allowed length of a String attribute
 	 */
 	Integer getMinLength();
 
 	/**
 	 * 
-	 * @return the minimum allowed value of the attribute (inside a collection
-	 *         table)
+	 * @return the minimum allowed value of a numeric attribute
 	 */
-	Long getMinValue();
-
-	/**
-	 * 
-	 * @return the select mode (combo boxes or row click) when selecting multiple
-	 *         items inside a search dialog
-	 */
-	MultiSelectMode getMultiSelectMode();
+	BigDecimal getMinValue();
 
 	/**
 	 * 
 	 * @return the name/identifier of the attribute
 	 */
 	String getName();
+
+	/**
+	 * @return the internal navigation link
+	 */
+	String getNavigationLink();
 
 	/**
 	 * 
@@ -291,12 +326,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 * @return The order number (used to internally order the attribute models)
 	 */
 	Integer getOrder();
-
-	/**
-	 * 
-	 * @return the paging mode used in entity select components
-	 */
-	PagingMode getPagingMode();
 
 	/**
 	 * @return The (nested) path to this attribute
@@ -354,23 +383,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 
 	/**
 	 * 
-	 * @return the height of a text area
-	 */
-	String getTextAreaHeight();
-
-	/**
-	 * 
 	 * @return The text field mode (text field or text area)
 	 */
 	AttributeTextFieldMode getTextFieldMode();
 
-	/**
-	 * @return the thousands the mode that determines how to handle the thousand
-	 *         separator when formatting floating point numbers
-	 */
-	ThousandsGroupingMode getThousandsGroupingMode();
-
-	/**
+    /**
 	 * @return The textual representation of a "true" value
 	 */
 	String getTrueRepresentation(Locale locale);
@@ -395,16 +412,11 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isBoolean();
 
 	/**
-	 * @return whether the Clear button is visible for the component
+	 * @return whether image download is allowed
 	 */
-	boolean isClearButtonVisible();
+	boolean isDownloadAllowed();
 
-	/**
-	 * @return whether the attribute represents a currency
-	 */
-	boolean isCurrency();
-
-	/**
+    /**
 	 * 
 	 * @return whether the attribute represents an email address
 	 */
@@ -429,11 +441,6 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isImage();
 
 	/**
-	 * @return whether this is the "main" attribute
-	 */
-	boolean isMainAttribute();
-
-	/**
 	 * 
 	 * @return whether "multiple search" is supported for this attribute
 	 */
@@ -446,10 +453,22 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isNavigable();
 
 	/**
+	 *
+	 * @return whether the detail collection is nested directly inside the parent object
+	 */
+	boolean isNestedDetails();
+
+	/**
 	 * 
 	 * @return whether the attribute value is numerical
 	 */
 	boolean isNumerical();
+
+	/**
+	 *
+	 * @return whether the attribute value is an integral number (integer or long)
+	 */
+	boolean isIntegral();
 
 	/**
 	 * 
@@ -531,14 +550,9 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	boolean isVisibleInForm();
 
 	/**
-	 * @return whether the attribute must be shown in a grid
+	 * @return whether the attribute must be shown in a grid or table
 	 */
 	boolean isVisibleInGrid();
-
-	/**
-	 * @return whether the attribute represents a weekly recurring date
-	 */
-	boolean isWeek();
 
 	/**
 	 * Removes all cascading search settings for the attribute
@@ -554,25 +568,19 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	void setCustomSetting(String name, Object value);
 
 	/**
-	 * Sets whether this attribute is the main attribute
-	 * 
-	 * @param main the desired value for the "main" setting
+	 * @return whether the attribute has a setter method
 	 */
-	void setMainAttribute(boolean main);
+	boolean hasSetterMethod();
 
 	/**
-	 * @return whether to use thousands grouping in edit mode
+	 * @return whether this attribute is needed for correct working of other attributes
 	 */
-	boolean useThousandsGroupingInEditMode();
-
-	/**
-	 * @return whether to use thousands grouping in edit mode
-	 */
-	boolean useThousandsGroupingInViewMode();
+	boolean isNeededInData();
 
 	/**
 	 *
-	 * @return return the auto-fill instructions used for ChatGPT
+	 * @return the query type to use in case of a lookup
 	 */
-	String getAutoFillInstructions();
+	QueryType getLookupQueryType();
+
 }

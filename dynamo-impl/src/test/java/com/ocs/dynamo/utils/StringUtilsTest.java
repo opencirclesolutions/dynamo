@@ -13,14 +13,10 @@
  */
 package com.ocs.dynamo.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
+import com.ocs.dynamo.domain.TestEntity;
 import org.junit.jupiter.api.Test;
 
-import com.ocs.dynamo.domain.TestEntity;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class StringUtilsTest {
 

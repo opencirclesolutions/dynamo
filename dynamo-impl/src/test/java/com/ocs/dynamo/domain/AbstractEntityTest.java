@@ -13,10 +13,9 @@
  */
 package com.ocs.dynamo.domain;
 
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class AbstractEntityTest {
 
@@ -37,10 +36,10 @@ public class AbstractEntityTest {
 
         // IDs not equal
         TestEntity e3 = new TestEntity();
-        assertFalse(e1.equals(e3));
+        assertNotEquals(e1, e3);
 
         TestEntity e4 = new TestEntity();
         e4.setId(2);
-        assertFalse(e1.equals(e4));
+        assertNotEquals(e1, e4);
     }
 }

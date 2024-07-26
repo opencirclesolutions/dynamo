@@ -61,4 +61,11 @@ public interface ServiceLocator {
 	 */
 	BaseService<?, ?> getServiceForEntity(Class<?> entityClass);
 
+	/**
+	 * Retrieves a service that is used to search for a certain type of entity
+	 * @param entityClass the entity class
+	 * @return the service used for searching
+	 */
+	BaseSearchService<?, ?> getSearchServiceForEntity(Class<?> entityClass);
+
 }

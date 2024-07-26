@@ -13,47 +13,37 @@
  */
 package com.ocs.dynamo.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.TestEntity2;
+import com.ocs.dynamo.domain.model.annotation.Attribute;
+import com.ocs.dynamo.exception.OCSRuntimeException;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import org.junit.jupiter.api.Test;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.Entity;
-import jakarta.validation.constraints.Size;
-
-import org.junit.jupiter.api.Test;
-
-import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.TestEntity2;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.exception.OCSRuntimeException;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ClassUtilsTest {
 
     @SuppressWarnings("unused")
-    private class NestedTestObject {
+    @Getter
+    @Setter
+    private static class NestedTestObject {
 
         private String name;
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
-        }
-
     }
 
     @SuppressWarnings("unused")
-    private class TestObject {
+    @Getter
+    @Setter
+    private static class TestObject {
 
         private byte[] fieldBytes = new byte[] { 1, 2, 3 };
 
@@ -65,14 +55,6 @@ public class ClassUtilsTest {
 
         private NestedTestObject nested;
 
-        public byte[] getFieldBytes() {
-            return fieldBytes;
-        }
-
-        public Integer getFieldOne() {
-            return fieldOne;
-        }
-
         @Attribute(displayName = "Bert")
         public String getFieldThree() {
             return null;
@@ -82,45 +64,17 @@ public class ClassUtilsTest {
             return fieldTwo;
         }
 
-        public NestedTestObject getNested() {
-            return nested;
-        }
+    }
 
-        public void setFieldBytes(byte[] fieldBytes) {
-            this.fieldBytes = fieldBytes;
-        }
-
-        public void setFieldOne(Integer fieldOne) {
-            this.fieldOne = fieldOne;
-        }
-
-        public void setFieldTwo(String fieldTwo) {
-            this.fieldTwo = fieldTwo;
-        }
-
-        public void setNested(NestedTestObject nested) {
-            this.nested = nested;
-        }
+    private static class TestObject2 extends TestObject {
 
     }
 
-    private class TestObject2 extends TestObject {
-
-    }
-
-    private class TestObject3 {
+    @Getter
+    @Setter
+    private static class TestObject3 {
         private Map<Integer, List<TestObject>> indexedObjects;
         private List<TestObject> objects;
-
-        @SuppressWarnings("unused")
-        public Map<Integer, List<TestObject>> getIndexedObjects() {
-            return indexedObjects;
-        }
-
-        @SuppressWarnings("unused")
-        public List<TestObject> getObjects() {
-            return objects;
-        }
     }
 
     @Test
@@ -130,16 +84,16 @@ public class ClassUtilsTest {
         entity.setName("Bob");
         entity.setAge(44L);
 
-        ClassUtils.clearFieldValue(entity, "someBytes", byte[].class);
+        ClassUtils.clearAttributeValue(entity, "someBytes", byte[].class);
         assertNull(entity.getSomeBytes());
 
-        ClassUtils.clearFieldValue(entity, "name", String.class);
+        ClassUtils.clearAttributeValue(entity, "name", String.class);
         assertNull(entity.getName());
 
         TestEntity2 entity2 = new TestEntity2();
         entity2.setTestEntity(entity);
 
-        ClassUtils.clearFieldValue(entity2, "testEntity.age", Long.class);
+        ClassUtils.clearAttributeValue(entity2, "testEntity.age", Long.class);
         assertNull(entity.getAge());
     }
 
@@ -159,26 +113,8 @@ public class ClassUtilsTest {
         // the reference is now non-empty and the property can be set
         entity2.setTestEntity(new TestEntity());
         assertTrue(ClassUtils.canSetProperty(entity2, "testEntity.name"));
-        // neste property that does not exist
+        // nested property that does not exist
         assertFalse(ClassUtils.canSetProperty(entity2, "testEntity.phone"));
-    }
-
-    @Test
-    public void testForClass() {
-        Class<?> clazz = ClassUtils.forClass("com.ocs.dynamo.domain.TestEntity");
-        assertNotNull(clazz);
-    }
-
-    @Test
-    public void testForClassBogus() {
-        Class<?> clazz = ClassUtils.forClass("com.ocs.dynamo.domain.TestEntityZ");
-        assertNull(clazz);
-    }
-
-    @Test
-    public void testForClassNull() {
-        Class<?> clazz = ClassUtils.forClass("");
-        assertNull(clazz);
     }
 
     @Test
@@ -192,6 +128,7 @@ public class ClassUtilsTest {
 
         // retrieve the annotation from the class and the field name
         attribute = ClassUtils.getAnnotationOnField(TestObject.class, "fieldOne", Attribute.class);
+        assertNotNull(attribute);
         assertEquals("desc", attribute.description());
 
         String desc = ClassUtils.getAnnotationAttributeValue(fieldOne, Attribute.class, "description");
@@ -274,7 +211,7 @@ public class ClassUtilsTest {
     }
 
     @Test
-    public void testGetFieldValueDoesntExists() {
+    public void testGetFieldValueDoesNotExist() {
         TestEntity entity = new TestEntity();
         entity.setAge(12L);
         assertThrows(OCSRuntimeException.class, () -> ClassUtils.getFieldValue(entity, "age2"));

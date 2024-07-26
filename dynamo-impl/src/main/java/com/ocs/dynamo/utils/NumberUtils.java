@@ -13,13 +13,15 @@
  */
 package com.ocs.dynamo.utils;
 
+import com.ocs.dynamo.domain.model.AttributeModel;
+import org.apache.commons.lang3.StringUtils;
+
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.text.NumberFormat;
+import java.util.Currency;
 import java.util.Locale;
-
-import com.ocs.dynamo.domain.model.AttributeModel;
 
 /**
  * Utility methods for dealing with numbers
@@ -29,33 +31,32 @@ import com.ocs.dynamo.domain.model.AttributeModel;
 public final class NumberUtils {
 
     /**
-     * Appends a percentage sign to the provided string if needed
+     * Appends a percentage sing to the provided string if needed
      *
-     * @param input         the string
+     * @param s          the string
      * @param percentage whether to append the sign
-     * @return the input string with a percentage sign appended to it
+     * @return the
      */
-    private static String appendPercentage(String input, boolean percentage) {
-        if (input == null) {
+    private static String appendPercentage(String s, boolean percentage) {
+        if (s == null) {
             return null;
         }
-        return percentage ? input + "%" : input;
+        return percentage ? s + "%" : s;
     }
 
     /**
-     * * Converts a BigDecimal value to a String
+     * Converts a BigDecimal value to a String
      *
-     * @param currency       whether the value represents a currency
-     * @param percentage     whether the value represents a percentage
-     * @param useGrouping    whether to use a thousand grouping
-     * @param value          the value
-     * @param currencySymbol the currency symbol
-     * @param locale         the locale to use
-     * @return the result of the conversion
+     * @param percentage   whether the value represents a percentage
+     * @param useGrouping  whether to use a thousand grouping
+     * @param value        the value
+     * @param currencyCode the currency code
+     * @param locale       the locale to use
+     * @return the result of the formatting
      */
-    public static String bigDecimalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
-                                            BigDecimal value, Locale locale, String currencySymbol) {
-        return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
+    public static String bigDecimalToString(boolean percentage, boolean useGrouping, int precision,
+                                            BigDecimal value, Locale locale, String currencyCode) {
+        return fractionalToString(percentage, useGrouping, precision, value, locale, currencyCode);
     }
 
     /**
@@ -83,43 +84,41 @@ public final class NumberUtils {
     /**
      * Converts a double to a String
      *
-     * @param currency       whether to include a currency symbol
-     * @param percentage     whether to include a percentage sign
-     * @param useGrouping    whether to use a thousand grouping separator
-     * @param precision      the desired precision
-     * @param value          the value to convert
-     * @param currencySymbol the currency symbol to use
-     * @param locale         the locale to use
-     * @return the result of the conversion
+     * @param percentage   whether to include a percentage sign
+     * @param useGrouping  whether to use a thousand grouping separator
+     * @param precision    the desired precision
+     * @param value        the value to convert
+     * @param locale       the locale to use
+     * @param currencyCode the currency symbol to use
+     * @return the result of the formatting
      */
-    public static String doubleToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
-                                        Double value, Locale locale, String currencySymbol) {
-        return fractionalToString(currency, percentage, useGrouping, precision, value, locale, currencySymbol);
+    public static String doubleToString(boolean percentage, boolean useGrouping, int precision,
+                                        Double value, Locale locale, String currencyCode) {
+        return fractionalToString(percentage, useGrouping, precision, value, locale, currencyCode);
     }
 
     /**
      * Converts a fractional value to a String
      *
-     * @param currency       whether to include a currency symbol
-     * @param percentage     whether to include a percentage sign
-     * @param useGrouping    whether to use a thousand grouping separator
-     * @param precision      the desired precision
-     * @param value          the value to convert
-     * @param currencySymbol the currency symbol to use
-     * @param locale         the locale to use
-     * @return the result of the conversion
+     * @param percentage   whether to include a percentage sign
+     * @param useGrouping  whether to use a thousand grouping separator
+     * @param precision    the desired precision
+     * @param value        the value to convert
+     * @param locale       the locale to use
+     * @param currencyCode the currency code to use
+     * @return the string representation
      */
-    public static String fractionalToString(boolean currency, boolean percentage, boolean useGrouping, int precision,
-                                            Number value, Locale locale, String currencySymbol) {
+    public static String fractionalToString(boolean percentage, boolean useGrouping, int precision,
+                                            Number value, Locale locale, String currencyCode) {
         if (value == null) {
             return null;
         }
 
         DecimalFormat df;
-        if (currency) {
+        if (!StringUtils.isEmpty(currencyCode)) {
             df = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);
             DecimalFormatSymbols s = df.getDecimalFormatSymbols();
-            s.setCurrencySymbol(currencySymbol);
+            s.setCurrency(Currency.getInstance(currencyCode));
             df.setDecimalFormatSymbols(s);
         } else {
             df = (DecimalFormat) DecimalFormat.getInstance(locale);
@@ -133,12 +132,12 @@ public final class NumberUtils {
     }
 
     /**
-     * Converts an Integer to a String, using the Vaadin converters
+     * Converts an Integer to a String
      *
      * @param grouping indicates whether grouping separators must be used
      * @param value    the value to convert
      * @param locale   the locale
-     * @return the result of the conversion
+     * @return the result of the formatting
      */
     public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
         if (value == null) {
@@ -154,7 +153,7 @@ public final class NumberUtils {
      * Checks whether a class is a double (either wrapper or primitive)
      *
      * @param clazz the class to check
-     * @return true if the provided class is a double or Double
+     * @return true if this is the case, false otherwise
      */
     public static boolean isDouble(Class<?> clazz) {
         return Double.class.equals(clazz) || double.class.equals(clazz);
@@ -163,8 +162,8 @@ public final class NumberUtils {
     /**
      * Checks if an object is a double (either wrapper or primitive)
      *
-     * @param value the object to check
-     * @return true if the provided object is a double or Double
+     * @param value the value to check
+     * @return true if this is the case, false otherwise
      */
     public static boolean isDouble(Object value) {
         if (value == null) {
@@ -174,20 +173,20 @@ public final class NumberUtils {
     }
 
     /**
-     * Checks if a class is represents a float (either wrapper or primitive)
+     * Checks if a class is a float (either wrapper or primitive)
      *
      * @param clazz the class to check
-     * @return true if the provided class is a Float or float
+     * @return true if this is the case, false otherwise
      */
     public static boolean isFloat(Class<?> clazz) {
         return Float.class.equals(clazz) || float.class.equals(clazz);
     }
 
     /**
-     * Checks if a class represents an integer (either wrapper or primitive)
+     * Checks if a class is an integer (either wrapper or primitive)
      *
      * @param clazz the class to check
-     * @return true  if the provided class is Integer or integer
+     * @return true if this is the case, false otherwise
      */
     public static boolean isInteger(Class<?> clazz) {
         return Integer.class.equals(clazz) || int.class.equals(clazz);
@@ -243,12 +242,12 @@ public final class NumberUtils {
     }
 
     /**
-     * Converts a Long to a String, using the Vaadin converters
+     * Converts a Long to a String
      *
      * @param grouping indicates whether grouping separators must be used
      * @param value    the value to convert
      * @param locale   the locale
-     * @return the resulting String value
+     * @return the result of the conversion
      */
     public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
         if (value == null) {
@@ -264,22 +263,20 @@ public final class NumberUtils {
     /**
      * Converts a number to a String based on an attribute model and additional options
      *
-     * @param am             the attribute model of the attribute to convert
-     * @param value          the value to convert
-     * @param grouping       the thousand grouping symbol
-     * @param locale         the locale used in the formatting
-     * @param currencySymbol the currency symbol
+     * @param am       the attribute model of the attribute to convert
+     * @param value    the value to convert
+     * @param grouping the thousand grouping symbol
+     * @param locale   the locale used in the formatting
      * @return the resulting String value
      */
-    public static <T> String numberToString(AttributeModel am, T value, boolean grouping, Locale locale,
-                                            String currencySymbol) {
+    public static <T> String numberToString(AttributeModel am, T value, boolean grouping, Locale locale) {
         if (NumberUtils.isInteger(am.getNormalizedType())) {
             return integerToString(grouping, am.isPercentage(), (Integer) value, locale);
         } else if (NumberUtils.isLong(am.getNormalizedType())) {
             return longToString(grouping, am.isPercentage(), (Long) value, locale);
         } else if (NumberUtils.isDouble(am.getNormalizedType()) || BigDecimal.class.equals(am.getNormalizedType())) {
-            return fractionalToString(am.isCurrency(), am.isPercentage(), grouping, am.getPrecision(), (Number) value,
-                    locale, currencySymbol);
+            return fractionalToString(am.isPercentage(), grouping, am.getPrecision(), (Number) value,
+                    locale, am.getCurrencyCode());
         }
         return null;
     }

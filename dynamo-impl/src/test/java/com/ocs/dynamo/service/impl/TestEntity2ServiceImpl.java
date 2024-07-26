@@ -13,14 +13,13 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import javax.inject.Inject;
-
-import org.springframework.stereotype.Service;
-
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.impl.TestEntity2Dao;
 import com.ocs.dynamo.domain.TestEntity2;
 import com.ocs.dynamo.service.TestEntity2Service;
+import org.springframework.stereotype.Service;
+
+import javax.inject.Inject;
 
 @Service("testEntity2Service")
 public class TestEntity2ServiceImpl extends BaseServiceImpl<Integer, TestEntity2>

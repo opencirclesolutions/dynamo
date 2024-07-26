@@ -13,13 +13,13 @@
  */
 package com.ocs.dynamo.domain.query;
 
+import com.ocs.dynamo.domain.AbstractEntity;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
-
-import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
  * An iterator for traversing large data sets without loading them all into

@@ -13,29 +13,18 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import java.util.Objects;
-
-import jakarta.persistence.Column;
-import jakarta.persistence.DiscriminatorColumn;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Inheritance;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
-
 import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.EditableType;
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
-import com.ocs.dynamo.functional.DomainConstants;
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
+import java.util.Objects;
 
 /**
  * Base class for reference information.
@@ -63,7 +52,8 @@ public abstract class Domain extends AbstractEntity<Integer> {
 	@ToString.Include
 	private Integer id;
 
-	@Attribute(visibleInForm = VisibilityType.HIDE, visibleInGrid = VisibilityType.HIDE, editable = EditableType.READ_ONLY)
+	@Attribute(visibleInForm = VisibilityType.HIDE, editable = EditableType.READ_ONLY,
+		visibleInGrid = VisibilityType.HIDE)
 	@Column(name = "type", insertable = false, updatable = false)
 	private String type;
 
@@ -77,7 +67,7 @@ public abstract class Domain extends AbstractEntity<Integer> {
 
 	@Size(max = 255)
 	@NotNull
-	@Attribute(main = true, maxLength = DomainConstants.MAX_NAME_LENGTH, searchable = SearchMode.ALWAYS)
+	@Attribute(maxLength = 255, searchable = SearchMode.ALWAYS)
 	@ToString.Include
 	private String name;
 

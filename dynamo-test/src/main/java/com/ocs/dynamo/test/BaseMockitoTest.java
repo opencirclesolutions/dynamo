@@ -13,13 +13,11 @@
  */
 package com.ocs.dynamo.test;
 
-import java.text.DecimalFormat;
-
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-import com.ocs.dynamo.constants.DynamoConstants;
+import java.text.DecimalFormat;
 
 /**
  * Base class for testing Spring beans. Automatically injects all dependencies
@@ -30,20 +28,13 @@ import com.ocs.dynamo.constants.DynamoConstants;
 @ExtendWith(SpringExtension.class)
 public abstract class BaseMockitoTest {
 
-    @BeforeAll
-    public static void beforeClass() {
-        System.setProperty(DynamoConstants.SP_SERVICE_LOCATOR_CLASS_NAME, "com.ocs.dynamo.ui.SpringTestServiceLocator");
-    }
-    
     /**
-     * 
      * @param str the string to convert
-     * @return the
+     * @return the result of the conversion
      */
     protected String formatNumber(String str) {
         DecimalFormat df = (DecimalFormat) DecimalFormat.getNumberInstance();
         char ds = df.getDecimalFormatSymbols().getDecimalSeparator();
         return str.replace(',', ds);
     }
-
 }

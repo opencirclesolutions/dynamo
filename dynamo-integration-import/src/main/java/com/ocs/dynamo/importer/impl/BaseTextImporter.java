@@ -20,7 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.importer.ImportField;
-import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 /**
  * Base class for importers that read data from a text file

@@ -22,4 +22,5 @@ import com.ocs.dynamo.domain.TestEntity;
  */
 public interface TestEntityService extends BaseService<Integer, TestEntity> {
 
+    public TestEntity partialAction(TestEntityDTO dto);
 }

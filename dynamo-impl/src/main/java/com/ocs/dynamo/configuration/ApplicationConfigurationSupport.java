@@ -13,15 +13,14 @@
  */
 package com.ocs.dynamo.configuration;
 
-import java.nio.charset.StandardCharsets;
-
 import jakarta.validation.ValidatorFactory;
-
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
+
+import java.nio.charset.StandardCharsets;
 
 /**
  * Default configuration for Dynamo applications. Adds a message source and a

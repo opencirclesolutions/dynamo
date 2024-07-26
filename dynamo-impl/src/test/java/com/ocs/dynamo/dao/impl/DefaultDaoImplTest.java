@@ -19,14 +19,14 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.test.BaseMockitoTest;
-import org.aspectj.lang.annotation.Before;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
-import org.mockito.Mockito;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.mockito.Mockito.when;
+
 
 public class DefaultDaoImplTest extends BaseMockitoTest {
 
@@ -36,7 +36,7 @@ public class DefaultDaoImplTest extends BaseMockitoTest {
     private EntityModelFactory entityModelFactory;
 
     @Mock
-    private EntityModel<TestEntity> entityModel;
+    private EntityModel entityModel;
 
     @BeforeEach
     void beforeEach() {
@@ -45,7 +45,7 @@ public class DefaultDaoImplTest extends BaseMockitoTest {
     @Test
     public void testCreateWithoutFetch() {
         dao = new DefaultDaoImpl<>(QTestEntity.testEntity, TestEntity.class);
-        Mockito.when(entityModelFactory.getModel(TestEntity.class)).thenReturn(entityModel);
+        when(entityModelFactory.getModel(TestEntity.class)).thenReturn(entityModel);
         ReflectionTestUtils.setField(dao, "entityModelFactory", entityModelFactory);
 
         assertEquals(QTestEntity.testEntity, dao.getDslRoot());

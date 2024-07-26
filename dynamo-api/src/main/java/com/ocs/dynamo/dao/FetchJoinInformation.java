@@ -18,7 +18,7 @@ import lombok.Getter;
 
 /**
  * A DTO representing the properties of a fetch join
- * 
+ *
  * @author bas.rutten
  */
 @Getter
@@ -33,7 +33,7 @@ public class FetchJoinInformation {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param property the property to use for the fetch
 	 * @param joinType the desired join type (left, inner etc.)
 	 */
@@ -44,7 +44,7 @@ public class FetchJoinInformation {
 
 	/**
 	 * Constructor - defaults to left join
-	 * 
+	 *
 	 * @param property the property to fetch
 	 */
 	public FetchJoinInformation(String property) {
@@ -53,7 +53,7 @@ public class FetchJoinInformation {
 
 	/**
 	 * Creates an array based on the specified vararg
-	 * 
+	 *
 	 * @param joins the specified joins
 	 * @return an array based on the joins
 	 */

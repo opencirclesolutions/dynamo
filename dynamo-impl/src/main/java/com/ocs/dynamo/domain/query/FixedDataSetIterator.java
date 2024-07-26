@@ -13,10 +13,10 @@
  */
 package com.ocs.dynamo.domain.query;
 
+import com.ocs.dynamo.domain.AbstractEntity;
+
 import java.io.Serializable;
 import java.util.List;
-
-import com.ocs.dynamo.domain.AbstractEntity;
 
 /**
  * A simple iterator for iterating over a fixed set of data - this basically

@@ -21,5 +21,5 @@ package com.ocs.dynamo.domain.model;
  */
 public enum AttributeSelectMode {
 
-	INHERIT, COMBO, LOOKUP, LIST, TOKEN;
+	INHERIT, COMBO, LOOKUP, MULTI_SELECT, AUTO_COMPLETE;
 }

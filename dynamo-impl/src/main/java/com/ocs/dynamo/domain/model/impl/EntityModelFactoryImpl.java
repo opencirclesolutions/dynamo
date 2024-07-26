@@ -20,10 +20,14 @@ import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.*;
 import com.ocs.dynamo.domain.model.annotation.*;
 import com.ocs.dynamo.exception.OCSRuntimeException;
+import com.ocs.dynamo.service.BaseService;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.service.ServiceLocator;
+import com.ocs.dynamo.service.ServiceLocatorFactory;
 import com.ocs.dynamo.utils.ClassUtils;
 import com.ocs.dynamo.utils.DateUtils;
+import com.ocs.dynamo.utils.NumberUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
 import lombok.NoArgsConstructor;
@@ -34,10 +38,12 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZonedDateTime;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.ConcurrentHashMap;
@@ -70,6 +76,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
     @Autowired(required = false)
     private MessageService messageService;
+
+    private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
     /**
      * Use this constructor when one needs to delegate creation of models to other
@@ -128,18 +136,42 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
             if (!StringUtils.isEmpty(modelAnnotation.displayProperty())) {
                 builder.displayProperty(modelAnnotation.displayProperty());
-                builder.filterProperty(modelAnnotation.displayProperty());
             }
+
             if (modelAnnotation.nestingDepth() > -1) {
                 builder.nestingDepth(modelAnnotation.nestingDepth());
             }
 
-            if (!StringUtils.isEmpty(modelAnnotation.filterProperty())) {
-                builder.filterProperty(modelAnnotation.filterProperty());
+            if (!modelAnnotation.listAllowed()) {
+                builder.listAllowed(false);
             }
-            if (!StringUtils.isEmpty(modelAnnotation.autofillInstructions())) {
-                builder.autofillInstructions(modelAnnotation.autofillInstructions());
+            if (!modelAnnotation.searchAllowed()) {
+                builder.searchAllowed(false);
             }
+            if (!modelAnnotation.createAllowed()) {
+                builder.createAllowed(false);
+            }
+            if (!modelAnnotation.updateAllowed()) {
+                builder.updateAllowed(false);
+            }
+
+            if (modelAnnotation.deleteAllowed()) {
+                builder.deleteAllowed(true);
+            }
+
+            if (!modelAnnotation.exportAllowed()) {
+                builder.exportAllowed(false);
+            }
+
+            builder.maxSearchResults(modelAnnotation.maxSearchResults());
+            builder.autofillInstructions(modelAnnotation.autofillInstructions());
+        }
+
+        Roles rolesAnnotation = entityClass.getAnnotation(Roles.class);
+        if (rolesAnnotation != null) {
+            builder.readRoles(Arrays.asList(rolesAnnotation.readRoles()));
+            builder.writeRoles(Arrays.asList(rolesAnnotation.writeRoles()));
+            builder.deleteRoles(Arrays.asList(rolesAnnotation.deleteRoles()));
         }
     }
 
@@ -160,11 +192,50 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 builder::defaultDescription);
         setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_PROPERTY),
                 builder::displayProperty);
-        setStringSetting(getEntityMessage(reference, EntityModel.FILTER_PROPERTY),
-                builder::filterProperty);
         setStringSetting(getEntityMessage(reference, EntityModel.AUTO_FILL_INSTRUCTIONS),
                 builder::autofillInstructions);
-        setIntSetting(getEntityMessage(reference, EntityModel.NESTING_DEPTH), -1, builder::nestingDepth);
+
+        setIntSettingIfAbove(getEntityMessage(reference, EntityModel.NESTING_DEPTH), -1, builder::nestingDepth);
+
+        setIntSettingIfBelow(getEntityMessage(reference, EntityModel.MAX_SEARCH_RESULTS),
+                Integer.MAX_VALUE, builder::maxSearchResults);
+
+        setBooleanSetting(getEntityMessage(reference, EntityModel.LIST_ALLOWED),
+                builder::listAllowed);
+        setBooleanSetting(getEntityMessage(reference, EntityModel.SEARCH_ALLOWED),
+                builder::searchAllowed);
+
+        setBooleanSetting(getEntityMessage(reference, EntityModel.CREATE_ALLOWED),
+                builder::createAllowed);
+        setBooleanSetting(getEntityMessage(reference, EntityModel.DELETE_ALLOWED),
+                builder::deleteAllowed);
+        setBooleanSetting(getEntityMessage(reference, EntityModel.UPDATE_ALLOWED),
+                builder::updateAllowed);
+        setBooleanSetting(getEntityMessage(reference, EntityModel.EXPORT_ALLOWED),
+                builder::exportAllowed);
+
+        setMessageBundleRoleOverrides(reference, EntityModel.READ_ROLES,
+                builder::readRoles);
+        setMessageBundleRoleOverrides(reference, EntityModel.WRITE_ROLES,
+                builder::writeRoles);
+        setMessageBundleRoleOverrides(reference, EntityModel.DELETE_ROLES,
+                builder::deleteRoles);
+    }
+
+    /**
+     * Sets roles based on message bundle overrides
+     *
+     * @param reference reference of the entity model
+     * @param name      name of the setting to look up
+     * @param consumer  the consumer that is used to set the values
+     */
+    private void setMessageBundleRoleOverrides(String reference, String name,
+                                               Consumer<List<String>> consumer) {
+        String roleMessage = getEntityMessage(reference, name);
+        if (roleMessage != null) {
+            String[] roles = roleMessage.split(",");
+            setStringListSetting(Arrays.asList(roles), consumer);
+        }
     }
 
     private void addMissingAttributeNames(List<String> explicitAttributeNames, List<AttributeModel> attributeModels,
@@ -187,17 +258,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     @Override
     public <T> boolean canProvideModel(String reference, Class<T> entityClass) {
         return true;
-    }
-
-    /**
-     * Check that the "week" setting is only allowed for java.time.LocalDate
-     *
-     * @param model the attribute model
-     */
-    private void checkWeekSettingAllowed(AttributeModel model) {
-        if (!LocalDate.class.equals(model.getType())) {
-            throw new OCSRuntimeException("'Week' setting only allowed for attributes of type LocalDate");
-        }
     }
 
     /**
@@ -224,10 +284,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
         }
 
-        for (AttributeGroup g : groupArray) {
-            model.addAttributeGroup(g.messageKey());
-            for (String s : g.attributeNames()) {
-                result.put(s, g.messageKey());
+        for (AttributeGroup attributeGroup : groupArray) {
+            model.addAttributeGroup(attributeGroup.messageKey());
+            for (String attributeName : attributeGroup.attributeNames()) {
+                result.put(attributeName, attributeGroup.messageKey());
             }
         }
         return result;
@@ -247,7 +307,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @return the constructed attribute model
      */
     protected <T> List<AttributeModel> constructAttributeModel(PropertyDescriptor descriptor,
-                                                               EntityModelImpl<T> entityModel, Class<?> parentClass, boolean nested, String prefix) {
+                                                               EntityModel<T> entityModel, Class<?> parentClass, boolean nested,
+                                                               String prefix) {
         List<AttributeModel> result = new ArrayList<>();
 
         // ignore methods annotated with @AssertTrue or @AssertFalse
@@ -263,34 +324,40 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         model.setEntityModel(entityModel);
 
         setAttributeModelDefaults(descriptor, entityModel, parentClass, prefix, fieldName, model);
+
         setNestedEntityModel(entityModel, model);
+
+        // only basic attributes are shown in the grid by default. nested attributes are hidden
+        // unless they are IDs
+        boolean isId = model.getName().equals(DynamoConstants.ID);
+        boolean displayProperty = model.getName().equals(entityModel.getDisplayProperty());
+
+        model.setVisibleInGrid((isId || displayProperty || !nested) && (AttributeType.BASIC.equals(model.getAttributeType())));
+        model.setVisibleInForm(!isId && (AttributeType.BASIC.equals(model.getAttributeType()) ||
+                AttributeType.LOB.equals(model.getAttributeType())));
+
+        boolean isIdOrNestedId = model.getName().equals(DynamoConstants.ID) ||
+                model.getName().endsWith(DynamoConstants.ID);
+        model.setEditableType(isIdOrNestedId ? EditableType.READ_ONLY : EditableType.EDITABLE);
 
         if (getMessageService() != null) {
             model.setDefaultTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
             model.setDefaultFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
         }
 
-        boolean isId = model.getName().equals(DynamoConstants.ID);
-        model.setVisibleInGrid(!isId && !nested && (AttributeType.BASIC.equals(model.getAttributeType())));
-        model.setVisibleInForm(!isId && AttributeType.BASIC.equals(model.getAttributeType()) ||
-                AttributeType.LOB.equals(model.getAttributeType()));
-
-        boolean isIdOrNestedId = model.getName().equals(DynamoConstants.ID) ||
-                model.getName().endsWith(DynamoConstants.ID);
-        model.setEditableType(isIdOrNestedId ? EditableType.READ_ONLY : EditableType.EDITABLE);
-
-
         AttributeSelectMode defaultMode = AttributeType.DETAIL.equals(model.getAttributeType())
-                ? AttributeSelectMode.TOKEN
+                ? AttributeSelectMode.MULTI_SELECT
                 : AttributeSelectMode.COMBO;
 
         model.setSelectMode(defaultMode);
         model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);
         model.setSearchSelectMode(defaultMode);
-        model.setGridSelectMode(defaultMode);
+        model.setBooleanFieldMode(SystemPropertyUtils.getDefaultBooleanFieldMode());
+        model.setElementCollectionMode(SystemPropertyUtils.getDefaultElementCollectionMode());
+        model.setEnumFieldMode(SystemPropertyUtils.getDefaultEnumFieldMode());
 
         Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
-                jakarta.validation.constraints.Email.class);
+                Email.class);
         if (email != null) {
             model.setEmail(true);
         }
@@ -309,6 +376,35 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     /**
+     * Processes an embedded attribute model. This will make sure that the
+     * properties of the embedded attribute are added to the parent entity model
+     *
+     * @param <T>         the type of the entity model
+     * @param result      list of attributes so far
+     * @param model       the nested attribute model
+     * @param entityModel the entity model
+     * @param nested      whether the attribute is nested
+     */
+    private <T> void processEmbeddedAttributeModel(List<AttributeModel> result, AttributeModel model,
+                                                   EntityModel<T> entityModel, boolean nested) {
+        // an embedded entity does not get its own entity model, but its properties are
+        // added
+        // to the parent entity
+        if (model.getType().equals(entityModel.getEntityClass())) {
+            throw new IllegalStateException("Embedding a class in itself is not allowed");
+        }
+        PropertyDescriptor[] embeddedDescriptors = BeanUtils.getPropertyDescriptors(model.getType());
+        for (PropertyDescriptor embeddedDescriptor : embeddedDescriptors) {
+            String name = embeddedDescriptor.getName();
+            if (!skipAttribute(name)) {
+                List<AttributeModel> embeddedModels = constructAttributeModel(embeddedDescriptor, entityModel,
+                        model.getType(), nested, model.getName());
+                result.addAll(embeddedModels);
+            }
+        }
+    }
+
+    /**
      * Iterates over the properties of an entity and created attribute models for
      * each of them
      *
@@ -320,9 +416,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private <T> List<AttributeModel> constructAttributeModels(String reference, Class<T> entityClass,
                                                               EntityModelImpl<T> entityModel) {
-        boolean mainAttributeFound = false;
-        AttributeModel firstStringAttribute = null;
-        AttributeModel firstSearchableAttribute = null;
         boolean nested = reference.indexOf('.') >= 0;
 
         PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(entityClass);
@@ -331,32 +424,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             if (!skipAttribute(descriptor.getName())) {
                 List<AttributeModel> attributeModels = constructAttributeModel(descriptor, entityModel,
                         entityModel.getEntityClass(), nested, null);
-                for (AttributeModel attributeModel : attributeModels) {
-
-                    // check if the main attribute has been found
-                    mainAttributeFound |= attributeModel.isMainAttribute();
-
-                    // also keep track of the first string property...
-                    if (firstStringAttribute == null && String.class.equals(attributeModel.getType())) {
-                        firstStringAttribute = attributeModel;
-                    }
-                    // ... and the first searchable property
-                    if (firstSearchableAttribute == null && attributeModel.isSearchable()) {
-                        firstSearchableAttribute = attributeModel;
-                    }
-                    result.add(attributeModel);
-                }
+                result.addAll(attributeModels);
             }
         }
-
-        if (!mainAttributeFound && !nested) {
-            if (firstStringAttribute != null) {
-                firstStringAttribute.setMainAttribute(true);
-            } else if (firstSearchableAttribute != null) {
-                firstSearchableAttribute.setMainAttribute(true);
-            }
-        }
-
         return result;
     }
 
@@ -405,12 +475,20 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 .defaultDescription(displayName).defaultDisplayName(displayName)
                 .defaultDisplayNamePlural(displayName + PLURAL_POSTFIX).entityClass(entityClass);
 
+        builder.listAllowed(true);
+        builder.createAllowed(true);
+        builder.searchAllowed(true);
+        builder.updateAllowed(true);
+        builder.exportAllowed(true);
+        builder.maxSearchResults(Integer.MAX_VALUE);
+
         addEntityModelAnnotationOverrides(entityClass, builder);
         addEntityModelMessageBundleOverrides(reference, builder);
 
         EntityModelImpl<T> entityModel = builder.build();
-
         alreadyProcessed.put(reference, entityClass);
+
+        addEntityModelActions(entityModel);
 
         List<AttributeModel> attributeModels = constructAttributeModels(reference, entityClass, entityModel);
 
@@ -438,23 +516,19 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         }
         setSortOrder(entityModel, sortOrder);
 
-        processFetchJoinAnnotations(entityClass, entityModel);
-        processMessageBundleJoinOverrides(entityModel);
-
-        cache.put(reference, entityModel);
-        return entityModel;
-    }
-
-    /**
-     * Translate @FetchJoin annotations to settings on the entity model
-     * @param entityClass the entity class
-     * @param entityModel the entity model
-     * @param <T> type parameter, the entity class
-     */
-    private <T> void processFetchJoinAnnotations(Class<T> entityClass, EntityModelImpl<T> entityModel) {
         entityModel.setFetchJoins(new ArrayList<>());
         entityModel.setDetailJoins(new ArrayList<>());
 
+        processJoinAnnotations(entityClass, entityModel);
+        processMessageBundleJoinOverrides(entityModel);
+
+        cache.put(reference, entityModel);
+
+        return entityModel;
+    }
+
+
+    private <T> void processJoinAnnotations(Class<T> entityClass, EntityModelImpl<T> entityModel) {
         FetchJoins joins = entityClass.getAnnotation(FetchJoins.class);
         if (joins != null) {
             List<FetchJoinInformation> mapped = Arrays.stream(joins.joins())
@@ -472,6 +546,73 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         }
     }
 
+    private <T> void addEntityModelActions(EntityModelImpl<T> entityModel) {
+
+        List<EntityModelAction> modelActions = new ArrayList<>();
+        BaseService<?, ?> service = serviceLocator.getServiceForEntity(entityModel.getEntityClass());
+        if (service != null) {
+            Class<?> clazz = org.springframework.util.ClassUtils.getUserClass(service);
+            Method[] methods = clazz.getMethods();
+            for (Method method : methods) {
+                addEntityModelAction(method, modelActions);
+            }
+        }
+        entityModel.setEntityModelActions(modelActions);
+    }
+
+    /**
+     * Potentially adds an entity model action for the provided method
+     *
+     * @param method       the method
+     * @param modelActions the model actions
+     */
+    private void addEntityModelAction(Method method, List<EntityModelAction> modelActions) {
+        ModelAction action = ClassUtils.getAnnotationOnMethod(method, ModelAction.class);
+        if (action != null) {
+
+            if (method.getParameters().length == 0) {
+                throw new OCSRuntimeException("@ModelAction annotation found on method %s without parameters"
+                        .formatted(method.getName()));
+            }
+
+            if (StringUtils.isEmpty(action.id())) {
+                throw new OCSRuntimeException("@ModelAction annotation found on method %s without an action ID"
+                        .formatted(method.getName()));
+            }
+
+            Class<?> actionClass = method.getParameters()[0].getType();
+            EntityModelActionImpl actionImpl = new EntityModelActionImpl();
+            actionImpl.setEntityClass(actionClass);
+            actionImpl.setReference(action.id());
+            actionImpl.setId(action.id());
+            actionImpl.setDefaultDisplayName(action.displayName());
+            actionImpl.setMethodName(method.getName());
+            actionImpl.setType(action.type());
+            actionImpl.setIcon(action.icon());
+            actionImpl.setRoles(Arrays.asList(action.roles()));
+
+            EntityModel<?> actionModel = constructModel(action.id(), actionClass);
+            actionImpl.setEntityModel(actionModel);
+            modelActions.add(actionImpl);
+
+            processEntityModelActionMessageBundleOverrides(actionImpl);
+        }
+    }
+
+    private void processEntityModelActionMessageBundleOverrides(EntityModelActionImpl action) {
+
+        setMessageBundleRoleOverrides(action.getReference(), EntityModel.ACTION_ROLES,
+                action::setRoles);
+        setStringSetting(getEntityMessage(action.getReference(), EntityModel.ICON),
+                action::setIcon);
+    }
+
+    /**
+     * Process message bundle join overrides for an entity
+     *
+     * @param entityModel the entity model
+     * @param <T>         type parameter, the type of the entity
+     */
     private <T> void processMessageBundleJoinOverrides(EntityModelImpl<T> entityModel) {
         List<FetchJoinInformation> overrideJoins = processMessageBundleFetchJoinOverrides(
                 entityModel, EntityModel.JOIN);
@@ -487,14 +628,40 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     /**
-     * Constructs a nested entity model
+     * Processes message bundle fetch joins overrides for a specific type
      *
-     * @param type      the class of the entity
-     * @param reference the unique reference
-     * @return the constructed model
+     * @param model    the entity model
+     * @param joinName the name of the join
+     * @param <T>      type parameter
+     * @return the list of fetch joins (possibly empty)
      */
-    public EntityModel<?> constructNestedEntityModel(Class<?> type, String reference) {
-        return getModel(reference, type);
+    protected <T> List<FetchJoinInformation> processMessageBundleFetchJoinOverrides(EntityModel<T> model,
+                                                                                    String joinName) {
+        List<FetchJoinInformation> result = new ArrayList<>();
+
+        // look for message bundle overwrites
+        int i = 1;
+        if (messageService != null) {
+            String key = joinName + "." + i + "." + EntityModel.ATTRIBUTE;
+            String joinAttribute = messageService.getEntityMessage(model.getReference(),
+                    key, getLocale());
+            while (joinAttribute != null) {
+                String joinType = messageService.getEntityMessage(model.getReference(),
+                        joinName + "." + i + "." + EntityModel.JOIN_TYPE, getLocale());
+
+                if (joinType != null) {
+                    result.add(new FetchJoinInformation(joinAttribute,
+                            JoinType.valueOf(joinType)));
+                } else {
+                    result.add(new FetchJoinInformation(joinAttribute));
+                }
+                i++;
+                joinAttribute = messageService.getEntityMessage(model.getReference(),
+                        joinName + "." + i + "." + EntityModel.ATTRIBUTE, getLocale());
+            }
+
+        }
+        return result;
     }
 
     /**
@@ -508,7 +675,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     protected <T> Map<String, String> determineAttributeGroupMapping(EntityModel<T> model, Class<T> entityClass) {
         Map<String, String> result = collectAttributeGroups(model, entityClass);
 
-        // look for message bundle overwrites
         int i = 1;
         if (messageService != null) {
             String groupName = messageService.getEntityMessage(model.getReference(),
@@ -538,42 +704,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     /**
-     * Processes message bundle fetch joins
-     * @param model the entity model
-     * @param name the name to look for in the message bundle
-     * @param <T> type parameter
-     * @return the list of fetch joins (possibly empty)
-     */
-    protected <T> List<FetchJoinInformation> processMessageBundleFetchJoinOverrides(EntityModel<T> model,
-                                                                                    String name) {
-        List<FetchJoinInformation> result = new ArrayList<>();
-
-        // look for message bundle overwrites
-        int i = 1;
-        if (messageService != null) {
-            String key = name + "." + i + "." + EntityModel.ATTRIBUTE;
-            String joinAttribute = messageService.getEntityMessage(model.getReference(),
-                    key, getLocale());
-            while (joinAttribute != null) {
-                String joinType = messageService.getEntityMessage(model.getReference(),
-                        name + "." + i + "." + EntityModel.JOIN_TYPE, getLocale());
-
-                if (joinType != null) {
-                    result.add(new FetchJoinInformation(joinAttribute,
-                            JoinType.valueOf(joinType)));
-                } else {
-                    result.add(new FetchJoinInformation(joinAttribute));
-                }
-                i++;
-                joinAttribute = messageService.getEntityMessage(model.getReference(),
-                        name + "." + i + "." + EntityModel.ATTRIBUTE, getLocale());
-            }
-
-        }
-        return result;
-    }
-
-    /**
      * Determines the (default) attribute ordering for an entity based on
      * the @AttributeOrder annotation
      *
@@ -590,6 +720,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             explicitAttributeNames = List.of(orderAnnotation.attributeNames());
         }
 
+        // set all orders
         determineAttributeOrderInner(reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames, attributeModels,
                 AttributeModelImpl::setOrder);
     }
@@ -637,7 +768,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 consumer.accept((AttributeModelImpl) am, i);
                 i++;
             } else {
-                throw new OCSRuntimeException("Attribute " + attributeName + " is not known");
+                throw new OCSRuntimeException("Attribute %s is not known".formatted(attributeName));
             }
         }
 
@@ -647,19 +778,19 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     /**
      * Determines the attribute type
      *
-     * @param parentClass    the parent class on which the attribute is defined
-     * @param attributeModel the model to determine the type of
+     * @param parentClass the parent class on which the attribute is defined
+     * @param model       the model representation of the attribute
      * @return the attribute type
      */
-    protected AttributeType determineAttributeType(Class<?> parentClass, AttributeModelImpl attributeModel) {
+    protected AttributeType determineAttributeType(Class<?> parentClass, AttributeModelImpl model) {
         AttributeType result = null;
-        String name = attributeModel.getName();
+        String name = model.getName();
         int p = name.lastIndexOf('.');
         if (p > 0) {
             name = name.substring(p + 1);
         }
 
-        if (!BeanUtils.isSimpleValueType(attributeModel.getType()) && !DateUtils.isJava8DateType(attributeModel.getType())) {
+        if (!BeanUtils.isSimpleValueType(model.getType()) && !DateUtils.isJava8DateType(model.getType())) {
             // No relation type set in view model definition, hence derive
             // defaults
             Embedded embedded = ClassUtils.getAnnotation(parentClass, name, Embedded.class);
@@ -667,29 +798,28 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
             if (embedded != null) {
                 result = AttributeType.EMBEDDED;
-            } else if (Collection.class.isAssignableFrom(attributeModel.getType())) {
-
+            } else if (Collection.class.isAssignableFrom(model.getType())) {
                 if (attribute != null && attribute.memberType() != null
                         && !attribute.memberType().equals(Object.class)) {
                     // if a member type is explicitly set, use that type
                     result = AttributeType.DETAIL;
-                    attributeModel.setMemberType(attribute.memberType());
+                    model.setMemberType(attribute.memberType());
                 } else if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null
                         || ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {
                     result = AttributeType.DETAIL;
-                    attributeModel.setMemberType(ClassUtils.getResolvedType(parentClass, name, 0));
+                    model.setMemberType(ClassUtils.getResolvedType(parentClass, name, 0));
                 } else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {
                     result = AttributeType.ELEMENT_COLLECTION;
-                    handleElementCollectionSettings(parentClass, attributeModel, name);
-                } else if (AbstractEntity.class.isAssignableFrom(attributeModel.getType())) {
+                    handleElementCollectionSettings(parentClass, model, name);
+                } else if (AbstractEntity.class.isAssignableFrom(model.getType())) {
                     // not a collection but a reference to another object
                     result = AttributeType.MASTER;
                 }
-            } else if (attributeModel.getType().isArray()) {
-                // a byte array with the @Lob annotation is transformed to a
-                // @Lob field
+            } else if (model.getType().isArray()) {
                 Lob lob = ClassUtils.getAnnotation(parentClass, name, Lob.class);
-                if (lob != null) {
+                Class<?> componentType = model.getType().getComponentType();
+
+                if (lob != null || componentType.equals(byte.class)) {
                     result = AttributeType.LOB;
                 }
             } else {
@@ -707,26 +837,27 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * Determines the "dateType" for an attribute
      *
      * @param modelType the type of the attribute. Can be a java 8 LocalX type
-     * @return the date type
+     * @return the data type
      */
     protected AttributeDateType determineDateType(Class<?> modelType) {
+        // set the date type
         if (LocalDate.class.equals(modelType)) {
             return AttributeDateType.DATE;
         } else if (LocalDateTime.class.equals(modelType)) {
-            return AttributeDateType.TIMESTAMP;
+            return AttributeDateType.LOCAL_DATE_TIME;
         } else if (LocalTime.class.equals(modelType)) {
             return AttributeDateType.TIME;
-        } else if (ZonedDateTime.class.equals(modelType)) {
-            return AttributeDateType.TIMESTAMP;
+        } else if (Instant.class.equals(modelType)) {
+            return AttributeDateType.INSTANT;
         }
         return null;
     }
 
     /**
-     * Determines the default format to use for formatting a date or time property
+     * Determines the default format to use for a date or time property
      *
      * @param type the type of the property
-     * @return the display format
+     * @return the default display format
      */
     protected String determineDefaultDisplayFormat(Class<?> type) {
         String format = null;
@@ -736,8 +867,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             format = SystemPropertyUtils.getDefaultDateTimeFormat();
         } else if (LocalTime.class.isAssignableFrom(type)) {
             format = SystemPropertyUtils.getDefaultTimeFormat();
-        } else if (ZonedDateTime.class.isAssignableFrom(type)) {
-            format = SystemPropertyUtils.getDefaultDateTimeWithTimezoneFormat();
+        } else if (Instant.class.isAssignableFrom(type)) {
+            format = SystemPropertyUtils.getDefaultDateTimeFormat();
         }
         return format;
     }
@@ -767,18 +898,18 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * Determines the order in which attributes must appear in a search form for an
      * entity
      *
-     * @param <T>             type parameter, the class
+     * @param <T>             the type of the class
      * @param entityClass     the class of the entity model
      * @param reference       unique reference of the entity model
      * @param attributeModels the list of attribute models to order
-     * @return true if an explicit order was defined, false otherwise
+     * @return the attribute order
      */
     protected <T> boolean determineSearchAttributeOrder(Class<T> entityClass, String reference,
                                                         List<AttributeModel> attributeModels) {
         List<String> explicitAttributeNames = new ArrayList<>();
-        SearchAttributeOrder orderAnnot = entityClass.getAnnotation(SearchAttributeOrder.class);
-        if (orderAnnot != null) {
-            explicitAttributeNames = List.of(orderAnnot.attributeNames());
+        SearchAttributeOrder orderAnnotation = entityClass.getAnnotation(SearchAttributeOrder.class);
+        if (orderAnnotation != null) {
+            explicitAttributeNames = List.of(orderAnnotation.attributeNames());
         }
         return determineAttributeOrderInner(reference, EntityModel.SEARCH_ATTRIBUTE_ORDER, explicitAttributeNames,
                 attributeModels, AttributeModelImpl::setSearchOrder);
@@ -789,7 +920,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      *
      * @param reference   the reference of the entity model
      * @param entityClass the entity class
-     * @return the model factory to be used for constructing the entity model
+     * @return the model factory
      */
     protected <T> EntityModelFactory findModelFactory(String reference, Class<T> entityClass) {
         EntityModelFactory entityModelFactory = this;
@@ -842,13 +973,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     @Override
-    public <T> EntityModel<T> getModel(Class<T> entityClass) {
+    public synchronized <T> EntityModel<T> getModel(Class<T> entityClass) {
         return getModel(entityClass.getSimpleName(), entityClass);
     }
 
     @Override
     @SuppressWarnings({"unchecked"})
-    public <T> EntityModel<T> getModel(String reference, Class<T> entityClass) {
+    public synchronized <T> EntityModel<T> getModel(String reference, Class<T> entityClass) {
         EntityModel<T> model = null;
         if (!StringUtils.isEmpty(reference) && entityClass != null) {
             model = (EntityModel<T>) cache.get(reference);
@@ -889,11 +1020,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      *
      * @param type      the type of the entity
      * @param reference the reference to the entity
-     * @return true if the entity model has already been computed
+     * @return true if this is the case, false otherwise
      */
     protected boolean hasEntityModel(Class<?> type, String reference) {
-        for (Entry<String, Class<?>> e : alreadyProcessed.entrySet()) {
-            if (reference.equals(e.getKey()) && e.getValue().equals(type)) {
+        for (Entry<String, Class<?>> entry : alreadyProcessed.entrySet()) {
+            if (reference.equals(entry.getKey()) && entry.getValue().equals(type)) {
                 // only check for starting reference in order to prevent
                 // recursive looping between
                 // two-sided relations
@@ -908,7 +1039,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * reference
      *
      * @param reference the unique reference of the entity model
-     * @return true if the entity model is known, false otherwise
+     * @return true if this is the case, false otherwise
      */
     public boolean hasModel(String reference) {
         return cache.containsKey(reference);
@@ -920,45 +1051,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * HIDE are negative values
      *
      * @param msg the message
-     * @return true if the setting is visible, false otherwise
+     * @return true if this is the case, false otherwise
      */
     private boolean isVisible(String msg) {
         try {
             VisibilityType other = VisibilityType.valueOf(msg);
             return VisibilityType.SHOW.equals(other);
         } catch (IllegalArgumentException ex) {
-            // do nothing
+            // do nothing, threat as false
         }
         return Boolean.parseBoolean(msg);
-    }
-
-    /**
-     * Processes an embedded attribute model. This will make sure that the
-     * properties of the embedded attribute are added to the parent entity model
-     *
-     * @param <T>         the type of the entity model
-     * @param result      list of attributes so far
-     * @param model       the nested attribute model
-     * @param entityModel the entity model
-     * @param nested      whether the attribute is nested
-     */
-    private <T> void processEmbeddedAttributeModel(List<AttributeModel> result, AttributeModel model,
-                                                   EntityModelImpl<T> entityModel, boolean nested) {
-        // an embedded entity does not get its own entity model, but its properties are
-        // added
-        // to the parent entity
-        if (model.getType().equals(entityModel.getEntityClass())) {
-            throw new IllegalStateException("Embedding a class in itself is not allowed");
-        }
-        PropertyDescriptor[] embeddedDescriptors = BeanUtils.getPropertyDescriptors(model.getType());
-        for (PropertyDescriptor embeddedDescriptor : embeddedDescriptors) {
-            String name = embeddedDescriptor.getName();
-            if (!skipAttribute(name)) {
-                List<AttributeModel> embeddedModels = constructAttributeModel(embeddedDescriptor, entityModel,
-                        model.getType(), nested, model.getName());
-                result.addAll(embeddedModels);
-            }
-        }
     }
 
     /**
@@ -968,7 +1070,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @param model     the attribute model
      */
     private void setAnnotationCustomOverwrites(Attribute attribute, AttributeModel model) {
-        if (attribute.custom() != null && attribute.custom().length > 0) {
+        if (attribute.custom() != null) {
             for (CustomSetting s : attribute.custom()) {
                 if (!StringUtils.isEmpty(s.name())) {
                     String value = s.value();
@@ -1025,13 +1127,17 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
             setStringSetting(attribute.description(), model::setDefaultDescription);
             setStringSetting(attribute.prompt(), model::setDefaultPrompt);
-            setStringSetting(attribute.displayFormat(), model::setDisplayFormat);
+            setStringSetting(attribute.displayFormat(), model::setDefaultDisplayFormat);
             setStringSetting(attribute.trueRepresentation(), model::setDefaultTrueRepresentation);
             setStringSetting(attribute.falseRepresentation(), model::setDefaultFalseRepresentation);
-            setStringSetting(attribute.textAreaHeight(), model::setTextAreaHeight);
-            setStringSetting(attribute.currencySymbol(), model::setCurrencySymbol);
+            setStringSetting(attribute.currencyCode(), model::setCurrencyCode);
+            setStringSetting(attribute.lookupEntityReference(), model::setLookupEntityReference);
+            setStringSetting(attribute.navigationLink(), model::setNavigationLink);
+            setStringSetting(attribute.autoFillInstructions(), model::setAutofillInstructions);
 
-            model.setEditableType(attribute.editable());
+            boolean isId = model.getName().equals(DynamoConstants.ID) ||
+                    model.getName().endsWith(DynamoConstants.ID);
+            model.setEditableType(isId ? EditableType.READ_ONLY : attribute.editable());
 
             setAnnotationVisibilityOverrides(attribute, model, nested);
 
@@ -1044,22 +1150,16 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setRequiredForSearching(true);
             }
 
-            if (attribute.main() && !nested) {
-                model.setMainAttribute(true);
-            }
-
             setBooleanTrueSetting(attribute.image(), model::setImage);
+            setBooleanTrueSetting(attribute.downloadAllowed(), model::setDownloadAllowed);
             setBooleanTrueSetting(attribute.percentage(), model::setPercentage);
-            setBooleanTrueSetting(attribute.currency(), model::setCurrency);
             setBooleanTrueSetting(attribute.url(), model::setUrl);
-            setBooleanFalseSetting(attribute.sortable(), model::setSortable);
             setBooleanTrueSetting(attribute.showPassword(), model::setShowPassword);
             setBooleanTrueSetting(attribute.quickAddAllowed(), model::setQuickAddAllowed);
+            setBooleanTrueSetting(attribute.neededInData(), model::setNeededInData);
 
-            if (attribute.week()) {
-                checkWeekSettingAllowed(model);
-                model.setWeek(true);
-            }
+            setBooleanFalseSetting(attribute.sortable(), model::setSortable);
+            setBooleanFalseSetting(attribute.nestedDetails(), model::setNestedDetails);
 
             if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
                 Set<String> set = Arrays.stream(attribute.allowedExtensions()).map(String::toLowerCase)
@@ -1067,7 +1167,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 model.setAllowedExtensions(set);
             }
 
-            if (attribute.cascade() != null && attribute.cascade().length > 0) {
+            if (attribute.cascade() != null) {
                 for (Cascade cascade : attribute.cascade()) {
                     model.addCascade(cascade.cascadeTo(), cascade.filterPath(), cascade.mode());
                 }
@@ -1075,9 +1175,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
             setAnnotationCustomOverwrites(attribute, model);
 
-            if (attribute.groupTogetherWith() != null && attribute.groupTogetherWith().length > 0) {
-                for (String s : attribute.groupTogetherWith()) {
-                    model.addGroupTogetherWith(s);
+            if (attribute.groupTogetherWith() != null) {
+                for (String attributeName : attribute.groupTogetherWith()) {
+                    model.addGroupTogetherWith(attributeName);
                 }
             }
 
@@ -1093,12 +1193,12 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 // setting the select mode also sets the search and grid modes
                 model.setSelectMode(attribute.selectMode());
                 model.setSearchSelectMode(attribute.selectMode());
-                model.setGridSelectMode(attribute.selectMode());
             }
 
+            // multiple search for master object (default to token)
             if (attribute.multipleSearch()) {
                 model.setMultipleSearch(true);
-                model.setSearchSelectMode(AttributeSelectMode.LOOKUP);
+                model.setSearchSelectMode(AttributeSelectMode.MULTI_SELECT);
             }
 
             if (!AttributeSelectMode.INHERIT.equals(attribute.searchSelectMode())) {
@@ -1106,21 +1206,19 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 // for a basic attribute, automatically set multiple search when a token field
                 // is selected
                 if (AttributeType.BASIC.equals(model.getAttributeType())
-                        && AttributeSelectMode.TOKEN.equals(model.getSearchSelectMode())) {
+                        && AttributeSelectMode.MULTI_SELECT.equals(model.getSearchSelectMode())) {
                     model.setMultipleSearch(true);
                 }
             }
 
-            setEnumValueUnless(attribute.gridSelectMode(), AttributeSelectMode.INHERIT, model::setGridSelectMode);
             setEnumValueUnless(attribute.searchCaseSensitive(), BooleanType.INHERIT,
                     value -> model.setSearchCaseSensitive(value.toBoolean()));
             setEnumValueUnless(attribute.searchPrefixOnly(), BooleanType.INHERIT,
                     value -> model.setSearchPrefixOnly(value.toBoolean()));
-            setEnumValueUnless(attribute.clearButtonVisible(), BooleanType.INHERIT,
-                    value -> model.setClearButtonVisible(value.toBoolean()));
-            setEnumValueUnless(attribute.thousandsGrouping(), ThousandsGroupingMode.INHERIT,
-                    model::setThousandsGroupingMode);
-            setEnumValueUnless(attribute.lookupFieldCaptions(), VisibilityType.INHERIT, model::setLookupFieldCaptions);
+            setEnumValueUnless(attribute.enumFieldMode(), AttributeEnumFieldMode.INHERIT,
+                    model::setEnumFieldMode);
+            setEnumValueUnless(attribute.lookupQueryType(), QueryType.INHERIT,
+                    model::setLookupQueryType);
 
             if (attribute.textFieldMode() != null
                     && !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {
@@ -1132,8 +1230,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             setIntSetting(attribute.maxLength(), -1, model::setMaxLength);
             setIntSetting(attribute.maxLengthInGrid(), -1, model::setMaxLengthInGrid);
 
-            setLongSetting(attribute.minValue(), Long.MIN_VALUE, true, model::setMinValue);
-            setLongSetting(attribute.maxValue(), Long.MAX_VALUE, false, model::setMaxValue);
+            setBigDecimalSetting(attribute.minValue(), Double.MIN_VALUE, true, model::setMinValue);
+            setBigDecimalSetting(attribute.maxValue(), Double.MAX_VALUE, false, model::setMaxValue);
 
             setStringSetting(attribute.replacementSearchPath(), model::setReplacementSearchPath);
             setStringSetting(attribute.replacementSortPath(), model::setReplacementSortPath);
@@ -1141,23 +1239,25 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             setBooleanTrueSetting(attribute.searchForExactValue(), model::setSearchForExactValue);
             setStringSetting(attribute.fileNameProperty(), model::setFileNameProperty);
 
-            setDefaulValue(model, attribute);
+            model.setSearchDateOnly(attribute.searchDateOnly());
+
+            setDefaultValue(model, attribute);
+            setDefaultSearchValue(model, attribute);
+            setDefaultSearchValueFrom(model, attribute);
+            setDefaultSearchValueTo(model, attribute);
 
             model.setNavigable(attribute.navigable());
             model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());
-            model.setSearchDateOnly(attribute.searchDateOnly());
 
-            setEnumValueUnless(attribute.pagingMode(), PagingMode.INHERIT, model::setPagingMode);
-            setEnumValueUnless(attribute.multiSelectMode(), MultiSelectMode.INHERIT, model::setMultiSelectMode);
             setEnumValueUnless(attribute.trimSpaces(), TrimType.INHERIT,
                     ts -> model.setTrimSpaces(TrimType.TRIM.equals(ts)));
             setEnumValueUnless(attribute.numberFieldMode(), NumberFieldMode.INHERIT, model::setNumberFieldMode);
+            setEnumValueUnless(attribute.booleanFieldMode(), AttributeBooleanFieldMode.INHERIT,
+                    model::setBooleanFieldMode);
+            setEnumValueUnless(attribute.elementCollectionMode(), ElementCollectionMode.INHERIT,
+                    model::setElementCollectionMode);
 
             setIntSetting(attribute.numberFieldStep(), 0, model::setNumberFieldStep);
-
-            if (!StringUtils.isEmpty(attribute.autoFillInstructions())) {
-                model.setAutoFillInstructions(attribute.autoFillInstructions());
-            }
         }
     }
 
@@ -1172,14 +1272,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @param fieldName   the name of the field
      * @param model       the attribute model
      */
-    private <T> void setAttributeModelDefaults(PropertyDescriptor descriptor, EntityModelImpl<T> entityModel,
+    private <T> void setAttributeModelDefaults(PropertyDescriptor descriptor, EntityModel<T> entityModel,
                                                Class<?> parentClass, String prefix, String fieldName, AttributeModelImpl model) {
         String displayName = com.ocs.dynamo.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
                 SystemPropertyUtils.isCapitalizeWords());
         model.setDefaultDisplayName(displayName);
+        model.setHasSetterMethod(descriptor.getWriteMethod() != null);
         model.setDefaultDescription(displayName);
         model.setDefaultPrompt(displayName);
-        model.setMainAttribute(descriptor.isPreferred());
         model.setSearchMode(SearchMode.NONE);
         model.setName((prefix == null ? "" : (prefix + ".")) + fieldName);
         model.setImage(false);
@@ -1189,22 +1289,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
         model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
         model.setUrl(false);
-        model.setThousandsGroupingMode(SystemPropertyUtils.getDefaultThousandsGroupingMode());
         model.setTrimSpaces(SystemPropertyUtils.isDefaultTrimSpaces());
-        model.setMultiSelectMode(SystemPropertyUtils.useGridSelectionCheckBoxes() ? MultiSelectMode.CHECKBOX
-                : MultiSelectMode.ROWSELECT);
-        model.setPagingMode(SystemPropertyUtils.getDefaultPagingMode());
-
         model.setType(descriptor.getPropertyType());
         model.setDateType(determineDateType(model.getType()));
-        model.setDisplayFormat(determineDefaultDisplayFormat(model.getType()));
+        model.setDefaultDisplayFormat(determineDefaultDisplayFormat(model.getType()));
         model.setNumberFieldMode(SystemPropertyUtils.getDefaultNumberFieldMode());
         model.setNumberFieldStep(1);
-
-        model.setClearButtonVisible(SystemPropertyUtils.isDefaultClearButtonVisible());
-        model.setTextAreaHeight(SystemPropertyUtils.getDefaultTextAreaHeight());
-        model.setCurrencySymbol(SystemPropertyUtils.getDefaultCurrencySymbol());
-        model.setLookupFieldCaptions(SystemPropertyUtils.getDefaultLookupFieldCaptions());
+        model.setLookupQueryType(QueryType.ID_BASED);
 
         setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);
     }
@@ -1219,30 +1310,47 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                                                              AttributeModelImpl attributeModel) {
 
         setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_NAME),
-                value -> attributeModel.setDefaultDisplayName(value));
+                attributeModel::setDefaultDisplayName);
         setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DESCRIPTION),
-                value -> attributeModel.setDefaultDescription(value));
+                attributeModel::setDefaultDescription);
         setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_VALUE),
-                value -> attributeModel.setDefaultValue(value));
+                attributeModel::setDefaultValue);
+        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_SEARCH_VALUE),
+                attributeModel::setDefaultSearchValue);
+        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_SEARCH_VALUE_FROM),
+                attributeModel::setDefaultSearchValueFrom);
+        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_SEARCH_VALUE_TO),
+                attributeModel::setDefaultSearchValueTo);
         setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_FORMAT),
-                value -> attributeModel.setDisplayFormat(value));
+                attributeModel::setDefaultDisplayFormat);
         setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRUE_REPRESENTATION),
-                value -> attributeModel.setDefaultTrueRepresentation(value));
+                attributeModel::setDefaultTrueRepresentation);
         setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.FALSE_REPRESENTATION),
-                value -> attributeModel.setDefaultFalseRepresentation(value));
-        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXT_AREA_HEIGHT),
-                value -> attributeModel.setTextAreaHeight(value));
-        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY_SYMBOL),
-                value -> attributeModel.setCurrencySymbol(value));
+                attributeModel::setDefaultFalseRepresentation);
+        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY_CODE),
+                attributeModel::setCurrencyCode);
+        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.LOOKUP_ENTITY_REFERENCE),
+                attributeModel::setLookupEntityReference);
+        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGATION_LINK),
+                attributeModel::setNavigationLink);
+        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.AUTO_FILL_INSTRUCTIONS),
+                attributeModel::setAutofillInstructions);
 
-        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAIN),
-                attributeModel::setMainAttribute);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REQUIRED_FOR_SEARCHING),
                 attributeModel::setRequiredForSearching);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),
                 attributeModel::setSortable);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),
                 attributeModel::setImage);
+        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DOWNLOAD_ALLOWED),
+                attributeModel::setDownloadAllowed);
+        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NEEDED_IN_DATA),
+                attributeModel::setNeededInData);
+
+        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SHOW_PASSWORD),
+                attributeModel::setShowPassword);
+        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NESTED_DETAILS),
+                attributeModel::setNestedDetails);
 
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_CASE_SENSITIVE),
                 attributeModel::setSearchCaseSensitive);
@@ -1252,15 +1360,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 attributeModel::setTrimSpaces);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PERCENTAGE),
                 attributeModel::setPercentage);
-        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY),
-                attributeModel::setCurrency);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.URL), attributeModel::setUrl);
 
         // check for read only (convenience only, overwritten by "editable")
         String msg = getAttributeMessage(entityModel, attributeModel, EntityModel.READ_ONLY);
         if (!StringUtils.isEmpty(msg)) {
-            boolean edt = Boolean.parseBoolean(msg);
-            if (edt) {
+            boolean editable = Boolean.parseBoolean(msg);
+            if (editable) {
                 attributeModel.setEditableType(EditableType.READ_ONLY);
             } else {
                 attributeModel.setEditableType(EditableType.EDITABLE);
@@ -1290,12 +1396,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
         }
 
-        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.WEEK);
-        if (!StringUtils.isEmpty(msg)) {
-            checkWeekSettingAllowed(attributeModel);
-            attributeModel.setWeek(Boolean.parseBoolean(msg));
-        }
-
         msg = getAttributeMessage(entityModel, attributeModel, EntityModel.ALLOWED_EXTENSIONS);
         if (msg != null && !StringUtils.isEmpty(msg)) {
             String[] extensions = msg.split(",");
@@ -1311,7 +1411,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             }
         }
 
-        setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,
+        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,
                 attributeModel::setPrecision);
 
         msg = getAttributeMessage(entityModel, attributeModel, EntityModel.EMBEDDED);
@@ -1324,46 +1424,45 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MULTIPLE_SEARCH);
         if (msg != null && !StringUtils.isEmpty(msg)) {
             attributeModel.setMultipleSearch(Boolean.parseBoolean(msg));
-            attributeModel.setSearchSelectMode(AttributeSelectMode.TOKEN);
+            attributeModel.setSearchSelectMode(AttributeSelectMode.MULTI_SELECT);
         }
 
         // set the select mode (also sets the search select mode and grid select mode)
         msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SELECT_MODE);
-        if (msg != null && !StringUtils.isEmpty(msg)) {
+        if (!StringUtils.isEmpty(msg)) {
             AttributeSelectMode mode = AttributeSelectMode.valueOf(msg);
             attributeModel.setSelectMode(mode);
             attributeModel.setSearchSelectMode(mode);
-            attributeModel.setGridSelectMode(mode);
         }
 
         setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_SELECT_MODE),
                 AttributeSelectMode.class, attributeModel::setSearchSelectMode);
-        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.GRID_SELECT_MODE),
-                AttributeSelectMode.class, attributeModel::setGridSelectMode);
-        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MULTI_SELECT_MODE),
-                MultiSelectMode.class, attributeModel::setMultiSelectMode);
         setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE), AttributeDateType.class,
                 attributeModel::setDateType);
-        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXTFIELD_MODE),
+        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXT_FIELD_MODE),
                 AttributeTextFieldMode.class, attributeModel::setTextFieldMode);
-        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.LOOKUP_FIELD_CAPTIONS),
-                VisibilityType.class, attributeModel::setLookupFieldCaptions);
+        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.BOOLEAN_FIELD_MODE),
+                AttributeBooleanFieldMode.class, attributeModel::setBooleanFieldMode);
+        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.ELEMENT_COLLECTION_MODE),
+                ElementCollectionMode.class, attributeModel::setElementCollectionMode);
+        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.LOOKUP_QUERY_TYPE),
+                QueryType.class, attributeModel::setLookupQueryType);
 
         msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_VALUE);
         if (!StringUtils.isEmpty(msg)) {
-            attributeModel.setMinValue(Long.parseLong(msg));
+            attributeModel.setMinValue(new BigDecimal(msg));
         }
 
-        setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH), -1,
+        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH), -1,
                 attributeModel::setMinLength);
-        setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH), -1,
-                value -> attributeModel.setMaxLength(value));
-        setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH_IN_GRID), -1,
-                value -> attributeModel.setMaxLengthInGrid(value));
+        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH), -1,
+                attributeModel::setMaxLength);
+        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH_IN_GRID), -1,
+                attributeModel::setMaxLengthInGrid);
 
         msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_VALUE);
         if (!StringUtils.isEmpty(msg)) {
-            attributeModel.setMaxValue(Long.parseLong(msg));
+            attributeModel.setMaxValue(new BigDecimal(msg));
         }
 
         setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SEARCH_PATH),
@@ -1373,9 +1472,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_ALLOWED),
                 attributeModel::setQuickAddAllowed);
 
-        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.THOUSANDS_GROUPING_MODE),
-                ThousandsGroupingMode.class, attributeModel::setThousandsGroupingMode);
-
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE),
                 attributeModel::setSearchForExactValue);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE),
@@ -1384,24 +1480,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 attributeModel::setSearchDateOnly);
         setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER),
                 attributeModel::setIgnoreInSearchFilter);
-        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CLEAR_BUTTON_VISIBLE),
-                attributeModel::setClearButtonVisible);
 
-        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PAGING_MODE), PagingMode.class,
-                attributeModel::setPagingMode);
         setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_MODE),
                 NumberFieldMode.class, attributeModel::setNumberFieldMode);
 
-        setIntSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_STEP), -1,
+        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_STEP), -1,
                 attributeModel::setNumberFieldStep);
 
         setMessageBundleCascadeOverrides(entityModel, attributeModel);
         setMessageBundleCustomOverrides(entityModel, attributeModel);
-
-        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.AUTO_FILL_INSTRUCTIONS);
-        if (!StringUtils.isEmpty(msg)) {
-            attributeModel.setAutoFillInstructions(msg);
-        }
     }
 
     /**
@@ -1412,7 +1499,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private void setBooleanFalseSetting(Boolean value, Consumer<Boolean> receiver) {
         if (!value) {
-            receiver.accept(value);
+            receiver.accept(false);
         }
     }
 
@@ -1436,7 +1523,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private void setBooleanTrueSetting(Boolean value, Consumer<Boolean> receiver) {
         if (value) {
-            receiver.accept(value);
+            receiver.accept(true);
         }
     }
 
@@ -1446,19 +1533,30 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      *
      * @param model        the attribute model
      * @param defaultValue the default value to set
+     * @param search       whether we are dealing with search mode
+     * @param
      */
     @SuppressWarnings({"unchecked", "rawtypes"})
-    private void setDefaultValue(AttributeModelImpl model, String defaultValue) {
+    private void setDefaultValue(AttributeModelImpl model, String defaultValue, boolean search, Consumer<Object> consumer) {
         if (model.getType().isEnum()) {
             Class<? extends Enum> enumType = model.getType().asSubclass(Enum.class);
-            model.setDefaultValue(Enum.valueOf(enumType, defaultValue));
+            consumer.accept(Enum.valueOf(enumType, defaultValue));
         } else if (DateUtils.isJava8DateType(model.getType())) {
-            Object o = DateUtils.createJava8Date(model.getType(), defaultValue, model.getDisplayFormat());
-            model.setDefaultValue(o);
+
+            Object object;
+            if (search && model.isSearchDateOnly()) {
+                object = DateUtils.createJava8Date(LocalDate.class, defaultValue,
+                        SystemPropertyUtils.getDefaultDateFormat());
+            } else {
+                object = DateUtils.createJava8Date(model.getType(), defaultValue,
+                        DateUtils.getDefaultDisplayFormat(model.getType()));
+            }
+            consumer.accept(object);
+
         } else if (Boolean.class.equals(model.getType()) || boolean.class.equals(model.getType())) {
-            model.setDefaultValue(Boolean.valueOf(defaultValue));
+            consumer.accept(Boolean.valueOf(defaultValue));
         } else {
-            model.setDefaultValue(ClassUtils.instantiateClass(model.getType(), defaultValue));
+            consumer.accept(ClassUtils.instantiateClass(model.getType(), defaultValue));
         }
     }
 
@@ -1468,22 +1566,76 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @param model     the attribute model
      * @param attribute the annotation
      */
-    private void setDefaulValue(AttributeModelImpl model, Attribute attribute) {
+    private void setDefaultValue(AttributeModelImpl model, Attribute attribute) {
         if (!StringUtils.isEmpty(attribute.defaultValue())) {
             if (!AttributeType.BASIC.equals(model.getAttributeType())) {
-                throw new OCSRuntimeException(
-                        model.getName() + ": setting a default value is only allowed for BASIC attributes");
+                throw new OCSRuntimeException("%s: setting a default value is only allowed for BASIC attributes"
+                        .formatted(model.getName()));
             }
 
             String defaultValue = attribute.defaultValue();
-            setDefaultValue(model, defaultValue);
+            setDefaultValue(model, defaultValue, false, model::setDefaultValue);
+        }
+    }
+
+    /**
+     * Sets the default search value of an attribute based on the annotation
+     *
+     * @param model     the attribute model
+     * @param attribute the annotation
+     */
+    private void setDefaultSearchValue(AttributeModelImpl model, Attribute attribute) {
+        if (!StringUtils.isEmpty(attribute.defaultSearchValue())) {
+            if (!AttributeType.BASIC.equals(model.getAttributeType())) {
+                throw new OCSRuntimeException("%s: setting a default search value is only allowed for BASIC attributes"
+                        .formatted(model.getName()));
+            }
+
+            String defaultValue = attribute.defaultSearchValue();
+            setDefaultValue(model, defaultValue, true, model::setDefaultSearchValue);
+        }
+    }
+
+    /**
+     * Sets the default search value of an attribute based on the annotation
+     *
+     * @param model     the attribute model
+     * @param attribute the annotation
+     */
+    private void setDefaultSearchValueFrom(AttributeModelImpl model, Attribute attribute) {
+        if (!StringUtils.isEmpty(attribute.defaultSearchValueFrom())) {
+            if (!AttributeType.BASIC.equals(model.getAttributeType())) {
+                throw new OCSRuntimeException("%s: setting a default search from value is only allowed for BASIC attributes"
+                        .formatted(model.getName()));
+            }
+
+            String defaultValue = attribute.defaultSearchValueFrom();
+            setDefaultValue(model, defaultValue, true, model::setDefaultSearchValueFrom);
+        }
+    }
+
+    /**
+     * Sets the default search value of an attribute based on the annotation
+     *
+     * @param model     the attribute model
+     * @param attribute the annotation
+     */
+    private void setDefaultSearchValueTo(AttributeModelImpl model, Attribute attribute) {
+        if (!StringUtils.isEmpty(attribute.defaultSearchValueTo())) {
+            if (!AttributeType.BASIC.equals(model.getAttributeType())) {
+                throw new OCSRuntimeException("%s: setting a default search to value is only allowed for BASIC attributes"
+                        .formatted(model.getName()));
+            }
+
+            String defaultValue = attribute.defaultSearchValueTo();
+            setDefaultValue(model, defaultValue, true, model::setDefaultSearchValueTo);
         }
     }
 
     /**
      * Sets an enum field based on a string value from a message bundle
      *
-     * @param <E>       the type of the enum
+     * @param <E>       the type of the class
      * @param value     the string value
      * @param enumClass the type of the enum
      * @param receiver  receiver function
@@ -1535,7 +1687,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * @param limit    the lower limit
      * @param receiver the receiver function
      */
-    private void setIntSetting(String value, int limit, Consumer<Integer> receiver) {
+    private void setIntSettingIfAbove(String value, int limit, Consumer<Integer> receiver) {
         if (value == null) {
             return;
         }
@@ -1547,17 +1699,36 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     /**
+     * Sets an integer value on the attribute model if the value is above the
+     * specified limit
+     *
+     * @param value    the integer value
+     * @param limit    the lower limit
+     * @param receiver the receiver function
+     */
+    private void setIntSettingIfBelow(String value, int limit, Consumer<Integer> receiver) {
+        if (value == null) {
+            return;
+        }
+
+        int intValue = Integer.parseInt(value);
+        if (intValue < limit) {
+            receiver.accept(intValue);
+        }
+    }
+
+    /**
      * Sets a long value on the attribute model if it is either above or below the
      * specified limit
      *
      * @param value    the value
      * @param limit    the limit
      * @param above    whether to check if the value is above the limit
-     * @param consumer the consumer to execute
+     * @param receiver the function to call if the condition is met
      */
-    private void setLongSetting(Long value, long limit, boolean above, Consumer<Long> consumer) {
-        if (value != null && ((above && value > limit) || value < limit)) {
-            consumer.accept(value);
+    private void setBigDecimalSetting(Double value, Double limit, boolean above, Consumer<BigDecimal> receiver) {
+        if (value != null && (above && value.compareTo(limit) > 0 || value.compareTo(limit) < 0)) {
+            receiver.accept(BigDecimal.valueOf(value));
         }
     }
 
@@ -1631,63 +1802,89 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * certain depth
      *
      * @param parentEntityModel the parent entity model
-     * @param model             the attribute model
+     * @param attributeModel    the attribute model
      */
-    protected void setNestedEntityModel(EntityModel<?> parentEntityModel, AttributeModelImpl model) {
-        EntityModel<?> em = model.getEntityModel();
+    protected void setNestedEntityModel(EntityModel<?> parentEntityModel, AttributeModelImpl attributeModel) {
+        EntityModel<?> em = attributeModel.getEntityModel();
         if (StringUtils.countMatches(em.getReference(), ".") < parentEntityModel.getNestingDepth()) {
             Class<?> type = null;
 
             // only needed for master and detail attributes
-            if (AttributeType.MASTER.equals(model.getAttributeType())) {
-                type = model.getType();
-            } else if (AttributeType.DETAIL.equals(model.getAttributeType())) {
-                type = model.getMemberType();
+            if (AttributeType.MASTER.equals(attributeModel.getAttributeType()) || AttributeType.EMBEDDED.equals(
+                    attributeModel.getAttributeType())) {
+                type = attributeModel.getType();
+            } else if (AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {
+                type = attributeModel.getMemberType();
             }
 
             if (type != null) {
                 String ref;
                 if (StringUtils.isEmpty(em.getReference())) {
-                    ref = em.getEntityClass() + "." + model.getName();
+                    ref = em.getEntityClass() + "." + attributeModel.getName();
                 } else {
-                    ref = em.getReference() + "." + model.getName();
+                    ref = em.getReference() + "." + attributeModel.getName();
                 }
 
-                if (type.equals(em.getEntityClass()) || !hasEntityModel(type, ref)) {
-                    model.setNestedEntityModel(findModelFactory(ref, type).getModel(ref, type));
-                }
+//                if (type.equals(em.getEntityClass()) || !hasEntityModel(type, ref)) {
+                EntityModel<?> nestedModel = findModelFactory(ref, type).getModel(ref, type);
+                attributeModel.setNestedEntityModel(nestedModel);
+//                } else {
+//                    //EntityModel<?> nestedModel = findModelFactory(ref, type).getModel(ref, type);
+//                    //attributeModel.setNestedEntityModel(nestedModel);
+//                }
             }
         }
     }
 
     /**
-     * Sets the "required", "min" and "max" settings on an attribute based on JPA validation
+     * Sets the "required" setting on an attribute based on JPA validation
      * annotations
      *
-     * @param <T>           the type parameter
-     * @param entityModel   the entity model that the attribute model is part of
-     * @param model         the attribute model
-     * @param parentClass   the parent class
-     * @param attributeName the name of the attribute
+     * @param <T>         the type parameter
+     * @param entityModel the entity model that the attribute model is part of
+     * @param model       the attribute model
+     * @param parentClass the parent class
+     * @param fieldName   the name of the field
      */
-    private <T> void setRequiredAndMinMaxSetting(EntityModelImpl<T> entityModel, AttributeModelImpl model,
-                                                 Class<?> parentClass, String attributeName) {
+    private <T> void setRequiredAndMinMaxSetting(EntityModel<T> entityModel, AttributeModelImpl model,
+                                                 Class<?> parentClass, String fieldName) {
         // determine if the attribute is required based on the @NotNull
         // annotation
-        NotNull notNull = ClassUtils.getAnnotation(entityModel.getEntityClass(), attributeName, NotNull.class);
+        NotNull notNull = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, NotNull.class);
         model.setRequired(notNull != null);
 
         // also set to required when it is a collection with a size greater than 0
         model.setAttributeType(determineAttributeType(parentClass, model));
-        Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), attributeName, Size.class);
+        Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);
         if (size != null && size.min() > 0 && AttributeType.DETAIL.equals(model.getAttributeType())) {
             model.setRequired(true);
         }
 
+        // minimum and maximum size for collections
+        if (size != null && AttributeType.DETAIL.equals(model.getAttributeType())) {
+            model.setMinCollectionSize(size.min());
+            model.setMaxCollectionSize(size.max());
+        }
+
         // minimum and maximum length based on the @Size annotation
-        if (AttributeType.BASIC.equals(model.getAttributeType()) && size != null) {
-            model.setMaxLength(size.max());
+        if (model.getType() == String.class && size != null) {
             model.setMinLength(size.min());
+            model.setMaxLength(size.max());
+        }
+
+        if (model.getAttributeType() == AttributeType.ELEMENT_COLLECTION && size != null) {
+            model.setMinCollectionSize(size.min());
+            model.setMaxCollectionSize(size.max());
+        }
+
+        Min min = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Min.class);
+        if ((model.isNumerical() || model.getAttributeType() == AttributeType.ELEMENT_COLLECTION) && min != null) {
+            model.setMinValue(BigDecimal.valueOf(min.value()));
+        }
+
+        Max max = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Max.class);
+        if ((model.isNumerical() || model.getAttributeType() == AttributeType.ELEMENT_COLLECTION) && max != null) {
+            model.setMaxValue(BigDecimal.valueOf(max.value()));
         }
     }
 
@@ -1704,14 +1901,14 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 String[] sd = token.trim().split(" ");
                 if (sd.length > 0 && !StringUtils.isEmpty(sd[0]) && model.getAttributeModel(sd[0]) != null) {
                     model.getSortOrder().put(model.getAttributeModel(sd[0]),
-                            sd.length <= 1 || (!"DESC".equalsIgnoreCase(sd[1]) && !"DSC".equalsIgnoreCase(sd[1])));
+                            sd.length == 1 || (!"DESC".equalsIgnoreCase(sd[1]) && !"DSC".equalsIgnoreCase(sd[1])));
                 }
             }
         }
     }
 
     /**
-     * Sets a String field based on a value from a message bundle
+     * Sets a String field value if the provided argument is not empty
      *
      * @param value    the string value
      * @param receiver the code that is executed to set the value
@@ -1723,11 +1920,23 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     /**
+     * Sets a String field value if the provided argument is not empty
+     *
+     * @param value    the string value
+     * @param receiver the code that is executed to set the value
+     */
+    private void setStringListSetting(List<String> value, Consumer<List<String>> receiver) {
+        if (value != null && !value.isEmpty()) {
+            receiver.accept(value);
+        }
+    }
+
+    /**
      * Indicates whether to skip an attribute since it does not constitute an actual
      * property but rather a generic or technical field that all entities have
      *
      * @param name the name of the attribute
-     * @return true if the attribute must be skipped
+     * @return true if this is case, false otherwise
      */
     private boolean skipAttribute(String name) {
         return CLASS.equals(name) || VERSION.equals(name);
@@ -1741,37 +1950,62 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private void validateAttributeModel(AttributeModel model) {
         // multiple select fields not allowed for some attribute types
-        if (AttributeSelectMode.TOKEN.equals(model.getSelectMode())
-                && !AttributeType.DETAIL.equals(model.getAttributeType())
-                && !AttributeType.BASIC.equals(model.getAttributeType())) {
-            throw new OCSRuntimeException("Token field not allowed for attribute " + model.getName());
+        if (AttributeSelectMode.MULTI_SELECT.equals(model.getSelectMode())
+                && (!AttributeType.DETAIL.equals(model.getAttributeType()))) {
+            throw new OCSRuntimeException("Multi-select field not allowed for attribute %s".formatted(model.getName()));
         }
 
-        // list select field only allowed for "master" attribute types
-        if ((AttributeSelectMode.LIST.equals(model.getSelectMode())
-                && !AttributeType.MASTER.equals(model.getAttributeType()))) {
-            throw new OCSRuntimeException("List field is not allowed for attribute " + model.getName());
+        if (AttributeSelectMode.MULTI_SELECT.equals(model.getSearchSelectMode())
+                && !(AttributeType.DETAIL.equals(model.getAttributeType()) || isMultiSelectMaster(model))) {
+            throw new OCSRuntimeException("Multi-select field not allowed for attribute %s".formatted(model.getName()));
+        }
+
+        if (AttributeSelectMode.AUTO_COMPLETE.equals(model.getSelectMode())
+                && AttributeType.DETAIL.equals(model.getAttributeType())) {
+            throw new OCSRuntimeException("Auto-complete field not allowed for attribute %s".formatted(model.getName()));
+        }
+
+        if (AttributeSelectMode.COMBO.equals(model.getSelectMode())
+                && AttributeType.DETAIL.equals(model.getAttributeType())) {
+            throw new OCSRuntimeException("Combo box not allowed for attribute %s".formatted(model.getName()));
+        }
+
+        if (AttributeSelectMode.COMBO.equals(model.getSearchSelectMode())
+                && model.isMultipleSearch()) {
+            throw new OCSRuntimeException("Combo box not allowed for multiple search for attribute %s".formatted(model.getName()));
+        }
+
+        if (AttributeSelectMode.AUTO_COMPLETE.equals(model.getSearchSelectMode())
+                && model.isMultipleSearch()) {
+            throw new OCSRuntimeException("Auto-complete field not allowed for multiple search for attribute %s".formatted(model.getName()));
         }
 
         // navigating only allowed in case of a many-to-one relation
         if (!AttributeType.MASTER.equals(model.getAttributeType()) && model.isNavigable()) {
-            throw new OCSRuntimeException("Navigation is not possible for attribute " + model.getName());
+            throw new OCSRuntimeException("Navigation is not possible for attribute %s".formatted(model.getName()));
         }
 
         // searching on a LOB is pointless
         if (AttributeType.LOB.equals(model.getAttributeType()) && model.isSearchable()) {
-            throw new OCSRuntimeException("Searching on a LOB is not allowed for attribute " + model.getName());
+            throw new OCSRuntimeException("Searching on a LOB is not allowed for attribute %s".formatted(model.getName()));
         }
 
         // "search date only" is only supported for date/time fields
         if (model.isSearchDateOnly() && !LocalDateTime.class.equals(model.getType())
-                && !ZonedDateTime.class.equals(model.getType())) {
-            throw new OCSRuntimeException("SearchDateOnly is not allowed for attribute " + model.getName());
+                && !Instant.class.equals(model.getType())) {
+            throw new OCSRuntimeException("SearchDateOnly is not allowed for attribute %s".formatted(model.getName()));
         }
 
         // field cannot be percentage and currency at the same time
-        if (model.isPercentage() && model.isCurrency()) {
-            throw new OCSRuntimeException(model.getName() + " is not allowed to be both a percentage and a currency");
+        if (model.isPercentage() && !StringUtils.isEmpty(model.getCurrencyCode())) {
+            throw new OCSRuntimeException("%s is not allowed to be both a percentage and a currency".formatted(model.getName()));
+        }
+
+        // element collection only supported for strings or integral numbers
+        if (model.getAttributeType() == AttributeType.ELEMENT_COLLECTION && (!model.getMemberType().equals(String.class)
+                && !NumberUtils.isLong(model.getMemberType()) && !NumberUtils.isInteger(model.getMemberType()))) {
+            throw new OCSRuntimeException("Element collection for %s is not allowed (not a String or an integral number)"
+                    .formatted(model.getName()));
         }
     }
 
@@ -1779,7 +2013,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      * Validates the "group together with" settings for all attributes in the
      * specified entity model
      *
-     * @param <T>         the type of the class of the entity model
+     * @param <T>         type parameter, type of the class managed by the entity model
      * @param entityModel the entity model
      */
     private <T> void validateGroupTogetherSettings(EntityModel<T> entityModel) {
@@ -1799,6 +2033,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 }
             }
         }
+    }
+
+    private boolean isMultiSelectMaster(AttributeModel attributeModel) {
+        return attributeModel.getAttributeType() == AttributeType.MASTER
+                && attributeModel.isMultipleSearch();
     }
 
 }

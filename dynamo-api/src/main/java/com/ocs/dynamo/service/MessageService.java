@@ -13,9 +13,9 @@
  */
 package com.ocs.dynamo.service;
 
-import java.util.Locale;
-
 import com.ocs.dynamo.domain.model.AttributeModel;
+
+import java.util.Locale;
 
 /**
  * A service for convenient access to message bundles - catches any exceptions

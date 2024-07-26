@@ -13,16 +13,11 @@
  */
 package com.ocs.dynamo.filter;
 
-import java.util.Collection;
-import java.util.List;
-
+import com.ocs.dynamo.filter.Compare.*;
 import org.springframework.beans.PropertyAccessorFactory;
 
-import com.ocs.dynamo.filter.Compare.Equal;
-import com.ocs.dynamo.filter.Compare.Greater;
-import com.ocs.dynamo.filter.Compare.GreaterOrEqual;
-import com.ocs.dynamo.filter.Compare.Less;
-import com.ocs.dynamo.filter.Compare.LessOrEqual;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Abstract base class for filters

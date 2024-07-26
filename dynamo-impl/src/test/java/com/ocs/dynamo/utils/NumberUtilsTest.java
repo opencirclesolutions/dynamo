@@ -1,14 +1,11 @@
 package com.ocs.dynamo.utils;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertFalse;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import com.ocs.dynamo.test.BaseMockitoTest;
+import org.junit.jupiter.api.Test;
 
 import java.math.BigDecimal;
 
-import org.junit.jupiter.api.Test;
-
-import com.ocs.dynamo.test.BaseMockitoTest;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class NumberUtilsTest extends BaseMockitoTest {
 

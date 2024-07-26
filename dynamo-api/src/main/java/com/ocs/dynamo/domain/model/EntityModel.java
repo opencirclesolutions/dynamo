@@ -18,6 +18,8 @@ import com.ocs.dynamo.dao.FetchJoinInformation;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * An interface representing a model that contains an entity's metadata
@@ -26,11 +28,6 @@ import java.util.Map;
  * @param <T> the type of the entity
  */
 public interface EntityModel<T> {
-
-	/**
-	 * Auto-fill instructions for AI
-	 */
-	String AUTO_FILL_INSTRUCTIONS = "autoFillInstructions";
 
 	/**
 	 * Allowed extensions (for a file upload)
@@ -51,6 +48,16 @@ public interface EntityModel<T> {
 	 * The (default) order of the attributes
 	 */
 	String ATTRIBUTE_ORDER = "attributeOrder";
+
+	/**
+	 * Auto-fill instructions
+	 */
+	String AUTO_FILL_INSTRUCTIONS = "autofillInstructions";
+
+	/**
+	 * Boolean field mode (checkbox or toggle)
+	 */
+	String BOOLEAN_FIELD_MODE = "booleanFieldMode";
 
 	/**
 	 * Cascade attribute
@@ -74,19 +81,14 @@ public interface EntityModel<T> {
 	String CASCADE_OFF = "cascadeOff";
 
 	/**
-	 * Whether the clear button is visible
+	 * Indicates whether creating a new entity is allowed
 	 */
-	String CLEAR_BUTTON_VISIBLE = "clearButtonVisible";
+	String CREATE_ALLOWED = "createAllowed";
 
 	/**
-	 * Whether an amount represents a currency
+	 * The currency code to use
 	 */
-	String CURRENCY = "currency";
-
-	/**
-	 * The currency symbol to use
-	 */
-	String CURRENCY_SYMBOL = "currencySymbol";
+	String CURRENCY_CODE = "currencyCode";
 
 	/**
 	 * Custom setting
@@ -120,6 +122,26 @@ public interface EntityModel<T> {
 	String DEFAULT_VALUE = "defaultValue";
 
 	/**
+	 * Default search value
+	 */
+	String DEFAULT_SEARCH_VALUE = "defaultSearchValue";
+
+	/**
+	 * Default search value to
+	 */
+	String DEFAULT_SEARCH_VALUE_FROM = "defaultSearchValueFrom";
+
+	/**
+	 * Default search value to
+	 */
+	String DEFAULT_SEARCH_VALUE_TO = "defaultSearchValueTo";
+
+	/**
+	 * Indicates whether deleting is allowed
+	 */
+	String DELETE_ALLOWED = "deleteAllowed";
+
+	/**
 	 * Description (used for tool tip)
 	 */
 	String DESCRIPTION = "description";
@@ -146,6 +168,11 @@ public interface EntityModel<T> {
 	String DISPLAY_PROPERTY = "displayProperty";
 
 	/**
+	 * Whether download is enabled
+	 */
+	String DOWNLOAD_ALLOWED = "downloadAllowed";
+
+	/**
 	 * The editable mode (EDITABLE, READ_ONLY, or CREATE_ONLY)
 	 */
 	String EDITABLE = "editable";
@@ -156,44 +183,19 @@ public interface EntityModel<T> {
 	String EMBEDDED = "embedded";
 
 	/**
+	 * The type of the component to use for element collections
+	 */
+	String ELEMENT_COLLECTION_MODE = "elementCollectionMode";
+
+	/**
 	 * The String representation for the boolean "false" value
 	 */
 	String FALSE_REPRESENTATION = "falseRepresentation";
 
-	/**
-	 * Master join
-	 */
-	String JOIN = "join";
-
-	/**
-	 * Detail join
-	 */
-	String DETAIL_JOIN = "detailJoin";
-
-	/**
-	 * Detail join attribute
-	 */
-	String ATTRIBUTE = "attribute";
-
-	/**
-	 * Detail join type
-	 */
-	String JOIN_TYPE = "joinType";
-
-	/**
-	 * The property to use for filtering when using paged mode for lookup
-	 */
-	String FILTER_PROPERTY = "filterProperty";
-
-	/**
+    /**
 	 * Attribute order in grid
 	 */
 	String GRID_ATTRIBUTE_ORDER = "gridAttributeOrder";
-
-	/**
-	 * The type of component to use in editable grid
-	 */
-	String GRID_SELECT_MODE = "gridSelectMode";
 
 	/**
 	 * Names of other attributes that must appear on the same line inside an edit
@@ -211,16 +213,21 @@ public interface EntityModel<T> {
 	 * Whether a (BLOB) field represents an image
 	 */
 	String IMAGE = "image";
-	
-	/**
-	 * Whether to display button captions in lookup fields
-	 */
-	String LOOKUP_FIELD_CAPTIONS = "lookupFieldCaptions";
 
 	/**
-	 * Whether the attribute is the main attribute
+	 * Whether the LIST method is allowed
 	 */
-	String MAIN = "main";
+	String LIST_ALLOWED = "listAllowed";
+
+	/**
+	 * The entity model reference to use for lookups
+	 */
+	String LOOKUP_ENTITY_REFERENCE = "lookupEntityReference";
+
+	/**
+	 * Query type to use inside popup dialog in lookup screen
+	 */
+	String LOOKUP_QUERY_TYPE = "lookupQueryType";
 
 	/**
 	 * The maximum length of the items inside an element collection
@@ -231,6 +238,11 @@ public interface EntityModel<T> {
 	 * The maximum string length of the textual representation inside a grid
 	 */
 	String MAX_LENGTH_IN_GRID = "maxLengthInGrid";
+
+	/**
+	 * Maximum number of allowed search results
+	 */
+	String MAX_SEARCH_RESULTS = "maxSearchResults";
 
 	/**
 	 * The maximum value of the numeric items inside an element collection
@@ -252,12 +264,7 @@ public interface EntityModel<T> {
 	 */
 	String MIN_VALUE = "minValue";
 
-	/**
-	 * The multiple select mode to use inside a search dialog
-	 */
-	String MULTI_SELECT_MODE = "multiSelectMode";
-
-	/**
+    /**
 	 * Whether to allow searching for multiple values in case of a MASTER attribute
 	 */
 	String MULTIPLE_SEARCH = "multipleSearch";
@@ -267,6 +274,22 @@ public interface EntityModel<T> {
 	 * will be rendered)
 	 */
 	String NAVIGABLE = "navigable";
+
+	/**
+	 * The custom navigation link to use from intra-application navigation
+	 */
+	String NAVIGATION_LINK = "navigationLink";
+
+	/**
+	 * Whether the attribute is needed in the data even though it's not visible
+	 * or editable itself
+	 */
+	String NEEDED_IN_DATA = "neededInData";
+
+	/**
+	 * Whether detail entities are included directly in the message body
+	 */
+	String NESTED_DETAILS = "nestedDetails";
 
 	/**
 	 * The default nesting depth for nested entity models
@@ -284,11 +307,6 @@ public interface EntityModel<T> {
 	String NUMBER_FIELD_STEP = "numberFieldStep";
 
 	/**
-	 * The paging type for selection components
-	 */
-	String PAGING_MODE = "pagingMode";
-
-	/**
 	 * Whether to include a percentage sign to a numerical field (cosmetic only)
 	 */
 	String PERCENTAGE = "percentage";
@@ -302,6 +320,11 @@ public interface EntityModel<T> {
 	 * The prompt value that appears inside empty input fields
 	 */
 	String PROMPT = "prompt";
+
+	/**
+	 * Indicates whether searching is allowed
+	 */
+	String SEARCH_ALLOWED = "searchAllowed";
 
 	/**
 	 * Indicates that quick add functionality is enabled
@@ -386,21 +409,10 @@ public interface EntityModel<T> {
 	String SORTABLE = "sortable";
 
 	/**
-	 * Text area height
-	 */
-	String TEXT_AREA_HEIGHT = "textAreaHeight";
-
-	/**
 	 * The text field mode - indicates whether to use a text field or text area for
 	 * editing a String field
 	 */
-	String TEXTFIELD_MODE = "textFieldMode";
-
-	/**
-	 * Indicates whether when to use the thousand separator when formatting
-	 * floating point numbers
-	 */
-	String THOUSANDS_GROUPING_MODE = "thousandsGroupingMode";
+	String TEXT_FIELD_MODE = "textFieldMode";
 
 	/**
 	 * Whether to trim excess spaces for text and text area fields
@@ -419,7 +431,12 @@ public interface EntityModel<T> {
 	String URL = "url";
 
 	/**
-	 * Indicated whether the field is visible in an edit form
+	 * Indicates whether updating is allowed
+	 */
+	String UPDATE_ALLOWED = "updateAllowed";
+
+	/**
+	 * Indicated whether the field is visible inside a form
 	 */
 	String VISIBLE_IN_FORM = "visibleInForm";
 
@@ -429,9 +446,39 @@ public interface EntityModel<T> {
 	String VISIBLE_IN_GRID = "visibleInGrid";
 
 	/**
-	 * Indicates whether to format a date field as a week code
+	 * Master join
 	 */
-	String WEEK = "week";
+	String JOIN = "join";
+
+	/**
+	 * Detail join
+	 */
+	String DETAIL_JOIN = "detailJoin";
+
+	/**
+	 * Detail join attribute
+	 */
+	String ATTRIBUTE = "attribute";
+
+	/**
+	 * Detail join type
+	 */
+	String JOIN_TYPE = "joinType";
+
+	/**
+	 * Whether exporting is allowed
+	 */
+	String EXPORT_ALLOWED = "exportAllowed";
+
+	String READ_ROLES = "readRoles";
+
+	String WRITE_ROLES = "writeRoles";
+
+	String DELETE_ROLES = "deleteRoles";
+
+	String ACTION_ROLES = "actionRoles";
+
+	String ICON = "icon";
 
 	/**
 	 * Adds an attribute group
@@ -439,6 +486,19 @@ public interface EntityModel<T> {
 	 * @param attributeGroup the name of the attribute group
 	 */
 	void addAttributeGroup(String attributeGroup);
+
+	/**
+	 * Adds a new attribute model on the position of the given existing attribute
+	 * model. The existing model will shift one position to the back of the list.
+	 * When the existing model is not found the attribute will be added to the end of
+	 * the list.
+	 * 
+	 * @param attributeGroup The group to which the attribute model should be
+	 *                       registered
+	 * @param model          The model of the attribute
+	 * @param existingModel  The existing attribute model
+	 */
+	void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel);
 
 	/**
 	 * @return the attribute groups that are defined for this entity
@@ -497,6 +557,12 @@ public interface EntityModel<T> {
 	List<AttributeModel> getAttributeModelsSortedForSearch();
 
 	/**
+	 *
+	 * @return the entity-wide instructions for automatically filling a form using a LLM
+	 */
+	String getAutofillInstructions();
+
+	/**
 	 * @return the attribute models for which cascading has been defined
 	 */
 	List<AttributeModel> getCascadeAttributeModels();
@@ -539,17 +605,9 @@ public interface EntityModel<T> {
 	Class<T> getEntityClass();
 
 	/**
-	 * The name of the property that is used to filter inside a combo box or token
-	 * component
-	 * 
-	 * @return the name of the filter property
+	 * @return the maximum number of allowed search results
 	 */
-	String getFilterProperty();
-
-	/**
-	 * @return the main attribute for this entity model
-	 */
-	AttributeModel getMainAttributeModel();
+	int getMaxSearchResults();
 
 	/**
 	 * 
@@ -585,24 +643,60 @@ public interface EntityModel<T> {
 	boolean isAttributeGroupVisible(String group, boolean readOnly);
 
 	/**
-	 * Indicates whether this is the "base" entity model for the class
-	 * 
-	 * @return true if this is the case, false otherwise
-	 */
-	boolean isBaseEntityModel();
-
-	/**
 	 * @return whether only the default attribute group is used
 	 */
 	boolean usesDefaultGroupOnly();
 
 	/**
-	 *
-	 * @return the auto-fill instructions
+	 * @return whether creating new entities is allowed
 	 */
-	String getAutofillInstructions();
+	boolean isCreateAllowed();
+
+	/**
+	 * @return whether it is allowed to retrieve of a list of entities
+	 */
+	boolean isListAllowed();
+
+	/**
+	 * @return whether directly deleting entities is allowed
+	 */
+	boolean isDeleteAllowed();
+
+	/**
+	 * @return whether modifying attributes is allowed
+	 */
+	boolean isUpdateAllowed();
+
+	/**
+	 * @return whether searching is allowed
+	 */
+	boolean isSearchAllowed();
+
+	/**
+	 * @return whether data model export is allowed
+	 */
+	boolean isExportAllowed();
+
+	/**
+	 * Returns the set of attribute models that match the provided predicate
+	 * @param predicate the predicate
+	 * @return the list of matching attribute models
+	 */
+	Stream<AttributeModel> getAttributeModels(Predicate<AttributeModel> predicate);
 
 	List<FetchJoinInformation> getFetchJoins();
 
 	List<FetchJoinInformation> getDetailJoins();
+
+	List<EntityModelAction> getEntityModelActions();
+
+	EntityModelAction findAction(String actionId);
+
+	List<String> getReadRoles();
+
+	List<String> getWriteRoles();
+
+	List<String> getDeleteRoles();
+
+	boolean hasEmbeddedAttributeModel(String property);
 }

@@ -13,9 +13,9 @@
  */
 package com.ocs.dynamo.domain.query;
 
-import java.io.Serializable;
-
 import com.ocs.dynamo.domain.AbstractEntity;
+
+import java.io.Serializable;
 
 /**
  * Interface for an iterator that iterators over a set of entities using paging

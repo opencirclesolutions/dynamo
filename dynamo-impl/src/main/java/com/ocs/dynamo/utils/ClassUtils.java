@@ -18,15 +18,14 @@ import jakarta.validation.constraints.Size;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.reflect.FieldUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
-import org.springframework.core.MethodParameter;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 /**
@@ -56,7 +55,7 @@ public final class ClassUtils {
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
                 Object first = MethodUtils.invokeMethod(obj,
-                        GET + org.apache.commons.lang3.StringUtils.capitalize(firstProperty));
+                        GET + StringUtils.capitalize(firstProperty));
                 if (first != null) {
                     return canSetProperty(first, fieldName.substring(p + 1));
                 }
@@ -70,24 +69,24 @@ public final class ClassUtils {
     }
 
     /**
-     * Clears a field
+     * Clears an attribute value
      *
-     * @param obj       the object on which to clear the field
-     * @param fieldName the name of the field
-     * @param fieldType the type of the field
+     * @param obj           the object on which to clear the field
+     * @param attributeName the name of the attribute
+     * @param argType       the argument type
      */
-    public static void clearFieldValue(Object obj, String fieldName, Class<?> fieldType) {
+    public static void clearAttributeValue(Object obj, String attributeName, Class<?> argType) {
         try {
-            int p = fieldName.indexOf('.');
+            int p = attributeName.indexOf('.');
             if (p >= 0) {
-                String firstProperty = fieldName.substring(0, p);
+                String firstProperty = attributeName.substring(0, p);
                 Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));
                 if (first != null) {
-                    clearFieldValue(first, fieldName.substring(p + 1), fieldType);
+                    clearAttributeValue(first, attributeName.substring(p + 1), argType);
                 }
             } else {
-                Method m = obj.getClass().getMethod(SET + StringUtils.capitalize(fieldName), fieldType);
-                m.invoke(obj, (Object) null);
+                Method method = obj.getClass().getMethod(SET + StringUtils.capitalize(attributeName), argType);
+                method.invoke(obj, (Object) null);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             throw new OCSRuntimeException(e.getMessage(), e);
@@ -95,48 +94,20 @@ public final class ClassUtils {
     }
 
     /**
-     * forClass which doesn't throw an exception and can handle empty class names
-     *
-     * @param clazz The fully qualified class name
-     * @return the specified class and null when class is not found
-     */
-    public static Class<?> forClass(final String clazz) {
-        Class<?> result = null;
-        try {
-            if (StringUtils.isNotEmpty(clazz)) {
-                result = Class.forName(clazz);
-            }
-        } catch (final ClassNotFoundException e) {
-            log.error(e.getMessage(), e);
-        }
-        return result;
-    }
-
-    @SuppressWarnings("unchecked")
-    public static <T extends Annotation> T getAnnotationOnClass(Class<?> clazz, Class<T> annotationClass) {
-        for (Annotation a : clazz.getAnnotations()) {
-            if (a.annotationType().equals(annotationClass)) {
-                return (T) a;
-            }
-        }
-        return null;
-    }
-
-    /**
      * Tries to retrieve an annotation, by first looking at the field name, and then
      * at the getter method
      *
      * @param clazz           the class
-     * @param fieldName       the name of the field
+     * @param attributeName   the name of the field
      * @param annotationClass the annotation class to look for
-     * @return the annotation or null if it could not be found
+     * @return the annotation
      */
-    public static <T extends Annotation> T getAnnotation(Class<?> clazz, String fieldName, Class<T> annotationClass) {
-        T t = getAnnotationOnMethod(clazz, fieldName, annotationClass);
-        if (t == null) {
-            t = getAnnotationOnField(clazz, fieldName, annotationClass);
+    public static <T extends Annotation> T getAnnotation(Class<?> clazz, String attributeName, Class<T> annotationClass) {
+        T entity = getAnnotationOnMethod(clazz, attributeName, annotationClass);
+        if (entity == null) {
+            entity = getAnnotationOnField(clazz, attributeName, annotationClass);
         }
-        return t;
+        return entity;
     }
 
     /**
@@ -160,12 +131,12 @@ public final class ClassUtils {
     }
 
     /**
-     * Returns an annotation on a field
+     * Return an annotation on a certain field
      *
      * @param clazz           the class
      * @param fieldName       the field name
      * @param annotationClass the class of the annotation
-     * @return the annotation or null if it could not be found
+     * @return the annotation
      */
     public static <T extends Annotation> T getAnnotationOnField(Class<?> clazz, String fieldName,
                                                                 Class<T> annotationClass) {
@@ -177,11 +148,11 @@ public final class ClassUtils {
     }
 
     /**
-     * Returns an annotation on a field
+     * Returns an annotation on a certain field
      *
      * @param field           the field
      * @param annotationClass the annotation class
-     * @return the annotation or null if it could not be found
+     * @return the annotation
      */
     @SuppressWarnings("unchecked")
     public static <T extends Annotation> T getAnnotationOnField(Field field, Class<T> annotationClass) {
@@ -202,7 +173,7 @@ public final class ClassUtils {
      * @param clazz           the class
      * @param fieldName       the name of the field (will be prepended with "get")
      * @param annotationClass the class of the annotation to look for
-     * @return the annotation or null if it could not be found
+     * @return the annotation
      */
     public static <T extends Annotation> T getAnnotationOnMethod(Class<?> clazz, String fieldName,
                                                                  Class<T> annotationClass) {
@@ -218,7 +189,7 @@ public final class ClassUtils {
      *
      * @param method          the method
      * @param annotationClass the class of the annotation
-     * @return the annotation or null if it could not be found
+     * @return the annotation
      */
     @SuppressWarnings("unchecked")
     public static <T extends Annotation> T getAnnotationOnMethod(Method method, Class<T> annotationClass) {
@@ -236,9 +207,9 @@ public final class ClassUtils {
     /**
      * Retrieves the contents of a field as a byte array
      *
-     * @param obj       the object from which to retrieve the value
+     * @param obj       the object
      * @param fieldName the name of the field
-     * @return the field value as a byte array
+     * @return the content, as a byte array
      */
     public static byte[] getBytes(Object obj, String fieldName) {
         return (byte[]) getFieldValue(obj, fieldName);
@@ -248,8 +219,8 @@ public final class ClassUtils {
      * Find constructor based on the types of the given arguments used to
      * instantiate the class with the found constructor
      *
-     * @param clazz the class for which to retrieve the constructor
-     * @param args  any arguments to be passed to the constructor
+     * @param clazz the class for which to find the constructor
+     * @param args  the arguments
      * @return the constructor
      */
     public static <T> Constructor<T> getConstructor(Class<T> clazz, Object... args) {
@@ -296,7 +267,7 @@ public final class ClassUtils {
      *
      * @param obj       the object from which to retrieve the field value
      * @param fieldName the name of the field
-     * @return the value of the field
+     * @return the field value
      */
     public static Object getFieldValue(Object obj, String fieldName) {
         try {
@@ -324,7 +295,7 @@ public final class ClassUtils {
      *
      * @param obj       the object
      * @param fieldName the name of the field
-     * @return the value of the field, as a String
+     * @return the field value, as a string
      */
     public static String getFieldValueAsString(Object obj, String fieldName) {
         return getFieldValueAsString(obj, fieldName, null);
@@ -333,14 +304,14 @@ public final class ClassUtils {
     /**
      * Returns a field value as a String
      *
-     * @param obj       the object
-     * @param fieldName the name of the field
-     * @param defValue  the default value that is used in case of a null value
-     * @return the field value, as a String
+     * @param obj          the object
+     * @param fieldName    the name of the field
+     * @param defaultValue the default value that is used in case of a null value
+     * @return the field value as a String
      */
-    public static String getFieldValueAsString(Object obj, String fieldName, String defValue) {
+    public static String getFieldValueAsString(Object obj, String fieldName, String defaultValue) {
         Object temp = getFieldValue(obj, fieldName);
-        return temp == null ? defValue : temp.toString();
+        return temp == null ? defaultValue : temp.toString();
     }
 
     /**
@@ -374,9 +345,9 @@ public final class ClassUtils {
     /**
      * Returns the maximum allowed length of a field
      *
-     * @param clazz the class on which the field is located
+     * @param clazz     the clazz on which the field is located
      * @param fieldName the name of the field
-     * @return the maximum length (or -1 if no maximum is set)
+     * @return the maximum length
      */
     public static int getMaxLength(Class<?> clazz, String fieldName) {
         Size size = getAnnotation(clazz, fieldName, Size.class);
@@ -394,49 +365,19 @@ public final class ClassUtils {
      * access the String from the nested List. For convenience, if no indexes are
      * specified the first generic is returned.
      *
-     * @param type the class
+     * @param type      the class
      * @param fieldName the name of the field
-     * @param indexes the generic indexes
-     * @return the type
+     * @param indexes   the set of indexes
+     * @return the resolved type
      */
     public static <T> Class<?> getResolvedType(Class<T> type, String fieldName, int... indexes) {
         Field field = getField(type, fieldName);
         if (field != null) {
             ResolvableType rt = ResolvableType.forField(field);
-            if (rt != null) {
-                if (indexes != null && indexes.length > 0) {
-                    rt = rt.getGeneric(indexes);
-                }
-                if (rt != null) {
-                    return rt.resolve();
-                }
-
+            if (indexes != null && indexes.length > 0) {
+                rt = rt.getGeneric(indexes);
             }
-        }
-        return null;
-    }
-
-    public static Class<?> getResolvedType(Object object, int... indexes) {
-        if (object != null) {
-            ResolvableType rt;
-            if (object instanceof Method) {
-                rt = ResolvableType.forMethodReturnType((Method) object);
-            } else if (object instanceof MethodParameter) {
-                rt = ResolvableType.forMethodParameter((MethodParameter) object);
-            } else if (object instanceof Type) {
-                rt = ResolvableType.forType((Type) object);
-            } else {
-                rt = ResolvableType.forRawClass((Class<?>) object);
-            }
-            if (rt != null) {
-                if (indexes != null && indexes.length > 0) {
-                    rt = rt.getGeneric(indexes);
-                }
-                if (rt != null) {
-                    return rt.resolve();
-                }
-
-            }
+            return rt.resolve();
         }
         return null;
     }
@@ -444,14 +385,14 @@ public final class ClassUtils {
     /**
      * Check if the object has a (public) method that has the specified name
      *
-     * @param object the object
+     * @param obj        the object to check
      * @param methodName the name of the method
      * @return true if this is the case, false otherwise
      */
-    public static boolean hasMethod(Object object, String methodName) {
-        Method[] methods = object.getClass().getMethods();
+    public static boolean hasMethod(Object obj, String methodName) {
+        Method[] methods = obj.getClass().getMethods();
         for (Method method : methods) {
-            if (method.getName().equals(methodName) && (Modifier.isPublic(method.getModifiers()))) {
+            if (method.getName().equals(methodName) && Modifier.isPublic(method.getModifiers())) {
                 return true;
             }
         }
@@ -463,9 +404,9 @@ public final class ClassUtils {
      * are not null so the types can be determined and a matching constructor can be
      * found. When no constructor is found null is returned.
      *
-     * @param clazz the class to instantiate
-     * @param args any arguments to pass to the constructor
-     * @return an instance of the class
+     * @param clazz the class
+     * @param args  the constructor arguments to pass
+     * @return the instantiated class
      */
     public static <T> T instantiateClass(Class<T> clazz, Object... args) {
         Constructor<T> constructor = getConstructor(clazz, args);
@@ -479,27 +420,32 @@ public final class ClassUtils {
         if (bytes != null) {
             setFieldValue(obj, fieldName, bytes);
         } else {
-            clearFieldValue(obj, fieldName, byte[].class);
+            clearAttributeValue(obj, fieldName, byte[].class);
         }
     }
 
     /**
-     * Sets a value for a field on an object
-     * @param object the object on which to set the value
-     * @param fieldName the name of the field to set
-     * @param value the value to set
+     * Sets the value of the provided field on the provided object
+     *
+     * @param obj       the object
+     * @param fieldName the name of the field
+     * @param value     the value to set
      */
-    public static void setFieldValue(Object object, String fieldName, Object value) {
+    public static void setFieldValue(Object obj, String fieldName, Object value) {
         try {
             int p = fieldName.indexOf('.');
             if (p >= 0) {
                 String firstProperty = fieldName.substring(0, p);
-                Object first = MethodUtils.invokeMethod(object, GET + StringUtils.capitalize(firstProperty));
+                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));
                 if (first != null) {
-                    setFieldValue(first, fieldName.substring(p + 1), value);
+                    if (first instanceof Collection<?> col) {
+                        col.forEach(c -> setFieldValue(c, fieldName.substring(p + 1), value));
+                    } else {
+                        setFieldValue(first, fieldName.substring(p + 1), value);
+                    }
                 }
             } else {
-                MethodUtils.invokeMethod(object, SET + StringUtils.capitalize(fieldName), value);
+                MethodUtils.invokeMethod(obj, SET + StringUtils.capitalize(fieldName), value);
             }
         } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {
             log.error(e.getMessage(), e);
@@ -507,28 +453,25 @@ public final class ClassUtils {
         }
     }
 
-    public static <T, S extends T> void copyFields(T from, S to) {
-        try {
-            Class<?> aClass = from.getClass();
-            final Field[] declaredFields = aClass.getDeclaredFields();
-            copyFields(from, to, declaredFields);
+    /**
+     * Translates the name of an entity to the fully qualified class name
+     *
+     * @param entityName the name of the entity
+     * @return the fully qualified class name
+     */
+    public static Class<?> findClass(String entityName) {
+        String packages = SystemPropertyUtils.getEntityModelPackageNames();
+        Class<?> result = null;
+        String[] packageNames = packages.split(",");
 
-            while ((aClass = aClass.getSuperclass()) != null) {
-                copyFields(from, to, aClass.getFields());
-            }
-        } catch (Exception e) {
-            log.error(e.getMessage(), e);
-            throw new OCSRuntimeException(e.getMessage(), e);
-        }
-    }
-
-    private static <T, S extends T> void copyFields(T from, S to, Field[] fields) throws IllegalAccessException {
-        for (Field field : fields) {
-            final int fieldModifiers = field.getModifiers();
-            if (!Modifier.isFinal(fieldModifiers) && !Modifier.isStatic(fieldModifiers)) {
-                Object value = FieldUtils.readField(field, from, true);
-                FieldUtils.writeField(field, to, value, true);
+        for (String packageName : packageNames) {
+            try {
+                result = Class.forName("%s.%s".formatted(packageName, entityName));
+            } catch (ClassNotFoundException | NoClassDefFoundError ex) {
+                // ignore
             }
         }
+        return result;
     }
+
 }

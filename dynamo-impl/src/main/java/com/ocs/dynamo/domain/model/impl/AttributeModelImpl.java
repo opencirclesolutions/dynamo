@@ -13,398 +13,395 @@
  */
 package com.ocs.dynamo.domain.model.impl;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-import java.util.MissingResourceException;
-import java.util.Optional;
-import java.util.ResourceBundle;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
-
-import com.ocs.dynamo.domain.model.AttributeDateType;
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.AttributeSelectMode;
-import com.ocs.dynamo.domain.model.AttributeTextFieldMode;
-import com.ocs.dynamo.domain.model.AttributeType;
-import com.ocs.dynamo.domain.model.CascadeMode;
-import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.MultiSelectMode;
-import com.ocs.dynamo.domain.model.NumberFieldMode;
-import com.ocs.dynamo.domain.model.PagingMode;
-import com.ocs.dynamo.domain.model.ThousandsGroupingMode;
-import com.ocs.dynamo.domain.model.VisibilityType;
+import com.ocs.dynamo.domain.model.*;
 import com.ocs.dynamo.domain.model.annotation.SearchMode;
-import com.ocs.dynamo.util.SystemPropertyUtils;
-
+import com.ocs.dynamo.utils.NumberUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
 
+import java.math.BigDecimal;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
 /**
  * Implementation of the AttributeModel interface - simple container for
  * properties
- * 
+ *
  * @author bas.rutten
  */
 @Data
-@EqualsAndHashCode(callSuper = false, of = { "entityModel", "name" })
+@EqualsAndHashCode(callSuper = false, of = {"entityModel", "name"})
 @ToString
 public class AttributeModelImpl implements AttributeModel {
 
-	private Set<String> allowedExtensions = new HashSet<>();
+    private Set<String> allowedExtensions = new HashSet<>();
 
-	private boolean alreadyGrouped;
+    private boolean alreadyGrouped;
 
-	private AttributeType attributeType;
+    private AttributeType attributeType;
 
-	private final Map<String, String> cascadeAttributes = new HashMap<>();
+    private String autofillInstructions;
 
-	private Map<String, CascadeMode> cascadeModes = new HashMap<>();
+    private AttributeBooleanFieldMode booleanFieldMode;
 
-	private boolean clearButtonVisible;
+    private final Map<String, String> cascadeAttributes = new HashMap<>();
 
-	private String collectionTableFieldName;
+    private Map<String, CascadeMode> cascadeModes = new HashMap<>();
 
-	private String collectionTableName;
+    private String collectionTableFieldName;
 
-	private boolean currency;
+    private String collectionTableName;
 
-	private String currencySymbol;
+    private String currencyCode;
 
-	private Map<String, Object> customSettings = new HashMap<>();
+    private Map<String, Object> customSettings = new HashMap<>();
 
-	private AttributeDateType dateType;
+    private AttributeDateType dateType;
 
-	private String defaultDescription;
+    private String defaultDescription;
 
-	private String defaultDisplayName;
+    private String defaultDisplayFormat;
 
-	private String defaultFalseRepresentation;
+    private String defaultDisplayName;
 
-	private String defaultPrompt;
+    private String defaultFalseRepresentation;
 
-	private String defaultTrueRepresentation;
+    private String defaultPrompt;
 
-	private Object defaultValue;
+    private String defaultTrueRepresentation;
 
-	private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
+    private Object defaultValue;
 
-	private String displayFormat;
+    private Object defaultSearchValue;
 
-	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
+    private Object defaultSearchValueFrom;
 
-	private EditableType editableType;
+    private Object defaultSearchValueTo;
 
-	private boolean email;
+    private Map<String, Optional<String>> descriptions = new ConcurrentHashMap<>();
 
-	@ToString.Exclude
-	private EntityModel<?> entityModel;
+    private Map<String, Optional<String>> displayFormats = new ConcurrentHashMap<>();
 
-	private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
+    private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
 
-	private String fileNameProperty;
+    private boolean downloadAllowed;
 
-	private Integer gridOrder;
+    private EditableType editableType;
 
-	private AttributeSelectMode gridSelectMode;
+    private ElementCollectionMode elementCollectionMode;
 
-	private final List<String> groupTogetherWith = new ArrayList<>();
+    private boolean email;
 
-	private boolean ignoreInSearchFilter;
+    private AttributeEnumFieldMode enumFieldMode;
 
-	private boolean image;
-	
-	private VisibilityType lookupFieldCaptions;
+    @ToString.Exclude
+    private EntityModel<?> entityModel;
 
-	private boolean mainAttribute;
+    private Map<String, Optional<String>> falseRepresentations = new ConcurrentHashMap<>();
 
-	private Integer maxLength;
+    private String fileNameProperty;
 
-	private Integer maxLengthInGrid;
+    private Integer gridOrder;
 
-	private Long maxValue;
+    private final List<String> groupTogetherWith = new ArrayList<>();
 
-	private Class<?> memberType;
+    private boolean ignoreInSearchFilter;
 
-	private Integer minLength;
+    private boolean image;
 
-	private Long minValue;
+    private String lookupEntityReference;
 
-	private boolean multipleSearch;
+    private QueryType lookupQueryType;
 
-	private MultiSelectMode multiSelectMode;
+    private Integer maxCollectionSize;
 
-	private String name;
+    private Integer maxLength;
 
-	private boolean navigable;
+    private Integer maxLengthInGrid;
 
-	private EntityModel<?> nestedEntityModel;
+    private BigDecimal maxValue;
 
-	private NumberFieldMode numberFieldMode;
+    private Class<?> memberType;
 
-	private Integer numberFieldStep;
+    private Integer minCollectionSize;
 
-	private Integer order;
+    private Integer minLength;
 
-	private PagingMode pagingMode;
+    private BigDecimal minValue;
 
-	private boolean percentage;
+    private boolean multipleSearch;
 
-	private int precision;
+    private String name;
 
-	private Map<String, Optional<String>> prompts = new ConcurrentHashMap<>();
+    private boolean neededInData;
 
-	private boolean quickAddAllowed;
+    private boolean navigable;
 
-	private String replacementSearchPath;
+    private String navigationLink;
 
-	private String replacementSortPath;
+    private boolean nestedDetails = true;
 
-	private boolean required;
+    private EntityModel<?> nestedEntityModel;
 
-	private boolean requiredForSearching;
+    private NumberFieldMode numberFieldMode;
 
-	private boolean searchCaseSensitive;
+    private Integer numberFieldStep;
 
-	private boolean searchDateOnly;
+    private Integer order;
 
-	private boolean searchForExactValue;
+    private boolean percentage;
 
-	private SearchMode searchMode;
+    private int precision;
 
-	private Integer searchOrder;
+    private Map<String, Optional<String>> prompts = new ConcurrentHashMap<>();
 
-	private boolean searchPrefixOnly;
+    private boolean quickAddAllowed;
 
-	private AttributeSelectMode searchSelectMode;
+    private String replacementSearchPath;
 
-	private AttributeSelectMode selectMode;
+    private String replacementSortPath;
 
-	private boolean showPassword;
+    private boolean required;
 
-	private boolean sortable;
+    private boolean requiredForSearching;
 
-	private String textAreaHeight;
+    private boolean searchCaseSensitive;
 
-	private AttributeTextFieldMode textFieldMode;
+    private boolean searchDateOnly;
 
-	private ThousandsGroupingMode thousandsGroupingMode;
+    private boolean searchForExactValue;
 
-	private boolean trimSpaces;
+    private SearchMode searchMode;
 
-	private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
+    private Integer searchOrder;
 
-	private Class<?> type;
+    private boolean searchPrefixOnly;
 
-	private boolean url;
+    private AttributeSelectMode searchSelectMode;
 
-	private boolean visibleInForm;
+    private AttributeSelectMode selectMode;
 
-	private boolean visibleInGrid;
+    private boolean showPassword;
 
-	private boolean week;
+    private boolean sortable;
 
-	private String autoFillInstructions;
+    private AttributeTextFieldMode textFieldMode;
 
-	@Override
-	public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
-		this.cascadeAttributes.put(cascadeTo, filterPath);
-		this.cascadeModes.put(cascadeTo, mode);
-	}
+    private boolean trimSpaces;
 
-	@Override
-	public void addGroupTogetherWith(final String path) {
-		groupTogetherWith.add(path);
-	}
+    private Map<String, Optional<String>> trueRepresentations = new ConcurrentHashMap<>();
 
-	@Override
-	public int compareTo(final AttributeModel o) {
-		return this.getOrder() - o.getOrder();
-	}
+    private Class<?> type;
 
-	@Override
-	public String getActualSearchPath() {
-		return replacementSearchPath != null ? replacementSearchPath : getPath();
-	}
+    private boolean url;
 
-	@Override
-	public String getActualSortPath() {
-		return replacementSortPath != null ? replacementSortPath : getPath();
-	}
+    private boolean visibleInForm;
 
-	@Override
-	public Set<String> getCascadeAttributes() {
-		return cascadeAttributes.keySet();
-	}
+    private boolean visibleInGrid;
 
-	@Override
-	public String getCascadeFilterPath(final String cascadeTo) {
-		return this.cascadeAttributes.get(cascadeTo);
-	}
+    private boolean setterMethod;
 
-	@Override
-	public CascadeMode getCascadeMode(final String cascadeTo) {
-		return this.cascadeModes.get(cascadeTo);
-	}
+    @Override
+    public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
+        this.cascadeAttributes.put(cascadeTo, filterPath);
+        this.cascadeModes.put(cascadeTo, mode);
+    }
 
-	@Override
-	public Object getCustomSetting(String name) {
-		return customSettings.get(name);
-	}
+    @Override
+    public void addGroupTogetherWith(final String path) {
+        groupTogetherWith.add(path);
+    }
 
-	@Override
-	public String getDescription(Locale locale) {
-		// lookup description, falling back to overridden display name or otherwise to
-		// the default description
-		String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
-		return lookup(descriptions, locale, EntityModel.DESCRIPTION, displayNameNoDefault, defaultDescription);
-	}
+    @Override
+    public int compareTo(final AttributeModel other) {
+        return this.getOrder() - other.getOrder();
+    }
 
-	@Override
-	public String getDisplayName(Locale locale) {
-		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName, null);
-	}
-
-	@Override
-	public String getFalseRepresentation(Locale locale) {
-		return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,
-				SystemPropertyUtils.getDefaultFalseRepresentation(locale), defaultFalseRepresentation);
-	}
-
-	@Override
-	public List<String> getGroupTogetherWith() {
-		return Collections.unmodifiableList(groupTogetherWith);
-	}
-
-	@Override
-	public Class<?> getNormalizedType() {
-		return getMemberType() != null ? getMemberType() : getType();
-	}
-
-	@Override
-	public String getPath() {
-		String reference = entityModel.getReference();
-		int p = reference.indexOf('.');
-
-		if (p <= 0) {
-			return name;
-		} else {
-			return reference.substring(p + 1) + "." + name;
-		}
-	}
-
-	@Override
-	public String getPrompt(Locale locale) {
-		if (!SystemPropertyUtils.useDefaultPromptValue()) {
-			return null;
-		}
-
-		// look up prompt. If not defined, look up display name
-		String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
-		return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefault, defaultPrompt);
-	}
-
-	@Override
-	public String getTrueRepresentation(Locale locale) {
-		return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,
-				SystemPropertyUtils.getDefaultTrueRepresentation(locale), defaultTrueRepresentation);
-	}
-
-	@Override
-	public boolean isBoolean() {
-		return Boolean.class.equals(type) || boolean.class.equals(type);
-	}
-
-	@Override
-	public boolean isEmbedded() {
-		return AttributeType.EMBEDDED.equals(attributeType);
-	}
-
-	@Override
-	public boolean isNumerical() {
-		return com.ocs.dynamo.utils.NumberUtils.isNumeric(type);
-	}
-
-	public boolean isSearchable() {
-		return SearchMode.ADVANCED.equals(searchMode) || SearchMode.ALWAYS.equals(searchMode);
-	}
-
-	/**
-	 * Looks up the translation of a value for a certain locale
-	 * 
-	 * @param source         the translation cache
-	 * @param locale         the locale
-	 * @param key            the message key
-	 * @param fallBack       the first fallback value
-	 * @param secondFallBack the second fallback value
-	 * @return the translation for the specified key
-	 */
-	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack,
-			String secondFallBack) {
-		if (!source.containsKey(locale.toString())) {
-			try {
-				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
-				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
-				source.put(locale.toString(), Optional.of(str));
-			} catch (MissingResourceException ex) {
-				source.put(locale.toString(), Optional.empty());
-			}
-		}
-
-		Optional<String> optional = source.get(locale.toString());
-		return optional.orElse(fallBack != null ? fallBack : secondFallBack);
-	}
-
-	/**
-	 * Looks up a key from the message bundle, returning an empty optional if
-	 * nothing can be found
-	 * 
-	 * @param source the cache
-	 * @param locale the locale
-	 * @param key    the message key
-	 * @return the value  that the key resolves to
-	 */
-	private String lookupNoDefault(Map<String, Optional<String>> source, Locale locale, String key) {
-		if (!source.containsKey(locale.toString())) {
-			try {
-				// resource bundle has not been checked yet, check it now
-				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
-				String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
-				source.put(locale.toString(), Optional.of(str));
-			} catch (MissingResourceException ex) {
-				// nothing in resource bundle, store empty value
-				source.put(locale.toString(), Optional.empty());
-			}
-		}
-		return source.get(locale.toString()).orElse(null);
-	}
-
-	@Override
-	public void removeCascades() {
-		this.cascadeAttributes.clear();
-	}
-
-	@Override
-	public void setCustomSetting(String name, Object value) {
-		this.customSettings.put(name, value);
-	}
-
-	@Override
-	public boolean useThousandsGroupingInEditMode() {
-		return ThousandsGroupingMode.ALWAYS.equals(thousandsGroupingMode)
-				|| ThousandsGroupingMode.EDIT.equals(thousandsGroupingMode);
-	}
-
-	@Override
-	public boolean useThousandsGroupingInViewMode() {
-		return ThousandsGroupingMode.ALWAYS.equals(thousandsGroupingMode)
-				|| ThousandsGroupingMode.VIEW.equals(thousandsGroupingMode);
-	}
+    @Override
+    public String getActualSearchPath() {
+        return replacementSearchPath != null ? replacementSearchPath : getPath();
+    }
 
+    @Override
+    public String getActualSortPath() {
+        return replacementSortPath != null ? replacementSortPath : getPath();
+    }
+
+    @Override
+    public Set<String> getCascadeAttributes() {
+        return cascadeAttributes.keySet();
+    }
+
+    @Override
+    public String getCascadeFilterPath(final String cascadeTo) {
+        return this.cascadeAttributes.get(cascadeTo);
+    }
+
+    @Override
+    public CascadeMode getCascadeMode(final String cascadeTo) {
+        return this.cascadeModes.get(cascadeTo);
+    }
+
+    @Override
+    public Object getCustomSetting(String name) {
+        return customSettings.get(name);
+    }
+
+    @Override
+    public String getDescription(Locale locale) {
+        // lookup description, falling back to overridden display name or otherwise to
+        // the default description
+        String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
+        return lookup(descriptions, locale, EntityModel.DESCRIPTION, displayNameNoDefault, defaultDescription);
+    }
+
+    @Override
+    public String getDisplayFormat(Locale locale) {
+        return lookup(displayFormats, locale, EntityModel.DISPLAY_FORMAT, defaultDisplayFormat, null);
+    }
+
+    @Override
+    public String getDisplayName(Locale locale) {
+        return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName, null);
+    }
+
+    @Override
+    public String getFalseRepresentation(Locale locale) {
+        return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,
+                SystemPropertyUtils.getDefaultFalseRepresentation(locale), defaultFalseRepresentation);
+    }
+
+    @Override
+    public List<String> getGroupTogetherWith() {
+        return Collections.unmodifiableList(groupTogetherWith);
+    }
+
+    @Override
+    public Class<?> getNormalizedType() {
+        return getMemberType() != null ? getMemberType() : getType();
+    }
+
+    @Override
+    public String getPath() {
+        String reference = entityModel.getReference();
+        int p = reference.indexOf('.');
+
+        if (p <= 0) {
+            return name;
+        } else {
+            return reference.substring(p + 1) + "." + name;
+        }
+    }
+
+    @Override
+    public String getPrompt(Locale locale) {
+        if (!SystemPropertyUtils.useDefaultPromptValue()) {
+            return null;
+        }
+
+        // look up prompt. If not defined, look up display name
+        String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);
+        return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefault, defaultPrompt);
+    }
+
+    @Override
+    public String getTrueRepresentation(Locale locale) {
+        return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,
+                SystemPropertyUtils.getDefaultTrueRepresentation(locale), defaultTrueRepresentation);
+    }
+
+    @Override
+    public boolean isBoolean() {
+        return Boolean.class.equals(type) || boolean.class.equals(type);
+    }
+
+    @Override
+    public boolean isEmbedded() {
+        return AttributeType.EMBEDDED.equals(attributeType);
+    }
+
+    @Override
+    public boolean isNumerical() {
+        return NumberUtils.isNumeric(type);
+    }
+
+    @Override
+    public boolean isIntegral() {
+        return NumberUtils.isInteger(type) || NumberUtils.isLong(type);
+    }
+
+    public boolean isSearchable() {
+        return SearchMode.ADVANCED.equals(searchMode) || SearchMode.ALWAYS.equals(searchMode);
+    }
+
+    /**
+     * Looks up the translation of a value for a certain locale
+     *
+     * @param source         the translation cache
+     * @param locale         the locale
+     * @param key            the message key
+     * @param fallBack       the first fallback value
+     * @param secondFallBack the second fallback value
+     * @return the translation for the specified key
+     */
+    private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack,
+                          String secondFallBack) {
+        if (!source.containsKey(locale.toString())) {
+            try {
+                ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+                String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
+                source.put(locale.toString(), Optional.of(str));
+            } catch (MissingResourceException ex) {
+                source.put(locale.toString(), Optional.empty());
+            }
+        }
+
+        Optional<String> optional = source.get(locale.toString());
+        return optional.orElse(fallBack != null ? fallBack : secondFallBack);
+    }
+
+    /**
+     * Looks up a key from the message bundle, returning an empty optional if
+     * nothing can be found
+     *
+     * @param source the cache
+     * @param locale the locale
+     * @param key    the message key
+     * @return the value  that the key resolves to
+     */
+    private String lookupNoDefault(Map<String, Optional<String>> source, Locale locale, String key) {
+        if (!source.containsKey(locale.toString())) {
+            try {
+                // resource bundle has not been checked yet, check it now
+                ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+                String str = rb.getString(getEntityModel().getReference() + "." + getPath() + "." + key);
+                source.put(locale.toString(), Optional.of(str));
+            } catch (MissingResourceException ex) {
+                // nothing in resource bundle, store empty value
+                source.put(locale.toString(), Optional.empty());
+            }
+        }
+        return source.get(locale.toString()).orElse(null);
+    }
+
+    @Override
+    public void removeCascades() {
+        this.cascadeAttributes.clear();
+    }
+
+    @Override
+    public void setCustomSetting(String name, Object value) {
+        this.customSettings.put(name, value);
+    }
+
+    @Override
+    public boolean hasSetterMethod() {
+        return setterMethod;
+    }
+
+    public void setHasSetterMethod(boolean hasSetterMethod) {
+        this.setterMethod = hasSetterMethod;
+    }
 }

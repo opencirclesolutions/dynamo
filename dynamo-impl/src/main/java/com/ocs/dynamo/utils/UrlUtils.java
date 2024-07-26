@@ -13,8 +13,6 @@
  */
 package com.ocs.dynamo.utils;
 
-import lombok.experimental.UtilityClass;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -24,8 +22,10 @@ import java.net.URISyntaxException;
  * @author Patrick Deenen (patrick@opencircle.solutions)
  *
  */
-@UtilityClass
 public final class UrlUtils {
+
+    private UrlUtils() {
+    }
 
     /**
      * Create an http url query with the given key value parameters, will apply url encoding on the

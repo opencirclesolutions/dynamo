@@ -13,13 +13,12 @@
  */
 package com.ocs.dynamo.functional.domain;
 
-import jakarta.persistence.DiscriminatorValue;
-import jakarta.persistence.Entity;
-import jakarta.validation.constraints.NotNull;
-
 import com.ocs.dynamo.domain.model.VisibilityType;
 import com.ocs.dynamo.domain.model.annotation.Attribute;
 import com.ocs.dynamo.domain.model.annotation.Model;
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
 import lombok.NoArgsConstructor;
 
 /**
@@ -30,7 +29,7 @@ import lombok.NoArgsConstructor;
  */
 @Entity
 @DiscriminatorValue("CURRENCY")
-@Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc", filterProperty = "name")
+@Model(displayNamePlural = "Currencies", displayProperty = "codeAndName", sortOrder = "name asc")
 @NoArgsConstructor
 public class Currency extends Domain {
 

@@ -13,12 +13,11 @@
  */
 package com.ocs.dynamo.domain.model.validator;
 
-import java.net.MalformedURLException;
-
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
-
 import org.apache.commons.lang3.StringUtils;
+
+import java.net.MalformedURLException;
 
 /**
  * A validator for checking if a String is a valid URL
@@ -49,12 +48,6 @@ public class URLValidator implements ConstraintValidator<URL, String> {
 
 		try {
 			new java.net.URL(value);
-
-			// assume at least 2 dots
-			int matches = StringUtils.countMatches(value, ".");
-			if (matches < 1) {
-				return false;
-			}
 		} catch (MalformedURLException ex) {
 			// do nothing
 			return false;

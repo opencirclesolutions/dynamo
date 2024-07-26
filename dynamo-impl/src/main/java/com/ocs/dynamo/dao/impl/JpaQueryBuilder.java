@@ -13,52 +13,23 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
-
-import org.apache.commons.lang3.StringUtils;
-import org.hibernate.query.sqm.tree.domain.SqmEntityValuedSimplePath;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.QueryFunction;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
-import com.ocs.dynamo.filter.And;
-import com.ocs.dynamo.filter.Between;
-import com.ocs.dynamo.filter.Compare;
-import com.ocs.dynamo.filter.Contains;
-import com.ocs.dynamo.filter.Filter;
-import com.ocs.dynamo.filter.In;
-import com.ocs.dynamo.filter.IsNull;
-import com.ocs.dynamo.filter.Like;
-import com.ocs.dynamo.filter.Modulo;
-import com.ocs.dynamo.filter.Not;
-import com.ocs.dynamo.filter.Or;
-import com.ocs.dynamo.util.SystemPropertyUtils;
-
+import com.ocs.dynamo.filter.*;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.Tuple;
 import jakarta.persistence.TypedQuery;
-import jakarta.persistence.criteria.CriteriaBuilder;
-import jakarta.persistence.criteria.CriteriaQuery;
-import jakarta.persistence.criteria.Expression;
-import jakarta.persistence.criteria.Fetch;
-import jakarta.persistence.criteria.FetchParent;
-import jakarta.persistence.criteria.Join;
-import jakarta.persistence.criteria.JoinType;
-import jakarta.persistence.criteria.Order;
-import jakarta.persistence.criteria.ParameterExpression;
-import jakarta.persistence.criteria.Path;
-import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Root;
-import jakarta.persistence.criteria.Selection;
+import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.hibernate.query.sqm.tree.domain.SqmEntityValuedSimplePath;
+
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * @author patrick.deenen
@@ -87,19 +58,19 @@ public final class JpaQueryBuilder {
 				// Support nested properties
 				FetchParent<T, ?> fetch = root;
 				String[] propertyPath = s.getProperty().split("\\.");
-				StringBuilder prefix = new StringBuilder();
+				String prefix = "";
 				
 				for (String property : propertyPath) {
 					if (prefix.length() > 0) {
-						prefix.append(".");
+						prefix = prefix + ".";
 					}
-					prefix.append(property);
+					prefix += property;
 					
-					if (fetchMap.containsKey(prefix.toString())) {
-						fetch = fetchMap.get(prefix.toString());
+					if (fetchMap.containsKey(prefix)) {
+						fetch = fetchMap.get(prefix);
 					} else {
 				      fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
-					  fetchMap.put(prefix.toString(), fetch);
+					  fetchMap.put(prefix, fetch);
 					}
 				}
 			}
@@ -341,6 +312,8 @@ public final class JpaQueryBuilder {
 			log.warn("Using distinct select, sorting on complex properties is not supported!");
 		}
 
+		// use parameters to prevent Hibernate from creating different query plan
+		// every time
 		Expression<String> exp = root.get(DynamoConstants.ID);
 		ParameterExpression<List> idExpression = builder.parameter(List.class, DynamoConstants.IDS);
 		cq.distinct(distinct);
@@ -633,78 +606,6 @@ public final class JpaQueryBuilder {
 	}
 
 	/**
-	 * Creates a query that fetches properties instead of entities. Supports
-	 * aggregated functions; when used will automatically add group by expressions
-	 * for all properties in the select list without an aggregated function.
-	 *
-	 * @param filter           the filter
-	 * @param entityManager    the entity manager
-	 * @param entityClass      the entity class
-	 * @param selectProperties the properties to use in the selection
-	 * @param sortOrders       the sorting information
-	 * @return the constructed query
-	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static <T> TypedQuery<Object[]> createSelectQuery(Filter filter, EntityManager entityManager,
-			Class<T> entityClass, String[] selectProperties, SortOrders sortOrders) {
-		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = builder.createQuery(Object[].class);
-		Root<T> root = cq.from(entityClass);
-		ArrayList<Expression<?>> grouping = new ArrayList<>();
-		boolean aggregated = false;
-
-		// Set select
-		if (selectProperties != null && selectProperties.length > 0) {
-			Selection<?>[] selections = new Selection<?>[selectProperties.length];
-			int i = 0;
-			for (String sp : selectProperties) {
-
-				// Support nested properties
-				String[] propertyPath = sp.split("\\.");
-				// Test for function
-				QueryFunction queryFunction = null;
-				Path path = null;
-				try {
-					if (propertyPath.length > 1) {
-						queryFunction = QueryFunction.valueOf(propertyPath[propertyPath.length - 1]);
-						path = getPropertyPath(root, sp.substring(0, sp.lastIndexOf('.')), true);
-					}
-				} catch (Exception e) {
-					// Do nothing; not a supported function; assume property name
-				}
-				if (queryFunction != null) {
-					selections[i] = switch (queryFunction) {
-					case AF_AVG -> builder.avg(path);
-					case AF_COUNT -> builder.count(path);
-					case AF_COUNT_DISTINCT -> builder.countDistinct(path);
-					case AF_SUM -> builder.sum(path);
-					};
-					aggregated = true;
-				} else {
-					path = getPropertyPath(root, sp, true);
-					selections[i] = path;
-					grouping.add(path);
-				}
-				i++;
-			}
-			cq.select(builder.array(selections));
-		}
-
-		Map<String, Object> pars = createParameterMap();
-		Predicate p = createPredicate(filter, builder, root, pars);
-		if (p != null) {
-			cq.where(p);
-		}
-		if (aggregated) {
-			cq.groupBy(grouping);
-		}
-		cq = addOrderBy(builder, cq, root, true, sortOrders == null ? null : sortOrders.toArray());
-		TypedQuery<Object[]> query = entityManager.createQuery(cq);
-		setParameters(query, pars);
-		return query;
-	}
-
-	/**
 	 * Creates a query to fetch an object based on a value of a unique property
 	 *
 	 * @param entityManager the entity manager
@@ -884,7 +785,7 @@ public final class JpaQueryBuilder {
 	private static boolean isCollection(Path<?> path) {
 		boolean collection = false;
 		try {
-			collection = path.type() != null && java.util.Collection.class.isAssignableFrom(path.type().getJavaType());
+			collection = path.type() != null && Collection.class.isAssignableFrom(path.type().getJavaType());
 		} catch (Exception ex) {
 			// do nothing (new JPA is stricter on this than before)
 		}

@@ -20,7 +20,7 @@ import java.util.List;
 import org.apache.commons.io.input.CharSequenceReader;
 
 import com.ocs.dynamo.exception.OCSImportException;
-import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 import com.opencsv.CSVParserBuilder;
 import com.opencsv.CSVReader;
 import com.opencsv.CSVReaderBuilder;

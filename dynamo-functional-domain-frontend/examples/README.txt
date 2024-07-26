@@ -1,1 +1,0 @@
-Select the file for your RDMS, rename to "orm.xml" and place in the "META-INF" directory under src/main/resources

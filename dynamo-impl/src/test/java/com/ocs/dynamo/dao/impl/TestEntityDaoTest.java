@@ -23,7 +23,6 @@ import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.filter.And;
 import com.ocs.dynamo.filter.Compare;
 import com.ocs.dynamo.filter.Filter;
-import com.ocs.dynamo.filter.In;
 import com.ocs.dynamo.utils.DateUtils;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -115,28 +114,6 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	public void fetchSelect() {
-		save("Pete", 1L);
-		save("Bob", 2L);
-		save("Isaac", 3L);
-		TestEntity e1 = entityManager.createQuery("from TestEntity t where t.name = 'Bob'", TestEntity.class)
-				.getSingleResult();
-		TestEntity e2 = entityManager.createQuery("from TestEntity t where t.name = 'Pete'", TestEntity.class)
-				.getSingleResult();
-
-		SortOrder sortName = new SortOrder("name");
-		Filter filter = new In("name", List.of(e1.getName(), e2.getName()));
-		List<Object[]> result = (List<Object[]>) dao.findProperties(filter, new String[] { "name", "age" },
-				new SortOrders(sortName));
-
-		assertEquals(2, result.size());
-		assertEquals(e1.getName(), result.get(0)[0]);
-		assertEquals(e1.getAge(), result.get(0)[1]);
-		assertEquals(e2.getName(), result.get(1)[0]);
-		assertEquals(e2.getAge(), result.get(1)[1]);
-	}
-
 	public void findByBirthDateLocal() {
 		List<TestEntity> result = dao.findByBirthDate();
 		assertEquals(0, result.size());
@@ -234,38 +211,6 @@ public class TestEntityDaoTest extends BackendIntegrationTest {
 		assertEquals("Klaas", list.get(1).getName());
 		assertEquals("Piet", list.get(2).getName());
 	}
-
-	@Test
-	public void findSelect() {
-		save("Pete", 1L);
-		save("Bob", 2L);
-		save("Isaac", 3L);
-
-		List<?> found = dao.findProperties(null, new String[] { "name", "age" }, new SortOrders(new SortOrder("name")));
-		assertEquals(3, found.size());
-
-		Object[] obj = (Object[]) found.get(0);
-		assertEquals("Bob", obj[0]);
-		assertEquals(2L, obj[1]);
-	}
-
-//	@Test
-//	@Transactional
-//	public void findSelect2() {
-//		save("Pete", 1L);
-//		save("Bob", 2L);
-//		save("Isaac", 3L);
-//
-//		SortOrders so = new SortOrders(new SortOrder("name"));
-//		PageableImpl pag = new PageableImpl(0, 10, so);
-//
-//		List<?> found = dao.findProperties(null, new String[] { "name", "age" }, pag);
-//		assertEquals(3, found.size());
-//
-//		Object[] obj = (Object[]) found.get(0);
-//		assertEquals("Bob", obj[0]);
-//		assertEquals(2L, obj[1]);
-//	}
 
 	@Test
 	@Transactional

@@ -8,7 +8,7 @@ The Entity Model of an entity can be automatically generated based on the proper
 
 Complementing the Entity Model is a set of user interface components (widgets) that can be used to quickly construct screens for common use cases, and a number of base classes for the Data Access and Service layers.
 The Framework is built around a number of proven and highly productive set of technologies:
-* Vaadin as the user interface framework
+* Angular as the user interface framework
 * Spring as the application framework
 * JPA2 for ORM
 * QueryDSL for type-safe query generation

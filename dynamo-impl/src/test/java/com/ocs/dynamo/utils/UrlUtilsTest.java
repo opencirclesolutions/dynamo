@@ -1,12 +1,12 @@
 package com.ocs.dynamo.utils;
 
-import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.Test;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import org.junit.jupiter.api.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class UrlUtilsTest {
 
@@ -14,19 +14,19 @@ public class UrlUtilsTest {
     public void testCreateUrl() throws URISyntaxException {
         URI uri = UrlUtils.createUrl("http://somehost/path?k0=ã ã", "k1", "ão 355(KM16,5)");
         assertNotNull(uri);
-        assertTrue(uri.toString().indexOf("%20") == 25);
+        assertEquals(25, uri.toString().indexOf("%20"));
 
         uri = UrlUtils.createUrl("http://somehost/path", "k1", "ão 355(KM16,5)");
         assertNotNull(uri);
-        assertTrue(uri.toString().indexOf("%20") == 26);
+        assertEquals(26, uri.toString().indexOf("%20"));
 
         uri = UrlUtils.createUrl("//somehost/path", "k1", "ão 355(KM16,5)");
         assertNotNull(uri);
-        assertTrue(uri.toString().indexOf("%20") == 26);
+        assertEquals(26, uri.toString().indexOf("%20"));
 
         uri = UrlUtils.createUrl("//somehost/path", "k1", "ão 355(KM16,5)", "k2", " & % $ ? ");
         assertNotNull(uri);
-        assertTrue(uri.toString().indexOf("%20") == 26);
+        assertEquals(26, uri.toString().indexOf("%20"));
     }
 
 }

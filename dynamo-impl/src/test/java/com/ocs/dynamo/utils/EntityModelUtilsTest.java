@@ -19,12 +19,14 @@ import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.domain.model.EntityModelFactory;
 import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
 import com.ocs.dynamo.service.MessageService;
+import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.impl.MessageServiceImpl;
 import com.ocs.dynamo.test.BaseMockitoTest;
 import com.ocs.dynamo.test.MockUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -32,13 +34,25 @@ import java.util.Locale;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.mockito.Mockito.when;
 
 public class EntityModelUtilsTest extends BaseMockitoTest {
 
-    private EntityModelFactory factory = new EntityModelFactoryImpl();
+    @Mock
+    private static ServiceLocator serviceLocator;
 
     @Mock
     private MessageService messageService = new MessageServiceImpl();
+
+    private final EntityModelFactory factory = new EntityModelFactoryImpl();
+
+    @BeforeEach
+    void beforeEach() {
+        ReflectionTestUtils.setField(factory, "serviceLocator", serviceLocator);
+        when(serviceLocator.getEntityModelFactory())
+                .thenReturn(factory);
+        when(serviceLocator.getMessageService()).thenReturn(messageService);
+    }
 
     @BeforeEach
     public void setUp() {
@@ -101,7 +115,8 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
 
         TestEntity2 target = new TestEntity2();
 
-        EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity2.class));
+        EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity2.class),
+                false);
 
         // simple attribute "name" must have been copied
         assertEquals("Name", target.getName());
@@ -122,7 +137,8 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
 
         TestEntity target = new TestEntity();
 
-        EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity.class));
+        EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity.class),
+                false);
 
         // simple attribute "name" must have been copied
         assertEquals("Name", target.getName());
@@ -148,7 +164,8 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
 
         TestEntity target = new TestEntity();
 
-        EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity.class), "name");
+        EntityModelUtils.copySimpleAttributes(source, target, factory.getModel(TestEntity.class),
+                false, "name");
 
         // name is listed in the ignore list and is not copied
         assertNull(target.getName());

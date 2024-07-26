@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation that can be placed on an entity - allows you to override metadata defaults
- * 
+ *
  * @author bas.rutten
  */
 @Retention(RetentionPolicy.RUNTIME)
@@ -28,51 +28,75 @@ import java.lang.annotation.Target;
 public @interface Model {
 
     /**
-     *
-     * @return additional context/instructions for auto-filling form
+     * @return additional context/instructions for automatically filling form
      */
     String autofillInstructions() default "";
 
     /**
-     * 
+     * @return whether "delete" operations are allowed
+     */
+    boolean deleteAllowed() default false;
+
+    /**
      * @return the display name of the entity
      */
     String displayName() default "";
 
     /**
-     * 
      * @return the display name (plural form) of the entity
      */
     String displayNamePlural() default "";
 
     /**
-     * 
      * @return the textual description, will be used in tool tips
      */
     String description() default "";
 
     /**
-     * 
      * @return the path of the property that will be used to describe the entity inside lookup
-     *         components
+     * components
      */
     String displayProperty() default "";
-    
-    /**
-     * 
-     * @return the path of the property that will be used to filter inside lookup components
-     */
-    String filterProperty() default "";
 
     /**
-     * 
-     * @return the default sort order (property name followed by option asc/desc, use commas to
-     *         separate)
+     * @return Whether "list" operations are allowed
      */
-    String sortOrder() default "";
-    
+    boolean listAllowed() default true;
+
+    /**
+     * @return the maximum allowed number of search results
+     */
+    int maxSearchResults() default Integer.MAX_VALUE;
+
     /**
      * @return the default entity model nesting depth
      */
     int nestingDepth() default -1;
+
+    /**
+     * @return the default sort order (property name followed by option asc/desc, use commas to
+     * separate)
+     */
+    String sortOrder() default "";
+
+    /**
+     * @return whether creating new entities is allowed
+     */
+    boolean createAllowed() default true;
+
+    /**
+     * @return whether updating existing entities is allowed
+     */
+    boolean updateAllowed() default true;
+
+    /**
+     * @return whether "search" operations are allowed
+     */
+    boolean searchAllowed() default true;
+
+    /**
+     * @return whether exporting is allowed
+     */
+    boolean exportAllowed() default true;
+
 }

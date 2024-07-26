@@ -1,9 +1,9 @@
 package com.ocs.dynamo.filter;
 
+import com.ocs.dynamo.domain.TestEntity;
+
 import java.util.HashSet;
 import java.util.Set;
-
-import com.ocs.dynamo.domain.TestEntity;
 
 public class CollectionHolder {
 

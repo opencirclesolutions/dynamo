@@ -13,22 +13,18 @@
  */
 package com.ocs.dynamo.utils;
 
-import java.util.*;
-
 import com.ocs.dynamo.constants.DynamoConstants;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
-import lombok.experimental.UtilityClass;
+
+import java.util.*;
 
 /**
  * @author bas.rutten
  */
-@UtilityClass
 public final class EntityModelUtils {
-
-    public static final Set<String> ALWAYS_IGNORE = Set.of("createdOn", "createdBy", "changedBy", "changedOn");
 
     /**
      * Copies all simple attribute values from one entity to the other
@@ -38,23 +34,32 @@ public final class EntityModelUtils {
      * @param model  the entity model
      * @param ignore the name of the properties to ignore
      */
-    public static <T> void copySimpleAttributes(T source, T target, EntityModel<T> model, String... ignore) {
+    public static <T> void copySimpleAttributes(T source, T target, EntityModel<T> model,
+                                                boolean copyLobs, String... ignore) {
         Set<String> toIgnore = new HashSet<>();
         if (ignore != null) {
             toIgnore.addAll(Arrays.asList(ignore));
         }
-        toIgnore.addAll(ALWAYS_IGNORE);
-
         for (AttributeModel am : model.getAttributeModels()) {
-            if ((AttributeType.BASIC.equals(am.getAttributeType()) || AttributeType.LOB.equals(am.getAttributeType()))
-                    && !toIgnore.contains(am.getName())) {
+
+            boolean copy = AttributeType.BASIC.equals(am.getAttributeType());
+            if (AttributeType.LOB.equals(am.getAttributeType())) {
+                copy = copyLobs;
+            }
+
+            if (copy && !toIgnore.contains(am.getName())) {
                 if (!DynamoConstants.ID.equals(am.getName())) {
                     Object value = ClassUtils.getFieldValue(source, am.getName());
                     if (ClassUtils.canSetProperty(target, am.getName())) {
+
+                        if (value instanceof String str && am.isTrimSpaces()) {
+                            value = str.trim();
+                        }
+
                         if (value != null) {
                             ClassUtils.setFieldValue(target, am.getName(), value);
                         } else {
-                            ClassUtils.clearFieldValue(target, am.getName(), am.getType());
+                            ClassUtils.clearAttributeValue(target, am.getName(), am.getType());
                         }
                     }
 
@@ -81,7 +86,7 @@ public final class EntityModelUtils {
 
         int i = 0;
         for (T entity : entities) {
-            if (result.length() > 0) {
+            if (!result.isEmpty()) {
                 result.append(", ");
             }
 
@@ -113,4 +118,9 @@ public final class EntityModelUtils {
         }
         return ClassUtils.getFieldValueAsString(entity, property);
     }
+
+    private EntityModelUtils() {
+        // private constructor
+    }
+
 }

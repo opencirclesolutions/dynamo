@@ -31,11 +31,11 @@ import java.util.Arrays;
 @Transactional
 public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T> {
 
-	private final EntityPathBase<T> dslRoot;
+    private final EntityPathBase<T> dslRoot;
 
-	private final Class<T> entityClass;
+    private final Class<T> entityClass;
 
-	private final String[] fetchPropertyIds;
+    private final String[] fetchPropertyIds;
 
 	/**
 	 * Constructor
@@ -48,7 +48,7 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 
 	/**
 	 * Constructor
-	 *
+	 * 
 	 * @param dslRoot          the query DSL root path
 	 * @param entityClass      the entity class
 	 * @param fetchPropertyIds the IDs of the properties to fetch

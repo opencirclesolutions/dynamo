@@ -21,7 +21,7 @@ import java.util.Set;
 
 import com.ocs.dynamo.exception.OCSImportException;
 import com.ocs.dynamo.service.MessageService;
-import com.ocs.dynamo.util.SystemPropertyUtils;
+import com.ocs.dynamo.utils.SystemPropertyUtils;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -39,13 +39,13 @@ public abstract class TextImportTemplate<ID, T> {
 
 	private List<String[]> lines;
 
-	private boolean checkForDuplicates;
+	private final boolean checkForDuplicates;
 
-	private List<String> errors;
+	private final List<String> errors;
 
-	private MessageService messageService;
+	private final MessageService messageService;
 
-	private Set<ID> keys = new HashSet<>();
+	private final Set<ID> keys = new HashSet<>();
 
 	/**
 	 * Constructor
@@ -133,7 +133,7 @@ public abstract class TextImportTemplate<ID, T> {
 				results.add(t);
 			} else {
 				errors.add(messageService.getMessage("ocs.duplicate.row",
-						SystemPropertyUtils.getDefaultDateLocale(), i + 1, key));
+						SystemPropertyUtils.getDefaultLocale(), i + 1, key));
 			}
 		} else {
 			results.add(t);

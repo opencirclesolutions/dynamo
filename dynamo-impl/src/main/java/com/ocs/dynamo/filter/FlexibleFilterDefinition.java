@@ -14,7 +14,6 @@
 package com.ocs.dynamo.filter;
 
 import com.ocs.dynamo.domain.model.AttributeModel;
-
 import lombok.Builder;
 import lombok.Getter;
 import lombok.ToString;

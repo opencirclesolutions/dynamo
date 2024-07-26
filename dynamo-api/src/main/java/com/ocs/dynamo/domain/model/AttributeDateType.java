@@ -14,14 +14,13 @@
 package com.ocs.dynamo.domain.model;
 
 /**
- * Indicates the date/time type of an attribute. Can be either timestamp, date,
- * or time
+ * Indicates the date/time type of an attribute
  * 
  * @author bas.rutten
  *
  */
 public enum AttributeDateType {
 
-	INHERIT, TIMESTAMP, DATE, TIME
+	INHERIT, LOCAL_DATE_TIME, INSTANT, DATE, TIME
 
 }

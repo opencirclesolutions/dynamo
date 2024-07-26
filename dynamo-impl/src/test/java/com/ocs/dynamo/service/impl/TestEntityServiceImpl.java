@@ -13,15 +13,16 @@
  */
 package com.ocs.dynamo.service.impl;
 
-import javax.inject.Inject;
-
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.ocs.dynamo.dao.BaseDao;
 import com.ocs.dynamo.dao.impl.TestEntityDao;
 import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.model.annotation.ModelAction;
+import com.ocs.dynamo.service.TestEntityDTO;
 import com.ocs.dynamo.service.TestEntityService;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import javax.inject.Inject;
 
 @Service("testEntityService")
 @Transactional
@@ -36,4 +37,10 @@ public class TestEntityServiceImpl extends BaseServiceImpl<Integer, TestEntity>
         return dao;
     }
 
+    @Override
+    @ModelAction(displayName = "Partial Action", id = "PartialAction", roles = {"role12"})
+    public TestEntity partialAction(TestEntityDTO dto) {
+        // do nothing
+        return null;
+    }
 }

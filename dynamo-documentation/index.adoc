@@ -47,7 +47,7 @@ productive set of technologies:
 * JPA2 for ORM
 * QueryDSL for type-safe query generation
 * Spring Boot as the application framework
-* Vaadin 14 as the user interface framework
+* Angular as the user interface framework
 
 == The Entity Model
 

@@ -13,30 +13,29 @@
  */
 package com.ocs.dynamo.dao.impl;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import com.ocs.dynamo.domain.TestEntity;
+import com.ocs.dynamo.domain.query.PagingDataSetIterator;
+import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.jupiter.api.Test;
-
-import com.ocs.dynamo.domain.TestEntity;
-import com.ocs.dynamo.domain.query.PagingDataSetIterator;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DataSetIteratorTest {
 
 	private PagingDataSetIterator<Integer, TestEntity> iterator;
 
-	private List<Integer> ids = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
+	private final List<Integer> ids = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10);
 
-	private List<Integer> ids2 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
+	private final List<Integer> ids2 = List.of(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12);
 
 	private int pagesRead = 0;
 
 	@Test
 	public void test() {
 
-		iterator = new PagingDataSetIterator<Integer, TestEntity>(ids, pages -> {
+		iterator = new PagingDataSetIterator<>(ids, pages -> {
 			List<TestEntity> result = new ArrayList<>();
 			for (Integer i : pages) {
 				TestEntity entity = new TestEntity();
@@ -63,7 +62,7 @@ public class DataSetIteratorTest {
 	@Test
 	public void testPartial() {
 
-		iterator = new PagingDataSetIterator<Integer, TestEntity>(ids2, page -> {
+		iterator = new PagingDataSetIterator<>(ids2, page -> {
 			List<TestEntity> result = new ArrayList<>();
 			for (Integer i : page) {
 				TestEntity entity = new TestEntity();
