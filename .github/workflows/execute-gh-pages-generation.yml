@@ -1,2 +1,9 @@
-- name: asciidoctor-ghpages
-  uses: manoelcampos/asciidoctor-ghpages-action@v2.3.0
+name: asciidoctor-ghpages
+on:
+  push:
+    branches:
+      - master
+      - main
+jobs:
+  generate-gh-pages-from-asciidoc:
+    uses: manoelcampos/asciidoctor-ghpages-action@v2.3.0
