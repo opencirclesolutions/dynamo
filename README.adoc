@@ -75,10 +75,8 @@ Dynamo has many features and functionality, which are not covered fully in this 
 ** Nested detail table (children)
 ** Dropdown (n-1 relationship to other entity)
 ** Multi-select (n-m relationship to other entity)
-** Auto-complete (n-1 relationship to other entity)
 ** Lookup field (n-1 relationship to other entity)
 ** Option to edit element collections (children)
-** Radio buttons
 ** Check boxes
 ** Date picker
 * The functionality to dynamically replace the standard Dynamo input components by custom components
@@ -109,8 +107,7 @@ Dynamo has many features and functionality, which are not covered fully in this 
 
 *Additonal (optional) features*
 
-* The _MultiDomainEditLayout_ is a layout that can be used to easily edit multiple types of simple domain (code table) entities
-* The _MultiDomainEditLayout_ provides a default backend implementation with JPA entities and entity model
+* The _MultiDomainEditLayout_ is a layout that can be used to easily edit multiple types of simple domain (code table) entities and includes a default backend implementation with JPA entities and entity model
 * The Hibernate envers module adds supports history on entities
 * The parameters module adds form to manage parameter lists
 
@@ -126,6 +123,14 @@ Dynamo has many features and functionality, which are not covered fully in this 
 |UI Widgets
 |Vaadin
 |PrimeNG
+
+|UI Widget generation: Auto-complete (n-1 relationship to other entity)
+|No
+|Yes
+
+|UI Widget generation: Radio buttons
+|No
+|Yes
 
 |Out of the box https://www.w3.org/WAI/standards-guidelines/wcag/[WCAG] compliance
 |https://vaadin.com/accessibility[Yes]
