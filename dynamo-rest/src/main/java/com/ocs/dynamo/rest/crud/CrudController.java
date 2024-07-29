@@ -484,16 +484,16 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 
     /**
      * Merge a collection of nested entities. When the incoming
-     * entity has an ID, look for a corresponding entity in the DB.
+     * entity has an ID, look for a corresponding entity in the current data.
      * Otherwise, create a new entity
      *
-     * @param am the attribute model
+     * @param am             the attribute model
      * @param sourceEntities the source entities (from the message)
      * @param targetEntities the target entities (from the DB0
-     * @param updating whether an update is taking place
+     * @param updating       whether an update is taking place
+     * @param <ID2>          type of the primary key
+     * @param <U>            type of the
      * @return the result of the merge operation
-     * @param <ID2> type of the primary key
-     * @param <U> type of the
      */
     @SuppressWarnings("unchecked")
     private <ID2, U extends AbstractEntity<ID2>> Collection<U> mergeNestedEntities(
@@ -515,8 +515,8 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
                         .findFirst().orElse((U) ClassUtils.instantiateClass(se.getClass()));
             }
 
-            mergeSimpleValues(se, target, (EntityModel<U>)am.getNestedEntityModel(), true);
-            mergeComplexValues(se, target, (EntityModel<U>)am.getNestedEntityModel(), updating, true);
+            mergeSimpleValues(se, target, (EntityModel<U>) am.getNestedEntityModel(), true);
+            mergeComplexValues(se, target, (EntityModel<U>) am.getNestedEntityModel(), updating, true);
             return target;
         });
         return am.getType().isAssignableFrom(Set.class) ? stream.collect(Collectors.toSet()) :

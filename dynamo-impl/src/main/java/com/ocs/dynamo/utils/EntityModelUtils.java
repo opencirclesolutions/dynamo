@@ -14,16 +14,20 @@
 package com.ocs.dynamo.utils;
 
 import com.ocs.dynamo.constants.DynamoConstants;
+import com.ocs.dynamo.domain.AbstractEntity;
 import com.ocs.dynamo.domain.model.AttributeModel;
 import com.ocs.dynamo.domain.model.AttributeType;
 import com.ocs.dynamo.domain.model.EntityModel;
 import com.ocs.dynamo.service.MessageService;
+import lombok.experimental.UtilityClass;
 
 import java.util.*;
+import java.util.function.BiConsumer;
 
 /**
  * @author bas.rutten
  */
+@UtilityClass
 public final class EntityModelUtils {
 
     /**
@@ -119,8 +123,22 @@ public final class EntityModelUtils {
         return ClassUtils.getFieldValueAsString(entity, property);
     }
 
-    private EntityModelUtils() {
-        // private constructor
+    /**
+     * Wires a relation
+     * @param entity the entity that contains the relation
+     * @param current the current set of relations
+     * @param input the new set of relations
+     * @param consumer consumer used to wire an element of the relation set to the current parent entity
+     * @param <T> type parameter, type of the parent
+     * @param <U> type parameter, type of the relation element
+     */
+    public static <T extends AbstractEntity<?>, U extends AbstractEntity<?>> void wireRelations(T entity, Collection<U> current, Collection<U> input,
+                                                                                                BiConsumer<U, T> consumer) {
+        current.clear();
+        if (input != null) {
+            current.addAll(input);
+            input.forEach(element -> consumer.accept(element, entity));
+        }
     }
 
 }

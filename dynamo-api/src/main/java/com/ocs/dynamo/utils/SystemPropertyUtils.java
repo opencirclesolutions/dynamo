@@ -159,7 +159,8 @@ public final class SystemPropertyUtils {
      */
     public static AttributeEnumFieldMode getDefaultEnumFieldMode() {
         return AttributeEnumFieldMode.valueOf(
-                getStringProperty(DynamoConstants.SP_DEFAULT_ENUM_FIELD_MODE, "DROPDOWN"));
+                getStringProperty(DynamoConstants.SP_DEFAULT_ENUM_FIELD_MODE,
+                        AttributeEnumFieldMode.DROPDOWN.name()));
     }
 
     private static Locale constructLocale(String localeString) {
@@ -182,12 +183,13 @@ public final class SystemPropertyUtils {
      * @return the default number field mode
      */
     public static NumberFieldMode getDefaultNumberFieldMode() {
-        String s = getStringProperty(DynamoConstants.SP_DEFAULT_NUMBER_FIELD_MODE, "TEXTFIELD");
+        String s = getStringProperty(DynamoConstants.SP_DEFAULT_NUMBER_FIELD_MODE,
+                NumberFieldMode.TEXTFIELD.toString());
         return NumberFieldMode.valueOf(s.toUpperCase());
     }
 
     /**
-     * @return whether searches on text fields will be case sensitive by default
+     * @return whether searches on text fields will be case-sensitive by default
      */
     public static boolean getDefaultSearchCaseSensitive() {
         return getBooleanProperty(DynamoConstants.SP_DEFAULT_SEARCH_CASE_SENSITIVE, false);
@@ -291,14 +293,6 @@ public final class SystemPropertyUtils {
     }
 
     /**
-     * @return whether to use the display name of an attribute as the "prompt" value
-     * (hint/placeholder) inside the component
-     */
-    public static boolean useDefaultPromptValue() {
-        return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, true);
-    }
-
-    /**
      * @return whether to use thousands grouping in XLS export
      */
     public static boolean useXlsThousandsGrouping() {
@@ -315,7 +309,8 @@ public final class SystemPropertyUtils {
 
     public static AttributeBooleanFieldMode getDefaultBooleanFieldMode() {
         return AttributeBooleanFieldMode.valueOf(getStringProperty(
-                DynamoConstants.SP_DEFAULT_BOOLEAN_FIELD_MODE, "CHECKBOX"
+                DynamoConstants.SP_DEFAULT_BOOLEAN_FIELD_MODE,
+                AttributeBooleanFieldMode.CHECKBOX.name()
         ));
     }
 

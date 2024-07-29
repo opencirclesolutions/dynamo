@@ -36,14 +36,14 @@ public class DynamoConstants {
     public static final String ID = "id";
 
     /**
+     * Constant to use when searching for multiple IDs
+     */
+    public static final String IDS = "ids";
+
+    /**
      * The version field used for optimistic locking
      */
     public static final String VERSION = "version";
-
-    /**
-     * Additional ID field
-     */
-    public static final String IDS = "ids";
 
     /**
      * Indicates whether to capitalize individual words in property names
@@ -146,18 +146,18 @@ public class DynamoConstants {
     public static final String SP_ENTITY_MODEL_PACKAGE_NAMES = "ocs.entity.model.package.names";
 
     /**
-     * Name of the system property that is used as the CSV escape character when
+     * Name of the system property that sets the CSV escape character when
      * exporting
      */
     public static final String SP_EXPORT_CSV_ESCAPE = "ocs.export.csv.escape";
 
     /**
-     * Name of the system property that is used as the CSV quote char when exporting
+     * Name of the system property that set the CSV quote char when exporting
      */
     public static final String SP_EXPORT_CSV_QUOTE = "ocs.export.csv.quote";
 
     /**
-     * Name of the system property that is used as the CSV separator when exporting
+     * Name of the system property that sets the CSV separator when exporting
      */
     public static final String SP_EXPORT_CSV_SEPARATOR = "ocs.export.csv.separator";
 
@@ -183,11 +183,6 @@ public class DynamoConstants {
      * The name of the database function used to replace accents
      */
     public static final String SP_UNACCENT_FUNCTION_NAME = "ocs.unaccent.function.name";
-
-    /**
-     * Indicates whether to use the display name as the input prompt by default
-     */
-    public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
 
     /**
      * Whether to use thousands grouping in XLS files
