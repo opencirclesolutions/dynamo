@@ -7,4 +7,4 @@ on:
 jobs:
     steps:
       name: generate-gh-pages-from-asciidoc
-      uses: manoelcampos/asciidoctor-ghpages-action@v2.3.0
+      uses: manoelcampos/asciidoctor-ghpages-action
