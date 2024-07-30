@@ -260,9 +260,11 @@ annotations:
 
 The *@Model* annotation can be used like this:
 
+[source,java]
+--
 @Model(displayProperty = "description")
-
-*public* *class* Meeting *extends* AbstractEntity<Integer> \{
+public class Meeting extends AbstractEntity<Integer> {
+--
 
 The *@Attribute* annotation can be placed either directly on the
 property, or on its getter method. Annotations placed on the getter
@@ -924,7 +926,7 @@ private Country country;
 
 And this is the input form that will be generated:
 
-image:/media/image2.png[image,width=560,height=64]
+image:media/image2.png[image,width=560,height=64]
 
 You can still use all available settings to modify the behaviour of the
 components for the “extra” attributes that are placed behind the first
@@ -1270,7 +1272,7 @@ application, they will see an “Add” button behind the field that can be
 used to create a new country. Once pressed, the button will bring up the
 following dialog:
 
-image:/media/image3.png[image,width=559,height=178]
+image:media/image3.png[image,width=559,height=178]
 
 The user can now enter the properties of the country in the popup – once
 they press the “OK” button the application will store the new Country,
@@ -1493,12 +1495,13 @@ attribute of type String. The default is *TEXTFIELD*_._ Yhr value
 *TEXTAREA* will be ignored inside a search form. The value *PASSWORD*
 will be ignored inside a search form.
 
-=== TrimSpaces (not supported yet)
+=== TrimSpaces
 
 In message bundle: *trimSpaces = true | false*
 
 This indicates whether extraneous space characters will be trimmed from
 the start and end of the input inside text areas and text fields. This
+defaults to false but can be modified by changing the value of the
 defaults to false but can be modified by changing the value of the
 *ocs.trim.spaces* system property.
 
@@ -1633,8 +1636,8 @@ You can also overwrite using message bundles:
 
 [source,properties]
 --
-*Organization.searchAttributeOrder=name,headquarters,address,countryOfOrigin,reputation*
-*Organization.gridAttributeOrder=name,headquarters,address,countryOfOrigin,reputation*
+Organization.searchAttributeOrder=name,headquarters,address,countryOfOrigin,reputation
+Organization.gridAttributeOrder=name,headquarters,address,countryOfOrigin,reputation
 --
 
 === Attribute grouping
@@ -1671,11 +1674,10 @@ this in the following way:
 
 [source,properties]
 --
-Organization.attributeGroup.1.messageKey=Organization.first*
-Organization.attributeGroup.1.attributeNames=name,address,headquarters,countryOf
-Origin*
-Organization.attributeGroup.2.displayName=Organization.second*
-Organization.attributeGroup.2.attributeNames=reputation*
+Organization.attributeGroup.1.messageKey=Organization.first
+Organization.attributeGroup.1.attributeNames=name,address,headquarters,countryOfOrigin
+Organization.attributeGroup.2.displayName=Organization.second
+Organization.attributeGroup.2.attributeNames=reputation
 --
 
 I.e. you include two messages for every attribute group: one containing
@@ -1737,7 +1739,7 @@ in the collection as a whole.
 
 An example of a “chips” component used to manage an element collection:
 
-image:/media/image5.png[image,width=411,height=129]
+image:media/image5.png[image,width=411,height=129]
 
 == Data access, Service layers and general concepts
 
@@ -1827,12 +1829,8 @@ business logic.
 The declaration of a service interface is very easy; the service must
 extend *BaseService*.
 
-[source.java]
+[source,java]
 --
-public interface OrganizationService extends BaseService<Integer, Organization> {
-}
-
-The implementation is equally simple:
 @Service("organizationService")
 public class OrganizationServiceImpl extends BaseServiceImpl<Integer, Organization> implements OrganizationService {
 
@@ -1844,6 +1842,7 @@ public class OrganizationServiceImpl extends BaseServiceImpl<Integer, Organizati
 		return dao;
 	}
 }
+
 --
 
 You can define a service by extending the *BaseServiceImpl* class and
@@ -2074,7 +2073,7 @@ Note that you do not have to check if the entity being returned is equal
 to the entity being validated, the framework will take care of this for
 you.
 
-=== Default Services and DAO’s
+=== Default Services and DAOs
 
 It can happen that you have a very simple entity for which you will only
 need the default methods provided by *BaseService*_._ If this is the
@@ -2084,16 +2083,16 @@ and/or *DefaultDaoImpl* in a configuration class. This looks as follows:
 
 [source,java]
 --
-    @Bean
-    public BaseDao<Integer, Region> regionDao() {
-        return new DefaultDaoImpl<>(QRegion.region, Region.class);
-    }
+@Bean
+public BaseDao<Integer, Region> regionDao() {
+    return new DefaultDaoImpl<>(QRegion.region, Region.class);
+}
 
-    @Bean
-    public BaseService<Integer, Region> regionService(BaseDao<Integer, Region> regionDao) {
-        DefaultServiceImpl<Integer, Region> regionService = new DefaultServiceImpl<>(regionDao, "code");
-        return regionService;
-    }
+@Bean
+public BaseService<Integer, Region> regionService(BaseDao<Integer, Region> regionDao) {
+    DefaultServiceImpl<Integer, Region> regionService = new DefaultServiceImpl<>(regionDao, "code");
+    return regionService;
+}
 --
 
 As you can see, you can configure a bean that is an instance of
@@ -2414,6 +2413,7 @@ will be capitalized.
 |ocs.default.boolean.field.mode |CHECKBOX |The default compoment to use
 editing Boolean attributes
 
+
 |ocs.default.date.format |dd-MM-yyyy |The pattern to use when formatting
 date values
 
@@ -2515,9 +2515,7 @@ Then, run the following command
 
 [source,commandline]
 --
-npx @openapitools/openapi-generator-cli generate -i api.yaml -g
-typescript-angular -o ./model/
---additional-properties=enumPropertyNaming=original,ngVersion=16
+npx @openapitools/openapi-generator-cli generate -i api.yaml -g typescript-angular -o ./model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
 --
 
 This will generate the front-end source code in the specified directory
@@ -2545,7 +2543,7 @@ In the HTML components, messages can be referenced as follows:
 
 [source,angular17html]
 --
-{{ 'server_unavailable' | translate}}
+{{ 'server_unavailable' | translate }}
 --
 
 In the Typescript files, you can inject a *translateService* instance,
@@ -2571,7 +2569,7 @@ error message
 this.messageService.warn('Selected something:' +  obj.firstName)
 --
 
-image:/media/image6.png[image,width=427,height=108]
+image:media/image6.png[image,width=427,height=108]
 
 Note that the methods of the *NotificationService* take a literal string
 value, not a key from the message bundle. If you want to display a value
@@ -2673,48 +2671,33 @@ with a date that is one day too early.
 
 *InstantRangeFilter/LocalDateTimeRangeFilter*
 
-export function createTimestampFilter(attributeName: string, from: Date,
-to: Date, instant: boolean) \{
+[source,typescript]
+--
+export function createTimestampFilter(attributeName: string, from: Date, to: Date, instant: boolean) {
 
-  let dateStrFrom = dateToTimestamp(from, instant);
+  let dateStrFrom = dateToTimestamp(from, instant);
+  let dateStrTo = dateToTimestamp(to, instant);
 
-  let dateStrTo = dateToTimestamp(to, instant);
-
-  if (instant) \{
-
-    let filter: InstantRangeFilterModel = \{
-
-      match: 'INSTANT_RANGE',
-
-      name: attributeName,
-
-      from: dateStrFrom,
-
-      to: dateStrTo
-
-    };
-
-    return filter;
-
-  } else \{
-
-    let filter: LocalDateTimeRangeFilterModel = \{
-
-      match: 'LOCAL_DATE_TIME_RANGE',
-
-      name: attributeName,
-
-      from: dateStrFrom,
-
-      to: dateStrTo
-
-    };
-
-    return filter;
-
-  }
-
+  if (instant) {
+    let filter: InstantRangeFilterModel = {
+      match: 'INSTANT_RANGE',
+      name: attributeName,
+      from: dateStrFrom,
+      to: dateStrTo
+    };
+    return filter;
+  } else {
+    let filter: LocalDateTimeRangeFilterModel = {
+      match: 'LOCAL_DATE_TIME_RANGE',
+      name: attributeName,
+      from: dateStrFrom,
+      to: dateStrTo
+    };
+    return filter;
+  }
 }
+--
+
 
 These filters can be used to specify filtering on a range of instants or
 LocalDateTime values. The filters contains a “from” value (lower bound,
@@ -2723,22 +2706,17 @@ these must be filled.
 
 *NumberInFilter*
 
-export function createNumberInFilter(attributeName: string, ids: any[])
-\{
-
-  let filter: NumberInFilterModel = \{
-
-    match: 'NUMBER_IN',
-
-    name: attributeName,
-
-    values: ids
-
-  };
-
-  return filter;
-
+[source,typescript]
+--
+export function createNumberInFilter(attributeName: string, ids: any[]) {
+  let filter: NumberInFilterModel = {
+    match: 'NUMBER_IN',
+    name: attributeName,
+    values: ids
+  };
+  return filter;
 }
+--
 
 The *NumberInFilter* can be used to filter on one or more entities based
 on their IDs. This filter takes a “values” parameter which must be an
@@ -2750,35 +2728,25 @@ multi select field.
 
 *TimeRangeFilter*
 
+[source,typescript]
+--
 export function createTimeRangeFilter(
+  attributeName: string,
+  from: any,
+  to: any
+): TimeRangeFilterModel {
+  let dateStrFrom: any = stringToTime(from);
+  let dateStrTo: any = stringToTime(to);
 
-  attributeName: string,
-
-  from: any,
-
-  to: any
-
-): TimeRangeFilterModel \{
-
-  let dateStrFrom: any = stringToTime(from);
-
-  let dateStrTo: any = stringToTime(to);
-
-  let filter: TimeRangeFilterModel = \{
-
-    match: 'TIME_RANGE',
-
-    name: attributeName,
-
-    from: dateStrFrom,
-
-    to: dateStrTo
-
-  };
-
-  return filter;
-
+  let filter: TimeRangeFilterModel = {
+    match: 'TIME_RANGE',
+    name: attributeName,
+    from: dateStrFrom,
+    to: dateStrTo
+  };
+  return filter;
 }
+--
 
 The *TimeRangeFilter* can be used to filter on a range of times (e.g.
 “14:57” to “16:44”) The filter contains a “from” value (lower bound,
@@ -2787,25 +2755,22 @@ these must be filled.
 
 *OrFilter*
 
-    return [createOrFilter([
-
-      createEqualsFilter('reservationCategory', 'ACADEMY'),
-
-      createEqualsFilter('reservationCategory', 'GOLF_COURT'),
-
-      createEqualsFilter('reservationCategory', 'GYM'),
-
-      createEqualsFilter('reservationCategory', 'SPA')
-
-    ])];
-
-The *OrFilter* can be used to construct a filter that will match if at
-least of a provided collection of filters matches.
+[source,typescript]
+--
+return [createOrFilter([
+  createEqualsFilter('reservationCategory', 'ACADEMY'),
+  createEqualsFilter('reservationCategory', 'GOLF_COURT'),
+  createEqualsFilter('reservationCategory', 'GYM'),
+  createEqualsFilter('reservationCategory', 'SPA')
+])];
+--
 
 *NotFilter*
 
-    return
-[createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA'))
+[source,typescript]
+--
+return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA'))
+--
 
 The *NotFilter* can be used to create a filter that negates the filter
 encloses in it.
@@ -2886,7 +2851,7 @@ relationship in the (detail) *@FetchJoins* of the entity. The entity
 model that is used to render the table is in this case a nested entity
 model that is part of the main entity model.
 
-image:/media/image7.png[image,width=560,height=355]
+image:media/image7.png[image,width=560,height=355]
 
 ==== Hidden fields
 
@@ -2904,17 +2869,20 @@ and add the *dHiddenField* directive to it. Then provide the field name
 and value. In case this is an entity, it is sufficient to only include
 the primary key (“entityId” in the example below).
 
-<app-generic-split-layout +
-entityName="PersonalRelation" +
-[openInViewMode]="true" +
-[defaultFilters]="getDefaultFilters()" +
-(afterEntityCreated)="afterEntityCreated(_$event_)" +
-> +
-<ng-template +
-dHiddenField +
-fieldName="memberFrom" +
-[value]="entityId" +
-></ng-template>
+[source,angular17html]
+--
+<app-generic-split-layout
+  entityName="PersonalRelation"
+  [openInViewMode]="true"
+  [defaultFilters]="getDefaultFilters()"
+  (afterEntityCreated)="afterEntityCreated($event)"
+>
+  <ng-template
+    dHiddenField
+    fieldName="memberFrom"
+    [value]="entityId"
+  ></ng-template>
+--
 
 ==== View objects
 
@@ -2983,24 +2951,26 @@ in the results table.
 ** Roles – an array of the roles that the user must have in order to be
 able to execute the action.
 
-@Override +
-@ModelAction(id = "AddMinimalOrganization", displayName = "Quick Add
-organization", +
-icon = "pi-building") +
-@Transactional +
-public Organization addMinimalOrganization(MinimalOrganizationDTO dto)
-\{ +
-+
-Organization org = new Organization(); +
-org.setName(dto.getName()); +
-org.setAddress(dto.getAddress()); +
-org.setHeadQuarters(dto.getHeadQuarters()); +
-org.setFounded(LocalDate._now_()); +
-org.setCountryOfOrigin(dto.getCountryOfOrigin()); +
-org.setReputation(Reputation._FEARSOME_); +
-org.setMemberCount(dto.getMemberCount()); +
-return save(org); +
+[source,java]
+--
+@Override
+@ModelAction(id = "AddMinimalOrganization", displayName = "Quick Add organization",
+    icon = "pi-building")
+@Transactional
+public Organization addMinimalOrganization(MinimalOrganizationDTO dto) {
+
+    Organization org = new Organization();
+    org.setName(dto.getName());
+    org.setAddress(dto.getAddress());
+    org.setHeadQuarters(dto.getHeadQuarters());
+    org.setFounded(LocalDate.now());
+    org.setCountryOfOrigin(dto.getCountryOfOrigin());
+    org.setReputation(Reputation.FEARSOME);
+    org.setMemberCount(dto.getMemberCount());
+    return save(org);
 }
+--
+
 
 Under the covers, the application will create an entity model based on
 the DTO that is passed to the annotated method. This entity model comes
@@ -3015,7 +2985,7 @@ up a modal dialog that can be used to carry out the action. This modal
 dialog will contain input components based on the entity model. E.g. for
 the action defined above, it will look as follows:
 
-image:/media/image8.png[image,width=559,height=265]
+image:media/image8.png[image,width=559,height=265]
 
 Actions of type CREATE will appear in the button bar below the results
 table in a search layout, split layout, or editable table layout.
@@ -3033,8 +3003,10 @@ It is possible to configure role-based authorization to limit which
 users are allowed to perform which actions on certain entities. This is
 done by means of placing the *@Roles* annotation on an entity class.
 
-@Roles(readRoles = \{}, writeRoles = \{"hidden"}, deleteRoles =
-\{"hidden"})
+[source,java]
+--
+@Roles(readRoles = {}, writeRoles = {"hidden"}, deleteRoles = {"hidden"})
+--
 
 The *@Roles* annotation has three properties:
 
@@ -3056,9 +3028,12 @@ It is possible to use thae message bundle to override the required
 roles, by using the “readRoles”, “writeRoles” and “deleteRoles” keys.
 Each value takes a comma-separated list of the role names.
 
-Entity6.readRoles=role4,role5 +
-Entity6.writeRoles=role6 +
+[source,properties]
+--
+Entity6.readRoles=role4,role5
+Entity6.writeRoles=role6
 Entity6.deleteRoles=role7
+--
 
 The Dynamo back-end will check the roles against the user’s Spring
 Security roles. It is left to the developer to ensure that the proper
@@ -3070,12 +3045,12 @@ in order to be able to perform role checks. You can then use the
 the user does not have the proper roles to read/write/delete the entity
 managed by the entity model.
 
-__ +
-__void validateReadAllowed(EntityModel<?> model); +
-+
-void validateWriteAllowed(EntityModel<?> model); +
-+
+[source,java]
+--
+void validateReadAllowed(EntityModel<?> model);
+void validateWriteAllowed(EntityModel<?> model);
 void validateDeleteAllowed(EntityModel<?> model);
+--
 
 In the front-end, the UI components offered by the Dynamo framework will
 be automatically adapted based on the provided roles. This means that:
@@ -3095,19 +3070,15 @@ that only authorized users get to see certain screens
 First of all, you can add a *RoleGuard* to any route that should only be
 accessible to certain users:
 
-  \{
-
-    path: 'organizations',
-
-    title: 'Organizations',
-
-    canActivate: [RoleGuard, BackendAvailableGuard],
-
-    component: OrganizationSearchComponent,
-
-    data: \{roles : ['view_product']}
-
-  },
+[source,typescript]
+--
+    path: 'organizations',
+    title: 'Organizations',
+    canActivate: [RoleGuard, BackendAvailableGuard],
+    component: OrganizationSearchComponent,
+    data: {roles : ['view_product']}
+  }
+--
 
 The “data” takes an array of roles that are allowed to access the
 specified route. The *RoleGuard* will block access to a route if the
@@ -3125,9 +3096,11 @@ Layout” which offers a search form combined with a results table. To use
 a *GenericSearchLayout*, define your own component, then in the HTML for
 that component, include something like this
 
+[source,angular17html]
+--
 <app-generic-search-layout entityName="Organization”
-
-  ></app-generic-search-layout>
+  ></app-generic-search-layout>
+--
 
 This is the most basic set-up that will provide you with a search screen
 for the “Organization” entity. By default, this will do the following:
@@ -3161,11 +3134,12 @@ way to do this is by defining the *detailNavigationPath* (see below).
 
 ==== DetailNavigationPath
 
+[source,angular17html]
+--
 <app-generic-search-layout entityName="Organization"
-
-  detailNavigationPath="organization"
-
->
+  detailNavigationPath="organization"
+ >
+--
 
 The *detailNavigationPath* setting can be used to set the path that is
 used to navigate to a details page for editing an entity that is
@@ -3180,11 +3154,12 @@ handlers instead.
 
 ==== SearchFormMode
 
+[source,angular17html]
+--
 <app-generic-search-layout entityName="Organization"
-
-  [searchFormMode]="searchMode"
-
-  >
+  [searchFormMode]="searchMode"
+  >
+--
 
 By using the *searchFormMode* it becomes possible to switch between the
 default search form (as described above) a more dynamic search form. By
@@ -3204,7 +3179,7 @@ filter.
 
 As an example, consider the following:
 
-image:/media/image9.png[image,width=560,height=165]
+image:media/image9.png[image,width=560,height=165]
 
 With regard to fields that are *requiredForSearching,* when using the
 dynamic search form, the application will render a row for every
@@ -3221,13 +3196,13 @@ You can use the *queryType* attribute on the layout to determine the
 query type to use. The supported values are PAGING and ID_BASED, with
 PAGING being the default.
 
+[source,angular17html]
+--
 <app-generic-search-layout entityName="Organization"
+  queryType]="queryType"
 
-  queryType]="queryType"
-
- 
-
-  ></app-generic-search-layout>
+  ></app-generic-search-layout>
+--
 
 Changing this setting will determine how the query will be carried out
 in the back-end. In many cases this will probably not be relevant, but
@@ -3298,25 +3273,19 @@ empty.
 The *defaultFilters* property takes an array of *FilterModel* objects
 that specify which filters to use.
 
-  getDefaultFilters(): FilterModel[] \{
-
-    let defaultFilters: FilterModel[] = [];
-
-    let filter1: EqualsFilterModel = \{
-
-      match: 'EQUALS',
-
-      name: 'reputation',
-
-      value: 'FEARSOME' as any,
-
-    };
-
-    defaultFilters.push(filter1);
-
-    return defaultFilters;
-
-  }
+[source,typescript]
+--
+getDefaultFilters(): FilterModel[] {
+let defaultFilters: FilterModel[] = [];
+let filter1: EqualsFilterModel = {
+  match: 'EQUALS',
+  name: 'reputation',
+  value: 'FEARSOME' as any,
+};
+defaultFilters.push(filter1);
+return defaultFilters;
+}
+--
 
 ==== EntityModelReference
 
@@ -3359,15 +3328,14 @@ represents the entire row that was selected.
 
 As an example, *onRowSelect* can be used to navigate to a detail screen:
 
-  onRowSelect(row: any) \{
-
-    if (row.id) \{
-
-      this.router.navigateByUrl('/organization/' + row.id);
-
-    }
-
-  }
+[source,typescript]
+--
+onRowSelect(row: any) {
+    if (row.id) {
+      this.router.navigateByUrl('/organization/' + row.id);
+    }
+}
+--
 
 ==== AfterSearchFormBuilt
 
@@ -3380,25 +3348,20 @@ attributes.
 Below is an example of using this functionality for setting the default
 of the “country of origin” field to “Australia”.
 
-  afterSearchFormBuilt(info: FormInfo) \{
+[source,typescript]
+--
+afterSearchFormBuilt(info: FormInfo) {
+    let model = createBasicSearchModel('name', 'Australia');
+    this.service!.search('Country', model).subscribe((result) => {
+      let country = result.results![0] as any;
 
-    let model = createBasicSearchModel('name', 'Australia');
-
-    this.service!.search('Country', model).subscribe((result) => \{
-
-      let country = result.results![0] as any;
-
-      info.formGroup.get('countryOfOrigin')?.patchValue(\{
-
-        value: country.id!,
-
-        name: country.name!
-
-      });
-
-    });
-
-  }
+      info.formGroup.get('countryOfOrigin')?.patchValue({
+        value: country.id!,
+        name: country.name!
+      });
+    });
+}
+--
 
 Note: when you are setting the value for a *multiselect* component, be
 sure that the value you are setting is an array.
@@ -3412,54 +3375,41 @@ be placed in each row in the table.
 In the HTML, you can set a value for the *additionalRowActions*
 property:
 
+[source,typescript]
+--
 <app-generic-search-layout entityName="Organization"
-
-[additionalRowActions]="getAdditionalRowActions()"
-
-  >
+ [additionalRowActions]="getAdditionalRowActions()"
+  >
+--
 
 Then, in the Typescript file you can define a list of additional
 actions:
 
-  getAdditionalRowActions(): AdditionalRowAction[] \{
+[source,typescript]
+--
+getAdditionalRowActions(): AdditionalRowAction[] {
+    let action: AdditionalRowAction = {
+      action: obj => {
+        this.messageService.warn('Selected something:' +  obj.name)
 
-    let action: AdditionalRowAction = \{
+      },
+      messageKey: 'action_one',
+      icon: "pi-times",
+      buttonClass: "btn btn-primary"
+    }
 
-      action: obj => \{
-
-        this.messageService.warn('Selected something:' +  obj.name)
-
-      },
-
-      messageKey: 'action_one',
-
-      icon: "pi-times",
-
-      buttonClass: "btn btn-primary"
-
-    }
-
-    let action2: AdditionalRowAction = \{
-
-      action: obj => \{
-
-        this.messageService.warn('Selected something:' +  obj.name)
-
-      },
-
-      messageKey: 'action_two',
-
-      icon: "pi-chart-pie",
-
-      buttonClass: "btn btn-danger",
-
-      enabled: obj => (obj['name'] as string).indexOf('a') >= 0
-
-    }
-
-    return [action, action2];
-
-  }
+    let action2: AdditionalRowAction = {
+      action: obj => {
+        this.messageService.warn('Selected something:' +  obj.name)
+      },
+      messageKey: 'action_two',
+      icon: "pi-chart-pie",
+      buttonClass: "btn btn-danger",
+      enabled: obj => (obj['name'] as string).indexOf('a') >= 0
+    }
+    return [action, action2];
+}
+--
 
 An action consists of:
 
@@ -3479,33 +3429,25 @@ is also possible to define global actions that are not tied to a
 specific entity. These global actions appear in the button bar below the
 results table.
 
-  getAdditionalGlobalActions(): AdditionalGlobalAction[] \{
+[source,typescript]
+--
+getAdditionalGlobalActions(): AdditionalGlobalAction[] {
+    let action: AdditionalGlobalAction = {
+      action: () => {
+        this.messageService.warn('This is a global action')
 
-    let action: AdditionalGlobalAction = \{
+      },
+      messageKey: 'action_one',
+      icon: "pi-times",
+      buttonClass: "btn btn-primary m-1",
+      enabled: () => {
+        return true;
+      }
+    }
 
-      action: () => \{
-
-        this.messageService.warn('This is a global action')
-
-      },
-
-      messageKey: 'action_one',
-
-      icon: "pi-times",
-
-      buttonClass: "btn btn-primary m-1",
-
-      enabled: () => \{
-
-        return true;
-
-      }
-
-    }
-
-    return [action];
-
-  }
+    return [action];
+}
+--
 
 An action consists of:
 
@@ -3522,37 +3464,31 @@ be enabled (if omitted, the button will be enabled by default).
 The GenericForm component can be used to edit or display a single
 entity. In its most basic form it can be used as follows:
 
+[source,typescript]
+--
 <app-generic-form
-
-  entityName="Organization"
-
-  [entityId]="entityId"
-
+  entityName="Organization"
+  [entityId]="entityId"
 >
 
-export class OrganizationFormComponent \{
+--
 
-  entityId?: number;
+[source,typescript]
+--
+export class OrganizationFormComponent {
+  entityId?: number;
 
-  constructor(
-
-    route: ActivatedRoute,
-
-    private messageService: LogMessageService,
-
-    private crudController: CrudControllerService
-
-  ) \{
-
-    let id = route.snapshot.paramMap.get('id');
-
-    if (id) \{
-
-      this.entityId = parseInt(id);
-
-    }
-
-  }
+  constructor(
+    route: ActivatedRoute,
+    private messageService: LogMessageService,
+    private crudController: CrudControllerService
+  ) {
+    let id = route.snapshot.paramMap.get('id');
+    if (id) {
+      this.entityId = parseInt(id);
+    }
+  }
+--
 
 This will set up an edit form for managing entities of type
 Organization. It can be used both for creating new entities and editing
@@ -3606,12 +3542,13 @@ each other. However, when you specify one or more attribute groups (on
 the entity), these will be used to group the entities together using
 either tabs sheets or panels.
 
-@AttributeGroup(messageKey = "organization.first", attributeNames =
-\{"id", "name", "address", "headQuarters", "countryOfOrigin"}) +
-@AttributeGroup(messageKey = "organization.second", attributeNames =
-\{"memberCount", "yearlyMortalityRate", "mainActivity", +
-"governmentSponsored", "budget"}) +
-public class Organization extends AbstractEntity<Integer> \{
+[source,java]
+--
+@AttributeGroup(messageKey = "organization.first", attributeNames = {"id", "name", "address", "headQuarters", "countryOfOrigin"})
+@AttributeGroup(messageKey = "organization.second", attributeNames = {"memberCount", "yearlyMortalityRate", "mainActivity",
+        "governmentSponsored", "budget"})
+public class Organization extends AbstractEntity<Integer> {
+--
 
 By default, the attributes will be grouped together using panels.
 However you can change the *attributeGroupMode* to TAB to change this to
@@ -3642,30 +3579,24 @@ done by implementing a function that takes as its parameters
 You can use these parameters to determine whether to show/hide a certain
 attribute.
 
- attributeVisible(am: AttributeModelResponse, editObject: any,
-formGroup: FormGroup) \{
+[source,typescript]
+--
+formGroup: FormGroup) {
+    let typeControl = formGroup.get('assetCategoryType');
+    if (!typeControl) {
+      return true;
+    }
+    let typeValue = formGroup.get('assetCategoryType')?.value?.value;
 
-    let typeControl = formGroup.get('assetCategoryType');
+    if (!typeValue) {
+      return false;
+    }
 
-    if (!typeControl) \{
+    let index = golfsetAttributes.indexOf(am.name)
+    return index >=0 ? typeValue === 'GOLFSET' : true;
 
-      return true;
-
-    }
-
-    let typeValue = formGroup.get('assetCategoryType')?.value?.value;
-
-    if (!typeValue) \{
-
-      return false;
-
-    }
-
-    let index = golfsetAttributes.indexOf(am.name)
-
-    return index >=0 ? typeValue === 'GOLFSET' : true;
-
-  }
+  }
+--
 
 ==== Field filters
 
@@ -3676,43 +3607,37 @@ from the back-end.
 
 In HTML, set a value for the *fieldFilters* property:
 
+[source,angular17html]
+--
 <app-generic-form
-
-  entityName="Organization"
-
-  [entityId]="entityId"
-
-  [fieldFilters]="getFieldFilters()"
-
+  entityName="Organization"
+  [entityId]="entityId"
+  [fieldFilters]="getFieldFilters()"
 >
+--
 
 In Typescript, define a function that returns a Map that maps from
 attribute name to an array of *FilterModel* objects
 
-  getFieldFilters() \{
+[source,typescript]
+--
+  getFieldFilters() {
+    let fieldFilters: Map<string,FilterModel[]> = new Map<string,FilterModel[]>();
 
-    let fieldFilters: Map<string,FilterModel[]> = new
-Map<string,FilterModel[]>();
+    let countryFilter = createEqualsFilter('name', 'au')
+    fieldFilters.set("countryOfOrigin", [
+      countryFilter
+    ]);
 
-    let countryFilter = createEqualsFilter('name', 'au')
+    let hoodFilter = createEqualsFilter('name', 'a')
+    fieldFilters.set("neighbourhoods", [
+      hoodFilter
+    ]);
 
-    fieldFilters.set("countryOfOrigin", [
+    return fieldFilters;
+  }
+--
 
-      countryFilter
-
-    ]);
-
-    let hoodFilter = createEqualsFilter('name', 'a')
-
-    fieldFilters.set("neighbourhoods", [
-
-      hoodFilter
-
-    ]);
-
-    return fieldFilters;
-
-  }
 
 This example sets up two field filters, one for the *countryOfOrigin*
 attribute and one for the *neighbourhoods* attribute**.** Both filters
@@ -3729,13 +3654,13 @@ the input components (e.g., empty a field when another field has a
 certain value). You can set this up by setting the
 *postProcessInputForm* option.
 
+[source,angular17html]
+--
 <app-generic-form entityName="Person"
-
-  [entityId]="entityId
-
-    [postProcessInputForm]="postProcessInputForm"
-
-></app-generic-form>
+  [entityId]="entityId
+    [postProcessInputForm]="postProcessInputForm"
+ ></app-generic-form>
+--
 
 This should correspond to a typescript function that takes a *FormGroup*
 as its argument and returns *void.* Within this function, it is possible
@@ -3743,19 +3668,17 @@ to retrieve the input components from the FormGroup and set up (e.g.)
 value change listeners that modify field values, enabled/disable fields
 based on input, etc.
 
-  postProcessInputForm(formGroup: FormGroup) \{
+[source,typescript]
+--
+  postProcessInputForm(formGroup: FormGroup) {
+    let lastName = formGroup.get('lastName')!;
+    let firstName = formGroup.get('firstName')!;
 
-    let lastName = formGroup.get('lastName')!;
-
-    let firstName = formGroup.get('firstName')!;
-
-    lastName.valueChanges.subscribe(val => \{
-
-      // do something
-
-    })
-
-  }
+    lastName.valueChanges.subscribe(val => {
+      // do something
+    })
+  }
+--
 
 ==== AfterEntityCreated
 
@@ -3768,38 +3691,30 @@ E.g, suppose we are creating a new Organization and want to set a
 default value for the *countryOfOrigin* attribute. This can be done as
 follows:
 
-  afterEntityCreated(event: FormInfo) \{
+[source,typescript]
+--
+  afterEntityCreated(event: FormInfo) {
+    let group = event?.formGroup;
 
-    let group = event?.formGroup;
+    let model = createBasicSearchModel('name', 'Australia');
+    this.crudController!.search('Country', model).subscribe((result) => {
+      let country = result.results![0] as any;
 
- 
+      group.get('countryOfOrigin')?.patchValue({
+        value: country.id!,
+        name: country.name!
+      });
+    });
+  }
+--
 
-    let model = createBasicSearchModel('name', 'Australia');
-
-    this.crudController!.search('Country', model).subscribe((result) =>
-\{
-
-      let country = result.results![0] as any;
-
-      group.get('countryOfOrigin')?.patchValue(\{
-
-        value: country.id!,
-
-        name: country.name!
-
-      });
-
-    });
-
-  }
-
+[source,angular17html]
+--
 <app-generic-form
-
-  entityName="Organization"
-
-  [entityId]="entityId"
-
-(afterEntityCreated)="afterEntityCreated($event)"
+  entityName="Organization"
+  [entityId]="entityId"
+  (afterEntityCreated)="afterEntityCreated($event)"
+--
 
 This callback method will be run whenever the form is opened in the
 “create new entity mode”, and will result in the “countryOfOrigin” field
@@ -3832,29 +3747,21 @@ form group
 validators (note that you can pass along the from group in order to set
 up validations across multiple fields if desired).
 
+[source,angular17html]
+--
 <app-generic-form
-
-  entityName="Member"
-
-  [entityId]="entityId"
-
-  [customValidatorTemplate]="customValidatorTemplate"
-
+  entityName="Member"
+  [entityId]="entityId"
+  [customValidatorTemplate]="customValidatorTemplate"
 >
-
-  <ng-template #customValidatorTemplate let-formGroup>
-
-    <ng-template
-
-      dAdditionalValidators
-
-      fieldName="bagNumber"
-
-      [formGroup]="formGroup"
-
-      [validators]="[CustomValidators.bagNumberValidator(formGroup)]"
-
-    />
+  <ng-template #customValidatorTemplate let-formGroup>
+    <ng-template
+      dAdditionalValidators
+      fieldName="bagNumber"
+      [formGroup]="formGroup"
+      [validators]="[CustomValidators.bagNumberValidator(formGroup)]"
+    />
+--
 
 ==== Additional form actions
 
@@ -3865,49 +3772,36 @@ declarative fashion.
 In the HTML code, you can set a value for the *additionalFormActions*
 property:
 
-<app-generic-form
-
-  entityName="Organization"
-
-  [entityId]="entityId"
-
-  [additionalFormActions]="getAdditionalFormActions()"
-
+[source,typescript]
+--
+ <app-generic-form
+  entityName="Organization"
+  [entityId]="entityId"
+  [additionalFormActions]="getAdditionalFormActions()"
 >
+--
 
 Then, in the Typescript file, you can define the additional action:
 
-  getAdditionalFormActions(): AdditionalFormAction[] \{
-
-    let action: AdditionalFormAction = \{
-
-      action: obj => \{
-
-        this.organizationService.clearAddress(obj.id)
-
-          .subscribe(obj => \{
-
-          this.comp?.bindExistingEntity();
-
-          })
-
-      },
-
-      messageKey: 'action_one',
-
-      icon: "pi-times",
-
-      mode: AdditionalActionMode.BOTH,
-
-      buttonClass: "btn btn-danger",
-
-      enabled: obj => \{return false;}
-
-    }
-
-    return [action];
-
-  }
+[source,typescript]
+--
+  getAdditionalFormActions(): AdditionalFormAction[] {
+    let action: AdditionalFormAction = {
+      action: obj => {
+        this.organizationService.clearAddress(obj.id)
+          .subscribe(obj => {
+            this.comp?.bindExistingEntity();
+          })
+      },
+      messageKey: 'action_one',
+      icon: "pi-times",
+      mode: AdditionalActionMode.BOTH,
+      buttonClass: "btn btn-danger",
+      enabled: obj => {return false;}
+    }
+    return [action];
+  }
+--
 
 An action consists of:
 
@@ -3945,11 +3839,13 @@ The integration with OpenAPI can be enabled simply by setting the
 for the API key, the desired model, and the maximum number of tokens
 must be provided.
 
-ocs.openai.enabled=true +
+[source,properties]
+--
+ocs.openai.enabled=true
 ocs.openai.api.key=[SECRET]
-
-ocs.openai.model=gpt-4-turbo +
+ocs.openai.model=gpt-4-turbo
 ocs.openai.maxtokens=4096
+--
 
 To use the service, a (paid) subscription to OpenAI is required; given
 such a subscription, the user can generate an API key (token) that must
@@ -3975,9 +3871,12 @@ Configuring ollama is relatively easy since it is running locally and
 does not require an external account. The configuration needs a URL (the
 default is localhost:11434) and a model name (llama3 or mistral).
 
-ocs.ollama.enabled=true +
-ocs.ollama.url=http://localhost:11434 +
+[source,properties]
+--
+ocs.ollama.enabled=true
+ocs.ollama.url=http://localhost:11434
 ocs.ollama.model=llama3
+--
 
 *Google VertexAI Gemini (and PALM)*
 
@@ -3993,12 +3892,15 @@ does require that you set up a Google Gloud account
 card. You can then create a project and enable the Vertex API for this
 project.
 
-ocs.vertexai.enabled=true +
-ocs.vertexai.project.id=[SECRET] +
-ocs.vertexai.project.region=europe-west1 +
+[source,properties]
+--
+ocs.vertexai.enabled=true
+ocs.vertexai.project.id=[SECRET]
+ocs.vertexai.project.region=europe-west1
 ocs.vertexai.model=gemini-1.5-flash-preview-0514
+--
 
-With this in place, you need to provide the application with your
+With this configuration in place, you need to provide the application with your
 project ID, Google Cloud region, and desired VertexAI model.
 
 It also seems perfectly possible to use the Spring AI gemini library in
@@ -4021,13 +3923,14 @@ the service from your application.
 
 Configuration can then be done as follows:
 
+[source,properties]
+--
 ocs.bedrock.enabled=true
-
-ocs.bedrock.access.key=AKIA5FTY7NWAPH2I7CGV +
+ocs.bedrock.access.key=AKIA5FTY7NWAPH2I7CGV
 ocs.bedrock.access.secret=[SECRET]
-
-ocs.bedrock.model.id=arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-v2 +
+ocs.bedrock.model.id=arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-v2
 ocs.bedrock.region=eu-central-1
+--
 
 The configuration for Bedrock can unfortunately be a bit messy, since
 the available models are region-dependent and also must be explicitly
@@ -4048,7 +3951,7 @@ entire request
 * Pressing the “OK”-button will send a request to the LLM service, which
 will try to translate the user input to valid property values, which
 will be pre-filled into the form.
-image:/media/image10.png[image,width=559,height=221]
+image:media/image10.png[image,width=559,height=221]
 
 You can set the default model to use by setting the value of the
 parameter *ocs.ai.default.service* This setting accepts the values
@@ -4127,7 +4030,7 @@ manipulating the upload, consisting of:
 * A “clear” button for clearing the uploaded file
 * A “download” button (if *downloadAllowed* is set to *true*)
 
-image:/media/image11.png[image,width=560,height=266]
+image:media/image11.png[image,width=560,height=266]
 
 Under the covers, the framework will combine the regular post or put
 request with any requests to upload or remove files; the regular update
@@ -4378,7 +4281,7 @@ the details of the selected entity.
 Below the table is an “Add” button that will bring up a dialog that can
 be used to add a new entity.
 
-image:/media/image12.png[image,width=560,height=158]
+image:media/image12.png[image,width=560,height=158]
 
 Supported features (see under the other sections for details)
 
@@ -4408,7 +4311,7 @@ any results table (in you right-click anywhere in the table). This menu
 will contain the options to create exports to both Excel and CSV
 formats.
 
-image:/media/image13.png[image,width=194,height=136]
+image:media/image13.png[image,width=194,height=136]
 
 The export that will be created contains all the data in the result set
 (i.e. all data that matches the search criteria), not just the rows that
