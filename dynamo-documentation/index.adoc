@@ -1010,6 +1010,7 @@ element collection. In this case, you must set the *maxLength* directly
 using the *@Attribute* annotation..
 
 [source,java]
+--
 @ElementCollection(fetch = FetchType.LAZY)
 @CollectionTable(name = "person_tags")
 @Column(name = "tag")
@@ -1134,6 +1135,7 @@ search component that is rendered (you can also use a lookup field by
 using the value *LOOKUP*).
 
 [source,java]
+--
 @NotNull
 @JoinColumn(name = "country_of_origin")
 @ManyToOne(fetch = FetchType.LAZY)
@@ -3072,6 +3074,7 @@ accessible to certain users:
 
 [source,typescript]
 --
+  {
     path: 'organizations',
     title: 'Organizations',
     canActivate: [RoleGuard, BackendAvailableGuard],
@@ -4254,7 +4257,7 @@ This works in the same way as for the *GenericForm*
 
 === GenericEditTableLayout
 
-The *GenericSplitLayout* is a composite layout component that contains a
+The *GenericEditTableLayout* is a composite layout component that contains a
 tabular display of data that allows the user to modify data or add new
 data.
 
@@ -4447,7 +4450,7 @@ This configuration can be included in the *orm.xml* file that can be
 included in the *src/main/resources/META-INF* directory. The following
 shows the configuration for PostgreSQL:
 
-[source,java]
+[source,xml]
 --
 <?xml version="1.0" encoding="UTF-8" ?>
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
