@@ -86,11 +86,20 @@ public class AttributeModelResponse {
     private EditableType editableType;
 
     /**
+     * List of attributes that this attribute is grouped together with
+     */
+    private List<String> groupTogetherWith;
+
+    /**
      * The name of or path to the attribute
      */
     @NotNull
     private String name;
 
+    /**
+     * Whether this is attribute is needed for correct operation of
+     * other attributes
+     */
     @NotNull
     private boolean neededInData;
 

@@ -293,6 +293,14 @@ public final class SystemPropertyUtils {
     }
 
     /**
+     * @return whether to use the display name of an attribute as the "prompt" value
+     * (hint/placeholder) inside the component
+     */
+    public static boolean useDefaultPromptValue() {
+        return getBooleanProperty(DynamoConstants.SP_USE_DEFAULT_PROMPT_VALUE, true);
+    }
+
+    /**
      * @return whether to use thousands grouping in XLS export
      */
     public static boolean useXlsThousandsGrouping() {

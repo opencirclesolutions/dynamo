@@ -63,6 +63,7 @@ public class EntityModelAttributeMapper {
         builder.booleanFieldMode(mapBooleanFieldMode(model.getBooleanFieldMode(), model));
         builder.cascades(mapCascades(model));
         builder.ignoreInSearchFilter(model.isIgnoreInSearchFilter());
+        builder.groupTogetherWith(model.getGroupTogetherWith());
 
         if (type == AttributeModelType.STRING) {
             builder.email(model.isEmail());

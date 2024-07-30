@@ -28,4 +28,6 @@ public class AutoFillOptions {
     private AIServiceType type;
 
     private String description;
+
+    private boolean defaultValue;
 }

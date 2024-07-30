@@ -21,6 +21,7 @@ import com.ocs.dynamo.autofill.rest.model.AutoFillRequest;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.*;
@@ -35,6 +36,9 @@ import java.util.List;
 @Slf4j
 @CrossOrigin
 public class AutoFillController extends BaseController {
+
+    @Value("${ocs.ai.default.service:CHAT_GPT}")
+    private String defaultValue;
 
     @Autowired
     private FormFillService formFillService;
@@ -65,9 +69,14 @@ public class AutoFillController extends BaseController {
             consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.OK)
     public List<AutoFillOptions> getOptions() {
-        return formFillService.findSupportedServices()
+        List<AutoFillOptions> list = formFillService.findSupportedServices()
                 .stream().map(type -> AutoFillOptions.builder()
                         .type(type).description(type.toString()).build())
                 .toList();
+
+        list.stream().filter(option -> option.getType().name().equalsIgnoreCase(defaultValue))
+                .forEach(option -> option.setDefaultValue(true));
+
+        return list;
     }
 }

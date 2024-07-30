@@ -185,6 +185,11 @@ public class DynamoConstants {
     public static final String SP_UNACCENT_FUNCTION_NAME = "ocs.unaccent.function.name";
 
     /**
+     * Indicates whether to use the display name as the input prompt by default
+     */
+    public static final String SP_USE_DEFAULT_PROMPT_VALUE = "ocs.use.default.prompt.value";
+
+    /**
      * Whether to use thousands grouping in XLS files
      */
     public static final String SP_XLS_THOUSANDS_GROUPING = "ocs.xls.thousands.grouping";
