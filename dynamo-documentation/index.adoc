@@ -3079,7 +3079,7 @@ accessible to certain users:
     title: 'Organizations',
     canActivate: [RoleGuard, BackendAvailableGuard],
     component: OrganizationSearchComponent,
-    data: {roles : ['view_product']}
+    data: {roles : ['view_organization']}
   }
 --
 

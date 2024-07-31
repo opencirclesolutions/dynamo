@@ -317,7 +317,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
                 this::isComplexAttribute).toList();
 
         for (AttributeModel am : attributeModels) {
-            if (!am.isVisibleInForm()) {
+            if (!am.isVisibleInForm() && am.getEditableType() != EditableType.HIDDEN) {
                 log.info("Skipping update of complex attribute that is not visible in form: {}",
                         am.getName());
                 continue;
