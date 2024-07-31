@@ -36,6 +36,12 @@ dynamo-envers/.classpath
 dynamo-envers/.settings
 dynamo-envers/.project
 dynamo-envers/.checkstyle
+dynamo-rest/target/
+dynamo-rest/.classpath
+dynamo-rest/.settings
+dynamo-rest/.project
+dynamo-rest/.checkstyle
+
 dynamo-showcase/target
 .travis.yml
 .idea
