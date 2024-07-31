@@ -218,14 +218,14 @@
 				<version>${opencsv.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.springboot.ai</groupId>
+				<groupId>org.springframework.ai</groupId>
 				<artifactId>spring-ai-core</artifactId>
-				<version>1.0.3</version>
+				<version>${spring.ai.version}</version>
 			</dependency>
 			<dependency>
-				<groupId>io.springboot.ai</groupId>
+				<groupId>org.springframework.ai</groupId>
 				<artifactId>spring-ai-openai</artifactId>
-				<version>1.0.3</version>
+				<version>${spring.ai.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.springframework.ai</groupId>
