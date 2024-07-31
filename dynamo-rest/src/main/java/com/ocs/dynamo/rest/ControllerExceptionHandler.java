@@ -38,7 +38,7 @@ import java.util.stream.Collectors;
 public class ControllerExceptionHandler {
 
     @ExceptionHandler({ConstraintViolationException.class})
-    @ResponseStatus(HttpStatus.NOT_FOUND)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(responseCode = "400", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})
     public ResponseEntity<ErrorMessageResponse> constraintViolation(ConstraintViolationException ex) {
         log.error(ex.getMessage(), ex);
