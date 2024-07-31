@@ -3,7 +3,7 @@
 .DS_Store
 .project
 .settings
-/target/
+target/
 *.iml
 /.idea
 
@@ -41,6 +41,8 @@ dynamo-rest/.classpath
 dynamo-rest/.settings
 dynamo-rest/.project
 dynamo-rest/.checkstyle
+dynamo-formfill/target/
+
 
 dynamo-showcase/target
 .travis.yml
