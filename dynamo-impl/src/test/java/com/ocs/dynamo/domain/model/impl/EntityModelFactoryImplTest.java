@@ -17,6 +17,7 @@ import com.ocs.dynamo.dao.JoinType;
 import com.ocs.dynamo.domain.TestEntity;
 import com.ocs.dynamo.domain.model.*;
 import com.ocs.dynamo.domain.model.annotation.*;
+import com.ocs.dynamo.exception.OCSRuntimeException;
 import com.ocs.dynamo.service.MessageService;
 import com.ocs.dynamo.service.ServiceLocator;
 import com.ocs.dynamo.service.impl.BaseServiceImpl;
@@ -641,14 +642,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	 */
 	@Test
 	public void testGroupTogetherWithWrongOrder() {
-		EntityModel<Entity11> model = factory.getModel(Entity11.class);
-
-		AttributeModel am = model.getAttributeModel("attribute2");
-		assertEquals(1, am.getGroupTogetherWith().size());
-		assertEquals("attribute1", am.getGroupTogetherWith().getFirst());
-
-		AttributeModel am1 = model.getAttributeModel("attribute1");
-		assertTrue(am1.isAlreadyGrouped());
+		assertThrows(OCSRuntimeException.class, () -> factory.getModel(Entity11.class));
 	}
 
 	/**

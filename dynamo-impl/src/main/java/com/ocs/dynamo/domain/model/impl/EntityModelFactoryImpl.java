@@ -2027,7 +2027,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                         AttributeModel other = entityModel.getAttributeModel(together);
                         if (together != null) {
                             ((AttributeModelImpl) other).setAlreadyGrouped(true);
-                            log.warn("Incorrect groupTogetherWith found: {} refers to {} ", am.getName(), together);
+                            throw new OCSRuntimeException("Incorrect groupTogetherWith found: %s refers to %s".formatted(am.getName(), together));
                         }
                     }
                 }
