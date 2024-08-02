@@ -4140,10 +4140,6 @@ Example for a text field
 
 Example for a multi-select field
 
-It is possible to mix-and-match the use of generic fields and your own freely defined components inside
-a free-form-template. This allows you a high degree of control over the layout of a screen, while at
-the same time profiting from the efficiency of using the standard components.
-
 [source,angular17html]
 --
 <app-generic-field
@@ -4155,19 +4151,25 @@ the same time profiting from the efficiency of using the standard components.
 </app-generic-field>
 --
 
+It is possible to mix-and-match the use of generic fields and your own freely defined components inside
+a free-form-template. This allows you a high degree of control over the layout of a screen, while at
+the same time profiting from the efficiency of using the standard components.
+
+You can also define your own components, e.g. like this:
+
 [source,angular17html]
 --
-      <label for="name">Organization Name</label>&nbsp;
-      <input
-        id="name"
-        type="text"
-        pInputText
-        formControlName="name"
-        placeholder="Name"
-      />
+  <label for="name">Organization Name</label>&nbsp;
+  <input
+    id="name"
+    type="text"
+    pInputText
+    formControlName="name"
+    placeholder="Name"
+  />
 --
 
-In the Typescript definition, you can used **@ViewChi**ld to inject a
+In the Typescript definition, you can use @ViewChild to inject a
 reference to the form component, and delegate the logic (e.g. for
 looking up available options) to the child component.
 
