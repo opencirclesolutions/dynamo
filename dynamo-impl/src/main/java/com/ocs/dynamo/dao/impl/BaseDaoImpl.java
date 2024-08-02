@@ -353,4 +353,24 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 		return entity;
 	}
 
+	@Override
+	public List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders) {
+		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
+				selectProperties, orders);
+		return query.getResultList();
+	}
+
+	@Override
+	public List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable) {
+		SortOrders sortOrders = pageable == null ? null : pageable.getSortOrders();
+		TypedQuery<Object[]> query = JpaQueryBuilder.createSelectQuery(filter, getEntityManager(), getEntityClass(),
+				selectProperties, sortOrders);
+		if (pageable != null) {
+			query.setFirstResult(pageable.getOffset());
+			query.setMaxResults(pageable.getPageSize());
+		}
+		return query.getResultList();
+	}
+
+
 }
