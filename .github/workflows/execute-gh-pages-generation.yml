@@ -2,9 +2,27 @@ name: asciidoctor-ghpages
 on:
   push:
     branches:
-      - master
+      - gh-pages
       - main
 jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
     steps:
-      name: generate-gh-pages-from-asciidoc
-      uses: manoelcampos/asciidoctor-ghpages-action
+    # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
+    - uses: actions/checkout@v3
+      
+    # Includes the AsciiDoctor GitHub Pages Action to convert adoc files to html and publish to gh-pages branch
+    - name: asciidoctor-ghpages
+      uses: manoelcampos/asciidoctor-ghpages-action@v2
+      with:
+        pdf_build: true
+        # asciidoctor_params: --attribute=nofooter
+        # adoc_file_ext: .ascii # default is .adoc
+        # source_dir: docs/ # default is .
+        # slides_build: true
+        # pre_build:
+        # post_build:
