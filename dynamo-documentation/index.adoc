@@ -117,7 +117,7 @@ parameter, then the simple name of the class is used as the reference)
 and which is then used as part of the message bundle entry.
 
 The classes for which you create an Entity Model must inherit from the
-*com.ocs.dynamo.domain.AbstractEntity* class. See chapter 6 for details.
+*org.dynamoframework.domain.AbstractEntity* class. See chapter 6 for details.
 
 ==== API
 
@@ -4502,7 +4502,7 @@ shows the configuration for PostgreSQL:
 		allocation-size="1" sequence-name="domain_id_seq" />
 	<sequence-generator name="parameter_id_seq"
 		allocation-size="1" sequence-name="parameter_id_seq" />
-	<entity class="com.ocs.dynamo.functional.domain.Domain">
+	<entity class="domain.functional.org.dynamoframework.Domain">
 		<attributes>
 			<id name="id">
 				<generated-value strategy="SEQUENCE" generator="domain_id_seq" />
