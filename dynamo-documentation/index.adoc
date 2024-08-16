@@ -4502,7 +4502,7 @@ shows the configuration for PostgreSQL:
 		allocation-size="1" sequence-name="domain_id_seq" />
 	<sequence-generator name="parameter_id_seq"
 		allocation-size="1" sequence-name="parameter_id_seq" />
-	<entity class="domain.functional.org.dynamoframework.Domain">
+	<entity class="org.dynamoframework.functional.domain.Domain">
 		<attributes>
 			<id name="id">
 				<generated-value strategy="SEQUENCE" generator="domain_id_seq" />

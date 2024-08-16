@@ -6,11 +6,11 @@
 //import org.springframework.context.annotation.ComponentScan;
 //
 //import org.dynamoframework.IntegrationTestConfig;
-//import dao.org.dynamoframework.BaseDao;
-//import impl.dao.org.dynamoframework.DefaultDaoImpl;
-//import domain.functional.org.dynamoframework.Currency;
-//import domain.functional.org.dynamoframework.QCurrency;
-//import service.org.dynamoframework.BaseService;
+//import org.dynamoframework.dao.BaseDao;
+//import org.dynamoframework.dao.impl.DefaultDaoImpl;
+//import org.dynamoframework.functional.domain.Currency;
+//import org.dynamoframework.functional.domain.QCurrency;
+//import org.dynamoframework.service.BaseService;
 //import impl.service.org.dynamoframework.DefaultServiceImpl;
 //
 ///**
@@ -20,7 +20,7 @@
 // *
 // */
 //@TestConfiguration
-//@ComponentScan(basePackages = "com.ocs.dynamo")
+//@ComponentScan(basePackages = "org.dynamoframework")
 //@SpringBootApplication
 //public class FunctionalDomainIntegrationTestConfig extends IntegrationTestConfig {
 //
