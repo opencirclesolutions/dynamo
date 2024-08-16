@@ -13,8 +13,8 @@
  */
 package org.dynamoframework.functional.service;
 
-import com.ocs.dynamo.functional.domain.Parameter;
-import com.ocs.dynamo.service.BaseService;
+import org.dynamoframework.functional.domain.Parameter;
+import org.dynamoframework.service.BaseService;
 
 /**
  * Created by R.E.M. Claassen on 7-4-2017.

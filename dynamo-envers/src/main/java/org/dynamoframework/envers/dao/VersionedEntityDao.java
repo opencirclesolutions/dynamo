@@ -16,10 +16,10 @@ package org.dynamoframework.envers.dao;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.envers.domain.RevisionKey;
-import com.ocs.dynamo.envers.domain.VersionedEntity;
+import org.dynamoframework.dao.BaseDao;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.envers.domain.RevisionKey;
+import org.dynamoframework.envers.domain.VersionedEntity;
 
 /**
  * 

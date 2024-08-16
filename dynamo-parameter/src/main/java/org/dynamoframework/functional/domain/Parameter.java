@@ -17,12 +17,12 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.AssertTrue;
 import jakarta.validation.constraints.NotNull;
 
-import com.ocs.dynamo.domain.AbstractAuditableEntity;
-import com.ocs.dynamo.domain.model.EditableType;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
-import com.ocs.dynamo.domain.model.annotation.AttributeOrder;
-import com.ocs.dynamo.domain.model.annotation.Model;
-import com.ocs.dynamo.domain.model.annotation.SearchMode;
+import org.dynamoframework.domain.AbstractAuditableEntity;
+import org.dynamoframework.domain.model.EditableType;
+import org.dynamoframework.domain.model.annotation.Attribute;
+import org.dynamoframework.domain.model.annotation.AttributeOrder;
+import org.dynamoframework.domain.model.annotation.Model;
+import org.dynamoframework.domain.model.annotation.SearchMode;
 
 import lombok.Getter;
 import lombok.Setter;

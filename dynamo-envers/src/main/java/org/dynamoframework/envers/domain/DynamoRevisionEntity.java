@@ -21,7 +21,7 @@ import jakarta.persistence.Table;
 import org.hibernate.envers.DefaultRevisionEntity;
 import org.hibernate.envers.RevisionEntity;
 
-import com.ocs.dynamo.envers.listener.DynamoRevisionListener;
+import org.dynamoframework.envers.listener.DynamoRevisionListener;
 import com.querydsl.core.annotations.QueryExclude;
 
 import lombok.Getter;

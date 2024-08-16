@@ -2,8 +2,8 @@ package org.dynamoframework.envers.dao.impl;
 
 import org.springframework.stereotype.Repository;
 
-import com.ocs.dynamo.envers.domain.Person;
-import com.ocs.dynamo.envers.domain.PersonRevision;
+import org.dynamoframework.envers.domain.Person;
+import org.dynamoframework.envers.domain.PersonRevision;
 
 @Repository
 public class PersonRevisionDaoImpl extends VersionedEntityDaoImpl<Integer, Person, PersonRevision>

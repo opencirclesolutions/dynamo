@@ -34,13 +34,13 @@ public class ChatGptService implements AIService {
 
     private OpenAiChatClient client;
 
-    @Value("${ocs.openai.api.key}")
+    @Value("${dynamoframework.openai.api.key}")
     private String apiKey;
 
-    @Value("${ocs.openai.model}")
+    @Value("${dynamoframework.openai.model}")
     private String model;
 
-    @Value("${ocs.openai.maxtokens}")
+    @Value("${dynamoframework.openai.maxtokens}")
     private Integer maxTokens;
 
     @PostConstruct

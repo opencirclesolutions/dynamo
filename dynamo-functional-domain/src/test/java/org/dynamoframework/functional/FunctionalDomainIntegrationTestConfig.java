@@ -5,7 +5,7 @@
 //import org.springframework.context.annotation.Bean;
 //import org.springframework.context.annotation.ComponentScan;
 //
-//import com.ocs.dynamo.IntegrationTestConfig;
+//import org.dynamoframework.IntegrationTestConfig;
 //import dao.org.dynamoframework.BaseDao;
 //import impl.dao.org.dynamoframework.DefaultDaoImpl;
 //import domain.functional.org.dynamoframework.Currency;

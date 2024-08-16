@@ -13,22 +13,22 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.TransactionStatus;
 
-import com.ocs.dynamo.BackendIntegrationTest;
-import com.ocs.dynamo.dao.Pageable;
-import com.ocs.dynamo.dao.PageableImpl;
-import com.ocs.dynamo.dao.SortOrder;
-import com.ocs.dynamo.dao.SortOrder.Direction;
-import com.ocs.dynamo.dao.SortOrders;
-import com.ocs.dynamo.envers.dao.PersonDao;
-import com.ocs.dynamo.envers.domain.Person;
-import com.ocs.dynamo.envers.domain.PersonRevision;
-import com.ocs.dynamo.envers.domain.RevisionKey;
-import com.ocs.dynamo.envers.domain.RevisionType;
-import com.ocs.dynamo.filter.And;
-import com.ocs.dynamo.filter.Compare;
-import com.ocs.dynamo.filter.Like;
-import com.ocs.dynamo.filter.Not;
-import com.ocs.dynamo.filter.Or;
+import org.dynamoframework.BackendIntegrationTest;
+import org.dynamoframework.dao.Pageable;
+import org.dynamoframework.dao.PageableImpl;
+import org.dynamoframework.dao.SortOrder;
+import org.dynamoframework.dao.SortOrder.Direction;
+import org.dynamoframework.dao.SortOrders;
+import org.dynamoframework.envers.dao.PersonDao;
+import org.dynamoframework.envers.domain.Person;
+import org.dynamoframework.envers.domain.PersonRevision;
+import org.dynamoframework.envers.domain.RevisionKey;
+import org.dynamoframework.envers.domain.RevisionType;
+import org.dynamoframework.filter.And;
+import org.dynamoframework.filter.Compare;
+import org.dynamoframework.filter.Like;
+import org.dynamoframework.filter.Not;
+import org.dynamoframework.filter.Or;
 
 @Disabled
 public class PersonRevisionDaoImplTest extends BackendIntegrationTest {

@@ -4,10 +4,10 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 import org.junit.jupiter.api.Test;
 
-import com.ocs.dynamo.domain.model.AttributeModel;
-import com.ocs.dynamo.domain.model.EntityModel;
-import com.ocs.dynamo.domain.model.EntityModelFactory;
-import com.ocs.dynamo.domain.model.impl.EntityModelFactoryImpl;
+import org.dynamoframework.domain.model.AttributeModel;
+import org.dynamoframework.domain.model.EntityModel;
+import org.dynamoframework.domain.model.EntityModelFactory;
+import org.dynamoframework.domain.model.impl.EntityModelFactoryImpl;
 
 public class PersonRevisionTest {
 

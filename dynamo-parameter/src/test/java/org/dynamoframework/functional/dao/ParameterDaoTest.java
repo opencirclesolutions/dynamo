@@ -16,10 +16,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import com.ocs.dynamo.BackendIntegrationTest;
-import com.ocs.dynamo.functional.ParameterIntegrationTestConfig;
-import com.ocs.dynamo.functional.domain.Parameter;
-import com.ocs.dynamo.functional.domain.ParameterType;
+import org.dynamoframework.BackendIntegrationTest;
+import org.dynamoframework.functional.ParameterIntegrationTestConfig;
+import org.dynamoframework.functional.domain.Parameter;
+import org.dynamoframework.functional.domain.ParameterType;
 
 /**
  * 

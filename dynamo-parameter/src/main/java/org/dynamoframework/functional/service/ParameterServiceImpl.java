@@ -17,11 +17,11 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.functional.dao.ParameterDao;
-import com.ocs.dynamo.functional.domain.Parameter;
-import com.ocs.dynamo.functional.domain.ParameterType;
-import com.ocs.dynamo.service.impl.BaseServiceImpl;
+import org.dynamoframework.dao.BaseDao;
+import org.dynamoframework.functional.dao.ParameterDao;
+import org.dynamoframework.functional.domain.Parameter;
+import org.dynamoframework.functional.domain.ParameterType;
+import org.dynamoframework.service.impl.BaseServiceImpl;
 
 /**
  * Created by R.E.M. Claassen on 7-4-2017.

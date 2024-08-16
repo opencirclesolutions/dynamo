@@ -2,10 +2,10 @@ package org.dynamoframework.envers.dao.impl;
 
 import org.springframework.stereotype.Repository;
 
-import com.ocs.dynamo.dao.impl.BaseDaoImpl;
-import com.ocs.dynamo.envers.dao.PersonDao;
-import com.ocs.dynamo.envers.domain.Person;
-import com.ocs.dynamo.envers.domain.QPerson;
+import org.dynamoframework.dao.impl.BaseDaoImpl;
+import org.dynamoframework.envers.dao.PersonDao;
+import org.dynamoframework.envers.domain.Person;
+import org.dynamoframework.envers.domain.QPerson;
 import com.querydsl.core.types.dsl.EntityPathBase;
 
 @Repository

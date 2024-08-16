@@ -13,8 +13,8 @@
  */
 package org.dynamoframework.functional.dao;
 
-import com.ocs.dynamo.dao.BaseDao;
-import com.ocs.dynamo.functional.domain.Parameter;
+import org.dynamoframework.dao.BaseDao;
+import org.dynamoframework.functional.domain.Parameter;
 
 /**
  * DAO for the Parameter entity

@@ -18,8 +18,8 @@ import java.time.ZonedDateTime;
 import org.apache.commons.lang3.builder.ReflectionToStringBuilder;
 import org.apache.commons.lang3.builder.ToStringStyle;
 
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.domain.model.annotation.Attribute;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.domain.model.annotation.Attribute;
 
 import lombok.Getter;
 import lombok.Setter;

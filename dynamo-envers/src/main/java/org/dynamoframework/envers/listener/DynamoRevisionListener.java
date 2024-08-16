@@ -15,9 +15,9 @@ package org.dynamoframework.envers.listener;
 
 import org.hibernate.envers.RevisionListener;
 
-import com.ocs.dynamo.envers.domain.DynamoRevisionEntity;
-import com.ocs.dynamo.service.UserDetailsService;
-import com.ocs.dynamo.service.impl.ApplicationContextProvider;
+import org.dynamoframework.envers.domain.DynamoRevisionEntity;
+import org.dynamoframework.service.UserDetailsService;
+import org.dynamoframework.service.impl.ApplicationContextProvider;
 
 /**
  * Custom Hibernate envers listener

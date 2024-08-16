@@ -6,7 +6,7 @@ import jakarta.persistence.Id;
 
 import org.hibernate.envers.Audited;
 
-import com.ocs.dynamo.domain.AbstractEntity;
+import org.dynamoframework.domain.AbstractEntity;
 
 @Audited
 @Entity

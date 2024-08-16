@@ -13,19 +13,19 @@
  */
 package org.dynamoframework.envers.dao.impl;
 
-import com.ocs.dynamo.constants.DynamoConstants;
-import com.ocs.dynamo.dao.FetchJoinInformation;
-import com.ocs.dynamo.dao.Pageable;
-import com.ocs.dynamo.dao.SortOrder;
-import com.ocs.dynamo.dao.SortOrders;
-import com.ocs.dynamo.dao.impl.BaseDaoImpl;
-import com.ocs.dynamo.domain.AbstractEntity;
-import com.ocs.dynamo.envers.dao.VersionedEntityDao;
-import com.ocs.dynamo.envers.domain.DynamoRevisionEntity;
-import com.ocs.dynamo.envers.domain.RevisionKey;
-import com.ocs.dynamo.envers.domain.RevisionType;
-import com.ocs.dynamo.envers.domain.VersionedEntity;
-import com.ocs.dynamo.utils.DateUtils;
+import org.dynamoframework.constants.DynamoConstants;
+import org.dynamoframework.dao.FetchJoinInformation;
+import org.dynamoframework.dao.Pageable;
+import org.dynamoframework.dao.SortOrder;
+import org.dynamoframework.dao.SortOrders;
+import org.dynamoframework.dao.impl.BaseDaoImpl;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.envers.dao.VersionedEntityDao;
+import org.dynamoframework.envers.domain.DynamoRevisionEntity;
+import org.dynamoframework.envers.domain.RevisionKey;
+import org.dynamoframework.envers.domain.RevisionType;
+import org.dynamoframework.envers.domain.VersionedEntity;
+import org.dynamoframework.utils.DateUtils;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import org.hibernate.envers.AuditReader;
 import org.hibernate.envers.AuditReaderFactory;

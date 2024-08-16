@@ -13,9 +13,9 @@
  */
 package org.dynamoframework.functional.dao;
 
-import com.ocs.dynamo.dao.impl.BaseDaoImpl;
-import com.ocs.dynamo.functional.domain.Parameter;
-import com.ocs.dynamo.functional.domain.QParameter;
+import org.dynamoframework.dao.impl.BaseDaoImpl;
+import org.dynamoframework.functional.domain.Parameter;
+import org.dynamoframework.functional.domain.QParameter;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import org.springframework.stereotype.Repository;
 
