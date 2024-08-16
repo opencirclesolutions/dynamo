@@ -54,7 +54,7 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>gitlab-maven-dynamo</id>
-			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/307/packages/maven</url>
+			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
