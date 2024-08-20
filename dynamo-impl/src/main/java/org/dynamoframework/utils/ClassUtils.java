@@ -496,7 +496,7 @@ public final class ClassUtils {
         synchronized (ClassUtils.class) {
             ClassPathScanningCandidateComponentProvider entityProvider = new ClassPathScanningCandidateComponentProvider(false);
             // AbstractEntity, niet abstract
-//          entityProvider.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
+          entityProvider.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
             for (String packageName : basePackages) {
                 Set<BeanDefinition> beanDefs = entityProvider.findCandidateComponents(packageName);
                 for (BeanDefinition beanDef : beanDefs) {
