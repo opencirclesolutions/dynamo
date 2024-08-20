@@ -4280,7 +4280,7 @@ can be used to enter a search term. Entering a search term of 3 or more
 characters will lead to a search request being carried out based on the
 provided property.
 
-==== Post processing the form and input validations
+==== Post-processing the form and input validations
 
 This works in the same way as for the *GenericForm*
 
@@ -4338,6 +4338,118 @@ the popup dialog)
 * QueryType
 * PostProcessInputForm
 * AdditionalValidation
+
+=== PDF Viewer
+
+The Dynamo framework provides a convenient component for viewing PDF documents. The source
+document can be provided as either an external URL, an internal URL, or a reference to the entity model.
+
+IN order to view a PDF file that is stored in a field on an entity, use the following set-up
+
+[source,angular17html]
+--
+  <app-pdf-viewer
+    [mode]="mode"
+    [entityId]="2"
+    entityName="Gift"
+    attributeName="logo.image"
+  ></app-pdf-viewer>
+--
+
+With the "mode" pointing to *PdfViewerMode.MODEL*. This will render a PDF file stored in the "logo.image"
+field of the "Gift" entity with primary key 2
+
+To refer to an internal URL, use the following:
+
+[source,angular17html]
+--
+  <app-pdf-viewer
+    [mode]="mode"
+    fileName="report.pdf"
+  ></app-pdf-viewer>
+--
+
+With the "mode" pointing to *PdfViewerMode.INTERNAL_URL*. This will render a PDF file named "report.pdf"
+that is retrieved from the back-end.
+
+For this to work, the back-end should provide a REST endpoint mapped to */pdf* that returns a response
+entity containing the byte representation of the file
+
+[source,java]
+--
+@RestController
+@RequestMapping(value = "/pdf")
+@Slf4j
+@RequiredArgsConstructor
+@CrossOrigin
+public class PdfController {
+
+    @GetMapping(value = "/{fileName}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<Resource> getRaw(@PathVariable("fileName") String fileName) throws IOException {
+
+        ClassPathResource cp = new ClassPathResource(fileName);
+        byte[] bytes = cp.getContentAsByteArray();
+
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=%s".formatted(fileName))
+                .contentLength(bytes.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+}
+--
+
+Finally, to render a PFD file found at external URL the following can be used:
+
+[source,angular17html]
+--
+  <app-pdf-viewer
+    [mode]="mode"
+    externalUrl="http://www.somesite.com/report.pdf"
+  ></app-pdf-viewer>
+--
+
+With the "mode" pointing to *PdfViewerMode.EXTERNAL_URL*. This will render the PDF file found at the external URL
+
+=== PDF Viewer Dialog
+
+Additionally, it is also possible to use the PDF viewer inside a popup-dialog. In order to use this
+component, include the following in your HTML file:
+
+[source,angular17html]
+--
+  <ng-template #popupDialogContainerRef></ng-template>
+  <div class="btn-group" role="group">
+    <button type="submit" class="btn btn-primary m-1" (click)="showDialog()">
+      Open Dialog
+    </button>
+  </div>
+--
+
+Then, in the typescript file, include the following:
+
+[source,typescript]
+--
+  @ViewChild('popupDialogContainerRef', { read: ViewContainerRef })
+  vcr!: ViewContainerRef;
+
+  showDialog() {
+    let componentRef = this.vcr!.createComponent(PdfViewerDialogComponent);
+
+    componentRef.instance.mode = PdfViewerMode.MODEL
+    componentRef.instance.attributeName = 'logo.image'
+    componentRef.instance.entityId = 2
+    componentRef.instance.entityName = 'Gift'
+    componentRef.instance.showDialog();
+  }
+--
+
+In this code, we create a PdfViewerDialogComponent which is simply a wrapper around the *app-pdf-viewer*
+component, and use the "showDialog()" method to open it.
+
+The PdfViewerDialogComponent supports the same modes (and associated attributes) as the *app-pdf-viewer*
 
 == Additional Functionality
 
