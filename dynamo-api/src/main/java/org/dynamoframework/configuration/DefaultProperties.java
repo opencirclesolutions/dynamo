@@ -37,8 +37,10 @@ public interface DefaultProperties {
 
     String getTimeFormat();
 
-    boolean isPromptValue();
+    boolean isUsePromptValue();
 
     boolean isTrimSpaces();
+
+    String getAiService();
 }
 

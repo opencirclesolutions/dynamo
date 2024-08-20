@@ -122,12 +122,17 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
         /**
          * Indicates whether to use the display name as the input prompt by default
          */
-        private boolean promptValue = true;
+        private boolean usePromptValue = true;
 
         /**
          * Whether to trim white space for text inputs
          */
         private boolean trimSpaces = false;
+
+        /**
+         * The default AI service
+         */
+        private String aiService;
 
     }
 
@@ -178,6 +183,102 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
         private boolean thousandsGrouping = false;
     }
 
+    private OpenAiProperties openai = new OpenAiConfigurationProperties();
+
+    @Data
+    public static class OpenAiConfigurationProperties implements Serializable, OpenAiProperties {
+        @Serial
+        private static final long serialVersionUID = 4426516280121454055L;
+        /**
+         * Enable OpenAI
+         */
+        private boolean enabled = false;
+        /**
+         * The OpenAI API key
+         */
+        private String apiKey;
+        /**
+         * The model to use
+         */
+        private String model = "gpt-4-turbo";
+        /**
+         * Maximum number of tokens
+         */
+        private Integer maxTokens = 4096;
+
+    }
+
+    private OllamaProperties ollama = new OllamaConfigurationProperties();
+
+    @Data
+    public static class OllamaConfigurationProperties implements Serializable, OllamaProperties {
+
+        private static final long serialVersionUID = -2357577501146838042L;
+        /**
+         * Enable Ollama
+         */
+        private boolean enabled = false;
+        /**
+         * Ollama URL
+         */
+        private String url;
+        /**
+         * The model to use
+         */
+        private String model = "llama3";
+    }
+
+    private VertexAiProperties vertexai = new VertexAiConfigurationProperties();
+
+    @Data
+    public static class VertexAiConfigurationProperties implements Serializable, VertexAiProperties {
+        @Serial
+        private static final long serialVersionUID = -1404865335552095931L;
+        /**
+         * Enable VertexAI
+         */
+        private boolean enabled = false;
+        /**
+         * The project id
+         */
+        private String projectId;
+        /**
+         * The region of the project
+         */
+        private String projectRegion = "europe-west1";
+        /**
+         * The model to use
+         */
+        private String model = "gemini-1.5-flash-preview-0514";
+    }
+
+    private BedrockProperties bedrock = new BedrockConfigurationProperties();
+
+    @Data
+    public static class BedrockConfigurationProperties implements Serializable, BedrockProperties {
+        @Serial
+        private static final long serialVersionUID = -6324259015491446578L;
+        /**
+         * Enable Bedrock
+         */
+        private boolean enabled = false;
+        /**
+         * Access key
+         */
+        private String accessKey;
+        /**
+         * Access secret
+         */
+        private String accessSecret;
+        /**
+         * Model id
+         */
+        private String modelId;
+        /**
+         * Region
+         */
+        private String region;
+    }
 
     /**
      * Class name for the service locator (override to create a different service

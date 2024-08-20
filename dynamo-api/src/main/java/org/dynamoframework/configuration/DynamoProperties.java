@@ -8,6 +8,11 @@ public interface DynamoProperties {
 
     CsvProperties getCsv();
 
+    OpenAiProperties getOpenai();
+    OllamaProperties getOllama();
+    VertexAiProperties getVertexai();
+    BedrockProperties getBedrock();
+
     String getServiceLocatorClassName();
 
     String getUnaccentFunctionName();

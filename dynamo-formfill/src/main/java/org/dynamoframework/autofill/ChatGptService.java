@@ -15,11 +15,13 @@ package org.dynamoframework.autofill;
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.openai.OpenAiChatClient;
 import org.springframework.ai.openai.OpenAiChatOptions;
 import org.springframework.ai.openai.api.OpenAiApi;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -34,22 +36,16 @@ public class ChatGptService implements AIService {
 
     private OpenAiChatClient client;
 
-    @Value("${dynamoframework.openai.api.key}")
-    private String apiKey;
-
-    @Value("${dynamoframework.openai.model}")
-    private String model;
-
-    @Value("${dynamoframework.openai.maxtokens}")
-    private Integer maxTokens;
+    @Autowired
+    private DynamoProperties dynamoProperties;
 
     @PostConstruct
     public void init() {
-        var openAiApi = new OpenAiApi(apiKey);
+        var openAiApi = new OpenAiApi(dynamoProperties.getOpenai().getApiKey());
         client = new OpenAiChatClient(openAiApi,
                 OpenAiChatOptions.builder()
-                        .withModel(model)
-                        .withMaxTokens(maxTokens)
+                        .withModel(dynamoProperties.getOpenai().getModel())
+                        .withMaxTokens(dynamoProperties.getOpenai().getMaxTokens())
                         .build());
     }
 

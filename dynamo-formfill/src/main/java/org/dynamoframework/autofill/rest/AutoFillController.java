@@ -37,7 +37,7 @@ import java.util.List;
 @CrossOrigin
 public class AutoFillController extends BaseController {
 
-    @Value("${ocs.ai.default.service:CHAT_GPT}")
+    @Value("${dynamo.defaults.ai-service:CHAT_GPT}")
     private String defaultValue;
 
     @Autowired

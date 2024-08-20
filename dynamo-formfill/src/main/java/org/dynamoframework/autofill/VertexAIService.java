@@ -17,10 +17,12 @@ import com.google.cloud.vertexai.VertexAI;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatClient;
 import org.springframework.ai.vertexai.gemini.VertexAiGeminiChatOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -34,24 +36,19 @@ import java.util.Map;
 @ConditionalOnProperty(value = "dynamoframework.vertexai.enabled", havingValue = "true")
 public class VertexAIService implements AIService {
 
-    @Value("${ocs.vertexai.project.id}")
-    private String projectId;
 
-    @Value("${ocs.vertexai.project.region}")
-    private String region;
-
-    @Value("${ocs.vertexai.model}")
-    private String model;
+    @Autowired
+    private DynamoProperties dynamoProperties;
 
     private VertexAiGeminiChatClient client;
 
     @PostConstruct
     public void init() {
-        VertexAI vertexApi = new VertexAI(projectId, region);
+        VertexAI vertexApi = new VertexAI(dynamoProperties.getVertexai().getProjectId(), dynamoProperties.getVertexai().getProjectRegion());
         client = new VertexAiGeminiChatClient(vertexApi,
                 VertexAiGeminiChatOptions.builder()
                         .withTemperature(0.4f)
-                        .withModel(model)
+                        .withModel(dynamoProperties.getVertexai().getModel())
                         .build());
     }
 

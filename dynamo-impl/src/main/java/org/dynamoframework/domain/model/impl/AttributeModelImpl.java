@@ -20,7 +20,6 @@ import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.domain.model.*;
 import org.dynamoframework.domain.model.annotation.SearchMode;
 import org.dynamoframework.utils.NumberUtils;
-import org.dynamoframework.utils.SystemPropertyUtils;
 
 import java.math.BigDecimal;
 import java.util.*;
@@ -304,7 +303,7 @@ public class AttributeModelImpl implements AttributeModel {
 
     @Override
     public String getPrompt(Locale locale) {
-        if (!dynamoProperties.getDefaults().isPromptValue()) {
+        if (!dynamoProperties.getDefaults().isUsePromptValue()) {
             return null;
         }
 

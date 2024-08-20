@@ -16,11 +16,13 @@ package org.dynamoframework.autofill;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
 import org.springframework.ai.ollama.OllamaChatClient;
 import org.springframework.ai.ollama.api.OllamaApi;
 import org.springframework.ai.ollama.api.OllamaOptions;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -36,18 +38,15 @@ public class OllamaService implements AIService {
 
     private OllamaChatClient client;
 
-    @Value("${ocs.ollama.model}")
-    private String model;
-
-    @Value("${ocs.ollama.url}")
-    private String url;
+    @Autowired
+    private DynamoProperties dynamoProperties;
 
     @PostConstruct
     public void init() {
-        var ollamaApi = new OllamaApi(url);
+        var ollamaApi = new OllamaApi(dynamoProperties.getOllama().getUrl());
         client = new OllamaChatClient(ollamaApi)
                 .withDefaultOptions(OllamaOptions.create()
-                        .withModel(model)
+                        .withModel(dynamoProperties.getOllama().getModel())
                         .withTemperature(0.9f));
     }
 

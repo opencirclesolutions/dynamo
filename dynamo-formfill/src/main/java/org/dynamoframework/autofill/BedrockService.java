@@ -17,11 +17,13 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.springframework.ai.bedrock.anthropic.AnthropicChatOptions;
 import org.springframework.ai.bedrock.anthropic.BedrockAnthropicChatClient;
 import org.springframework.ai.bedrock.anthropic.api.AnthropicChatBedrockApi;
 import org.springframework.ai.chat.ChatResponse;
 import org.springframework.ai.chat.prompt.Prompt;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Service;
@@ -37,25 +39,16 @@ import java.util.Map;
 @ConditionalOnProperty(value = "dynamoframework.bedrock.enabled", havingValue = "true")
 public class BedrockService implements AIService {
 
-    @Value("${ocs.bedrock.access.key}")
-    private String key;
-
-    @Value("${ocs.bedrock.access.secret}")
-    private String secret;
-
-    @Value("${ocs.bedrock.model.id}")
-    private String modelId;
-
-    @Value("${ocs.bedrock.region}")
-    private String region;
+    @Autowired
+    private DynamoProperties dynamoProperties;
 
     private BedrockAnthropicChatClient client;
 
     @PostConstruct
     public void init() {
-        AnthropicChatBedrockApi api = new AnthropicChatBedrockApi(modelId,
-                StaticCredentialsProvider.create(AwsBasicCredentials.create(key, secret)), region, new ObjectMapper());
-        client = new BedrockAnthropicChatClient(api,
+        AnthropicChatBedrockApi api = new AnthropicChatBedrockApi(dynamoProperties.getBedrock().getModelId(),
+                StaticCredentialsProvider.create(AwsBasicCredentials.create(dynamoProperties.getBedrock().getAccessKey(), dynamoProperties.getBedrock().getAccessSecret())), dynamoProperties.getBedrock().getRegion(), new ObjectMapper());
+        this.client = new BedrockAnthropicChatClient(api,
                 AnthropicChatOptions.builder()
                         .withAnthropicVersion(AnthropicChatBedrockApi.DEFAULT_ANTHROPIC_VERSION)
                         .withTemperature(1.0f)
