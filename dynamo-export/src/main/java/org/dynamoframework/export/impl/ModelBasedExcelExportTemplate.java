@@ -17,6 +17,7 @@ import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.util.LocaleUtil;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
 import org.dynamoframework.domain.AbstractEntity;
@@ -59,11 +60,11 @@ public class ModelBasedExcelExportTemplate<ID extends Serializable, T extends Ab
      * @param locale          the locale to use
      * @param joins           fetch joins to use when retrieving data
      */
-    public ModelBasedExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode mode,
+    public ModelBasedExcelExportTemplate(DynamoProperties dynamoProperties, BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode mode,
                                          List<SortOrder> sortOrders, Filter filter, String title,
                                          Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator,
                                          Locale locale, FetchJoinInformation... joins) {
-        super(service, entityModel, mode, sortOrders, filter, title, customGenerator, locale, joins);
+        super(dynamoProperties, service, entityModel, mode, sortOrders, filter, title, customGenerator, locale, joins);
     }
 
     @Override

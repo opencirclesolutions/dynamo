@@ -2,6 +2,8 @@ package org.dynamoframework.utils;
 
 import lombok.Getter;
 import lombok.Setter;
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.domain.AbstractEntity;
 import org.dynamoframework.domain.TestEntity;
 import org.dynamoframework.domain.model.AttributeModel;
@@ -15,9 +17,10 @@ import org.dynamoframework.test.BaseMockitoTest;
 import org.dynamoframework.test.MockUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
@@ -28,12 +31,14 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-@ExtendWith(SpringExtension.class)
+@Import({EntityModelFactoryImpl.class, DynamoPropertiesHolder.class})
+@EnableConfigurationProperties(value = DynamoConfigurationProperties.class)
 public class FormatUtilsTest extends BaseMockitoTest {
 
     private static final Locale LOCALE = new Locale.Builder().setLanguage("nl").build();
 
-    private static EntityModelFactory factory = new EntityModelFactoryImpl();
+    @Autowired
+    private  EntityModelFactory factory;// = new EntityModelFactoryImpl();
 
     @Mock
     private static MessageService messageService;

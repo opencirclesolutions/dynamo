@@ -16,6 +16,7 @@ package org.dynamoframework.domain.model.impl;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
 import lombok.ToString;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.domain.model.*;
 import org.dynamoframework.domain.model.annotation.SearchMode;
 import org.dynamoframework.utils.NumberUtils;
@@ -35,6 +36,8 @@ import java.util.concurrent.ConcurrentHashMap;
 @EqualsAndHashCode(callSuper = false, of = {"entityModel", "name"})
 @ToString
 public class AttributeModelImpl implements AttributeModel {
+
+    private final DynamoProperties dynamoProperties;
 
     private Set<String> allowedExtensions = new HashSet<>();
 
@@ -203,6 +206,10 @@ public class AttributeModelImpl implements AttributeModel {
 
     private boolean setterMethod;
 
+    public AttributeModelImpl(DynamoProperties dynamoProperties) {
+        this.dynamoProperties = dynamoProperties;
+    }
+
     @Override
     public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
         this.cascadeAttributes.put(cascadeTo, filterPath);
@@ -270,7 +277,7 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public String getFalseRepresentation(Locale locale) {
         return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,
-                SystemPropertyUtils.getDefaultFalseRepresentation(locale), defaultFalseRepresentation);
+                dynamoProperties.getDefaults().getFalseRepresentations().get(locale.toString()), defaultFalseRepresentation);
     }
 
     @Override
@@ -297,7 +304,7 @@ public class AttributeModelImpl implements AttributeModel {
 
     @Override
     public String getPrompt(Locale locale) {
-        if (!SystemPropertyUtils.useDefaultPromptValue()) {
+        if (!dynamoProperties.getDefaults().isPromptValue()) {
             return null;
         }
 
@@ -309,7 +316,7 @@ public class AttributeModelImpl implements AttributeModel {
     @Override
     public String getTrueRepresentation(Locale locale) {
         return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,
-                SystemPropertyUtils.getDefaultTrueRepresentation(locale), defaultTrueRepresentation);
+                dynamoProperties.getDefaults().getTrueRepresentations().get(locale.toString()), defaultTrueRepresentation);
     }
 
     @Override

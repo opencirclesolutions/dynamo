@@ -16,7 +16,7 @@ package org.dynamoframework.importer.template;
 import lombok.extern.slf4j.Slf4j;
 import org.dynamoframework.exception.OCSImportException;
 import org.dynamoframework.service.MessageService;
-import org.dynamoframework.utils.SystemPropertyUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -131,7 +131,7 @@ public abstract class TextImportTemplate<ID, T> {
 				results.add(t);
 			} else {
 				errors.add(messageService.getMessage("dynamoframework.duplicate.row",
-						SystemPropertyUtils.getDefaultLocale(), i + 1, key));
+						DynamoPropertiesHolder.getDynamoProperties().getDefaults().getLocale(), i + 1, key));
 			}
 		} else {
 			results.add(t);

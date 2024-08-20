@@ -13,6 +13,8 @@
  */
 package org.dynamoframework.utils;
 
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.domain.TestEntity;
 import org.dynamoframework.domain.TestEntity2;
 import org.dynamoframework.domain.model.EntityModel;
@@ -26,6 +28,9 @@ import org.dynamoframework.test.MockUtil;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
@@ -36,6 +41,8 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.mockito.Mockito.when;
 
+@Import({EntityModelFactoryImpl.class, DynamoPropertiesHolder.class})
+@EnableConfigurationProperties(value = DynamoConfigurationProperties.class)
 public class EntityModelUtilsTest extends BaseMockitoTest {
 
     @Mock
@@ -44,7 +51,8 @@ public class EntityModelUtilsTest extends BaseMockitoTest {
     @Mock
     private MessageService messageService = new MessageServiceImpl();
 
-    private final EntityModelFactory factory = new EntityModelFactoryImpl();
+    @Autowired
+    private  EntityModelFactory factory;// = new EntityModelFactoryImpl();
 
     @BeforeEach
     void beforeEach() {

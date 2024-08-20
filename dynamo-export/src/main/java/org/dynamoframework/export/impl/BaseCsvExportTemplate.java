@@ -13,6 +13,7 @@
  */
 package org.dynamoframework.export.impl;
 
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
 import org.dynamoframework.domain.AbstractEntity;
@@ -43,9 +44,9 @@ public abstract class BaseCsvExportTemplate<ID extends Serializable, T extends A
      * @param sortOrders  the sort order
      * @param joins       fetch joins to apply when querying the database
      */
-    protected BaseCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+    protected BaseCsvExportTemplate(DynamoProperties dynamoProperties, BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
                                     List<SortOrder> sortOrders, Filter filter, FetchJoinInformation... joins) {
-        super(service, entityModel, exportMode, sortOrders, filter, "", joins);
+        super(dynamoProperties, service, entityModel, exportMode, sortOrders, filter, "", joins);
     }
 
 }

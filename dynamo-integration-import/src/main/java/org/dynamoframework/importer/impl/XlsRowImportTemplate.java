@@ -18,7 +18,7 @@ import org.apache.poi.ss.usermodel.Workbook;
 import org.dynamoframework.exception.OCSImportException;
 import org.dynamoframework.importer.dto.AbstractDTO;
 import org.dynamoframework.service.MessageService;
-import org.dynamoframework.utils.SystemPropertyUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -157,7 +157,7 @@ public abstract class XlsRowImportTemplate<ID, T extends AbstractDTO> {
                                     results.add(entity);
                                 } else {
                                     errors.add(messageService.getMessage("dynamoframework.duplicate.row",
-                                           SystemPropertyUtils.getDefaultLocale(), i + 1, key));
+                                            DynamoPropertiesHolder.getDynamoProperties().getDefaults().getLocale(), i + 1, key));
                                 }
                             } else {
                                 results.add(entity);

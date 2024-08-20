@@ -19,6 +19,7 @@ import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.constants.DynamoConstants;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.JoinType;
@@ -33,7 +34,6 @@ import org.dynamoframework.service.ServiceLocatorFactory;
 import org.dynamoframework.utils.ClassUtils;
 import org.dynamoframework.utils.DateUtils;
 import org.dynamoframework.utils.NumberUtils;
-import org.dynamoframework.utils.SystemPropertyUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -76,6 +76,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
     @Autowired(required = false)
     private MessageService messageService;
+
+    @Autowired
+    private DynamoProperties dynamoProperties;
 
     private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
@@ -320,7 +323,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             return result;
         }
 
-        AttributeModelImpl model = new AttributeModelImpl();
+        AttributeModelImpl model = new AttributeModelImpl(dynamoProperties);
         model.setEntityModel(entityModel);
 
         setAttributeModelDefaults(descriptor, entityModel, parentClass, prefix, fieldName, model);
@@ -341,8 +344,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         model.setEditableType(isIdOrNestedId ? EditableType.READ_ONLY : EditableType.EDITABLE);
 
         if (getMessageService() != null) {
-            model.setDefaultTrueRepresentation(SystemPropertyUtils.getDefaultTrueRepresentation());
-            model.setDefaultFalseRepresentation(SystemPropertyUtils.getDefaultFalseRepresentation());
+            model.setDefaultTrueRepresentation(dynamoProperties.getDefaults().getTrueRepresentation());
+            model.setDefaultFalseRepresentation(dynamoProperties.getDefaults().getFalseRepresentation());
         }
 
         AttributeSelectMode defaultMode = AttributeType.DETAIL.equals(model.getAttributeType())
@@ -352,9 +355,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         model.setSelectMode(defaultMode);
         model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);
         model.setSearchSelectMode(defaultMode);
-        model.setBooleanFieldMode(SystemPropertyUtils.getDefaultBooleanFieldMode());
-        model.setElementCollectionMode(SystemPropertyUtils.getDefaultElementCollectionMode());
-        model.setEnumFieldMode(SystemPropertyUtils.getDefaultEnumFieldMode());
+        model.setBooleanFieldMode(dynamoProperties.getDefaults().getBooleanFieldMode());
+        model.setElementCollectionMode(dynamoProperties.getDefaults().getElementCollectionMode());
+        model.setEnumFieldMode(dynamoProperties.getDefaults().getEnumFieldMode());
 
         Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
                 Email.class);
@@ -467,11 +470,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private <T> EntityModelImpl<T> constructModelInner(Class<T> entityClass, String reference) {
 
-        String displayName = org.dynamoframework.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName(),
-                SystemPropertyUtils.isCapitalizeWords());
+        String displayName = org.dynamoframework.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName(), dynamoProperties.isCapitalizePropertyNames());
 
         EntityModelImpl.EntityModelImplBuilder<T> builder = EntityModelImpl.builder();
-        builder.reference(reference).nestingDepth(SystemPropertyUtils.getDefaultNestingDepth())
+        builder.reference(reference).nestingDepth(dynamoProperties.getDefaults().getNestingDepth())
                 .defaultDescription(displayName).defaultDisplayName(displayName)
                 .defaultDisplayNamePlural(displayName + PLURAL_POSTFIX).entityClass(entityClass);
 
@@ -862,13 +864,13 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     protected String determineDefaultDisplayFormat(Class<?> type) {
         String format = null;
         if (LocalDate.class.isAssignableFrom(type)) {
-            format = SystemPropertyUtils.getDefaultDateFormat();
+            format = dynamoProperties.getDefaults().getDateFormat();
         } else if (LocalDateTime.class.isAssignableFrom(type)) {
-            format = SystemPropertyUtils.getDefaultDateTimeFormat();
+            format = dynamoProperties.getDefaults().getDateTimeFormat();
         } else if (LocalTime.class.isAssignableFrom(type)) {
-            format = SystemPropertyUtils.getDefaultTimeFormat();
+            format = dynamoProperties.getDefaults().getTimeFormat();
         } else if (Instant.class.isAssignableFrom(type)) {
-            format = SystemPropertyUtils.getDefaultDateTimeFormat();
+            format = dynamoProperties.getDefaults().getDateTimeFormat();
         }
         return format;
     }
@@ -965,7 +967,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
     }
 
     protected Locale getLocale() {
-        return SystemPropertyUtils.getDefaultLocale();
+        return dynamoProperties.getDefaults().getLocale();
     }
 
     public MessageService getMessageService() {
@@ -1274,8 +1276,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
      */
     private <T> void setAttributeModelDefaults(PropertyDescriptor descriptor, EntityModel<T> entityModel,
                                                Class<?> parentClass, String prefix, String fieldName, AttributeModelImpl model) {
-        String displayName = org.dynamoframework.utils.StringUtils.propertyIdToHumanFriendly(fieldName,
-                SystemPropertyUtils.isCapitalizeWords());
+        String displayName = org.dynamoframework.utils.StringUtils.propertyIdToHumanFriendly(fieldName, dynamoProperties.isCapitalizePropertyNames());
         model.setDefaultDisplayName(displayName);
         model.setHasSetterMethod(descriptor.getWriteMethod() != null);
         model.setDefaultDescription(displayName);
@@ -1285,15 +1286,15 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
         model.setImage(false);
         model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);
         model.setSortable(true);
-        model.setPrecision(SystemPropertyUtils.getDefaultDecimalPrecision());
-        model.setSearchCaseSensitive(SystemPropertyUtils.getDefaultSearchCaseSensitive());
-        model.setSearchPrefixOnly(SystemPropertyUtils.getDefaultSearchPrefixOnly());
+        model.setPrecision(dynamoProperties.getDefaults().getDecimalPrecision());
+        model.setSearchCaseSensitive(dynamoProperties.getDefaults().isSearchCaseSensitive());
+        model.setSearchPrefixOnly(dynamoProperties.getDefaults().isSearchPrefixOnly());
         model.setUrl(false);
-        model.setTrimSpaces(SystemPropertyUtils.isDefaultTrimSpaces());
+        model.setTrimSpaces(dynamoProperties.getDefaults().isTrimSpaces());
         model.setType(descriptor.getPropertyType());
         model.setDateType(determineDateType(model.getType()));
         model.setDefaultDisplayFormat(determineDefaultDisplayFormat(model.getType()));
-        model.setNumberFieldMode(SystemPropertyUtils.getDefaultNumberFieldMode());
+        model.setNumberFieldMode(dynamoProperties.getDefaults().getNumberFieldMode());
         model.setNumberFieldStep(1);
         model.setLookupQueryType(QueryType.ID_BASED);
 
@@ -1546,7 +1547,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             Object object;
             if (search && model.isSearchDateOnly()) {
                 object = DateUtils.createJava8Date(LocalDate.class, defaultValue,
-                        SystemPropertyUtils.getDefaultDateFormat());
+                        dynamoProperties.getDefaults().getDateFormat());
             } else {
                 object = DateUtils.createJava8Date(model.getType(), defaultValue,
                         DateUtils.getDefaultDisplayFormat(model.getType()));

@@ -54,7 +54,7 @@
 	<distributionManagement>
 		<snapshotRepository>
 			<id>gitlab-maven-dynamo</id>
-			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/307/packages/maven</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
@@ -104,28 +104,10 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot</artifactId>
+				<artifactId>spring-boot-dependencies</artifactId>
 				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-autoconfigure</artifactId>
-				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-logging</artifactId>
-				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-data-jpa</artifactId>
-				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-validation</artifactId>
-				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.persistence</groupId>

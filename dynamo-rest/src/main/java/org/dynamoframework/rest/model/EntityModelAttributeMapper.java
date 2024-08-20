@@ -39,8 +39,7 @@ public class EntityModelAttributeMapper {
 
     public AttributeModelResponse mapAttributeModel(AttributeModel model, Set<Locale> locales) {
 
-        AttributeModelResponse.AttributeModelResponseBuilder builder = AttributeModelResponse
-                .builder();
+        AttributeModelResponse.AttributeModelResponseBuilder builder = AttributeModelResponse.builder();
 
         AttributeModelType type = mapType(model);
         builder.attributeModelDataType(type);

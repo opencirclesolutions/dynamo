@@ -14,6 +14,7 @@
 package org.dynamoframework.export.impl;
 
 import org.apache.poi.util.LocaleUtil;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
 import org.dynamoframework.domain.AbstractEntity;
@@ -24,6 +25,7 @@ import org.dynamoframework.export.type.ExportMode;
 import org.dynamoframework.filter.Filter;
 import org.dynamoframework.service.BaseService;
 import org.dynamoframework.service.ServiceLocatorFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,6 +42,9 @@ import java.util.function.Supplier;
 @Service
 public class ExportServiceImpl implements ExportService {
 
+    @Autowired
+    private DynamoProperties dynamoProperties;
+
     @Override
     @Transactional
     @SuppressWarnings("unchecked")
@@ -50,7 +55,7 @@ public class ExportServiceImpl implements ExportService {
         BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
                 .getServiceForEntity(entityModel.getEntityClass());
 
-        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(service, entityModel, mode,
+        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(dynamoProperties, service, entityModel, mode,
                 sortOrders, filter, locale, joins);
         return template.process();
     }
@@ -60,7 +65,7 @@ public class ExportServiceImpl implements ExportService {
     public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportCsvFixed(EntityModel<T> entityModel,
                                                                                          ExportMode mode, List<T> items,
                                                                                          Locale locale) {
-        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(null, entityModel, mode, null,
+        ModelBasedCsvExportTemplate<ID, T> template = new ModelBasedCsvExportTemplate<>(dynamoProperties, null, entityModel, mode, null,
                 null, new Locale.Builder().setLanguage("nl").build());
         return template.processFixed(items);
     }
@@ -73,7 +78,7 @@ public class ExportServiceImpl implements ExportService {
                                                                                       Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, Locale locale, FetchJoinInformation... joins) {
         BaseService<ID, T> service = (BaseService<ID, T>) ServiceLocatorFactory.getServiceLocator()
                 .getServiceForEntity(entityModel.getEntityClass());
-        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(service, entityModel, mode,
+        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(dynamoProperties, service, entityModel, mode,
                 sortOrders, filter,
                 entityModel.getDisplayNamePlural(LocaleUtil.getUserLocale()), customGenerator, locale, joins);
         return template.process();
@@ -84,7 +89,7 @@ public class ExportServiceImpl implements ExportService {
     public <ID extends Serializable, T extends AbstractEntity<ID>> byte[] exportExcelFixed(EntityModel<T> entityModel,
                                                                                            ExportMode mode, Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator, List<T> items,
                                                                                            Locale locale) {
-        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(null, entityModel, mode,
+        ModelBasedExcelExportTemplate<ID, T> template = new ModelBasedExcelExportTemplate<>(dynamoProperties, null, entityModel, mode,
                 null, null, entityModel.getDisplayNamePlural(LocaleUtil.getUserLocale()), customGenerator, locale);
         return template.processFixed(items);
     }

@@ -15,6 +15,7 @@ package org.dynamoframework.utils;
 
 import lombok.experimental.UtilityClass;
 import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.exception.OCSRuntimeException;
 
 import java.time.*;
@@ -417,13 +418,13 @@ public final class DateUtils {
      */
     public static String getDefaultDisplayFormat(Class<?> clazz) {
         if (LocalDate.class.equals(clazz)) {
-           return SystemPropertyUtils.getDefaultDateFormat();
+           return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat();
         } else if (LocalDateTime.class.equals(clazz)) {
-            return SystemPropertyUtils.getDefaultDateTimeFormat();
+            return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateTimeFormat();
         } else if (LocalTime.class.equals(clazz)) {
-            return SystemPropertyUtils.getDefaultTimeFormat();
+            return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getTimeFormat();
         } else if (Instant.class.equals(clazz)) {
-            return SystemPropertyUtils.getDefaultDateTimeFormat();
+            return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateTimeFormat();
         }
         return null;
     }

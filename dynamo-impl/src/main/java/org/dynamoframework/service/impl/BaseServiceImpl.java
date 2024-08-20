@@ -20,6 +20,7 @@ import jakarta.validation.constraints.AssertFalse;
 import jakarta.validation.constraints.AssertTrue;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.dao.*;
 import org.dynamoframework.domain.AbstractEntity;
 import org.dynamoframework.exception.OCSNonUniqueException;
@@ -46,6 +47,9 @@ import java.util.Set;
  */
 @Slf4j
 public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implements BaseService<ID, T> {
+
+    @Autowired
+    private DynamoProperties dynamoProperties;
 
     @Autowired
     private ValidatorFactory factory;
@@ -242,8 +246,7 @@ public abstract class BaseServiceImpl<ID, T extends AbstractEntity<ID>> implemen
         }
 
         if (identicalEntityExists(entity)) {
-            throw new OCSNonUniqueException(messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique",
-                    SystemPropertyUtils.getDefaultLocale()));
+            throw new OCSNonUniqueException(messageService.getMessage(getEntityClass().getSimpleName() + ".not.unique", dynamoProperties.getDefaults().getLocale()));
         }
     }
 

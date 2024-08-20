@@ -16,7 +16,7 @@ package org.dynamoframework.importer.impl;
 import org.apache.commons.lang3.StringUtils;
 import org.dynamoframework.exception.OCSImportException;
 import org.dynamoframework.importer.ImportField;
-import org.dynamoframework.utils.SystemPropertyUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -64,7 +64,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	 */
 	protected LocalDate getDateValue(String unit) {
         if (!StringUtils.isEmpty(unit)) {
-			return LocalDate.parse(unit, DateTimeFormatter.ofPattern(SystemPropertyUtils.getDefaultDateFormat()));
+			return LocalDate.parse(unit, DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));
 
 		}
 		return null;

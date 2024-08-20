@@ -20,6 +20,7 @@ import jakarta.persistence.criteria.*;
 import jakarta.persistence.metamodel.Attribute;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.constants.DynamoConstants;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
@@ -27,6 +28,8 @@ import org.dynamoframework.dao.SortOrders;
 import org.dynamoframework.filter.*;
 import org.dynamoframework.utils.SystemPropertyUtils;
 import org.hibernate.query.sqm.tree.domain.SqmEntityValuedSimplePath;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -37,7 +40,15 @@ import java.util.Map.Entry;
  *         API
  */
 @Slf4j
+@Component
 public final class JpaQueryBuilder {
+
+	static private DynamoProperties dynamoProperties;
+
+	@Autowired
+	public void init(DynamoProperties dynamoProperties) {
+		JpaQueryBuilder.dynamoProperties = dynamoProperties;
+	}
 
 	/**
 	 * Adds fetch join information to a query root
@@ -168,7 +179,7 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createCaseInsensitiveLikePredicate(CriteriaBuilder builder, Root<?> root, Like like) {
-		String unaccentName = SystemPropertyUtils.getUnAccentFunctionName();
+		String unaccentName = dynamoProperties.getUnaccentFunctionName();
 		if (!StringUtils.isEmpty(unaccentName)) {
 			return builder.like(
 					builder.function(unaccentName, String.class,
@@ -450,7 +461,7 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private static Predicate createLikePredicate(CriteriaBuilder builder, Root<?> root, Like like) {
-		String unaccentName = SystemPropertyUtils.getUnAccentFunctionName();
+		String unaccentName = dynamoProperties.getUnaccentFunctionName();
 		if (!StringUtils.isEmpty(unaccentName)) {
 			return builder.like(
 					builder.function(unaccentName, String.class, getPropertyPath(root, like.getPropertyId(), true)),

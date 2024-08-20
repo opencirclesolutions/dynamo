@@ -13,7 +13,10 @@
  */
 package org.dynamoframework.test;
 
+import org.dynamoframework.configuration.DynamoProperties;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.text.DecimalFormat;

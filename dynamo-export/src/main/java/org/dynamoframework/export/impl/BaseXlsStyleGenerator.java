@@ -15,12 +15,13 @@ package org.dynamoframework.export.impl;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.domain.AbstractEntity;
 import org.dynamoframework.domain.model.AttributeDateType;
 import org.dynamoframework.domain.model.AttributeModel;
 import org.dynamoframework.export.XlsStyleGenerator;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.utils.NumberUtils;
-import org.dynamoframework.utils.SystemPropertyUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -68,13 +69,14 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
     /**
      * Constructor
      *
-     * @param workbook the Workbook to apply the styles to
+     * @param dynamoProperties
+     * @param workbook         the Workbook to apply the styles to
      */
-    public BaseXlsStyleGenerator(Workbook workbook) {
+    public BaseXlsStyleGenerator(DynamoProperties dynamoProperties, Workbook workbook) {
         this.workbook = workbook;
         DataFormat format = workbook.createDataFormat();
 
-        thousandsGrouping = SystemPropertyUtils.useXlsThousandsGrouping();
+        thousandsGrouping = dynamoProperties.getCsv().isThousandsGrouping();
 
         // create the cell styles only once - this is a huge performance
         // gain!
@@ -107,15 +109,15 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 
         dateStyle = workbook.createCellStyle();
         setBorder(dateStyle, BorderStyle.THIN);
-        dateStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultDateFormat()));
+        dateStyle.setDataFormat(format.getFormat(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));
 
         dateTimeStyle = workbook.createCellStyle();
         setBorder(dateTimeStyle, BorderStyle.THIN);
-        dateTimeStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultDateTimeFormat()));
+        dateTimeStyle.setDataFormat(format.getFormat(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateTimeFormat()));
 
         timeStyle = workbook.createCellStyle();
         setBorder(timeStyle, BorderStyle.THIN);
-        timeStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultTimeFormat()));
+        timeStyle.setDataFormat(format.getFormat(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getTimeFormat()));
     }
 
     /**

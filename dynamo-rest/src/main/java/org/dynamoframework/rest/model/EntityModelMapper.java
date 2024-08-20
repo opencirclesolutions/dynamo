@@ -16,12 +16,12 @@ package org.dynamoframework.rest.model;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.constants.DynamoConstants;
 import org.dynamoframework.domain.model.AttributeModel;
 import org.dynamoframework.domain.model.EntityModel;
 import org.dynamoframework.domain.model.EntityModelAction;
 import org.dynamoframework.service.MessageService;
-import org.dynamoframework.utils.SystemPropertyUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
@@ -38,6 +38,8 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class EntityModelMapper {
 
+    private final DynamoProperties dynamoProperties;
+
     private final MessageService messageService;
 
     private final EntityModelAttributeMapper mapper;
@@ -45,8 +47,7 @@ public class EntityModelMapper {
     public EntityModelResponse mapEntityModel(EntityModel<?> model) {
         Set<Locale> locales = discoverLocales();
         return EntityModelResponse.builder()
-                .attributeModels(model.getAttributeModels().stream().map(am ->
-                        mapper.mapAttributeModel(am, locales)).toList())
+                .attributeModels(model.getAttributeModels().stream().map(am -> mapper.mapAttributeModel(am, locales)).toList())
                 .attributeNamesOrdered(extractAttributeNames(model.getAttributeModels()))
                 .attributeNamesOrderedForGrid(extractAttributeNames(model.getAttributeModelsSortedForGrid()))
                 .attributeNamesOrderedForSearch(extractAttributeNames(model.getAttributeModelsSortedForSearch()))
@@ -185,7 +186,7 @@ public class EntityModelMapper {
         Set<Locale> collect = Arrays.stream(resources).map(res -> extractLocale(res.getFilename()))
                 .filter(Objects::nonNull)
                 .collect(Collectors.toSet());
-        collect.add(SystemPropertyUtils.getDefaultLocale());
+        collect.add(dynamoProperties.getDefaults().getLocale());
         return collect;
     }
 

@@ -20,6 +20,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
 import org.dynamoframework.dao.JoinType;
 import org.dynamoframework.domain.TestEntity;
 import org.dynamoframework.domain.model.*;
@@ -32,10 +33,14 @@ import org.dynamoframework.service.impl.MessageServiceImpl;
 import org.dynamoframework.service.impl.TestEntityServiceImpl;
 import org.dynamoframework.test.BaseMockitoTest;
 import org.dynamoframework.utils.DateUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
 import org.mockito.Mockito;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
 
@@ -52,13 +57,16 @@ import java.util.Set;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
+@Import({EntityModelFactoryImpl.class, DynamoPropertiesHolder.class})
+@EnableConfigurationProperties(value = DynamoConfigurationProperties.class)
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
-	private final EntityModelFactoryImpl factory = new EntityModelFactoryImpl();
+	@Autowired
+	private  EntityModelFactoryImpl factory;// = new EntityModelFactoryImpl();
 
 	private final ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
-	private final MessageService messageService = new MessageServiceImpl();
+	private  MessageService messageService = new MessageServiceImpl();
 
 	private final Locale locale = new Locale.Builder().setLanguage("nl").build();
 
@@ -75,10 +83,6 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		BaseServiceImpl<?, ?> service = new TestEntityServiceImpl();
 		Mockito.when(serviceLocator.getServiceForEntity(TestEntity.class))
 				.thenAnswer(a -> service);
-
-		System.setProperty("dynamoframework.use.default.prompt.value", "true");
-		System.setProperty("dynamoframework.default.date.format", "dd-MM-yyyy");
-		System.setProperty("dynamoframework.default.datetime.format", "dd-MM-yyyy HH:mm:ss");
 
 		source.setBasename("META-INF/entitymodel");
 		ReflectionTestUtils.setField(messageService, "source", source);

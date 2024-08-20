@@ -13,20 +13,28 @@
  */
 package org.dynamoframework.utils;
 
+import jakarta.persistence.Entity;
 import jakarta.validation.constraints.Size;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.exception.OCSRuntimeException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author Bas Rutten
@@ -453,25 +461,58 @@ public final class ClassUtils {
         }
     }
 
+    private static Set<String> basePackages = null;
+    private static Map<String, Class> entityClasses = new HashMap<>();
+
     /**
-     * Translates the name of an entity to the fully qualified class name
+     * Translates the name of an entity to the fully qualified class name. The <code>@EntityScan</code> base packages are searched.
      *
-     * @param entityName the name of the entity
-     * @return the fully qualified class name
+     * @param entityName the name of the entity; the class must be annotated with <code>@Entity</code>
+     * @return the class
      */
     public static Class<?> findClass(String entityName) {
-        String packages = SystemPropertyUtils.getEntityModelPackageNames();
-        Class<?> result = null;
-        String[] packageNames = packages.split(",");
-
-        for (String packageName : packageNames) {
-            try {
-                result = Class.forName("%s.%s".formatted(packageName, entityName));
-            } catch (ClassNotFoundException | NoClassDefFoundError ex) {
-                // ignore
+        if (basePackages == null) {
+            synchronized (ClassUtils.class) {
+                ClassPathScanningCandidateComponentProvider entityScanProvider = new ClassPathScanningCandidateComponentProvider(false);
+                entityScanProvider.addIncludeFilter(new AnnotationTypeFilter(EntityScan.class));
+                basePackages = new HashSet<>();
+                Set<BeanDefinition> beanDefs = entityScanProvider.findCandidateComponents("");
+                for (BeanDefinition beanDef : beanDefs) {
+                    System.out.println(beanDef.getBeanClassName());
+                }
+                for (BeanDefinition bd : beanDefs) {
+                    if (bd instanceof AnnotatedBeanDefinition) {
+                        Map<String, Object> annotAttributeMap = ((AnnotatedBeanDefinition) bd).getMetadata().getAnnotationAttributes(EntityScan.class.getCanonicalName());
+                        Arrays.stream(((String[]) annotAttributeMap.get("basePackages"))).forEach(s -> log.debug("Found basePackage {}", s));
+                        Collections.addAll(basePackages, ((String[]) annotAttributeMap.get("basePackages")));
+                    }
+                }
             }
         }
-        return result;
+        if (entityClasses.containsKey(entityName)) {
+            log.debug("Getting class for {} from cache", entityName);
+            return entityClasses.get(entityName);
+        }
+        synchronized (ClassUtils.class) {
+            ClassPathScanningCandidateComponentProvider entityProvider = new ClassPathScanningCandidateComponentProvider(false);
+            // AbstractEntity, niet abstract
+//          entityProvider.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
+            for (String packageName : basePackages) {
+                Set<BeanDefinition> beanDefs = entityProvider.findCandidateComponents(packageName);
+                for (BeanDefinition beanDef : beanDefs) {
+                    if (entityName.equals(beanDef.getBeanClassName().substring(beanDef.getBeanClassName().lastIndexOf(".") + 1))) {
+                        try {
+                            Class<?> clazz = Class.forName(beanDef.getBeanClassName());
+                            entityClasses.put(entityName, clazz);
+                            return clazz;
+                        } catch (ClassNotFoundException e) {
+                            log.warn("Class {} not found", beanDef.getBeanClassName());
+                        }
+                    }
+                }
+            }
+        }
+        return null;
     }
 
 }

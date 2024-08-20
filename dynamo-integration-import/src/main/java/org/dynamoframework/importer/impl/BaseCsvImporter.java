@@ -19,7 +19,7 @@ import com.opencsv.CSVReaderBuilder;
 import com.opencsv.exceptions.CsvException;
 import org.apache.commons.io.input.CharSequenceReader;
 import org.dynamoframework.exception.OCSImportException;
-import org.dynamoframework.utils.SystemPropertyUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -37,7 +37,7 @@ public class BaseCsvImporter extends BaseTextImporter {
      */
     @Override
     public int countRows(byte[] bytes, int sheetIndex) {
-        List<String[]> lines = readCsvFile(bytes, SystemPropertyUtils.getCsvSeparator(), SystemPropertyUtils.getCsvQuoteChar());
+        List<String[]> lines = readCsvFile(bytes, DynamoPropertiesHolder.getDynamoProperties().getCsv().getSeparatorChar(), DynamoPropertiesHolder.getDynamoProperties().getCsv().getQuoteChar());
         return lines.size();
     }
 

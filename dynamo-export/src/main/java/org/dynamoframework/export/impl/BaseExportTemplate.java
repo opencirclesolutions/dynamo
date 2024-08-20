@@ -15,6 +15,7 @@ package org.dynamoframework.export.impl;
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.constants.DynamoConstants;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
@@ -67,6 +68,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
     @Getter(AccessLevel.PROTECTED)
     private final ExportMode exportMode;
 
+    @Getter(AccessLevel.PROTECTED)
+    private final DynamoProperties dynamoProperties;
+
     /**
      * Constructor
      *
@@ -78,8 +82,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
      * @param title       the title of the sheet
      * @param joins       the joins to use when retrieving data
      */
-    protected BaseExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+    protected BaseExportTemplate(DynamoProperties dynamoProperties, BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
                                  List<SortOrder> sortOrders, Filter filter, String title, FetchJoinInformation... joins) {
+        this.dynamoProperties = dynamoProperties;
         this.service = service;
         this.exportMode = exportMode;
         this.entityModel = entityModel;

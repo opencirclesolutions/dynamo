@@ -35,7 +35,7 @@ public final class ServiceLocatorFactory {
 		if (serviceLocator == null) {
 			synchronized (ServiceLocatorFactory.class) {
 				if (serviceLocator == null) {
-					String serviceLocatorClassName = SystemPropertyUtils.getServiceLocatorClassName();
+					String serviceLocatorClassName = SystemPropertyUtils.getServiceLocatorClassName(); // Via env variable?
 					log.info("Using service locator class {} ", serviceLocatorClassName);
 					try {
 						serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();

@@ -24,7 +24,7 @@ import org.dynamoframework.exception.OCSRuntimeException;
 import org.dynamoframework.importer.ImportField;
 import org.dynamoframework.importer.dto.AbstractDTO;
 import org.dynamoframework.utils.ClassUtils;
-import org.dynamoframework.utils.SystemPropertyUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.springframework.beans.BeanUtils;
 
 import java.beans.PropertyDescriptor;
@@ -185,7 +185,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		LocalDate value = getDateValue(cell);
 		if (value == null && !StringUtils.isEmpty(field.defaultValue())) {
 			value = LocalDate.parse(field.defaultValue(),
-					DateTimeFormatter.ofPattern(SystemPropertyUtils.getDefaultDateFormat()));
+					DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));
 		}
 		return value;
 	}
