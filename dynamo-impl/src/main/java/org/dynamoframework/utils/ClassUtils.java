@@ -469,7 +469,7 @@ public final class ClassUtils {
     /**
      * Translates the name of an entity to the fully qualified class name. The <code>@EntityScan</code> base packages are searched.
      *
-     * @param entityName the name of the entity; the class must be annotated with <code>@Entity</code>
+     * @param entityName the name of the entity; the class must be a concrete subclass of <code>AbstractEnity</code>
      * @return the class
      */
     public static Class<?> findClass(String entityName) {
