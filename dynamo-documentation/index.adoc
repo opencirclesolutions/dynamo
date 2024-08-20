@@ -350,10 +350,10 @@ the enumeration value.
 * For dates and times, the value of the attribute models’
 *displayFormat* setting is used. By default, this has the following
 values:
-** “ocs.default.date.format” (dd-MM-yyyy) for dates
-** “ocs.default.time.format” (HH:mm:ss) for times
-** “ocs.default.datetime.format” (dd-MM-yyyy HH:mm:ss)
-** “ocs.default.datetime.zone.format” (dd-MM-yyyy HH:mm:ssZ)
+** “dynamoframework.default.date.format” (dd-MM-yyyy) for dates
+** “dynamoframework.default.time.format” (HH:mm:ss) for times
+** “dynamoframework.default.datetime.format” (dd-MM-yyyy HH:mm:ss)
+** “dynamoframework.default.datetime.zone.format” (dd-MM-yyyy HH:mm:ssZ)
 * For the *visibleInForm* and *visibleInGrid* settings, both the
 enumeration values (SHOW/HIDE) and the Boolean values *true* and *false*
 are supported.
@@ -523,7 +523,7 @@ The *booleanFieldMode* setting can be used to change the type of user
 interface component that is used to modify an attribute of type Boolean.
 
 The default value for this setting is derived from the value of the
-system property “ocs.default.boolean.field.mode”. It defaults to
+system property “dynamoframework.default.boolean.field.mode”. It defaults to
 *CHECKBOX* but can be changed to *TOGGLE* (a toggle button) or *SWITCH*
 (an on/off switch).
 
@@ -651,8 +651,8 @@ separator. For enumeration values, use the upper-case String
 representation of the desired value.
 
 For date attributes, use the String representations according to the
-system properties *ocs.default.date.format* _(dd-MM-yyyy),_
-*ocs.default.time.format* _(HH:mm:ss),_ *ocs.default.datetime.format*
+system properties *dynamoframework.default.date.format* _(dd-MM-yyyy),_
+*dynamoframework.default.time.format* _(HH:mm:ss),_ *dynamoframework.default.datetime.format*
 _(dd-MM-yyyy HH:mm:ss)_.
 
 === DefaultSearchValueFrom
@@ -672,8 +672,8 @@ separator. For enumeration values, use the upper-case String
 representation of the desired value.
 
 For date attributes, use the String representations according to the
-system properties *ocs.default.date.format* _(dd-MM-yyyy),_
-*ocs.default.time.format* _(HH:mm:ss),_ *ocs.default.datetime.format*
+system properties *dynamoframework.default.date.format* _(dd-MM-yyyy),_
+*dynamoframework.default.time.format* _(HH:mm:ss),_ *dynamoframework.default.datetime.format*
 _(dd-MM-yyyy HH:mm:ss)_
 
 === DefaultSearchValueTo
@@ -693,8 +693,8 @@ separator. For enumeration values, use the upper-case String
 representation of the desired value.
 
 For date/time attributes, use the String representations according to
-the system properties *ocs.default.date.format* _(dd-MM-yyyy),_
-*ocs.default.time.format* _(HH:mm:ss),_ *ocs.default.datetime.format*
+the system properties *dynamoframework.default.date.format* _(dd-MM-yyyy),_
+*dynamoframework.default.time.format* _(HH:mm:ss),_ *dynamoframework.default.datetime.format*
 _(dd-MM-yyyy HH:mm:ss)_.
 
 === DefaultValue
@@ -712,8 +712,8 @@ separator. For enumeration values, use the upper-case String
 representation of the desired value.
 
 For date/time attributes, use the String representations according to
-the system properties *ocs.default.date.format* _(dd-MM-yyyy),_
-*ocs.default.time.format* _(HH:mm:ss),_ *ocs.default.datetime.format*
+the system properties *dynamoframework.default.date.format* _(dd-MM-yyyy),_
+*dynamoframework.default.time.format* _(HH:mm:ss),_ *dynamoframework.default.datetime.format*
 _(dd-MM-yyyy HH:mm:ss)_
 
 === Description
@@ -741,8 +741,8 @@ data/time formatting pattern, e.g. “dd-MM-yyyy”, but you can use
 different separators like “dd/MM-yyyy” or use formats like “yyyy-MM-dd”.
 
 If you do not explicitly specify a displayFormat for an attribute, the
-framework will default to the value of the *ocs.default.date.format,
-ocs.default.time.format,* *ocs.default.datetime.format,* or system
+framework will default to the value of the *dynamoframework.default.date.format,
+dynamoframework.default.time.format,* *dynamoframework.default.datetime.format,* or system
 variables depending on the *dateType* of the attribute model.
 
 This setting supports localization.
@@ -755,7 +755,7 @@ The *displayName* setting determines how the attribute will be named
 onscreen. By default, it is derived from the *name* setting, replacing
 CamelCase notation by spaces and then capitalizing individual words,
 e.g. “mininumAge” will be translated to “Minimum Age”. You can use the
-system property *ocs.capitalize.words* and set it to *false* so that
+system property *dynamoframework.capitalize.words* and set it to *false* so that
 only the first word will be capitalized.
 
 This setting supports localization.
@@ -817,7 +817,7 @@ The *enumFieldMode* determines which input component to use when
 managing an attribute of type ENUM. By default the value DROPDOWN is
 used, which means that a dropdown field (combo box) will be used. You
 can change this default by modifying the value of the system property
-*ocs.default.enum.field.mode.* When the value is changed to *RADIO* a
+*dynamoframework.default.enum.field.mode.* When the value is changed to *RADIO* a
 set of radio buttons will be used instead.
 
 Note that within a search form, this setting will be ignored, and a
@@ -1186,7 +1186,7 @@ When set to *NUMBERFIELD*, the application will render a pair of spinner
 buttons that can be used to increase or decrease the value.
 
 The default value of this setting can be modified by changing the system
-variable *ocs.default.number.field.mode*.
+variable *dynamoframework.default.number.field.mode*.
 
 === NumberFieldStep
 
@@ -1214,8 +1214,8 @@ In message bundle: *precision = [Numeric value]*
 
 The *precision* setting determines the number of digits will be shown
 behind the decimal separator when displaying non-integer numbers. By
-default, it is set to *2* but you can change this by changing the value
-of the system property *ocs.default.decimal.precision*.
+default, it is set to *2*, but you can change this by changing the value
+of the system property *dynamoframework.default.decimal.precision*.
 
 === Prompt
 
@@ -1339,8 +1339,8 @@ means it will not show up in a search form. Setting this property to
 In message bundle: *searchCaseSensitive = true | false*
 
 The *searchCaseSensitive* setting determines whether search operations
-on the property are case sensitive. The default is given by the system
-property *ocs.default.search.case.sensitive* which defaults to “false”.
+on the property are case-sensitive. The default is given by the system
+property *dynamoframework.default.search.case.sensitive* which defaults to “false”.
 This setting is only used for attributes of type String and ignored in
 all other cases.
 
@@ -1495,7 +1495,7 @@ This indicates whether extraneous space characters will be trimmed from
 the start and end of the input inside text areas and text fields. This
 defaults to false but can be modified by changing the value of the
 defaults to false but can be modified by changing the value of the
-*ocs.trim.spaces* system property.
+*dynamoframework.trim.spaces* system property.
 
 On the @Attribute annotation, you can use the “trimSpaces” setting which
 supports the values INHERIT, TRIM and NO_TRIM. When INHERIT is used, it
@@ -2278,8 +2278,8 @@ component scanning in this class
 [source,java]
 --
 @SpringBootApplication
-@ComponentScan(basePackages = {"com.opencircle.gts","com.ocs.dynamo"})
-@EntityScan({"com.ocs.dynamo.functional.domain", "com.opencircle.gts.domain"})
+@ComponentScan(basePackages = {"com.opencircle.gts","org.dynamoframework"})
+@EntityScan({"org.dynamoframework.functional.domain", "com.opencircle.gts.domain"})
 public class GtsWebApplication {
 
     public static void main(String[] args) {
@@ -2398,79 +2398,79 @@ The Dynamo Framework relies on several pre-configured system properties:
 [width="100%",cols="52%,22%,26%",options="header",]
 |===
 |*Property Name* |*Default Value* |*Explanation*
-|ocs.capitalize.words |True |Indicates whether to capitalize all words
+|dynamoframework.capitalize.words |True |Indicates whether to capitalize all words
 that appear in captions. If set to “false” then only the first character
 will be capitalized.
 
-|ocs.default.boolean.field.mode |CHECKBOX |The default compoment to use
+|dynamoframework.default.boolean.field.mode |CHECKBOX |The default compoment to use
 editing Boolean attributes
 
 
-|ocs.default.date.format |dd-MM-yyyy |The pattern to use when formatting
+|dynamoframework.default.date.format |dd-MM-yyyy |The pattern to use when formatting
 date values
 
-|ocs.default.datetime.format |dd-MM-yyyy HH:mm:ss |The pattern to use
+|dynamoframework.default.datetime.format |dd-MM-yyyy HH:mm:ss |The pattern to use
 when formatting timestamp values
 
-|ocs.default.decimal.precision |2 |The default number of decimals to use
+|dynamoframework.default.decimal.precision |2 |The default number of decimals to use
 when formatting/entering a decimal value
 
-|ocs.default.element.collection.mode |CHIPS |The default component to
+|dynamoframework.default.element.collection.mode |CHIPS |The default component to
 use for managing an element collection
 
-|ocs.default.enum.field.mode |DROPDOWN |The default component to use for
+|dynamoframework.default.enum.field.mode |DROPDOWN |The default component to use for
 managing an enumeration
 
-|ocs.default.locale |uk |The default locale. This is used for number
+|dynamoframework.default.locale |uk |The default locale. This is used for number
 formatting and localization of messages and labels
 
-|ocs.default.boolean.field.mode |CHECKBOX |The default component to use
+|dynamoframework.default.boolean.field.mode |CHECKBOX |The default component to use
 for managing a boolen property
 
-|ocs.default.false.representation |false |The default textual
+|dynamoframework.default.false.representation |false |The default textual
 representation of a boolean “false” value
 
-|ocs.default.number.field.mode |TEXTFIELD a|
+|dynamoframework.default.number.field.mode |TEXTFIELD a|
 The default field type to use for integer properties
 
 Allowed values: TEXTFIELD, NUMBERFIELD
 
-|ocs.default.search.case.sensitive |false |Whether to use case sensitive
+|dynamoframework.default.search.case.sensitive |false |Whether to use case sensitive
 mode when searching on string fields
 
-|ocs.default.search.prefix.only |False |Whether to only look for matches
+|dynamoframework.default.search.prefix.only |False |Whether to only look for matches
 at the start of a string (rather than anywhere) when searching on sting
 fields.
 
-|ocs.default.search.case.sensitive |false |Whether searching on String
-values is case sensitive by default.
+|dynamoframework.default.search.case.sensitive |false |Whether searching on String
+values is case-sensitive by default.
 
-|ocs.default.search.prefix.only |false |Whether searching on String
+|dynamoframework.default.search.prefix.only |false |Whether searching on String
 values only considers matches at the start (rather than anywhere in the
 String)
 
-|ocs.default.time.format |HH:mm:ss |The pattern to use when formatting
+|dynamoframework.default.time.format |HH:mm:ss |The pattern to use when formatting
 time values
 
-|ocs.default.true.representation |True |The default textual
+|dynamoframework.default.true.representation |True |The default textual
 representation of a boolean “true” value
 
-|ocs.entity.model.package.names | |A comma-separated list of packages
+|dynamoframework.entity.model.package.names | |A comma-separated list of packages
 that contain the entity classes
 
-|ocs.export.csv.escape |“” |The escape character to use when exporting
+|dynamoframework.export.csv.escape |“” |The escape character to use when exporting
 to CSV
 
-|ocs.export.csv.separator |; |The separator character to use when
+|dynamoframework.export.csv.separator |; |The separator character to use when
 exporting data to CSV
 
-|ocs.export.csv.quote |“ |The quote character to use when exporting data
+|dynamoframework.export.csv.quote |“ |The quote character to use when exporting data
 to CSV
 
-|ocs.trim.spaces |false |Whether to remove extraneous spaces at the
+|dynamoframework.trim.spaces |false |Whether to remove extraneous spaces at the
 start or end of the input in text fields and text areas
 
-|ocs.use.default.prompt.value |false |Whether to display a prompt/hint
+|dynamoframework.use.default.prompt.value |false |Whether to display a prompt/hint
 value inside input components in edit forms
 |===
 
@@ -3832,16 +3832,16 @@ The following services are supported:
 *OpenAI*
 
 The integration with OpenAPI can be enabled simply by setting the
-*ocs.openai.enabled* application property to “true”. In addition, values
+*dynamoframework.openai.enabled* application property to “true”. In addition, values
 for the API key, the desired model, and the maximum number of tokens
 must be provided.
 
 [source,properties]
 --
-ocs.openai.enabled=true
-ocs.openai.api.key=[SECRET]
-ocs.openai.model=gpt-4-turbo
-ocs.openai.maxtokens=4096
+dynamoframework.openai.enabled=true
+dynamoframework.openai.api.key=[SECRET]
+dynamoframework.openai.model=gpt-4-turbo
+dynamoframework.openai.maxtokens=4096
 --
 
 To use the service, a (paid) subscription to OpenAI is required; given
@@ -3870,9 +3870,9 @@ default is localhost:11434) and a model name (llama3 or mistral).
 
 [source,properties]
 --
-ocs.ollama.enabled=true
-ocs.ollama.url=http://localhost:11434
-ocs.ollama.model=llama3
+dynamoframework.ollama.enabled=true
+dynamoframework.ollama.url=http://localhost:11434
+dynamoframework.ollama.model=llama3
 --
 
 *Google VertexAI Gemini (and PALM)*
@@ -3891,10 +3891,10 @@ project.
 
 [source,properties]
 --
-ocs.vertexai.enabled=true
-ocs.vertexai.project.id=[SECRET]
-ocs.vertexai.project.region=europe-west1
-ocs.vertexai.model=gemini-1.5-flash-preview-0514
+dynamoframework.vertexai.enabled=true
+dynamoframework.vertexai.project.id=[SECRET]
+dynamoframework.vertexai.project.region=europe-west1
+dynamoframework.vertexai.model=gemini-1.5-flash-preview-0514
 --
 
 With this configuration in place, you need to provide the application with your
@@ -3922,11 +3922,11 @@ Configuration can then be done as follows:
 
 [source,properties]
 --
-ocs.bedrock.enabled=true
-ocs.bedrock.access.key=AKIA5FTY7NWAPH2I7CGV
-ocs.bedrock.access.secret=[SECRET]
-ocs.bedrock.model.id=arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-v2
-ocs.bedrock.region=eu-central-1
+dynamoframework.bedrock.enabled=true
+dynamoframework.bedrock.access.key=AKIA5FTY7NWAPH2I7CGV
+dynamoframework.bedrock.access.secret=[SECRET]
+dynamoframework.bedrock.model.id=arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-v2
+dynamoframework.bedrock.region=eu-central-1
 --
 
 The configuration for Bedrock can unfortunately be a bit messy, since
@@ -3951,7 +3951,7 @@ will be pre-filled into the form.
 image:media/image10.png[image,width=559,height=221]
 
 You can set the default model to use by setting the value of the
-parameter *ocs.ai.default.service* This setting accepts the values
+parameter *dynamoframework.ai.default.service* This setting accepts the values
 CHAT_GPT, VERTEX_AI, OLLAMA, and BEDROCK.
 
 Pressing the “OK”-button will send a request to the LLM service, which
@@ -4280,7 +4280,7 @@ can be used to enter a search term. Entering a search term of 3 or more
 characters will lead to a search request being carried out based on the
 provided property.
 
-==== Post processing the form and input validations
+==== Post-processing the form and input validations
 
 This works in the same way as for the *GenericForm*
 
@@ -4338,6 +4338,118 @@ the popup dialog)
 * QueryType
 * PostProcessInputForm
 * AdditionalValidation
+
+=== PDF Viewer
+
+The Dynamo framework provides a convenient component for viewing PDF documents. The source
+document can be provided as either an external URL, an internal URL, or a reference to the entity model.
+
+IN order to view a PDF file that is stored in a field on an entity, use the following set-up
+
+[source,angular17html]
+--
+  <app-pdf-viewer
+    [mode]="mode"
+    [entityId]="2"
+    entityName="Gift"
+    attributeName="logo.image"
+  ></app-pdf-viewer>
+--
+
+With the "mode" pointing to *PdfViewerMode.MODEL*. This will render a PDF file stored in the "logo.image"
+field of the "Gift" entity with primary key 2
+
+To refer to an internal URL, use the following:
+
+[source,angular17html]
+--
+  <app-pdf-viewer
+    [mode]="mode"
+    fileName="report.pdf"
+  ></app-pdf-viewer>
+--
+
+With the "mode" pointing to *PdfViewerMode.INTERNAL_URL*. This will render a PDF file named "report.pdf"
+that is retrieved from the back-end.
+
+For this to work, the back-end should provide a REST endpoint mapped to */pdf* that returns a response
+entity containing the byte representation of the file
+
+[source,java]
+--
+@RestController
+@RequestMapping(value = "/pdf")
+@Slf4j
+@RequiredArgsConstructor
+@CrossOrigin
+public class PdfController {
+
+    @GetMapping(value = "/{fileName}", produces = MediaType.APPLICATION_PDF_VALUE)
+    public ResponseEntity<Resource> getRaw(@PathVariable("fileName") String fileName) throws IOException {
+
+        ClassPathResource cp = new ClassPathResource(fileName);
+        byte[] bytes = cp.getContentAsByteArray();
+
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=%s".formatted(fileName))
+                .contentLength(bytes.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
+
+}
+--
+
+Finally, to render a PFD file found at external URL the following can be used:
+
+[source,angular17html]
+--
+  <app-pdf-viewer
+    [mode]="mode"
+    externalUrl="http://www.somesite.com/report.pdf"
+  ></app-pdf-viewer>
+--
+
+With the "mode" pointing to *PdfViewerMode.EXTERNAL_URL*. This will render the PDF file found at the external URL
+
+=== PDF Viewer Dialog
+
+Additionally, it is also possible to use the PDF viewer inside a popup-dialog. In order to use this
+component, include the following in your HTML file:
+
+[source,angular17html]
+--
+  <ng-template #popupDialogContainerRef></ng-template>
+  <div class="btn-group" role="group">
+    <button type="submit" class="btn btn-primary m-1" (click)="showDialog()">
+      Open Dialog
+    </button>
+  </div>
+--
+
+Then, in the typescript file, include the following:
+
+[source,typescript]
+--
+  @ViewChild('popupDialogContainerRef', { read: ViewContainerRef })
+  vcr!: ViewContainerRef;
+
+  showDialog() {
+    let componentRef = this.vcr!.createComponent(PdfViewerDialogComponent);
+
+    componentRef.instance.mode = PdfViewerMode.MODEL
+    componentRef.instance.attributeName = 'logo.image'
+    componentRef.instance.entityId = 2
+    componentRef.instance.entityName = 'Gift'
+    componentRef.instance.showDialog();
+  }
+--
+
+In this code, we create a PdfViewerDialogComponent which is simply a wrapper around the *app-pdf-viewer*
+component, and use the "showDialog()" method to open it.
+
+The PdfViewerDialogComponent supports the same modes (and associated attributes) as the *app-pdf-viewer*
 
 == Additional Functionality
 

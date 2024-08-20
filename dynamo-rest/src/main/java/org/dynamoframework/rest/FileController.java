@@ -40,6 +40,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.util.Base64;
 
 /**
  * Generic controller for uploading and downloading files
@@ -141,6 +142,35 @@ public class FileController {
                 .contentLength(bytes.length)
                 .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .body(resource);
+    }
+
+    /**
+     * Downloads a file as a Base64 string
+     * @param entityId the entity ID
+     * @param entityName the name of the entity
+     * @param attributeName the name of
+     * @return the base 64 representation of the string
+     * @param <ID> the type of the primary key
+     * @param <T> the type of the entity
+     */
+    @SuppressWarnings({"unchecked"})
+    @GetMapping(path = "/downloadBase64", produces = MediaType.TEXT_PLAIN_VALUE)
+    @Transactional
+    public <ID, T extends AbstractEntity<ID>> ResponseEntity<String> downloadBase64(@RequestParam("entityId") String entityId,
+                                                                                    @RequestParam("entityName") String entityName,
+                                                                                    @RequestParam("attributeName") String attributeName) {
+        EntityModel<T> model = findEntityModel(entityName);
+        BaseService<ID, T> service = (BaseService<ID, T>) serviceLocator.getServiceForEntity(model.getEntityClass());
+        T entity = service.fetchById(convertId(model, entityId));
+        if (entity == null) {
+            throw new OcsNotFoundException("Entity with ID %s could not be found".formatted(entityId));
+        }
+        byte[] bytes = ClassUtils.getBytes(entity, attributeName);
+        String base = Base64.getEncoder().encodeToString(bytes);
+
+        return ResponseEntity.ok()
+                .contentType(MediaType.TEXT_PLAIN)
+                .body(base);
     }
 
     private <ID, T extends AbstractEntity<ID>> AttributeModel findAttributeModel(EntityModel<T> model,
