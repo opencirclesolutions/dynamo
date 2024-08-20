@@ -13,6 +13,8 @@
  */
 package org.dynamoframework.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.io.FilenameUtils;
@@ -50,6 +52,7 @@ import java.util.Base64;
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "File", description = "Dynamo file controller")
 public class FileController {
 
     private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
@@ -70,6 +73,7 @@ public class FileController {
     @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @SuppressWarnings("unchecked")
     @Transactional
+    @Operation(summary = "Uploads a file")
     public <ID, T extends AbstractEntity<ID>> void upload(@RequestParam("file") MultipartFile file,
                                                           @RequestParam("entityId") String id,
                                                           @RequestParam("entityName") String entityName,
@@ -96,6 +100,7 @@ public class FileController {
     @GetMapping(value = "/clear")
     @SuppressWarnings("unchecked")
     @Transactional
+    @Operation(summary = "Clear a file")
     public <ID, T extends AbstractEntity<ID>> void clear(@RequestParam("entityId") String id,
                                                          @RequestParam("entityName") String entityName,
                                                          @RequestParam("attributeName") String attributeName) throws IOException {
@@ -117,6 +122,7 @@ public class FileController {
     @SuppressWarnings({"unchecked"})
     @GetMapping(path = "/download")
     @Transactional
+    @Operation(summary = "Download a file")
     public <ID, T extends AbstractEntity<ID>> ResponseEntity<Resource> download(@RequestParam("entityId") String entityId,
                                                                                 @RequestParam("entityName") String entityName,
                                                                                 @RequestParam("attributeName") String attributeName) {
@@ -156,6 +162,7 @@ public class FileController {
     @SuppressWarnings({"unchecked"})
     @GetMapping(path = "/downloadBase64", produces = MediaType.TEXT_PLAIN_VALUE)
     @Transactional
+    @Operation(summary = "Downloads a file as a Base64 string")
     public <ID, T extends AbstractEntity<ID>> ResponseEntity<String> downloadBase64(@RequestParam("entityId") String entityId,
                                                                                     @RequestParam("entityName") String entityName,
                                                                                     @RequestParam("attributeName") String attributeName) {

@@ -13,6 +13,8 @@
  */
 package org.dynamoframework.autofill.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
 import org.dynamoframework.autofill.FormFillService;
@@ -35,6 +37,7 @@ import java.util.List;
 @RequestMapping(value = "/autofill")
 @Slf4j
 @CrossOrigin
+@Tag(name = "Auto fill", description = "Dynamo auto fill controller")
 public class AutoFillController extends BaseController {
 
     @Value("${dynamo.defaults.ai-service:CHAT_GPT}")
@@ -53,6 +56,7 @@ public class AutoFillController extends BaseController {
     @PostMapping(value = "/{entityName}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Makes a request to automatically fill a form")
     public Object autoFill(@PathVariable("entityName") String entityName, @RequestBody
            @Valid AutoFillRequest request, @RequestParam(required = false) String reference) {
 
@@ -68,6 +72,7 @@ public class AutoFillController extends BaseController {
     @GetMapping(value = "/options", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Retrieve a list of available AI services")
     public List<AutoFillOptions> getOptions() {
         List<AutoFillOptions> list = formFillService.findSupportedServices()
                 .stream().map(type -> AutoFillOptions.builder()

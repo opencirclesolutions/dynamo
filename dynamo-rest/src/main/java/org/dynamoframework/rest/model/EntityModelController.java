@@ -13,6 +13,8 @@
  */
 package org.dynamoframework.rest.model;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +32,7 @@ import org.springframework.web.bind.annotation.*;
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "Model", description = "Dynamo Model controller")
 public class EntityModelController {
 
     private final EntityModelFactory entityModelFactory;
@@ -43,6 +46,7 @@ public class EntityModelController {
      * @return the entity model
      */
     @GetMapping("/{entityName}")
+    @Operation(summary = "Retrieve an entity model")
     public EntityModelResponse getEntityModel(@PathVariable String entityName,
                                               @RequestParam(required = false) String reference) {
         Class<?> clazz = ClassUtils.findClass(entityName);
@@ -61,6 +65,7 @@ public class EntityModelController {
      * @return the entity model
      */
     @GetMapping("/{entityName}/attribute/{attributeName}")
+    @Operation(summary = "Retrieve a nested entity model")
     public EntityModelResponse getNestedEntityModel(@PathVariable String entityName,
                                                     @PathVariable String attributeName,
                                                     @RequestParam(required = false) String reference) {
@@ -86,6 +91,7 @@ public class EntityModelController {
      * @return the entity model
      */
     @GetMapping("/{entityName}/action/{actionId}")
+    @Operation(summary = "Retrieve an action entity model")
     public EntityModelResponse getActionEntityModel(@PathVariable String entityName,
                                                     @PathVariable String actionId,
                                                     @RequestParam(required = false) String reference) {

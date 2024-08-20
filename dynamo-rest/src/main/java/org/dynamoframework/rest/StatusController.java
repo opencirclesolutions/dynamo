@@ -13,6 +13,8 @@
  */
 package org.dynamoframework.rest;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.dynamoframework.rest.model.StatusResponse;
@@ -29,9 +31,11 @@ import org.springframework.web.bind.annotation.RestController;
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin
+@Tag(name = "Status", description = "Dynamo status controller")
 public class StatusController {
 
     @GetMapping
+    @Operation(summary = "Get the status")
     StatusResponse getStatus() {
         return StatusResponse.builder()
                 .status("OK")

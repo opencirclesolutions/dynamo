@@ -14,6 +14,8 @@
 package org.dynamoframework.rest.crud;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -48,6 +50,7 @@ import java.util.stream.Stream;
 @Slf4j
 @CrossOrigin
 @RequiredArgsConstructor
+@Tag(name = "CRUD", description = "Dynamo CRUD controller")
 public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseController {
 
     private final ObjectMapper objectMapper;
@@ -64,6 +67,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @SneakyThrows
     @ResponseStatus(HttpStatus.CREATED)
+    @Operation(summary = "Create a new entity")
     public T post(@PathVariable("entityName") String entityName, @RequestBody
     String request, @RequestParam(required = false) String reference) {
 
@@ -99,6 +103,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @SneakyThrows
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Executes an action defined in the entity model")
     @SuppressWarnings("unchecked")
     public <U extends AbstractEntity<ID>> T executeAction(@PathVariable("entityName") String entityName,
                                                           @PathVariable("actionId") String actionId,
@@ -156,6 +161,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
     @PutMapping(value = "/{entityName}/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @SneakyThrows
+    @Operation(summary = "Updates an existing entity")
     public T put(@PathVariable("entityName") String entityName, @PathVariable("id") String id, @RequestBody
     String request, @RequestParam(required = false) String reference) {
 
@@ -188,6 +194,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
      */
     @GetMapping(value = "/{entityName}/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.ALL_VALUE)
+    @Operation(summary = "Retrieve the details of a single entity")
     public T get(@PathVariable("entityName") String entityName, @PathVariable("id") String id,
                  @RequestParam(required = false) String reference) {
         Class<T> clazz = findClass(entityName);
@@ -211,6 +218,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
      */
     @GetMapping(value = "/{entityName}/init", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.ALL_VALUE)
+    @Operation(summary = "Instantiates a new entity")
     public T init(@PathVariable("entityName") String entityName, @RequestParam(required = false) String reference) {
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
@@ -230,6 +238,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
     @GetMapping(value = "/{entityName}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.OK)
+    @Operation(summary = "Retrieves a simple list of entities (without any sorting or filtering)")
     public List<T> list(@PathVariable("entityName") String entityName, @RequestParam(required = false) String reference) {
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
@@ -253,6 +262,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
      */
     @PostMapping(value = "/{entityName}/search", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(summary = "Executes a search request")
     public SearchResultsModel<T> search(@PathVariable("entityName") String entityName, @RequestBody @Valid SearchModel searchModel,
                                         @RequestParam(required = false) String reference) {
 
@@ -267,6 +277,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 
     @DeleteMapping("/{entityName}/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Delete an entity")
     public void delete(@PathVariable("entityName") String entityName, @PathVariable("id") String id) {
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = getEntityModelFactory().getModel(clazz);
