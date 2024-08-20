@@ -479,13 +479,9 @@ public final class ClassUtils {
                 entityScanProvider.addIncludeFilter(new AnnotationTypeFilter(EntityScan.class));
                 basePackages = new HashSet<>();
                 Set<BeanDefinition> beanDefs = entityScanProvider.findCandidateComponents("");
-                for (BeanDefinition beanDef : beanDefs) {
-                    System.out.println(beanDef.getBeanClassName());
-                }
                 for (BeanDefinition bd : beanDefs) {
                     if (bd instanceof AnnotatedBeanDefinition) {
                         Map<String, Object> annotAttributeMap = ((AnnotatedBeanDefinition) bd).getMetadata().getAnnotationAttributes(EntityScan.class.getCanonicalName());
-                        Arrays.stream(((String[]) annotAttributeMap.get("basePackages"))).forEach(s -> log.debug("Found basePackage {}", s));
                         Collections.addAll(basePackages, ((String[]) annotAttributeMap.get("basePackages")));
                     }
                 }
