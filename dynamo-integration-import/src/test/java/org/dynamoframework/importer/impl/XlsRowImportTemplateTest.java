@@ -1,13 +1,19 @@
 package org.dynamoframework.importer.impl;
 
 import org.apache.commons.io.FileUtils;
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.service.MessageService;
 import org.dynamoframework.test.BaseMockitoTest;
 import org.dynamoframework.test.MockUtil;
 import org.dynamoframework.utils.DateUtils;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,6 +23,9 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+@ExtendWith(SpringExtension.class)
+@Import({DynamoPropertiesHolder.class})
+@EnableConfigurationProperties(value = DynamoConfigurationProperties.class)
 public class XlsRowImportTemplateTest extends BaseMockitoTest {
 
 	@Mock

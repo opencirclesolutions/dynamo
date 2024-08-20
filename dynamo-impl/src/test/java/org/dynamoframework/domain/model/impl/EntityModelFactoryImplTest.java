@@ -40,6 +40,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -70,7 +71,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	private final Locale locale = new Locale.Builder().setLanguage("nl").build();
 
-	@Mock
+	@MockBean
 	private static ServiceLocator serviceLocator;
 
 	@BeforeEach

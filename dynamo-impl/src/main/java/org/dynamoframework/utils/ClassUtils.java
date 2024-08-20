@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.reflect.MethodUtils;
 import org.dynamoframework.configuration.DynamoProperties;
+import org.dynamoframework.domain.AbstractEntity;
 import org.dynamoframework.exception.OCSRuntimeException;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -30,6 +31,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
+import org.springframework.core.type.filter.AssignableTypeFilter;
 import org.springframework.stereotype.Component;
 
 import java.lang.annotation.Annotation;
@@ -495,12 +497,11 @@ public final class ClassUtils {
         }
         synchronized (ClassUtils.class) {
             ClassPathScanningCandidateComponentProvider entityProvider = new ClassPathScanningCandidateComponentProvider(false);
-            // AbstractEntity, niet abstract
-          entityProvider.addIncludeFilter(new AnnotationTypeFilter(Entity.class));
+            entityProvider.addIncludeFilter(new AssignableTypeFilter(AbstractEntity.class));
             for (String packageName : basePackages) {
                 Set<BeanDefinition> beanDefs = entityProvider.findCandidateComponents(packageName);
                 for (BeanDefinition beanDef : beanDefs) {
-                    if (entityName.equals(beanDef.getBeanClassName().substring(beanDef.getBeanClassName().lastIndexOf(".") + 1))) {
+                    if (entityName.equals(beanDef.getBeanClassName().substring(beanDef.getBeanClassName().lastIndexOf(".") + 1)) && !beanDef.isAbstract()) {
                         try {
                             Class<?> clazz = Class.forName(beanDef.getBeanClassName());
                             entityClasses.put(entityName, clazz);
