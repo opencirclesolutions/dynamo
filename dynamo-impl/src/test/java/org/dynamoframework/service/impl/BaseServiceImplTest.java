@@ -70,26 +70,6 @@ public class BaseServiceImplTest extends BaseMockitoTest {
         }
     }
 
-//    public class TestService extends BaseServiceImpl<Integer, TestEntity> {
-//
-//        @Autowired
-//        private Dependency dependency;
-//
-//        @Override
-//        protected TestEntity findIdenticalEntity(TestEntity entity) {
-//            return dao.findByUniqueProperty("name", entity.getName(), true);
-//        }
-//
-//        @Override
-//        protected BaseDao<Integer, TestEntity> getDao() {
-//            return dao;
-//        }
-//
-//        public void noop() {
-//            dependency.noop();
-//        }
-//    }
-
     private static final int ID = 1;
 
     @MockBean
@@ -107,9 +87,6 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 
     @Mock
     private Validator validator;
-
-//    @Spy
-//    private ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
     @BeforeEach
     public void setupBaseServiceImplTest() {

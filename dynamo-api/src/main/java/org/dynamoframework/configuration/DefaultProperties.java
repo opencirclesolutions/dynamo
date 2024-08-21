@@ -1,7 +1,9 @@
 package org.dynamoframework.configuration;
 
+import org.dynamoframework.domain.model.*;
+
 public interface DefaultProperties {
-    org.dynamoframework.domain.model.AttributeBooleanFieldMode getBooleanFieldMode();
+    AttributeBooleanFieldMode getBooleanFieldMode();
 
     String getDateFormat();
 
@@ -9,9 +11,9 @@ public interface DefaultProperties {
 
     Integer getDecimalPrecision();
 
-    org.dynamoframework.domain.model.ElementCollectionMode getElementCollectionMode();
+    ElementCollectionMode getElementCollectionMode();
 
-    org.dynamoframework.domain.model.AttributeEnumFieldMode getEnumFieldMode();
+    AttributeEnumFieldMode getEnumFieldMode();
 
     String getFalseRepresentation();
 
@@ -21,7 +23,7 @@ public interface DefaultProperties {
 
     String getTrueRepresentation();
 
-    org.dynamoframework.domain.model.GroupTogetherMode getGroupTogetherMode();
+    GroupTogetherMode getGroupTogetherMode();
 
     Integer getGroupTogetherWidth();
 
@@ -29,7 +31,7 @@ public interface DefaultProperties {
 
     Integer getNestingDepth();
 
-    org.dynamoframework.domain.model.NumberFieldMode getNumberFieldMode();
+    NumberFieldMode getNumberFieldMode();
 
     boolean isSearchCaseSensitive();
 

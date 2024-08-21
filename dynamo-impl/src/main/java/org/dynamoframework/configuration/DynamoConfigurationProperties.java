@@ -26,6 +26,7 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
     private DefaultProperties defaults = new DefaultConfigurationProperties();
 
     @Data
+    @ConfigurationProperties(prefix = "dynamoframework.defaults")
     public static class DefaultConfigurationProperties implements Serializable, DefaultProperties {
         @Serial
         private static final long serialVersionUID = -3229613809797417359L;
@@ -136,23 +137,10 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
 
     }
 
-//    private EntityModelProperties entityModel = new EntityModelProperties();
-//
-//    @Data
-//    public static class EntityModelProperties implements Serializable {
-//        @Serial
-//        private static final long serialVersionUID = 2907487755230383369L;
-//
-//        /**
-//         * The packages that contain the entity model
-//         */
-//        private List<String> packages;
-//    }
-
-
     private CsvProperties csv = new CsvConfigurationProperties();
 
     @Data
+    @ConfigurationProperties(prefix = "dynamoframework.csv")
     public static class CsvConfigurationProperties implements Serializable, CsvProperties {
         @Serial
         private static final long serialVersionUID = 6909139472091672387L;
@@ -186,6 +174,7 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
     private OpenAiProperties openai = new OpenAiConfigurationProperties();
 
     @Data
+    @ConfigurationProperties(prefix = "dynamoframework.openai")
     public static class OpenAiConfigurationProperties implements Serializable, OpenAiProperties {
         @Serial
         private static final long serialVersionUID = 4426516280121454055L;
@@ -211,6 +200,7 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
     private OllamaProperties ollama = new OllamaConfigurationProperties();
 
     @Data
+    @ConfigurationProperties(prefix = "dynamoframework.ollama")
     public static class OllamaConfigurationProperties implements Serializable, OllamaProperties {
 
         private static final long serialVersionUID = -2357577501146838042L;
@@ -231,6 +221,7 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
     private VertexAiProperties vertexai = new VertexAiConfigurationProperties();
 
     @Data
+    @ConfigurationProperties(prefix = "dynamoframework.vertexai")
     public static class VertexAiConfigurationProperties implements Serializable, VertexAiProperties {
         @Serial
         private static final long serialVersionUID = -1404865335552095931L;
@@ -255,6 +246,7 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
     private BedrockProperties bedrock = new BedrockConfigurationProperties();
 
     @Data
+    @ConfigurationProperties(prefix = "dynamoframework.bedrock")
     public static class BedrockConfigurationProperties implements Serializable, BedrockProperties {
         @Serial
         private static final long serialVersionUID = -6324259015491446578L;
@@ -279,12 +271,6 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
          */
         private String region;
     }
-
-    /**
-     * Class name for the service locator (override to create a different service
-     * locator, e.g. to use a separate service locator for integration tests)
-     */
-    private String serviceLocatorClassName = "org.dynamoframework.SpringWebServiceLocator";
 
     /**
      * The name of the database function used to replace accents

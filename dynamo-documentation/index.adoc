@@ -2298,8 +2298,7 @@ public class ApplicationConfig extends ApplicationConfigurationSupport {
 
     @Override
     protected String[] getBaseNames() {
-       return new String[] { "classpath:/META-INF/entitymodel", "classpath:/messages",
-             "classpath:/ocscommon", "classpath:/ValidationMessages" };
+       return new String[] { "classpath:/META-INF/entitymodel", "classpath:/messages", "classpath:/ValidationMessages" };
     }
 
     @Bean
