@@ -12,6 +12,7 @@
 		<name>Open Circle Solutions</name>
 		<url>http://www.opencirclesolutions.nl</url>
 	</organization>
+	<inceptionYear>2014</inceptionYear>
 	<licenses>
 		<license>
 			<name>Apache License Version 2.0</name>
@@ -396,6 +397,11 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>2.4.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -451,6 +457,26 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<executions>
+					<execution>
+					<id>update-file-header</id>
+					<goals>
+						<goal>update-file-header</goal>
+					</goals>
+					<phase>process-sources</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<licenseName>apache_v2</licenseName>
+					<failOnMissingHeader>true</failOnMissingHeader>
+					<failOnNotUptodateHeader>true</failOnNotUptodateHeader>
+					<ignoreNoFileToScan>true</ignoreNoFileToScan>
+					<projectName>Dynamo Framework</projectName>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>
