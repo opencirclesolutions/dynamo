@@ -5,7 +5,7 @@
 	version="1.0">
 	<sequence-generator name="parameter_id_seq"
 		allocation-size="1" sequence-name="parameter_id_seq" />
-	<entity class="com.ocs.dynamo.functional.domain.Parameter">
+	<entity class="org.dynamoframework.functional.domain.Parameter">
 		<attributes>
 			<id name="id">
 				<generated-value strategy="SEQUENCE" generator="parameter_id_seq" />
