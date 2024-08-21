@@ -44,6 +44,12 @@
 			<organization>Open Circle Solutions</organization>
 			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
 		</developer>
+		<developer>
+			<name>Tommy Menheere</name>
+			<email>info@dynamoframwork.org</email>
+			<organization>Open Circle Solutions</organization>
+			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
+		</developer>
 	</developers>
 	<scm>
 		<connection>scm:git:https://github.com/opencirclesolutions/dynamo</connection>
