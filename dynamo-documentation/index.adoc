@@ -2383,84 +2383,407 @@ the “ROLE” prefix from all role names.
 Dynamo several ways of dealing with (system) properties.
 
 The easiest way of declaring a property is by including it in the
-*application.properties* file which is located in the
+*application.properties* or *application.yml* file which is located in the
 *src/main/resources* directory. This is the standard file used by Spring
 boot, and as such you can add both your own system properties to it, as
-well as using it to modify any Spring Boot settings. You can use the
+well as using it to modify any Spring Boot settings.
+
+You can use the
 default mechanisms offered by Spring Boot (e.g. external configuration
-file, explicitly set system parameters) to override the values in
-*application.properties*.
+file, explicitly set system parameters, using profiles) to override the
+values.
 
-The Dynamo Framework relies on several pre-configured system properties:
+The Dynamo Framework manages all properties using `@ConfigurationProperties`.
+In the next sections an overview of all available properties is given. In
+the section title the prefix is given for the properties in the tables.
 
+For instance, to set the default date-format to `yyyy-MM-dd`, configure it
+like this in a properties file:
+
+[source,properties]
+----
+dynamoframework.defaults.date-format=yyyy-MM-dd
+----
+
+If you use a yaml file, use:
+
+[source,yaml]
+-----
+dynamoframework:
+  defaults:
+    date-format: yyyy-MM-dd
+-----
+
+==== Prefix dynamoframework
 [width="100%",cols="52%,22%,26%",options="header",]
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties`
+[cols="2,1,3,1,1"]
 |===
-|*Property Name* |*Default Value* |*Explanation*
-|dynamoframework.capitalize-property-names |True |Indicates whether to capitalize all words
-that appear in captions. If set to “false” then only the first character
-will be capitalized.
-
-|dynamoframework.defaults.boolean-field-mode |CHECKBOX |The default compoment to use
-editing Boolean attributes
+|Key |Type |Description |Default value |Deprecation
 
 
-|dynamoframework.defaults.date-format |dd-MM-yyyy |The pattern to use when formatting
-date values
+|bedrock
+|org.dynamoframework.configuration.BedrockProperties
+|Bedrock properties
+|
+|
 
-|dynamoframework.defaults.date-time-format |dd-MM-yyyy HH:mm:ss |The pattern to use
-when formatting timestamp values
+|capitalize-property-names
+|java.lang.Boolean
+|Indicates whether to capitalize individual words in property names
+|true
+|
 
-|dynamoframework.defaults.decimal-precision |2 |The default number of decimals to use
-when formatting/entering a decimal value
+|csv
+|org.dynamoframework.configuration.CsvProperties
+|Properties related to csv, import and export
+|
+|
 
-|dynamoframework.defaults.element-collection-mode |CHIPS |The default component to
-use for managing an element collection
+|defaults
+|org.dynamoframework.configuration.DefaultProperties
+|Default properties
+|
+|
 
-|dynamoframework.defaults.enum-field-mode |DROPDOWN |The default component to use for
-managing an enumeration
+|ollama
+|org.dynamoframework.configuration.OllamaProperties
+|Ollama properties
+|
+|
 
-|dynamoframework.defaults.locale |uk |The default locale. This is used for number
-formatting and localization of messages and labels
+|openai
+|org.dynamoframework.configuration.OpenAiProperties
+|OpenAI properties
+|
+|
 
-|dynamoframework.defaults.boolean-field-mode |CHECKBOX |The default component to use
-for managing a boolen property
+|unaccent-function-name
+|java.lang.String
+|The name of the database function used to replace accents
+|
+|
 
-|dynamoframework.defaults.false-representation |false |The default textual
-representation of a boolean “false” value
-
-|dynamoframework.defaults.number-field-mode |TEXTFIELD a|
-The default field type to use for integer properties
-
-Allowed values: TEXTFIELD, NUMBERFIELD
-
-|dynamoframework.defaults.search-case-sensitive |false |Whether to use case sensitive
-mode when searching on string fields
+|vertexai
+|org.dynamoframework.configuration.VertexAiProperties
+|VertexAI properties
+|
+|
 
 
-|dynamoframework.defaults.search-prefix-only |false |Whether searching on String
-values only considers matches at the start (rather than anywhere in the
-String)
+|===
 
-|dynamoframework.defaults.time-format |HH:mm:ss |The pattern to use when formatting
-time values
+==== Prefix dynamoframework.ollama
 
-|dynamoframework.default.true-representation |True |The default textual
-representation of a boolean “true” value
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
 
-|dynamoframework.csv.escape-char |“” |The escape character to use when exporting
-to CSV
 
-|dynamoframework.csv.separator-char |; |The separator character to use when
-exporting data to CSV
+|enabled
+|java.lang.Boolean
+|Enable Ollama
+|false
+|
 
-|dynamoframework.csv.quote-char |“ |The quote character to use when exporting data
-to CSV
+|model
+|java.lang.String
+|The model to use
+|llama3
+|
 
-|dynamoframework.defaults.trim-spaces |false |Whether to remove extraneous spaces at the
-start or end of the input in text fields and text areas
+|url
+|java.lang.String
+|Ollama URL
+|
+|
 
-|dynamoframework.defaults.use-prompt-value |false |Whether to display a prompt/hint
-value inside input components in edit forms
+
+|===
+
+==== Prefix dynamoframework.openai
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|api-key
+|java.lang.String
+|The OpenAI API key
+|
+|
+
+|enabled
+|java.lang.Boolean
+|Enable OpenAI
+|false
+|
+
+|max-tokens
+|java.lang.Integer
+|Maximum number of tokens
+|4096
+|
+
+|model
+|java.lang.String
+|The model to use
+|gpt-4-turbo
+|
+
+
+|===
+
+==== Prefix dynamoframework.defaults
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|ai-service
+|java.lang.String
+|The default AI service
+|
+|
+
+|boolean-field-mode
+|org.dynamoframework.domain.model.AttributeBooleanFieldMode
+|Indicates the default mode to use for boolean components
+|
+|
+
+|date-format
+|java.lang.String
+|The default date format
+|dd-MM-yyyy
+|
+
+|date-time-format
+|java.lang.String
+|The default date/time (time stamp) format
+|dd-MM-yyyy HH:mm:ss
+|
+
+|decimal-precision
+|java.lang.Integer
+|The default decimal precision
+|2
+|
+
+|element-collection-mode
+|org.dynamoframework.domain.model.ElementCollectionMode
+|Indicates the default mode to use for element collection fields
+|
+|
+
+|enum-field-mode
+|org.dynamoframework.domain.model.AttributeEnumFieldMode
+|The default field type to use for enumeration attributes
+|
+|
+
+|false-representation
+|java.lang.String
+|The representation of the value &lt;code&gt;false&lt;/code&gt;
+|false
+|
+
+|false-representations
+|java.util.Map&lt;java.lang.String,java.lang.String&gt;
+|Localized representations of the value &lt;code&gt;false&lt;/code&gt;
+|
+|
+
+|group-together-mode
+|org.dynamoframework.domain.model.GroupTogetherMode
+|The default group together mode
+|
+|
+
+|group-together-width
+|java.lang.Integer
+|The column width from grouping together
+|300
+|
+
+|locale
+|java.util.Locale
+|The default locale
+|
+|
+
+|nesting-depth
+|java.lang.Integer
+|The default nesting depth
+|2
+|
+
+|number-field-mode
+|org.dynamoframework.domain.model.NumberFieldMode
+|The default number field mode
+|
+|
+
+|search-case-sensitive
+|java.lang.Boolean
+|The default case sensitiveness for search
+|false
+|
+
+|search-prefix-only
+|java.lang.Boolean
+|Whether search is prefix only
+|false
+|
+
+|time-format
+|java.lang.String
+|The default time format
+|HH:mm:ss
+|
+
+|trim-spaces
+|java.lang.Boolean
+|Whether to trim white space for text inputs
+|false
+|
+
+|true-representation
+|java.lang.String
+|The representation of the value &lt;code&gt;true&lt;/code&gt;
+|true
+|
+
+|true-representations
+|java.util.Map&lt;java.lang.String,java.lang.String&gt;
+|Localized representations of the value &lt;code&gt;true&lt;/code&gt;
+|
+|
+
+|use-prompt-value
+|java.lang.Boolean
+|Indicates whether to use the display name as the input prompt by default
+|true
+|
+
+
+|===
+
+
+==== Prefix dynamoframework.bedrock
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|access-key
+|java.lang.String
+|Access key
+|
+|
+
+|access-secret
+|java.lang.String
+|Access secret
+|
+|
+
+|enabled
+|java.lang.Boolean
+|Enable Bedrock
+|false
+|
+
+|model-id
+|java.lang.String
+|Model id
+|
+|
+
+|region
+|java.lang.String
+|Region
+|
+|
+
+
+|===
+
+==== Prefix dynamoframework.vertexai
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAiConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|enabled
+|java.lang.Boolean
+|Enable VertexAI
+|false
+|
+
+|model
+|java.lang.String
+|The model to use
+|gemini-1.5-flash-preview-0514
+|
+
+|project-id
+|java.lang.String
+|The project id
+|
+|
+
+|project-region
+|java.lang.String
+|The region of the project
+|europe-west1
+|
+
+|===
+
+
+==== Prefix dynamoframework.csv
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|escape-char
+|java.lang.String
+|The CSV escape character when importing/exporting
+|&quot;&quot;
+|
+
+|max-rows-before-streaming
+|java.lang.Integer
+|The number of rows that must be present in a result set before resorting to a streaming approach for Excel export
+|1000
+|
+
+|quote-char
+|java.lang.String
+|The CSV quote char when importing/exporting
+|&quot;&quot;
+|
+
+|separator-char
+|java.lang.String
+|The CSV separator when importing/exporting
+|;
+|
+
+|thousands-grouping
+|java.lang.Boolean
+|Whether to use thousands grouping in XLS files
+|false
+|
+
 |===
 
 You can use the static methods from the *SystemPropertyUtils* class to

@@ -23,6 +23,9 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
      */
     private boolean capitalizePropertyNames = true;
 
+    /**
+     * Default properties
+     */
     private DefaultProperties defaults = new DefaultConfigurationProperties();
 
     @Data
@@ -137,6 +140,9 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
 
     }
 
+    /**
+     * Properties related to csv, import and export
+     */
     private CsvProperties csv = new CsvConfigurationProperties();
 
     @Data
@@ -171,6 +177,9 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
         private boolean thousandsGrouping = false;
     }
 
+    /**
+     * OpenAI properties
+     */
     private OpenAiProperties openai = new OpenAiConfigurationProperties();
 
     @Data
@@ -197,6 +206,9 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
 
     }
 
+    /**
+     * Ollama properties
+     */
     private OllamaProperties ollama = new OllamaConfigurationProperties();
 
     @Data
@@ -218,6 +230,9 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
         private String model = "llama3";
     }
 
+    /**
+     * VertexAI properties
+     */
     private VertexAiProperties vertexai = new VertexAiConfigurationProperties();
 
     @Data
@@ -243,6 +258,9 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
         private String model = "gemini-1.5-flash-preview-0514";
     }
 
+    /**
+     * Bedrock properties
+     */
     private BedrockProperties bedrock = new BedrockConfigurationProperties();
 
     @Data
