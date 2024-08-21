@@ -13,11 +13,13 @@
  */
 package org.dynamoframework;
 
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
 import org.dynamoframework.domain.model.EntityModelFactory;
 import org.dynamoframework.domain.model.impl.EntityModelFactoryImpl;
 import org.dynamoframework.service.MessageService;
 import org.dynamoframework.service.impl.MessageServiceImpl;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -27,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
  *
  */
 @Configuration
+@EnableConfigurationProperties(DynamoConfigurationProperties.class)
 public class DynamoImplAutoConfigure {
 
     @Bean
