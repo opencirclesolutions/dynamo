@@ -136,20 +136,6 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
 
     }
 
-//    private EntityModelProperties entityModel = new EntityModelProperties();
-//
-//    @Data
-//    public static class EntityModelProperties implements Serializable {
-//        @Serial
-//        private static final long serialVersionUID = 2907487755230383369L;
-//
-//        /**
-//         * The packages that contain the entity model
-//         */
-//        private List<String> packages;
-//    }
-
-
     private CsvProperties csv = new CsvConfigurationProperties();
 
     @Data
