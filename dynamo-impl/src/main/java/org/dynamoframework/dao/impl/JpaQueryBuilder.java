@@ -26,7 +26,6 @@ import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
 import org.dynamoframework.dao.SortOrders;
 import org.dynamoframework.filter.*;
-import org.dynamoframework.utils.SystemPropertyUtils;
 import org.hibernate.query.sqm.tree.domain.SqmEntityValuedSimplePath;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;

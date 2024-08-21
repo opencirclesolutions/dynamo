@@ -16,7 +16,8 @@ package org.dynamoframework.service;
 import lombok.experimental.UtilityClass;
 import lombok.extern.slf4j.Slf4j;
 import org.dynamoframework.exception.OCSRuntimeException;
-import org.dynamoframework.utils.SystemPropertyUtils;
+
+import java.util.Properties;
 
 /**
  * Factory class for creating a service locator.
@@ -30,12 +31,14 @@ public final class ServiceLocatorFactory {
 
 	private static volatile ServiceLocator serviceLocator;
 
+	private static final String CLASS_NAME = "org.dynamoframework.SpringWebServiceLocator";
+
 	@SuppressWarnings("deprecation")
 	public static ServiceLocator getServiceLocator() {
 		if (serviceLocator == null) {
 			synchronized (ServiceLocatorFactory.class) {
 				if (serviceLocator == null) {
-					String serviceLocatorClassName = SystemPropertyUtils.getServiceLocatorClassName(); // Via env variable?
+					String serviceLocatorClassName = getServiceLocatorClassName();
 					log.info("Using service locator class {} ", serviceLocatorClassName);
 					try {
 						serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();
@@ -46,6 +49,17 @@ public final class ServiceLocatorFactory {
 			}
 		}
 		return serviceLocator;
+	}
+
+	protected static String getServiceLocatorClassName() {
+		Properties prop = new Properties();
+		try {
+			prop.load(ServiceLocatorFactory.class.getClassLoader().getResourceAsStream("dynamoframework.properties"));
+		}
+		catch (Exception e) {
+			log.debug("Service locator properties file not found, using default");
+		}
+		return prop.getProperty("service-locator", CLASS_NAME);
 	}
 
 }

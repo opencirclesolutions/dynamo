@@ -29,7 +29,6 @@ import org.dynamoframework.filter.Filter;
 import org.dynamoframework.service.BaseService;
 import org.dynamoframework.service.MessageService;
 import org.dynamoframework.utils.ClassUtils;
-import org.dynamoframework.utils.SystemPropertyUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 
