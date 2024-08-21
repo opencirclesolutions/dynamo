@@ -58,6 +58,10 @@
 		<url>https://github.com/opencirclesolutions/dynamo</url>
 		<tag>3.0.1</tag>
 	</scm>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/opencirclesolutions/dynamo/issues</url>
+	</issueManagement>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>gitlab-maven-dynamo</id>
