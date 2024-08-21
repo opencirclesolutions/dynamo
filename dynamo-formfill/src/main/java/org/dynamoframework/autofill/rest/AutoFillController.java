@@ -40,7 +40,7 @@ import java.util.List;
 @Tag(name = "Auto fill", description = "Dynamo auto fill controller")
 public class AutoFillController extends BaseController {
 
-    @Value("${dynamo.defaults.ai-service:CHAT_GPT}")
+    @Value("${dynamoframework.defaults.ai-service:CHAT_GPT}")
     private String defaultValue;
 
     @Autowired
