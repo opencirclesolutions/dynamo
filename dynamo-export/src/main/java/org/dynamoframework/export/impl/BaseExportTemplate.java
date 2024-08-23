@@ -1,20 +1,28 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 package org.dynamoframework.export.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import lombok.AccessLevel;
 import lombok.Getter;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.constants.DynamoConstants;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
@@ -67,6 +75,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
     @Getter(AccessLevel.PROTECTED)
     private final ExportMode exportMode;
 
+    @Getter(AccessLevel.PROTECTED)
+    private final DynamoProperties dynamoProperties;
+
     /**
      * Constructor
      *
@@ -78,8 +89,9 @@ public abstract class BaseExportTemplate<ID extends Serializable, T extends Abst
      * @param title       the title of the sheet
      * @param joins       the joins to use when retrieving data
      */
-    protected BaseExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+    protected BaseExportTemplate(DynamoProperties dynamoProperties, BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
                                  List<SortOrder> sortOrders, Filter filter, String title, FetchJoinInformation... joins) {
+        this.dynamoProperties = dynamoProperties;
         this.service = service;
         this.exportMode = exportMode;
         this.entityModel = entityModel;

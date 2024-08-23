@@ -12,6 +12,7 @@
 		<name>Open Circle Solutions</name>
 		<url>http://www.opencirclesolutions.nl</url>
 	</organization>
+	<inceptionYear>2014</inceptionYear>
 	<licenses>
 		<license>
 			<name>Apache License Version 2.0</name>
@@ -44,6 +45,12 @@
 			<organization>Open Circle Solutions</organization>
 			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
 		</developer>
+		<developer>
+			<name>Tommy Menheere</name>
+			<email>info@dynamoframwork.org</email>
+			<organization>Open Circle Solutions</organization>
+			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
+		</developer>
 	</developers>
 	<scm>
 		<connection>scm:git:https://github.com/opencirclesolutions/dynamo</connection>
@@ -51,10 +58,14 @@
 		<url>https://github.com/opencirclesolutions/dynamo</url>
 		<tag>3.0.1</tag>
 	</scm>
+	<issueManagement>
+		<system>github</system>
+		<url>https://github.com/opencirclesolutions/dynamo/issues</url>
+	</issueManagement>
 	<distributionManagement>
 		<snapshotRepository>
 			<id>gitlab-maven-dynamo</id>
-			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/${env.CI_PROJECT_ID}/packages/maven</url>
+			<url>https://gitlab.opencirclesolutions.nl/api/v4/projects/307/packages/maven</url>
 		</snapshotRepository>
 		<repository>
 			<id>ossrh</id>
@@ -104,28 +115,10 @@
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot</artifactId>
+				<artifactId>spring-boot-dependencies</artifactId>
 				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-autoconfigure</artifactId>
-				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-logging</artifactId>
-				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-data-jpa</artifactId>
-				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-validation</artifactId>
-				<version>${spring.boot.version}</version>
+				<type>pom</type>
+				<scope>import</scope>
 			</dependency>
 			<dependency>
 				<groupId>jakarta.persistence</groupId>
@@ -146,17 +139,6 @@
 				<groupId>org.slf4j</groupId>
 				<artifactId>slf4j-api</artifactId>
 				<version>2.0.13</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-web</artifactId>
-				<version>${spring.boot.version}</version>
-			</dependency>
-			<dependency>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-starter-test</artifactId>
-				<version>${spring.boot.version}</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.springdoc</groupId>
@@ -333,7 +315,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-surefire-plugin</artifactId>
-					<version>3.3.0</version>
+					<version>3.4.0</version>
 				</plugin>
 				<!-- QA - Checkstyle -->
 				<plugin>
@@ -419,6 +401,11 @@
 						</execution>
 					</executions>
 				</plugin>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>license-maven-plugin</artifactId>
+					<version>2.4.0</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
@@ -474,6 +461,26 @@
 						</goals>
 					</execution>
 				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>license-maven-plugin</artifactId>
+				<executions>
+					<execution>
+					<id>update-file-header</id>
+					<goals>
+						<goal>update-file-header</goal>
+					</goals>
+					<phase>process-sources</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<licenseName>apache_v2</licenseName>
+					<failOnMissingHeader>true</failOnMissingHeader>
+					<failOnNotUptodateHeader>true</failOnNotUptodateHeader>
+					<ignoreNoFileToScan>true</ignoreNoFileToScan>
+					<projectName>Dynamo Framework</projectName>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

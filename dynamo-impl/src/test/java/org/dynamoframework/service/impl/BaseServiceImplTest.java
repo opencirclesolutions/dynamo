@@ -1,21 +1,29 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 package org.dynamoframework.service.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import jakarta.validation.Validation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
 import org.dynamoframework.dao.*;
 import org.dynamoframework.domain.TestEntity;
 import org.dynamoframework.exception.OCSNonUniqueException;
@@ -25,13 +33,18 @@ import org.dynamoframework.filter.Filter;
 import org.dynamoframework.service.MessageService;
 import org.dynamoframework.test.BaseMockitoTest;
 import org.dynamoframework.test.MockUtil;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.*;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -47,55 +60,40 @@ import static org.mockito.Mockito.when;
  *
  * @author bas.rutten
  */
-@ExtendWith(SpringExtension.class)
+@Import({DynamoPropertiesHolder.class})
+@EnableConfigurationProperties(value = DynamoConfigurationProperties.class)
 public class BaseServiceImplTest extends BaseMockitoTest {
 
-    private static class Dependency {
-
-        public void noop() {
-            // do nothing
-        }
-    }
-
-    private class TestService extends BaseServiceImpl<Integer, TestEntity> {
-
-        @Autowired
-        private Dependency dependency;
-
-        @Override
-        protected TestEntity findIdenticalEntity(TestEntity entity) {
-            return dao.findByUniqueProperty("name", entity.getName(), true);
+    @TestConfiguration
+    public static class BaseServiceImplTestConfig {
+        @Bean("test")
+        TestServiceImpl testService() {
+            return new TestServiceImpl();
         }
 
-        @Override
-        protected BaseDao<Integer, TestEntity> getDao() {
-            return dao;
-        }
-
-        public void noop() {
-            dependency.noop();
+        @Bean
+        ValidatorFactory validatorFactory() {
+            return Validation.buildDefaultValidatorFactory();
         }
     }
 
     private static final int ID = 1;
 
-    @Mock
+    @MockBean
     private BaseDao<Integer, TestEntity> dao;
 
-    @Mock
+    @MockBean
     private Dependency dependency;
 
-    @Mock
+    @MockBean
     private MessageService messageService;
 
-    @InjectMocks
-    private TestService service = new TestService();
+    @Autowired
+    @Qualifier("test")
+    private TestServiceImpl service;
 
     @Mock
     private Validator validator;
-
-    @Spy
-    private ValidatorFactory validatorFactory = Validation.buildDefaultValidatorFactory();
 
     @BeforeEach
     public void setupBaseServiceImplTest() {
@@ -205,7 +203,7 @@ public class BaseServiceImplTest extends BaseMockitoTest {
 
         service.fetchByIds(List.of(1, 2));
         verify(dao).fetchByIds(Mockito.eq(List.of(1, 2)),
-        isNull(), isNull(), any(FetchJoinInformation[].class));
+                isNull(), isNull(), any(FetchJoinInformation[].class));
 
         service.fetchByIds(List.of(1, 2), new FetchJoinInformation("property1"));
         verify(dao).fetchByIds(List.of(1, 2), null, (SortOrders) null, new FetchJoinInformation("property1"));
@@ -352,14 +350,44 @@ public class BaseServiceImplTest extends BaseMockitoTest {
      */
     @Test
     public void testValidate_Identical() {
-        TestEntity entity = new TestEntity("kevin", 15L);
+        TestEntity entity = new TestEntity(1, "kevin", 15L);
 
-        TestEntity other = new TestEntity();
-        other.setId(4);
+        TestEntity other = new TestEntity(2, "kevin", 15L);
+
         when(dao.findByUniqueProperty("name", "kevin", true)).thenReturn(other);
 
         assertThrows(OCSNonUniqueException.class, () -> service.validate(entity));
     }
 
-    ;
+}
+
+
+class TestServiceImpl extends BaseServiceImpl<Integer, TestEntity> {
+    @Autowired
+    private Dependency dependency;
+
+    @Autowired
+    private BaseDao<Integer, TestEntity> dao;
+
+    @Override
+    protected BaseDao<Integer, TestEntity> getDao() {
+        return dao;
+    }
+
+    @Override
+    protected TestEntity findIdenticalEntity(TestEntity entity) {
+        return dao.findByUniqueProperty("name", entity.getName(), true);
+    }
+
+
+    public void noop() {
+        dependency.noop();
+    }
+}
+
+class Dependency {
+
+    public void noop() {
+        // do nothing
+    }
 }

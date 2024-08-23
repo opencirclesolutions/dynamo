@@ -1,17 +1,24 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 package org.dynamoframework.export.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import lombok.Getter;
 import lombok.Setter;
@@ -19,6 +26,8 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.util.LocaleUtil;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dynamoframework.configuration.DynamoProperties;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
 import org.dynamoframework.domain.AbstractEntity;
@@ -80,11 +89,11 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
      * @param locale          locale
      * @param joins           the joins
      */
-    protected BaseExcelExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+    protected BaseExcelExportTemplate(DynamoProperties dynamoProperties, BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
                                       List<SortOrder> sortOrders, Filter filter, String title,
                                       Supplier<CustomXlsStyleGenerator<ID, T>> customGenerator,
                                       Locale locale, FetchJoinInformation... joins) {
-        super(service, entityModel, exportMode, sortOrders, filter, title, joins);
+        super(dynamoProperties, service, entityModel, exportMode, sortOrders, filter, title, joins);
         LocaleUtil.setUserLocale(locale);
         this.customGenerator = customGenerator == null ? null : customGenerator.get();
     }
@@ -105,7 +114,8 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
      * @return the created generator
      */
     protected XlsStyleGenerator<ID, T> createGenerator(Workbook workbook) {
-        return new BaseXlsStyleGenerator<>(workbook);
+        BaseXlsStyleGenerator baseXlsStyleGenerator = new BaseXlsStyleGenerator<>(getDynamoProperties(), workbook);
+        return baseXlsStyleGenerator;
     }
 
     /**
@@ -143,7 +153,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
      * @return the workbook
      */
     protected Workbook createWorkbook(int size) {
-        if (size > SystemPropertyUtils.getMaxExportRowsBeforeStreaming()) {
+        if (size > getDynamoProperties().getCsv().getMaxRowsBeforeStreaming()) {
             return new SXSSFWorkbook();
         }
         return new XSSFWorkbook();
@@ -199,7 +209,7 @@ public abstract class BaseExcelExportTemplate<ID extends Serializable, T extends
         }
         boolean isPercentage = (am != null && am.isPercentage()) || forcePercentage;
 
-        int defaultPrecision = SystemPropertyUtils.getDefaultDecimalPrecision();
+        int defaultPrecision = DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDecimalPrecision();
         int precision = (am == null ? defaultPrecision : am.getPrecision()) + 2;
         if (isPercentage) {
             // percentages in the application are just numbers,

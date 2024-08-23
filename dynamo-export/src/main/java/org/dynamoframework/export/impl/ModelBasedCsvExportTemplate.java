@@ -1,20 +1,28 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 package org.dynamoframework.export.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import com.opencsv.CSVWriter;
 import org.apache.poi.util.LocaleUtil;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.dao.FetchJoinInformation;
 import org.dynamoframework.dao.SortOrder;
 import org.dynamoframework.domain.AbstractEntity;
@@ -25,8 +33,8 @@ import org.dynamoframework.export.type.ExportMode;
 import org.dynamoframework.filter.Filter;
 import org.dynamoframework.service.BaseService;
 import org.dynamoframework.utils.ClassUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.utils.FormatUtils;
-import org.dynamoframework.utils.SystemPropertyUtils;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -48,7 +56,6 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
         extends BaseCsvExportTemplate<ID, T> {
 
     private final Locale locale;
-
     /**
      * Constructor
      *
@@ -59,9 +66,9 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
      * @param filter      filter to apply to limit the results
      * @param joins       fetch joins to use when querying the database
      */
-    public ModelBasedCsvExportTemplate(BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
+    public ModelBasedCsvExportTemplate(DynamoProperties dynamoProperties, BaseService<ID, T> service, EntityModel<T> entityModel, ExportMode exportMode,
                                        List<SortOrder> sortOrders, Filter filter, Locale locale, FetchJoinInformation... joins) {
-        super(service, entityModel, exportMode, sortOrders, filter, joins);
+        super(dynamoProperties, service, entityModel, exportMode, sortOrders, filter, joins);
         this.locale = locale;
     }
 
@@ -69,9 +76,9 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
     protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8),
-                     SystemPropertyUtils.getCsvSeparator().charAt(0),
-                     SystemPropertyUtils.getCsvQuoteChar().charAt(0),
-                     SystemPropertyUtils.getCsvEscapeChar().charAt(0), String.format("%n"))) {
+                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getSeparatorChar().charAt(0),
+                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getQuoteChar().charAt(0),
+                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getEscapeChar().charAt(0), String.format("%n"))) {
 
             addHeaderRow(writer);
 

@@ -1,18 +1,27 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 package org.dynamoframework.export.rest;
 
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -50,6 +59,7 @@ import java.util.Locale;
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin(exposedHeaders = {"Content-Type", "Content-Disposition"})
+@Tag(name = "Export", description = "Dynamo export controller")
 public class ExportController {
 
     private final EntityModelFactory entityModelFactory;
@@ -74,6 +84,7 @@ public class ExportController {
      */
     @PostMapping(path = "/excel/{entityName}")
     @SuppressWarnings("unchecked")
+    @Operation(summary = "Exports data to Excel")
     public <ID extends Serializable, T extends AbstractEntity<ID>> ResponseEntity<Resource> exportExcel(
             @PathVariable("entityName") String entityName, @RequestParam(required = false) String reference,
             @RequestBody @Valid SearchModel searchModel, @RequestParam(required = false, defaultValue = "en") String locale,
@@ -105,6 +116,7 @@ public class ExportController {
     }
 
     @PostMapping(path = "/csv/{entityName}")
+    @Operation(summary = "Exports data to csv")
     public <ID extends Serializable, T extends AbstractEntity<ID>> ResponseEntity<Resource> exportCsv(
             @PathVariable("entityName") String entityName, @RequestParam(required = false) String reference,
             @RequestBody @Valid SearchModel searchModel, @RequestParam(required = false, defaultValue = "en") String locale,

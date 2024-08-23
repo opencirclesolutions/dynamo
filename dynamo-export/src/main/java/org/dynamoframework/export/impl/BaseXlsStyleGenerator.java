@@ -1,26 +1,34 @@
-/*
-   Licensed under the Apache License, Version 2.0 (the "License");
-   you may not use this file except in compliance with the License.
-   You may obtain a copy of the License at
-
-       http://www.apache.org/licenses/LICENSE-2.0
-
-   Unless required by applicable law or agreed to in writing, software
-   distributed under the License is distributed on an "AS IS" BASIS,
-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-   See the License for the specific language governing permissions and
-   limitations under the License.
- */
 package org.dynamoframework.export.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
+import org.dynamoframework.configuration.DynamoProperties;
 import org.dynamoframework.domain.AbstractEntity;
 import org.dynamoframework.domain.model.AttributeDateType;
 import org.dynamoframework.domain.model.AttributeModel;
 import org.dynamoframework.export.XlsStyleGenerator;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.utils.NumberUtils;
-import org.dynamoframework.utils.SystemPropertyUtils;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -68,13 +76,14 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
     /**
      * Constructor
      *
-     * @param workbook the Workbook to apply the styles to
+     * @param dynamoProperties
+     * @param workbook         the Workbook to apply the styles to
      */
-    public BaseXlsStyleGenerator(Workbook workbook) {
+    public BaseXlsStyleGenerator(DynamoProperties dynamoProperties, Workbook workbook) {
         this.workbook = workbook;
         DataFormat format = workbook.createDataFormat();
 
-        thousandsGrouping = SystemPropertyUtils.useXlsThousandsGrouping();
+        thousandsGrouping = dynamoProperties.getCsv().isThousandsGrouping();
 
         // create the cell styles only once - this is a huge performance
         // gain!
@@ -107,15 +116,15 @@ public class BaseXlsStyleGenerator<ID extends Serializable, T extends AbstractEn
 
         dateStyle = workbook.createCellStyle();
         setBorder(dateStyle, BorderStyle.THIN);
-        dateStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultDateFormat()));
+        dateStyle.setDataFormat(format.getFormat(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));
 
         dateTimeStyle = workbook.createCellStyle();
         setBorder(dateTimeStyle, BorderStyle.THIN);
-        dateTimeStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultDateTimeFormat()));
+        dateTimeStyle.setDataFormat(format.getFormat(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateTimeFormat()));
 
         timeStyle = workbook.createCellStyle();
         setBorder(timeStyle, BorderStyle.THIN);
-        timeStyle.setDataFormat(format.getFormat(SystemPropertyUtils.getDefaultTimeFormat()));
+        timeStyle.setDataFormat(format.getFormat(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getTimeFormat()));
     }
 
     /**
