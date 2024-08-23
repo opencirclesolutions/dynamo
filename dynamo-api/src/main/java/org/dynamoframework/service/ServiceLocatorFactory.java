@@ -60,7 +60,6 @@ public final class ServiceLocatorFactory {
     }
 
     protected static String getServiceLocatorClassName() {
-        Properties prop = new Properties();
         BufferedReader in = null;
         try {
             in = new BufferedReader(new InputStreamReader(ServiceLocatorFactory.class.getClassLoader().getResourceAsStream("dynamoservicelocator")));
