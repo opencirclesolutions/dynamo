@@ -20,15 +20,13 @@ package org.dynamoframework.rest;
  * #L%
  */
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
-import org.dynamoframework.exception.OCSNonUniqueException;
-import org.dynamoframework.exception.OCSSecurityException;
-import org.dynamoframework.exception.OCSValidationException;
-import org.dynamoframework.exception.OcsNotFoundException;
+import org.dynamoframework.exception.*;
 import org.dynamoframework.rest.model.ErrorMessageResponse;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -54,6 +52,15 @@ public class ControllerExceptionHandler {
 
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(HttpStatus.BAD_REQUEST.value(), collect));
+    }
+
+    @ExceptionHandler({JsonProcessingException.class})
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ApiResponse(responseCode = "400", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})
+    public ResponseEntity<ErrorMessageResponse> jsonProcessingException(JsonProcessingException ex) {
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorMessageResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
     }
 
     /**

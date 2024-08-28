@@ -33,6 +33,10 @@ public class OCSRuntimeException extends RuntimeException {
 
     private static final long serialVersionUID = -6263372299801009820L;
 
+    public OCSRuntimeException(Throwable cause) {
+        super(cause);
+    }
+
     public OCSRuntimeException(String message) {
         super(message);
     }

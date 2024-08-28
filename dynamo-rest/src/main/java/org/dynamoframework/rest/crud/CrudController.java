@@ -22,6 +22,7 @@ package org.dynamoframework.rest.crud;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -75,7 +76,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
     @SneakyThrows
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new entity")
-    public T post(@PathVariable("entityName") String entityName, @RequestBody
+    public T post(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName, @RequestBody
     String request, @RequestParam(required = false) String reference) {
 
         Class<T> clazz = findClass(entityName);
@@ -100,7 +101,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
      * Executes an action defined in the entity model
      *
      * @param entityName the name of the entity
-     * @param actionId   the ID of the action to carry out
+     * @param actionId   the ID of the action to execute
      * @param request    the request body
      * @param reference  optional entity model reference
      * @param id         optional ID of the entity to update (in case of update actions)
@@ -108,15 +109,15 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
      */
     @PostMapping(value = "/{entityName}/action/{actionId}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
-    @SneakyThrows
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Executes an action defined in the entity model")
+    @SneakyThrows
     @SuppressWarnings("unchecked")
-    public <U extends AbstractEntity<ID>> T executeAction(@PathVariable("entityName") String entityName,
-                                                          @PathVariable("actionId") String actionId,
-                                                          @RequestBody
-                                                          String request, @RequestParam(required = false) String reference,
-                                                          @RequestParam(required = false) String id) {
+    public <U extends AbstractEntity<ID>> T executeAction(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
+                                                          @PathVariable("actionId") @Parameter(description = "The id of the action to execute") String actionId,
+                                                          @RequestBody @Parameter(description = "The request body") String request,
+                                                          @RequestParam(required = false) @Parameter(description = "Entity model reference") String reference,
+                                                          @RequestParam(required = false) @Parameter(description = "ID of the entity to update (in case of update actions)")String id) {
 
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
@@ -169,8 +170,10 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @SneakyThrows
     @Operation(summary = "Updates an existing entity")
-    public T put(@PathVariable("entityName") String entityName, @PathVariable("id") String id, @RequestBody
-    String request, @RequestParam(required = false) String reference) {
+    public T put(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
+                 @PathVariable("id") @Parameter(description = "The ID of the entity") String id,
+                 @RequestBody @Parameter(description = "The message body") String request,
+                 @RequestParam(required = false)@Parameter(description = "Reference to specify the entity model to use")  String reference) {
 
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
@@ -202,8 +205,9 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
     @GetMapping(value = "/{entityName}/{id}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.ALL_VALUE)
     @Operation(summary = "Retrieve the details of a single entity")
-    public T get(@PathVariable("entityName") String entityName, @PathVariable("id") String id,
-                 @RequestParam(required = false) String reference) {
+    public T get(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
+                 @PathVariable("id") @Parameter(description = "The ID of the entity") String id,
+                 @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
         userDetailsService.validateReadAllowed(model);
@@ -220,13 +224,14 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
      * Instantiates a new entity
      *
      * @param entityName the name of the entity
-     * @param reference  the ID of the entity
+     * @param reference  the entity model reference
      * @return the entity
      */
     @GetMapping(value = "/{entityName}/init", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.ALL_VALUE)
     @Operation(summary = "Instantiates a new entity")
-    public T init(@PathVariable("entityName") String entityName, @RequestParam(required = false) String reference) {
+    public T init(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
+                  @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
         userDetailsService.validateWriteAllowed(model);
@@ -246,7 +251,8 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
             consumes = MediaType.ALL_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Retrieves a simple list of entities (without any sorting or filtering)")
-    public List<T> list(@PathVariable("entityName") String entityName, @RequestParam(required = false) String reference) {
+    public List<T> list(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
+                        @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
         validateMethodAllowed(model, EntityModel::isListAllowed);
@@ -270,8 +276,9 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
     @PostMapping(value = "/{entityName}/search", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @Operation(summary = "Executes a search request")
-    public SearchResultsModel<T> search(@PathVariable("entityName") String entityName, @RequestBody @Valid SearchModel searchModel,
-                                        @RequestParam(required = false) String reference) {
+    public SearchResultsModel<T> search(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
+                                        @RequestBody @Valid @Parameter(description = "The search request") SearchModel searchModel,
+                                        @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
 
         Class<T> clazz = findClass(entityName);
 
@@ -285,7 +292,8 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
     @DeleteMapping("/{entityName}/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Delete an entity")
-    public void delete(@PathVariable("entityName") String entityName, @PathVariable("id") String id) {
+    public void delete(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
+                       @PathVariable("id") @Parameter(description = "The ID of the entity") String id) {
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = getEntityModelFactory().getModel(clazz);
         validateMethodAllowed(model, EntityModel::isDeleteAllowed);

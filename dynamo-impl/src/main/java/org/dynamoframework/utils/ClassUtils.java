@@ -58,6 +58,27 @@ public final class ClassUtils {
 
     private static final String SET = "set";
 
+    private static Set<String> basePackages = null;
+
+    private static Map<String, Class> entityClasses = new HashMap<>();
+
+    static {
+        if (basePackages == null) {
+            synchronized (ClassUtils.class) {
+                ClassPathScanningCandidateComponentProvider entityScanProvider = new ClassPathScanningCandidateComponentProvider(false);
+                entityScanProvider.addIncludeFilter(new AnnotationTypeFilter(EntityScan.class));
+                basePackages = new HashSet<>();
+                Set<BeanDefinition> beanDefs = entityScanProvider.findCandidateComponents("");
+                for (BeanDefinition bd : beanDefs) {
+                    if (bd instanceof AnnotatedBeanDefinition) {
+                        Map<String, Object> annotAttributeMap = ((AnnotatedBeanDefinition) bd).getMetadata().getAnnotationAttributes(EntityScan.class.getCanonicalName());
+                        Collections.addAll(basePackages, ((String[]) annotAttributeMap.get("basePackages")));
+                    }
+                }
+            }
+        }
+    }
+
     /**
      * Checks if the specified property can be set for the specified object. This
      * method supports nested properties
@@ -470,9 +491,6 @@ public final class ClassUtils {
         }
     }
 
-    private static Set<String> basePackages = null;
-    private static Map<String, Class> entityClasses = new HashMap<>();
-
     /**
      * Translates the name of an entity to the fully qualified class name. The <code>@EntityScan</code> base packages are searched.
      *
@@ -480,20 +498,6 @@ public final class ClassUtils {
      * @return the class
      */
     public static Class<?> findClass(String entityName) {
-        if (basePackages == null) {
-            synchronized (ClassUtils.class) {
-                ClassPathScanningCandidateComponentProvider entityScanProvider = new ClassPathScanningCandidateComponentProvider(false);
-                entityScanProvider.addIncludeFilter(new AnnotationTypeFilter(EntityScan.class));
-                basePackages = new HashSet<>();
-                Set<BeanDefinition> beanDefs = entityScanProvider.findCandidateComponents("");
-                for (BeanDefinition bd : beanDefs) {
-                    if (bd instanceof AnnotatedBeanDefinition) {
-                        Map<String, Object> annotAttributeMap = ((AnnotatedBeanDefinition) bd).getMetadata().getAnnotationAttributes(EntityScan.class.getCanonicalName());
-                        Collections.addAll(basePackages, ((String[]) annotAttributeMap.get("basePackages")));
-                    }
-                }
-            }
-        }
         if (entityClasses.containsKey(entityName)) {
             log.debug("Getting class for {} from cache", entityName);
             return entityClasses.get(entityName);

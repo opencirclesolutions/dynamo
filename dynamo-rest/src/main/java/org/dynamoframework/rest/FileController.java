@@ -21,6 +21,7 @@ package org.dynamoframework.rest;
  */
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -81,9 +82,9 @@ public class FileController {
     @SuppressWarnings("unchecked")
     @Transactional
     @Operation(summary = "Uploads a file")
-    public <ID, T extends AbstractEntity<ID>> void upload(@RequestParam("file") MultipartFile file,
-                                                          @RequestParam("entityId") String id,
-                                                          @RequestParam("entityName") String entityName,
+    public <ID, T extends AbstractEntity<ID>> void upload(@RequestParam("file") @Parameter(description = "The file to upload") MultipartFile file,
+                                                          @RequestParam("entityId") @Parameter(description = "The ID of the entity on which to store the file") String id,
+                                                          @RequestParam("entityName") @Parameter(description = "The name of the entity") String entityName,
                                                           @RequestParam("attributeName") String attributeName) throws IOException {
 
         EntityModel<T> model = findEntityModel(entityName);
@@ -108,9 +109,9 @@ public class FileController {
     @SuppressWarnings("unchecked")
     @Transactional
     @Operation(summary = "Clear a file")
-    public <ID, T extends AbstractEntity<ID>> void clear(@RequestParam("entityId") String id,
-                                                         @RequestParam("entityName") String entityName,
-                                                         @RequestParam("attributeName") String attributeName) throws IOException {
+    public <ID, T extends AbstractEntity<ID>> void clear(@RequestParam("entityId") @Parameter(description = "The ID of the entity") String id,
+                                                         @RequestParam("entityName") @Parameter(description = "The ID of the entity") String entityName,
+                                                         @RequestParam("attributeName") @Parameter(description = "The ID of the atribute") String attributeName) throws IOException {
 
         EntityModel<T> model = findEntityModel(entityName);
         AttributeModel attributeModel = findAttributeModel(model, attributeName);
@@ -130,9 +131,9 @@ public class FileController {
     @GetMapping(path = "/download")
     @Transactional
     @Operation(summary = "Download a file")
-    public <ID, T extends AbstractEntity<ID>> ResponseEntity<Resource> download(@RequestParam("entityId") String entityId,
-                                                                                @RequestParam("entityName") String entityName,
-                                                                                @RequestParam("attributeName") String attributeName) {
+    public <ID, T extends AbstractEntity<ID>> ResponseEntity<Resource> download(@RequestParam("entityId") @Parameter(description = "The ID of the entity") String entityId,
+                                                                                @RequestParam("entityName") @Parameter(description = "The name of the entity") String entityName,
+                                                                                @RequestParam("attributeName") @Parameter(description = "The ID of the atribute") String attributeName) {
         EntityModel<T> model = findEntityModel(entityName);
         AttributeModel attributeModel = findAttributeModel(model, attributeName);
 
@@ -170,9 +171,9 @@ public class FileController {
     @GetMapping(path = "/downloadBase64", produces = MediaType.TEXT_PLAIN_VALUE)
     @Transactional
     @Operation(summary = "Downloads a file as a Base64 string")
-    public <ID, T extends AbstractEntity<ID>> ResponseEntity<String> downloadBase64(@RequestParam("entityId") String entityId,
-                                                                                    @RequestParam("entityName") String entityName,
-                                                                                    @RequestParam("attributeName") String attributeName) {
+    public <ID, T extends AbstractEntity<ID>> ResponseEntity<String> downloadBase64(@RequestParam("entityId") @Parameter(description = "The ID of the entity") String entityId,
+                                                                                    @RequestParam("entityName") @Parameter(description = "The name of the entity") String entityName,
+                                                                                    @RequestParam("attributeName") @Parameter(description = "The ID of the atribute") String attributeName) {
         EntityModel<T> model = findEntityModel(entityName);
         BaseService<ID, T> service = (BaseService<ID, T>) serviceLocator.getServiceForEntity(model.getEntityClass());
         T entity = service.fetchById(convertId(model, entityId));
