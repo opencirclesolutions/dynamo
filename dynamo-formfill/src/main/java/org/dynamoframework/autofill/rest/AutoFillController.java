@@ -9,9 +9,9 @@ package org.dynamoframework.autofill.rest;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package org.dynamoframework.autofill.rest;
  */
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.extern.slf4j.Slf4j;
@@ -55,17 +56,19 @@ public class AutoFillController extends BaseController {
 
     /**
      * Makes a request to automatically fill a form
+     *
      * @param entityName the name of the entity for which to fill a form
-     * @param request request containing the input and desired AI service
-     * @param reference optional reference to further specify the entity model
+     * @param request    request containing the input and desired AI service
+     * @param reference  optional reference to further specify the entity model
      * @return an object containing the fields that could be automatically filled
      */
     @PostMapping(value = "/{entityName}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Makes a request to automatically fill a form")
-    public Object autoFill(@PathVariable("entityName") String entityName, @RequestBody
-           @Valid AutoFillRequest request, @RequestParam(required = false) String reference) {
+    public Object autoFill(@PathVariable("entityName") @Parameter(description = "The name of the entity for which to fill a form") String entityName,
+                           @RequestBody @Valid @Parameter(description = "Therequest containing the input and desired AI service") AutoFillRequest request,
+                           @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
 
         Class<Object> clazz = findClass(entityName);
         EntityModel<?> entityModel = findEntityModel(reference, clazz);

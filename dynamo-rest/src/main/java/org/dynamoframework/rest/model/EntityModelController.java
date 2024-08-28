@@ -9,9 +9,9 @@ package org.dynamoframework.rest.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -21,6 +21,7 @@ package org.dynamoframework.rest.model;
  */
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -48,14 +49,15 @@ public class EntityModelController {
 
     /**
      * Retrieves an entity model based on the name of the entity
+     *
      * @param entityName the name of the entity
-     * @param reference optional reference to the specific entity model
+     * @param reference  optional reference to the specific entity model
      * @return the entity model
      */
     @GetMapping("/{entityName}")
     @Operation(summary = "Retrieve an entity model")
-    public EntityModelResponse getEntityModel(@PathVariable String entityName,
-                                              @RequestParam(required = false) String reference) {
+    public EntityModelResponse getEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
+                                              @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
         Class<?> clazz = ClassUtils.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
@@ -67,15 +69,16 @@ public class EntityModelController {
 
     /**
      * Retrieves a nested entity model based on the main attribute name and the name of the attribute
-     * @param entityName the main entity name
+     *
+     * @param entityName    the main entity name
      * @param attributeName the name of the attribute
      * @return the entity model
      */
     @GetMapping("/{entityName}/attribute/{attributeName}")
     @Operation(summary = "Retrieve a nested entity model")
-    public EntityModelResponse getNestedEntityModel(@PathVariable String entityName,
-                                                    @PathVariable String attributeName,
-                                                    @RequestParam(required = false) String reference) {
+    public EntityModelResponse getNestedEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
+                                                    @PathVariable @Parameter(description = "The name of the attribute") String attributeName,
+                                                    @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
         Class<?> clazz = ClassUtils.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
@@ -93,14 +96,15 @@ public class EntityModelController {
 
     /**
      * Retrieves a nested entity model based on the main attribute name and the name of the attribute
+     *
      * @param entityName the main entity name
-     * @param actionId the name of the attribute
+     * @param actionId   the name of the attribute
      * @return the entity model
      */
     @GetMapping("/{entityName}/action/{actionId}")
     @Operation(summary = "Retrieve an action entity model")
-    public EntityModelResponse getActionEntityModel(@PathVariable String entityName,
-                                                    @PathVariable String actionId,
+    public EntityModelResponse getActionEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
+                                                    @PathVariable @Parameter(description = "The name of the attribute") String actionId,
                                                     @RequestParam(required = false) String reference) {
         Class<?> clazz = ClassUtils.findClass(entityName);
         if (clazz == null) {
