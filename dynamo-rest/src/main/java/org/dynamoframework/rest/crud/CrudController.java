@@ -20,7 +20,6 @@ package org.dynamoframework.rest.crud;
  * #L%
  */
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -35,7 +34,6 @@ import org.dynamoframework.dao.SortOrder;
 import org.dynamoframework.dao.SortOrders;
 import org.dynamoframework.domain.AbstractEntity;
 import org.dynamoframework.domain.model.*;
-import org.dynamoframework.exception.OCSUnmarshallException;
 import org.dynamoframework.exception.OCSValidationException;
 import org.dynamoframework.exception.OcsNotFoundException;
 import org.dynamoframework.rest.BaseController;
@@ -75,6 +73,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 
     @PostMapping(value = "/{entityName}", produces = MediaType.APPLICATION_JSON_VALUE,
             consumes = MediaType.APPLICATION_JSON_VALUE)
+    @SneakyThrows
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Create a new entity")
     public T post(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName, @RequestBody
@@ -85,12 +84,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
         validateMethodAllowed(model, EntityModel::isCreateAllowed);
         userDetailsService.validateWriteAllowed(model);
 
-        T source = null;
-        try {
-            source = objectMapper.readerFor(clazz).readValue(request);
-        } catch (JsonProcessingException e) {
-            throw new OCSUnmarshallException(e);
-        }
+        T source = objectMapper.readerFor(clazz).readValue(request);
         T copy = ClassUtils.instantiateClass(clazz);
 
         mergeSimpleValues(source, copy, model, false);
@@ -141,12 +135,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 
         EntityModel<U> actionModel = (EntityModel<U>) action.getEntityModel();
 
-        U source = null;
-        try {
-            source = objectMapper.readerFor(action.getEntityClass()).readValue(request);
-        } catch (JsonProcessingException e) {
-            throw new OCSUnmarshallException(e);
-        }
+        U source = objectMapper.readerFor(action.getEntityClass()).readValue(request);
         ID convertedId = convertId(clazz, id);
 
         U copy = ClassUtils.instantiateClass(actionModel.getEntityClass());
@@ -197,12 +186,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
                     .formatted(entityName, id));
         }
 
-        T source = null;
-        try {
-            source = objectMapper.readerFor(clazz).readValue(request);
-        } catch (JsonProcessingException e) {
-            throw new OCSUnmarshallException(e);
-        }
+        T source = objectMapper.readerFor(clazz).readValue(request);
 
         mergeSimpleValues(source, existingEntity, model, true);
         mergeComplexValues(source, existingEntity, model, true, false);

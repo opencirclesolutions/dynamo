@@ -20,6 +20,7 @@ package org.dynamoframework.rest;
  * #L%
  */
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import jakarta.validation.ConstraintViolation;
@@ -53,10 +54,10 @@ public class ControllerExceptionHandler {
                 .body(new ErrorMessageResponse(HttpStatus.BAD_REQUEST.value(), collect));
     }
 
-    @ExceptionHandler({OCSUnmarshallException.class})
+    @ExceptionHandler({JsonProcessingException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     @ApiResponse(responseCode = "400", content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE)})
-    public ResponseEntity<ErrorMessageResponse> unmarshallException(OCSUnmarshallException ex) {
+    public ResponseEntity<ErrorMessageResponse> jsonProcessingException(JsonProcessingException ex) {
         log.error(ex.getMessage(), ex);
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorMessageResponse(HttpStatus.BAD_REQUEST.value(), ex.getMessage()));
