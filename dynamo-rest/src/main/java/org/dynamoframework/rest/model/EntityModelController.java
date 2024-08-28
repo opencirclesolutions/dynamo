@@ -98,13 +98,13 @@ public class EntityModelController {
      * Retrieves a nested entity model based on the main attribute name and the name of the attribute
      *
      * @param entityName the main entity name
-     * @param actionId   the name of the attribute
+     * @param actionId   the ID of the action
      * @return the entity model
      */
     @GetMapping("/{entityName}/action/{actionId}")
     @Operation(summary = "Retrieve an action entity model")
     public EntityModelResponse getActionEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
-                                                    @PathVariable @Parameter(description = "The name of the attribute") String actionId,
+                                                    @PathVariable @Parameter(description = "The ID of the action") String actionId,
                                                     @RequestParam(required = false) String reference) {
         Class<?> clazz = ClassUtils.findClass(entityName);
         if (clazz == null) {
