@@ -2838,8 +2838,6 @@ outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo
 with the application's menu structure or routing, although it does offer some convenience features and
 general use services.
 
-====
-
 === General front-end services
 
 ==== Localization
@@ -3461,7 +3459,7 @@ table, or when you click the Add button. The functionality for
 navigating to a detail screen must be explicitly enabled. The easiest
 way to do this is by defining the *detailNavigationPath* (see below).
 
-==== DetailNavigationPath
+====DetailNavigationPath
 
 [source,angular17html]
 --

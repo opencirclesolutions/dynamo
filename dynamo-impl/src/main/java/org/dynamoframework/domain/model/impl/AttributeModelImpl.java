@@ -150,7 +150,7 @@ public class AttributeModelImpl implements AttributeModel {
 
     private String navigationLink;
 
-    private boolean nestedDetails = true;
+    private boolean nestedDetails;
 
     private EntityModel<?> nestedEntityModel;
 

@@ -195,7 +195,7 @@ public @interface Attribute {
     /**
      * @return whether one-to-many relation are nested inside the create/edit request
      */
-    boolean nestedDetails() default true;
+    boolean nestedDetails() default false;
 
     /**
      * @return the number field mode
