@@ -2808,18 +2808,21 @@ front-end, you must run the OpenAPI generator for Angular in order to
 create the services and DTOs that are required by the Angular framework.
 
 To do so, first start the back-end application, then open a web browser
-and navigate to *http://localhost:8080/v3/api-docs.* This will bring up
-a page containing the OpenAPI documentation of the endpoints offered by
-Dynamo (as well as any custom endpoints that you may have added
-yourself). Copy the raw code and convert it to YAML (e.g. by pasting it
-in https://editor.swagger.io/), then store the yaml in a file named
-*api.yaml* and save that to the root directory of the front-end project.
+and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will
+download a file called *api-docs.yaml*.
+
+As an alternative, https://curl.se[curl] can be used to download this file:
+
+[source, commandline]
+--
+curl -O http://localhost:8080/v3/api-docs.yaml
+--
 
 Then, run the following command
 
 [source,commandline]
 --
-npx @openapitools/openapi-generator-cli generate -i api.yaml -g typescript-angular -o ./model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
+npx @openapitools/openapi-generator-cli generate -i api-docs.yaml -g typescript-angular -o ./model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
 --
 
 This will generate the front-end source code in the specified directory
