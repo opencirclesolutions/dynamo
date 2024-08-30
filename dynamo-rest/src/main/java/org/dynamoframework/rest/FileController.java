@@ -56,7 +56,7 @@ import java.util.Base64;
  * Generic controller for uploading and downloading files
  */
 @RestController
-@RequestMapping("/files")
+@RequestMapping(value = "#{@'dynamoframework-org.dynamoframework.configuration.DynamoConfigurationProperties'.defaults.endpoints.crud}")
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin

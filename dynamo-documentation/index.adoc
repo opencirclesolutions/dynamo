@@ -2579,6 +2579,12 @@ dynamoframework:
 |
 |
 
+|endpoints
+|org.dynamoframework.configuration.EndpointProperties
+|The configuration of the Dynamo endpoints
+|
+|
+
 |enum-field-mode
 |org.dynamoframework.domain.model.AttributeEnumFieldMode
 |The default field type to use for enumeration attributes
@@ -2672,6 +2678,54 @@ dynamoframework:
 
 |===
 
+==== Prefix dynamoframework.defaults.endpoints
+
+// tag::dynamoframework.defaults.endpoints[]
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties$EndpointConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|autofill
+|java.lang.String
+|The endpoint for the auto fill controller
+|/autofill
+|
+
+|crud
+|java.lang.String
+|The endpoint for the crud controller
+|/crud
+|
+
+|export
+|java.lang.String
+|The endpoint for the export controller
+|/export
+|
+
+|files
+|java.lang.String
+|The endpoint for the files controller
+|/files
+|
+
+|model
+|java.lang.String
+|The endpoint for the model controller
+|/model
+|
+
+|status
+|java.lang.String
+|The endpoint for the status controller
+|/status
+|
+
+
+|===
+// end::dynamoframework.defaults.endpoints[]
 
 ==== Prefix dynamoframework.bedrock
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
