@@ -3331,7 +3331,7 @@ no specific roles are required and any user may perform the action. In
 case multiple values are provided, a user can perform the action as long
 as they have any of the provided roles.
 
-It is possible to use thae message bundle to override the required
+It is possible to use the message bundle to override the required
 roles, by using the “readRoles”, “writeRoles” and “deleteRoles” keys.
 Each value takes a comma-separated list of the role names.
 
