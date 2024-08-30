@@ -2029,7 +2029,7 @@ exclusively in the back-end. In case any of these validations fail, the
 call will be rejected and an validation error message will be shown.
 
 Unfortunately, it is not possible to automatically replicate the custom
-back-end validations in the front-end. However it is possible to
+back-end validations in the front-end. However, it is possible to
 replicate the validations by using custom validators. This will be
 covered in more detail later.
 
@@ -2805,11 +2805,13 @@ front-end code.
 
 When you start a new project that uses the Dynamo framework in its
 front-end, you must run the OpenAPI generator for Angular in order to
-create the services and DTOs that are required by the Angular framework.
+create the services and DTOs that are required by the Dynamo framework.
+
+[TODO] include a part about using the Dynamo component
 
 To do so, first start the back-end application, then open a web browser
-and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will
-download a file called *api-docs.yaml*.
+and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will show you a web page
+containing the applications' OpenAPI (Swagger) documentation
 
 As an alternative, https://curl.se[curl] can be used to download this file:
 
@@ -2818,7 +2820,8 @@ As an alternative, https://curl.se[curl] can be used to download this file:
 curl -O http://localhost:8080/v3/api-docs.yaml
 --
 
-Then, run the following command
+Save the data to a file named "api-docs.yaml" and save it in the root directory of your
+front-end application. Then, run the following command:
 
 [source,commandline]
 --
@@ -2828,6 +2831,12 @@ npx @openapitools/openapi-generator-cli generate -i api-docs.yaml -g typescript-
 This will generate the front-end source code in the specified directory
 (in this case */model*). It will now be ready for usage by the
 framework.
+
+It should (at least in principle) be possible to add Dynamo to your existing front-end application
+without too much effort. Note that setting up the general structure of your application is largely
+outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo does not concern itself
+with the application's menu structure or routing, although it does offer some convenience features and
+general use services.
 
 === General front-end services
 
@@ -2878,8 +2887,8 @@ this.messageService.warn('Selected something:' +  obj.firstName)
 
 image:media/image6.png[image,width=427,height=108]
 
-Note that the methods of the *NotificationService* take a literal string
-value, not a key from the message bundle. If you want to display a value
+Note that the methods of the *NotificationService* take a String literal,
+not a key from the message bundle. If you want to display a value
 from a message bundle, you need to retrieve that using the
 translateService first.
 
@@ -3005,9 +3014,8 @@ export function createTimestampFilter(attributeName: string, from: Date, to: Dat
 }
 --
 
-
 These filters can be used to specify filtering on a range of instants or
-LocalDateTime values. The filters contains a “from” value (lower bound,
+LocalDateTime values. The filter contains a “from” value (lower bound,
 including) and a “to” value (upper bound, inclusive). At least one of
 these must be filled.
 
@@ -3055,7 +3063,7 @@ export function createTimeRangeFilter(
 }
 --
 
-The *TimeRangeFilter* can be used to filter on a range of times (e.g.
+The *TimeRangeFilter* can be used to filter on a range of time stamps (e.g.
 “14:57” to “16:44”) The filter contains a “from” value (lower bound,
 including) and a “to” value (upper bound, inclusive). At least one of
 these must be filled.
@@ -3071,6 +3079,9 @@ return [createOrFilter([
   createEqualsFilter('reservationCategory', 'SPA')
 ])];
 --
+
+The OrFilter can be used to chain together a number of other filters using the logical OR
+operator:
 
 *NotFilter*
 
@@ -3136,7 +3147,8 @@ multi-select field, but Dynamo also offers the option to use an lookup
 field.
 ** For a multi-select field, the framework will by default show all
 available options (up to a maximum of 200), and will perform a GET call
-without any filters in order to retrieve the available options.
+without any filters in order to retrieve the available options. For this to work,
+the *listAllowed* setting on the entity much be enabled
 ** When you define a field filter, the application will instead perform
 a call to the *search* endpoint, using a filter on the *displayProperty*
 attribute in combination with the field filters.
@@ -3145,7 +3157,7 @@ request to retrieve the available options. Instead, the user can use a
 button to bring up a popup dialog containing a search form. This allows
 the user to carry out a complex search query. The search form is
 constructed using the entity model for the entity you are searching for.
-By default this is the general entity model for that entity, but you can
+By default, this is the general entity model for that entity, but you can
 use the *lookupEntityReference* setting on the attribute model to
 specify a different entity model and the *lookupQueryType* to specify
 the query type.
@@ -3203,14 +3215,14 @@ used to transfer data to the UI where it will be used for display
 purposes. This technique can be used to combine data from e.g. multiple
 sources
 
-In order to use a view object, follow the following steps:
+In order to use a view object, take the following steps:
 
 * Create a class that will serve as the View Object, and have it extend
 the *AbstractEntity* class. Using the @Model annotation, disable any
 update/create functionality for this entity by setting the
 *createAllowed, updateAllowed* and *deleteAllowed* settings to false.
 * Create a service that extends *BaseSearchService.* This is a subclass
-of the general *BaseSearch* that only supports methods for searching
+of the general *BaseService* that only supports methods for searching
 (not for updating and deleting).
 * Implement this service, and inside the implementation provide the
 implementations for the relevant search methods. A useful technique here
@@ -3256,7 +3268,10 @@ will appear on the button bar below the results table in a search layout
 or a split layout. UPDATE means that the actions will appear in each row
 in the results table.
 ** Roles – an array of the roles that the user must have in order to be
-able to execute the action.
+able to execute the action. Actions for which the user is not in the
+appropriate role will be greyed out in the UI.
+
+As an example, consider the following:
 
 [source,java]
 --
@@ -3278,11 +3293,10 @@ public Organization addMinimalOrganization(MinimalOrganizationDTO dto) {
 }
 --
 
-
 Under the covers, the application will create an entity model based on
 the DTO that is passed to the annotated method. This entity model comes
 with all the functionality of a regular entity model – this means that
-you can annotate the DTO properties with the @Attribute annotation (and
+you can annotate the DTO properties with the *@Attribute* annotation (and
 the other entity-model related annotation), and these settings will
 influence how the dialog that is used to carry out the action will
 behave.
@@ -3303,6 +3317,11 @@ behind the regular popup button.
 Note that for an UPDATE action, if your DTO class has properties with
 the same name as those of the main entity, the corresponding fields will
 automatically be set to the values from the main entity.
+
+The action is also linked to the entity by means of the ID field - the ID
+of the entity will be passed along to the call to the back-end and should
+bind to the ID field in the DTO. In your service you can then use this ID
+in order to retrieve the entity.
 
 ==== Authorization
 
@@ -3369,7 +3388,7 @@ rights.
 * The Delete button will only be rendered when the user has “delete”
 rights.
 
-Currently, there Dynamo framework does not provide functionality for
+Currently, the Dynamo framework does not provide functionality for
 automatically building a menu or defining navigation rules based on the
 entity model roles. However, it does offer some functionality to ensure
 that only authorized users get to see certain screens
@@ -3433,14 +3452,14 @@ table.
 will be used to display the values inside the table.
 * Each row in the table will contain a Delete button that allows the
 user to delete an entity. This button will only show up if
-*deleteEnabled* is set to true for the entity.
+*deleteEnabled* is set to true for the entity (and if the user has the correct rights)
 
 Note that by default, nothing will happen when you click on a row in the
-table, or when you click the add button. The functionality for
+table, or when you click the Add button. The functionality for
 navigating to a detail screen must be explicitly enabled. The easiest
 way to do this is by defining the *detailNavigationPath* (see below).
 
-==== DetailNavigationPath
+====DetailNavigationPath
 
 [source,angular17html]
 --
@@ -3457,7 +3476,7 @@ separate component (and include a route to it) for this detail page.
 If this value is set, no extra actions are needed to navigate to a
 detail screen for editing or creating an entity. If this value is not
 set (e.g. in case you want some custom behaviour when clicking on either
-a row in the table, use the *onAddButtonClick* or *onRowSelect* event
+a row in the table or the Add button, use the *onAddButtonClick* or *onRowSelect* event
 handlers instead.
 
 ==== SearchFormMode
@@ -3521,7 +3540,7 @@ the table.
 ==== PreserveSearchTerms
 
 The *preserveSearchTerms* setting can be used to store the search terms
-entered by the user between visits to the page. By default this
+entered by the user between visits to the page. By default, this
 functionality is enabled. With this functionality enabled, when a user
 enters one or more search terms and then presses the Search button, the
 search terms that the user entered will be saved, and restores once the
@@ -3555,15 +3574,15 @@ confirmation before clearing the search form. The default value is
 
 ==== SearchImmediately
 
-By default, the application will carry out ­a search request immediately
-as the screen is loaded, resulting in a results table that will be
+By default, the application will carry out a search request immediately
+when the screen is first loaded, resulting in a results table that will be
 immediately filled. When this is not the desirable behaviour, you can
 set the *searchImmediately* property to *false.* When this is done, no
 search request will be carried out after the screen has loaded.
 
 ==== AdvancedModeEnabled
 
-The *advancedModeEnabled* attribute can be used to specify whether an
+The *advancedModeEnabled* attribute can be used to specify whether
 the advanced search mode is enabled. By default, this is not the case,
 and the search form will only contain the attributes for which
 *searchable* has been set to *ALWAYS*. When *advancedModeEnabled* is set
@@ -3612,7 +3631,7 @@ will be rendered.
 * When the value is changed to *READ_ONLY,* each row in the table will
 contain a popup button that will bring up a dialog that can be used to
 view the details of the selected row.
-* When the value is change to *EDIT,* each row in the table will contain
+* When the value is changed to *EDIT,* each row in the table will contain
 a popup button that will bring up a dialog that can be used to edit the
 selected row.
 
@@ -3672,7 +3691,7 @@ afterSearchFormBuilt(info: FormInfo) {
 --
 
 Note: when you are setting the value for a *multiselect* component, be
-sure that the value you are setting is an array.
+sure that the value you are passing array.
 
 ==== Additional row actions
 
@@ -3735,7 +3754,7 @@ be enabled (if omitted, the button will always be enabled by default).
 In addition to actions that are available for each row in the table, it
 is also possible to define global actions that are not tied to a
 specific entity. These global actions appear in the button bar below the
-results table.
+results table in search form.
 
 [source,typescript]
 --
@@ -3826,7 +3845,7 @@ entity model to use.
 ==== OpenInViewMode
 
 By default, the edit form will be rendered in edit mode after being
-opened. If want the form to open in view mode instead, you can set the
+opened. If you want the form to open in view mode instead, you can set the
 *openInViewMode* property to *true.* If this is the case, the screen
 will open in read-only mode, and an “Edit” button will be present to
 switch to edit mode (provided the user has the proper rights and editing
@@ -3864,7 +3883,7 @@ the use tab sheets.
 
 ==== Changing column number and width
 
-By default the edit form will consist of a single column that spans most
+By default, the edit form will consist of a single column that spans most
 of the screen. The width of the edit form is actually governed by the
 value of the *formWidthClass* property. The default value is
 
