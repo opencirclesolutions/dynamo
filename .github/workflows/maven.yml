@@ -10,9 +10,11 @@ name: Java CI with Maven
 
 on:
   push:
-    branches: [ "dynamo-v40" ]
+    branches:
+      - dynamo-v40
   pull_request:
-    branches: [ "dynamo-v40" ]
+    branches:
+      - dynamo-v40
 
 jobs:
   build:
