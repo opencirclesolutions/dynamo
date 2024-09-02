@@ -2689,38 +2689,38 @@ dynamoframework:
 
 |autofill
 |java.lang.String
-|The endpoint for the auto fill controller
-|/autofill
+|The endpoint for the autofill controller
+|/api/dynamo/autofill
 |
 
 |crud
 |java.lang.String
 |The endpoint for the crud controller
-|/crud
+|/api/dynamo/crud
 |
 
 |export
 |java.lang.String
 |The endpoint for the export controller
-|/export
+|/api/dynamo/export
 |
 
 |files
 |java.lang.String
 |The endpoint for the files controller
-|/files
+|/api/dynamofiles
 |
 
 |model
 |java.lang.String
 |The endpoint for the model controller
-|/model
+|/api/dynamo/model
 |
 
 |status
 |java.lang.String
 |The endpoint for the status controller
-|/status
+|/api/dynamo/status
 |
 
 

@@ -165,27 +165,27 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
             /**
              * The endpoint for the export controller
              */
-            private String export = "/export";
+            private String export = "/api/dynamo/export";
             /**
              * The endpoint for the model controller
              */
-            private String model = "/model";
+            private String model = "/api/dynamo/model";
             /**
-             * The endpoint for the auto fill controller
+             * The endpoint for the autofill controller
              */
-            private String autofill = "/autofill";
+            private String autofill = "/api/dynamo/autofill";
             /**
              * The endpoint for the status controller
              */
-            private String status = "/status";
+            private String status = "/api/dynamo/status";
             /**
              * The endpoint for the crud controller
              */
-            private String crud = "/crud";
+            private String crud = "/api/dynamo/crud";
             /**
              * The endpoint for the files controller
              */
-            private String files = "/files";
+            private String files = "/api/dynamo/files";
         }
 
     }
