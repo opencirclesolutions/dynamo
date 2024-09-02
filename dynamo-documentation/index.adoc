@@ -314,7 +314,7 @@ Some examples:
 Organization.displayName=Criminal Organization
 --
 
-Sets the display name of the Organization entity to “Crimal
+Sets the display name of the Organization entity to “Criminal
 Organization”.
 
 [source,properties]
@@ -352,7 +352,7 @@ the enumeration value.
 values:
 ** “dynamoframework.defaults.date-format” (dd-MM-yyyy) for dates
 ** “dynamoframework.defaults.time-format” (HH:mm:ss) for times
-** “dynamoframework.defaults.datetime-format” (dd-MM-yyyy HH:mm:ss)
+** “dynamoframework.defaults.date-time-format” (dd-MM-yyyy HH:mm:ss)
 * For the *visibleInForm* and *visibleInGrid* settings, both the
 enumeration values (SHOW/HIDE) and the Boolean values *true* and *false*
 are supported.
@@ -651,7 +651,7 @@ representation of the desired value.
 
 For date attributes, use the String representations according to the
 system properties *dynamoframework.defaults.date-format* _(dd-MM-yyyy),_
-*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.datetime-format*
+*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.date-time-format*
 _(dd-MM-yyyy HH:mm:ss)_.
 
 === DefaultSearchValueFrom
@@ -672,7 +672,7 @@ representation of the desired value.
 
 For date attributes, use the String representations according to the
 system properties *dynamoframework.defaults.date-format* _(dd-MM-yyyy),_
-*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.datetime-format*
+*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.date-time-format*
 _(dd-MM-yyyy HH:mm:ss)_
 
 === DefaultSearchValueTo
