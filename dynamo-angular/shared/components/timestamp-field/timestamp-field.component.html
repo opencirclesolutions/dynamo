@@ -1,0 +1,70 @@
+<ng-container [formGroup]="formGroup!">
+  <ng-container *ngIf="searchMode">
+    <p-calendar *ngIf="am.searchDateOnly === true"
+    [id]="am.name"
+    [name]="am.name"
+    [formControlName]="am.name"
+    [placeholder]="am.placeholders[locale]"
+    [dateFormat]="
+    getCalendarDateFormat(am.displayFormats[locale])"
+    [showClear]="true"
+    appendTo="body"
+  >
+  </p-calendar>
+
+    <div class="row" *ngIf="am.searchDateOnly === false">
+      <div class="col-6">
+        <p-calendar
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="getFromName(am)"
+          [placeholder]="getPlaceholderFrom(am)"
+          [dateFormat]="
+          getCalendarDateFormat(am.displayFormats[locale])"
+          [showClear]="true"
+          [showTime]="true"
+          appendTo="body"
+        >
+        </p-calendar>
+      </div>
+      <div class="col-6">
+        <p-calendar
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="getToName(am)"
+          [placeholder]="getPlaceholderTo(am)"
+          [dateFormat]="
+          getCalendarDateFormat(am.displayFormats[locale])"
+          [showClear]="true"
+          [showTime]="true"
+          appendTo="body"
+        >
+        </p-calendar>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="!searchMode">
+    <div class="row">
+      <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+        <p-calendar
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="am.name"
+          [dateFormat]="
+          getCalendarDateFormat(am.displayFormats[locale])"
+          [placeholder]="am.placeholders[locale]"
+          [showClear]="true"
+          [showTime]="true"
+          appendTo="body"
+        />
+      </div>
+      <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+        <p-message
+          severity="error"
+          *ngIf="getErrorString(am.name) && showValidationErrors"
+          [text]="getErrorString(am.name)"
+        ></p-message>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

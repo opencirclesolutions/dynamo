@@ -1,0 +1,180 @@
+<form
+  *ngIf="entityModel && mainForm"
+  (ng-submit)="search()"
+  [formGroup]="mainForm"
+  ngClass="nested"
+>
+  <p-panel header="{{ 'search' | translate }}" [toggleable]="true">
+    <div class="row" *ngFor="let row of searchRows; index as i">
+      <div class="col-1">
+        <button
+          type="button"
+          class="btn btn-danger m-1"
+          [disabled]="loading || row.required"
+          pTooltip=" {{ 'delete' | translate}}"
+          (click)="deleteRow(i)"
+        >
+          <span class="pi pi-trash"></span>
+        </button>
+      </div>
+      <!-- Dropdown for selecting attribute to search on -->
+      <div class="col-4">
+        <p-dropdown
+          [options]="searchableAttributeNames"
+          optionLabel="name"
+          [showClear]="true"
+          appendTo="body"
+          [formGroup]="getFormGroup(i)"
+          [formControl]="getFormControl('attribute', i)"
+          [filter]="true"
+          filterBy="name"
+          *ngIf="getFormGroup(i)"
+        ></p-dropdown>
+      </div>
+      <!-- Type-specific fields -->
+      <div class="col-6" *ngIf="row.am">
+        <ng-container
+          [ngTemplateOutlet]="getTemplateForField(row.am!.name) || defaultFieldTemplate"
+          [ngTemplateOutletContext]="{
+            $implicit: row.am!,
+            formGroup: getFormGroup(i)
+          }"
+        >
+        </ng-container>
+      </div>
+    </div>
+  </p-panel>
+  <div class="btn-group mt-2" role="group">
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      [disabled]="loading"
+      (click)="addRow(false)"
+    >
+      <span class="pi pi-plus"></span> {{ "add_filter" | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      [disabled]="loading"
+      (click)="search()"
+    >
+      <span class="pi pi-search"></span> {{ "search" | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      [disabled]="loading"
+      (click)="clear()"
+    >
+      <span class="pi pi-eraser"></span> {{ "clear" | translate }}
+    </button>
+  </div>
+</form>
+
+<ng-template #defaultFieldTemplate let-am let-formGroup="formGroup">
+  <!-- String -->
+  <ng-container [formGroup]="formGroup">
+    <ng-container *ngIf="isString(am)">
+      <app-string-field
+        [am]="am"
+        [formGroup]="formGroup"
+        [locale]="locale"
+        classes="p-inputtext-sm form-control"
+        [allowTextAreas]="false"
+        [showValidationErrors]="false"
+      ></app-string-field>
+    </ng-container>
+    <!-- Master -->
+    <ng-container *ngIf="isMaster(am)">
+      <app-select-entity
+        [am]="am"
+        [options]="lookupEntities(am.lookupEntityName!)"
+        [locale]="locale"
+        [formGroup]="formGroup"
+        [searchMode]="true"
+        [entityModelReference]="am.lookupEntityReference"
+        [defaultFilters]="getFieldFilters(am)"
+      >
+      </app-select-entity>
+    </ng-container>
+    <!-- Free detail -->
+    <ng-container *ngIf="isFreeDetail(am)">
+      <app-select-many
+        [am]="am"
+        [options]="lookupEntities(am.lookupEntityName!)"
+        [locale]="locale"
+           [formGroup]="formGroup"
+        [searchMode]="true"
+        [entityModelReference]="am.lookupEntityReference"
+        [defaultFilters]="getFieldFilters(am)"
+      >
+      </app-select-many>
+    </ng-container>
+    <!-- Enumeration -->
+    <ng-container *ngIf="isEnum(am)">
+      <app-enum-field
+        [am]="am"
+        [locale]="locale"
+        [showValidationErrors]="false"
+        [options]="getEnumValues(am.name)"
+           [formGroup]="formGroup"
+        [searchMode]="true"
+      ></app-enum-field>
+    </ng-container>
+    <!-- Boolean -->
+    <ng-container *ngIf="isBoolean(am)" [formGroup]="formGroup">
+      <p-triStateCheckbox
+        [id]="am.name"
+        [name]="am.name"
+        [formControlName]="am.name"
+      >
+      </p-triStateCheckbox>
+    </ng-container>
+    <!-- Date -->
+    <ng-container *ngIf="isDate(am)">
+      <app-date-field
+        [am]="am"
+        [locale]="locale"
+        [searchMode]="true"
+           [formGroup]="formGroup"
+      ></app-date-field>
+    </ng-container>
+    <!-- Time -->
+    <ng-container *ngIf="isTime(am)">
+      <app-time-field
+        [am]="am"
+        [locale]="locale"
+        [searchMode]="true"
+           [formGroup]="formGroup"
+      ></app-time-field>
+    </ng-container>
+    <!-- Timestamps -->
+    <ng-container *ngIf="isInstant(am) || isLocalDateTime(am)">
+      <app-timestamp-field
+        [am]="am"
+        [locale]="locale"
+        [searchMode]="true"
+           [formGroup]="formGroup"
+      ></app-timestamp-field>
+    </ng-container>
+    <!-- Integral numbers -->
+    <ng-container *ngIf="isIntegral(am)">
+      <app-number-field
+        [am]="am"
+        [locale]="locale"
+        [searchMode]="true"
+           [formGroup]="formGroup"
+      ></app-number-field>
+    </ng-container>
+    <!-- Decimal numbers -->
+    <ng-container *ngIf="isDecimal(am)">
+      <app-decimal-field
+        [am]="am"
+        [locale]="locale"
+        [searchMode]="true"
+           [formGroup]="formGroup"
+      ></app-decimal-field>
+    </ng-container>
+  </ng-container>
+</ng-template>

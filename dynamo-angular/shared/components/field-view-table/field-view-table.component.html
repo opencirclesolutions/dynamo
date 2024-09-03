@@ -1,0 +1,41 @@
+<p-table
+  [value]="getRows()"
+  [lazy]="false"
+  dataKey="id"
+  [rows]="pageSize"
+  [pageLinks]="10"
+  styleClass="p-datatable-sm"
+  [paginator]="false"
+  [showCurrentPageReport]="false"
+  currentPageReportTemplate="Show {first} to {last} of {totalRecords} items"
+  [rowsPerPageOptions]="[10, 25, 50]"
+  *ngIf="rows && rows.length > 0"
+>
+  <ng-template pTemplate="header" *ngIf="entityModel && initDone">
+    <tr>
+      <th
+        *ngFor="let am of this.attributeModels"
+        scope="am"
+        [ngStyle]=""
+        [pSortableColumnDisabled]="true"
+        [pSortableColumn]="''"
+      >
+        <ng-container>
+          {{ am.displayNames[locale] }} {{ am.required ? "*" : "" }}
+        </ng-container>
+      </th>
+    </tr>
+  </ng-template>
+  <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+    <tr>
+      <td *ngFor="let am of attributeModels">
+        <app-field-view
+          [am]="am"
+          [entity]="row"
+          [locale]="locale"
+          [enumMap]="getEnumMap(am)"
+        ></app-field-view>
+      </td>
+    </tr>
+  </ng-template>
+</p-table>

@@ -1,0 +1,43 @@
+<ng-container [formGroup]="formGroup!">
+  <div class="row">
+    <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+      <input
+        [id]="am.name"
+        [name]="am.name"
+        type="text"
+        pInputText
+        [formControlName]="am.name"
+        *ngIf="isTextField(am)"
+        [class]="classes"
+        [placeholder]="am.placeholders[locale]"
+      />
+      <textarea
+        pInputTextarea
+        [id]="am.name"
+        [name]="am.name"
+        type="text"
+        pInputText
+        [formControlName]="am.name"
+        [placeholder]="am.placeholders[locale]"
+        [class]="classes"
+        *ngIf="isTextArea(am)"
+      >
+      </textarea>
+      <p-password
+        [formControlName]="am.name"
+        [id]="am.name"
+        [feedback]="false"
+        [placeholder]="am.placeholders[locale]"
+        [class]="classes"
+        *ngIf="isPassword(am)"
+      ></p-password>
+    </div>
+    <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+      <p-message
+        severity="error"
+        *ngIf="getErrorString(am.name)"
+        [text]="getErrorString(am.name)"
+      ></p-message>
+    </div>
+  </div>
+</ng-container>

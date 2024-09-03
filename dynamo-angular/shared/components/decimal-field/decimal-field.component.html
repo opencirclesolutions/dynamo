@@ -1,0 +1,62 @@
+<ng-container [formGroup]="formGroup!">
+  <ng-container *ngIf="!searchMode">
+    <div class="row">
+      <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+        <p-inputNumber
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="am.name"
+          [mode]="getDecimalMode(am)"
+          [minFractionDigits]="am.precision"
+          [maxFractionDigits]="am.precision"
+          [locale]="getSimpleLocale(locale)"
+          [suffix]="getSuffix(am)"
+          [currency]="am.currencyCode"
+          [placeholder]="am.placeholders[locale]!"
+        >
+        </p-inputNumber>
+      </div>
+      <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+        <p-message
+          severity="error"
+          *ngIf="getErrorString(am.name)"
+          [text]="getErrorString(am.name)"
+        ></p-message>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="searchMode">
+    <div class="row">
+      <div class="col-6">
+        <p-inputNumber
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="getFromName(am)"
+          [mode]="getDecimalMode(am)"
+          [currency]="am.currencyCode"
+          [minFractionDigits]="am.precision"
+          [maxFractionDigits]="am.precision"
+          [locale]="getSimpleLocale(locale)"
+          [suffix]="getSuffix(am)"
+          [placeholder]="getPlaceholderFrom(am)"
+        >
+        </p-inputNumber>
+      </div>
+      <div class="col-6">
+        <p-inputNumber
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="getToName(am)"
+          [mode]="getDecimalMode(am)"
+          [currency]="am.currencyCode"
+          [minFractionDigits]="am.precision"
+          [maxFractionDigits]="am.precision"
+          [locale]="getSimpleLocale(locale)"
+          [suffix]="getSuffix(am)"
+          [placeholder]="getPlaceholderTo(am)"
+        >
+        </p-inputNumber>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

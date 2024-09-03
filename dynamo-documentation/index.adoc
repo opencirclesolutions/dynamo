@@ -2789,54 +2789,429 @@ dynamoframework:
 You can use the static methods from the *SystemPropertyUtils* class to
 access these system properties from inside your code.
 
-== User interface setup
+=== Back-end code set-up
 
-=== Basic UI setup
+Back-end applications that want to use the Dynamo framework are fairly standard
+Spring Boot applications. Below is a sample pom.xml file that shows the minimal set-up for a
+Dynamo back-end.
 
-The Dynamo framework can be used in any Angular front-end. However, a
-couple of limitations apply:
+Replace the placeholders between square brackets by your own values
 
-* The framework depends on PrimeNG
-* The framework depends on Bootstrap
-* The framework depends on the OpenAPI generator for creating relevant
-front-end code.
+This example POM also does not include any database drivers. This means you
+will likely need to add your own database driver (e.g. Postgresql).
 
-=== Front-end code generation
+It also does not contain any dependencies for setting up application security,
+however the three dependencies that you need to set up Spring security based
+on OAuth are included in the pom but commented out.
 
-When you start a new project that uses the Dynamo framework in its
-front-end, you must run the OpenAPI generator for Angular in order to
-create the services and DTOs that are required by the Dynamo framework.
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.3.2</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>[YOUR GROUP ID]</groupId>
+	<artifactId>[YOUR ARTEFACT ID]</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>[YOUR NAME]</name>
+	<properties>
+		<java.version>21</java.version>
+		<dynamo.version>4.0.0-SNAPSHOT</dynamo.version>
+	</properties>
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-rest</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-formfill</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-functional-domain</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-export</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.16.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>5.1.0</version>
+			<classifier>jakarta</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>5.1.0</version>
+			<classifier>jakarta</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.2.224</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.9</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-security</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.security</groupId>-->
+<!--			<artifactId>spring-security-oauth2-resource-server</artifactId>-->
+<!--			<version>6.3.0</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.security</groupId>-->
+<!--			<artifactId>spring-security-oauth2-jose</artifactId>-->
+<!--			<version>6.3.0</version>-->
+<!--		</dependency>-->
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<parameters>true</parameters>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<configuration>
+							<outputDirectory>target/generated-sources/annotations</outputDirectory>
+							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<image>
+						<builder>paketobuildpacks/builder-jammy-base:latest</builder>
+					</image>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.3.0</version>
+			</plugin>
+		</plugins>
+	</build>
 
-[TODO] include a part about using the Dynamo component
+</project>
+----
+
+With this in place, there is only a little bit of set-up needed to be able to use
+the application. First of all, include an ApplicationConfig file as follows
+
+[source,java]
+----
+package com.opencircle.gts.configuration;
+
+import com.opencircle.gts.domain.MainActivity;
+import com.opencircle.gts.domain.QMainActivity;
+import org.dynamoframework.configuration.ApplicationConfigurationSupport;
+import org.dynamoframework.dao.BaseDao;
+import org.dynamoframework.dao.impl.DefaultDaoImpl;
+import org.dynamoframework.functional.domain.Country;
+import org.dynamoframework.functional.domain.QCountry;
+import org.dynamoframework.functional.domain.QRegion;
+import org.dynamoframework.functional.domain.Region;
+import org.dynamoframework.service.BaseService;
+import org.dynamoframework.service.impl.DefaultServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ApplicationConfig extends ApplicationConfigurationSupport {
+
+	@Override
+	protected String[] getBaseNames() {
+		return new String[] { "classpath:/META-INF/entitymodel", "classpath:/messages",
+				"classpath:/ocscommon", "classpath:/ValidationMessages" };
+	}
+
+    // some default DAOs and services for illustration purposes
+	@Bean
+	public BaseDao<Integer, Region> regionDao() {
+		return new DefaultDaoImpl<>(QRegion.region, Region.class);
+	}
+
+	@Bean
+	public BaseService<Integer, Region> regionService(BaseDao<Integer, Region> regionDao) {
+        return new DefaultServiceImpl<>(regionDao, "code");
+	}
+
+	@Bean
+	public BaseDao<Integer, Country> countryDao() {
+		return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
+	}
+
+	@Bean
+	public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> dao) {
+		return new DefaultServiceImpl<>(dao, "code");
+	}
+}
+----
+
+Finally, we need a Spring Boot Application class
+
+[source,java]
+----
+package com.opencircle.gts;
+
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+@SpringBootApplication
+@ComponentScan(basePackages = {"[YOUR PACKAGE GOES HERE]","org.dynamoframework"})
+@EntityScan({"org.dynamoframework.functional.domain", "[YOUR PACKAGE GOES HERE]"})
+@EnableConfigurationProperties(DynamoConfigurationProperties.class)
+public class GtsWebApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(GtsWebApplication.class, args);
+    }
+}
+----
+
+Be sure to replace the placeholders above by the directories that contain your
+entities (for the @EntityScan) and your services/components (for the @ComponentScan)
+
+=== Front-end code set-up
+
+When you start a new front-end project that uses the Dynamo framework in its
+front-end, there are several approaches you can take. The easiest approach is
+to use the blueprint project found at
+https://github.com/opencirclesolutions/dynamo-blueprint
+
+This project contains the skeleton for an Angular application that uses the
+Dynamo framework. It comes with
+
+* A package.json containing the required dependencies/libraries
+* The sources generated by the NPX code generator (more on this below) based
+on the endpoints offered by the back-end. These are included in the *dynamo/model* directory
+* The generic components that make up the Dynamo framework. These are located
+in the /src/app/shared directory
+* A basic skeleton for the application (app.module.ts with all
+the required dependencies)
+
+The quickest way to get started is to fork this project, then replace all
+occurrences of "dynamo-blueprint" by your desired project name.
+
+With this in place, you should be able to run the *ng serve* command
+to start a minimal application. This application has all the infrastructure
+in place but does not do any authentication or authorization.
+
+In order to add custom logic to this application, you can run the *ng generate
+component <name>* command to create a component. Inside this component, you
+can use the dynamo components like "<app-generic-search-layout>".
+
+In order to be able to actually use the component, don't forget to add a route
+to it in the *app-routing.module.ts*, e.g.
+
+[source,typescript]
+----
+  {
+    path: '',
+    title: 'Organizations',
+    component: OrganizationSearchComponent,
+  },
+----
+
+=== Adding the Dynamo code to an existing project
+
+If you already have an existing front-end project you can also copy the Dynamo sources
+directly to your project.
+
+To do so, make sure that your project uses the following dependencies
+
+[source,yaml]
+----
+  "dependencies": {
+    "@angular/animations": "^16.1.2",
+    "@angular/common": "^16.1.2",
+    "@angular/compiler": "^16.1.2",
+    "@angular/core": "^16.1.2",
+    "@angular/forms": "^16.1.2",
+    "@angular/platform-browser": "^16.1.2",
+    "@angular/platform-browser-dynamic": "^16.1.2",
+    "@angular/router": "^16.1.2",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^7.0.0",
+    "angular-oauth2-oidc": "^15.0.1",
+    "bootstrap": "^5.2.3",
+    "date-fns": "^3.3.1",
+    "ngx-extended-pdf-viewer": "^19.7.1",
+    "primeicons": "^6.0.1",
+    "primeng": "^16.0.2",
+    "quill": "^2.0.1",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.13.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^16.1.1",
+    "@angular/cli": "~16.2.0",
+    "@angular/compiler-cli": "^16.1.2",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~4.6.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.1.3"
+  }
+----
+
+and that Bootstrap and ngx-translate are set up properly.
+
+With that in place, you can copy the contents of the *dynamo-angular/shared* folder
+to the */src/app/shared* folder in your application.
+
+You will also need the code used to communicate with the back-end. You can make this
+available to the front-end by copying the contents of the *dynamo-angular/dynamo/model*
+to the *dynamo/model* directory in your front-end application. You can also run the
+Open API tools generator as described below.
+
+In case you are using the PDF viewer component and this produces errors, you might need
+to add the following to your *angular.json* file
+
+[source,yaml]
+---
+    "assets": [
+      "src/favicon.ico",
+      "src/assets",
+      {
+        "glob": "**/*",
+        "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+        "output": "/assets"
+      }
+    ]
+---
+
+
+=== Code generation
+
+Out of the box, the code in the blueprint project contains model objects
+and service for communicating with the standard Dynamo REST endpoints.
+
+However, if your application contains any custom endpoints that you always
+want to access from the UI in a convenient way, you can use the Open Api code
+generator to generate the plumbing code for you.
 
 To do so, first start the back-end application, then open a web browser
 and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will show you a web page
 containing the applications' OpenAPI (Swagger) documentation
 
-As an alternative, https://curl.se[curl] can be used to download this file:
-
-[source, commandline]
---
-curl -O http://localhost:8080/v3/api-docs.yaml
---
-
-Save the data to a file named "api-docs.yaml" and save it in the root directory of your
+Save the data to a file named "api.yaml" and save it in the root directory of your
 front-end application. Then, run the following command:
 
 [source,commandline]
 --
-npx @openapitools/openapi-generator-cli generate -i api-docs.yaml -g typescript-angular -o ./model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
+npx @openapitools/openapi-generator-cli generate -i api.yaml -g typescript-angular -o ./dynamo/model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
 --
 
 This will generate the front-end source code in the specified directory
-(in this case */model*). It will now be ready for usage by the
+(in this case */dynamo/model*). It will now be ready for usage by the
 framework.
 
-It should (at least in principle) be possible to add Dynamo to your existing front-end application
-without too much effort. Note that setting up the general structure of your application is largely
-outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo does not concern itself
-with the application's menu structure or routing, although it does offer some convenience features and
-general use services.
+The code for any additional custom endpoints will be added to the /dynamo/model folder,
+along with the code for the generic Dynamo endpoints (running this command will overwrite
+any of the existing code).
+
+
 
 === General front-end services
 
@@ -3198,7 +3573,7 @@ the primary key (“entityId” in the example below).
 >
   <ng-template
     dHiddenField
-    fieldName="memberFrom"
+    attributename="memberFrom"
     [value]="entityId"
   ></ng-template>
 --
@@ -4088,7 +4463,7 @@ up validations across multiple fields if desired).
   <ng-template #customValidatorTemplate let-formGroup>
     <ng-template
       dAdditionalValidators
-      fieldName="bagNumber"
+      attributeName="bagNumber"
       [formGroup]="formGroup"
       [validators]="[CustomValidators.bagNumberValidator(formGroup)]"
     />

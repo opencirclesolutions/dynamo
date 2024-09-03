@@ -1,0 +1,31 @@
+<ng-container [formGroup]="formGroup!">
+  <div class="row">
+    <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+      <p-chips
+        [id]="am.name"
+        [formControlName]="am.name"
+        [placeholder]="am.placeholders[locale]"
+        [formControlName]="am.name"
+        (onAdd)="validateInput($event)"
+        *ngIf="useChips()"
+        [minlength]="am.minCollectionSize || null"
+        [maxlength]="am.maxCollectionSize || null"
+      ></p-chips>
+      <app-element-collection-dialog
+        [id]="am.name"
+        [formGroup]="formGroup!"
+        [formControlName]="am.name"
+        [locale]="locale"
+        [am]="am"
+        *ngIf="useDialog()"
+      ></app-element-collection-dialog>
+    </div>
+    <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+      <p-message
+        severity="error"
+        *ngIf="getErrorString(am.name)"
+        [text]="getErrorString(am.name)"
+      ></p-message>
+    </div>
+  </div>
+</ng-container>

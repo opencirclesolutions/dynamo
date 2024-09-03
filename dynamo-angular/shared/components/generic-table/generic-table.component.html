@@ -1,0 +1,67 @@
+<app-data-table
+  *ngIf="searchImmediately || searched"
+  [columns]="columns"
+  [rows]="rows"
+  [totalRecords]="totalRecords"
+  (lazyLoad)="loadPage($event)"
+  [pageSize]="defaultPageSize"
+  [locale]="locale"
+  (rowClick)="rowClick($event)"
+  (deleteButtonClick)="deleteButtonClick($event)"
+  [deleteEnabled]="entityModel?.deleteAllowed! && !nested && isDeleteAllowed()"
+  [detailsModeEnabled]="detailsModeEnabled"
+  [selectedIds]="selectedIds"
+  [multiSelect]="multiSelect"
+  [showDetailButton]="showDetailButton"
+  [loading]="loading"
+  [customButtonTemplate]="customButtonTemplate"
+  [initialSortField]="getInitialSortField()"
+  [initialSortOrder]="getInitialSortOrder()"
+  [contextMenuItems]="getContextMenuItems()"
+>
+  <!-- Additional buttons-->
+  <ng-template #customButtonTemplate let-row>
+    <div class="btn-group" role="group">
+      <ng-container *ngIf="showPopupButton()">
+        <button
+          type="button"
+          pTooltip=" {{ 'details' | translate}}"
+          class="btn btn-primary m-1"
+          (click)="openEntityDialog(row)"
+        >
+          <span class="pi pi-eye"></span>
+        </button>
+      </ng-container>
+      <!-- Additional entity model actions -->
+      <button
+        *ngFor="let action of filterEntityModelActions()"
+        type="button"
+        class="btn btn-primary m-1"
+        [disabled]="loading"
+        (click)="callModelAction(vcr, action, row)"
+        pTooltip="{{ action.displayNames[locale] }}"
+      >
+        <span class="pi {{ action.icon }}"></span>
+      </button>
+      <!-- Additional UI defined actions -->
+      <button
+        *ngFor="let action of additionalRowActions"
+        type="button"
+        [class]="action.buttonClass"
+        (click)="callAdditionalRowAction(action, row)"
+        pTooltip="{{ action.messageKey | translate }}"
+        [disabled]="isRowActionDisabled(action, row)"
+      >
+        <span *ngIf="action.icon" class="pi {{ action.icon }}"></span>
+      </button>
+      <ng-template #popupDialogContainerRef></ng-template>
+    </div>
+  </ng-template>
+</app-data-table>
+<div class="row" *ngIf="!searched && !searchImmediately">
+  <span>
+    &nbsp;
+    <i>{{ "not_searched_yet" | translate }}</i></span
+  >
+  &nbsp;
+</div>

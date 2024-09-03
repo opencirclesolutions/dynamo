@@ -1,0 +1,8 @@
+:host([theme~="vertical"]) #layout {
+	height: inherit;
+	flex-direction: column;
+}
+
+:host([theme~="vertical"]) #layout ::slotted(*) {
+    margin-left: 0px;
+}

@@ -1,0 +1,54 @@
+<ng-container [formGroup]="formGroup!">
+  <div class="row">
+    <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+      <div class="row">
+        <div [class]="getFieldColClass()">
+          <p-multiSelect
+            [id]="am.name"
+            [name]="am.name"
+            [options]="options"
+            optionLabel="name"
+            [filter]="true"
+            [filterBy]="am.displayPropertyName"
+            [formControlName]="am.name"
+            [showClear]="true"
+            *ngIf="!useLookupField(am)"
+            [placeholder]="am.placeholders[locale]"
+          ></p-multiSelect>
+        </div>
+        <div class="col-2">
+          <button
+            class="btn btn-primary"
+            type="button"
+            (click)="showQuickAddDialog()"
+            *ngIf="isQuickAddButtonVisible() && !useLookupField(am)"
+          >
+            <span class="pi pi-plus"></span>
+          </button>
+        </div>
+      </div>
+      <app-lookup-field
+        [id]="am.name"
+        [entityName]="am.lookupEntityName!"
+        [locale]="locale"
+        [am]="am"
+        [displayPropertyName]="am.displayPropertyName!"
+        [formControlName]="am.name"
+        [multiSelect]="true"
+        *ngIf="useLookupField(am)"
+        [entityModelReference]="entityModelReference"
+        [entityModel]="entityModel"
+        [defaultFilters]="defaultFilters"
+        [queryType]="mapQueryType(am.lookupQueryType!)"
+      />
+      <ng-template #popupDialogContainerRef></ng-template>
+    </div>
+    <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+      <p-message
+        severity="error"
+        *ngIf="getErrorString(am.name)"
+        [text]="getErrorString(am.name)"
+      ></p-message>
+    </div>
+  </div>
+</ng-container>

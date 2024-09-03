@@ -1166,9 +1166,9 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
             setBooleanTrueSetting(attribute.showPassword(), model::setShowPassword);
             setBooleanTrueSetting(attribute.quickAddAllowed(), model::setQuickAddAllowed);
             setBooleanTrueSetting(attribute.neededInData(), model::setNeededInData);
+            setBooleanTrueSetting(attribute.nestedDetails(), model::setNestedDetails);
 
             setBooleanFalseSetting(attribute.sortable(), model::setSortable);
-            setBooleanFalseSetting(attribute.nestedDetails(), model::setNestedDetails);
 
             if (attribute.allowedExtensions() != null && attribute.allowedExtensions().length > 0) {
                 Set<String> set = Arrays.stream(attribute.allowedExtensions()).map(String::toLowerCase)
