@@ -2980,7 +2980,6 @@ on OAuth are included in the pom but commented out.
 			</plugin>
 		</plugins>
 	</build>
-
 </project>
 ----
 
@@ -3057,16 +3056,51 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @ComponentScan(basePackages = {"[YOUR PACKAGE GOES HERE]","org.dynamoframework"})
 @EntityScan({"org.dynamoframework.functional.domain", "[YOUR PACKAGE GOES HERE]"})
 @EnableConfigurationProperties(DynamoConfigurationProperties.class)
-public class GtsWebApplication {
+public class MyApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(GtsWebApplication.class, args);
+        SpringApplication.run(MyApplication.class, args);
     }
 }
 ----
 
 Be sure to replace the placeholders above by the directories that contain your
 entities (for the @EntityScan) and your services/components (for the @ComponentScan)
+
+As one of the final steps, the application also needs access to an instance of the Dynamo
+class *UserDetailsService*. This service is responsible for checking whether a user is in
+a certain role and whether they are allowed to perform certain actions. The implementation of
+this service depends on your authentication provider of choice and implementing it is
+beyond the scope of this documentation. Below you find a dummy implementation that will
+never reject a request.
+
+[source,java]
+----
+@Service
+public class MockUserDetailsService implements UserDetailsService {
+    @Override
+    public boolean isUserInRole(String... roles) {
+        return true;
+    }
+
+    @Override
+    public void validateReadAllowed(EntityModel<?> model) {
+
+    }
+
+    @Override
+    public void validateWriteAllowed(EntityModel<?> model) {
+
+    }
+
+    @Override
+    public void validateDeleteAllowed(EntityModel<?> model) {
+
+    }
+}
+
+----
+
 
 === Front-end code set-up
 
@@ -3165,7 +3199,13 @@ available to the front-end by copying the contents of the *dynamo-angular/dynamo
 to the *dynamo/model* directory in your front-end application. You can also run the
 Open API tools generator as described below.
 
-In case you are using the PDF viewer component and this produces errors, you might need
+Finally, the messages used for the internationalization of the Dynamo
+components have to be added to the application message bundles. These
+messages are included under the *dynamo-angular/i18n/* directory. Currently,
+English and Dutch are supported. These message need to be added to the
+message bundle files, typically under */src/assets/i18n*
+
+Finally, in case you are using the PDF viewer component and this produces errors, you might need
 to add the following to your *angular.json* file
 
 [source,yaml]
@@ -3180,6 +3220,7 @@ to add the following to your *angular.json* file
       }
     ]
 ---
+
 
 
 === Code generation

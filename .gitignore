@@ -58,3 +58,4 @@ dynamo-jasperreports-fixes/target
 dynamo-jpa/target
 dynamo-spring/target
 dynamo-vaadin/target
+/dynamo-frontend-export/frontend/
