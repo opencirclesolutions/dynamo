@@ -2741,6 +2741,58 @@ The code for any additional custom endpoints will be added to the /dynamo/model 
 along with the code for the generic Dynamo endpoints (running this command will overwrite
 any of the existing code).
 
+==== Using Apache Maven
+
+It is also possible to generate the front-end code using Apache Maven.
+This requires the *api-docs.json* file. This file can be obtained similarly
+to *api-docs.yaml* file: start the back-end application, then open a web
+browser and navigate to *http://localhost:8080/v3/api-docs*. After this,
+save the file to *api-docs.json*
+
+As an alternative, https://curl.se[curl] can also be used to download this
+file:
+
+[source, commandline]
+--
+curl -o api-docs.json http://localhost:8080/v3/api-docs
+--
+
+To generate the front-end code, the https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-maven-plugin/README.md[openapi-generator-maven-plugin]
+is used. The plugin needs to be configured as shown below:
+
+[source,xml]
+--
+<plugin>
+    <groupId>org.openapitools</groupId>
+    <artifactId>openapi-generator-maven-plugin</artifactId>
+    <version>7.8.0</version> <!-- or use a newer version -->
+    <executions>
+        <execution>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+                <inputSpec>${project.build.directory}/openapi.json</inputSpec>
+                <generatorName>typescript-angular</generatorName>
+                <output>src/main/${front-end.name}/model</output>
+                <configOptions>
+                    <ngVersion>16.1.2</ngVersion>
+                    <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                    <enumPropertyNaming>original</enumPropertyNaming>
+                </configOptions>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+--
+
+It is also possible to completely integrate the generation of the front-end
+code in the build process. A possible way to this is by using the
+*springdoc-openapi-maven-plugin*. Refer to
+https://github.com/springdoc/springdoc-openapi-maven-plugin[the readme of this plugin]
+for an example.
+
 
 == System properties
 
