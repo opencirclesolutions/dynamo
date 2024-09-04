@@ -1,0 +1,29 @@
+<ng-container *ngIf="dialogVisible && isValid()">
+  <p-dialog
+    [showHeader]="false"
+    [(visible)]="dialogVisible"
+    [style]="{ width: '85vw' }"
+    [closable]="true"
+    [closeOnEscape]="true"
+    [modal]="true"
+  >
+    <app-pdf-viewer
+      [mode]="mode"
+      [externalUrl]="externalUrl"
+      [entityId]="entityId"
+      [entityName]="entityName"
+      [attributeName]="attributeName"
+      [fileName]="fileName"
+    ></app-pdf-viewer>
+    <div class="btn-group" role="group">
+      <button
+        type="button"
+        class="btn btn-primary m-1"
+        (click)="closeDialog()"
+      >
+        {{ 'close' | translate }}
+      </button>
+    </div>
+  </p-dialog>
+</ng-container>
+

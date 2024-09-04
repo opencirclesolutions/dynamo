@@ -1,0 +1,14 @@
+<div class="container" *ngIf="isValid()">
+  <ng-container *ngIf="isModelMode()">
+    <ngx-extended-pdf-viewer
+      *ngIf="this.val && this.val.length > 0"
+      [base64Src]="getContent()"
+    ></ngx-extended-pdf-viewer>
+  </ng-container>
+  <ng-container *ngIf="isInternalMode()">
+    <ngx-extended-pdf-viewer [src]="getUrl()"></ngx-extended-pdf-viewer>
+  </ng-container>
+  <ng-container *ngIf="isExternalMode()">
+    <ngx-extended-pdf-viewer [src]="externalUrl!"></ngx-extended-pdf-viewer>
+  </ng-container>
+</div>

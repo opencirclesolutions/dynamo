@@ -1,0 +1,52 @@
+<div class="row">
+  <div class="col-lg-6">
+    <!-- image containing base 64 representation -->
+    <img
+      *ngIf="getImageContent() && am.image"
+      width="200px"
+      height="200px"
+      src="{{ getImageContent() }}"
+    />
+    <!-- no preview available -->
+    <img
+      *ngIf="!getImageContent() || !am.image"
+      width="200px"
+      height="200px"
+      src="assets/no-preview.png"
+      alt
+    />
+  </div>
+  <!-- Actual file upload component-->
+  <div class="col-lg-6">
+    <p-fileUpload
+      mode="basic"
+      #upload
+      chooseLabel="{{ 'upload' | translate }}"
+      [customUpload]="true"
+      [maxFileSize]="10000000"
+      [multiple]="true"
+      [accept]="getAllowedExtensions()"
+      (uploadHandler)="uploadHandler($event)"
+      [auto]="true"
+    ></p-fileUpload>
+    <!-- Clear button -->
+    <button
+      type="button"
+      class="btn btn-primary mt-1 mr-1"
+      (click)="clearUpload()"
+      [disabled]="!getImageContent()"
+    >
+      <span class="pi pi-ban"></span> {{ "clear" | translate }}
+    </button>
+    <!-- Download button -->
+    <button
+      type="button"
+      class="btn btn-primary mt-1 mr-1"
+      (click)="downloadFile()"
+      *ngIf="getImageContent() && am.downloadAllowed"
+    >
+      <span class="pi pi-download"></span>
+      {{ "download" | translate }}
+    </button>
+  </div>
+</div>

@@ -1,0 +1,91 @@
+<ng-container *ngIf="dialogVisible">
+  <p-dialog
+    header="{{ 'ai_fill' | translate }}"
+    [showHeader]="true"
+    [(visible)]="dialogVisible"
+    [style]="{ width: '70vw' }"
+    [modal]="true"
+  >
+    <form *ngIf="mainForm" [formGroup]="mainForm">
+      <div class="row">
+        <!-- AI service selection box -->
+        <label for="type">{{ "ai_type" | translate }}</label>
+        <div class="row">
+          <p-dropdown
+            id="type"
+            [options]="options"
+            optionLabel="name"
+            [showClear]="true"
+            formControlName="type"
+          ></p-dropdown>
+          <p-message
+            severity="error"
+            *ngIf="getErrorString('ai_type')"
+            [text]="getErrorString('ai_type')"
+          ></p-message>
+        </div>
+      </div>
+      <!-- Textual input -->
+      <div class="row">
+        <label for="input">{{ "ai_input" | translate }}</label>
+        <div class="row">
+          <textarea
+            pInputTextarea
+            id="input"
+            type="text"
+            pInputText
+            formControlName="input"
+            [style]="{height: '20vh'}"
+          >
+          </textarea>
+          <p-message
+            severity="error"
+            *ngIf="getErrorString('input')"
+            [text]="getErrorString('input')"
+          ></p-message>
+        </div>
+      </div>
+      <!-- Additional instructions -->
+      <div class="row">
+        <label for="additionalInstructions">
+          {{ "ai_instructions" | translate }}</label
+        >
+        <div class="row">
+          <textarea
+            pInputTextarea
+            id="additionalInstructions"
+            type="text"
+            pInputText
+            formControlName="additionalInstructions"
+          >
+          </textarea>
+          <p-message
+            severity="error"
+            *ngIf="getErrorString('additionalInstructions')"
+            [text]="getErrorString('additionalInstructions')"
+          ></p-message>
+        </div>
+      </div>
+    </form>
+
+    <div class="btn-group" role="group">
+      <button
+        type="button"
+        class="btn btn-danger m-1"
+        (click)="cancel()"
+        [disabled]="loading"
+      >
+        <span class="pi pi-times"></span> {{ "cancel" | translate }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-success m-1"
+        (click)="execute()"
+        [disabled]="!mainForm?.valid || loading"
+      >
+        <span class="pi pi-check"></span>
+        {{ "ok" | translate }}
+      </button>
+    </div>
+  </p-dialog>
+</ng-container>

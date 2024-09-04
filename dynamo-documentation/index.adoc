@@ -7,7 +7,7 @@ image:media/logo-dynamo.png[image]
 
 Web Application Accelerator Framework
 
-Developed, maintained and sponsored by
+Developed, maintained and sponsered by
 
 image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
 
@@ -138,11 +138,10 @@ versions of entity models in section 3.5)
 *model/Organization?reference=PersonOrganizationSearch*
 
 As you will see later on, entity models can be nested: if an entity has
-a reference to another entity (one-to-many, many-to-one etc) then a
+a reference to another entity (one-to-many, many-to-one etc.) then a
 nested entity model for that entity will be created. You can retrieve a
 nested entity model by performing a GET to
 */model/\{entityName}/attribute/attributeName,* e.g.
-
 */model/Gift/attribute/translations*
 
 Generally speaking, you should not have to call these endpoints directly
@@ -218,8 +217,8 @@ setting on attributes of nested entities is ignored – this is because
 when you are creating a search screen for an entity, you normally want
 to search on the attributes of that entity, not on the nested
 attributes.
-** For nested entity models, the “id” attribute and the
-“displayProperty” attribute will be marked with “visibleInGrid=true”.
+** For nested entity models, the *id* attribute and the
+*displayProperty* attribute will be marked with “visibleInGrid=true”.
 This is done so that a textual description of a nested entity can be
 shown inside a grid.
 * Getters that are annotated with *@AssertTrue* or *@AssertFalse*
@@ -285,8 +284,8 @@ not the behaviour of any derived Entity Models.
 
 If you need to override the behaviour of a derived Entity Model, you can
 use the message bundle mechanism to achieve this. Message bundle
-overrides must be placed in the *entitymodel.properties* file (create a
-locale-specific version of this file if you need to; the normal Java
+overrides must be placed in the *src/main/resources/META-INF/entitymodel.properties* file
+(create a locale-specific version of this file if you need to; the normal Java
 message bundle mechanic is supported).
 
 Message bundle entries in general have the following structure:
@@ -374,7 +373,7 @@ property. By default, its value is empty, which means there are no
 restrictions on the file type.
 
 The value can be set to a comma-separated list of supported extensions,
-e.g. *bmp,jpg,png.*. Any “.” characters must not be included.
+e.g. *bmp,jpg,png*. Any “.” characters must not be included.
 
 On the *@Attribute* annotation, you can use an array of String values
 instead of a comma-separated String. Extensions are not case-sensitive,
@@ -394,13 +393,13 @@ relation in the entity class, e.g. the *orderLines* attribute inside an
 * *MASTER*: a property that appears as a *@OneToOne* or *@ManyToOne* in
 the entity class.
 * *LOB*: a property that is annotated with *@Lob* and represents a large
-binary object (like a file or an image)
+binary object (like a file or an image).
 * *EMBEDDED*: used during the Entity Model construction process to
 handle embedded properties (using the *@Embedded* annotation). This will
 be covered in the _Advanced_ section.
 * *ELEMENT_COLLECTION*: a property that is annotated with the
 *@ElementCollection* annotation, i.e. a collection of simple values like
-integers and Strings (note that the JPA spec does allow more complex element
+integers and Strings (The JPA spec does allow more complex element
 collections, but these are not currently supported by Dynamo).
 
 The attribute type in combination with the Java type determines how a
@@ -430,7 +429,7 @@ of the *selectMode* setting.
 * For a *DETAIL* property, the behaviour will depend on the value of the
 *nestedDetails* setting:
 ** In case *nestedDetails* is set to true, a table that can be used to
-edit the details in-line as part of the edit form is rendered. This is
+edit the details inline as part of the edit form is rendered. This is
 used for nested collections that cannot exist without the parent entity,
 e.g. the OrderLines belonging to an Order.
 ** In case *nestedDetails* is set to false, a multiple select component
@@ -455,7 +454,7 @@ generated. These allow the user to perform an interval search (return
 all values that are higher than or equal to the value in the first field
 and lower than or equal to the value in the second field). If you do not
 want this behaviour, you can change the value of the
-*searchForExactValue* setting to *true*_;_ if you do this then only a
+*searchForExactValue* setting to *true*; if you do this then only a
 single search field will appear.
 ** For a property of type *LocalDateTime* or *Instant* you can set the
 *searchForDate* setting to true. If you do this then only a single
@@ -562,16 +561,17 @@ attribute. In our example, the attribute to change is “members” (see
 below).
 * *filterPath* – this is the path that determines which filter to apply
 to the selection component that is on the receiving end of the cascade
-action. In our example, we want to filter a list of Person so that only
+action. In our example, we want to filter a list of Persons so that only
 persons from a certain country are returned – this country is stored in
 the *countryOfOrigin* property of the person so this is our filter path.
-* *mode* - this specifies whether cascading should be enabled in search
+* *mode* - this specifies whether the cascading should be enabled in search
 forms, in edit forms, or in both cases. The default is *BOTH*.
 
 [source,java]
 --
 @Attribute(visibleInGrid = VisibilityType.SHOW, searchable = SearchMode.ALWAYS, visibleInForm = VisibilityType.SHOW, cascade = @Cascade(cascadeTo = "members", filterPath = "countryOfOrigin", mode = CascadeMode.EDIT))
 private Country countryOfOrigin;
+
 @Attribute(searchable = true, visibleInForm = VisibilityType.SHOW)
 private Set<Person> members = new HashSet<>();
 --
@@ -704,7 +704,7 @@ In message bundle: *defaultValue = [String]*
 
 The *defaultValue* setting can be used to set the default value that
 appears inside a user interface component when creating a new entity.
-This is only supported for simple attributes like strings and number,
+This is only supported for simple attributes like Strings and numbers,
 not for entities.
 
 You always specify this setting as a String; if the value must be
@@ -725,7 +725,7 @@ The *description* setting determines the value of the tooltip that the
 user will see when hovering over the input field for the property.
 
 If not explicitly set, it will default to the value of the *displayName*
-setting**.**
+setting.
 
 This setting supports localization.
 
@@ -776,8 +776,9 @@ In message bundle: *editableType = READ_ONLY | CREATE_ONLY | EDITABLE |
 HIDDEN*
 
 The *editableType* setting specifies when an attribute can be edited.
-The default value *EDITABLE* means that the attribute can always be
-edited. *CREATE_ONLY* means that the attribute can only be edited when
+The default value *EDITABLE* means that the attribute can be edited both
+when creating a new entity or when editing an existing one.
+*CREATE_ONLY* means that the attribute can only be edited when
 creating a new entity. *READ_ONLY* means that the property is read-only
 and cannot be edited in the user interface.
 
@@ -815,54 +816,14 @@ framework).
 In message bundle: *enumFieldMode = DROPDOWN | RADIO*
 
 The *enumFieldMode* determines which input component to use when
-managing an attribute of type ENUM. By default the value DROPDOWN is
+managing an attribute of type ENUM. By default, the value DROPDOWN is
 used, which means that a dropdown field (combo box) will be used. You
 can change this default by modifying the value of the system property
 *dynamoframework.defaults.enum-field-mode*. When the value is changed to *RADIO* a
 set of radio buttons will be used instead.
 
 Note that within a search form, this setting will be ignored, and a
-dropdown component will always be used (in order to save space).
-
-=== Embedded
-
-In message bundle: *embedded = true | false*
-
-The *embedded* setting can be used to specify that a certain (complex)
-attribute must be treated as an embedded attribute. An embedded
-attribute is treated as an integral part of the entity, and no separate
-entity model is created for an embedded attribute.
-
-By default, any attribute annotated with the JPA *@Embedded* attribute
-will have its *embedded* setting set to true but you can override this
-using the *@Attribute* annotation or a message bundle.
-
-[source,java]
---
-// inside Gift.java
-@Attribute(embedded = true)
-@JoinColumn(name = "logo")
-@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-private GiftLogo logo = new GiftLogo();
-// inside GiftLogo.java
-@Lob
-@Attribute(image = true, fileNameProperty = "logo.fileName")
-private byte[] image;
-
-@Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
-private String fileName;
---
-
-In the example above, we see a *Gift* class with an embedded attribute
-“logo” of type *GiftLogo.* The *GiftLogo* class contains several fields
-like “image” and “filename”.
-
-By setting *embedded* to true, we effectively make sure that there is no
-entity model for *GiftLogo*, and all the attributes from *GiftLogo* are
-made part of the entity model of the embedding class, *Gift.* When you
-want to access an attribute model for an attribute inside *GiftLogo,*
-you must use its full path, e.g. “logo.fileName” or “logo.image” rather
-than just “fileName’ or “image”.
+dropdown component will always be used in order to save space.
 
 === FileNameProperty
 
@@ -883,15 +844,15 @@ private byte[] image;
 private String fileName;
 --
 
-By default, if you define an attribute of type LOB, then the application
+By default, if you define an attribute of type LOB, the application
 will render a file upload component for editing this attribute. The byte
 content of the uploaded file will be stored in the property itself, but
 the file name of the file that was uploaded will not be persisted.
 
 If you want to store the file name as well, simply create another
-property (of type String) and then set the *fileNameProperty* of the
+property (of type String) and then point the *fileNameProperty* of the
 *@Attribute* annotation that is placed on the property that holds the
-binary repreentation to point to this property. The framework will then
+binary representation to this property. The framework will then
 store the name of the uploaded file in this property as part of the file
 upload process.
 
@@ -916,7 +877,7 @@ value of this setting consists of a list of attribute names. The input
 components for these attributes will be placed behind the original
 attribute, in the order in which they are defined.
 
-Here you see an example of how the “region” attribute:
+Here you see an example of this for the “region” attribute:
 
 [source,java]
 --
@@ -938,8 +899,8 @@ Note that for this to work properly, the attribute that the
 *groupTogetherWith* setting refers to must occur in the attribute order
 *after* the attribute that does the referring (for the example
 above, *region* must come after *country*). If this rule is not
-observed, then a warning message will be logged during the entity model
-creation process and the behaviour is undefined.
+observed, then an exception will be thrown and the component will
+not be displayed properly.
 
 === IgnoreInSearchFilter
 
@@ -954,7 +915,7 @@ want to ignore the selected value when actually performing a search.
 In message bundle: *image = true | false*
 
 This setting can be used on a LOB property to specify whether it
-represents an image. By default, this setting has the value *false*_._
+represents an image. By default, this setting has the value *false*.
 If set to *true*, the application will try to render a preview image of
 the value (byte contents) of the property.
 
@@ -978,7 +939,7 @@ this entity model behaves.
 In message bundle: *lookupQueryType = PAGING | ID_BASED*
 
 The *lookupQueryType* setting can be used to specify the query type to
-use inside an popup search dialog that is used inside a lookup field
+use inside a popup search dialog that is used inside a lookup field
 component.
 
 === MaxCollectionSize
@@ -998,17 +959,16 @@ automatically derived from the *@Size(max=<value>)* annotation.
 
 It can also be used to set the maximum length of string values inside an
 element collection. In this case, you must set the *maxLength* directly
-using the *@Attribute* annotation..
+using the *@Attribute* annotation.
 
 [source,java]
---
+---
 @ElementCollection(fetch = FetchType.LAZY)
 @CollectionTable(name = "person_tags")
 @Column(name = "tag")
 @Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.HIDE,
         minLength = 4, maxLength = 12, elementCollectionMode = ElementCollectionMode.DIALOG)
-@Size(max = 5)
---
+---
 
 === MaxLengthInGrid
 
@@ -1033,6 +993,7 @@ element collection. In this case, you must set the *maxValue* directly
 using the *@Attribute* annotation.
 
 [source,java]
+---
 @ElementCollection(fetch = FetchType.LAZY)
 @CollectionTable(name = "person_lucky_numbers")
 @Column(name = "lucky_number")
@@ -1040,7 +1001,7 @@ using the *@Attribute* annotation.
         minValue = 10, maxValue = 100, elementCollectionMode = ElementCollectionMode.CHIPS)
 @Size(max = 3)
 private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
---
+---
 
 === MemberType
 
@@ -1062,7 +1023,7 @@ This setting is only supported as an annotation override.
 The *minCollectionSize* setting determines the minimum number of allowed
 elements in an element collection, one-to-many relation, or many-to-many
 relation. Its value is derived from the *min* value on the *@Size*
-annotation.
+annotation from the Java validation framework.
 
 === MinLength
 
@@ -1081,7 +1042,6 @@ on the *@Attribute* annotation.
 @Column(name = "tag")
 @Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.HIDE,
         minLength = 4, maxLength = 12, elementCollectionMode = ElementCollectionMode.DIALOG)
-@Size(max = 5)
 private Set<@Size(min = 4, max = 12) String> tags = new HashSet<>();
 --
 
@@ -1113,8 +1073,8 @@ private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
 In message bundle: *multipleSearch = true | false*
 
 The *multipleSearch* setting can be used to allow searching on multiple
-values at once for attributes of type *MASTER*. By default, you would
-only be allowed to search on a single value at a time for such
+values at once for attributes of type *MASTER*. By default, the user
+would only be allowed to search on a single value at a time for such
 attributes, but if you set this setting to *true* you will be allowed to
 select multiple values (and the application will return all entities
 that match at least one of the selected values). This will also change
@@ -1145,7 +1105,7 @@ works both in a grid and inside an edit form. This is only supported for
 properties of type *MASTER* (i.e. many-to-one relations).
 
 In order to use this form of navigation, you first need to set the
-*navigable* setting for the “property” to true. This will then make the
+*navigable* setting for the property to true. This will then make the
 attribute values clickable inside results tables, and inside a form that
 is in read-only mode.
 
@@ -1154,7 +1114,7 @@ is in read-only mode.
 In message bundle: *navigationLink = <string value>*
 
 The *navigationLink* setting can be used to specify the path to use for
-intra-application navigation (see also under *navigable)* . By default,
+intra-application navigation (see also under *navigable)*. By default,
 the application will use the name of the referenced entity (with the
 first letter lower-cased) as the value of the navigation link, but this
 can be modified by setting the navigation link. If this setting has a
@@ -1179,12 +1139,12 @@ values anyway.
 In message bundle: *numberFieldMode* = *TEXTFIELD | NUMBERFIELD*
 
 The *numberFieldMode* setting can be used to set the field mode to use
-for a numeric property When set to *TEXTFIELD* then application will
+for a numeric property When set to *TEXTFIELD* application will
 render a text field. This field has input validation so that only
 numbers can be entered.
 
-When set to *NUMBERFIELD*, the application will render a pair of spinner
-buttons that can be used to increase or decrease the value.
+When set to *NUMBERFIELD*, the application will render a text field
+with a pair of spinner buttons that can be used to increase or decrease the value.
 
 The default value of this setting can be modified by changing the system
 variable *dynamoframework.defaults.number-field-mode*.
@@ -1193,7 +1153,7 @@ variable *dynamoframework.defaults.number-field-mode*.
 
 In message bundle: *numberFieldStep* = *<integer>*
 
-The number field mode can be used to set the step size to be used for a
+The *numberFieldStep* setting can be used to set the step size to be used for a
 number field (see the previous section). The default value is 1, but you
 can set this to any positive integer.
 
@@ -1203,7 +1163,7 @@ In message bundle: *percentage = true | false*
 
 The *percentage* setting is used to indicate whether a numeric value
 represents a percentage. By default, this attribute has the value
-*false*_._ If set to *true*, then the value of the property will be
+*false*. If set to *true*, the value of the property will be
 displayed with a “%” sign following it, both in read-only and edit mode.
 
 The percentage sign is purely cosmetic; the actual value of the property
@@ -1292,7 +1252,7 @@ since the property is not known in JPA. In cases like this, you can use
 the *replacementSearchPath* setting to specify the alternate (real) path
 to use during the search.
 
-NOTE: the *replacementSearchPath* setting is managed completely in the
+The *replacementSearchPath* setting is managed completely in the
 back-end.
 
 === ReplacementSortPath
@@ -1304,7 +1264,7 @@ clicks on a column header in a search results grid. By default, the
 application will then sort on the exact path to the property, but if the
 *replacementSortPath* is set, that value will be used instead.
 
-NOTE: the *replacementSortPath* setting is managed completely in the
+The *replacementSortPath* setting is managed completely in the
 back-end.
 
 === RequiredForSearching
@@ -1340,7 +1300,7 @@ means it will not show up in a search form. Setting this property to
 In message bundle: *searchCaseSensitive = true | false*
 
 The *searchCaseSensitive* setting determines whether search operations
-on the property are case-sensitive. The default is given by the system
+on the attribute are case-sensitive. The default is given by the system
 property *dynamoframework.defaults.search-case-sensitive* which defaults to “false”.
 This setting is only used for attributes of type String and ignored in
 all other cases.
@@ -1359,7 +1319,7 @@ attribute that represents a date/time (either LocalDateTime or an
 Instant) are carried out using only date selection fields rather than
 time selection fields.
 
-By default, when searching on an a date/time attribute, the application
+By default, when searching on a date/time attribute, the application
 will render two timestamp search fields that allow you to specify a
 search interval. When you change this setting to *true* then instead the
 application will render to date selection fields. Searching using these
@@ -1408,7 +1368,7 @@ searching an attribute of attribute type *MASTER* or *DETAIL* will be
 rendered (inside a search form).
 
 By default, the value of the *searchSelectMode* setting is equal to the
-value of the *selectMode* but you can change it explicitly if you want a
+value of the *selectMode*, but you can change it explicitly if you want a
 different component to be rendered inside a search form.
 
 The following restrictions apply:
@@ -1424,7 +1384,7 @@ the back-end will be performed:
 * For select mode *COMBO,* if no field filter is applied, a call to the
 “list” endpoint (*GET /crud/<entityName>* is performed. This will simply
 result a sorted list of all the known entities of the requested type.
-Use this with care as it is a really bad idea to use this for entities
+Use this with care as it is a bad idea to use this for large collections
 * For select mode *COMBO,* if a field filter is applied, a call to the
 “search” endpoint (*POST /crud/<entityName>/search* is performed. This
 will result in a list of entities that match the provided field filter,
@@ -1458,7 +1418,7 @@ the back-end will be performed:
 * For select mode *COMBO,* if no field filter is applied, a call to the
 “list” endpoint (*GET /crud/<entityName>* is performed. This will simply
 result a sorted list of all the known entities of the requested type.
-Use this with care as it is a really bad idea to use this for entities
+Use this with care as it is a bad idea to use this for large collections.
 * For select mode *COMBO,* if a field filter is applied, a call to the
 “search” endpoint (*POST /crud/<entityName>/search* is performed. This
 will result in a list of entities that match the provided field filter,
@@ -1509,12 +1469,11 @@ attribute.
 In message bundle: *trueRepresentation = [desired value]*,
 *falseRepresentation = [desired value]*
 
-
 The *trueRepresentation* and *falseRepresentation* settings can be used
 to modify how a Boolean value is displayed in read-only mode. By
-default, such a value will simply by displayed as “true” or “false”, but
+default, such a value will simply be displayed as “true” or “false”, but
 this can be overruled by setting respectively the *trueRepresentation*
-and *falseRepresentation* values**.**
+and *falseRepresentation* values.
 
 This setting does nothing in edit mode, since in that case a checkbox or
 toggle button will be rendered.
@@ -1526,10 +1485,10 @@ In message bundle: *url = true | false*
 The *url* setting can be used to specify that a certain String property
 must be rendered as a clickable URL.
 
-The default value is *false*_._ If set to *true,* then a validator will
+The default value is *false*. If set to *true,* then a validator will
 be added to the field (when in edit mode) that checks if the entered
-value is a valid URL (must start with http or https). Also, in read-only
-mode the framework will render a clickable URL containing the value of
+value is a valid URL (must start with http or https). Also, in view mode
+the framework will render a clickable URL containing the value of
 the attribute – when clicked it will open the provided URL in a separate
 browser window.
 
@@ -1538,14 +1497,12 @@ browser window.
 In message bundle: *visibleInForm = true | false | SHOW | HIDE*
 
 The *visibleInForm* setting determines whether a property will be
-displayed inside an edit form__.__ It is not to be confused with the
+displayed inside an edit form. It is not to be confused with the
 *visibleInGrid* attribute that governs whether a property shows up in a
 grid.
 
-By default, all basic properties will have *visibleInForm* set to
-*true*, except for the “id” property which is reserved for a technical
-primary key and will by default be hidden from the user. All complex
-(master and detail) properties will be hidden by default.
+By default, all simple properties will have *visibleInForm* set to
+*true*. All complex (master and detail) properties will be hidden by default.
 
 Instead of *true* you can also use the value *SHOW* and instead of
 *false* you can also sue the value *HIDE*.
@@ -1557,12 +1514,11 @@ In message bundle: *visibleInGrid = true | false | SHOW | HIDE*
 The *visibleInGrid* setting determines whether a property will be
 displayed in a search results grid.
 
-By default, all *BASIC* properties will have *visibleInGrid* set to
-true, except for the “id” property which is used for a technical primary
-key and will by default be hidden from the user.
+By default, all simple properties will have *visibleInGrid* set to
+*true*. All complex (master and detail) properties will be hidden by default.
 
-For all other properties, you must manually set the attribute to *true*
-(or *SHOW*).
+Instead of *true* you can also use the value *SHOW* and instead of
+*false* you can also sue the value *HIDE*.
 
 == Attribute ordering and grouping
 
@@ -1594,7 +1550,7 @@ in the bundle will overwrite the ordering set by @AttributeOrder. If
 your entity has a large number of attributes this might get a bit
 unwieldy though.
 
-The ordering does not have to be contain all properties; if you leave
+The ordering does not have to contain all properties; if you leave
 out any attributes, then those will be placed (in the normal order)
 after any attributes that are explicitly mentioned in the annotation or
 the message bundle.
@@ -1625,7 +1581,7 @@ attribute order, so you will have to redefine all attributes in the
 order you want to see them. Any attributes that are not explicitly
 mentioned are included at the end in alphabetical order.
 
-You can also overwrite using message bundles:
+You can also overwrite these orders using the message bundle:
 
 [source,properties]
 --
@@ -1681,7 +1637,7 @@ at “1”.
 The attribute grouping is only used to determine which properties to
 group together, not to determine the order in which the attributes
 appear within this group. This order is still determined by the
-*@AttributeOrder* annotation as described in section 4.1.
+*@AttributeOrder* annotation as described earlier.
 
 When you want to refer to a certain attribute group in your code, you
 should do so by using the (unique) message key of that group.
@@ -1742,7 +1698,7 @@ Dynamo has certain requirements regarding the Data Access layer and
 Entity classes that are used in applications developed with the
 framework.
 
-All Entity classes (classes that map to a table in the database) must
+All Entity classes (i.e. classes that map to a table in the database) must
 inherit from the *AbstractEntity* class. This means that they inherit a
 *version* field (used for optimistic locking) and an *id* field that
 denotes the technical primary key. The type of this id field is
@@ -1752,7 +1708,6 @@ An example Entity class looks like this:
 
 [source,java]
 --
-An example Entity class looks like this:
 @Entity
 @Model(displayProperty = "name")
 @Table(name = "organization")
@@ -1761,7 +1716,7 @@ public class Organization extends AbstractEntity<Integer> {
 
 In principle, it is allowed to use inheritance when defining entities.
 However, be careful when using abstract superclasses: their use is
-currently only allowed when the abstract superclass itself is directly
+currently only allowed when the abstract superclass itself is *not* directly
 exposed via the REST services. This is because the REST serialization
 and deserialization process cannot properly deal with abstract classes.
 
@@ -1795,7 +1750,6 @@ public class OrganizationDaoImpl extends BaseDaoImpl<Integer, Organization> impl
 	}
 }
 --
-
 
 The minimal implementation contains just two methods: getEntityClass()
 which returns the type of the entity that is managed by the DAO, and
@@ -1910,7 +1864,7 @@ fetching is mandatory and thus always present.
 Take care not to include any substantially large relations, since this
 can lead to poor performance.
 
-Note that if you create a component that contains a tabular display of
+If you create a component that contains a tabular display of
 data, you can specify the way in which the data will be retrieved. There
 are two options here:
 
@@ -1988,10 +1942,10 @@ on the JSR 303 (Bean Validation) standard: to express validation rules,
 simply use the standard annotations (@NotNull, @Size, @Min etc.) on the
 properties of your entity.
 
-You can also use @AssertTrue and @AssertFalse to express more complex
+You can also use *AssertTrue* and *@AssertFalse* to express more complex
 (inter-field) validation rules, or write your own validations by
-implementing the *ConstraintValidator* interface. To use @AssertTrue or
-@AssertFalse, create a method on the entity class that returns a
+implementing the *ConstraintValidator* interface. To use *@AssertTrue* or
+*@AssertFalse*, create a method on the entity class that returns a
 Boolean, then annotate that method with either of these annotations –
 during the validation process these methods will be executed and if the
 return value does not match the value expected by the annotation then a
@@ -2016,7 +1970,7 @@ appropriate Angular validators. The following validators are supported:
 * Minimum and maximum length (for String attributes)
 * Email validation (for String attributes annotated with @Email)
 * URL validation (for String attributes annotated with @URL)
-* Required validator (all attributes)
+* Required validator (all type of attributes)
 * Minimum and maximum collection size (many-to-many and one-to-many
 relations, element collections).
 
@@ -2028,12 +1982,12 @@ If all validations pass on the front-end, a call to the back-end will be
 performed. In the back-end, the same validations will be performed
 again, possible augmented with any custom validations defined
 exclusively in the back-end. In case any of these validations fail, the
-call will be rejected and an validation error message will be shown.
+call will be rejected and a validation error message will be shown.
 
 Unfortunately, it is not possible to automatically replicate the custom
 back-end validations in the front-end. However, it is possible to
 replicate the validations by using custom validators. This will be
-covered in more detail later.
+covered in more detail later in this manual.
 
 ==== Checking for identical entities
 
@@ -2125,23 +2079,24 @@ carried out in order to add a new entity to the system
 * Create a new entity class, and annotate it with the standard JPA
 annotations for ORM mapping and validation.
 * Annotate the entity with the *@Model* annotation to configure the
-entity model settings like *displayProperty* and *sortOrder.*
+entity model settings like *displayProperty*, *sortOrder*, and
+*createAllowed*
 * Annotate the entity with the *@AttributeOrder* (and optionally
 *@GridAttributeOrder* and *@SearchAttributeOrder)* in order to configure
 the attribute ordering.
 * Annotate the entity with one or more *@AttributeGroup* annotations if
 you want the attributes to be grouped in a specific way inside the edit
 form.
-* Create the DAO and Service interfaces and their implementations
 * Use *@FetchJoins* to specify which relations to fetch in case of a
 search/list and in case of the retrieval of an individual entity.
+* Create the DAO and Service interfaces and their implementations
 
 Make sure the individual attribute settings are correct (this can
 involve a lot of tweaking since there are many settings, but this should
 cover the basics)
 
-* Set the correct values for *searchable*_,_ *visibleInGrid* and
-*visibleInForm*_._ Note that by default no attributes are searchable,
+* Set the correct values for *searchable*, *visibleInGrid* and
+*visibleInForm*. Note that by default no attributes are searchable,
 and that only basic attributes are visible inside grids and forms. For
 any complex attributes, you will have to set *visibleInGrid* or
 *visibleInForm* to true if you want these attributes to show up in
@@ -2159,7 +2114,7 @@ field or a text area
 * Use the *@Attribute(url=true)* when the field represents a URL
 
 |Integer or Long a|
-* Use the *numberFieldMode* to determine whether or not to use spinner
+* Use the *numberFieldMode* to determine whether to use spinner
 buttons
 
 |Decimal number (BigDecimal) a|
@@ -2178,8 +2133,7 @@ applicable
 
 |Instant or LocalDateTime a|
 * Set the displayFormat
-* Determine whether you want to search using *searchForDateOnly* if
-applicable
+* Determine whether you want to search using *searchForDateOnly*
 
 |Many-to-one relationship (“master”) a|
 * Set the *selectMode* to distinguish between using a combo box, au
@@ -2187,9 +2141,10 @@ autocomplete component or a lookup field
 * Make sure the “*displayProperty*” of the related entity is set
 * If this attribute is searchable, considers whether you wants to set
 *multipleSearch* to true to allow searching on multiple values.
+* Set the @Attribute(nestedDetails) setting to *false*
 
 |Many-to-many relationship a|
-* Set the @Attribute(nestedDetails)” setting to *false*
+
 * Set the *selectMode* to distinguish between using a multi-select
 component or a lookup field
 * Make sure the *displayProperty* of the related entity is set
@@ -2198,7 +2153,7 @@ component or a lookup field
 * *Make sure the entities are wired correctly (see below)*
 
 |One-to-many relationship (nested/dependent attributes) a|
-* Make sure the *nestedDetails* setting is set to false.
+* Make sure the *nestedDetails* setting is set to true.
 
 |Element collection table a|
 * Make sure the *elementCollectionMode* is set correctly
@@ -2212,8 +2167,9 @@ values
 
 |===
 
-Especially important is that for nested/dependent attributes the
-entities are always wired correctly. The Dynamo Framework offers a
+For nested/dependent attributes it is important that the
+entities always wired correctly (meaning that the parent entity correctly refers
+to the nested entity and vice versa). The Dynamo Framework offers a
 utility method in the EntityUtils class for achieving this. Here you can
 see an example of this.
 
@@ -2224,32 +2180,335 @@ public void setTranslations(Set<GiftTranslation> translations) {
 }
 --
 
-== Back-end setup
+The *wireRelations* function is static function from the *EntityModelUtils* class.
 
-=== Project structure
+== Project set-up
 
-By default, the backend of a Dynamo application is simply a Spring Boot
-application. You can use basically any set-up that you want, as long as
-you ensure the following items are present
+=== Back-end set-up
 
-* src/main/java
-* src/main/resources
-** META-INF
-*** *entitymodel.properties* the message bundle used to customize the
-entity model generation process.
-*** Optional localized property files, e.g. “entitymodel_nl.properties”.
-** *application.properties* contains the application properties (Spring
-Boot file).
+Back-end applications that want to use the Dynamo framework are fairly standard
+Spring Boot applications. Below is a sample pom.xml file that shows the minimal set-up for a
+Dynamo back-end.
+
+Replace the placeholders between square brackets by your own values
+
+This example POM also does not include any database drivers. This means you
+will likely need to add your own database driver (e.g. Postgresql).
+
+It also does not contain any dependencies for setting up application security,
+however the three dependencies that you need to set up Spring security based
+on OAuth are included in the pom but commented out.
+
+[source,xml]
+----
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<groupId>org.springframework.boot</groupId>
+		<artifactId>spring-boot-starter-parent</artifactId>
+		<version>3.3.2</version>
+		<relativePath/> <!-- lookup parent from repository -->
+	</parent>
+	<groupId>[YOUR GROUP ID]</groupId>
+	<artifactId>[YOUR ARTEFACT ID]</artifactId>
+	<version>0.0.1-SNAPSHOT</version>
+	<name>[YOUR NAME]</name>
+	<properties>
+		<java.version>21</java.version>
+		<dynamo.version>4.0.0-SNAPSHOT</dynamo.version>
+	</properties>
+	<repositories>
+		<repository>
+			<id>spring-milestones</id>
+			<name>Spring Milestones</name>
+			<url>https://repo.spring.io/milestone</url>
+			<snapshots>
+				<enabled>false</enabled>
+			</snapshots>
+		</repository>
+	</repositories>
+	<dependencies>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-rest</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-formfill</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-functional-domain</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.dynamoframework</groupId>
+			<artifactId>dynamo-export</artifactId>
+			<version>${dynamo.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-validation</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-web</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springdoc</groupId>
+			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+			<version>2.5.0</version>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>2.16.1</version>
+		</dependency>
+		<dependency>
+			<groupId>org.projectlombok</groupId>
+			<artifactId>lombok</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-test</artifactId>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-jpa</artifactId>
+			<version>5.1.0</version>
+			<classifier>jakarta</classifier>
+		</dependency>
+		<dependency>
+			<groupId>com.querydsl</groupId>
+			<artifactId>querydsl-apt</artifactId>
+			<version>5.1.0</version>
+			<classifier>jakarta</classifier>
+			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.h2database</groupId>
+			<artifactId>h2</artifactId>
+			<version>2.2.224</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi</artifactId>
+			<version>5.2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>5.2.5</version>
+		</dependency>
+		<dependency>
+			<groupId>com.opencsv</groupId>
+			<artifactId>opencsv</artifactId>
+			<version>5.9</version>
+		</dependency>
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.boot</groupId>-->
+<!--			<artifactId>spring-boot-starter-security</artifactId>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.security</groupId>-->
+<!--			<artifactId>spring-security-oauth2-resource-server</artifactId>-->
+<!--			<version>6.3.0</version>-->
+<!--		</dependency>-->
+<!--		<dependency>-->
+<!--			<groupId>org.springframework.security</groupId>-->
+<!--			<artifactId>spring-security-oauth2-jose</artifactId>-->
+<!--			<version>6.3.0</version>-->
+<!--		</dependency>-->
+	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>3.13.0</version>
+				<configuration>
+					<source>${java.version}</source>
+					<target>${java.version}</target>
+					<parameters>true</parameters>
+					<compilerArgs>
+						<arg>-parameters</arg>
+					</compilerArgs>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<version>3.3.1</version>
+				<executions>
+					<execution>
+						<configuration>
+							<outputDirectory>target/generated-sources/annotations</outputDirectory>
+							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+						</configuration>
+					</execution>
+				</executions>
+				<configuration>
+					<image>
+						<builder>paketobuildpacks/builder-jammy-base:latest</builder>
+					</image>
+					<excludes>
+						<exclude>
+							<groupId>org.projectlombok</groupId>
+							<artifactId>lombok</artifactId>
+						</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<version>3.3.0</version>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+With this in place, there is only a little bit of set-up needed to be able to use
+the application. First of all, include an ApplicationConfig class as follows
+
+[source,java]
+----
+package com.opencircle.gts.configuration;
+
+import com.opencircle.gts.domain.MainActivity;
+import com.opencircle.gts.domain.QMainActivity;
+import org.dynamoframework.configuration.ApplicationConfigurationSupport;
+import org.dynamoframework.dao.BaseDao;
+import org.dynamoframework.dao.impl.DefaultDaoImpl;
+import org.dynamoframework.functional.domain.Country;
+import org.dynamoframework.functional.domain.QCountry;
+import org.dynamoframework.functional.domain.QRegion;
+import org.dynamoframework.functional.domain.Region;
+import org.dynamoframework.service.BaseService;
+import org.dynamoframework.service.impl.DefaultServiceImpl;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration
+public class ApplicationConfig extends ApplicationConfigurationSupport {
+
+	@Override
+	protected String[] getBaseNames() {
+		return new String[] { "classpath:/META-INF/entitymodel", "classpath:/messages",
+				"classpath:/ocscommon", "classpath:/ValidationMessages" };
+	}
+
+    // some default DAOs and services for illustration purposes. remove at your discretion
+	@Bean
+	public BaseDao<Integer, Region> regionDao() {
+		return new DefaultDaoImpl<>(QRegion.region, Region.class);
+	}
+
+	@Bean
+	public BaseService<Integer, Region> regionService(BaseDao<Integer, Region> regionDao) {
+        return new DefaultServiceImpl<>(regionDao, "code");
+	}
+
+	@Bean
+	public BaseDao<Integer, Country> countryDao() {
+		return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
+	}
+
+	@Bean
+	public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> dao) {
+		return new DefaultServiceImpl<>(dao, "code");
+	}
+}
+----
+
+Finally, we need a Spring Boot Application class
+
+[source,java]
+----
+package com.opencircle.gts;
+
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
+
+@SpringBootApplication
+@ComponentScan(basePackages = {"[YOUR PACKAGE GOES HERE]","org.dynamoframework"})
+@EntityScan({"org.dynamoframework.functional.domain", "[YOUR PACKAGE GOES HERE]"})
+@EnableConfigurationProperties(DynamoConfigurationProperties.class)
+public class MyApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(MyApplication.class, args);
+    }
+}
+----
+
+Be sure to replace the placeholders above by the directories that contain your
+entities (for the @EntityScan) and your services/components (for the @ComponentScan)
+
+The application also needs access to an implementation of the Dynamo
+interface *UserDetailsService*. This service is responsible for checking whether a user is in
+a certain role and whether they are allowed to perform certain actions. The implementation of
+this service depends on your authentication provider of choice and implementing it is
+beyond the scope of this documentation. Below you find a dummy implementation that will
+never reject a request.
+
+[source,java]
+----
+@Service
+public class MockUserDetailsService implements UserDetailsService {
+    @Override
+    public boolean isUserInRole(String... roles) {
+        return true;
+    }
+
+    @Override
+    public void validateReadAllowed(EntityModel<?> model) {
+
+    }
+
+    @Override
+    public void validateWriteAllowed(EntityModel<?> model) {
+
+    }
+
+    @Override
+    public void validateDeleteAllowed(EntityModel<?> model) {
+
+    }
+}
+----
 
 === Message bundles
 
-A Dynamo application uses a number of message bundles (see the tree in
-the previous section for information on where these bundles are
-located). These message bundles are made available to the Spring
+A Dynamo application uses a number of message bundles.
+These message bundles are made available to the Spring
 Framework and you can retrieve a message from them using the
 *MessageService* which is a Spring-managed singleton bean that you can
 inject into your services. Note that many standard components already
-have a reference to this *MessageService*_._
+have a reference to this *MessageService*.
+
+The message bundle that is most
+important for updating the application is the message bundle located at
+*src/main/resources/entitymodel.properties*. While the application will function
+without this message bundle, it is very useful for specifying e.g. localizations of
+enumeration values or for overriding entity model defaults defined in the annotations.
 
 The *MessageService* provides a number of methods for retrieving
 messages. Some of these are used internally by the framework and should
@@ -2269,63 +2528,16 @@ message will be returned. If you do not want this behaviour, you can use
 the *getMessageNoDefault* version of the method instead. This version
 returns *null* when a message cannot be found.
 
-=== Spring Boot configuration
-
-A Dynamo application uses Spring boot as its application framework. This
-means that there must be a main class that is annotated with
-*@SpringBootApplication*. Typically, you will also set up entity and
-component scanning in this class
-
-[source,java]
---
-@SpringBootApplication
-@ComponentScan(basePackages = {"com.opencircle.gts","org.dynamoframework"})
-@EntityScan({"org.dynamoframework.functional.domain", "com.opencircle.gts.domain"})
-public class GtsWebApplication {
-
-    public static void main(String[] args) {
-        SpringApplication.run(GtsWebApplication.class, args);
-    }
-
-}
---
-
-Any additional configuration should typically be done in a configuration
-class that extends the *@ApplicationConfigurationSupport* class.
-
-[source,java]
---
-@Configuration
-public class ApplicationConfig extends ApplicationConfigurationSupport {
-
-    @Override
-    protected String[] getBaseNames() {
-       return new String[] { "classpath:/META-INF/entitymodel", "classpath:/messages", "classpath:/ValidationMessages" };
-    }
-
-    @Bean
-    public BaseDao<Integer, Region> regionDao() {
-       return new DefaultDaoImpl<>(QRegion.region, Region.class);
-    }
-
-    @Bean
-    public BaseService<Integer, Region> regionService(BaseDao<Integer, Region> regionDao) {
-        return new DefaultServiceImpl<>(regionDao, "code");
-    }
---
-
-
-As you can see, this class is typically used to instantiate default DAO
-and Service classes (as described in section 6.7).
-
 As a Dynamo application is a Spring Boot application, you can add or
 modify any properties by changing the *application.properties* file
 which should be located in the src/main/resources directory of the UI
 subproject. The properties specific to Dynamo will be covered in the
 section on system properties.
 
+=== Authentication and authorization
+
 Dynamo does not have any functionality for directly dealing with
-authentication and authorization. It is recommended to use Spring
+authentication. It is recommended to use Spring
 Security for securing your application.
 
 The following gives some pointers for setting up Spring Security, using
@@ -2347,7 +2559,7 @@ public class GtsSecurityAdapter {
     public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         return http
                 .authorizeHttpRequests(
-                        config -> config.requestMatchers(mvc.pattern("/status"),
+                        config -> config.requestMatchers(mvc.pattern("/api/dynamo/status"),
                                 mvc.pattern("/v3/api-docs")).permitAll())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -2370,7 +2582,7 @@ public class GtsSecurityAdapter {
 
 * We create a class, and annotate it with the *@EnableWebSecurity* and
 *@EnableMethodSecurity* annotations in order to enable Spring security.
-* We create a *MvcRequestMatcher* that allows us define certain patterns
+* We create a *MvcRequestMatcher* that allows us to define certain patterns
 that are excluded form the authentication (e.g. the “status” endpoint).
 * We set up HTTP security, permitting access to some URIs based on the
 request matcher, and adding JWT-based security for all other endpoints.
@@ -2380,18 +2592,219 @@ catch-all way to configure this.
 * The *GrantedAuthorityDefaults* is a convenience feature, it removes
 the “ROLE” prefix from all role names.
 
-=== System properties
+=== Front-end set-up
 
-Dynamo several ways of dealing with (system) properties.
+When you start a new front-end project that uses the Dynamo framework in its
+front-end, there are several approaches you can take. The easiest approach is
+to use the blueprint project found at
+https://github.com/opencirclesolutions/dynamo-blueprint
+
+This project contains the skeleton for an Angular application that uses the
+Dynamo framework. It comes with:
+
+* A package.json containing the required dependencies/libraries
+* The sources generated by the OpenAPI code generator (more on this below) based
+on the endpoints offered by the back-end. These are included in the *dynamo/model* directory
+* The generic components that make up the Dynamo framework. These are located
+in the /src/app/shared directory
+* A basic skeleton for the application (app.module.ts with all
+the required dependencies)
+
+The fastest way to get started is to fork this project, then replace all
+occurrences of "dynamo-blueprint" by your desired project name.
+
+With this in place, you should be able to run the *ng serve* command
+to start a minimal application. This application has all the infrastructure
+in place but does not do any authentication or authorization.
+
+In order to add custom logic to this application, you can run the *ng generate
+component <name>* command to create a component. Inside this component, you
+can use the dynamo components like "<app-generic-search-layout>".
+
+In order to be able to actually use the component, don't forget to add a route
+to it in the *app-routing.module.ts*, e.g.
+
+[source,typescript]
+----
+  {
+    path: '',
+    title: 'Organizations',
+    component: OrganizationSearchComponent
+  },
+----
+
+
+=== Adding Dynamo to an existing front-end project
+
+If you already have an existing front-end project you can also copy the Dynamo sources
+directly to your project.
+
+To do so, make sure that your project uses the following dependencies
+
+[source,yaml]
+----
+  "dependencies": {
+    "@angular/animations": "^16.1.2",
+    "@angular/common": "^16.1.2",
+    "@angular/compiler": "^16.1.2",
+    "@angular/core": "^16.1.2",
+    "@angular/forms": "^16.1.2",
+    "@angular/platform-browser": "^16.1.2",
+    "@angular/platform-browser-dynamic": "^16.1.2",
+    "@angular/router": "^16.1.2",
+    "@ngx-translate/core": "^15.0.0",
+    "@ngx-translate/http-loader": "^7.0.0",
+    "angular-oauth2-oidc": "^15.0.1",
+    "bootstrap": "^5.2.3",
+    "date-fns": "^3.3.1",
+    "ngx-extended-pdf-viewer": "^19.7.1",
+    "primeicons": "^6.0.1",
+    "primeng": "^16.0.2",
+    "quill": "^2.0.1",
+    "rxjs": "^7.8.1",
+    "tslib": "^2.3.0",
+    "zone.js": "^0.13.1"
+  },
+  "devDependencies": {
+    "@angular-devkit/build-angular": "^16.1.1",
+    "@angular/cli": "~16.2.0",
+    "@angular/compiler-cli": "^16.1.2",
+    "@types/jasmine": "~5.1.0",
+    "jasmine-core": "~4.6.0",
+    "karma": "~6.4.0",
+    "karma-chrome-launcher": "~3.2.0",
+    "karma-coverage": "~2.2.0",
+    "karma-jasmine": "~5.1.0",
+    "karma-jasmine-html-reporter": "~2.1.0",
+    "typescript": "~5.1.3"
+  }
+----
+
+and that Bootstrap and ngx-translate are set up properly.
+
+With that in place, you can copy the contents of the *dynamo-angular/shared* folder
+to the */src/app/shared* folder in your application.
+
+You will also need the code used to communicate with the back-end. You can make this
+available to the front-end by copying the contents of the *dynamo-angular/dynamo/model*
+to the *dynamo/model* directory in your front-end application. You can also run the
+Open API tools generator as described below.
+
+Finally, the messages used for the internationalization of the Dynamo
+components have to be added to the application message bundles. These
+messages are included under the *dynamo-angular/i18n/* directory. Currently,
+English and Dutch are supported. These message need to be added to the
+message bundle files, typically under */src/assets/i18n*
+
+Finally, in case you are using the PDF viewer component and this produces errors, you might need
+to add the following to your *angular.json* file:
+
+[source,yaml]
+---
+    "assets": [
+      "src/favicon.ico",
+      "src/assets",
+      {
+        "glob": "**/*",
+        "input": "node_modules/ngx-extended-pdf-viewer/assets/",
+        "output": "/assets"
+      }
+    ]
+---
+
+=== Code generation
+
+Out of the box, the code in the blueprint project contains model objects
+and service for communicating with the standard Dynamo REST endpoints.
+
+However, if your application contains any custom endpoints that you always
+want to access from the UI in a convenient way, you can use the Open Api code
+generator to generate the plumbing code for you.
+
+To do so, first start the back-end application, then open a web browser
+and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will show you a web page
+containing the applications' OpenAPI (Swagger) documentation
+
+Save the data to a file named "api.yaml" and save it in the root directory of your
+front-end application. Then, run the following command:
+
+[source,commandline]
+--
+npx @openapitools/openapi-generator-cli generate -i api.yaml -g typescript-angular -o ./dynamo/model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
+--
+
+This will generate the front-end source code in the specified directory
+(in this case */dynamo/model*). It will now be ready for usage by the
+framework.
+
+The code for any additional custom endpoints will be added to the /dynamo/model folder,
+along with the code for the generic Dynamo endpoints (running this command will overwrite
+any of the existing code).
+
+==== Using Apache Maven
+
+It is also possible to generate the front-end code using Apache Maven.
+This requires the *api-docs.json* file. This file can be obtained similarly
+to *api-docs.yaml* file: start the back-end application, then open a web
+browser and navigate to *http://localhost:8080/v3/api-docs*. After this,
+save the file to *api-docs.json*
+
+As an alternative, https://curl.se[curl] can also be used to download this
+file:
+
+[source, commandline]
+--
+curl -o api-docs.json http://localhost:8080/v3/api-docs
+--
+
+To generate the front-end code, the https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-maven-plugin/README.md[openapi-generator-maven-plugin]
+is used. The plugin needs to be configured as shown below:
+
+[source,xml]
+--
+<plugin>
+    <groupId>org.openapitools</groupId>
+    <artifactId>openapi-generator-maven-plugin</artifactId>
+    <version>7.8.0</version> <!-- or use a newer version -->
+    <executions>
+        <execution>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+                <inputSpec>${project.build.directory}/openapi.json</inputSpec>
+                <generatorName>typescript-angular</generatorName>
+                <output>src/main/${front-end.name}/model</output>
+                <configOptions>
+                    <ngVersion>16.1.2</ngVersion>
+                    <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                    <enumPropertyNaming>original</enumPropertyNaming>
+                </configOptions>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+--
+
+It is also possible to completely integrate the generation of the front-end
+code in the build process. A possible way to this is by using the
+*springdoc-openapi-maven-plugin*. Refer to
+https://github.com/springdoc/springdoc-openapi-maven-plugin[the readme of this plugin]
+for an example.
+
+
+== System properties
+
+Dynamo supports several ways of dealing with (system) properties.
 
 The easiest way of declaring a property is by including it in the
 *application.properties* or *application.yml* file which is located in the
 *src/main/resources* directory. This is the standard file used by Spring
-boot, and as such you can add both your own system properties to it, as
+Boot, and as such you can add both your own system properties to it, as
 well as using it to modify any Spring Boot settings.
 
-You can use the
-default mechanisms offered by Spring Boot (e.g. external configuration
+You can use the default mechanisms offered by Spring Boot (e.g. external configuration
 file, explicitly set system parameters, using profiles) to override the
 values.
 
@@ -2846,122 +3259,7 @@ You can use the static methods from the *SystemPropertyUtils* class to
 access these system properties from inside your code.
 
 
-=== Changing the standard Dynamo endpoints
-
-The REST endpoints used by dynamo can be configured using properties. There
-are six endpoints that Dynamo requires to function. See <<_prefix_dynamoframework_defaults_endpoints>>
-for the settings and their default values.
-
-
-WARNING: When that the front-end code needs to be updated/regenerated when
-the endpoints are changed. See <<_front_end_code_generation>> on how to
-do this.
-
-== User interface setup
-
-=== Basic UI setup
-
-The Dynamo framework can be used in any Angular front-end. However, a
-couple of limitations apply:
-
-* The framework depends on PrimeNG
-* The framework depends on Bootstrap
-* The framework depends on the OpenAPI generator for creating relevant
-front-end code.
-
-=== Front-end code generation
-
-When you start a new project that uses the Dynamo framework in its
-front-end, you must run the OpenAPI generator for Angular in order to
-create the services and DTOs that are required by the Dynamo framework.
-
-It should (at least in principle) be possible to add Dynamo to your existing front-end application
-without too much effort. Note that setting up the general structure of your application is largely
-outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo does not concern itself
-with the application's menu structure or routing, although it does offer some convenience features and
-general use services.
-
-
-[TODO] include a part about using the Dynamo component
-
-==== Using npx
-
-To do so, first start the back-end application, then open a web browser
-and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will download
-the yaml file.
-
-As an alternative, https://curl.se[curl] can be used to download this file:
-
-[source, commandline]
---
-curl -O http://localhost:8080/v3/api-docs.yaml
---
-
-Save the data to a file named "api-docs.yaml" and save it in the root directory of your
-front-end application. Then, run the following command:
-
-[source,commandline]
---
-npx @openapitools/openapi-generator-cli generate -i api-docs.yaml -g typescript-angular -o ./model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
---
-
-This will generate the front-end source code in the specified directory
-(in this case */model*). It will now be ready for usage by the
-framework.
-
-==== Using Apache Maven
-
-It is also possible to generate the front-end code using Apache Maven.
-This requires the *api-docs.json* file. This file can be obtained similarly
-to *api-docs.yaml* file: start the back-end application, then open a web
-browser and navigate to *http://localhost:8080/v3/api-docs*. After this,
-save the file to *api-docs.json*
-
-As an alternative, https://curl.se[curl] can also be used to download this
-file:
-
-[source, commandline]
---
-curl -o api-docs.json http://localhost:8080/v3/api-docs
---
-
-To generate the front-end code, the https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-maven-plugin/README.md[openapi-generator-maven-plugin]
-is used. The plugin needs to be configured as shown below:
-
-[source,xml]
---
-<plugin>
-    <groupId>org.openapitools</groupId>
-    <artifactId>openapi-generator-maven-plugin</artifactId>
-    <version>7.8.0</version> <!-- or use a newer version -->
-    <executions>
-        <execution>
-            <goals>
-                <goal>generate</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-                <inputSpec>${project.build.directory}/openapi.json</inputSpec>
-                <generatorName>typescript-angular</generatorName>
-                <output>src/main/${front-end.name}/model</output>
-                <configOptions>
-                    <ngVersion>16.1.2</ngVersion>
-                    <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
-                    <enumPropertyNaming>original</enumPropertyNaming>
-                </configOptions>
-            </configuration>
-        </execution>
-    </executions>
-</plugin>
---
-
-It is also possible to completely integrate the generation of the front-end
-code in the build process. A possible way to this is by using the
-*springdoc-openapi-maven-plugin*. Refer to
-https://github.com/springdoc/springdoc-openapi-maven-plugin[the readme of this plugin]
-for an example.
-
-=== General front-end services
+== General front-end services
 
 ==== Localization
 
@@ -3010,7 +3308,7 @@ this.messageService.warn('Selected something:' +  obj.firstName)
 
 image:media/image6.png[image,width=427,height=108]
 
-Note that the methods of the *NotificationService* take a String literal,
+NOTE: The methods of the *NotificationService* take a String literal,
 not a key from the message bundle. If you want to display a value
 from a message bundle, you need to retrieve that using the
 translateService first.
@@ -3019,16 +3317,9 @@ By default, the message will disappear after a couple of seconds, but
 you can use the *sticky* parameter set to *true* in order to make the
 message sticky/persistent.
 
-== Composite UI components
+== General UI concepts
 
-Everything you have read until now is an introduction that is needed to
-understand how Dynamo can be used to create complex screens and user
-interface components. The next sections will cover some of the most
-common use cases.
-
-=== General concepts
-
-==== Search Filters
+=== Search Filters
 
 The Dynamo Framework uses a generic framework for executing search
 requests to the back-end. Normally the details of this framework are
@@ -3216,7 +3507,7 @@ return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA
 The *NotFilter* can be used to create a filter that negates the filter
 encloses in it.
 
-==== Updates
+=== Updates
 
 Some extra explanation is in order with regard to how the Dynamo
 framework deals with updates of existing entities. All updates of
@@ -3230,7 +3521,7 @@ form but cannot be edited because they are read-only, are not updated.
 This happens fully on the back-end and is not something that the
 front-end developers have to take into account.
 
-==== Editing complex attributes
+=== Editing complex attributes
 
 With regard to editing complex attributes inside an edit form, Dynamo
 offers several options. This section will go over these options.
@@ -3259,7 +3550,7 @@ request to retrieve the available options. Instead, the user can use a
 button to bring up a popup dialog containing a search form. This allows
 the user to carry out a complex search query. The search form is
 constructed using the entity model for the entity you are searching for.
-By default this is the standard entity model for that entity, but you
+By default, this is the standard entity model for that entity, but you
 can use the *lookupEntityReference* setting on the attribute model to
 specify a different entity model and the *lookupQueryType* to specify
 the query type to use.
@@ -3295,7 +3586,7 @@ model that is part of the main entity model.
 
 image:media/image7.png[image,width=560,height=355]
 
-==== Hidden fields
+=== Hidden fields
 
 In rare cases, it can occur that your application contains an edit form
 for creating/updating entities that depends on an external value that is
@@ -3321,12 +3612,12 @@ the primary key (“entityId” in the example below).
 >
   <ng-template
     dHiddenField
-    fieldName="memberFrom"
+    attributename="memberFrom"
     [value]="entityId"
   ></ng-template>
 --
 
-==== View objects
+=== View objects
 
 In general, Dynamo is not particularly concerned with whether the
 objects you are displaying in the UI are actual entities backed by a
@@ -3362,7 +3653,7 @@ attribute model settings on the view object.
 would normally, and instead use the name of the view object as the
 *entityName*.
 
-==== Entity Model Actions
+=== Entity Model Actions
 
 It is also possible to define actions on the entity model that will
 directly be translated to input dialogs in the UI. This can be used when
@@ -3437,7 +3728,7 @@ table in a search layout, split layout, or editable table layout.
 Actions of type UPDATE will appear in each row in the results table,
 behind the regular popup button.
 
-Note that for an UPDATE action, if your DTO class has properties with
+NOTE: for an UPDATE action, if your DTO class has properties with
 the same name as those of the main entity, the corresponding fields will
 automatically be set to the values from the main entity.
 
@@ -3446,7 +3737,7 @@ of the entity will be passed along to the call to the back-end and should
 bind to the ID field in the DTO. In your service you can then use this ID
 in order to retrieve the entity.
 
-==== Authorization
+=== Authorization
 
 It is possible to configure role-based authorization to limit which
 users are allowed to perform which actions on certain entities. This is
@@ -3539,6 +3830,8 @@ Secondly, you can use the *AuthenticationService* to check whether a
 user is in a certain role. You can e.g. use this when building a menu,
 to enable/disable certain routes.
 
+== Composite UI components
+
 === GenericSearchLayout
 
 One of the most commonly used components will be the “Generic Search
@@ -3577,7 +3870,7 @@ will be used to display the values inside the table.
 user to delete an entity. This button will only show up if
 *deleteEnabled* is set to true for the entity (and if the user has the correct rights)
 
-Note that by default, nothing will happen when you click on a row in the
+NOTE: By default, nothing will happen when you click on a row in the
 table, or when you click the Add button. The functionality for
 navigating to a detail screen must be explicitly enabled. The easiest
 way to do this is by defining the *detailNavigationPath* (see below).
@@ -4211,7 +4504,7 @@ up validations across multiple fields if desired).
   <ng-template #customValidatorTemplate let-formGroup>
     <ng-template
       dAdditionalValidators
-      fieldName="bagNumber"
+      attributeName="bagNumber"
       [formGroup]="formGroup"
       [validators]="[CustomValidators.bagNumberValidator(formGroup)]"
     />
@@ -4428,7 +4721,7 @@ The Dynamo framework comes with built-in functionality for dealing with
 file uploads. This is based on a scenario in which you want to upload
 one or more files and store them as binary data in the database. Note
 that is not always the ideal way to store data (especially when files
-become big) but it is something that is fairly easily to realize, hence
+become big), but it is something that is fairly easily to realize, hence
 we think it is a useful feature anyway. Just remember to use it with
 care.
 
@@ -5044,7 +5337,7 @@ public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> da
 }
 --
 
-Note that the *DefaultDaoImpl* and *DefaultServiceImpl* classes are part
+NOTE: The *DefaultDaoImpl* and *DefaultServiceImpl* classes are part
 of the core dynamo implementation so you can use them without adding the
 *dynamo-functional-domain* dependencies to your pom.xml.
 

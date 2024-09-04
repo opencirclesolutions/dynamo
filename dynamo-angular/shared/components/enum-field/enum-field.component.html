@@ -1,0 +1,38 @@
+<ng-container [formGroup]="formGroup!">
+  <div class="row">
+    <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+      <p-dropdown
+        [id]="am.name"
+        [name]="am.name"
+        [options]="options"
+        optionLabel="name"
+        [showClear]="true"
+        [formControlName]="am.name"
+        [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
+        *ngIf="!useRadioButton()"
+      ></p-dropdown>
+      <ng-container *ngIf="useRadioButton()">
+        <div *ngFor="let option of options" class="field-checkbox">
+          <p-radioButton
+            [inputId]="option.value"
+            [value]="option"
+            [formControlName]="am.name"
+            [pTooltip]="am.descriptions[locale]"
+          />
+          &nbsp;
+          <label [for]="option.value" class="ml-2">
+            {{ option.name }}
+          </label>
+        </div>
+      </ng-container>
+    </div>
+    <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+      <p-message
+        severity="error"
+        *ngIf="getErrorString(am.name)"
+        [text]="getErrorString(am.name)"
+      ></p-message>
+    </div>
+  </div>
+</ng-container>
