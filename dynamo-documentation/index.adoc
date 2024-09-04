@@ -398,7 +398,7 @@ handle embedded properties (using the *@Embedded* annotation). This will
 be covered in the _Advanced_ section.
 * *ELEMENT_COLLECTION*: a property that is annotated with the
 *@ElementCollection* annotation, i.e. a collection of simple values like
-integers and Strings (note: the JPA spec does allow more complex element
+integers and Strings (note that the JPA spec does allow more complex element
 collections, but these are not currently supported by Dynamo).
 
 The attribute type in combination with the Java type determines how a
@@ -1290,7 +1290,7 @@ since the property is not known in JPA. In cases like this, you can use
 the *replacementSearchPath* setting to specify the alternate (real) path
 to use during the search.
 
-Note: the *replacementSearchPath* setting is managed completely in the
+NOTE: the *replacementSearchPath* setting is managed completely in the
 back-end.
 
 === ReplacementSortPath
@@ -1302,7 +1302,7 @@ clicks on a column header in a search results grid. By default, the
 application will then sort on the exact path to the property, but if the
 *replacementSortPath* is set, that value will be used instead.
 
-Note: the *replacementSortPath* setting is managed completely in the
+NOTE: the *replacementSortPath* setting is managed completely in the
 back-end.
 
 === RequiredForSearching
@@ -2851,7 +2851,7 @@ are six endpoints that Dynamo requires to function. See <<_prefix_dynamoframewor
 for the settings and their default values.
 
 
-Note: when that the front-end code needs to be updated/regenerated when
+WARNING: When that the front-end code needs to be updated/regenerated when
 the endpoints are changed. See <<_front_end_code_generation>> on how to
 do this.
 
@@ -3100,7 +3100,7 @@ time stamps). The filter contains a “from” value (lower bound,
 including) and a “to” value (upper bound, inclusive). At least one of
 these values must be filled.
 
-Note: the actual values that are sent to the back-end in case of
+NOTE: the actual values that are sent to the back-end in case of
 filtering on a Date are always string representations in ISO format
 (yyyy-MM-dd). Be careful when converting from Javascript Dates (which
 always contain a time stamp) to ISO string, it is very common to end up
@@ -3811,7 +3811,7 @@ afterSearchFormBuilt(info: FormInfo) {
 }
 --
 
-Note: when you are setting the value for a *multiselect* component, be
+NOTE: when you are setting the value for a *multiselect* component, be
 sure that the value you are passing array.
 
 ==== Additional row actions
@@ -4172,7 +4172,7 @@ This callback method will be run whenever the form is opened in the
 “create new entity mode”, and will result in the “countryOfOrigin” field
 being filled with “Australia”
 
-Note: if this approach is too cumbersome for your purposes, consider
+TIP: if this approach is too cumbersome for your purposes, consider
 overriding the *initialize* method in the back-end instead (see section
 7.5).
 
