@@ -2590,7 +2590,7 @@ catch-all way to configure this.
 * The *GrantedAuthorityDefaults* is a convenience feature, it removes
 the “ROLE” prefix from all role names.
 
-== Front-end set-up
+=== Front-end set-up
 
 When you start a new front-end project that uses the Dynamo framework in its
 front-end, there are several approaches you can take. The easiest approach is
@@ -3207,16 +3207,9 @@ By default, the message will disappear after a couple of seconds, but
 you can use the *sticky* parameter set to *true* in order to make the
 message sticky/persistent.
 
-== Composite UI components
+== General UI concepts
 
-Everything you have read until now is an introduction that is needed to
-understand how Dynamo can be used to create complex screens and user
-interface components. The next sections will cover some of the most
-common use cases.
-
-=== General concepts
-
-==== Search Filters
+=== Search Filters
 
 The Dynamo Framework uses a generic framework for executing search
 requests to the back-end. Normally the details of this framework are
@@ -3404,7 +3397,7 @@ return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA
 The *NotFilter* can be used to create a filter that negates the filter
 encloses in it.
 
-==== Updates
+=== Updates
 
 Some extra explanation is in order with regard to how the Dynamo
 framework deals with updates of existing entities. All updates of
@@ -3418,7 +3411,7 @@ form but cannot be edited because they are read-only, are not updated.
 This happens fully on the back-end and is not something that the
 front-end developers have to take into account.
 
-==== Editing complex attributes
+=== Editing complex attributes
 
 With regard to editing complex attributes inside an edit form, Dynamo
 offers several options. This section will go over these options.
@@ -3447,7 +3440,7 @@ request to retrieve the available options. Instead, the user can use a
 button to bring up a popup dialog containing a search form. This allows
 the user to carry out a complex search query. The search form is
 constructed using the entity model for the entity you are searching for.
-By default this is the standard entity model for that entity, but you
+By default, this is the standard entity model for that entity, but you
 can use the *lookupEntityReference* setting on the attribute model to
 specify a different entity model and the *lookupQueryType* to specify
 the query type to use.
@@ -3483,7 +3476,7 @@ model that is part of the main entity model.
 
 image:media/image7.png[image,width=560,height=355]
 
-==== Hidden fields
+=== Hidden fields
 
 In rare cases, it can occur that your application contains an edit form
 for creating/updating entities that depends on an external value that is
@@ -3514,7 +3507,7 @@ the primary key (“entityId” in the example below).
   ></ng-template>
 --
 
-==== View objects
+=== View objects
 
 In general, Dynamo is not particularly concerned with whether the
 objects you are displaying in the UI are actual entities backed by a
@@ -3550,7 +3543,7 @@ attribute model settings on the view object.
 would normally, and instead use the name of the view object as the
 *entityName*.
 
-==== Entity Model Actions
+=== Entity Model Actions
 
 It is also possible to define actions on the entity model that will
 directly be translated to input dialogs in the UI. This can be used when
@@ -3634,7 +3627,7 @@ of the entity will be passed along to the call to the back-end and should
 bind to the ID field in the DTO. In your service you can then use this ID
 in order to retrieve the entity.
 
-==== Authorization
+=== Authorization
 
 It is possible to configure role-based authorization to limit which
 users are allowed to perform which actions on certain entities. This is
