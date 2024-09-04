@@ -136,11 +136,10 @@ versions of entity models in section 3.5)
 *model/Organization?reference=PersonOrganizationSearch*
 
 As you will see later on, entity models can be nested: if an entity has
-a reference to another entity (one-to-many, many-to-one etc) then a
+a reference to another entity (one-to-many, many-to-one etc.) then a
 nested entity model for that entity will be created. You can retrieve a
 nested entity model by performing a GET to
 */model/\{entityName}/attribute/attributeName,* e.g.
-
 */model/Gift/attribute/translations*
 
 Generally speaking, you should not have to call these endpoints directly
@@ -216,8 +215,8 @@ setting on attributes of nested entities is ignored – this is because
 when you are creating a search screen for an entity, you normally want
 to search on the attributes of that entity, not on the nested
 attributes.
-** For nested entity models, the “id” attribute and the
-“displayProperty” attribute will be marked with “visibleInGrid=true”.
+** For nested entity models, the *id* attribute and the
+*displayProperty* attribute will be marked with “visibleInGrid=true”.
 This is done so that a textual description of a nested entity can be
 shown inside a grid.
 * Getters that are annotated with *@AssertTrue* or *@AssertFalse*
@@ -283,8 +282,8 @@ not the behaviour of any derived Entity Models.
 
 If you need to override the behaviour of a derived Entity Model, you can
 use the message bundle mechanism to achieve this. Message bundle
-overrides must be placed in the *entitymodel.properties* file (create a
-locale-specific version of this file if you need to; the normal Java
+overrides must be placed in the *src/main/resources/META-INF/entitymodel.properties* file
+(create a locale-specific version of this file if you need to; the normal Java
 message bundle mechanic is supported).
 
 Message bundle entries in general have the following structure:
@@ -372,7 +371,7 @@ property. By default, its value is empty, which means there are no
 restrictions on the file type.
 
 The value can be set to a comma-separated list of supported extensions,
-e.g. *bmp,jpg,png.*. Any “.” characters must not be included.
+e.g. *bmp,jpg,png*. Any “.” characters must not be included.
 
 On the *@Attribute* annotation, you can use an array of String values
 instead of a comma-separated String. Extensions are not case-sensitive,
@@ -392,13 +391,13 @@ relation in the entity class, e.g. the *orderLines* attribute inside an
 * *MASTER*: a property that appears as a *@OneToOne* or *@ManyToOne* in
 the entity class.
 * *LOB*: a property that is annotated with *@Lob* and represents a large
-binary object (like a file or an image)
+binary object (like a file or an image).
 * *EMBEDDED*: used during the Entity Model construction process to
 handle embedded properties (using the *@Embedded* annotation). This will
 be covered in the _Advanced_ section.
 * *ELEMENT_COLLECTION*: a property that is annotated with the
 *@ElementCollection* annotation, i.e. a collection of simple values like
-integers and Strings (note: the JPA spec does allow more complex element
+integers and Strings (The JPA spec does allow more complex element
 collections, but these are not currently supported by Dynamo).
 
 The attribute type in combination with the Java type determines how a
@@ -428,7 +427,7 @@ of the *selectMode* setting.
 * For a *DETAIL* property, the behaviour will depend on the value of the
 *nestedDetails* setting:
 ** In case *nestedDetails* is set to true, a table that can be used to
-edit the details in-line as part of the edit form is rendered. This is
+edit the details inline as part of the edit form is rendered. This is
 used for nested collections that cannot exist without the parent entity,
 e.g. the OrderLines belonging to an Order.
 ** In case *nestedDetails* is set to false, a multiple select component
@@ -453,7 +452,7 @@ generated. These allow the user to perform an interval search (return
 all values that are higher than or equal to the value in the first field
 and lower than or equal to the value in the second field). If you do not
 want this behaviour, you can change the value of the
-*searchForExactValue* setting to *true*_;_ if you do this then only a
+*searchForExactValue* setting to *true*; if you do this then only a
 single search field will appear.
 ** For a property of type *LocalDateTime* or *Instant* you can set the
 *searchForDate* setting to true. If you do this then only a single
@@ -560,16 +559,17 @@ attribute. In our example, the attribute to change is “members” (see
 below).
 * *filterPath* – this is the path that determines which filter to apply
 to the selection component that is on the receiving end of the cascade
-action. In our example, we want to filter a list of Person so that only
+action. In our example, we want to filter a list of Persons so that only
 persons from a certain country are returned – this country is stored in
 the *countryOfOrigin* property of the person so this is our filter path.
-* *mode* - this specifies whether cascading should be enabled in search
+* *mode* - this specifies whether the cascading should be enabled in search
 forms, in edit forms, or in both cases. The default is *BOTH*.
 
 [source,java]
 --
 @Attribute(visibleInGrid = VisibilityType.SHOW, searchable = SearchMode.ALWAYS, visibleInForm = VisibilityType.SHOW, cascade = @Cascade(cascadeTo = "members", filterPath = "countryOfOrigin", mode = CascadeMode.EDIT))
 private Country countryOfOrigin;
+
 @Attribute(searchable = true, visibleInForm = VisibilityType.SHOW)
 private Set<Person> members = new HashSet<>();
 --
@@ -672,7 +672,7 @@ representation of the desired value.
 
 For date attributes, use the String representations according to the
 system properties *dynamoframework.defaults.date-format* _(dd-MM-yyyy),_
-*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.datetime-format*
+*dynamoframework.defaults.time-format* _(HH:mm:ss)_, *dynamoframework.defaults.datetime-format*
 _(dd-MM-yyyy HH:mm:ss)_
 
 === DefaultSearchValueTo
@@ -702,7 +702,7 @@ In message bundle: *defaultValue = [String]*
 
 The *defaultValue* setting can be used to set the default value that
 appears inside a user interface component when creating a new entity.
-This is only supported for simple attributes like strings and number,
+This is only supported for simple attributes like Strings and numbers,
 not for entities.
 
 You always specify this setting as a String; if the value must be
@@ -723,7 +723,7 @@ The *description* setting determines the value of the tooltip that the
 user will see when hovering over the input field for the property.
 
 If not explicitly set, it will default to the value of the *displayName*
-setting**.**
+setting.
 
 This setting supports localization.
 
@@ -774,8 +774,9 @@ In message bundle: *editableType = READ_ONLY | CREATE_ONLY | EDITABLE |
 HIDDEN*
 
 The *editableType* setting specifies when an attribute can be edited.
-The default value *EDITABLE* means that the attribute can always be
-edited. *CREATE_ONLY* means that the attribute can only be edited when
+The default value *EDITABLE* means that the attribute can be edited both
+when creating a new entity or when editing an existing one.
+*CREATE_ONLY* means that the attribute can only be edited when
 creating a new entity. *READ_ONLY* means that the property is read-only
 and cannot be edited in the user interface.
 
@@ -813,54 +814,14 @@ framework).
 In message bundle: *enumFieldMode = DROPDOWN | RADIO*
 
 The *enumFieldMode* determines which input component to use when
-managing an attribute of type ENUM. By default the value DROPDOWN is
+managing an attribute of type ENUM. By default, the value DROPDOWN is
 used, which means that a dropdown field (combo box) will be used. You
 can change this default by modifying the value of the system property
 *dynamoframework.defaults.enum-field-mode*. When the value is changed to *RADIO* a
 set of radio buttons will be used instead.
 
 Note that within a search form, this setting will be ignored, and a
-dropdown component will always be used (in order to save space).
-
-=== Embedded
-
-In message bundle: *embedded = true | false*
-
-The *embedded* setting can be used to specify that a certain (complex)
-attribute must be treated as an embedded attribute. An embedded
-attribute is treated as an integral part of the entity, and no separate
-entity model is created for an embedded attribute.
-
-By default, any attribute annotated with the JPA *@Embedded* attribute
-will have its *embedded* setting set to true but you can override this
-using the *@Attribute* annotation or a message bundle.
-
-[source,java]
---
-// inside Gift.java
-@Attribute(embedded = true)
-@JoinColumn(name = "logo")
-@OneToOne(fetch = FetchType.LAZY, optional = false, cascade = CascadeType.ALL)
-private GiftLogo logo = new GiftLogo();
-// inside GiftLogo.java
-@Lob
-@Attribute(image = true, fileNameProperty = "logo.fileName")
-private byte[] image;
-
-@Attribute(readOnly = true, showInTable = VisibilityType.HIDE)
-private String fileName;
---
-
-In the example above, we see a *Gift* class with an embedded attribute
-“logo” of type *GiftLogo.* The *GiftLogo* class contains several fields
-like “image” and “filename”.
-
-By setting *embedded* to true, we effectively make sure that there is no
-entity model for *GiftLogo*, and all the attributes from *GiftLogo* are
-made part of the entity model of the embedding class, *Gift.* When you
-want to access an attribute model for an attribute inside *GiftLogo,*
-you must use its full path, e.g. “logo.fileName” or “logo.image” rather
-than just “fileName’ or “image”.
+dropdown component will always be used in order to save space.
 
 === FileNameProperty
 
@@ -881,15 +842,15 @@ private byte[] image;
 private String fileName;
 --
 
-By default, if you define an attribute of type LOB, then the application
+By default, if you define an attribute of type LOB, the application
 will render a file upload component for editing this attribute. The byte
 content of the uploaded file will be stored in the property itself, but
 the file name of the file that was uploaded will not be persisted.
 
 If you want to store the file name as well, simply create another
-property (of type String) and then set the *fileNameProperty* of the
+property (of type String) and then point the *fileNameProperty* of the
 *@Attribute* annotation that is placed on the property that holds the
-binary repreentation to point to this property. The framework will then
+binary representation to this property. The framework will then
 store the name of the uploaded file in this property as part of the file
 upload process.
 
@@ -914,7 +875,7 @@ value of this setting consists of a list of attribute names. The input
 components for these attributes will be placed behind the original
 attribute, in the order in which they are defined.
 
-Here you see an example of how the “region” attribute:
+Here you see an example of this for the “region” attribute:
 
 [source,java]
 --
@@ -936,8 +897,8 @@ Note that for this to work properly, the attribute that the
 *groupTogetherWith* setting refers to must occur in the attribute order
 *after* the attribute that does the referring (for the example
 above, *region* must come after *country*). If this rule is not
-observed, then a warning message will be logged during the entity model
-creation process and the behaviour is undefined.
+observed, then an exception will be thrown and the component will
+not be displayed properly.
 
 === IgnoreInSearchFilter
 
@@ -952,7 +913,7 @@ want to ignore the selected value when actually performing a search.
 In message bundle: *image = true | false*
 
 This setting can be used on a LOB property to specify whether it
-represents an image. By default, this setting has the value *false*_._
+represents an image. By default, this setting has the value *false*.
 If set to *true*, the application will try to render a preview image of
 the value (byte contents) of the property.
 
@@ -976,7 +937,7 @@ this entity model behaves.
 In message bundle: *lookupQueryType = PAGING | ID_BASED*
 
 The *lookupQueryType* setting can be used to specify the query type to
-use inside an popup search dialog that is used inside a lookup field
+use inside a popup search dialog that is used inside a lookup field
 component.
 
 === MaxCollectionSize
@@ -996,17 +957,16 @@ automatically derived from the *@Size(max=<value>)* annotation.
 
 It can also be used to set the maximum length of string values inside an
 element collection. In this case, you must set the *maxLength* directly
-using the *@Attribute* annotation..
+using the *@Attribute* annotation.
 
 [source,java]
---
+---
 @ElementCollection(fetch = FetchType.LAZY)
 @CollectionTable(name = "person_tags")
 @Column(name = "tag")
 @Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.HIDE,
         minLength = 4, maxLength = 12, elementCollectionMode = ElementCollectionMode.DIALOG)
-@Size(max = 5)
---
+---
 
 === MaxLengthInGrid
 
@@ -1031,6 +991,7 @@ element collection. In this case, you must set the *maxValue* directly
 using the *@Attribute* annotation.
 
 [source,java]
+---
 @ElementCollection(fetch = FetchType.LAZY)
 @CollectionTable(name = "person_lucky_numbers")
 @Column(name = "lucky_number")
@@ -1038,7 +999,7 @@ using the *@Attribute* annotation.
         minValue = 10, maxValue = 100, elementCollectionMode = ElementCollectionMode.CHIPS)
 @Size(max = 3)
 private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
---
+---
 
 === MemberType
 
@@ -1060,7 +1021,7 @@ This setting is only supported as an annotation override.
 The *minCollectionSize* setting determines the minimum number of allowed
 elements in an element collection, one-to-many relation, or many-to-many
 relation. Its value is derived from the *min* value on the *@Size*
-annotation.
+annotation from the Java validation framework.
 
 === MinLength
 
@@ -1079,7 +1040,6 @@ on the *@Attribute* annotation.
 @Column(name = "tag")
 @Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.HIDE,
         minLength = 4, maxLength = 12, elementCollectionMode = ElementCollectionMode.DIALOG)
-@Size(max = 5)
 private Set<@Size(min = 4, max = 12) String> tags = new HashSet<>();
 --
 
@@ -1111,8 +1071,8 @@ private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
 In message bundle: *multipleSearch = true | false*
 
 The *multipleSearch* setting can be used to allow searching on multiple
-values at once for attributes of type *MASTER*. By default, you would
-only be allowed to search on a single value at a time for such
+values at once for attributes of type *MASTER*. By default, the user
+would only be allowed to search on a single value at a time for such
 attributes, but if you set this setting to *true* you will be allowed to
 select multiple values (and the application will return all entities
 that match at least one of the selected values). This will also change
@@ -1143,7 +1103,7 @@ works both in a grid and inside an edit form. This is only supported for
 properties of type *MASTER* (i.e. many-to-one relations).
 
 In order to use this form of navigation, you first need to set the
-*navigable* setting for the “property” to true. This will then make the
+*navigable* setting for the property to true. This will then make the
 attribute values clickable inside results tables, and inside a form that
 is in read-only mode.
 
@@ -1152,7 +1112,7 @@ is in read-only mode.
 In message bundle: *navigationLink = <string value>*
 
 The *navigationLink* setting can be used to specify the path to use for
-intra-application navigation (see also under *navigable)* . By default,
+intra-application navigation (see also under *navigable)*. By default,
 the application will use the name of the referenced entity (with the
 first letter lower-cased) as the value of the navigation link, but this
 can be modified by setting the navigation link. If this setting has a
@@ -1177,12 +1137,12 @@ values anyway.
 In message bundle: *numberFieldMode* = *TEXTFIELD | NUMBERFIELD*
 
 The *numberFieldMode* setting can be used to set the field mode to use
-for a numeric property When set to *TEXTFIELD* then application will
+for a numeric property When set to *TEXTFIELD* application will
 render a text field. This field has input validation so that only
 numbers can be entered.
 
-When set to *NUMBERFIELD*, the application will render a pair of spinner
-buttons that can be used to increase or decrease the value.
+When set to *NUMBERFIELD*, the application will render a text field
+with a pair of spinner buttons that can be used to increase or decrease the value.
 
 The default value of this setting can be modified by changing the system
 variable *dynamoframework.defaults.number-field-mode*.
@@ -1191,7 +1151,7 @@ variable *dynamoframework.defaults.number-field-mode*.
 
 In message bundle: *numberFieldStep* = *<integer>*
 
-The number field mode can be used to set the step size to be used for a
+The *numberFieldStep* setting can be used to set the step size to be used for a
 number field (see the previous section). The default value is 1, but you
 can set this to any positive integer.
 
@@ -1201,7 +1161,7 @@ In message bundle: *percentage = true | false*
 
 The *percentage* setting is used to indicate whether a numeric value
 represents a percentage. By default, this attribute has the value
-*false*_._ If set to *true*, then the value of the property will be
+*false*. If set to *true*, the value of the property will be
 displayed with a “%” sign following it, both in read-only and edit mode.
 
 The percentage sign is purely cosmetic; the actual value of the property
@@ -1290,7 +1250,7 @@ since the property is not known in JPA. In cases like this, you can use
 the *replacementSearchPath* setting to specify the alternate (real) path
 to use during the search.
 
-Note: the *replacementSearchPath* setting is managed completely in the
+The *replacementSearchPath* setting is managed completely in the
 back-end.
 
 === ReplacementSortPath
@@ -1302,7 +1262,7 @@ clicks on a column header in a search results grid. By default, the
 application will then sort on the exact path to the property, but if the
 *replacementSortPath* is set, that value will be used instead.
 
-Note: the *replacementSortPath* setting is managed completely in the
+The *replacementSortPath* setting is managed completely in the
 back-end.
 
 === RequiredForSearching
@@ -1338,7 +1298,7 @@ means it will not show up in a search form. Setting this property to
 In message bundle: *searchCaseSensitive = true | false*
 
 The *searchCaseSensitive* setting determines whether search operations
-on the property are case-sensitive. The default is given by the system
+on the attribute are case-sensitive. The default is given by the system
 property *dynamoframework.defaults.search-case-sensitive* which defaults to “false”.
 This setting is only used for attributes of type String and ignored in
 all other cases.
@@ -1357,7 +1317,7 @@ attribute that represents a date/time (either LocalDateTime or an
 Instant) are carried out using only date selection fields rather than
 time selection fields.
 
-By default, when searching on an a date/time attribute, the application
+By default, when searching on a date/time attribute, the application
 will render two timestamp search fields that allow you to specify a
 search interval. When you change this setting to *true* then instead the
 application will render to date selection fields. Searching using these
@@ -1406,7 +1366,7 @@ searching an attribute of attribute type *MASTER* or *DETAIL* will be
 rendered (inside a search form).
 
 By default, the value of the *searchSelectMode* setting is equal to the
-value of the *selectMode* but you can change it explicitly if you want a
+value of the *selectMode*, but you can change it explicitly if you want a
 different component to be rendered inside a search form.
 
 The following restrictions apply:
@@ -1422,7 +1382,7 @@ the back-end will be performed:
 * For select mode *COMBO,* if no field filter is applied, a call to the
 “list” endpoint (*GET /crud/<entityName>* is performed. This will simply
 result a sorted list of all the known entities of the requested type.
-Use this with care as it is a really bad idea to use this for entities
+Use this with care as it is a bad idea to use this for large collections
 * For select mode *COMBO,* if a field filter is applied, a call to the
 “search” endpoint (*POST /crud/<entityName>/search* is performed. This
 will result in a list of entities that match the provided field filter,
@@ -1456,7 +1416,7 @@ the back-end will be performed:
 * For select mode *COMBO,* if no field filter is applied, a call to the
 “list” endpoint (*GET /crud/<entityName>* is performed. This will simply
 result a sorted list of all the known entities of the requested type.
-Use this with care as it is a really bad idea to use this for entities
+Use this with care as it is a bad idea to use this for large collections.
 * For select mode *COMBO,* if a field filter is applied, a call to the
 “search” endpoint (*POST /crud/<entityName>/search* is performed. This
 will result in a list of entities that match the provided field filter,
@@ -1507,12 +1467,11 @@ attribute.
 In message bundle: *trueRepresentation = [desired value]*,
 *falseRepresentation = [desired value]*
 
-
 The *trueRepresentation* and *falseRepresentation* settings can be used
 to modify how a Boolean value is displayed in read-only mode. By
-default, such a value will simply by displayed as “true” or “false”, but
+default, such a value will simply be displayed as “true” or “false”, but
 this can be overruled by setting respectively the *trueRepresentation*
-and *falseRepresentation* values**.**
+and *falseRepresentation* values.
 
 This setting does nothing in edit mode, since in that case a checkbox or
 toggle button will be rendered.
@@ -1524,10 +1483,10 @@ In message bundle: *url = true | false*
 The *url* setting can be used to specify that a certain String property
 must be rendered as a clickable URL.
 
-The default value is *false*_._ If set to *true,* then a validator will
+The default value is *false*. If set to *true,* then a validator will
 be added to the field (when in edit mode) that checks if the entered
-value is a valid URL (must start with http or https). Also, in read-only
-mode the framework will render a clickable URL containing the value of
+value is a valid URL (must start with http or https). Also, in view mode
+the framework will render a clickable URL containing the value of
 the attribute – when clicked it will open the provided URL in a separate
 browser window.
 
@@ -1536,14 +1495,12 @@ browser window.
 In message bundle: *visibleInForm = true | false | SHOW | HIDE*
 
 The *visibleInForm* setting determines whether a property will be
-displayed inside an edit form__.__ It is not to be confused with the
+displayed inside an edit form. It is not to be confused with the
 *visibleInGrid* attribute that governs whether a property shows up in a
 grid.
 
-By default, all basic properties will have *visibleInForm* set to
-*true*, except for the “id” property which is reserved for a technical
-primary key and will by default be hidden from the user. All complex
-(master and detail) properties will be hidden by default.
+By default, all simple properties will have *visibleInForm* set to
+*true*. All complex (master and detail) properties will be hidden by default.
 
 Instead of *true* you can also use the value *SHOW* and instead of
 *false* you can also sue the value *HIDE*.
@@ -1555,12 +1512,11 @@ In message bundle: *visibleInGrid = true | false | SHOW | HIDE*
 The *visibleInGrid* setting determines whether a property will be
 displayed in a search results grid.
 
-By default, all *BASIC* properties will have *visibleInGrid* set to
-true, except for the “id” property which is used for a technical primary
-key and will by default be hidden from the user.
+By default, all simple properties will have *visibleInGrid* set to
+*true*. All complex (master and detail) properties will be hidden by default.
 
-For all other properties, you must manually set the attribute to *true*
-(or *SHOW*).
+Instead of *true* you can also use the value *SHOW* and instead of
+*false* you can also sue the value *HIDE*.
 
 == Attribute ordering and grouping
 
@@ -1592,7 +1548,7 @@ in the bundle will overwrite the ordering set by @AttributeOrder. If
 your entity has a large number of attributes this might get a bit
 unwieldy though.
 
-The ordering does not have to be contain all properties; if you leave
+The ordering does not have to contain all properties; if you leave
 out any attributes, then those will be placed (in the normal order)
 after any attributes that are explicitly mentioned in the annotation or
 the message bundle.
@@ -1623,7 +1579,7 @@ attribute order, so you will have to redefine all attributes in the
 order you want to see them. Any attributes that are not explicitly
 mentioned are included at the end in alphabetical order.
 
-You can also overwrite using message bundles:
+You can also overwrite these orders using the message bundle:
 
 [source,properties]
 --
@@ -1679,7 +1635,7 @@ at “1”.
 The attribute grouping is only used to determine which properties to
 group together, not to determine the order in which the attributes
 appear within this group. This order is still determined by the
-*@AttributeOrder* annotation as described in section 4.1.
+*@AttributeOrder* annotation as described earlier.
 
 When you want to refer to a certain attribute group in your code, you
 should do so by using the (unique) message key of that group.
@@ -1740,7 +1696,7 @@ Dynamo has certain requirements regarding the Data Access layer and
 Entity classes that are used in applications developed with the
 framework.
 
-All Entity classes (classes that map to a table in the database) must
+All Entity classes (i.e. classes that map to a table in the database) must
 inherit from the *AbstractEntity* class. This means that they inherit a
 *version* field (used for optimistic locking) and an *id* field that
 denotes the technical primary key. The type of this id field is
@@ -1750,7 +1706,6 @@ An example Entity class looks like this:
 
 [source,java]
 --
-An example Entity class looks like this:
 @Entity
 @Model(displayProperty = "name")
 @Table(name = "organization")
@@ -1759,7 +1714,7 @@ public class Organization extends AbstractEntity<Integer> {
 
 In principle, it is allowed to use inheritance when defining entities.
 However, be careful when using abstract superclasses: their use is
-currently only allowed when the abstract superclass itself is directly
+currently only allowed when the abstract superclass itself is *not* directly
 exposed via the REST services. This is because the REST serialization
 and deserialization process cannot properly deal with abstract classes.
 
@@ -1793,7 +1748,6 @@ public class OrganizationDaoImpl extends BaseDaoImpl<Integer, Organization> impl
 	}
 }
 --
-
 
 The minimal implementation contains just two methods: getEntityClass()
 which returns the type of the entity that is managed by the DAO, and
@@ -1908,7 +1862,7 @@ fetching is mandatory and thus always present.
 Take care not to include any substantially large relations, since this
 can lead to poor performance.
 
-Note that if you create a component that contains a tabular display of
+If you create a component that contains a tabular display of
 data, you can specify the way in which the data will be retrieved. There
 are two options here:
 
@@ -1986,10 +1940,10 @@ on the JSR 303 (Bean Validation) standard: to express validation rules,
 simply use the standard annotations (@NotNull, @Size, @Min etc.) on the
 properties of your entity.
 
-You can also use @AssertTrue and @AssertFalse to express more complex
+You can also use *AssertTrue* and *@AssertFalse* to express more complex
 (inter-field) validation rules, or write your own validations by
-implementing the *ConstraintValidator* interface. To use @AssertTrue or
-@AssertFalse, create a method on the entity class that returns a
+implementing the *ConstraintValidator* interface. To use *@AssertTrue* or
+*@AssertFalse*, create a method on the entity class that returns a
 Boolean, then annotate that method with either of these annotations –
 during the validation process these methods will be executed and if the
 return value does not match the value expected by the annotation then a
@@ -2014,7 +1968,7 @@ appropriate Angular validators. The following validators are supported:
 * Minimum and maximum length (for String attributes)
 * Email validation (for String attributes annotated with @Email)
 * URL validation (for String attributes annotated with @URL)
-* Required validator (all attributes)
+* Required validator (all type of attributes)
 * Minimum and maximum collection size (many-to-many and one-to-many
 relations, element collections).
 
@@ -2026,12 +1980,12 @@ If all validations pass on the front-end, a call to the back-end will be
 performed. In the back-end, the same validations will be performed
 again, possible augmented with any custom validations defined
 exclusively in the back-end. In case any of these validations fail, the
-call will be rejected and an validation error message will be shown.
+call will be rejected and a validation error message will be shown.
 
 Unfortunately, it is not possible to automatically replicate the custom
 back-end validations in the front-end. However, it is possible to
 replicate the validations by using custom validators. This will be
-covered in more detail later.
+covered in more detail later in this manual.
 
 ==== Checking for identical entities
 
@@ -2123,23 +2077,24 @@ carried out in order to add a new entity to the system
 * Create a new entity class, and annotate it with the standard JPA
 annotations for ORM mapping and validation.
 * Annotate the entity with the *@Model* annotation to configure the
-entity model settings like *displayProperty* and *sortOrder.*
+entity model settings like *displayProperty*, *sortOrder*, and
+*createAllowed*
 * Annotate the entity with the *@AttributeOrder* (and optionally
 *@GridAttributeOrder* and *@SearchAttributeOrder)* in order to configure
 the attribute ordering.
 * Annotate the entity with one or more *@AttributeGroup* annotations if
 you want the attributes to be grouped in a specific way inside the edit
 form.
-* Create the DAO and Service interfaces and their implementations
 * Use *@FetchJoins* to specify which relations to fetch in case of a
 search/list and in case of the retrieval of an individual entity.
+* Create the DAO and Service interfaces and their implementations
 
 Make sure the individual attribute settings are correct (this can
 involve a lot of tweaking since there are many settings, but this should
 cover the basics)
 
-* Set the correct values for *searchable*_,_ *visibleInGrid* and
-*visibleInForm*_._ Note that by default no attributes are searchable,
+* Set the correct values for *searchable*, *visibleInGrid* and
+*visibleInForm*. Note that by default no attributes are searchable,
 and that only basic attributes are visible inside grids and forms. For
 any complex attributes, you will have to set *visibleInGrid* or
 *visibleInForm* to true if you want these attributes to show up in
@@ -2157,7 +2112,7 @@ field or a text area
 * Use the *@Attribute(url=true)* when the field represents a URL
 
 |Integer or Long a|
-* Use the *numberFieldMode* to determine whether or not to use spinner
+* Use the *numberFieldMode* to determine whether to use spinner
 buttons
 
 |Decimal number (BigDecimal) a|
@@ -2176,8 +2131,7 @@ applicable
 
 |Instant or LocalDateTime a|
 * Set the displayFormat
-* Determine whether you want to search using *searchForDateOnly* if
-applicable
+* Determine whether you want to search using *searchForDateOnly*
 
 |Many-to-one relationship (“master”) a|
 * Set the *selectMode* to distinguish between using a combo box, au
@@ -2185,9 +2139,10 @@ autocomplete component or a lookup field
 * Make sure the “*displayProperty*” of the related entity is set
 * If this attribute is searchable, considers whether you wants to set
 *multipleSearch* to true to allow searching on multiple values.
+* Set the @Attribute(nestedDetails) setting to *false*
 
 |Many-to-many relationship a|
-* Set the @Attribute(nestedDetails)” setting to *false*
+
 * Set the *selectMode* to distinguish between using a multi-select
 component or a lookup field
 * Make sure the *displayProperty* of the related entity is set
@@ -2196,7 +2151,7 @@ component or a lookup field
 * *Make sure the entities are wired correctly (see below)*
 
 |One-to-many relationship (nested/dependent attributes) a|
-* Make sure the *nestedDetails* setting is set to false.
+* Make sure the *nestedDetails* setting is set to true.
 
 |Element collection table a|
 * Make sure the *elementCollectionMode* is set correctly
@@ -2210,8 +2165,9 @@ values
 
 |===
 
-Especially important is that for nested/dependent attributes the
-entities are always wired correctly. The Dynamo Framework offers a
+For nested/dependent attributes it is important that the
+entities always wired correctly (meaning that the parent entity correctly refers
+to the nested entity and vice versa). The Dynamo Framework offers a
 utility method in the EntityUtils class for achieving this. Here you can
 see an example of this.
 
@@ -2222,9 +2178,11 @@ public void setTranslations(Set<GiftTranslation> translations) {
 }
 --
 
-== Back-end Setup
+The *wireRelations* function is static function from the *EntityModelUtils* class.
 
-=== Back-end code set-up
+== Project set-up
+
+=== Back-end set-up
 
 Back-end applications that want to use the Dynamo framework are fairly standard
 Spring Boot applications. Below is a sample pom.xml file that shows the minimal set-up for a
@@ -2448,7 +2406,7 @@ public class ApplicationConfig extends ApplicationConfigurationSupport {
 				"classpath:/ocscommon", "classpath:/ValidationMessages" };
 	}
 
-    // some default DAOs and services for illustration purposes
+    // some default DAOs and services for illustration purposes. remove at your discretion
 	@Bean
 	public BaseDao<Integer, Region> regionDao() {
 		return new DefaultDaoImpl<>(QRegion.region, Region.class);
@@ -2577,7 +2535,7 @@ section on system properties.
 === Authentication and authorization
 
 Dynamo does not have any functionality for directly dealing with
-authentication and authorization. It is recommended to use Spring
+authentication. It is recommended to use Spring
 Security for securing your application.
 
 The following gives some pointers for setting up Spring Security, using
@@ -2622,7 +2580,7 @@ public class GtsSecurityAdapter {
 
 * We create a class, and annotate it with the *@EnableWebSecurity* and
 *@EnableMethodSecurity* annotations in order to enable Spring security.
-* We create a *MvcRequestMatcher* that allows us define certain patterns
+* We create a *MvcRequestMatcher* that allows us to define certain patterns
 that are excluded form the authentication (e.g. the “status” endpoint).
 * We set up HTTP security, permitting access to some URIs based on the
 request matcher, and adding JWT-based security for all other endpoints.
@@ -2640,17 +2598,17 @@ to use the blueprint project found at
 https://github.com/opencirclesolutions/dynamo-blueprint
 
 This project contains the skeleton for an Angular application that uses the
-Dynamo framework. It comes with
+Dynamo framework. It comes with:
 
 * A package.json containing the required dependencies/libraries
-* The sources generated by the NPX code generator (more on this below) based
+* The sources generated by the OpenAPI code generator (more on this below) based
 on the endpoints offered by the back-end. These are included in the *dynamo/model* directory
 * The generic components that make up the Dynamo framework. These are located
 in the /src/app/shared directory
 * A basic skeleton for the application (app.module.ts with all
 the required dependencies)
 
-The quickest way to get started is to fork this project, then replace all
+The fastest way to get started is to fork this project, then replace all
 occurrences of "dynamo-blueprint" by your desired project name.
 
 With this in place, you should be able to run the *ng serve* command
@@ -2669,11 +2627,11 @@ to it in the *app-routing.module.ts*, e.g.
   {
     path: '',
     title: 'Organizations',
-    component: OrganizationSearchComponent,
+    component: OrganizationSearchComponent
   },
 ----
 
-=== Adding the Dynamo code to an existing project
+=== Adding Dynamo to an existing front-end project
 
 If you already have an existing front-end project you can also copy the Dynamo sources
 directly to your project.
@@ -2736,7 +2694,7 @@ English and Dutch are supported. These message need to be added to the
 message bundle files, typically under */src/assets/i18n*
 
 Finally, in case you are using the PDF viewer component and this produces errors, you might need
-to add the following to your *angular.json* file
+to add the following to your *angular.json* file:
 
 [source,yaml]
 ---
@@ -2750,8 +2708,6 @@ to add the following to your *angular.json* file
       }
     ]
 ---
-
-
 
 === Code generation
 
@@ -2789,11 +2745,10 @@ Dynamo several ways of dealing with (system) properties.
 The easiest way of declaring a property is by including it in the
 *application.properties* or *application.yml* file which is located in the
 *src/main/resources* directory. This is the standard file used by Spring
-boot, and as such you can add both your own system properties to it, as
+Boot, and as such you can add both your own system properties to it, as
 well as using it to modify any Spring Boot settings.
 
-You can use the
-default mechanisms offered by Spring Boot (e.g. external configuration
+You can use the default mechanisms offered by Spring Boot (e.g. external configuration
 file, explicitly set system parameters, using profiles) to override the
 values.
 

@@ -63,7 +63,7 @@
   <ng-container *ngIf="!hasGroupTogetherWith(am)">
     <div class="row pt-2 pb-2">
       <div
-        pTooltip="{{ am.displayNames[locale] }}"
+        [pTooltip]="am.descriptions[locale]"
         class="col-lg-4 col-md-4 col-sm-6 text-truncate"
       >
         {{ am.displayNames[locale] }}
@@ -86,7 +86,7 @@
       <div [class]="getGroupTogetherColClass(am)">
         <div class="row pt-2 pb-2">
           <div
-            pTooltip="{{ am.displayNames[locale] }}"
+            [pTooltip]="am.descriptions[locale]"
             class="col-lg-4 col-md-4 col-sm-6 text-truncate"
           >
             {{ am.displayNames[locale] }}

@@ -7,6 +7,7 @@
           [name]="am.name"
           [formControlName]="getFromName(am)"
           [placeholder]="getPlaceholderFrom(am)"
+          [pTooltip]="am.descriptions[locale]"
           [timeOnly]="true"
         >
         </p-calendar>
@@ -17,6 +18,7 @@
           [name]="am.name"
           [formControlName]="getToName(am)"
           [placeholder]="getPlaceholderTo(am)"
+          [pTooltip]="am.descriptions[locale]"
           [timeOnly]="true"
         >
         </p-calendar>
@@ -32,6 +34,7 @@
           [formControlName]="am.name"
           [timeOnly]="true"
           [placeholder]="am.placeholders[locale]!"
+          [pTooltip]="am.descriptions[locale]"
           [showClear]="true"
         />
       </div>

@@ -9,6 +9,7 @@
         [showClear]="true"
         [formControlName]="am.name"
         [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
         *ngIf="!useRadioButton()"
       ></p-dropdown>
       <ng-container *ngIf="useRadioButton()">
@@ -17,6 +18,7 @@
             [inputId]="option.value"
             [value]="option"
             [formControlName]="am.name"
+            [pTooltip]="am.descriptions[locale]"
           />
           &nbsp;
           <label [for]="option.value" class="ml-2">

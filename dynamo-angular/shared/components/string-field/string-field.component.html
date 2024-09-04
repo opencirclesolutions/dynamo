@@ -10,6 +10,7 @@
         *ngIf="isTextField(am)"
         [class]="classes"
         [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
       />
       <textarea
         pInputTextarea
@@ -20,6 +21,7 @@
         [formControlName]="am.name"
         [placeholder]="am.placeholders[locale]"
         [class]="classes"
+        [pTooltip]="am.descriptions[locale]"
         *ngIf="isTextArea(am)"
       >
       </textarea>
@@ -29,6 +31,7 @@
         [feedback]="false"
         [placeholder]="am.placeholders[locale]"
         [class]="classes"
+        [pTooltip]="am.descriptions[locale]"
         *ngIf="isPassword(am)"
       ></p-password>
     </div>

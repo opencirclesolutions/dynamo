@@ -5,6 +5,7 @@
         [id]="am.name"
         [formControlName]="am.name"
         [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
         [formControlName]="am.name"
         (onAdd)="validateInput($event)"
         *ngIf="useChips()"
@@ -16,6 +17,7 @@
         [formGroup]="formGroup!"
         [formControlName]="am.name"
         [locale]="locale"
+        [pTooltip]="am.descriptions[locale]"
         [am]="am"
         *ngIf="useDialog()"
       ></app-element-collection-dialog>

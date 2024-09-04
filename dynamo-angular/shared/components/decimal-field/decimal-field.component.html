@@ -13,6 +13,7 @@
           [suffix]="getSuffix(am)"
           [currency]="am.currencyCode"
           [placeholder]="am.placeholders[locale]!"
+          [pTooltip]="am.descriptions[locale]"
         >
         </p-inputNumber>
       </div>
@@ -39,6 +40,7 @@
           [locale]="getSimpleLocale(locale)"
           [suffix]="getSuffix(am)"
           [placeholder]="getPlaceholderFrom(am)"
+          [pTooltip]="am.descriptions[locale]"
         >
         </p-inputNumber>
       </div>
@@ -54,6 +56,7 @@
           [locale]="getSimpleLocale(locale)"
           [suffix]="getSuffix(am)"
           [placeholder]="getPlaceholderTo(am)"
+          [pTooltip]="am.descriptions[locale]"
         >
         </p-inputNumber>
       </div>

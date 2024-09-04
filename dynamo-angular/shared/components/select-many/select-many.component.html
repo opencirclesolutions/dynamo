@@ -14,6 +14,7 @@
             [showClear]="true"
             *ngIf="!useLookupField(am)"
             [placeholder]="am.placeholders[locale]"
+            [pTooltip]="am.descriptions[locale]"
           ></p-multiSelect>
         </div>
         <div class="col-2">
@@ -40,6 +41,7 @@
         [entityModel]="entityModel"
         [defaultFilters]="defaultFilters"
         [queryType]="mapQueryType(am.lookupQueryType!)"
+        [pTooltip]="am.descriptions[locale]"
       />
       <ng-template #popupDialogContainerRef></ng-template>
     </div>

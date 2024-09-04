@@ -7,6 +7,7 @@
         [formControlName]="am.name"
         [binary]="true"
         *ngIf="useCheckbox(am)"
+        [pTooltip]="am.descriptions[locale]"
       >
       </p-checkbox>
       <p-toggleButton
@@ -17,11 +18,13 @@
         offIcon="pi pi-times"
         onIcon="pi pi-check"
         *ngIf="useToggle(am)"
+        [pTooltip]="am.descriptions[locale]"
       ></p-toggleButton>
       <p-inputSwitch
         [formControlName]="am.name"
         [id]="am.name"
         *ngIf="useSwitch(am)"
+        [pTooltip]="am.descriptions[locale]"
       ></p-inputSwitch>
     </div>
   </div>

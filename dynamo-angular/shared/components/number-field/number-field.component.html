@@ -10,6 +10,7 @@
           [showButtons]="isShowNumberSpinnerButtons(am)"
           [step]="am.numberFieldStep!"
           [placeholder]="am.placeholders[locale]"
+          [pTooltip]="am.descriptions[locale]"
         >
         </p-inputNumber>
       </div>
@@ -33,6 +34,7 @@
         [showButtons]="isShowNumberSpinnerButtons(am)"
         [step]="am.numberFieldStep!"
         [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
       >
       </p-inputNumber>
     </div>
@@ -46,6 +48,7 @@
           [placeholder]="getPlaceholderFrom(am)"
           [showButtons]="isShowNumberSpinnerButtons(am)"
           [step]="am.numberFieldStep!"
+          [pTooltip]="am.descriptions[locale]"
         >
         </p-inputNumber>
       </div>
@@ -58,6 +61,7 @@
           [placeholder]="getPlaceholderTo(am)"
           [showButtons]="isShowNumberSpinnerButtons(am)"
           [step]="am.numberFieldStep!"
+          [pTooltip]="am.descriptions[locale]"
         >
         </p-inputNumber>
       </div>

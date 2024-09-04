@@ -8,6 +8,7 @@
           [formControlName]="am.name"
           [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
           [placeholder]="am.placeholders[locale]"
+          [pTooltip]="am.descriptions[locale]"
           [showClear]="true"
           appendTo="body"
         />
@@ -29,6 +30,7 @@
         [formControlName]="am.name"
         [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
         [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
         [showClear]="true"
         appendTo="body"
       />
@@ -41,6 +43,7 @@
           [formControlName]="getFromName(am)"
           [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
           [placeholder]="getPlaceholderFrom(am)"
+          [pTooltip]="am.descriptions[locale]"
           [showClear]="true"
           appendTo="body"
         >
@@ -53,6 +56,7 @@
           [formControlName]="getToName(am)"
           [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
           [placeholder]="getPlaceholderTo(am)"
+          [pTooltip]="am.descriptions[locale]"
           [showClear]="true"
           appendTo="body"
         >
