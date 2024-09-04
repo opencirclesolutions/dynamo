@@ -3308,7 +3308,7 @@ this.messageService.warn('Selected something:' +  obj.firstName)
 
 image:media/image6.png[image,width=427,height=108]
 
-Note that the methods of the *NotificationService* take a String literal,
+NOTE: The methods of the *NotificationService* take a String literal,
 not a key from the message bundle. If you want to display a value
 from a message bundle, you need to retrieve that using the
 translateService first.
@@ -3728,7 +3728,7 @@ table in a search layout, split layout, or editable table layout.
 Actions of type UPDATE will appear in each row in the results table,
 behind the regular popup button.
 
-Note that for an UPDATE action, if your DTO class has properties with
+NOTE: for an UPDATE action, if your DTO class has properties with
 the same name as those of the main entity, the corresponding fields will
 automatically be set to the values from the main entity.
 
@@ -3870,7 +3870,7 @@ will be used to display the values inside the table.
 user to delete an entity. This button will only show up if
 *deleteEnabled* is set to true for the entity (and if the user has the correct rights)
 
-Note that by default, nothing will happen when you click on a row in the
+NOTE: By default, nothing will happen when you click on a row in the
 table, or when you click the Add button. The functionality for
 navigating to a detail screen must be explicitly enabled. The easiest
 way to do this is by defining the *detailNavigationPath* (see below).
@@ -4721,7 +4721,7 @@ The Dynamo framework comes with built-in functionality for dealing with
 file uploads. This is based on a scenario in which you want to upload
 one or more files and store them as binary data in the database. Note
 that is not always the ideal way to store data (especially when files
-become big) but it is something that is fairly easily to realize, hence
+become big), but it is something that is fairly easily to realize, hence
 we think it is a useful feature anyway. Just remember to use it with
 care.
 
@@ -5337,7 +5337,7 @@ public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> da
 }
 --
 
-Note that the *DefaultDaoImpl* and *DefaultServiceImpl* classes are part
+NOTE: The *DefaultDaoImpl* and *DefaultServiceImpl* classes are part
 of the core dynamo implementation so you can use them without adding the
 *dynamo-functional-domain* dependencies to your pom.xml.
 
