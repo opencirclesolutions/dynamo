@@ -42,7 +42,7 @@ import java.util.List;
  * A controller that offers endpoints for the form-fill functionality
  */
 @RestController
-@RequestMapping(value = "/autofill")
+@RequestMapping(value = "#{@'dynamoframework-org.dynamoframework.configuration.DynamoConfigurationProperties'.defaults.endpoints.autofill}")
 @Slf4j
 @CrossOrigin
 @Tag(name = "Auto fill", description = "Dynamo auto fill controller")

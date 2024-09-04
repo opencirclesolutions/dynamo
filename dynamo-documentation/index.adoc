@@ -1,5 +1,7 @@
 = Dynamo
 :toc:
+:toclevels: 2
+:icons: font
 
 image:media/logo-dynamo.png[image]
 
@@ -313,7 +315,7 @@ Some examples:
 Organization.displayName=Criminal Organization
 --
 
-Sets the display name of the Organization entity to “Crimal
+Sets the display name of the Organization entity to “Criminal
 Organization”.
 
 [source,properties]
@@ -351,7 +353,7 @@ the enumeration value.
 values:
 ** “dynamoframework.defaults.date-format” (dd-MM-yyyy) for dates
 ** “dynamoframework.defaults.time-format” (HH:mm:ss) for times
-** “dynamoframework.defaults.datetime-format” (dd-MM-yyyy HH:mm:ss)
+** “dynamoframework.defaults.date-time-format” (dd-MM-yyyy HH:mm:ss)
 * For the *visibleInForm* and *visibleInGrid* settings, both the
 enumeration values (SHOW/HIDE) and the Boolean values *true* and *false*
 are supported.
@@ -651,7 +653,7 @@ representation of the desired value.
 
 For date attributes, use the String representations according to the
 system properties *dynamoframework.defaults.date-format* _(dd-MM-yyyy),_
-*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.datetime-format*
+*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.date-time-format*
 _(dd-MM-yyyy HH:mm:ss)_.
 
 === DefaultSearchValueFrom
@@ -672,7 +674,7 @@ representation of the desired value.
 
 For date attributes, use the String representations according to the
 system properties *dynamoframework.defaults.date-format* _(dd-MM-yyyy),_
-*dynamoframework.defaults.time-format* _(HH:mm:ss)_, *dynamoframework.defaults.datetime-format*
+*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.date-time-format*
 _(dd-MM-yyyy HH:mm:ss)_
 
 === DefaultSearchValueTo
@@ -2940,6 +2942,12 @@ dynamoframework:
 |
 |
 
+|endpoints
+|org.dynamoframework.configuration.EndpointProperties
+|The configuration of the Dynamo endpoints
+|
+|
+
 |enum-field-mode
 |org.dynamoframework.domain.model.AttributeEnumFieldMode
 |The default field type to use for enumeration attributes
@@ -3033,6 +3041,54 @@ dynamoframework:
 
 |===
 
+==== Prefix dynamoframework.defaults.endpoints
+
+// tag::dynamoframework.defaults.endpoints[]
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties$EndpointConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|autofill
+|java.lang.String
+|The endpoint for the autofill controller
+|/api/dynamo/autofill
+|
+
+|crud
+|java.lang.String
+|The endpoint for the crud controller
+|/api/dynamo/crud
+|
+
+|export
+|java.lang.String
+|The endpoint for the export controller
+|/api/dynamo/export
+|
+
+|files
+|java.lang.String
+|The endpoint for the file controller
+|/api/dynamo/file
+|
+
+|model
+|java.lang.String
+|The endpoint for the model controller
+|/api/dynamo/model
+|
+
+|status
+|java.lang.String
+|The endpoint for the status controller
+|/api/dynamo/status
+|
+
+
+|===
+// end::dynamoframework.defaults.endpoints[]
 
 ==== Prefix dynamoframework.bedrock
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
@@ -3285,7 +3341,7 @@ time stamps). The filter contains a “from” value (lower bound,
 including) and a “to” value (upper bound, inclusive). At least one of
 these values must be filled.
 
-Note: the actual values that are sent to the back-end in case of
+NOTE: the actual values that are sent to the back-end in case of
 filtering on a Date are always string representations in ISO format
 (yyyy-MM-dd). Be careful when converting from Javascript Dates (which
 always contain a time stamp) to ISO string, it is very common to end up
@@ -3656,7 +3712,7 @@ no specific roles are required and any user may perform the action. In
 case multiple values are provided, a user can perform the action as long
 as they have any of the provided roles.
 
-It is possible to use thae message bundle to override the required
+It is possible to use the message bundle to override the required
 roles, by using the “readRoles”, “writeRoles” and “deleteRoles” keys.
 Each value takes a comma-separated list of the role names.
 
@@ -3998,7 +4054,7 @@ afterSearchFormBuilt(info: FormInfo) {
 }
 --
 
-Note: when you are setting the value for a *multiselect* component, be
+NOTE: when you are setting the value for a *multiselect* component, be
 sure that the value you are passing array.
 
 ==== Additional row actions
@@ -4359,7 +4415,7 @@ This callback method will be run whenever the form is opened in the
 “create new entity mode”, and will result in the “countryOfOrigin” field
 being filled with “Australia”
 
-Note: if this approach is too cumbersome for your purposes, consider
+TIP: if this approach is too cumbersome for your purposes, consider
 overriding the *initialize* method in the back-end instead (see section
 7.5).
 
@@ -4565,8 +4621,8 @@ Configuration can then be done as follows:
 [source,properties]
 --
 dynamoframework.bedrock.enabled=true
-dynamoframework.bedrock.access-key=AKIA5FTY7NWAPH2I7CGV
-dynamoframework.bedrock.access-secret=[SECRET]
+dynamoframework.bedrock.access-key=[ACCESS KEY]
+dynamoframework.bedrock.access-secret=[ACCESS SECRET]
 dynamoframework.bedrock.model-id=arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-v2
 dynamoframework.bedrock.region=eu-central-1
 --

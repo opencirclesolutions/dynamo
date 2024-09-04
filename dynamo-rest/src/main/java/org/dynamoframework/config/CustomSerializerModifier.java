@@ -63,7 +63,7 @@ public class CustomSerializerModifier extends BeanSerializerModifier {
 
                 AttributeModel attributeModel = model.getAttributeModel(next.getName());
                 if (attributeModel == null && !model.hasEmbeddedAttributeModel(next.getName())) {
-                    log.info("Removing unbacked property {}", next.getName());
+                    log.debug("Removing unbacked property {}", next.getName());
                     iterator.remove();
                 }
             }

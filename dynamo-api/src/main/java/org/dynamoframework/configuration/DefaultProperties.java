@@ -64,5 +64,7 @@ public interface DefaultProperties {
     boolean isTrimSpaces();
 
     String getAiService();
+
+    EndpointProperties getEndpoints();
 }
 

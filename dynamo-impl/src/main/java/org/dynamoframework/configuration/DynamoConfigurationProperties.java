@@ -154,6 +154,40 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
          */
         private String aiService;
 
+        /**
+         * The configuration of the Dynamo endpoints
+         */
+        private EndpointProperties endpoints = new EndpointConfigurationProperties();
+
+        @Data
+        @ConfigurationProperties(prefix = "dynamoframework.defaults.endpoints")
+        public static class EndpointConfigurationProperties implements Serializable, EndpointProperties {
+            /**
+             * The endpoint for the export controller
+             */
+            private String export = "/api/dynamo/export";
+            /**
+             * The endpoint for the model controller
+             */
+            private String model = "/api/dynamo/model";
+            /**
+             * The endpoint for the autofill controller
+             */
+            private String autofill = "/api/dynamo/autofill";
+            /**
+             * The endpoint for the status controller
+             */
+            private String status = "/api/dynamo/status";
+            /**
+             * The endpoint for the crud controller
+             */
+            private String crud = "/api/dynamo/crud";
+            /**
+             * The endpoint for the file controller
+             */
+            private String file = "/api/dynamo/file";
+        }
+
     }
 
     /**
@@ -310,6 +344,7 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
      * The name of the database function used to replace accents
      */
     private String unaccentFunctionName = "";
+
 
 
 }

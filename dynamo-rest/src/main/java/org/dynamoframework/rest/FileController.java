@@ -56,7 +56,7 @@ import java.util.Base64;
  * Generic controller for uploading and downloading files
  */
 @RestController
-@RequestMapping("/files")
+@RequestMapping(value = "#{@'dynamoframework-org.dynamoframework.configuration.DynamoConfigurationProperties'.defaults.endpoints.file}")
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin
@@ -111,7 +111,7 @@ public class FileController {
     @Operation(summary = "Clear a file")
     public <ID, T extends AbstractEntity<ID>> void clear(@RequestParam("entityId") @Parameter(description = "The ID of the entity") String id,
                                                          @RequestParam("entityName") @Parameter(description = "The ID of the entity") String entityName,
-                                                         @RequestParam("attributeName") @Parameter(description = "The ID of the atribute") String attributeName) throws IOException {
+                                                         @RequestParam("attributeName") @Parameter(description = "The ID of the attribute") String attributeName) throws IOException {
 
         EntityModel<T> model = findEntityModel(entityName);
         AttributeModel attributeModel = findAttributeModel(model, attributeName);
@@ -133,7 +133,7 @@ public class FileController {
     @Operation(summary = "Download a file")
     public <ID, T extends AbstractEntity<ID>> ResponseEntity<Resource> download(@RequestParam("entityId") @Parameter(description = "The ID of the entity") String entityId,
                                                                                 @RequestParam("entityName") @Parameter(description = "The name of the entity") String entityName,
-                                                                                @RequestParam("attributeName") @Parameter(description = "The ID of the atribute") String attributeName) {
+                                                                                @RequestParam("attributeName") @Parameter(description = "The ID of the attribute") String attributeName) {
         EntityModel<T> model = findEntityModel(entityName);
         AttributeModel attributeModel = findAttributeModel(model, attributeName);
 
@@ -173,7 +173,7 @@ public class FileController {
     @Operation(summary = "Downloads a file as a Base64 string")
     public <ID, T extends AbstractEntity<ID>> ResponseEntity<String> downloadBase64(@RequestParam("entityId") @Parameter(description = "The ID of the entity") String entityId,
                                                                                     @RequestParam("entityName") @Parameter(description = "The name of the entity") String entityName,
-                                                                                    @RequestParam("attributeName") @Parameter(description = "The ID of the atribute") String attributeName) {
+                                                                                    @RequestParam("attributeName") @Parameter(description = "The ID of the attribute") String attributeName) {
         EntityModel<T> model = findEntityModel(entityName);
         BaseService<ID, T> service = (BaseService<ID, T>) serviceLocator.getServiceForEntity(model.getEntityClass());
         T entity = service.fetchById(convertId(model, entityId));
