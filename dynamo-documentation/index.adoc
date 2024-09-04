@@ -1,6 +1,6 @@
 = Dynamo
 :toc:
-
+:toclevels: 3
 image:media/logo-dynamo.png[image]
 
 Web Application Accelerator Framework
@@ -2844,7 +2844,7 @@ You can use the static methods from the *SystemPropertyUtils* class to
 access these system properties from inside your code.
 
 
-==== Changing the standard Dynamo endpoints
+=== Changing the standard Dynamo endpoints
 
 The REST endpoints used by dynamo can be configured using properties. There
 are six endpoints that Dynamo requires to function. See <<_prefix_dynamoframework_defaults_endpoints>>
