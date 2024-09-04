@@ -3720,6 +3720,8 @@ Secondly, you can use the *AuthenticationService* to check whether a
 user is in a certain role. You can e.g. use this when building a menu,
 to enable/disable certain routes.
 
+== Composite UI components
+
 === GenericSearchLayout
 
 One of the most commonly used components will be the “Generic Search
