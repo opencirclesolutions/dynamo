@@ -2557,7 +2557,7 @@ public class GtsSecurityAdapter {
     public SecurityFilterChain filterChain(HttpSecurity http, MvcRequestMatcher.Builder mvc) throws Exception {
         return http
                 .authorizeHttpRequests(
-                        config -> config.requestMatchers(mvc.pattern("/status"),
+                        config -> config.requestMatchers(mvc.pattern("/api/dynamo/status"),
                                 mvc.pattern("/v3/api-docs")).permitAll())
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
@@ -2630,6 +2630,7 @@ to it in the *app-routing.module.ts*, e.g.
     component: OrganizationSearchComponent
   },
 ----
+
 
 === Adding Dynamo to an existing front-end project
 
@@ -2738,9 +2739,10 @@ The code for any additional custom endpoints will be added to the /dynamo/model 
 along with the code for the generic Dynamo endpoints (running this command will overwrite
 any of the existing code).
 
+
 == System properties
 
-Dynamo several ways of dealing with (system) properties.
+Dynamo supports several ways of dealing with (system) properties.
 
 The easiest way of declaring a property is by including it in the
 *application.properties* or *application.yml* file which is located in the
