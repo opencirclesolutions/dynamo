@@ -101,10 +101,10 @@ export class ExportService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<Blob>;
-    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<HttpResponse<Blob>>;
-    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<HttpEvent<Blob>>;
-    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<any> {
+    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Blob>;
+    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Blob>>;
+    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Blob>>;
+    public exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
         if (entityName === null || entityName === undefined) {
             throw new Error('Required parameter entityName was null or undefined when calling exportCsv.');
         }
@@ -142,8 +142,8 @@ export class ExportService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'application/json',
-                '*/*'
+                '*/*',
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -166,7 +166,7 @@ export class ExportService {
             localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
         }
 
-        let localVarPath = `/export/csv/${this.configuration.encodeParam({name: "entityName", value: entityName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/api/dynamo/export/csv/${this.configuration.encodeParam({name: "entityName", value: entityName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -191,10 +191,10 @@ export class ExportService {
      * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
      * @param reportProgress flag to report request and response progress.
      */
-    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<Blob>;
-    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<HttpResponse<Blob>>;
-    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<HttpEvent<Blob>>;
-    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: 'application/json' | '*/*', context?: HttpContext}): Observable<any> {
+    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'body', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<Blob>;
+    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'response', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpResponse<Blob>>;
+    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'events', reportProgress?: boolean, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<HttpEvent<Blob>>;
+    public exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe: any = 'body', reportProgress: boolean = false, options?: {httpHeaderAccept?: '*/*' | 'application/json', context?: HttpContext}): Observable<any> {
         if (entityName === null || entityName === undefined) {
             throw new Error('Required parameter entityName was null or undefined when calling exportExcel.');
         }
@@ -232,8 +232,8 @@ export class ExportService {
         if (localVarHttpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'application/json',
-                '*/*'
+                '*/*',
+                'application/json'
             ];
             localVarHttpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
@@ -256,7 +256,7 @@ export class ExportService {
             localVarHeaders = localVarHeaders.set('Content-Type', httpContentTypeSelected);
         }
 
-        let localVarPath = `/export/excel/${this.configuration.encodeParam({name: "entityName", value: entityName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/api/dynamo/export/excel/${this.configuration.encodeParam({name: "entityName", value: entityName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

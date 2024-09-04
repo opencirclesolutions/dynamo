@@ -163,7 +163,7 @@ export class AutoFillService {
             }
         }
 
-        let localVarPath = `/autofill/${this.configuration.encodeParam({name: "entityName", value: entityName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
+        let localVarPath = `/api/dynamo/autofill/${this.configuration.encodeParam({name: "entityName", value: entityName, in: "path", style: "simple", explode: false, dataType: "string", dataFormat: undefined})}`;
         return this.httpClient.request<object>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -225,7 +225,7 @@ export class AutoFillService {
             }
         }
 
-        let localVarPath = `/autofill/options`;
+        let localVarPath = `/api/dynamo/autofill/options`;
         return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

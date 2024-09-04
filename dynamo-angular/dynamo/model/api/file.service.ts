@@ -175,7 +175,7 @@ export class FileService {
             }
         }
 
-        let localVarPath = `/files/clear`;
+        let localVarPath = `/api/dynamo/file/clear`;
         return this.httpClient.request<any>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -252,7 +252,7 @@ export class FileService {
         }
 
 
-        let localVarPath = `/files/download`;
+        let localVarPath = `/api/dynamo/file/download`;
         return this.httpClient.request('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -340,7 +340,7 @@ export class FileService {
             }
         }
 
-        let localVarPath = `/files/downloadBase64`;
+        let localVarPath = `/api/dynamo/file/downloadBase64`;
         return this.httpClient.request<string>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
@@ -454,7 +454,7 @@ export class FileService {
             }
         }
 
-        let localVarPath = `/files/upload`;
+        let localVarPath = `/api/dynamo/file/upload`;
         return this.httpClient.request<any>('post', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,

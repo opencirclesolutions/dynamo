@@ -139,7 +139,7 @@ export class StatusService {
             }
         }
 
-        let localVarPath = `/status`;
+        let localVarPath = `/api/dynamo/status`;
         return this.httpClient.request<StatusResponse>('get', `${this.configuration.basePath}${localVarPath}`,
             {
                 context: localVarHttpContext,
