@@ -2707,8 +2707,8 @@ dynamoframework:
 
 |files
 |java.lang.String
-|The endpoint for the files controller
-|/api/dynamofiles
+|The endpoint for the file controller
+|/api/dynamo/file
 |
 
 |model

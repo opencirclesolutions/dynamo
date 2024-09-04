@@ -183,9 +183,9 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
              */
             private String crud = "/api/dynamo/crud";
             /**
-             * The endpoint for the files controller
+             * The endpoint for the file controller
              */
-            private String files = "/api/dynamo/files";
+            private String file = "/api/dynamo/file";
         }
 
     }
