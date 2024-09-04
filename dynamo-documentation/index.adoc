@@ -1,11 +1,11 @@
 = Dynamo
 :toc:
-
+:toclevels: 3
 image:media/logo-dynamo.png[image]
 
 Web Application Accelerator Framework
 
-Developed, maintained and sponsered by
+Developed, maintained and sponsored by
 
 image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
 
@@ -314,7 +314,7 @@ Some examples:
 Organization.displayName=Criminal Organization
 --
 
-Sets the display name of the Organization entity to “Crimal
+Sets the display name of the Organization entity to “Criminal
 Organization”.
 
 [source,properties]
@@ -352,7 +352,7 @@ the enumeration value.
 values:
 ** “dynamoframework.defaults.date-format” (dd-MM-yyyy) for dates
 ** “dynamoframework.defaults.time-format” (HH:mm:ss) for times
-** “dynamoframework.defaults.datetime-format” (dd-MM-yyyy HH:mm:ss)
+** “dynamoframework.defaults.date-time-format” (dd-MM-yyyy HH:mm:ss)
 * For the *visibleInForm* and *visibleInGrid* settings, both the
 enumeration values (SHOW/HIDE) and the Boolean values *true* and *false*
 are supported.
@@ -398,7 +398,7 @@ handle embedded properties (using the *@Embedded* annotation). This will
 be covered in the _Advanced_ section.
 * *ELEMENT_COLLECTION*: a property that is annotated with the
 *@ElementCollection* annotation, i.e. a collection of simple values like
-integers and Strings (note: the JPA spec does allow more complex element
+integers and Strings (note that the JPA spec does allow more complex element
 collections, but these are not currently supported by Dynamo).
 
 The attribute type in combination with the Java type determines how a
@@ -651,7 +651,7 @@ representation of the desired value.
 
 For date attributes, use the String representations according to the
 system properties *dynamoframework.defaults.date-format* _(dd-MM-yyyy),_
-*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.datetime-format*
+*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.date-time-format*
 _(dd-MM-yyyy HH:mm:ss)_.
 
 === DefaultSearchValueFrom
@@ -672,7 +672,7 @@ representation of the desired value.
 
 For date attributes, use the String representations according to the
 system properties *dynamoframework.defaults.date-format* _(dd-MM-yyyy),_
-*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.datetime-format*
+*dynamoframework.defaults.time-format* _(HH:mm:ss),_ *dynamoframework.defaults.date-time-format*
 _(dd-MM-yyyy HH:mm:ss)_
 
 === DefaultSearchValueTo
@@ -1290,7 +1290,7 @@ since the property is not known in JPA. In cases like this, you can use
 the *replacementSearchPath* setting to specify the alternate (real) path
 to use during the search.
 
-Note: the *replacementSearchPath* setting is managed completely in the
+NOTE: the *replacementSearchPath* setting is managed completely in the
 back-end.
 
 === ReplacementSortPath
@@ -1302,7 +1302,7 @@ clicks on a column header in a search results grid. By default, the
 application will then sort on the exact path to the property, but if the
 *replacementSortPath* is set, that value will be used instead.
 
-Note: the *replacementSortPath* setting is managed completely in the
+NOTE: the *replacementSortPath* setting is managed completely in the
 back-end.
 
 === RequiredForSearching
@@ -2222,7 +2222,7 @@ public void setTranslations(Set<GiftTranslation> translations) {
 }
 --
 
-== Back-end Setup
+== Back-end setup
 
 === Project structure
 
@@ -2579,6 +2579,12 @@ dynamoframework:
 |
 |
 
+|endpoints
+|org.dynamoframework.configuration.EndpointProperties
+|The configuration of the Dynamo endpoints
+|
+|
+
 |enum-field-mode
 |org.dynamoframework.domain.model.AttributeEnumFieldMode
 |The default field type to use for enumeration attributes
@@ -2672,6 +2678,54 @@ dynamoframework:
 
 |===
 
+==== Prefix dynamoframework.defaults.endpoints
+
+// tag::dynamoframework.defaults.endpoints[]
+*Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties$EndpointConfigurationProperties`
+[cols="2,1,3,1,1"]
+|===
+|Key |Type |Description |Default value |Deprecation
+
+
+|autofill
+|java.lang.String
+|The endpoint for the autofill controller
+|/api/dynamo/autofill
+|
+
+|crud
+|java.lang.String
+|The endpoint for the crud controller
+|/api/dynamo/crud
+|
+
+|export
+|java.lang.String
+|The endpoint for the export controller
+|/api/dynamo/export
+|
+
+|files
+|java.lang.String
+|The endpoint for the file controller
+|/api/dynamo/file
+|
+
+|model
+|java.lang.String
+|The endpoint for the model controller
+|/api/dynamo/model
+|
+
+|status
+|java.lang.String
+|The endpoint for the status controller
+|/api/dynamo/status
+|
+
+
+|===
+// end::dynamoframework.defaults.endpoints[]
 
 ==== Prefix dynamoframework.bedrock
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
@@ -2789,6 +2843,18 @@ dynamoframework:
 You can use the static methods from the *SystemPropertyUtils* class to
 access these system properties from inside your code.
 
+
+=== Changing the standard Dynamo endpoints
+
+The REST endpoints used by dynamo can be configured using properties. There
+are six endpoints that Dynamo requires to function. See <<_prefix_dynamoframework_defaults_endpoints>>
+for the settings and their default values.
+
+
+WARNING: When that the front-end code needs to be updated/regenerated when
+the endpoints are changed. See <<_front_end_code_generation>> on how to
+do this.
+
 == User interface setup
 
 === Basic UI setup
@@ -2807,11 +2873,20 @@ When you start a new project that uses the Dynamo framework in its
 front-end, you must run the OpenAPI generator for Angular in order to
 create the services and DTOs that are required by the Dynamo framework.
 
+It should (at least in principle) be possible to add Dynamo to your existing front-end application
+without too much effort. Note that setting up the general structure of your application is largely
+outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo does not concern itself
+with the application's menu structure or routing, although it does offer some convenience features and
+general use services.
+
+
 [TODO] include a part about using the Dynamo component
 
+==== Using npx
+
 To do so, first start the back-end application, then open a web browser
-and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will show you a web page
-containing the applications' OpenAPI (Swagger) documentation
+and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will download
+the yaml file.
 
 As an alternative, https://curl.se[curl] can be used to download this file:
 
@@ -2832,11 +2907,57 @@ This will generate the front-end source code in the specified directory
 (in this case */model*). It will now be ready for usage by the
 framework.
 
-It should (at least in principle) be possible to add Dynamo to your existing front-end application
-without too much effort. Note that setting up the general structure of your application is largely
-outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo does not concern itself
-with the application's menu structure or routing, although it does offer some convenience features and
-general use services.
+==== Using Apache Maven
+
+It is also possible to generate the front-end code using Apache Maven.
+This requires the *api-docs.json* file. This file can be obtained similarly
+to *api-docs.yaml* file: start the back-end application, then open a web
+browser and navigate to *http://localhost:8080/v3/api-docs*. After this,
+save the file to *api-docs.json*
+
+As an alternative, https://curl.se[curl] can also be used to download this
+file:
+
+[source, commandline]
+--
+curl -o api-docs.json http://localhost:8080/v3/api-docs
+--
+
+To generate the front-end code, the https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-maven-plugin/README.md[openapi-generator-maven-plugin]
+is used. The plugin needs to be configured as shown below:
+
+[source,xml]
+--
+<plugin>
+    <groupId>org.openapitools</groupId>
+    <artifactId>openapi-generator-maven-plugin</artifactId>
+    <version>7.8.0</version> <!-- or use a newer version -->
+    <executions>
+        <execution>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+                <inputSpec>${project.build.directory}/openapi.json</inputSpec>
+                <generatorName>typescript-angular</generatorName>
+                <output>src/main/${front-end.name}/model</output>
+                <configOptions>
+                    <ngVersion>16.1.2</ngVersion>
+                    <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                    <enumPropertyNaming>original</enumPropertyNaming>
+                </configOptions>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+--
+
+It is also possible to completely integrate the generation of the front-end
+code in the build process. A possible way to this is by using the
+*springdoc-openapi-maven-plugin*. Refer to
+https://github.com/springdoc/springdoc-openapi-maven-plugin[the readme of this plugin]
+for an example.
 
 === General front-end services
 
@@ -2979,7 +3100,7 @@ time stamps). The filter contains a “from” value (lower bound,
 including) and a “to” value (upper bound, inclusive). At least one of
 these values must be filled.
 
-Note: the actual values that are sent to the back-end in case of
+NOTE: the actual values that are sent to the back-end in case of
 filtering on a Date are always string representations in ISO format
 (yyyy-MM-dd). Be careful when converting from Javascript Dates (which
 always contain a time stamp) to ISO string, it is very common to end up
@@ -3690,7 +3811,7 @@ afterSearchFormBuilt(info: FormInfo) {
 }
 --
 
-Note: when you are setting the value for a *multiselect* component, be
+NOTE: when you are setting the value for a *multiselect* component, be
 sure that the value you are passing array.
 
 ==== Additional row actions
@@ -4051,7 +4172,7 @@ This callback method will be run whenever the form is opened in the
 “create new entity mode”, and will result in the “countryOfOrigin” field
 being filled with “Australia”
 
-Note: if this approach is too cumbersome for your purposes, consider
+TIP: if this approach is too cumbersome for your purposes, consider
 overriding the *initialize* method in the back-end instead (see section
 7.5).
 
@@ -4257,8 +4378,8 @@ Configuration can then be done as follows:
 [source,properties]
 --
 dynamoframework.bedrock.enabled=true
-dynamoframework.bedrock.access-key=AKIA5FTY7NWAPH2I7CGV
-dynamoframework.bedrock.access-secret=[SECRET]
+dynamoframework.bedrock.access-key=[ACCESS KEY]
+dynamoframework.bedrock.access-secret=[ACCESS SECRET]
 dynamoframework.bedrock.model-id=arn:aws:bedrock:eu-central-1::foundation-model/anthropic.claude-v2
 dynamoframework.bedrock.region=eu-central-1
 --

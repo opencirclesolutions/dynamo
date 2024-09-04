@@ -166,7 +166,6 @@
 								<value>Unknown group</value>
 							</excludedGroups>
 							<includedGroups>
-
 							</includedGroups>
 						</configuration>
 					</execution>

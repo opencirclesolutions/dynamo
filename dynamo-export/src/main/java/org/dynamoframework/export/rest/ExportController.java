@@ -56,7 +56,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.Locale;
 
 @RestController
-@RequestMapping("/export")
+@RequestMapping(value = "#{@'dynamoframework-org.dynamoframework.configuration.DynamoConfigurationProperties'.defaults.endpoints.export}")
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin(exposedHeaders = {"Content-Type", "Content-Disposition"})

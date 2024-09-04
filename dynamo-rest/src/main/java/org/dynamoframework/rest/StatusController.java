@@ -34,7 +34,7 @@ import org.springframework.web.bind.annotation.RestController;
  * A simple controller for returning an "OK" when the application is running
  */
 @RestController
-@RequestMapping("/status")
+@RequestMapping(value = "#{@'dynamoframework-org.dynamoframework.configuration.DynamoConfigurationProperties'.defaults.endpoints.status}")
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin

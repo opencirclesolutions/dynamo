@@ -36,7 +36,7 @@ import org.dynamoframework.utils.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/model")
+@RequestMapping(value = "#{@'dynamoframework-org.dynamoframework.configuration.DynamoConfigurationProperties'.defaults.endpoints.model}")
 @Slf4j
 @RequiredArgsConstructor
 @CrossOrigin
