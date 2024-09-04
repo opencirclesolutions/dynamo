@@ -7,7 +7,7 @@ image:media/logo-dynamo.png[image]
 
 Web Application Accelerator Framework
 
-Developed, maintained and sponsered by
+Developed, maintained and sponsored by
 
 image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
 
@@ -138,7 +138,7 @@ versions of entity models in section 3.5)
 *model/Organization?reference=PersonOrganizationSearch*
 
 As you will see later on, entity models can be nested: if an entity has
-a reference to another entity (one-to-many, many-to-one etc.) then a
+a reference to another entity (one-to-many, many-to-one, etc.) then a
 nested entity model for that entity will be created. You can retrieve a
 nested entity model by performing a GET to
 */model/\{entityName}/attribute/attributeName,* e.g.
@@ -2203,178 +2203,164 @@ on OAuth are included in the pom but commented out.
 ----
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-		<groupId>org.springframework.boot</groupId>
-		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.2</version>
-		<relativePath/> <!-- lookup parent from repository -->
-	</parent>
-	<groupId>[YOUR GROUP ID]</groupId>
-	<artifactId>[YOUR ARTEFACT ID]</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
-	<name>[YOUR NAME]</name>
-	<properties>
-		<java.version>21</java.version>
-		<dynamo.version>4.0.0-SNAPSHOT</dynamo.version>
-	</properties>
-	<repositories>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-	<dependencies>
-		<dependency>
-			<groupId>org.dynamoframework</groupId>
-			<artifactId>dynamo-rest</artifactId>
-			<version>${dynamo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.dynamoframework</groupId>
-			<artifactId>dynamo-formfill</artifactId>
-			<version>${dynamo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.dynamoframework</groupId>
-			<artifactId>dynamo-functional-domain</artifactId>
-			<version>${dynamo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.dynamoframework</groupId>
-			<artifactId>dynamo-export</artifactId>
-			<version>${dynamo.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-data-jpa</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-web</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springdoc</groupId>
-			<artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
-			<version>2.5.0</version>
-		</dependency>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>2.16.1</version>
-		</dependency>
-		<dependency>
-			<groupId>org.projectlombok</groupId>
-			<artifactId>lombok</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-jpa</artifactId>
-			<version>5.1.0</version>
-			<classifier>jakarta</classifier>
-		</dependency>
-		<dependency>
-			<groupId>com.querydsl</groupId>
-			<artifactId>querydsl-apt</artifactId>
-			<version>5.1.0</version>
-			<classifier>jakarta</classifier>
-			<scope>provided</scope>
-		</dependency>
-		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<version>2.2.224</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi</artifactId>
-			<version>5.2.5</version>
-		</dependency>
-		<dependency>
-			<groupId>org.apache.poi</groupId>
-			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.5</version>
-		</dependency>
-		<dependency>
-			<groupId>com.opencsv</groupId>
-			<artifactId>opencsv</artifactId>
-			<version>5.9</version>
-		</dependency>
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.boot</groupId>-->
-<!--			<artifactId>spring-boot-starter-security</artifactId>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.security</groupId>-->
-<!--			<artifactId>spring-security-oauth2-resource-server</artifactId>-->
-<!--			<version>6.3.0</version>-->
-<!--		</dependency>-->
-<!--		<dependency>-->
-<!--			<groupId>org.springframework.security</groupId>-->
-<!--			<artifactId>spring-security-oauth2-jose</artifactId>-->
-<!--			<version>6.3.0</version>-->
-<!--		</dependency>-->
-	</dependencies>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.13.0</version>
-				<configuration>
-					<source>${java.version}</source>
-					<target>${java.version}</target>
-					<parameters>true</parameters>
-					<compilerArgs>
-						<arg>-parameters</arg>
-					</compilerArgs>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>3.3.1</version>
-				<executions>
-					<execution>
-						<configuration>
-							<outputDirectory>target/generated-sources/annotations</outputDirectory>
-							<processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
-						</configuration>
-					</execution>
-				</executions>
-				<configuration>
-					<image>
-						<builder>paketobuildpacks/builder-jammy-base:latest</builder>
-					</image>
-					<excludes>
-						<exclude>
-							<groupId>org.projectlombok</groupId>
-							<artifactId>lombok</artifactId>
-						</exclude>
-					</excludes>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-surefire-plugin</artifactId>
-				<version>3.3.0</version>
-			</plugin>
-		</plugins>
-	</build>
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>org.springframework.boot</groupId>
+    <artifactId>spring-boot-starter-parent</artifactId>
+    <version>3.3.2</version>
+    <relativePath/> <!-- lookup parent from repository -->
+  </parent>
+  <groupId>[YOUR GROUP ID]</groupId>
+  <artifactId>[YOUR ARTEFACT ID]</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+  <name>[YOUR NAME]</name>
+  <properties>
+    <java.version>21</java.version>
+    <dynamo.version>4.0.0-SNAPSHOT</dynamo.version>
+  </properties>
+  <repositories>
+    <repository>
+      <id>spring-milestones</id>
+      <name>Spring Milestones</name>
+      <url>https://repo.spring.io/milestone</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+  <dependencies>
+    <dependency>
+      <groupId>org.dynamoframework</groupId>
+      <artifactId>dynamo-rest</artifactId>
+      <version>${dynamo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dynamoframework</groupId>
+      <artifactId>dynamo-formfill</artifactId>
+      <version>${dynamo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dynamoframework</groupId>
+      <artifactId>dynamo-functional-domain</artifactId>
+      <version>${dynamo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.dynamoframework</groupId>
+      <artifactId>dynamo-export</artifactId>
+      <version>${dynamo.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-validation</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-web</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springdoc</groupId>
+      <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+      <version>2.5.0</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>2.16.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.boot</groupId>
+      <artifactId>spring-boot-starter-test</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-jpa</artifactId>
+      <version>5.1.0</version>
+      <classifier>jakarta</classifier>
+    </dependency>
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-apt</artifactId>
+      <version>5.1.0</version>
+      <classifier>jakarta</classifier>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.h2database</groupId>
+      <artifactId>h2</artifactId>
+      <version>2.2.224</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi</artifactId>
+      <version>5.2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.poi</groupId>
+      <artifactId>poi-ooxml</artifactId>
+      <version>5.2.5</version>
+    </dependency>
+    <dependency>
+      <groupId>com.opencsv</groupId>
+      <artifactId>opencsv</artifactId>
+      <version>5.9</version>
+    </dependency>
+  </dependencies>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>3.13.0</version>
+        <configuration>
+          <source>${java.version}</source>
+          <target>${java.version}</target>
+          <parameters>true</parameters>
+          <compilerArgs>
+            <arg>-parameters</arg>
+          </compilerArgs>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>3.3.1</version>
+        <executions>
+          <execution>
+            <configuration>
+              <outputDirectory>target/generated-sources/annotations</outputDirectory>
+              <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+            </configuration>
+          </execution>
+        </executions>
+        <configuration>
+          <image>
+            <builder>paketobuildpacks/builder-jammy-base:latest</builder>
+          </image>
+          <excludes>
+            <exclude>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok</artifactId>
+            </exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.3.0</version>
+      </plugin>
+    </plugins>
+  </build>
 </project>
 ----
 
@@ -2408,7 +2394,7 @@ public class ApplicationConfig extends ApplicationConfigurationSupport {
 				"classpath:/ocscommon", "classpath:/ValidationMessages" };
 	}
 
-    // some default DAOs and services for illustration purposes. remove at your discretion
+    // some default DAOs and services for illustration purposes. Remove at your discretion.
 	@Bean
 	public BaseDao<Integer, Region> regionDao() {
 		return new DefaultDaoImpl<>(QRegion.region, Region.class);
@@ -2700,7 +2686,7 @@ Finally, in case you are using the PDF viewer component and this produces errors
 to add the following to your *angular.json* file:
 
 [source,yaml]
----
+--
     "assets": [
       "src/favicon.ico",
       "src/assets",
@@ -2710,7 +2696,7 @@ to add the following to your *angular.json* file:
         "output": "/assets"
       }
     ]
----
+--
 
 === Code generation
 
@@ -2722,11 +2708,19 @@ want to access from the UI in a convenient way, you can use the Open Api code
 generator to generate the plumbing code for you.
 
 To do so, first start the back-end application, then open a web browser
-and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will show you a web page
-containing the applications' OpenAPI (Swagger) documentation
+and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will download
+the yaml file.
 
-Save the data to a file named "api.yaml" and save it in the root directory of your
-front-end application. Then, run the following command:
+[TIP]
+.Use https://curl.se[curl] to download this file
+====
+[source, commandline]
+--
+curl -O http://localhost:8080/v3/api-docs.yaml
+--
+====
+
+After this, run the following command:
 
 [source,commandline]
 --
@@ -2749,13 +2743,15 @@ to *api-docs.yaml* file: start the back-end application, then open a web
 browser and navigate to *http://localhost:8080/v3/api-docs*. After this,
 save the file to *api-docs.json*
 
-As an alternative, https://curl.se[curl] can also be used to download this
-file:
 
+[TIP]
+.Use https://curl.se[curl] to download this file
+====
 [source, commandline]
 --
-curl -o api-docs.json http://localhost:8080/v3/api-docs
+curl -O http://localhost:8080/v3/api-docs.yaml
 --
+====
 
 To generate the front-end code, the https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-maven-plugin/README.md[openapi-generator-maven-plugin]
 is used. The plugin needs to be configured as shown below:
@@ -2763,27 +2759,27 @@ is used. The plugin needs to be configured as shown below:
 [source,xml]
 --
 <plugin>
-    <groupId>org.openapitools</groupId>
-    <artifactId>openapi-generator-maven-plugin</artifactId>
-    <version>7.8.0</version> <!-- or use a newer version -->
-    <executions>
-        <execution>
-            <goals>
-                <goal>generate</goal>
-            </goals>
-            <phase>generate-resources</phase>
-            <configuration>
-                <inputSpec>${project.build.directory}/openapi.json</inputSpec>
-                <generatorName>typescript-angular</generatorName>
-                <output>src/main/${front-end.name}/model</output>
-                <configOptions>
-                    <ngVersion>16.1.2</ngVersion>
-                    <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
-                    <enumPropertyNaming>original</enumPropertyNaming>
-                </configOptions>
-            </configuration>
-        </execution>
-    </executions>
+  <groupId>org.openapitools</groupId>
+  <artifactId>openapi-generator-maven-plugin</artifactId>
+  <version>7.8.0</version> <!-- or use a newer version -->
+  <executions>
+    <execution>
+      <goals>
+        <goal>generate</goal>
+      </goals>
+      <phase>generate-resources</phase>
+      <configuration>
+        <inputSpec>${project.build.directory}/openapi.json</inputSpec>
+        <generatorName>typescript-angular</generatorName>
+        <output>src/main/${front-end.name}/model</output>
+        <configOptions>
+          <ngVersion>16.1.2</ngVersion>
+          <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+          <enumPropertyNaming>original</enumPropertyNaming>
+        </configOptions>
+      </configuration>
+    </execution>
+  </executions>
 </plugin>
 --
 
@@ -2792,7 +2788,6 @@ code in the build process. A possible way to this is by using the
 *springdoc-openapi-maven-plugin*. Refer to
 https://github.com/springdoc/springdoc-openapi-maven-plugin[the readme of this plugin]
 for an example.
-
 
 == System properties
 
@@ -3258,6 +3253,16 @@ dynamoframework:
 You can use the static methods from the *SystemPropertyUtils* class to
 access these system properties from inside your code.
 
+=== Changing the standard Dynamo endpoints
+
+The REST endpoints used by dynamo can be configured using properties. There
+are six endpoints that Dynamo requires to function. See <<_prefix_dynamoframework_defaults_endpoints>>
+for the settings and their default values.
+
+
+WARNING: When that the front-end code needs to be updated/regenerated when
+the endpoints are changed. See <<_front_end_code_generation>> on how to
+do this.
 
 == General front-end services
 
@@ -5284,9 +5289,9 @@ pom.xml file:
 [source,xml]
 --
 <dependency>
-	<groupId>org.dynamoframework</groupId>
-	<artifactId>dynamo-functional-domain</artifactId>
-	<version>${com.ocs.dynamo.version}</version>
+  <groupId>org.dynamoframework</groupId>
+  <artifactId>dynamo-functional-domain</artifactId>
+  <version>${com.ocs.dynamo.version}</version>
 </dependency>
 --
 
@@ -5357,19 +5362,19 @@ shows the configuration for PostgreSQL:
 --
 <?xml version="1.0" encoding="UTF-8" ?>
 <entity-mappings xmlns="http://java.sun.com/xml/ns/persistence/orm"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
-	version="1.0">
-	<sequence-generator name="domain_id_seq"
-		allocation-size="1" sequence-name="domain_id_seq" />
-	<sequence-generator name="parameter_id_seq"
-		allocation-size="1" sequence-name="parameter_id_seq" />
-	<entity class="org.dynamoframework.functional.domain.Domain">
-		<attributes>
-			<id name="id">
-				<generated-value strategy="SEQUENCE" generator="domain_id_seq" />
-			</id>
-		</attributes>
-	</entity>
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence/orm http://java.sun.com/xml/ns/persistence/orm_1_0.xsd"
+  version="1.0">
+  <sequence-generator name="domain_id_seq"
+    allocation-size="1" sequence-name="domain_id_seq" />
+  <sequence-generator name="parameter_id_seq"
+    allocation-size="1" sequence-name="parameter_id_seq" />
+  <entity class="org.dynamoframework.functional.domain.Domain">
+    <attributes>
+      <id name="id">
+        <generated-value strategy="SEQUENCE" generator="domain_id_seq" />
+      </id>
+    </attributes>
+  </entity>
 </entity-mappings>
 --
