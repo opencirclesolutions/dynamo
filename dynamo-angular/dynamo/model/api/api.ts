@@ -1,0 +1,13 @@
+export * from './autoFill.service';
+import { AutoFillService } from './autoFill.service';
+export * from './cRUD.service';
+import { CRUDService } from './cRUD.service';
+export * from './export.service';
+import { ExportService } from './export.service';
+export * from './file.service';
+import { FileService } from './file.service';
+export * from './model.service';
+import { ModelService } from './model.service';
+export * from './status.service';
+import { StatusService } from './status.service';
+export const APIS = [AutoFillService, CRUDService, ExportService, FileService, ModelService, StatusService];

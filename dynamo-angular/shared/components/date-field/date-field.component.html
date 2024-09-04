@@ -1,0 +1,67 @@
+<ng-container [formGroup]="formGroup!">
+  <ng-container *ngIf="!searchMode">
+    <div class="row">
+      <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+        <p-calendar
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="am.name"
+          [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
+          [placeholder]="am.placeholders[locale]"
+          [pTooltip]="am.descriptions[locale]"
+          [showClear]="true"
+          appendTo="body"
+        />
+      </div>
+      <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+        <p-message
+          severity="error"
+          *ngIf="getErrorString(am.name)"
+          [text]="getErrorString(am.name)"
+        ></p-message>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="searchMode">
+    <div *ngIf="am.searchForExactValue === true" class="row">
+      <p-calendar
+        [id]="am.name"
+        [name]="am.name"
+        [formControlName]="am.name"
+        [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
+        [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
+        [showClear]="true"
+        appendTo="body"
+      />
+    </div>
+    <div *ngIf="am.searchForExactValue === false" class="row">
+      <div class="col-6">
+        <p-calendar
+          [id]="getFromName(am)"
+          [name]="getFromName(am)"
+          [formControlName]="getFromName(am)"
+          [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
+          [placeholder]="getPlaceholderFrom(am)"
+          [pTooltip]="am.descriptions[locale]"
+          [showClear]="true"
+          appendTo="body"
+        >
+        </p-calendar>
+      </div>
+      <div class="col-6">
+        <p-calendar
+          [id]="getToName(am)"
+          [name]="getToName(am)"
+          [formControlName]="getToName(am)"
+          [dateFormat]="getCalendarDateFormat(am.displayFormats[locale])"
+          [placeholder]="getPlaceholderTo(am)"
+          [pTooltip]="am.descriptions[locale]"
+          [showClear]="true"
+          appendTo="body"
+        >
+        </p-calendar>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

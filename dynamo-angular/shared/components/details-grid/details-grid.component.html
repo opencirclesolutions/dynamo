@@ -1,0 +1,169 @@
+<div class="row" *ngIf="entityModel">
+  <p-table
+    [value]="getRows()"
+    [lazy]="false"
+    [rows]="pageSize"
+    styleClass="p-datatable-sm"
+    [paginator]="true"
+    [totalRecords]="getTotalRecords()"
+    [showCurrentPageReport]="false"
+    currentPageReportTemplate="Show {first} to {last} of {totalRecords} items"
+    [rowsPerPageOptions]="[10, 25, 50]"
+  >
+    <ng-template pTemplate="header" *ngIf="entityModel">
+      <tr>
+        <th
+          *ngFor="let am of this.attributeModels"
+          scope="am"
+          [ngStyle]=""
+          [pSortableColumnDisabled]="true"
+          [pSortableColumn]="''"
+        >
+          <ng-container>
+            {{ am.displayNames[locale] }} {{ am.required ? "*" : "" }}
+          </ng-container>
+        </th>
+        <th>
+          <button
+            type="submit"
+            class="btn btn-primary"
+            pTooltip=" {{ 'add' | translate }}"
+            (click)="addButtonClick()"
+          >
+            <span class="pi pi-plus"></span>
+          </button>
+        </th>
+      </tr>
+    </ng-template>
+    <ng-template pTemplate="body" let-row let-rowIndex="rowIndex">
+      <tr [formGroup]="getFormGroup(rowIndex)" *ngIf="getFormGroup(rowIndex)">
+        <td *ngFor="let am of attributeModels">
+          <ng-container *ngIf="!isEditable(row, am)">
+            <div class="row p-2">
+              <div class="col-10">
+                <app-field-view
+                  [am]="am"
+                  [entity]="row"
+                  [locale]="locale"
+                ></app-field-view>
+              </div>
+            </div>
+          </ng-container>
+          <ng-container *ngIf="isEditable(row, am)">
+            <!-- String field -->
+            <div *ngIf="isString(am)">
+              <app-string-field
+                [am]="am"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                *ngIf="getFormControl(am, rowIndex)"
+                [allowTextAreas]="false"
+                ngDefaultControl
+              ></app-string-field>
+            </div>
+            <div *ngIf="isEnum(am)">
+              <app-enum-field
+                [am]="am"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                [options]="getEnumValues(am.name)"
+                *ngIf="getFormControl(am, rowIndex)"
+                ngDefaultControl
+              ></app-enum-field>
+            </div>
+            <div *ngIf="isDate(am)">
+              <app-date-field
+                [am]="am"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                *ngIf="getFormControl(am, rowIndex)"
+                ngDefaultControl
+              ></app-date-field>
+            </div>
+            <div *ngIf="isTime(am)">
+              <app-time-field
+                [am]="am"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                *ngIf="getFormControl(am, rowIndex)"
+                ngDefaultControl
+              ></app-time-field>
+            </div>
+            <div *ngIf="isInstant(am) || isLocalDateTime(am)">
+              <app-timestamp-field
+                [am]="am"
+                [locale]="locale"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                *ngIf="getFormControl(am, rowIndex)"
+                ngDefaultControl
+              ></app-timestamp-field>
+            </div>
+            <div *ngIf="isMaster(am)">
+              <app-select-entity
+                [am]="am"
+                [options]="lookupEntities(am.lookupEntityName!)"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                [nested]="true"
+                *ngIf="getFormControl(am, rowIndex)"
+                ngDefaultControl
+              >
+              </app-select-entity>
+            </div>
+            <div *ngIf="isBoolean(am)">
+              <p-checkbox
+                [id]="am.name"
+                [name]="am.name"
+                [formControl]="getFormControl(am, rowIndex)"
+                [binary]="true"
+                *ngIf="getFormControl(am, rowIndex)"
+              >
+              </p-checkbox>
+            </div>
+            <div *ngIf="isIntegral(am)">
+              <app-number-field
+                [am]="am"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                [locale]="locale"
+                *ngIf="getFormControl(am, rowIndex)"
+                ngDefaultControl
+              >
+              </app-number-field>
+            </div>
+            <div *ngIf="isDecimal(am)">
+              <app-decimal-field
+                [am]="am"
+                [formGroup]="getFormGroup(rowIndex)"
+                [formControl]="getFormControl(am, rowIndex)"
+                [locale]="locale"
+                *ngIf="getFormControl(am, rowIndex)"
+                ngDefaultControl
+              >
+              </app-decimal-field>
+            </div>
+          </ng-container>
+        </td>
+        <td>
+          <button
+            type="submit"
+            class="btn btn-danger"
+            pTooltip=" {{ 'add' | translate}}"
+            (click)="deleteRow(rowIndex)"
+          >
+            <span class="pi pi-trash"></span>
+          </button>
+        </td>
+      </tr>
+      <ng-container
+        [ngTemplateOutlet]="
+          customValidatorTemplate || defaultCustomValidatorTemplate
+        "
+        [ngTemplateOutletContext]="{ $implicit: getFormGroup(rowIndex) }"
+      >
+      </ng-container>
+    </ng-template>
+  </p-table>
+  <ng-template #defaultCustomValidatorTemplate> </ng-template>
+</div>

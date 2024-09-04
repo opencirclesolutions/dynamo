@@ -1,0 +1,146 @@
+<ng-container>
+  <div *ngIf="isString(am)">
+    <app-string-field
+      [formGroup]="formGroup!"
+      [am]="am"
+      [locale]="locale"
+      classes="p-inputtext-sm form-control"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+      [showValidationErrors]="showValidationErrors"
+      [fullWidth]="fullWidth"
+    ></app-string-field>
+  </div>
+  <!-- Element collection -->
+  <div *ngIf="isElementCollection(am)" class="row">
+    <app-element-collection-field
+      [am]="am"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [locale]="locale"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+    >
+    </app-element-collection-field>
+  </div>
+  <!-- Integral number -->
+  <div *ngIf="isIntegral(am)" class="row">
+    <app-number-field
+      [am]="am"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [locale]="locale"
+      [validationColClass]="getValidationColClass()"
+      [colClass]="getColClass()"
+    >
+    </app-number-field>
+  </div>
+  <div *ngIf="isEnum(am)" class="row">
+    <app-enum-field
+      [am]="am"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [locale]="locale"
+      [options]="enumValues!"
+      [validationColClass]="getValidationColClass()"
+      [colClass]="getColClass()"
+    >
+    </app-enum-field>
+  </div>
+  <!-- Free detail -->
+  <div *ngIf="isFreeDetail(am)" class="row">
+     <app-select-many
+      [am]="am"
+      [options]="options!"
+      [locale]="locale"
+      [formGroup]="formGroup!"
+      [formControl]="getFormControl(am)"
+      [fullWidth]="fullWidth"
+      [entityModelReference]="am.lookupEntityReference"
+      [entityModel]="entityModel"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+      [defaultFilters]="fieldFilters!"
+      ngDefaultControl
+    >
+    </app-select-many>
+  </div>
+  <!-- Many-to-one -->
+  <div *ngIf="isMaster(am)" class="row">
+    <app-select-entity
+      [am]="am"
+      [options]="options!"
+      [locale]="locale"
+      [formGroup]="formGroup!"
+      [formControl]="getFormControl(am)"
+      [fullWidth]="fullWidth"
+      [entityModelReference]="am.lookupEntityReference"
+      [entityModel]="entityModel"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+      [defaultFilters]="fieldFilters!"
+      ngDefaultControl
+    >
+    </app-select-entity>
+  </div>
+  <div *ngIf="isTime(am)" class="row">
+    <div class="row">
+      <app-time-field
+        [am]="am"
+        [formGroup]="formGroup!"
+        [fullWidth]="fullWidth"
+        [colClass]="getColClass()"
+        [validationColClass]="getValidationColClass()"
+      ></app-time-field>
+    </div>
+  </div>
+  <div *ngIf="isInstant(am) || isLocalDateTime(am)" class="row">
+    <app-timestamp-field
+      [am]="am"
+      [locale]="locale"
+      [searchMode]="false"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+    ></app-timestamp-field>
+  </div>
+  <!-- Boolean -->
+  <div *ngIf="isBoolean(am)" class="row">
+    <div class="row">
+      <div [class]="getColClass()">
+        <app-boolean-field
+          [am]="am"
+          [formGroup]="formGroup!"
+          [fullWidth]="fullWidth"
+          [colClass]="getColClass()"
+          [validationColClass]="getValidationColClass()"
+        ></app-boolean-field>
+      </div>
+    </div>
+  </div>
+  <!-- Date -->
+  <div *ngIf="isDate(am)" class="row">
+    <div class="row">
+      <app-date-field
+        [am]="am"
+        [formGroup]="formGroup!"
+        [fullWidth]="fullWidth"
+        [colClass]="getColClass()"
+        [validationColClass]="getValidationColClass()"
+      >
+      </app-date-field>
+    </div>
+  </div>
+  <div *ngIf="isDecimal(am)" class="row">
+    <div class="row">
+      <app-decimal-field
+        [am]="am"
+        [formGroup]="formGroup!"
+        [fullWidth]="fullWidth"
+        [colClass]="getColClass()"
+        [validationColClass]="getValidationColClass()"
+      ></app-decimal-field>
+    </div>
+  </div>
+</ng-container>

@@ -1,0 +1,192 @@
+<form
+  *ngIf="entityModel && mainForm"
+  (ng-submit)="search()"
+  [formGroup]="mainForm"
+  ngClass="nested"
+>
+  <p-panel header="{{ 'search' | translate }}" [toggleable]="true">
+    <div class="row">
+      <div
+        *ngFor="let am of searchAttributeModels"
+        class="form-group col-lg-4 col-md-6 col-sm-12"
+      >
+        <ng-container [formGroup]="mainForm"
+          [ngTemplateOutlet]="getTemplateForField(am.name) || defaultFieldTemplate"
+          [ngTemplateOutletContext]="{ $implicit: am, mainForm: mainForm }"
+        >
+        </ng-container>
+      </div>
+    </div>
+  </p-panel>
+  <div class="btn-group mt-2" role="group">
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      [disabled]="loading"
+      (click)="search()"
+    >
+      <span class="pi pi-search"></span> {{ "search" | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      [disabled]="loading"
+      (click)="clear()"
+    >
+      <span class="pi pi-eraser"></span> {{ "clear" | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      (click)="toAdvancedMode()"
+      *ngIf="!advancedMode && advancedModeEnabled"
+      [disabled]="loading"
+    >
+      <span class="pi pi-search-plus"></span> {{ "advanced_mode" | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      (click)="toSimpleMode()"
+      *ngIf="advancedMode && advancedModeEnabled"
+    >
+      <span class="pi pi-search-minus"></span> {{ "simple_mode" | translate }}
+    </button>
+  </div>
+  <ng-template #defaultFieldTemplate let-am>
+    <div *ngIf="isString(am)">
+      <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+      <app-string-field
+        [am]="am"
+        [formGroup]="mainForm"
+        [locale]="locale"
+        classes="p-inputtext-sm form-control"
+        [allowTextAreas]="false"
+        [showValidationErrors]="false"
+      ></app-string-field>
+    </div>
+    <!-- Integral -->
+    <div *ngIf="isIntegral(am)">
+      <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+      <app-number-field
+        [am]="am"
+        [formGroup]="mainForm"
+        [locale]="locale"
+        [searchMode]="true"
+      ></app-number-field>
+    </div>
+    <!-- Decimal -->
+    <div *ngIf="isDecimal(am)">
+      <div class="row">
+        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+        <app-decimal-field
+          [am]="am"
+          [formGroup]="mainForm"
+          [locale]="locale"
+          [searchMode]="true"
+        ></app-decimal-field>
+      </div>
+    </div>
+    <!-- Boolean -->
+    <div *ngIf="isBoolean(am)">
+      <div>
+        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+        <div class="col-12">
+          <p-triStateCheckbox
+            [id]="am.name"
+            [name]="am.name"
+            [formControlName]="am.name"
+            [pTooltip]="am.descriptions[locale]"
+          >
+          </p-triStateCheckbox>
+        </div>
+      </div>
+    </div>
+    <!-- Enumeration -->
+    <div *ngIf="isEnum(am)">
+      <div class="row">
+        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+        <app-enum-field
+          [am]="am"
+          [formGroup]="mainForm"
+          [locale]="locale"
+          [showValidationErrors]="false"
+          [options]="getEnumValues(am.name)"
+          [searchMode]="true"
+        ></app-enum-field>
+      </div>
+    </div>
+    <!-- Date -->
+    <div *ngIf="isDate(am)">
+      <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+      <app-date-field
+        [am]="am"
+        [locale]="locale"
+        [searchMode]="true"
+        [formGroup]="mainForm"
+      ></app-date-field>
+    </div>
+    <!-- Time -->
+    <div *ngIf="isTime(am)">
+      <div class="row">
+        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+        <app-time-field
+          [am]="am"
+          [locale]="locale"
+          [searchMode]="true"
+          [formGroup]="mainForm"
+        ></app-time-field>
+      </div>
+    </div>
+    <!-- Timestamps -->
+    <div *ngIf="isInstant(am) || isLocalDateTime(am)">
+      <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+      <app-timestamp-field
+        [am]="am"
+        [locale]="locale"
+        [searchMode]="true"
+        [formGroup]="mainForm"
+      ></app-timestamp-field>
+    </div>
+    <!-- Master -->
+    <div *ngIf="isMaster(am)">
+      <div class="row">
+        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+        <div class="col-12">
+          <app-select-entity
+            [am]="am"
+            [options]="lookupEntities(am.lookupEntityName!)"
+            [locale]="locale"
+            [formGroup]="mainForm"
+            [searchMode]="true"
+            [entityModelReference]="am.lookupEntityReference"
+            [defaultFilters]="getCombinedFilters(am)"
+            [showQuickAddButton]="false"
+          >
+          </app-select-entity>
+        </div>
+      </div>
+    </div>
+    <!-- Detail (free)-->
+    <div *ngIf="isFreeDetail(am)">
+      <div class="row">
+        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+        <div class="col-12">
+          <app-select-many
+            [am]="am"
+            [options]="lookupEntities(am.lookupEntityName!)"
+            [locale]="locale"
+            [formGroup]="mainForm"
+            [searchMode]="true"
+            [entityModelReference]="am.lookupEntityReference"
+            [defaultFilters]="getCombinedFilters(am)"
+            [showQuickAddButton]="false"
+          >
+          </app-select-many>
+        </div>
+      </div>
+    </div>
+  </ng-template>
+</form>
+
+

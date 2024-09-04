@@ -1,0 +1,70 @@
+<ng-container [formGroup]="formGroup!">
+  <ng-container *ngIf="!searchMode">
+    <div class="row">
+      <div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+        <p-inputNumber
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="am.name"
+          [useGrouping]="false"
+          [showButtons]="isShowNumberSpinnerButtons(am)"
+          [step]="am.numberFieldStep!"
+          [placeholder]="am.placeholders[locale]"
+          [pTooltip]="am.descriptions[locale]"
+        >
+        </p-inputNumber>
+      </div>
+      <div [class]="fullWidth ? 'col-12' : validationColClass" *ngIf="showValidationErrors">
+        <p-message
+          severity="error"
+          *ngIf="getErrorString(am.name)"
+          [text]="getErrorString(am.name)"
+        ></p-message>
+      </div>
+    </div>
+  </ng-container>
+  <ng-container *ngIf="searchMode">
+    <div *ngIf="am.searchForExactValue === true">
+      <p-inputNumber
+        class="exact"
+        [id]="am.name"
+        [name]="am.name"
+        [formControlName]="am.name"
+        [useGrouping]="false"
+        [showButtons]="isShowNumberSpinnerButtons(am)"
+        [step]="am.numberFieldStep!"
+        [placeholder]="am.placeholders[locale]"
+        [pTooltip]="am.descriptions[locale]"
+      >
+      </p-inputNumber>
+    </div>
+    <div *ngIf="am.searchForExactValue === false" class="row">
+      <div class="col-6">
+        <p-inputNumber
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="getFromName(am)"
+          [useGrouping]="false"
+          [placeholder]="getPlaceholderFrom(am)"
+          [showButtons]="isShowNumberSpinnerButtons(am)"
+          [step]="am.numberFieldStep!"
+          [pTooltip]="am.descriptions[locale]"
+        >
+        </p-inputNumber>
+      </div>
+      <div class="col-6">
+        <p-inputNumber
+          [id]="am.name"
+          [name]="am.name"
+          [formControlName]="getToName(am)"
+          [useGrouping]="false"
+          [placeholder]="getPlaceholderTo(am)"
+          [showButtons]="isShowNumberSpinnerButtons(am)"
+          [step]="am.numberFieldStep!"
+          [pTooltip]="am.descriptions[locale]"
+        >
+        </p-inputNumber>
+      </div>
+    </div>
+  </ng-container>
+</ng-container>

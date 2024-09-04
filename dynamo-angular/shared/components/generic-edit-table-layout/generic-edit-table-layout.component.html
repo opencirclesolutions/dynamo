@@ -1,0 +1,66 @@
+<ng-container *ngIf="entityModel && isReadAllowed()">
+  <h4>{{ tableCaptionPlural }}</h4>
+  <app-generic-table
+    [entityModel]="entityModel"
+    [entityModelReference]="entityModelReference"
+    [entityName]="entityName"
+    [locale]="locale"
+    [searchObject]="searchObject"
+    [queryType]="queryType"
+    [defaultFilters]="defaultFilters"
+    [advancedMode]="false"
+    [detailsModeEnabled]="false"
+    [showDetailButton]="false"
+    [nested]="false"
+    [additionalRowActions]="additionalRowActions"
+    [additionalFormActions]="additionalFormActions"
+    [postProcessInputForm]="postProcessInputForm"
+    [additionalValidation]="additionalValidation"
+    [customValidatorTemplate]="customValidatorTemplate"
+    [fieldFilters]="fieldFilters"
+    [exportMode]="exportMode"
+    [injectedCustomInputs]="customInputs"
+    [hiddenFieldService]="hiddenFieldService"
+    [popupButtonMode]="popupButtonMode"
+    (onSearchComplete)="searchComplete()"
+  />
+  <ng-template #popupDialogContainerRef></ng-template>
+
+  <!-- Dialog to add new entity-->
+  <div class="btn-group" role="group">
+    <button
+      type="button"
+      class="btn btn-primary m-1"
+      (click)="openNewEntityDialog()"
+      *ngIf="entityModel?.createAllowed! && isWriteAllowed()"
+      [disabled]="loading"
+    >
+      <span class="pi pi-plus"></span> {{ "add" | translate }}
+    </button>
+    <!-- Server defined actions-->
+    <button
+      *ngFor="let action of filterEntityModelActions()"
+      type="button"
+      class="btn btn-primary m-1"
+      (click)="callModelAction(vcr, action, undefined)"
+    >
+      <span class="pi {{ action.icon }}"></span>
+      {{ action.displayNames[locale] }}
+    </button>
+    <!-- UI defined global actions -->
+    <button
+      *ngFor="let action of additionalGlobalActions"
+      type="button"
+      [class]="action.buttonClass"
+      (click)="callAdditionalGlobalAction(action)"
+      [disabled]="loading || isGlobalActionDisabled(action)"
+    >
+      <span *ngIf="action.icon" class="pi {{ action.icon }}"></span>
+      {{ action.messageKey | translate }}
+    </button>
+  </div>
+</ng-container>
+<ng-container *ngIf="entityModel && !isReadAllowed()">
+  {{ "component_view_not_allowed" | translate }}
+</ng-container>
+

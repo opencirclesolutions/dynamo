@@ -1,0 +1,31 @@
+<ng-container [formGroup]="formGroup!">
+  <div class="row">
+    <div [class]="colClass">
+      <p-checkbox
+        [id]="am.name"
+        [name]="am.name"
+        [formControlName]="am.name"
+        [binary]="true"
+        *ngIf="useCheckbox(am)"
+        [pTooltip]="am.descriptions[locale]"
+      >
+      </p-checkbox>
+      <p-toggleButton
+        [formControlName]="am.name"
+        [id]="am.name"
+        [onLabel]="am!.trueRepresentations[locale]"
+        [offLabel]="am!.falseRepresentations[locale]"
+        offIcon="pi pi-times"
+        onIcon="pi pi-check"
+        *ngIf="useToggle(am)"
+        [pTooltip]="am.descriptions[locale]"
+      ></p-toggleButton>
+      <p-inputSwitch
+        [formControlName]="am.name"
+        [id]="am.name"
+        *ngIf="useSwitch(am)"
+        [pTooltip]="am.descriptions[locale]"
+      ></p-inputSwitch>
+    </div>
+  </div>
+</ng-container>
