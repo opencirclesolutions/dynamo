@@ -25,10 +25,7 @@ import org.dynamoframework.exception.OCSImportException;
 import org.dynamoframework.service.MessageService;
 import org.dynamoframework.configuration.DynamoPropertiesHolder;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Template class for importing data from a text (CSV or fixed width) file and
@@ -137,8 +134,7 @@ public abstract class TextImportTemplate<ID, T> {
 				keys.add(key);
 				results.add(t);
 			} else {
-				errors.add(messageService.getMessage("dynamoframework.duplicate.row",
-						DynamoPropertiesHolder.getDynamoProperties().getDefaults().getLocale(), i + 1, key));
+				errors.add(messageService.getMessage("dynamoframework.duplicate.row", Locale.US, i + 1, key));
 			}
 		} else {
 			results.add(t);
