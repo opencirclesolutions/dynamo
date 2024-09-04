@@ -5,7 +5,7 @@ image:media/logo-dynamo.png[image]
 
 Web Application Accelerator Framework
 
-Developed, maintained and sponsered by
+Developed, maintained and sponsored by
 
 image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
 
