@@ -2222,7 +2222,7 @@ public void setTranslations(Set<GiftTranslation> translations) {
 }
 --
 
-== Back-end Setup
+== Back-end setup
 
 === Project structure
 
@@ -2843,6 +2843,13 @@ dynamoframework:
 You can use the static methods from the *SystemPropertyUtils* class to
 access these system properties from inside your code.
 
+
+==== Changing the standard Dynamo endpoints
+
+The REST endpoints used by dynamo can be configured using properties. There
+are six endpoints that Dynamo requires to function. See <<_prefix_dynamoframework_defaults_endpoints>>
+for the settings and their default values.
+
 == User interface setup
 
 === Basic UI setup
@@ -2861,11 +2868,20 @@ When you start a new project that uses the Dynamo framework in its
 front-end, you must run the OpenAPI generator for Angular in order to
 create the services and DTOs that are required by the Dynamo framework.
 
+It should (at least in principle) be possible to add Dynamo to your existing front-end application
+without too much effort. Note that setting up the general structure of your application is largely
+outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo does not concern itself
+with the application's menu structure or routing, although it does offer some convenience features and
+general use services.
+
+
 [TODO] include a part about using the Dynamo component
 
+==== Using npx
+
 To do so, first start the back-end application, then open a web browser
-and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will show you a web page
-containing the applications' OpenAPI (Swagger) documentation
+and navigate to *http://localhost:8080/v3/api-docs.yaml*. This will download
+the yaml file.
 
 As an alternative, https://curl.se[curl] can be used to download this file:
 
@@ -2886,11 +2902,57 @@ This will generate the front-end source code in the specified directory
 (in this case */model*). It will now be ready for usage by the
 framework.
 
-It should (at least in principle) be possible to add Dynamo to your existing front-end application
-without too much effort. Note that setting up the general structure of your application is largely
-outside of the scope of the Dynamo Framework (at least for now). Notably, Dynamo does not concern itself
-with the application's menu structure or routing, although it does offer some convenience features and
-general use services.
+==== Using Apache Maven
+
+It is also possible to generate the front-end code using Apache Maven.
+This requires the *api-docs.json* file. This file can be obtained similarly
+to *api-docs.yaml* file: start the back-end application, then open a web
+browser and navigate to *http://localhost:8080/v3/api-docs*. After this,
+save the file to *api-docs.json*
+
+As an alternative, https://curl.se[curl] can also be used to download this
+file:
+
+[source, commandline]
+--
+curl -o api-docs.json http://localhost:8080/v3/api-docs
+--
+
+To generate the front-end code, the https://github.com/OpenAPITools/openapi-generator/blob/master/modules/openapi-generator-maven-plugin/README.md[openapi-generator-maven-plugin]
+is used. The plugin needs to be configured as shown below:
+
+[source,xml]
+--
+<plugin>
+    <groupId>org.openapitools</groupId>
+    <artifactId>openapi-generator-maven-plugin</artifactId>
+    <version>7.8.0</version> <!-- or use a newer version -->
+    <executions>
+        <execution>
+            <goals>
+                <goal>generate</goal>
+            </goals>
+            <phase>generate-resources</phase>
+            <configuration>
+                <inputSpec>${project.build.directory}/openapi.json</inputSpec>
+                <generatorName>typescript-angular</generatorName>
+                <output>src/main/${front-end.name}/model</output>
+                <configOptions>
+                    <ngVersion>16.1.2</ngVersion>
+                    <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
+                    <enumPropertyNaming>original</enumPropertyNaming>
+                </configOptions>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+--
+
+It is also possible to completely integrate the generation of the front-end
+code in the build process. A possible way to this is by using the
+*springdoc-openapi-maven-plugin*. Refer to
+https://github.com/springdoc/springdoc-openapi-maven-plugin[the readme of this plugin]
+for an example.
 
 === General front-end services
 
