@@ -1,6 +1,8 @@
 = Dynamo
 :toc:
-:toclevels: 3
+:toclevels: 2
+:icons: font
+
 image:media/logo-dynamo.png[image]
 
 Web Application Accelerator Framework

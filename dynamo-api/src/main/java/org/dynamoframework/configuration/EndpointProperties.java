@@ -25,7 +25,7 @@ public interface EndpointProperties {
     String getExport();
     String getAutofill();
     String getStatus();
-    String getFiles();
+    String getFile();
     String getCrud();
     String getModel();
 }
