@@ -597,9 +597,9 @@ and add the *@AttributeOrder* annotation to the class as seen below
 --
 @Entity
 @Table(name = "organization")
-@AttributeOrder(attributeNames = \{ "name", "headQuarters", "address",
+@AttributeOrder(attributeNames = { "name", "headQuarters", "address",
 "countryOfOrigin", "reputation" })
-public class Organization *extends* AbstractEntity<Integer> {
+public class Organization extends AbstractEntity<Integer> {
 --
 
 Restart the back-end to verify that the attributes are now displayed in
@@ -943,16 +943,16 @@ creating a new one).
 
 [source,typescript]
 --
-      {
-        path: 'organizations',
-        title: 'Organizations',
-        component: OrganizationSearchComponent
-      },
-      {
-        path: 'organization',
-        title: 'Create Organization',
-        component: OrganizationFormComponent
-      },
+  {
+    path: 'organizations',
+    title: 'Organizations',
+    component: OrganizationSearchComponent
+  },
+  {
+    path: 'organization',
+    title: 'Create Organization',
+    component: OrganizationFormComponent
+  },
 --
 
 Both routes point to the *OrganizationFormComponent* which looks as
@@ -1138,7 +1138,7 @@ expects standard Bootstrap expressions, e.g. “col-12” means use up all
 12 available columns
 
 If you want to change e.g. the number of columns being used, you can
-modify the *numberOfColumns* property. By default this has the value *1*
+modify the *numberOfColumns* property. By default, this has the value *1*,
 but you can set it to *2* or *3.* Using a value other than 1 will cause
 the input components to be displayed behind each other on the same row
 (provided there is enough room).
@@ -1155,20 +1155,18 @@ have a way of grouping certain attributes together.
 To demonstrate how this works, modify the *Organization* view so that it
 reads as follows:
 
+[source,java]
+--
 @Entity
-
 @Table(name = "organization")
-
-@AttributeGroup(messageKey = "organization.first", attributeNames = \{
+@AttributeGroup(messageKey = "organization.first", attributeNames = {
 "name", "address", "headQuarters", "countryOfOrigin" })
-
-@AttributeGroup(messageKey = "organization.second", attributeNames = \{
+@AttributeGroup(messageKey = "organization.second", attributeNames = {
 "reputation" })
-
-@AttributeOrder(attributeNames = \{ "name", "headQuarters", "address",
+@AttributeOrder(attributeNames = { "name", "headQuarters", "address",
 "countryOfOrigin", "reputation" })
-
-*public* *class* Organization *extends* AbstractEntity<Integer> \{
+public class Organization extends AbstractEntity<Integer> {
+--
 
 Here, you define two attribute groups identified by the message keys
 “organization.first” and “organization.second” and place some attributes
@@ -1176,11 +1174,12 @@ in each group.
 
 In the *entitymodel.properties* file, add the following lines:
 
-*organization.first=First*
-
-*organization.second=Second*
-
-*dynamoframework.default.attribute.group=Others*
+[source,properties]
+--
+organization.first=First
+organization.second=Second
+dynamoframework.default.attribute.group=Others
+--
 
 Restart the application and verify that the edit form now looks as
 follows:
@@ -1198,9 +1197,12 @@ specified by the *@AttributeOrder* annotation.
 
 Also, by default the application will use panels to group the attributes
 together. If you prefer using tabs, define an attribute group mode
-property in your Typescript file
+property in your Typescript file:
 
-  attributeGroupMode: AttributeGroupMode = AttributeGroupMode.TAB;
+[source,typescript]
+--
+attributeGroupMode: AttributeGroupMode = AttributeGroupMode.TAB;
+--
 
 And refer to that property in the HTML file (organization.form.html).
 
@@ -1213,7 +1215,10 @@ By default, the option to delete existing entities is disabled. You can
 easily enable this functionality by setting the *deleteAllowed* setting
 on the @Model annotation to *true*
 
-*@Model(displayProperty = "name", deleteAllowed = true)*
+[source,java]
+--
+@Model(displayProperty = "name", deleteAllowed = true)
+--
 
 With this setting in place, the application will now render a big bright
 red “Delete” button in every row in the search results table.
@@ -1222,19 +1227,22 @@ red “Delete” button in every row in the search results table.
 
 As an alternative to using a separate detail screen, it is also possible
 to open a pop-up edit dialog directly from the results table. In order
-to enable this functionality, define a *popuuButtonMode* variable in the
-*OrganizationSearchComponent* :
+to enable this functionality, define a *popupButtonMode* variable in the
+*OrganizationSearchComponent*:
 
-  popupButtonMode: PopupButtonMode = PopupButtonMode.EDIT;
+[source,typescript]
+--
+popupButtonMode: PopupButtonMode = PopupButtonMode.EDIT;
+--
 
 then refer to it from the HTML file. This will cause a “details” button
 to appear in each row in the details table. Pressing this button will
 cause a pop-up dialog containing the details of the selected entity to
 appear. The fields that will appear in this pop-up dialog are rendered
 according to the same logic as the edit form (e.g. this will mean the
-same attribute groups, ordering, etc will be used). However, some of the
+same attribute groups, ordering, etc. will be used). However, some of the
 options that are available on the full edit form (e.g. setting the
-number of columns) are not available on the pop-up dialog.
+number of columns) are not available in the pop-up dialog.
 
 The value EDIT chosen above will ensure that the dialog will be opened
 in EDIT mode. You can also specify the value VIEW. In this case the
@@ -1264,10 +1272,10 @@ The default value is *false*.
 away when opening the screen. The default value for this setting is
 *true* which means that a search is carried out right away. If you set
 it to *false*, the search results grid will be hidden after you open the
-screen and you must carry out a search first before it will show up.
+screen, and you must carry out a search first before it will show up.
 * *preserveSearchTerms* determines whether any search terms that you
 enter in a search form will be preserved when you navigate away from a
-screen and then navigate back to it. This is enabled by default so you
+screen and then navigate back to it. This is enabled by default, so you
 don’t normally need to do anything to get this functionality.
 
 === Adding your own lookup tables
@@ -1275,14 +1283,15 @@ don’t normally need to do anything to get this functionality.
 It is also fairly easy to define your own lookup tables. As a case in
 point, take a look at the “MainActivity” class. This defines the main
 activity of an Organization. In order to use it in the application,
-modify Organization.java so that it reads the following:
+modify Organization.java so that it reads as follows:
 
-@JoinColumn(name = "main_activity") +
-@ManyToOne(fetch = FetchType._LAZY_) +
-@Attribute(quickAddAllowed = true, visibleInForm =
-VisibilityType._SHOW_, searchable = SearchMode._ALWAYS_, visibleInGrid =
-VisibilityType._SHOW_) +
+[source,java]
+--
+@JoinColumn(name = "main_activity")
+@ManyToOne(fetch = FetchType.LAZY)
+@Attribute(quickAddAllowed = true, visibleInForm = VisibilityType.SHOW, searchable = SearchMode.ALWAYS, visibleInGrid = VisibilityType.SHOW)
 private MainActivity mainActivity;
+--
 
 Now, when you open the detail page for an organization, you should see a
 “Main Activity” field in the edit form:
@@ -1301,7 +1310,7 @@ when you try to add a new lookup table value with the same name as an
 already existing entity, the application will throw a validation
 exception. The message that is shown is expected to be in the message
 bundle under the *<DomainName>.not.unique* key. To make this work for
-the MainActivity, add the following to entitymodel.properties
+the MainActivity, add the following to *entitymodel.properties*.
 
 MainActivity.not.unique=This main activity already exists
 
@@ -1323,8 +1332,8 @@ property should be ignored when constructing the search filter when
 searching using a *GenericSearchLayoutComponent*. When you mark an
 attribute as “searchable” but set “ignoreInSearchFilter” to true, a
 search field will be rendered inside the form, but the contents of the
-field will be ignored when actually searching. The most obvious use for
-this is when working with cascaded fields (outside of the scope of this
+field will be ignored when actually searching. The most obvious use case for
+this is when working with cascaded fields (outside the scope of this
 training).
 * Sometimes, when searching or sorting on an attribute, you will want to
 search or sort on an attribute path that is different from the actual
@@ -1346,36 +1355,37 @@ classes have already been provided for you. We will, however, be adding
 a new Angular component. First, create the skeleton for the component by
 running the following Angular CLI command:
 
-*ng generate component person-search --module app*
+[source,commandline]
+--
+ng generate component person-search --module app
+--
 
 This will generate an Angular component (4 files in total) and add it to
 the application’s main module.
 
 In the *app-routing.module.ts* file, add the following to the *children*
-array
+array:
 
-      \{
-
-        path: 'persons',
-
-        title: 'Persons',
-
-        component: PersonSearchComponent
-
-      }
+[source,yaml]
+--
+  {
+    path: 'persons',
+    title: 'Persons',
+    component: PersonSearchComponent,
+  },
+--
 
 This defines a new route to the persons component. Finally, in the
 *nav.component.ts* file, add a new menu item:
 
-      \{
-
-        topLevel: true,
-
-        text: 'Persons',
-
-        routerLink: "/persons"
-
-      }
+[source,yaml]
+--
+  {
+    topLevel: true,
+    text: 'Persons',
+    routerLink: "/persons"
+  },
+--
 
 Which will add a new top-level menu item named “Persons”. If you click
 on this link, you will be taken to a page that simply reads
@@ -1386,9 +1396,11 @@ is a layout that consists of a search results table on the left and a
 form for displaying the selected row on the right. Implementing it is
 even simpler than for the search layout:
 
+[source,angular17html]
+--
 <app-generic-split-layout entityName="Person">
-
 </app-generic-split-layout>
+--
 
 Which will produce a screen that looks as follows:
 
@@ -1400,12 +1412,12 @@ that row show up in the form to the right.
 below the table. Clicking this button will bring up an empty form that
 allows you to create a new entity.
 
-Now, using everything you have learned so far, modify this screen:
+Now, using everything you have learned so far, modify this screen in the following ways:
 
 * Make sure the “organization” property shows up in the grid and in the
-edit form (note: don’t forget to modify the relation fetching inside the
-*PersonDaoImpl* and to set a *displayProperty* for the Organization if
-that has not been done already__).__
+edit form (note: don’t forget to modify the relation fetching using the *@FetchJoin* annotation
+and to set a *displayProperty* for the Organization if
+that has not been done already).
 * The attribute order reads “firstName”, “nickName”, “lastName”,
 “organization” “born”, “died”
 * The caption for the *nickName* property must be changed to “Nickname”
@@ -1418,21 +1430,21 @@ By default, the data that is displayed is not filtered in any way. You
 can change this by adding *default filters* to the layout. These are
 filters that are automatically applied to any search request. In order
 to add default filters, define the following in the
-perso-search.component.ts:
+person-search.component.ts:
 
-  getDefaultFilters(): FilterModel[] \{
+[source,typescript]
+--
+getDefaultFilters(): FilterModel[] {
+return [createEqualsFilter('firstName', 'a')]
+}
+--
 
-   return [createEqualsFilter('firstName', 'a')]
-
-  }
-
-And modify the HTML file as follows.
-
+[source,angular17html]
+--
 <app-generic-split-layout entityName="Person"
-
-  [defaultFilters]="getDefaultFilters()">
-
+  [defaultFilters]="getDefaultFilters()">
 </app-generic-split-layout>
+--
 
 This sets up a filter for filtering on the *firstName* property of the
 person, and will match if this first name contains the letter “a” (note
@@ -1441,7 +1453,7 @@ that the attribute model, specifically the *searchPrefixOnly* and
 carried out. You don’t have to specify a “like” query or something in
 the front-end.)
 
-The Dynamo framework comes with a range of built-in filters. In addition
+The Dynamo framework comes with a range of built-in filters. In addition,
 the *EqualsFilterModel* shown above, there are classes like
 *NumberRangeFilter, DateRangeFilter* and *NumberInFilter.* Please refer
 to the full Dynamo documentation for more details.
@@ -1454,8 +1466,7 @@ Some of these include:
 used to quickly filter the search results. When this property is set, a
 “quick search” text field will appear in the split layout above the
 search results table. Typing in this input field will filter the search
-results based on the specified property. Note that the property must be
-set to
+results based on the specified property. Note that the property must be searchable.
 * If this is not sufficient, you can also set the *searchDialogEnabled*
 setting to true. With this in place, a “Search” button will be shown
 above the results table. Clicking this button will bring up a pop-up
@@ -1467,7 +1478,7 @@ will match those you selected in the dialog.
 
 The split layout also supports settings like *openInViewMode* and
 *confirmSave* that we already covered when discussing the
-*GenericSearchLayout.*
+*GenericSearchLayout*.
 
 == Beware of gangsters bringing gifts
 
@@ -1478,37 +1489,41 @@ between our notorious gangsters.
 To do so, first we need to add a component for displaying the available
 gifts. This basically follows the same set-up as
 
-*ng generate component gift-search --module app*
+[source,commandline]
+--
+ng generate component gift-search --module app
+--
 
 In the *app-routing.module.ts* file, add the following to the *children*
 array
 
-      \{
-
-        path: 'gifts',
-
-        title: 'Gifts',
-
-        component: GiftSearchComponent
-
-      },
+[source,commandline]
+--
+  {
+    path: 'gifts',
+    title: 'Gifts',
+    component: GiftSearchComponent
+  },
+--
 
 This defines a new route to the persons component. Finally, in the
 *nav.component.ts* file, add a new menu item:
 
-      \{
+[source,yaml]
+--
+  {
+    topLevel: true,
+    text: 'Gifts',
+    routerLink: "/gifts"
+  },
+--
 
-        topLevel: true,
+Defining the actual layout is pretty easy as well:
 
-        text: 'Gifts',
-
-        routerLink: "/gifts"
-
-      }
-
-Defining the actualy layout is pretty easy as well:
-
+[source,angular17html]
+--
 <app-generic-split-layout entityName="Gift"></app-generic-split-layout>
+--
 
 One of the functionalities of the gifts screen is the option to upload
 an image to help us identify what the gift looks like. The application
@@ -1521,46 +1536,51 @@ working, but it’s not very user-friendly yet. To make the application
 behave a bit better, open the *GiftLogo* class and find the *image*
 attribute. Annotate it as follows:
 
-@Column(columnDefinition = "bytea") +
-@Attribute(image = true, fileNameProperty = "logo.fileName") +
+[source,java]
+--
+@Column(columnDefinition = "bytea")
+@Attribute(image = true, fileNameProperty = "logo.fileName")
 private byte[] image;
+--
 
 Also annotate the *fileName* property directly below it as follows:
 
-@Attribute(editable = *EditableType.READ_ONLY*, visibleInGrid =
-VisibilityType.*_HIDE_*)
-
-*private* String fileName;
+[source,java]
+--
+@Attribute(editable = EditableType.READ_ONLY, visibleInGrid =
+VisibilityType.HIDE)
+private String fileName;
+--
 
 Note that we are using the full path of the attribute, “logo.fileName”
 rather than just “filename”. This is because the Logo is an embedded
 object of the Gift – embedded objects are more or less absorbed into the
 object that is embedding them and don’t have their own models. All the
 attributes of the embedded model become attributes of the embedding
-entity in the Entity Model, and should be referred to using their full
+entity in the Entity Model, and must be referred to using their full
 paths.
 
 By changing the value of the *image* setting to true you mark this field
 as an image, causing the application to try and render a preview of the
-contents of this field (it will of course still fail if you didn’t
+contents of this field (it will of course still fail if you didn't
 upload an actual image).
 
 The *fileNameProperty* setting is used to automatically set the value of
 another property to the name of the file you uploaded – in this case the
-*fileName* property on the *GiftLogo.*
+*fileName* property on the *GiftLogo*.
 
-Now, when you try uploading a file again, the application should show
+Now, when you try uploading a file again, the application will show
 you a preview of the image you uploaded (provided it’s actually an
-image) and the “filename” will be automatically set after uploading the
+image) and the "fileName" property will be automatically set after uploading the
 image.
 
 Now, if you want to restrict the type of files that the user can upload,
 you can use the *allowedExtensions* setting. This setting takes as its
-value an array of strings, e.g. \{“png”, “gif”}. You can also set the
-*downloadAllowed* setting to make it so that a “download” button will
+value an array of strings, e.g. "png", "gif". You can also set the
+*downloadAllowed* setting to make it so that a "download" button will
 show up in the file upload component.
 
-Play around with the file upload functionality for a while if you want,
+Play around with the file upload functionality for a bit if you want,
 then have a look at the rest of the screen and make sure you get all the
 little details right (attribute order, captions etc.)
 
@@ -1575,18 +1595,19 @@ to and retrieve it from the blob storage.
 
 Now, there is one more cool thing we can do with the *Gift* entity, and
 that is displaying and editing a collection of dependent objects, in
-this case the *translations.*
+this case the *translations*.
 
 In the *Gift* class, annotate the *translations* property as follows.
 
-@Valid +
-@OneToMany(mappedBy = "gift", fetch = FetchType._LAZY_, cascade =
-\{CascadeType._MERGE_, +
-CascadeType._PERSIST_}, orphanRemoval = true) +
-@Size(max = 3) +
-@Attribute(visibleInForm = VisibilityType._SHOW_, nestedDetails =
-true) +
+[source,java]
+--
+@Valid
+@OneToMany(mappedBy = "gift", fetch = FetchType.LAZY, cascade = {CascadeType.MERGE,
+        CascadeType.PERSIST}, orphanRemoval = true)
+@Size(max = 3)
+@Attribute(visibleInForm = VisibilityType.SHOW, nestedDetails = true)
 private Set<GiftTranslation> translations = new HashSet<>();
+--
 
 Of note here is the *nestedDetails* setting that will ensure that the
 framework treats this property as a nested detail property. Also note
@@ -1597,10 +1618,12 @@ We also have to make sure that the wiring of the translations to the
 gifts is done properly. To do so, include the following in the Gift
 class:
 
-public void setTranslations(Set<GiftTranslation> translations) \{ +
-_wireRelations_(this, this.translations, translations, (translation,
-gift) -> translation.setGift(gift)); +
+[source,java]
+--
+public void setTranslations(Set<GiftTranslation> translations) {
+    wireRelations(this, this.translations, translations, (translation, gift) -> translation.setGift(gift));
 }
+--
 
 The *wireRelations* method is a convenience method from the
 *EntityModelUtils* class.
@@ -1624,26 +1647,32 @@ one criminal to the other.
 First, create the component again and add it to the menu and routing
 files:
 
-*ng generate component delivery-table --module app*
+[source,commandline]
+--
+ng generate component delivery-table --module app
+--
 
 The component itself is again deceptively simple
 
+[source,angular17html]
+--
 <app-generic-edit-table-layout entityName="Delivery">
+--
 
 However, if you open the Deliveries screen it its current form, it will
 not do an awful lot. This is because the Delivery class contains a
 number of complex attributes that are not present in either the results
 table of the edit form.
 
-To make the screen behave, add the following annotation to the
-*fromPerson, toPerson,* and *Gift* properties. You may also want to set
-the “displayProperty” setting on the *Gift* class (to “name”) if you
+To make the screen behave, set the visibleInForm and visibleInGrid settings
+for *fromPerson*, *toPerson* and *gift* properties to SHOW. You may also want to set
+the *displayProperty* setting on the *Gift* class (to “name”) if you
 have not done so already, to make sure that a useful description of the
 gift shows up in the table and in the dropdown component.
 
 Now, when you restart the application and open the Deliveries screen,
 you will see a grid in which you can edit the displayed entities.
-Initially, the grid will be empty but you can use the *Add* button to
+Initially, the grid will be empty, but you can use the *Add* button to
 add new entries. However, this is not very useful at the moment since
 you won’t be able to see (let alone fill in) all the required fields.
 
@@ -1655,7 +1684,7 @@ that you added will show up in the grid.
 
 Note that at the end of every row there is a “Details” button that you
 can use to bring up the details of the current row/entity. If
-“*updateEnabled”* is set to true on the entity model, you can also use
+*updateEnabled* is set to true on the entity model, you can also use
 this dialog to edit the entity.
 
 == Filters, custom components, and callback methods
@@ -1677,31 +1706,28 @@ As we’ve seen before with the default filters (in the SplitLayout), the
 field filters are defined in the component’s TypeScript file. As an
 example, we define the following in the *organization-form.component.ts*
 
-  getFieldFilters() \{
+[source,typescript]
+--
+  getFieldFilters() {
+    let fieldFilters: Map<string,FilterModel[]> = new Map<string,FilterModel[]>();
 
-    let fieldFilters: Map<string,FilterModel[]> = new
-Map<string,FilterModel[]>();
+    let countryFilter = createEqualsFilter('name', 'au')
+    fieldFilters.set("countryOfOrigin", [
+      countryFilter
+    ]);
 
-    let countryFilter = createEqualsFilter('name', 'au')
+    return fieldFilters;
+  }
+--
 
-    fieldFilters.set("countryOfOrigin", [
-
-      countryFilter
-
-    ]);
-
-    return fieldFilters;
-
-  }
-
-Also, in the HTML file we bind this method to the [*fieldFilters*]
+Also, in the HTML file we bind this method to the [fieldFilters]
 property.
 
 Now, if we open the screen to edit an organization (or create a new
 one), we will see that the available option in the *countryOfOrigin*
 component are limited to those countries that contain the substring “au”
 (e.g. Austria or Australia). This works regardless of the type of the
-input component but it will of course show up in different ways.
+input component, but it will of course show up in different ways.
 
 The example above only applies to the edit form, but adding the field
 filters to the search form works in exactly the same way.
@@ -1714,41 +1740,29 @@ standard component generated by the framework with a custom one.
 
 To do so, you can insert an ng-template element marked with the
 *dOverrideField* annotation inside the component (in this case,
-organization-form.component.html.
+*organization-form.component.html*.
 
-  <ng-template
-
-    dOverrideField
-
-    attributeName="name"
-
-    let-am
-
-    let-formGroup="mainForm"
-
-  >
-
-    <ng-container formGroup=[formGroup]>
-
-      <label for="name">Custom Name Label</label>
-
-      <textarea
-
-        pInputTextarea
-
-        id="name"
-
-        name="name"
-
-        pInputText
-
-        formControlName="name"
-
-      ></textarea>
-
-  </ng-container>
-
-  </ng-template>
+[source,angular17html]
+--
+  <ng-template
+    dOverrideField
+    attributeName="name"
+    let-am
+    let-formGroup="mainForm"
+  >
+    <ng-container [formGroup]="formGroup">
+      <app-generic-field
+        id="name"
+        name="name"
+        [am]="am"
+        formControlName="name"
+        [formGroup]="formGroup"
+        ngDefaultControl
+      >
+      </app-generic-field>
+    </ng-container>
+  </ng-template>
+--
 
 The *dOverrideField* on the template makes sure the mechanism picks up
 this custom component. The “attributeName” must be the name of the
@@ -1777,45 +1791,23 @@ functionality cannot be automatically duplicated on the front-end. This
 is where custom front-end validations come in.
 
 We have already provided a custom validator in the CustomValidators
-class, and will now apply this to a field in the
-*person-search.component.html* that we created before.
+class, and will now apply this to a field in the *person-search.component.html* that we created before.
 
-In the app-generic-split-layout we create before, we ad a template named
+In the app-generic-split-layout we create before, we add a template named
 *customValidatorTemplate* and bind this to the *customValidatorTemplate*
 property of the layout:
 
-<app-generic-split-layout
-
-  entityName="Person"
-
-  [defaultFilters]="getDefaultFilters()"
-
-  quickSearchProperty="firstName"
-
-  [searchDialogEnabled]="true"
-
-*  [customValidatorTemplate]="customValidatorTemplate"*
-
->
-
-  <ng-template #customValidatorTemplate let-formGroup>
-
-    <ng-template
-
-      dAdditionalValidators
-
-      attributeName="died"
-
-      [formGroup]="formGroup"
-
-     
-[validators]="[CustomValidators.diedAfterBornValidator(formGroup)]"
-
-    />
-
-  </ng-template>
-
-</app-generic-split-layout>
+[source,angular17html]
+--
+  <ng-template #customValidatorTemplate let-formGroup>
+    <ng-template
+      dAdditionalValidators
+      attributeName="died"
+      [formGroup]="formGroup"
+      [validators]="[CustomValidators.diedAfterBornValidator(formGroup)]"
+    />
+  </ng-template>
+--
 
 Inside the template we can create any number of templates annotated with
 the *dAdditionalValidators* template. Each template must contain the
@@ -1830,9 +1822,10 @@ In the typescript file, add the following, where the “CustomValidators”
 on the right refers to the class you import from the
 *custom-validators.ts* file.
 
- 
-
+[source,typescript]
+--
 readonly CustomValidators = CustomValidators
+--
 
 Note: you must always include the appropriate validations in the
 back-end as well. Never rely on the front-end only for validating data,
@@ -1859,42 +1852,63 @@ In order to add an entity model action, we need the following things:
 
 Let’s start with the DTO:
 
-@Getter +
-@Setter +
-@ToString +
-@Model(displayName = "Organization Name Change") +
-public class OrganizationNameDTO extends AbstractEntity<Integer> \{ +
- +
-private Integer id; +
- +
-@NotNull +
-@Attribute +
-@Size(max = 255) +
-private String name; +
- +
-}
+[source,java]
+--
+package com.opencircle.gts.service;
 
-The DTO class must extend the AbstractEntity class, and must have an ID
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.domain.model.annotation.Attribute;
+import org.dynamoframework.domain.model.annotation.Model;
+
+@Getter
+@Setter
+@ToString
+@Model(displayName = "Organization Name Change")
+public class OrganizationNameDTO extends AbstractEntity<Integer> {
+
+    private Integer id;
+
+    @NotNull
+    @Attribute
+    @Size(max = 255)
+    private String name;
+
+}
+--
+
+The DTO class must extend the *AbstractEntity* class, and must have an ID
 field that has the same data type as the entity that the action belongs
 to (in this case the Organization). The framework constructs an entity
 model for the DTO in the same way as it does for an actual entity, so
-annotations like @Model and @Attribute work in the same way.
+annotations like *@Model* and *@Attribute* work in the same way.
 
-In the OrganizationService(Impl) we add an method that we want to carry
+In the OrganizationService(Impl) we add a method that we want to carry
 out:
 
-@Override +
-@Transactional +
-@ModelAction(id = "ChangeName", displayName = "Change name", type =
-EntityModelActionType._UPDATE_, +
-icon = "pi-shield") +
-public Organization updateName(OrganizationNameDTO dto) \{ +
-Organization org = findById(dto.getId()); +
-org.setName(dto.getName()); +
-return save(org); +
+[source,java]
+--
+@Override
+@Transactional
+@ModelAction(id = "ChangeName", displayName = "Change name", type = EntityModelActionType.UPDATE,
+icon = "pi-shield")
+public Organization updateName(OrganizationNameDTO dto) {
+    Organization org = findById(dto.getId());
+    org.setName(dto.getName());
+    return save(org);
 }
+--
 
-This is a fairly simple method that accepts the OrganizationNameDTO as a
+And in the *OrganizationService* we add the method definition
+--
+Organization updateName(OrganizationNameDTO dto);
+--
+
+This is a fairly simple method that accepts the *OrganizationNameDTO* as a
 parameter, and must return the updated entity (in this case the
 Organization). The logic is easy – it just sets the name on the
 organization, then saves the updated organization to the database.
@@ -1904,16 +1918,16 @@ Dynamo will translate it to a button that will show up (in this case) in
 each row in the table (in this case it’s the button with the shield
 icon). The ModelAction has a unique ID, a display name (this will be
 shown in the tooltip of the button) and a type. The type can be either
-CREATE or UPDATE and determines where the button corresponding to the
-action will show up. UPDATE actions will show up in each button in a
-results table, and CREATE actions will show up in the button bar below
+*CREATE* or *UPDATE* and determines where the button corresponding to the
+action will show up. *UPDATE* actions will show up in each button in a
+results table, and *CREATE* actions will show up in the button bar below
 the table.
 
 image:media/image15.png[image,width=560,height=24]
 
 Pressing the button will open a pop-up dialog based on the
 *OrganizationNameDTO* we saw before. Any fields that match between the
-main entity (organization) and the DTO, in this case the name, will be
+main entity (Organization) and the DTO, in this case the name, will be
 automatically filled in:
 
 image:media/image16.png[image,width=559,height=107]
@@ -1929,33 +1943,24 @@ table.
 As an example of a global action, consider the following (which we add
 to organization-search.component.ts).
 
-  getAdditionalGlobalActions(): AdditionalGlobalAction[] \{
+[source,typescript]
+--
+  getAdditionalGlobalActions(): AdditionalGlobalAction[] {
+    let action: AdditionalGlobalAction = {
+      action: () => {
+        this.messageService.warn('This is a global action');
+      },
+      messageKey: 'action_one',
+      icon: 'pi-times',
+      buttonClass: 'btn btn-primary m-1',
+      enabled: () => {
+        return this.authenticationService.hasRole('bogus')
+      },
+    };
 
-    let action: AdditionalGlobalAction = \{
-
-      action: () => \{
-
-        this.messageService.warn('This is a global action');
-
-      },
-
-      messageKey: 'action_one',
-
-      icon: 'pi-times',
-
-      buttonClass: 'btn btn-primary m-1',
-
-      enabled: () => \{
-
-      return true;
-
-      },
-
-    };
-
-    return [action];
-
-  }
+    return [action];
+  }
+--
 
 A global action consists of:
 
@@ -1964,11 +1969,10 @@ A global action consists of:
 button in the application’s message bundle.
 * The icon to display on the button (optional)
 * The CSS classes of the button (from Bootstrap)
-* A function to determine when the action is enabled
+* A function to determine when the action is enabled (in this example it's always enabled)
 
 Now, if you look at the Organization screen, a button will show up below
-the result table, and clicking it will simply display a notification
-message.
+the result table, and clicking it will display a notification message.
 
 Adding form actions and row actions goes in much the same way, although
 the exact attributes differ based on the action type. Refer to the full
@@ -1990,19 +1994,14 @@ will contain the options to create exports to both Excel and CSV
 formats.
 
 The export file that will be created contains all the data in the result
-set +
-(i.e. all data that matches the search criteria), not just the rows
-that +
-are currently displayed – Dynamo will iterate over the entire data set +
-using pagination. +
- +
+set (i.e. all data that matches the search criteria), not just the rows
+that are currently displayed – Dynamo will iterate over the entire data set
+using pagination.
+
 By default, the export will contain only the columns that are visible
-in +
-the table, but you can change the *exportMode* setting to FULL in
-order +
-to include all attributes that have their “*visibleInForm*” setting
-equal +
-to "true".
+in the table, but you can change the *exportMode* setting to FULL in
+order to include all attributes that have their *visibleInForm* setting
+equal to "true".
 
 === Clickable Links
 
@@ -2011,16 +2010,18 @@ displayed (simply as a text or a label) inside a grid or an edit form to
 a hyperlink that allows navigation within the application.
 
 We will demonstrate this using the *organization* property of the
-*Person.* Change the code inside the Person class so that is reads as
+*Person.* Change the code inside the Person class so that it reads as
 follows:
 
-@NotNull +
-@JoinColumn(name = "organization") +
-@ManyToOne(fetch = FetchType._LAZY_) +
-@Attribute(visibleInForm = VisibilityType._SHOW_, visibleInGrid =
-VisibilityType._SHOW_, +
-navigable = true) +
+[source,java]
+--
+@NotNull
+@JoinColumn(name = "organization")
+@ManyToOne(fetch = FetchType.LAZY)
+@Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.SHOW,
+        navigable = true)
 private Organization organization;
+--
 
 image:media/image17.png[image,width=503,height=407]
 
@@ -2029,7 +2030,7 @@ that whenever the property is shown in read-only mode, a hyperlink will
 be rendered instead of just a textual representation. When the user
 clicks on the hyperlink, the application will navigate to a (detail)
 screen by following the route “/[lower cased name of the entity]/[entity
-id]”, in this case *“/organization/1*” . This is the route at which we
+id]”, in this case *“/organization/1*”. This is the route at which we
 configured our “*OrganizationFormComponent*” so the application will
 then show a details screen for the selected organization.
 
