@@ -1480,7 +1480,7 @@ The split layout also supports settings like *openInViewMode* and
 *confirmSave* that we already covered when discussing the
 *GenericSearchLayout*.
 
-== Beware of gangsters bringing gifts
+== Split layouts
 
 Now, we are finally getting to the good stuff – we are going to add a
 screen to manage the various types of gifts that are being sent around
@@ -1639,7 +1639,7 @@ the table). Go ahead and add some translations to the table, then press
 the Save button on the form and verify how the Gift plus its
 translations are neatly saved to the database.
 
-== Deliveries and editable grids
+== Editable tables
 
 Now, let’s add a screen for managing the various gift deliveries from
 one criminal to the other.
@@ -1954,7 +1954,7 @@ to organization-search.component.ts).
       icon: 'pi-times',
       buttonClass: 'btn btn-primary m-1',
       enabled: () => {
-        return this.authenticationService.hasRole('bogus')
+        return true;
       },
     };
 
@@ -2049,8 +2049,11 @@ modify a certain entity type).
 To test this, open the *Person* class and modify the class declaration
 by adding the *@Roles* annotation as follows:
 
-@Roles(writeRoles = "bogus") +
-public class Person extends AbstractEntity<Integer> \{
+[source,java]
+--
+@Roles(writeRoles = "bogus")
+public class Person extends AbstractEntity<Integer> {
+--
 
 This means that only users in the “bogus” role are allowed to perform
 write actions (i.e. create and update) on this entity. Since you don’t
@@ -2071,7 +2074,7 @@ component will only show up if the user has at least one of the
 specified role. If not, the user simply will see a “You are not allowed
 to view this component” message.
 
-Note that currently, when a user does not have the appropriate roles to
+Currently, when a user does not have the appropriate roles to
 view a screen, the corresponding menu option is *not* automatically
 removed from the menu. The current version of Dynamo does not make any
 assumptions with regard to how you build your menu.
@@ -2087,19 +2090,16 @@ place. Here, Dynamo does offer some functionality to help you.
 In the *app.routing.module.ts*, modify the entry for the
 *PersonSearchComponent* so that it reads as follows:
 
-      \{
-
-        path: 'persons',
-
-        title: 'Persons',
-
-        component: PersonSearchComponent,
-
-        canActivate: [RoleGuard],
-
-        data: \{ roles: ['bogus'] }
-
-      },
+[source,yaml]
+--
+  {
+    path: 'persons',
+    title: 'Persons',
+    component: PersonSearchComponent,
+    canActivate: [RoleGuard],
+    data: { roles: ['bogus'] }
+  },
+--
 
 Compared to the old situation, we add a *canActivate* element that
 points to the *RoleGuard*, and using the “data” element we configure the
@@ -2111,6 +2111,33 @@ user is in any of the configured roles before navigating to the
 error message will be shown and the application will navigate to the
 “/home” route.
 
+In addition to using the role-based authentication in the back-end, it is
+possible to use it in the front-end. To do this, you need to inject
+an instance of the AuthenticationService in your Typescript component.
+
+You can then use the *hasRole*  method to enable or disable certain functionalities.
+As an example, see how we can modify the global action we defined earlier so
+that it is only enabled if the user has the "bogus" role.
+
+[source,typescript]
+--
+  getAdditionalGlobalActions(): AdditionalGlobalAction[] {
+    let action: AdditionalGlobalAction = {
+      action: () => {
+        this.messageService.warn('This is a global action');
+      },
+      messageKey: 'action_one',
+      icon: 'pi-times',
+      buttonClass: 'btn btn-primary m-1',
+      enabled: () => {
+        return this.authenticationService.hasRole('bogus')
+      },
+    };
+
+    return [action];
+  }
+--
+
 == Element collections
 
 One of the lesser known features of JPA is the ability to work with
@@ -2119,37 +2146,33 @@ basically a collection of primitive values (String, integer, etc.) that
 can be defined as a property on an entity. Within the context of our
 example, we could define the following in the *Person* class:
 
-@ElementCollection(fetch = FetchType._LAZY_) +
-@CollectionTable(name = "person_lucky_numbers") +
-@Column(name = "lucky_number") +
-@Size(max = 3) +
-@Attribute(visibleInForm = VisibilityType._SHOW_) +
-private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new
-HashSet<>();
+[source,java]
+--
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "person_lucky_numbers")
+    @Column(name = "lucky_number")
+    @Size(max = 3)
+    @Attribute(visibleInForm = VisibilityType.SHOW)
+    private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
+--
 
 This will define a collection of integers that can be used to store a
 person’s lucky numbers. As you can see, these are stored in the database
 in a table named “person_lucky_numbers”. The definition for this table
 is as follows:
 
-CREATE TABLE person_lucky_numbers
-
-(
-
-id serial NOT NULL,
-
-person_id integer,
-
-lucky_number integer,
-
-primary key(id)
-
+[source,sql]
+--
+CREATE TABLE person_lucky_numbers(
+  id serial NOT NULL,
+  person_id integer,
+  lucky_number integer,
+  primary key(id)
 );
 
 ALTER TABLE person_lucky_numbers ADD CONSTRAINT
-fk_person_lucky_numbers_person FOREIGN KEY (person_id)
-
-REFERENCES person(id) ON DELETE CASCADE;
+fk_person_lucky_numbers_person FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE;
+--
 
 Go ahead and execute these commands in your SQL client.
 
@@ -2160,28 +2183,40 @@ be empty. You can add values to it by typing directly inside the
 component and then pressing Enter when you are done with the input. It
 is possible to add multiple values like this.
 
-image:vertopal_93dcc55b4d0c4e7a8d695d891a2e9897/media/image18.png[image,width=560,height=81]
+image:media/image18.png[image,width=560,height=81]
 
-The component comes with several validations, e.g. the @Size annotation
+The component comes with several validations, e.g. the *@Size* annotation
 that you can see in the code example above will be used to limit the
 maximum allowed number of elements (in this case 3).
 
 We can also use the *minValue* and *maxValue* settings on *@Attribute*
 to set minimum and maximum values.
 
-@Attribute(visibleInForm = VisibilityType._SHOW_, minValue = 0, maxValue
-= 100) +
-private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new
-HashSet<>();
+[source,java]
+--
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "person_lucky_numbers")
+    @Column(name = "lucky_number")
+    @Size(max = 3)
+    @Attribute(visibleInForm = VisibilityType._SHOW_, minValue = 0, maxValue
+    = 100)
+    private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new
+    HashSet<>();
+--
 
 In addition, it is possible to change the type of the component by
 setting the *elementCollectionMode* (in this case to DIALOG).
 
-@Attribute(visibleInForm = VisibilityType._SHOW_, minValue = 0, maxValue
-= 100, +
-elementCollectionMode = ElementCollectionMode._DIALOG_) +
-private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new
-HashSet<>();
+[source,java]
+--
+    @ElementCollection(fetch = FetchType.LAZY)
+    @CollectionTable(name = "person_lucky_numbers")
+    @Column(name = "lucky_number")
+    @Size(max = 3)
+    @Attribute(visibleInForm = VisibilityType.SHOW, minValue = 0, maxValue = 100,
+        elementCollectionMode = ElementCollectionMode.DIALOG)
+    private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
+--
 
 This will result in a different kind of component being used to edit the
 element collection: a component that uses a pop-up dialog to add new
