@@ -594,13 +594,13 @@ Next, let’s change the attribute order – go to the *Organization* class
 and add the *@AttributeOrder* annotation to the class as seen below
 
 [source,java]
----
+--
 @Entity
 @Table(name = "organization")
 @AttributeOrder(attributeNames = \{ "name", "headQuarters", "address",
 "countryOfOrigin", "reputation" })
 public class Organization *extends* AbstractEntity<Integer> {
----
+--
 
 Restart the back-end to verify that the attributes are now displayed in
 the order specified above – note that this goes for both the search
@@ -619,13 +619,13 @@ your search form or the result grid, you can use the
 *@SearchAttributeOrder* or *@GridAttributeOrder* to specify this.
 
 [source,java]
----
-@AttributeOrder(attributeNames = \{ "name", "headQuarters", "address",
+--
+@AttributeOrder(attributeNames = { "name", "headQuarters", "address",
 "countryOfOrigin", "reputation" })
-@GridAttributeOrder(attributeNames = \{ "memberCount",
+@GridAttributeOrder(attributeNames = { "memberCount",
 "yearlyMortalityRate" })
-public class Organization *extends* AbstractEntity<Integer> {
----
+public class Organization extends AbstractEntity<Integer> {
+--
 
 In the above example, we have added an *@GridAttributeOrder.* Now when
 you restart the application after this, you will see that the grid
@@ -636,12 +636,12 @@ OK, now it’s time to fix the enumeration. Open the
 *ui.messages.properties* file and add the following:
 
 [source,properties]
----
+--
 Reputation.REALLY_NOT_FEARSOME=Really not fearsome
 Reputation.MILDLY_FEARSOME=Mildly fearsome
 Reputation.FEARSOME=Fearsome
 Reputation.EXTREMELY_FEARSOME=Extremely fearsome
----
+--
 
 Restart the application and see how the enumeration values have now been
 replaced by the values from the message bundle.
@@ -653,12 +653,12 @@ of the value of an attribute inside the grid by setting the
 *maxLengthInGrid* setting. Try this for the *name* attribute:
 
 [source,java]
----
+--
 @NotNull
 @Size(max = 255)
 @Attribute(searchable = SearchMode.ALWAYS, main = true, maxLengthInGrid = 10)
 private String name;
----
+--
 
 Restart the application and verify that the values inside the name
 column are now truncated after 10 characters.
@@ -672,9 +672,9 @@ bundle.
 Open this file and add the following line:
 
 [source,properties]
----
+--
 Organization.yearlyMortalityRate.percentage=true
----
+--
 
 Restart the application and verify that we now see a percentage sign
 (“%”) near the values of the “yearly mortality rate”. This teaches us
@@ -687,9 +687,9 @@ divide or multiply the value by anything).
 for this is
 
 [source,properties]
----
+--
 [entity name].[property name].[setting] = [value]
----
+--
 
 You can also directly change the settings on the entity by not including
 any property name, e.g. *Organization.displayName=Organisatie*
@@ -701,10 +701,10 @@ can also change it by using the message bundle.
 To practice a bit more, add the following lines to *entitymodel.properties*.
 
 [source,properties]
----
+--
 Organization.governmentSponsored.trueRepresentation=You bet!
 Organization.governmentSponsored.falseRepresentation=No Way!
----
+--
 
 Then, restart the application and verify that instead of the standard
 “true” and “false” values for the Boolean *governmentSponsored*
@@ -728,13 +728,13 @@ inside a grid. To fix this, add the *@Attribute* annotation to the
 *countryOfOrigin* property and set the *visibleInGrid* setting to SHOW.
 
 [source,java]
----
+--
 @NotNull
 @JoinColumn(name = "country_of_origin")
 @ManyToOne(fetch = FetchType.*_LAZY_*)
 @Attribute(visibleInGrid = VisibilityType.*_SHOW_*)
 private Country countryOfOrigin;
----
+--
 
 Now, after you restart the backend application, the country of origin
 column should appear in the table. But the way the data is fetched is
@@ -744,8 +744,11 @@ an extra query in order to retrieve the country.
 In order to fix this, we can add a fetch join to the data retrieval. To
 do so, add the following to the *Organization* entity:
 
-*@FetchJoins(joins = \{@FetchJoin(attribute = "countryOfOrigin)}, +
-detailJoins = \{@FetchJoin(attribute = "countryOfOrigin")})*
+[source,java]
+--
+@FetchJoins(joins = {@FetchJoin(attribute = "countryOfOrigin")},
+detailJoins = {@FetchJoin(attribute = "countryOfOrigin")})
+--
 
 This will make sure that whenever any Organizations are fetched by the
 framework, the *countryOfOrigin* relation of those organizations will be
@@ -782,34 +785,29 @@ a name, or of a name and a (unique) code.
 
 The module contains several pre-defined domain classes like *Country*
 which you can use if you include a database table named “domain” in your
-application and fill it with the proper values (this is straightforward
+application and fill it with the proper values (this is straightforward,
 so we won’t go into it here).
 
 To properly use the values from the *Country* table, though, one more
 thing is needed and that is a service for retrieving them from the
 repository. Now, we could of course create the proper Java classes for
-this, but this is slightly tedious and we can also use the Dynamo
+this, but this is slightly tedious, and we can also use the Dynamo
 functionality for _Default Services_ and define the required service in
-Spring. Open the *ApplicationConfig.java* class and observe the
+Spring. Open the *ApplicationConfig.java* class and take note of the
 following code:
 
+[source,java]
+--
 @Bean
-
-*public* BaseDao<Integer, Country> countryDao() \{
-
-*return* *new* DefaultDaoImpl<>(QCountry.*_country_*, Country.*class*,
-"parent");
-
+public BaseService<Integer, Region> regionService(BaseDao<Integer, Region> regionDao) {
+    return new DefaultServiceImpl<>(regionDao, "code");
 }
 
 @Bean
-
-*public* BaseService<Integer, Country> countryService(BaseDao<Integer,
-Country> dao) \{
-
-*return* *new* DefaultServiceImpl<>(dao, "code");
-
+public BaseDao<Integer, Country> countryDao() {
+    return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
 }
+--
 
 This defines a bean that is an instance of *DefaultServiceImpl* which
 has an inner bean of type *DefaultDaoImpl.* These are convenience
@@ -817,10 +815,10 @@ classes that in turn inherit from the *BaseServiceImpl* and
 *BaseDaoImpl* classes and provide all the basic functionality for
 retrieving, saving, and deleting entities. The only catch is of course
 that you cannot define any custom methods (e.g.
-“*findCountriesInEurope*”) but for such simple entities, this is usually
+*findCountriesInEurope*) but for such simple entities, this is usually
 not an issue.
 
-_Note: *ApplicationConfig* is an example of a Spring Boot configuration
+*NOTE*: *ApplicationConfig* is an example of a Spring Boot configuration
 class and inherits from the *ApplicationConfigSupport* class from the
 Dynamo Framework. This class already takes care of some generic
 configuration which cannot be taken care of by Spring Boot
@@ -833,29 +831,31 @@ bit. By default, the application will render a dropdown component that
 can be used to select a country to search on. Let’s play around with
 this a little bit and change it to a lookup component:
 
+[source,java]
+--
 @NotNull
-
 @JoinColumn(name = "country_of_origin")
-
-@ManyToOne(fetch = FetchType.*_LAZY_*)
-
-@Attribute(searchable = SearchMode.*_ALWAYS_*, visibleInGrid =
-VisibilityType.*_SHOW_*, selectMode = AttributeSelectMode.*_LOOKUP_*)
-
-*private* Country countryOfOrigin;
+@ManyToOne(fetch = FetchType._LAZY_)
+@Attribute(searchable = SearchMode._ALWAYS_, visibleInGrid =
+VisibilityType._SHOW_, selectMode = AttributeSelectMode.LOOKUP)
+private Country countryOfOrigin;
+--
 
 Restart the backend and observe how you can now use a popup dialog to
 search for the country you want to filter on.
 
 Dynamo now also comes with an auto-complete field:
 
-@NotNull +
-@JoinColumn(name = "country_of_origin") +
-@ManyToOne(fetch = FetchType._LAZY_) +
+[source,java]
+--
+@NotNull 
+@JoinColumn(name = "country_of_origin") 
+@ManyToOne(fetch = FetchType.LAZY)
 @Attribute(searchable = SearchMode._ALWAYS_, visibleInGrid =
-VisibilityType._SHOW_, +
-searchSelectMode = AttributeSelectMode._AUTO_COMPLETE_) +
+VisibilityType.SHOW,
+searchSelectMode = AttributeSelectMode.AUTO_COMPLETE)
 private Country countryOfOrigin;
+--
 
 With this in place, the application will render a field that allows the
 user to start typing – the available options will be filtered so that
@@ -867,7 +867,7 @@ allows you to search for multiple values for a normally single-valued
 relation – the search query will return all entities that match one of
 the provided search values. Note that when you set *multipleSearch* to
 true, the application will switch to displaying a multi-select field
-instead of a drop down. Optionally, you can use a lookup field.
+instead of a drop-down. You can also use a lookup field.
 
 === Dynamic search layout
 
@@ -877,19 +877,22 @@ offers an additional way of handling search requests. This is called the
 search terms can be added dynamically. To enable this functionality add
 the following in *organization-search.component.ts:*
 
+[source,typescript]
+--
 searchFormMode: SearchFormMode = SearchFormMode.DYNAMIC;
+--
 
 And bind it in the *organization-search.component.html*:
 
+[source,angular17html]
+--
 <app-generic-search-layout
-
-  entityName="Organization"
-
-  detailNavigationPath="organization"
-
-*  [searchFormMode]="searchFormMode"*
-
+  entityName="Organization"
+  detailNavigationPath="organization"
+  [searchFormMode]="searchFormMode"
 >
+</app-generic-search-layout>
+--
 
 Now, you will see that the search screen you saw before has been
 replaced by a (normally) initially empty search form, with an “Add
@@ -899,7 +902,7 @@ search form. This row can be used to add a search criterion.
 image:media/image6.png[image,width=560,height=361]
 
 Each search row starts with a combo box that allows you to select the
-attribute you want to filter on. It included all attributes with
+attribute you want to filter on. It includes all attributes with
 searchable set to either ADVANCED or ALWAYS, sorted in alphabetical
 order.
 
@@ -938,30 +941,31 @@ When you look in *app-routing.module.ts* you will see that the following
 routes are defined (one for editing an existing entity and one for
 creating a new one).
 
-\{
-
-path: ‘organization’,
-
-title: ‘Create Organization’,
-
-component: OrganizationFormComponent
-
-},
-
-\{
-
-path: ‘organization/:id’,
-
-title: ‘Edit Organization’,
-
-component: OrganizationFormComponent
-
-},
+[source,typescript]
+--
+      {
+        path: 'organizations',
+        title: 'Organizations',
+        component: OrganizationSearchComponent
+      },
+      {
+        path: 'organization',
+        title: 'Create Organization',
+        component: OrganizationFormComponent
+      },
+--
 
 Both routes point to the *OrganizationFormComponent* which looks as
 follows:
 
-*[TODO] insert code.*
+[source,angular17html]
+--
+<app-generic-form
+entityName="Organization"
+[entityId]="entityId"
+navigateBackRoute="organizations">
+</app-generic-form>
+--
 
 This is a minimal set-up that includes a) the name of the entity b) the
 ID of the entity being edited (this is undefined when defining a new
@@ -980,24 +984,26 @@ like this:
 image:media/image7.png[image,width=560,height=570]
 
 By now, it should not come as a surprise that you will see text fields
-for String and numeric attributes, a combo box for an enumeration etc.
+for String and numeric attributes, combo boxes for enumerations, etc..
 If you look closely, however, you will see that there are no components
-yet for editing the *country of origin* and *members* attributes. This
+for editing the *country of origin* and *members* attributes. This
 is because, by default, no components will be created for editing
 complex attributes.
 
 To make the components for editing the complex attributes show up, you
-can set the *complexEditable* setting for an attribute to true. We do
+can set the *visibleInForm* setting for an attribute to true. We do
 this now for the country of origin field:
 
-@NotNull +
-@JoinColumn(name = "country_of_origin") +
-@ManyToOne(fetch = FetchType._LAZY_) +
-@Attribute(searchable = SearchMode._ALWAYS_, visibleInGrid =
-VisibilityType._SHOW_, +
-searchSelectMode = AttributeSelectMode._AUTO_COMPLETE_, +
-visibleInForm = VisibilityType._SHOW_) +
+[source,java]
+--
+@NotNull
+@JoinColumn(name = "country_of_origin")
+@ManyToOne(fetch = FetchType.LAZY)
+@Attribute(searchable = SearchMode.ALWAYS, visibleInGrid = VisibilityType.SHOW,
+        searchSelectMode = AttributeSelectMode.AUTO_COMPLETE,
+        visibleInForm = VisibilityType.SHOW)
 private Country countryOfOrigin;
+--
 
 Now, go ahead and add a new organization to the system (be creative).
 Note that validations have automatically been added to the form based on
@@ -1008,10 +1014,10 @@ Note that sometimes it’s not desirable to be able to directly edit an
 attribute – e.g. in case of a status field that is automatically set, a
 creation time stamp, etc. You can make sure that such an attribute shows
 up as read-only in the form by setting the *editable* setting of the
-@Attribute annotation to *READONLY.* It is also possible to specify the
+*@Attribute* annotation to *READONLY.* It is also possible to specify the
 settings *CREATE_ONLY* and *EDITABLE*. When you use the setting
 *CREATE_ONLY* you will only be able to edit the attribute when creating
-a new entity. The *EDITABLE* setting, which is the default value, means
+a new entity. The *EDITABLE* value, which is the default value, means
 that the attribute can always be edited.
 
 === Editing existing entities
@@ -1027,36 +1033,36 @@ longer just click anywhere in the table. Instead, a “pencil” button will
 show up in each row in the table. Click this button to navigate to the
 detail screen.
 
+[source,angular17html]
+--
 <app-generic-search-layout entityName="Organization"
-
-  detailNavigationPath="organization" [advancedModeEnabled]="true"
-
-    [showDetailButton]="true">
-
+ detailNavigationPath="organization" [advancedModeEnabled]="true"
+[showDetailButton]="true">
 </app-generic-search-layout>
+--
 
 image:media/image8.png[image,width=559,height=26]
 
-Note that you can also set the *detailsModeEnabled* setting to *false.*
+Note that you can also set the *detailsModeEnabled* setting to *false*.
 This will completely disable the functionality to navigate to the detail
-screen for existing entites (however, you can still create new entities
+screen for existing entities (however, you can still create new entities
 using the *Add* button).
 
 Some changes you can make to modify the behaviour of edit forms include:
 
-* Use the *defaultValue* setting on any simple attribute to define a
+* Using the *defaultValue* setting on any simple attribute to define a
 default value. This can be a string, integer, BigDecimal etc. Try this
 out on e.g. the “*yearlyMortalityRate*” attribute. Use a period (“.”) as
 the decimal separator if needed. Once you click the *Add* button to
 create a new entity, any fields for which a default value has been
 defined will be automatically filled with this default value.
-* Use the *TextFieldMode* to switch between displaying a text field, a
+* Using the *TextFieldMode* to switch between displaying a text field, a
 text area, or a password field. Try this on the *address* property.
 _Note: this only works inside edit forms. The TextFieldMode will be
 ignored when creating a search form, since the text area in the search
-form would take up too much space and it’s highly unlikely you’d want to
+form would take up too much space, and it’s highly unlikely you’d want to
 search for an enormously long string match anyway._
-* Use the *booleanFieldMode* to switch between using a check box, a
+* Use the *booleanFieldMode* to switch between using a checkbox, a
 toggle button, or a switch component for editing a Boolean property.
 _Note that this only has an effect inside an edit form. In a search
 form, the framework will always use a tri-state checkbox as described
@@ -1068,27 +1074,24 @@ numeric input field for a numeric property (this only works for integer
 or long properties). When you set this to “NUMBERFIELD”, e.g. for the
 “memberCount” property, you will see the following:
 
-____
 image:media/image9.png[image,width=560,height=53]
 
-This is a numeric input field which will only accept numeric input and
+* This is a numeric input field which will only accept numeric input and
 also contains plus and minus buttons for changing the value. You can use
 the *numberFieldStep* setting to modify the step size.
-____
-
 * You can use the *groupTogetherWith* setting to specify that multiple
 components must be placed on the same row in the edit form. To do so,
 use a *groupTogetherWith* value on the attribute you want to appear
 *first* in the row:
 
+[source,java]
+--
 @NotNull
-
 @Size(max = 255)
-
-@Attribute(searchable = SearchMode.*_ALWAYS_*, displayName =
+@Attribute(searchable = SearchMode.ALWAYS, displayName =
 "Headquarters", groupTogetherWith = "address")
-
-*private* String headQuarters;
+private String headQuarters;
+--
 
 * The above will make sure that the “address” field shows up on the same
 line as the “headQuarters” field. When using this setting, take care
