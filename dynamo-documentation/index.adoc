@@ -277,7 +277,7 @@ you can use both access types interchangeably.
 
 The annotation override mechanism is quite powerful, but it has some
 drawbacks. E.g. it hard-codes certain String values (display name,
-description) into your application and it does not directly allow for
+description) into your application, and it does not directly allow for
 internationalization. It also only allows you to override the behaviour
 of the “default” Entity Model that is based directly on the class, and
 not the behaviour of any derived Entity Models.

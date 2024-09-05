@@ -119,11 +119,11 @@ If your Postgresql settings are different from the default, open the
 following properties so that they match your values:
 
 [source,properties]
----
+--
 spring.datasource.url=jdbc:postgresql://[.underline]#localhost#:[insert_your_port_here]/[.underline]#gts#
 spring.datasource.password=[.underline]#[insert your password here]#
 spring.datasource.username=[.underline]#[insert your username here]#
----
+--
 
 If your application does not build, and you get compilation errors like
 “QOrganiziation cannot be found”, you might need to add the folder that
@@ -177,11 +177,11 @@ In the example application used for this training, we use almost no
 custom logic, so the DAO interfaces are typically simple:
 
 [source,java]
----
+--
 public interface* GiftDao extends BaseDao<Integer,Gift> {
 
 }
----
+--
 
 In the easiest scenario, all you have to do is extend the *BaseDao*
 interface provided by the framework. This *BaseDao* contains several
@@ -192,7 +192,7 @@ also quite simple:
 
 
 [source,java]
----
+--
 @Repository
 public class GiftDaoImpl extends BaseDaoImpl<Integer, Gift> implements GiftDao {
 
@@ -207,7 +207,7 @@ public class GiftDaoImpl extends BaseDaoImpl<Integer, Gift> implements GiftDao {
 	}
 
 }
----
+--
 
 As you can see, the DAO implementation extends the *BaseDaoImpl* class
 (which, unsurprisingly, implements *BaseDao*) and must implement the DAO
@@ -235,11 +235,11 @@ don’t have to create a service).
 If you look inside the *GiftService* class, you will see the following:
 
 [source,java]
----
+--
 public interface GiftService extends BaseService<Integer, Gift> {
 
 }
----
+--
 
 As you can see, all a service interface must do is extend the
 *BaseService* class – this gives the service access to the common
@@ -248,7 +248,7 @@ methods for retrieving, storing, and deleting entities.
 The *GiftServiceImpl* service implementation class is also quite simple:
 
 [source,java]
----
+--
 @Service
 public class GiftServiceImpl extends BaseServiceImpl<Integer, Gift> implements GiftService {
 
@@ -259,7 +259,7 @@ public class GiftServiceImpl extends BaseServiceImpl<Integer, Gift> implements G
     protected BaseDao<Integer, Gift> getDao() {
         return dao;
     }
----
+--
 
 All it needs to do is extend the *BaseServiceImpl* class (that, of
 course, contains the implementation of the common methods) and implement
@@ -314,10 +314,10 @@ folder. This folder contains both an HMTL file and a Typescript file.
 The HTML file is very small and looks as follows:
 
 [source,angular17html]
----
+--
 <app-generic-search-layout entityName="Organization"
   detailNavigationPath="organization"></app-generic-search-layout>
----
+--
 
 * As you can see, we define an **<app-generic-search-layout>** component
 which is the generic component from the Dynamo framework that consists
@@ -353,12 +353,12 @@ Open the *Organization* class and place the *@Attribute* annotation on
 the *name* property. Then set the *searchable* setting to ALWAYS:
 
 [source,java]
----
+--
 @NotNull
 @Size(max = 100)
 @Attribute(searchable = SearchMode.ALWAYS)
 private String name;
----
+--
 
 Restart the back-end application refresh the browser screen. You will
 now see a search form that contains a “Name” search field. Experiment
@@ -391,14 +391,14 @@ rendered.
 This is what it looks like in the code:
 
 [source,java]
----
+--
 @NotNull
 @Size(max = 255)
 @Attribute(searchable = SearcinMode.ALWAYS,
 searchCaseSensitive = BooleanType.TRUE, searchPrefixOnly =
 BooleanType.TRUE)
 private String name;
----
+--
 
 Now, set the “searchable” setting to ALWAYS on some of the other
 attributes.
@@ -450,7 +450,7 @@ You will now see an additional button show up in the button bar.
 Clicking it will toggle between showing and hiding the search fields
 that are set to searchable = ADVANCED.
 
-image:/media/image3.png[image,width=458,height=70]
+image:media/image3.png[image,width=458,height=70]
 
 === More searching 
 
@@ -463,7 +463,7 @@ person is a member).
 You will now see a search component for the *members* attribute that
 looks as follows:
 
-image:/media/image4.png[image,width=424,height=328]
+image:media/image4.png[image,width=424,height=328]
 
 By default, the application will render a multiple-select field from
 which you can select the members to search on. However, as you can see,
@@ -473,12 +473,12 @@ To fix this, open the *Person* class and, at the top of the class, add
 the *@Model* annotation like this:
 
 [source,java]
----
+--
 @Entity
 @Table(name = "person")
 @Model(displayProperty = "nickName")
 public class Person extends AbstractEntity<Integer> {
----
+--
 
 *@Model* is like *@Attribute* except that it has to placed on the entity,
 not on one of its attributes. *@Model* supports several settings:
@@ -527,7 +527,7 @@ Go ahead and set the *searchSelectMode* setting of the *members* field
 to AttributeSelectMode.*LOOKUP*. Restart the application and verify that
 you now see the following:
 
-image:/media/image5.png[image,width=429,height=68]
+image:media/image5.png[image,width=429,height=68]
 
 You will now see a “lookup field” which consists of a label that
 displays the currently selected value(s), a button for clearing the
