@@ -572,7 +572,7 @@ forms, in edit forms, or in both cases. The default is *BOTH*.
 @Attribute(visibleInGrid = VisibilityType.SHOW, searchable = SearchMode.ALWAYS, visibleInForm = VisibilityType.SHOW, cascade = @Cascade(cascadeTo = "members", filterPath = "countryOfOrigin", mode = CascadeMode.EDIT))
 private Country countryOfOrigin;
 
-@Attribute(searchable = true, visibleInForm = VisibilityType.SHOW)
+@Attribute(searchable = SearchMode.ALWAYS, visibleInForm = VisibilityType.SHOW)
 private Set<Person> members = new HashSet<>();
 --
 
