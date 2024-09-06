@@ -22,7 +22,7 @@ import { FormInfo } from '../model/form-info';
 import { SearchFormStateService } from '../service/search-form-state.service';
 import { AuthenticationService } from '../service/authentication-service';
 import { OverrideFieldDirective } from '../directives/override-field-directive';
-import { atLeastOneRequiredValidator } from '../validators/validators';
+import { DynamoValidators } from '../validators/validators';
 
 /**
  * Basic component for search forms
@@ -226,8 +226,8 @@ export abstract class BaseSearchComponent extends BaseCompositeComponent {
     controlFrom: AbstractControl
   ) {
     if (am.requiredForSearching === true) {
-      let valsFrom: ValidatorFn[] = [atLeastOneRequiredValidator(controlTo)];
-      let valsTo: ValidatorFn[] = [atLeastOneRequiredValidator(controlFrom)];
+      let valsFrom: ValidatorFn[] = [new DynamoValidators(this.translate).atLeastOneRequiredValidator(controlTo)];
+      let valsTo: ValidatorFn[] = [new DynamoValidators(this.translate).atLeastOneRequiredValidator(controlFrom)];
       controlFrom.addValidators(valsFrom);
       controlTo.addValidators(valsTo);
 

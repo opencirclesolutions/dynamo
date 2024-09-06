@@ -1,13 +1,13 @@
 <div class="main">
   <div [class]="rowClass">
     <div
-      class="col-lg-10 col-md-10 col-sm-12 pt-2"
+      class="col-lg-9 col-md-9 col-sm-6 pt-2"
       *ngIf="getSelectedValueString()"
     >
       {{ getSelectedValueString() }}
     </div>
     <div
-      class="col-lg-10 col-md-10 col-sm-12 pt-2"
+      class="col-lg-9 col-md-9 col-sm-6 pt-2"
       *ngIf="!getSelectedValueString()"
     >
       <i>{{ "nothing_selected" | translate }}</i>

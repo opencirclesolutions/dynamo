@@ -10,8 +10,11 @@
         *ngFor="let am of searchAttributeModels"
         class="form-group col-lg-4 col-md-6 col-sm-12"
       >
-        <ng-container [formGroup]="mainForm"
-          [ngTemplateOutlet]="getTemplateForField(am.name) || defaultFieldTemplate"
+        <ng-container
+          [formGroup]="mainForm"
+          [ngTemplateOutlet]="
+            getTemplateForField(am.name) || defaultFieldTemplate
+          "
           [ngTemplateOutletContext]="{ $implicit: am, mainForm: mainForm }"
         >
         </ng-container>
@@ -186,7 +189,20 @@
         </div>
       </div>
     </div>
+    <!-- Element collection -->
+    <div *ngIf="isElementCollection(am)">
+      <div class="row">
+        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+        <div class="col-12">
+          <app-element-collection-field
+            [am]="am"
+            [locale]="locale"
+            [formGroup]="mainForm"
+            [searchMode]="true"
+          >
+          </app-element-collection-field>
+        </div>
+      </div>
+    </div>
   </ng-template>
 </form>
-
-

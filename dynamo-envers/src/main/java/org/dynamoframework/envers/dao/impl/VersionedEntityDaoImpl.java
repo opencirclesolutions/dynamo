@@ -25,6 +25,7 @@ import org.dynamoframework.envers.domain.DynamoRevisionEntity;
 import org.dynamoframework.envers.domain.RevisionKey;
 import org.dynamoframework.envers.domain.RevisionType;
 import org.dynamoframework.envers.domain.VersionedEntity;
+import org.dynamoframework.filter.*;
 import org.dynamoframework.utils.DateUtils;
 import com.querydsl.core.types.dsl.EntityPathBase;
 import org.hibernate.envers.AuditReader;

@@ -43,13 +43,16 @@ export class DataTableComponent implements OnInit {
   @Input() initialSortOrder: 1 | 0 | -1 = 0;
   @Input() enablePaginator: boolean = true;
   @Input() deleteEnabled: boolean = true;
+  // whether navigating to details screen is enabled
   @Input() detailsModeEnabled: boolean = true;
+  // whether to display a detail button
   @Input() showDetailButton: boolean = false;
+  // IDs of currently selected rows
   @Input() selectedIds: any[] = [];
   // template for inserting custom buttons
   @Input() customButtonTemplate?: TemplateRef<any>;
+  // context menu items for download
   @Input() contextMenuItems: MenuItem[] = [];
-
   // event handler for dealing with a row click
   @Output() rowClick: EventEmitter<Number> = new EventEmitter<Number>();
   // event handler for responding to a delete button click

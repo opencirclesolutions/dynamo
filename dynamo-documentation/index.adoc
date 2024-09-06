@@ -4375,9 +4375,6 @@ attributeVisible(am: AttributeModelResponse, editObject: any, formGroup: FormGro
     }
     let typeValue = formGroup.get('assetCategoryType')?.value?.value;
 
-    //let typeValue = editObject['assetCategoryType']?.value?.value;
-    //console.log("type value: " + JSON.stringify(editObject))
-
     // no type selected
     if (!typeValue) {
       return false;

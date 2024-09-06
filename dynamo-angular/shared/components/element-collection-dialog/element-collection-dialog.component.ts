@@ -34,6 +34,7 @@ export class ElementCollectionDialogComponent
   implements ControlValueAccessor, OnInit
 {
 
+  @Input() searchMode: boolean = false;
   @Input() rowClass: string = 'row';
   @Input() disabled: boolean = false;
 
@@ -53,7 +54,7 @@ export class ElementCollectionDialogComponent
 
   ngOnInit(): void {
     this.dialogForm = this.formBuilder.group([]);
-    let validators = createValidators(this.am, true);
+    let validators = createValidators(this.translate, this.am, true, this.searchMode);
     validators.push(Validators.required);
 
     let control = this.formBuilder.control(

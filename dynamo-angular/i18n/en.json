@@ -41,6 +41,7 @@
   "minimum_value": "Minimum value is {{minValue}}",
   "invalid_email": "Invalid email",
   "invalid_url": "Invalid URL",
+  "invalid_value": "Invalid value",
   "custom_born_before_died": "Born must not be after died",
   "placeholder_from": "{{placeholder}} from",
   "placeholder_to": "{{placeholder}} to",
@@ -69,5 +70,6 @@
   "ai_input": "Input",
   "ai_instructions": "Additional instructions",
   "ai_fill": "Auto Fill",
-  "screen_not_accessible": "This screen is not accessible"
+  "screen_not_accessible": "This screen is not accessible",
+  "at_least_one_value_required": "At least one value is required"
 }

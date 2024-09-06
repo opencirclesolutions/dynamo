@@ -13,6 +13,7 @@
  */
 package org.dynamoframework.envers.listener;
 
+import org.dynamoframework.ApplicationContextProvider;
 import org.hibernate.envers.RevisionListener;
 
 import org.dynamoframework.envers.domain.DynamoRevisionEntity;

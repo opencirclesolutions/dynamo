@@ -205,7 +205,7 @@ export class DetailsGridComponent
         }
       }
 
-      let validators = createValidators(am, false);
+      let validators = createValidators(this.translate, am, false, false);
       let control = this.formBuilder!.control(
         {
           disabled: false,

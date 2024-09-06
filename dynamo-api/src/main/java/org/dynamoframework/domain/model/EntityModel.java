@@ -185,11 +185,6 @@ public interface EntityModel<T> {
 	String EDITABLE = "editable";
 
 	/**
-	 * Whether the property is embedded
-	 */
-	String EMBEDDED = "embedded";
-
-	/**
 	 * The type of the component to use for element collections
 	 */
 	String ELEMENT_COLLECTION_MODE = "elementCollectionMode";

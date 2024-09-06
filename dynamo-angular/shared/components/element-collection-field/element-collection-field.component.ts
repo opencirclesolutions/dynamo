@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, Input } from '@angular/core';
 import { BaseComponent } from '../base-component';
 import { AttributeModelResponse } from 'dynamo/model';
 import { NotificationService } from '../../service/notification-service';
@@ -14,6 +14,8 @@ import { TranslateService } from '@ngx-translate/core';
   styleUrls: ['./element-collection-field.component.scss'],
 })
 export class ElementCollectionFieldComponent extends BaseComponent {
+
+  @Input() searchMode: boolean = false;
 
   constructor(
     private messageService: NotificationService,
@@ -72,6 +74,11 @@ export class ElementCollectionFieldComponent extends BaseComponent {
       values.pop();
     }
 
+    // minimum/maximum checking not applicable to search mode
+    if (this.searchMode) {
+      return;
+    }
+
     if (val && am.maxLength && val.length > am.maxLength) {
       values.pop();
       this.messageService.error(
@@ -109,6 +116,11 @@ export class ElementCollectionFieldComponent extends BaseComponent {
     let index: number = values.findIndex((a) => a == number);
     if (index >= 0 && index !== values.length - 1) {
       values.pop();
+    }
+
+    // minimum/maximum checking not applicable to search mode
+    if (this.searchMode) {
+      return;
     }
 
     if (am.maxValue && number > am.maxValue) {

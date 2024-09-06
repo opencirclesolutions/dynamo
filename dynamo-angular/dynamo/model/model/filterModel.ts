@@ -16,7 +16,7 @@ export interface FilterModel {
     name?: string;
 }
 export namespace FilterModel {
-    export type MatchEnum = 'EQUALS' | 'DATE_RANGE' | 'NUMBER_RANGE' | 'INSTANT_RANGE' | 'LOCAL_DATE_TIME_RANGE' | 'NUMBER_IN' | 'TIME_RANGE' | 'OR' | 'NOT';
+    export type MatchEnum = 'EQUALS' | 'DATE_RANGE' | 'NUMBER_RANGE' | 'INSTANT_RANGE' | 'LOCAL_DATE_TIME_RANGE' | 'NUMBER_IN' | 'TIME_RANGE' | 'OR' | 'NOT' | 'ELEMENT_COLLECTION';
     export const MatchEnum = {
         EQUALS: 'EQUALS' as MatchEnum,
         DATE_RANGE: 'DATE_RANGE' as MatchEnum,
@@ -26,7 +26,8 @@ export namespace FilterModel {
         NUMBER_IN: 'NUMBER_IN' as MatchEnum,
         TIME_RANGE: 'TIME_RANGE' as MatchEnum,
         OR: 'OR' as MatchEnum,
-        NOT: 'NOT' as MatchEnum
+        NOT: 'NOT' as MatchEnum,
+        ELEMENT_COLLECTION: 'ELEMENT_COLLECTION' as MatchEnum
     };
 }
 

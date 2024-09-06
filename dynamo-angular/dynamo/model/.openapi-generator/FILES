@@ -20,6 +20,7 @@ model/autoFillOptions.ts
 model/autoFillRequest.ts
 model/cascadeModel.ts
 model/dateRangeFilterModel.ts
+model/elementCollectionFilterModel.ts
 model/entityModelActionResponse.ts
 model/entityModelResponse.ts
 model/equalsFilterModel.ts

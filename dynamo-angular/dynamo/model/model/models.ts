@@ -5,6 +5,7 @@ export * from './autoFillOptions';
 export * from './autoFillRequest';
 export * from './cascadeModel';
 export * from './dateRangeFilterModel';
+export * from './elementCollectionFilterModel';
 export * from './entityModelActionResponse';
 export * from './entityModelResponse';
 export * from './equalsFilterModel';

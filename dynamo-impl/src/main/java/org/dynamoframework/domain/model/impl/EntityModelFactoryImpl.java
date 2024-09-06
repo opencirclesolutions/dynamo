@@ -1190,10 +1190,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
                 }
             }
 
-            if (attribute.embedded()) {
-                model.setAttributeType(AttributeType.EMBEDDED);
-            }
-
             if (attribute.dateType() != null && !AttributeDateType.INHERIT.equals(attribute.dateType())) {
                 model.setDateType(attribute.dateType());
             }
@@ -1421,11 +1417,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
         setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,
                 attributeModel::setPrecision);
-
-        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.EMBEDDED);
-        if (msg != null && !StringUtils.isEmpty(msg) && Boolean.parseBoolean(msg)) {
-            attributeModel.setAttributeType(AttributeType.EMBEDDED);
-        }
 
         // multiple search setting - setting this to true also sets the search select
         // mode to TOKEN

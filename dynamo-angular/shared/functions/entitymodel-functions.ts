@@ -3,6 +3,7 @@ import { TranslateService } from '@ngx-translate/core';
 import {
   AttributeModelResponse,
   DateRangeFilterModel,
+  ElementCollectionFilterModel,
   EqualsFilterModel,
   FilterModel,
   InstantRangeFilterModel,
@@ -16,7 +17,7 @@ import {
   TimeRangeFilterModel,
 } from 'dynamo/model';
 import { dateToString, dateToTimestamp, stringToTime } from './functions';
-import { urlValidator } from '../validators/validators';
+import { DynamoValidators } from '../validators/validators';
 
 // maximum number of items to display in description of collection
 const MAX_ITEMS = 3;
@@ -248,8 +249,10 @@ export function setNestedValue(
  * @returns the array of validators that was created
  */
 export function createValidators(
+  translate: TranslateService,
   am: AttributeModelResponse,
-  elementCollectionPopup: boolean
+  elementCollectionPopup: boolean,
+  searchMode: boolean
 ): ValidatorFn[] {
   let validators: ValidatorFn[] = [];
   if (am.required) {
@@ -268,7 +271,7 @@ export function createValidators(
     }
 
     if (am.url === true) {
-      validators.push(urlValidator());
+      validators.push(new DynamoValidators(translate).urlValidator());
     }
   }
 
@@ -287,7 +290,11 @@ export function createValidators(
     am.elementCollectionMode ===
       AttributeModelResponse.ElementCollectionModeEnum.DIALOG;
 
-  if (elementCollectionDialog && elementCollectionPopup) {
+  if (isElementCollection(am) && !elementCollectionPopup) {
+    validators.push(new DynamoValidators(translate).isArrayValidator());
+  }
+
+  if (!searchMode && elementCollectionDialog && elementCollectionPopup) {
     if (am.maxLength) {
       validators.push(Validators.maxLength(am.maxLength));
     }
@@ -296,7 +303,11 @@ export function createValidators(
     }
   }
 
-  if (isIntegral(am) || isDecimal(am) || elementCollectionDialog) {
+  if (
+    isIntegral(am) ||
+    isDecimal(am) ||
+    (elementCollectionDialog && !searchMode)
+  ) {
     if (am.minValue) {
       validators.push(Validators.min(am.minValue));
     }
@@ -351,7 +362,7 @@ export function createEmptySearchModel() {
     sort: {
       sortField: 'id',
       sortDirection: 'ASC',
-    }
+    },
   };
   return model;
 }
@@ -379,12 +390,10 @@ export function createEqualsFilter(
  * @param filters the filters
  * @returns the filter
  */
-export function createOrFilter(
-  filters: FilterModel[]
-): OrFilterModel {
+export function createOrFilter(filters: FilterModel[]): OrFilterModel {
   let filter: OrFilterModel = {
     match: 'OR',
-    orFilters: filters
+    orFilters: filters,
   };
   return filter;
 }
@@ -394,12 +403,10 @@ export function createOrFilter(
  * @param not the filter to negate
  * @returns the filter
  */
-export function createNotFilter(
-  filter: FilterModel
-): NotFilterModel {
+export function createNotFilter(filter: FilterModel): NotFilterModel {
   let notFilter: NotFilterModel = {
     match: 'NOT',
-    filter: filter
+    filter: filter,
   };
   return notFilter;
 }
@@ -420,7 +427,7 @@ export function createNumberRangeFilter(
     match: 'NUMBER_RANGE',
     name: attributeName,
     from: from,
-    to: to
+    to: to,
   };
   return filter;
 }
@@ -444,7 +451,7 @@ export function createDateRangeFilter(
     match: 'DATE_RANGE',
     name: attributeName,
     from: dateStrFrom,
-    to: dateStrTo
+    to: dateStrTo,
   };
   return filter;
 }
@@ -470,7 +477,7 @@ export function createTimestampFilter(
       match: 'INSTANT_RANGE',
       name: attributeName,
       from: dateStrFrom,
-      to: dateStrTo
+      to: dateStrTo,
     };
     return filter;
   } else {
@@ -478,7 +485,7 @@ export function createTimestampFilter(
       match: 'LOCAL_DATE_TIME_RANGE',
       name: attributeName,
       from: dateStrFrom,
-      to: dateStrTo
+      to: dateStrTo,
     };
     return filter;
   }
@@ -497,7 +504,7 @@ export function createNumberInFilter(
   let filter: NumberInFilterModel = {
     match: 'NUMBER_IN',
     name: attributeName,
-    values: ids
+    values: ids,
   };
   return filter;
 }
@@ -521,7 +528,35 @@ export function createTimeRangeFilter(
     match: 'TIME_RANGE',
     name: attributeName,
     from: dateStrFrom,
-    to: dateStrTo
+    to: dateStrTo,
+  };
+  return filter;
+}
+
+/**
+ * Creates a filter for filtering on an array of numbers
+ * @param attributeName the name of the attribute to filter on
+ * @param ids the IDs
+ * @returns the filter
+ */
+export function createElementCollectionFilter(
+  am: AttributeModelResponse,
+  vals: any[]
+): ElementCollectionFilterModel {
+  vals = vals.map((val) => {
+    if (
+      am.elementCollectionType ===
+      AttributeModelResponse.ElementCollectionTypeEnum.INTEGRAL
+    ) {
+      return parseInt(val);
+    }
+    return val;
+  });
+
+  let filter: ElementCollectionFilterModel = {
+    match: 'ELEMENT_COLLECTION',
+    name: am.name,
+    values: vals,
   };
   return filter;
 }
@@ -533,15 +568,25 @@ export function createTimeRangeFilter(
  * @param translate the translate service
  * @returns the resulting string
  */
-export function truncateDescriptions(items: any[], property: string, translate: TranslateService) {
+export function truncateDescriptions(
+  items: any[],
+  property: string,
+  translate: TranslateService
+) {
   if (items.length > MAX_ITEMS) {
     let surplus = items.length - MAX_ITEMS;
-    let firstItems = items.slice(0, MAX_ITEMS)
-    return firstItems.map((val) => val[property] || translate.instant('display_unknown')).join(', ')
-     + " " + translate.instant('and_others', {'surplus' : surplus})
-  }
-  else {
-    return items.map((val) => val[property] || translate.instant('display_unknown')).join(', ');
+    let firstItems = items.slice(0, MAX_ITEMS);
+    return (
+      firstItems
+        .map((val) => val[property] || translate.instant('display_unknown'))
+        .join(', ') +
+      ' ' +
+      translate.instant('and_others', { surplus: surplus })
+    );
+  } else {
+    return items
+      .map((val) => val[property] || translate.instant('display_unknown'))
+      .join(', ');
   }
 }
 

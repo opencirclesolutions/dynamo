@@ -9,9 +9,9 @@ package org.dynamoframework.rest.crud;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,6 +41,7 @@ import java.time.Instant;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
@@ -159,14 +160,14 @@ public class SearchService {
                     .stream().map(fm -> mapFilter(model, fm))
                     .toList();
             return new Or(mapped.toArray(new Filter[0]));
-        } else if (filterModel instanceof  NotFilterModel nfm) {
+        } else if (filterModel instanceof NotFilterModel nfm) {
             return new Not(mapFilter(model, nfm.getFilter()));
 //        } else if (filterModel instanceof AndFilterModel afm) {
 ////                List<? extends Filter> mapped = afm.getFilters() == null ? Collections.emptyList() : afm.getFilters()
 ////                        .stream().map(fm -> mapFilter(model, fm))
 ////                        .toList();
 ////                return new And(mapped.toArray(new Filter[0]));
-       } else if (filterModel instanceof EqualsFilterModel efm) {
+        } else if (filterModel instanceof EqualsFilterModel efm) {
             String prop = mapSearchProperty(am);
             Object value = convertValue(efm.getValue(), am);
 
@@ -208,6 +209,23 @@ public class SearchService {
             }
             String prop = mapSearchProperty(am);
             return new In(prop + ".id", nfm.getValues());
+        } else if (filterModel instanceof ElementCollectionFilterModel efm) {
+            if (am.getAttributeType() != AttributeType.ELEMENT_COLLECTION) {
+                throw new OCSValidationException("Invalid element collection filter specified for attribute %s"
+                        .formatted(efm.getName()));
+            }
+
+            Object[] values = efm.getValues();
+            if (values == null || values.length == 0) {
+                throw new OCSValidationException("No values specified for element collection filter %s"
+                        .formatted(efm.getName()));
+            }
+
+            List<Contains> list = Arrays.stream(values)
+                    .map(val -> new Contains(am.getName(), val))
+                    .toList();
+            return new Or(list.toArray(new Contains[0]));
+
         }
         return null;
     }

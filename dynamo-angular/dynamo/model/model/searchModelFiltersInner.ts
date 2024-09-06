@@ -11,6 +11,7 @@
  */
 import { DateRangeFilterModel } from './dateRangeFilterModel';
 import { TimeRangeFilterModel } from './timeRangeFilterModel';
+import { ElementCollectionFilterModel } from './elementCollectionFilterModel';
 import { LocalTime } from './localTime';
 import { NumberInFilterModel } from './numberInFilterModel';
 import { OrFilterModel } from './orFilterModel';
@@ -26,5 +27,5 @@ import { FilterModel } from './filterModel';
  * @type SearchModelFiltersInner
  * @export
  */
-export type SearchModelFiltersInner = DateRangeFilterModel | EqualsFilterModel | InstantRangeFilterModel | LocalDateTimeRangeFilterModel | NotFilterModel | NumberInFilterModel | NumberRangeFilterModel | OrFilterModel | TimeRangeFilterModel;
+export type SearchModelFiltersInner = DateRangeFilterModel | ElementCollectionFilterModel | EqualsFilterModel | InstantRangeFilterModel | LocalDateTimeRangeFilterModel | NotFilterModel | NumberInFilterModel | NumberRangeFilterModel | OrFilterModel | TimeRangeFilterModel;
 
