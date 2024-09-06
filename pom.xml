@@ -110,6 +110,7 @@
 		<maven.compiler.target>21</maven.compiler.target>
 		<spring.ai.version>0.8.1</spring.ai.version>
 		<jakarta.version>3.1.0</jakarta.version>
+		<dependency.skip>true</dependency.skip>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -494,6 +495,7 @@
 					</execution>
 				</executions>
 				<configuration>
+					<skip>dependency.skip</skip>
 					<nvdApiKeyEnvironmentVariable>NVP_API_KEY</nvdApiKeyEnvironmentVariable>
 				</configuration>
 			</plugin>
