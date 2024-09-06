@@ -112,8 +112,6 @@
 			value="inherit" />
 	</module>
 	<module name="Header">
-		<property name="header"
-			value="/*\n   Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);" />
 		<property name="ignoreLines" value="3" />
 		<property name="fileExtensions" value="java" />
 	</module>

@@ -102,10 +102,8 @@ public @interface Attribute {
     EditableType editable() default EditableType.EDITABLE;
 
     /**
-     * @return whether the attribute is embedded
+     * @return the enumeration field mode to use
      */
-    boolean embedded() default false;
-
     AttributeEnumFieldMode enumFieldMode() default AttributeEnumFieldMode.INHERIT;
 
     /**

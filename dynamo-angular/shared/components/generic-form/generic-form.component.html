@@ -13,8 +13,8 @@
 </ng-container>
 <ng-container *ngIf="!freeFormMode">
   <!-- View mode only -->
-  <div *ngIf="viewMode || !isWriteAllowed()" [class]="getFormWidthClass()">
-    <div>
+  <div *ngIf="viewMode || !isWriteAllowed()">
+    <div [class]="getFormWidthClass()">
       <app-generic-form-view
         [entity]="editObject"
         [locale]="locale"

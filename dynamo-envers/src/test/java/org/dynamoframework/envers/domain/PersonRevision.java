@@ -11,7 +11,7 @@ public class PersonRevision extends VersionedEntity<Integer, Person> {
 	}
 
 	@Override
-	@Attribute(embedded = true)
+	@Attribute
 	public Person getEntity() {
 		return super.getEntity();
 	}

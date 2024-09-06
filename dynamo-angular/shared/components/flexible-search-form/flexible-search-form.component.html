@@ -11,7 +11,7 @@
           type="button"
           class="btn btn-danger m-1"
           [disabled]="loading || row.required"
-          pTooltip=" {{ 'delete' | translate}}"
+          pTooltip=" {{ 'delete' | translate }}"
           (click)="deleteRow(i)"
         >
           <span class="pi pi-trash"></span>
@@ -34,7 +34,9 @@
       <!-- Type-specific fields -->
       <div class="col-6" *ngIf="row.am">
         <ng-container
-          [ngTemplateOutlet]="getTemplateForField(row.am!.name) || defaultFieldTemplate"
+          [ngTemplateOutlet]="
+            getTemplateForField(row.am!.name) || defaultFieldTemplate
+          "
           [ngTemplateOutletContext]="{
             $implicit: row.am!,
             formGroup: getFormGroup(i)
@@ -104,7 +106,7 @@
         [am]="am"
         [options]="lookupEntities(am.lookupEntityName!)"
         [locale]="locale"
-           [formGroup]="formGroup"
+        [formGroup]="formGroup"
         [searchMode]="true"
         [entityModelReference]="am.lookupEntityReference"
         [defaultFilters]="getFieldFilters(am)"
@@ -118,7 +120,7 @@
         [locale]="locale"
         [showValidationErrors]="false"
         [options]="getEnumValues(am.name)"
-           [formGroup]="formGroup"
+        [formGroup]="formGroup"
         [searchMode]="true"
       ></app-enum-field>
     </ng-container>
@@ -138,7 +140,7 @@
         [am]="am"
         [locale]="locale"
         [searchMode]="true"
-           [formGroup]="formGroup"
+        [formGroup]="formGroup"
       ></app-date-field>
     </ng-container>
     <!-- Time -->
@@ -147,7 +149,7 @@
         [am]="am"
         [locale]="locale"
         [searchMode]="true"
-           [formGroup]="formGroup"
+        [formGroup]="formGroup"
       ></app-time-field>
     </ng-container>
     <!-- Timestamps -->
@@ -156,7 +158,7 @@
         [am]="am"
         [locale]="locale"
         [searchMode]="true"
-           [formGroup]="formGroup"
+        [formGroup]="formGroup"
       ></app-timestamp-field>
     </ng-container>
     <!-- Integral numbers -->
@@ -165,7 +167,7 @@
         [am]="am"
         [locale]="locale"
         [searchMode]="true"
-           [formGroup]="formGroup"
+        [formGroup]="formGroup"
       ></app-number-field>
     </ng-container>
     <!-- Decimal numbers -->
@@ -174,8 +176,17 @@
         [am]="am"
         [locale]="locale"
         [searchMode]="true"
-           [formGroup]="formGroup"
+        [formGroup]="formGroup"
       ></app-decimal-field>
+    </ng-container>
+    <ng-container *ngIf="isElementCollection(am)">
+      <app-element-collection-field
+        [am]="am"
+        [locale]="locale"
+        [formGroup]="formGroup"
+        [searchMode]="true"
+      >
+      </app-element-collection-field>
     </ng-container>
   </ng-container>
 </ng-template>

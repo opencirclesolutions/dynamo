@@ -259,6 +259,7 @@ public class GiftServiceImpl extends BaseServiceImpl<Integer, Gift> implements G
     protected BaseDao<Integer, Gift> getDao() {
         return dao;
     }
+}
 --
 
 All it needs to do is extend the *BaseServiceImpl* class (that, of
@@ -429,10 +430,10 @@ want, and when you feel comfortable with how it all works, move on to
 the next section.
 
 Finally, you might be wondering why we are setting searchable to
-“ALWAYS” rather than just “true”. This is because it’s also possible to
-specify the value “ADVANCED”. In this case, the property will only show
+ALWAYS rather than just “true”. This is because it’s also possible to
+specify the value ADVANCED. In this case, the property will only show
 in the search form when the “advanced search mode” is enabled. To try
-this, change the searchable attribute for “headquarters” to “ADVANCED”.
+this, change the searchable attribute for “headquarters” to ADVANCED.
 Now, when you restart the application, the headquarters search field
 should no longer appear.
 
@@ -448,7 +449,7 @@ that the line referring to FormOptions looks as follows:
 
 You will now see an additional button show up in the button bar.
 Clicking it will toggle between showing and hiding the search fields
-that are set to searchable = ADVANCED.
+that are set to searchable=ADVANCED.
 
 image:media/image3.png[image,width=458,height=70]
 
@@ -524,7 +525,7 @@ here, but you can override it by explicitly setting a value for the
 *SearchSelectMode* attribute.
 
 Go ahead and set the *searchSelectMode* setting of the *members* field
-to AttributeSelectMode.*LOOKUP*. Restart the application and verify that
+to *LOOKUP*. Restart the application and verify that
 you now see the following:
 
 image:media/image5.png[image,width=429,height=68]
@@ -542,7 +543,7 @@ explicit *SearchSelectMode* is set.
 * There are several other supported *AttributeSelectModes*, e.g.
 *COMBO*, *AUTO_SELECT* and *LOOKUP*. These will be covered in more
 detail later. Not all select modes make sense for every attribute. E.g.
-for editing a one-to-one relation you cannot use the *TOKEN* setting
+for editing a one-to-one relation you cannot use the *MULTI_SELECT* setting
 since this would allow you to select multiple values. The Dynamo
 framework will produce an exception when you try to use an illegal
 select mode.
@@ -1110,9 +1111,11 @@ fields into clickable URLs (that point to external resources).
 To demonstrate, set the “url” setting to *true* for the “url” property
 of the *Organization* class.
 
-@Attribute(url = *true*)
-
-*private* String url;
+[source,java]
+--
+@Attribute(url = true)
+private String url;
+--
 
 Then, restart the application and verify that in the grid in the
 Organizations screen you will now see an empty “URL” field. Navigate to
@@ -2023,14 +2026,21 @@ follows:
 private Organization organization;
 --
 
+This will lead to the following situation in the Person screen
+(note that you may have to set the "openInViewMode" to true in order to
+make the link show up)
+
 image:media/image17.png[image,width=503,height=407]
 
 The *navigable* setting on the *@Attribute* annotation will make sure
 that whenever the property is shown in read-only mode, a hyperlink will
-be rendered instead of just a textual representation. When the user
+be rendered instead of just a textual representation. Note that this
+applies to both detail forms and result tables.
+
+When the user
 clicks on the hyperlink, the application will navigate to a (detail)
-screen by following the route “/[lower cased name of the entity]/[entity
-id]”, in this case *“/organization/1*”. This is the route at which we
+screen by following the route */[lower cased name of the entity]/[entity
+id]*, in this case *“/organization/1”*. This is the route at which we
 configured our “*OrganizationFormComponent*” so the application will
 then show a details screen for the selected organization.
 

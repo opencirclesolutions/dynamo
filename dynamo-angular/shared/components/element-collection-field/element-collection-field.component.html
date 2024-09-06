@@ -18,6 +18,7 @@
         [formControlName]="am.name"
         [locale]="locale"
         [pTooltip]="am.descriptions[locale]"
+        [searchMode]=searchMode
         [am]="am"
         *ngIf="useDialog()"
       ></app-element-collection-dialog>

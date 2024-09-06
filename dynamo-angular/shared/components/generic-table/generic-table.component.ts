@@ -16,7 +16,6 @@ import {
   EntityModelResponse,
   ExportService,
   FilterModel,
-  PagingModel,
   SearchModel,
 } from 'dynamo/model';
 import { TableColumn } from '../data-table/data-table.component';

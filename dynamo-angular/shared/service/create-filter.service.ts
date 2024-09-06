@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AttributeModelResponse, FilterModel, TimeRangeFilterModel } from 'dynamo/model';
-import { createDateRangeFilter, createEqualsFilter, createNumberInFilter, createNumberRangeFilter, createTimeRangeFilter, createTimestampFilter, isBoolean, isDecimal, isEnum, isFreeDetail, isInstant, isIntegral, isLocalDateTime, isMaster, isString, isTime } from '../functions/entitymodel-functions';
+import { createDateRangeFilter, createElementCollectionFilter, createEqualsFilter, createNumberInFilter, createNumberRangeFilter, createTimeRangeFilter, createTimestampFilter, isBoolean, isDecimal, isElementCollection, isEnum, isFreeDetail, isInstant, isIntegral, isLocalDateTime, isMaster, isString, isTime } from '../functions/entitymodel-functions';
 import { isDate } from 'date-fns';
 import { dateToString } from '../functions/functions';
 import { SelectOption } from '../model/select-option';
@@ -99,6 +99,9 @@ export class CreateFilterService {
           this.createTimestampFilter(searchObject, am, filters);
         } else if (isTime(am)) {
           this.createTimeFilter(searchObject, am, filters);
+        } else if (isElementCollection(am)) {
+          let values =  searchObject[am.name];
+          filters.push(createElementCollectionFilter(am, values));
         }
       }
 

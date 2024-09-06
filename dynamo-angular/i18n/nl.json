@@ -43,6 +43,7 @@
   "placeholder_from": "{{placeholder}} vanaf",
   "placeholder_to": "{{placeholder}} tot",
   "invalid_url": "Ongeldige link",
+  "invalid_value": "Ongeldige waarde",
   "not_a_number": "Geen geldig getal",
   "choose_columns": "Selecteer kolommen",
   "selected_columns": "kolommen geselecteerd",
@@ -69,5 +70,6 @@
   "ai_type": "AI Type",
   "ai_input": "Inover",
   "ai_instructions": "Extra instructions",
-  "ai_fill": "Automatisch vullen"
+  "ai_fill": "Automatisch vullen",
+  "at_least_one_value_required": "Vul ten minste een waarde in"
 }

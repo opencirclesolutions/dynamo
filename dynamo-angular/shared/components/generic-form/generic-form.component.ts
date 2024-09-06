@@ -424,7 +424,7 @@ export class GenericFormComponent
     this.mainForm = this.formBuilder.group([]);
 
     this.visibleAttributeModels.forEach((am) => {
-      let validators = createValidators(am, false);
+      let validators = createValidators(this.translate, am, false, false);
       if (!this.isNestedDetail(am)) {
         let control = this.formBuilder.control(
           {
@@ -574,6 +574,11 @@ export class GenericFormComponent
         } else if (this.isTime(am)) {
           // format as time, take first 4 chars only
           editObject[am.name] = stringToTime(control.value);
+        } else if (this.isElementCollection(am)) {
+          let val = control.value;
+          if (Array.isArray(val)) {
+            editObject[am.name] = control.value;
+          }
         } else {
           editObject[am.name] = control.value;
         }

@@ -211,27 +211,29 @@ export class FlexibleSearchFormComponent
     // respond to changes by rendering one or more search fields
     attributeControl.valueChanges.subscribe((changes: any) => {
       row.attributeName = changes?.value;
-      row.am = this.findAttributeModel(row.attributeName!)
-      if (this.needsTwoSearchFields(row.am!)) {
-        this.buildRangeControls(rowGroup, row.am!, true);
-      } else {
-        let defaultValue = this.convertDefaultValue(
-          row.am!.defaultSearchValue,
-          row.am!
-        );
-        let valueControl = this.formBuilder.control(
-          {
-            disabled: false,
-            value: defaultValue,
-          },
-          {
-            validators:
-              row.am?.requiredForSearching === true
-                ? [Validators.required]
-                : []
-          }
-        );
-        rowGroup.addControl(row.attributeName!, valueControl);
+      row.am = this.findAttributeModel(row.attributeName!);
+      if (row.am) {
+        if (this.needsTwoSearchFields(row.am!)) {
+          this.buildRangeControls(rowGroup, row.am!, true);
+        } else {
+          let defaultValue = this.convertDefaultValue(
+            row.am!.defaultSearchValue,
+            row.am!
+          );
+          let valueControl = this.formBuilder.control(
+            {
+              disabled: false,
+              value: defaultValue,
+            },
+            {
+              validators:
+                row.am?.requiredForSearching === true
+                  ? [Validators.required]
+                  : [],
+            }
+          );
+          rowGroup.addControl(row.attributeName!, valueControl);
+        }
       }
     });
 
