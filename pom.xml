@@ -482,6 +482,21 @@
 					<projectName>Dynamo Framework</projectName>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>org.owasp</groupId>
+				<artifactId>dependency-check-maven</artifactId>
+				<version>10.0.4</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>aggregate</goal>
+						</goals>
+					</execution>
+				</executions>
+				<configuration>
+					<nvdApiKeyEnvironmentVariable>NVP_API_KEY</nvdApiKeyEnvironmentVariable>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 	<profiles>
