@@ -178,7 +178,7 @@ custom logic, so the DAO interfaces are typically simple:
 
 [source,java]
 --
-public interface* GiftDao extends BaseDao<Integer,Gift> {
+public interface GiftDao extends BaseDao<Integer,Gift> {
 
 }
 --
@@ -189,7 +189,6 @@ dozen utility methods for saving, removing and retrieving entities.
 
 When you look inside a DAO implementation class, you will see that it is
 also quite simple:
-
 
 [source,java]
 --
@@ -212,7 +211,7 @@ public class GiftDaoImpl extends BaseDaoImpl<Integer, Gift> implements GiftDao {
 As you can see, the DAO implementation extends the *BaseDaoImpl* class
 (which, unsurprisingly, implements *BaseDao*) and must implement the DAO
 interface. In its most basic form, you only have to implement the
-(trivial) *getEntityClass* method and the *getDslRoot* class – the
+(trivial) *getEntityClass* and *getDslRoot* methods – the
 latter returns the root path used when creating QueryDSL queries.
 QueryDSL is a library that we use for type-safe custom queries. It is a
 very useful technology which we encourage you to learn about online, but
@@ -227,7 +226,7 @@ bother with it all that much.
 
 Inside the *com.opencircle.gts.service* package you will find the
 service layer for the GTS application. Like the DAO layer, this is a
-simple layer as since at the moment it contains no business logic. As
+simple layer as since at the moment it contains almost no business logic. As
 with the DAOs, there is one service interface and one corresponding
 implementation per entity class (and again, for dependent entities you
 don’t have to create a service).
@@ -293,7 +292,7 @@ build properly. Then, open the *GtsApplication* class and run it. After
 a couple of seconds
 
 In order to run the front-end, open a command prompt and navigate to the
-root folder of the front-end project. Execute the command *ng server* to
+root folder of the front-end project. Execute the command *ng serve* to
 start the application, then open a web browser and navigate to
 *http://localhost:4200.*
 
@@ -332,8 +331,7 @@ to the detail screen (this will be covered a bit later).
 The Typescript file possibly even simpler, at least for now (although we
 will be adding to that later).
 
-And that is basically all there is to it. While there is a lot you can
-(and will) tweak, this is basically all that is needed to create a simple
+While there is a lot you can (and will) tweak, this is basically all that is needed to create a simple
 search screen. In the next section, we will tweak this screen and make
 sure it performs as desired.
 
@@ -343,7 +341,7 @@ sure it performs as desired.
 
 The first thing you may notice about the screen is that, although it is
 a search screen, there currently aren’t any search fields. This is
-because none of the attributes are currently marked as *searchable.*
+because none of the attributes are currently marked as *searchable*.
 
 To change this, we need to modify the entity model generation process,
 by means of the *@Attribute* annotation. This is an annotation that can
@@ -356,13 +354,13 @@ the *name* property. Then set the *searchable* setting to ALWAYS:
 [source,java]
 --
 @NotNull
-@Size(max = 100)
+@Size(max = 255)
 @Attribute(searchable = SearchMode.ALWAYS)
 private String name;
 --
 
 Restart the back-end application refresh the browser screen. You will
-now see a search form that contains a “Name” search field. Experiment
+now see a search form that contains a "Name" field to search on. Experiment
 with the searching to find out that by default, the searching is not
 case-sensitive and will look for matches anywhere in the attribute
 value.
@@ -395,7 +393,7 @@ This is what it looks like in the code:
 --
 @NotNull
 @Size(max = 255)
-@Attribute(searchable = SearcinMode.ALWAYS,
+@Attribute(searchable = SearchMode.ALWAYS,
 searchCaseSensitive = BooleanType.TRUE, searchPrefixOnly =
 BooleanType.TRUE)
 private String name;
@@ -482,7 +480,7 @@ public class Person extends AbstractEntity<Integer> {
 --
 
 *@Model* is like *@Attribute* except that it has to placed on the entity,
-not on one of its attributes. *@Model* supports several settings:
+rather than one of its attributes. *@Model* supports several settings:
 
 * *displayProperty* (which you saw above) determines which property to
 use when displaying the entity inside a lookup component like a combo
@@ -492,8 +490,7 @@ of the Person as the display property.
 It defaults to the class name, with camel case replaced by spaces. E.g.
 the display name of “Organization” is “Organization”.
 * *displayNamePlural* is the plural name of the class. It defaults to
-the *displayName* with an “s” added at the end, so you may have to
-override this for some classes.
+the *displayName* with an “s” added at the end.
 * *description* is a textual description of the entity. It will appear
 as a tooltip in e.g. a search results grid.
 * *sortOrder* takes a comma-separated list of fields and directions to
@@ -504,16 +501,16 @@ a SQL sort order, e.g. “name” or “name asc” will sort by name in
 ascending order, “name desc” will sort by name in descending order,
 “name asc, age desc” will sort first by name and then by age.
 * In addition, there are several settings like *listAllowed,
-searchAllowed, createAllowed* etc. that govern which actions are allowed
+searchAllowed, createAllowed* that govern which actions are allowed
 on this entity. These will be covered in more detail later on.
 
-Note that you place the annotation on the *Person* entity, not on the
+Note that you set the *displayProperty* on the *Person* entity, not on the
 *Organization* – this annotation will affect all references to the
 Person entity, so it will show up like this in any search or edit form.
 
 As you can see, by default the application will use a multi-select field
-for searching inside a detail relation. You can modify this behaviour by
-changing the value of the *selectMode* and *searchSelectMode* settings
+for searching inside a many-to-many or one-to-many relationship.
+You can modify this behaviour by changing the value of the *selectMode* and *searchSelectMode* settings
 on *@Attribute*:
 
 * *selectMode* determines the type of UI component to render for this
@@ -535,14 +532,11 @@ displays the currently selected value(s), a button for clearing the
 currently selected value(s) and a button that brings up a search dialog
 when clicked,
 
-Please note:
-
 * You don’t normally have to specify a *searchSelectMode*: the
 application will by default use the value of the *selectMode* if no
 explicit *SearchSelectMode* is set.
 * There are several other supported *AttributeSelectModes*, e.g.
-*COMBO*, *AUTO_SELECT* and *LOOKUP*. These will be covered in more
-detail later. Not all select modes make sense for every attribute. E.g.
+*COMBO*, *AUTO_SELECT* and *LOOKUP*. Not all select modes make sense for every attribute. E.g.
 for editing a one-to-one relation you cannot use the *MULTI_SELECT* setting
 since this would allow you to select multiple values. The Dynamo
 framework will produce an exception when you try to use an illegal
@@ -555,17 +549,18 @@ We will end this section with some additional remarks about searching:
 value for the associated property before you can carry out a search.
 Concretely, this means that the *Search* button will be disabled unless
 you have filled in a value for all fields that are marked as
-*requiredForSearching.*
+*requiredForSearching.* (In case the application renders both
+an upper and a lower bound field, it is enough to fill in at least one value)
 * For fields that contain a time stamp (java.time.LocalDateTime or
 java.time.Instant), normally two search fields are rendered – these can
-be used to set the upper and lower bound of the interval to search on.
+be used to define the upper and lower bound of the interval to search on.
 However, if you set the *searchDateOnly* setting to *true* then instead
 a single search field will be rendered. This field allows you to select
 a date (rather than a time stamp) and when you perform a search, only
 the records for which the date part of the value matches will be
 returned.
 * The *@Attribute* annotation also comes with the *defaultSearchValue* ,
-defaultSearchValueFrom* en *defaultSearchValueTo* settings. These can be
+*defaultSearchValueFrom* and *defaultSearchValueTo* settings. These can be
 used to respectively set:
 ** A default value for a simple attribute
 ** A default value for the lower bound when searching on an interval
@@ -586,7 +581,7 @@ Luckily, the framework contains several ways of tweaking the visual and
 textual representation of the generated screens.
 
 First, let’s go back to the *@Attribute* annotation. Like *@Model*, it
-has the *displayName, displayNamePlural,* and *description* values that
+has the *displayName, and *description* values that
 can be used to modify the captions and labels that are displayed on the
 screen. Go ahead and use these to fix the caption of the “Headquarters”
 search field.
@@ -598,7 +593,7 @@ and add the *@AttributeOrder* annotation to the class as seen below
 --
 @Entity
 @Table(name = "organization")
-@AttributeOrder(attributeNames = { "name", "headQuarters", "address",
+@AttributeOrder(attributeNames = { "id", "name", "headQuarters", "address",
 "countryOfOrigin", "reputation" })
 public class Organization extends AbstractEntity<Integer> {
 --
@@ -621,14 +616,14 @@ your search form or the result grid, you can use the
 
 [source,java]
 --
-@AttributeOrder(attributeNames = { "name", "headQuarters", "address",
+@AttributeOrder(attributeNames = { "id", "name", "headQuarters", "address",
 "countryOfOrigin", "reputation" })
 @GridAttributeOrder(attributeNames = { "memberCount",
 "yearlyMortalityRate" })
 public class Organization extends AbstractEntity<Integer> {
 --
 
-In the above example, we have added an *@GridAttributeOrder.* Now when
+In the above example, we have added an *@GridAttributeOrder*. When
 you restart the application after this, you will see that the grid
 starts with the "memberCount" and "yearlyMortalityRate" fields. Note
 that the other attributes are shown in alphabetical order.
@@ -657,7 +652,7 @@ of the value of an attribute inside the grid by setting the
 --
 @NotNull
 @Size(max = 255)
-@Attribute(searchable = SearchMode.ALWAYS, main = true, maxLengthInGrid = 10)
+@Attribute(searchable = SearchMode.ALWAYS, maxLengthInGrid = 10)
 private String name;
 --
 
@@ -693,7 +688,7 @@ for this is
 --
 
 You can also directly change the settings on the entity by not including
-any property name, e.g. *Organization.displayName=Organisatie*
+a property name, e.g. *Organization.displayName=Organisatie*
 
 You can also change the value of the percentage setting using the
 *@Attribute* annotation – this is just an example to show you that you
@@ -708,7 +703,7 @@ Organization.governmentSponsored.falseRepresentation=No Way!
 --
 
 Then, restart the application and verify that instead of the standard
-“true” and “false” values for the Boolean *governmentSponsored*
+"true" and "false" values for the Boolean *governmentSponsored*
 attribute, you will now see the custom descriptions shown above.
 
 The exact syntax and all the names of the settings you can tweak is an
@@ -725,25 +720,27 @@ Now, let’s go back to the *Country of Origin* attribute. We want to
 display this attribute in the grid, but it’s not there yet. This is
 because it is a _complex attribute_ that refers to another entity or
 collection of entities. By default, this type of attribute is not shown
-inside a grid. To fix this, add the *@Attribute* annotation to the
+inside a table. To fix this, add the *@Attribute* annotation to the
 *countryOfOrigin* property and set the *visibleInGrid* setting to SHOW.
 
 [source,java]
 --
 @NotNull
 @JoinColumn(name = "country_of_origin")
-@ManyToOne(fetch = FetchType.*_LAZY_*)
-@Attribute(visibleInGrid = VisibilityType.*_SHOW_*)
+@ManyToOne(fetch = FetchType.LAZY)
+@Attribute(visibleInGrid = VisibilityType.SHOW)
 private Country countryOfOrigin;
 --
 
 Now, after you restart the backend application, the country of origin
-column should appear in the table. But the way the data is fetched is
-not very efficient – for every organization, that application performs
+column should appear in the table. Note that the "displayProperty" of the
+country is already set to the "name" property.
+
+The way the data is fetched is not very efficient right now. For every organization, that application performs
 an extra query in order to retrieve the country.
 
 In order to fix this, we can add a fetch join to the data retrieval. To
-do so, add the following to the *Organization* entity:
+do so, add the following annotation to the *Organization* entity:
 
 [source,java]
 --
@@ -767,7 +764,7 @@ powerful way to limit the number of queries that is carried out and can
 thus be crucial for achieving good performance. Keep in mind though,
 that if used poorly it can also lead to a lot of useless data being
 retrieved with every request – imagine e.g. that the Country keeps track
-of all its inhabitants: automatically fetching (millions or billions) of
+of all its inhabitants: automatically fetching (millions or even billions) of
 inhabitants every time a country is fetched is clearly a bad thing and
 must be avoided.
 
@@ -799,15 +796,15 @@ following code:
 
 [source,java]
 --
-@Bean
-public BaseService<Integer, Region> regionService(BaseDao<Integer, Region> regionDao) {
-    return new DefaultServiceImpl<>(regionDao, "code");
-}
+    @Bean
+    public BaseDao<Integer, Country> countryDao() {
+        return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
+    }
 
-@Bean
-public BaseDao<Integer, Country> countryDao() {
-    return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
-}
+    @Bean
+    public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> dao) {
+        return new DefaultServiceImpl<>(dao, "code");
+    }
 --
 
 This defines a bean that is an instance of *DefaultServiceImpl* which
@@ -837,22 +834,23 @@ this a little bit and change it to a lookup component:
 @NotNull
 @JoinColumn(name = "country_of_origin")
 @ManyToOne(fetch = FetchType._LAZY_)
-@Attribute(searchable = SearchMode._ALWAYS_, visibleInGrid =
-VisibilityType._SHOW_, selectMode = AttributeSelectMode.LOOKUP)
+@Attribute(searchable = SearchMode.ALWAYS, visibleInGrid =
+VisibilityType.SHOW, selectMode = AttributeSelectMode.LOOKUP)
 private Country countryOfOrigin;
 --
 
 Restart the backend and observe how you can now use a popup dialog to
 search for the country you want to filter on.
 
-Dynamo now also comes with an auto-complete field:
+Dynamo now also comes with an auto-complete field which you can use
+as follows:
 
 [source,java]
 --
 @NotNull 
 @JoinColumn(name = "country_of_origin") 
 @ManyToOne(fetch = FetchType.LAZY)
-@Attribute(searchable = SearchMode._ALWAYS_, visibleInGrid =
+@Attribute(searchable = SearchMode.ALWAYS, visibleInGrid =
 VisibilityType.SHOW,
 searchSelectMode = AttributeSelectMode.AUTO_COMPLETE)
 private Country countryOfOrigin;
@@ -912,7 +910,7 @@ components to appear based on the selected attribute (e.g. a text field
 for a string attribute, two number fields for an integer component
 etc.). This follows the exact same logic as the regular search form.
 
-When you mark an attribute as *requiredForSearching,* a search row for
+When you mark an attribute as *requiredForSearching*, a row for
 that attribute will always be rendered; it cannot be removed and the
 selected attribute cannot change. If you define or more default values
 for an attribute, then a search row for that attribute will also be
@@ -940,7 +938,7 @@ set to “organization”).
 
 When you look in *app-routing.module.ts* you will see that the following
 routes are defined (one for editing an existing entity and one for
-creating a new one).
+creating a new one):
 
 [source,typescript]
 --
@@ -969,7 +967,7 @@ navigateBackRoute="organizations">
 --
 
 This is a minimal set-up that includes a) the name of the entity b) the
-ID of the entity being edited (this is undefined when defining a new
+ID of the entity being edited (undefined when defining a new
 entity) and c) the route to use when navigating back to the search
 screen.
 
@@ -985,11 +983,12 @@ like this:
 image:media/image7.png[image,width=560,height=570]
 
 By now, it should not come as a surprise that you will see text fields
-for String and numeric attributes, combo boxes for enumerations, etc..
-If you look closely, however, you will see that there are no components
-for editing the *country of origin* and *members* attributes. This
+for String and numeric attributes, combo boxes for enumerations, etc.
+If you look closely, however, you will see that there is no component
+for editing the *country of origin* attribute. This
 is because, by default, no components will be created for editing
-complex attributes.
+complex attributes. There is also no component for modifying the members
+but this is by design.
 
 To make the components for editing the complex attributes show up, you
 can set the *visibleInForm* setting for an attribute to true. We do
@@ -1029,7 +1028,7 @@ navigate to the detail screen you just saw, but now the details of the
 selected row will be shown.
 
 You can also set the *showDetailButton* setting on the
-generic-search-layout to *true.* With this setting in place, you can no
+generic-search-layout to *true*. With this setting in place, you can no
 longer just click anywhere in the table. Instead, a “pencil” button will
 show up in each row in the table. Click this button to navigate to the
 detail screen.
@@ -1056,10 +1055,10 @@ default value. This can be a string, integer, BigDecimal etc. Try this
 out on e.g. the “*yearlyMortalityRate*” attribute. Use a period (“.”) as
 the decimal separator if needed. Once you click the *Add* button to
 create a new entity, any fields for which a default value has been
-defined will be automatically filled with this default value.
+defined will be automatically set to this default value.
 * Using the *TextFieldMode* to switch between displaying a text field, a
 text area, or a password field. Try this on the *address* property.
-_Note: this only works inside edit forms. The TextFieldMode will be
+_This only works inside edit forms. The TextFieldMode will be
 ignored when creating a search form, since the text area in the search
 form would take up too much space, and it’s highly unlikely you’d want to
 search for an enormously long string match anyway._
@@ -1094,11 +1093,11 @@ use a *groupTogetherWith* value on the attribute you want to appear
 private String headQuarters;
 --
 
-* The above will make sure that the “address” field shows up on the same
+The above will make sure that the “address” field shows up on the same
 line as the “headQuarters” field. When using this setting, take care
 that the attributes are in the right order (the attribute on which you
 place the *groupTogetherWith* setting must occur in the ordering before
-the attribute it refers to. Dynamo will produce an error when you define
+the attribute it refers to. Dynamo will produce an error if you define
 an incorrect attribute grouping)
 
 image:media/image10.png[image,width=560,height=79]
@@ -1155,20 +1154,15 @@ have been mentioned in the *groupTogetherWith* setting). However,
 sometimes, especially when you have many attributes, it can be useful to
 have a way of grouping certain attributes together.
 
-To demonstrate how this works, modify the *Organization* view so that it
-reads as follows:
+To demonstrate how this works, add the following annotations to
+the *Organization* class.
 
 [source,java]
 --
-@Entity
-@Table(name = "organization")
 @AttributeGroup(messageKey = "organization.first", attributeNames = {
 "name", "address", "headQuarters", "countryOfOrigin" })
 @AttributeGroup(messageKey = "organization.second", attributeNames = {
 "reputation" })
-@AttributeOrder(attributeNames = { "name", "headQuarters", "address",
-"countryOfOrigin", "reputation" })
-public class Organization extends AbstractEntity<Integer> {
 --
 
 Here, you define two attribute groups identified by the message keys
@@ -1230,15 +1224,15 @@ red “Delete” button in every row in the search results table.
 
 As an alternative to using a separate detail screen, it is also possible
 to open a pop-up edit dialog directly from the results table. In order
-to enable this functionality, define a *popupButtonMode* variable in the
-*OrganizationSearchComponent*:
+to enable this functionality, define a *popupButtonMode* variable in
+*organization-search.component.ts*:
 
 [source,typescript]
 --
 popupButtonMode: PopupButtonMode = PopupButtonMode.EDIT;
 --
 
-then refer to it from the HTML file. This will cause a “details” button
+then use it from the HTML file to bind it to the . This will cause a “details” button
 to appear in each row in the details table. Pressing this button will
 cause a pop-up dialog containing the details of the selected entity to
 appear. The fields that will appear in this pop-up dialog are rendered
@@ -1249,7 +1243,8 @@ number of columns) are not available in the pop-up dialog.
 
 The value EDIT chosen above will ensure that the dialog will be opened
 in EDIT mode. You can also specify the value VIEW. In this case the
-pop-up dialog will be rendered in read-only mode.
+pop-up dialog will be rendered in read-only mode. The default value, NONE,
+means that no button to open the dialog will appear.
 
 === Additional GenericEditForm properties
 
@@ -1261,7 +1256,7 @@ must be in view mode after first opening it. In this case, an *Edit*
 button will be provided to switch the screen to edit mode.
 * *confirmSave* determines whether to ask for confirmation before saving
 changes after the user presses the *Save* button. The default value is
-*false.*
+*false*.
 
 === Additional GenericSearchLayout properties
 
@@ -1274,7 +1269,7 @@ The default value is *false*.
 * *searchImmediately* determines whether to carry out a search right
 away when opening the screen. The default value for this setting is
 *true* which means that a search is carried out right away. If you set
-it to *false*, the search results grid will be hidden after you open the
+it to *false*, the search results grid will initially be hidden after you open the
 screen, and you must carry out a search first before it will show up.
 * *preserveSearchTerms* determines whether any search terms that you
 enter in a search form will be preserved when you navigate away from a
@@ -1295,6 +1290,8 @@ modify Organization.java so that it reads as follows:
 @Attribute(quickAddAllowed = true, visibleInForm = VisibilityType.SHOW, searchable = SearchMode.ALWAYS, visibleInGrid = VisibilityType.SHOW)
 private MainActivity mainActivity;
 --
+
+Also, set the "displayProperty" of the MainActivity class to "name".
 
 Now, when you open the detail page for an organization, you should see a
 “Main Activity” field in the edit form:
@@ -1318,7 +1315,7 @@ the MainActivity, add the following to *entitymodel.properties*.
 MainActivity.not.unique=This main activity already exists
 
 Now, restart the application, try to add a duplicate main activity and
-verify that see the error message defined here.
+verify that you see the error message defined here.
 
 === Additional attribute model settings
 
@@ -1336,8 +1333,10 @@ searching using a *GenericSearchLayoutComponent*. When you mark an
 attribute as “searchable” but set “ignoreInSearchFilter” to true, a
 search field will be rendered inside the form, but the contents of the
 field will be ignored when actually searching. The most obvious use case for
-this is when working with cascaded fields (outside the scope of this
+this is when working with cascading input fields (outside the scope of this
 training).
+* By default, sorting is enabled for all attributes. You can disable
+sorting for an attribute by setting the *sortable* setting to false.
 * Sometimes, when searching or sorting on an attribute, you will want to
 search or sort on an attribute path that is different from the actual
 path to the attribute. For these situations, you can use the
@@ -1411,7 +1410,7 @@ image:media/image13.png[image,width=560,height=247]
 
 * You can select a row in the table to the left to make the details of
 that row show up in the form to the right.
-* If *addAllowed* is true for the entity, an “Add” button will show up
+* If *createAllowed* is true for the entity, an “Add” button will show up
 below the table. Clicking this button will bring up an empty form that
 allows you to create a new entity.
 
@@ -1433,7 +1432,7 @@ By default, the data that is displayed is not filtered in any way. You
 can change this by adding *default filters* to the layout. These are
 filters that are automatically applied to any search request. In order
 to add default filters, define the following in the
-person-search.component.ts:
+*person-search.component.ts*:
 
 [source,typescript]
 --
@@ -1462,7 +1461,7 @@ the *EqualsFilterModel* shown above, there are classes like
 to the full Dynamo documentation for more details.
 
 Like the *GenericSearchLayout*, the *GenericSplitLayout* comes with a
-number of useful properties that can be used to change its behaviour.
+number of useful properties that can be used to modify its behaviour.
 Some of these include:
 
 * The *quickSearchProperty* can be used to define a property that can be
@@ -1474,7 +1473,7 @@ results based on the specified property. Note that the property must be searchab
 setting to true. With this in place, a “Search” button will be shown
 above the results table. Clicking this button will bring up a pop-up
 search dialog. This basically functions in the same way as the search
-form in the *GenericSearchLayout,* meaning that all attributes that are
+form in the *GenericSearchLayout*, meaning that all attributes that are
 marked as searchable will show up. You can carry out searches using this
 screen, and when you close it, the search results in the split layout
 will match those you selected in the dialog.
@@ -1585,7 +1584,7 @@ show up in the file upload component.
 
 Play around with the file upload functionality for a bit if you want,
 then have a look at the rest of the screen and make sure you get all the
-little details right (attribute order, captions etc.)
+little details right (attribute order, captions etc.).
 
 Disclaimer: storing binary data in a relational database is not always
 an optimal design decision, but we recognize that it is useful for

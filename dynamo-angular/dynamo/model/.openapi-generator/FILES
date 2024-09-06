@@ -1,4 +1,5 @@
 .gitignore
+.openapi-generator-ignore
 README.md
 api.module.ts
 api/api.ts
@@ -7,8 +8,6 @@ api/cRUD.service.ts
 api/export.service.ts
 api/file.service.ts
 api/model.service.ts
-api/organizationController.service.ts
-api/pdfController.service.ts
 api/status.service.ts
 configuration.ts
 encoder.ts
@@ -20,7 +19,6 @@ model/attributeModelResponse.ts
 model/autoFillOptions.ts
 model/autoFillRequest.ts
 model/cascadeModel.ts
-model/country.ts
 model/dateRangeFilterModel.ts
 model/elementCollectionFilterModel.ts
 model/entityModelActionResponse.ts
@@ -30,17 +28,12 @@ model/filterModel.ts
 model/instantRangeFilterModel.ts
 model/localDateTimeRangeFilterModel.ts
 model/localTime.ts
-model/mainActivity.ts
 model/models.ts
-model/neighbourhood.ts
 model/notFilterModel.ts
 model/numberInFilterModel.ts
 model/numberRangeFilterModel.ts
 model/orFilterModel.ts
-model/organization.ts
 model/pagingModel.ts
-model/person.ts
-model/region.ts
 model/searchModel.ts
 model/searchModelFiltersInner.ts
 model/searchResultsModelAbstractEntity.ts
