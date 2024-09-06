@@ -277,7 +277,7 @@ you can use both access types interchangeably.
 
 The annotation override mechanism is quite powerful, but it has some
 drawbacks. E.g. it hard-codes certain String values (display name,
-description) into your application and it does not directly allow for
+description) into your application, and it does not directly allow for
 internationalization. It also only allows you to override the behaviour
 of the “default” Entity Model that is based directly on the class, and
 not the behaviour of any derived Entity Models.
@@ -1891,6 +1891,45 @@ situation – if you have a large data set and no relations to fetch then
 paging is preferred. If you have a lot of relations to fetch (or if you
 must fetch any one-to-many or many-to-many relations), use the ID-based
 approach.
+
+In addition to defining the joins using the @FetchJoin annotation, it is
+also possible to configure the joins in the entitymodel.properties message bundle.
+
+This is done as follows
+
+[source,properties]
+---
+[Entity Model Reference].[join|detailJoin].[number].attribute= [name of the attribute]
+[Entity Model Reference].[join|detailJoin].[number].joinType= 'LEFT'| 'RIGHT' | 'INNER'
+---
+
+I.e.:
+- you can use "join" to define joins that are used when fetching multiple entities
+and "detailJoin" to define joins that are used when fetching single entities
+- Joins (per type) are numbered, starting with 1
+- Use "attribute" to specify the name of the attribute
+
+E.g, to set up two joins for the Organization entity, you can do the following
+
+[source,properties]
+---
+Organization.join.1.attribute=mainActivity
+Organization.join.1.joinType=LEFT
+Organization.join.2.attribute=neighbourhoods
+Organization.join.2.joinType=LEFT
+---
+
+And to define three joins to be used when fetching a single entity:
+
+[source,properties]
+---
+Organization.detailJoin.1.attribute=mainActivity
+Organization.detailJoin.1.joinType=LEFT
+Organization.detailJoin.2.attribute=neighbourhoods
+Organization.detailJoin.2.joinType=LEFT
+Organization.detailJoin.3.attribute=countryOfOrigin
+Organization.detailJoin.3.joinType=INNER
+---
 
 === Entity Initialization
 
@@ -5231,8 +5270,11 @@ using pagination.
 
 By default, the export will contain only the columns that are visible in
 the table, but you can change the *exportMode* setting to FULL in order
-to include all attributes that have their “*visibleInForm*” setting set
-to true.
+to include all attributes that have their “*visibleInForm*” setting equal
+to "true".
+
+You can also use the *exportModeReference* property to configure which
+exact version of the entity model to use for creating the export.
 
 To further customize the export to Excel, it is possible to specify a
 custom style generator. This can be done by implementing the
