@@ -2763,7 +2763,7 @@ After this, run the following command:
 
 [source,commandline]
 --
-npx @openapitools/openapi-generator-cli generate -i api.yaml -g typescript-angular -o ./dynamo/model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
+npx @openapitools/openapi-generator-cli generate -i api-docs.yaml -g typescript-angular -o ./dynamo/model/ --additional-properties=enumPropertyNaming=original,ngVersion=16
 --
 
 This will generate the front-end source code in the specified directory
@@ -2810,7 +2810,7 @@ is used. The plugin needs to be configured as shown below:
       <configuration>
         <inputSpec>${project.build.directory}/openapi.json</inputSpec>
         <generatorName>typescript-angular</generatorName>
-        <output>src/main/${front-end.name}/model</output>
+        <output>src/main/${front-end.name}/dynamo/model</output>
         <configOptions>
           <ngVersion>16.1.2</ngVersion>
           <disallowAdditionalPropertiesIfNotPresent>false</disallowAdditionalPropertiesIfNotPresent>
