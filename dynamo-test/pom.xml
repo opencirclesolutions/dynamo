@@ -9,6 +9,7 @@
 	<artifactId>dynamo-test</artifactId>
 	<packaging>jar</packaging>
 	<name>Dynamo Framework - Supporting test classes</name>
+	<description>Dynamo Framework supporting test classes project.</description>
 	<dependencies>
 		<dependency>
 			<groupId>${project.groupId}</groupId>
