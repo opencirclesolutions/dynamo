@@ -71,7 +71,7 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	 */
 	protected LocalDate getDateValue(String unit) {
         if (!StringUtils.isEmpty(unit)) {
-			return LocalDate.parse(unit, DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));
+			return LocalDate.parse(unit, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
 		}
 		return null;
