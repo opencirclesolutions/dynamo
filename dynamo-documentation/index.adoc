@@ -3584,7 +3584,16 @@ return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA
 The *NotFilter* can be used to create a filter that negates the filter
 encloses in it.
 
-=== Updates
+*NullFilter*
+
+[source,typescript]
+--
+return createNullFilter('parent')
+--
+
+The *NullFilter* can be used to create a filter that checks if the value is NULL.
+
+==== Updates
 
 Some extra explanation is in order with regard to how the Dynamo
 framework deals with updates of existing entities. All updates of

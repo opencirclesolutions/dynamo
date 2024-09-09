@@ -20,8 +20,14 @@ package org.dynamoframework.rest.crud.search;
  * #L%
  */
 
-public enum FilterType {
+import lombok.Getter;
+import lombok.Setter;
+import lombok.experimental.SuperBuilder;
+import lombok.extern.jackson.Jacksonized;
 
-    EQUALS, DATE_RANGE, NUMBER_RANGE, INSTANT_RANGE, LOCAL_DATE_TIME_RANGE, NUMBER_IN, TIME_RANGE, OR, NOT,
-    ELEMENT_COLLECTION, IS_NULL
+@Getter
+@Setter
+@Jacksonized
+@SuperBuilder
+public class NullFilterModel extends FilterModel {
 }

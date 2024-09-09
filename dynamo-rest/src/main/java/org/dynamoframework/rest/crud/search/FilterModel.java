@@ -42,7 +42,8 @@ import lombok.experimental.SuperBuilder;
         @JsonSubTypes.Type(value = LocalDateTimeRangeFilterModel.class, name = "LOCAL_DATE_TIME_RANGE"),
         @JsonSubTypes.Type(value = OrFilterModel.class, name = "OR"),
         @JsonSubTypes.Type(value = NotFilterModel.class, name = "NOT"),
-        @JsonSubTypes.Type(value = ElementCollectionFilterModel.class, name = "ELEMENT_COLLECTION")
+        @JsonSubTypes.Type(value = ElementCollectionFilterModel.class, name = "ELEMENT_COLLECTION"),
+        @JsonSubTypes.Type(value = NullFilterModel.class, name = "IS_NULL")
 })
 @Getter
 @Setter

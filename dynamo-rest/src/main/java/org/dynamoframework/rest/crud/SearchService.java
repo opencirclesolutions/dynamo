@@ -226,6 +226,9 @@ public class SearchService {
                     .toList();
             return new Or(list.toArray(new Contains[0]));
 
+        } else if(filterModel instanceof NullFilterModel) {
+            String prop = mapSearchProperty(am);
+            return new IsNull(prop);
         }
         return null;
     }
