@@ -10,14 +10,14 @@
 	<url>https://github.com/opencirclesolutions/dynamo</url>
 	<organization>
 		<name>Open Circle Solutions</name>
-		<url>http://www.opencirclesolutions.nl</url>
+		<url>https://www.opencirclesolutions.nl</url>
 	</organization>
 	<inceptionYear>2014</inceptionYear>
 	<licenses>
 		<license>
 			<name>Apache License Version 2.0</name>
 			<distribution>repo</distribution>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
 		</license>
 	</licenses>
 	<developers>
@@ -25,31 +25,31 @@
 			<name>Patrick Deenen</name>
 			<email>info@dynamoframwork.org</email>
 			<organization>Open Circle Solutions</organization>
-			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
+			<organizationUrl>https://www.opencirclesolutions.nl</organizationUrl>
 		</developer>
 		<developer>
 			<name>Bas Rutten</name>
 			<email>info@dynamoframwork.org</email>
 			<organization>Open Circle Solutions</organization>
-			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
+			<organizationUrl>https://www.opencirclesolutions.nl</organizationUrl>
 		</developer>
 		<developer>
 			<name>Willem van Dreumel</name>
 			<email>info@dynamoframwork.org</email>
 			<organization>Open Circle Solutions</organization>
-			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
+			<organizationUrl>https://www.opencirclesolutions.nl</organizationUrl>
 		</developer>
 		<developer>
 			<name>Endy Brosens</name>
 			<email>info@dynamoframwork.org</email>
 			<organization>Open Circle Solutions</organization>
-			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
+			<organizationUrl>https://www.opencirclesolutions.nl</organizationUrl>
 		</developer>
 		<developer>
 			<name>Tommy Menheere</name>
 			<email>info@dynamoframwork.org</email>
 			<organization>Open Circle Solutions</organization>
-			<organizationUrl>http://www.opencirclesolutions.nl</organizationUrl>
+			<organizationUrl>https://www.opencirclesolutions.nl</organizationUrl>
 		</developer>
 	</developers>
 	<scm>
