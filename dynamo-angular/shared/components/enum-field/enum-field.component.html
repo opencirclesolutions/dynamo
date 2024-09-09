@@ -10,6 +10,7 @@
         [formControlName]="am.name"
         [placeholder]="am.placeholders[locale]"
         [pTooltip]="am.descriptions[locale]"
+        appendTo="body"
         *ngIf="!useRadioButton()"
       ></p-dropdown>
       <ng-container *ngIf="useRadioButton()">

@@ -822,7 +822,7 @@ can change this default by modifying the value of the system property
 *dynamoframework.defaults.enum-field-mode*. When the value is changed to *RADIO* a
 set of radio buttons will be used instead.
 
-Note that within a search form, this setting will be ignored, and a
+NOTE: within a search form, this setting will be ignored, and a
 dropdown component will always be used in order to save space.
 
 === FileNameProperty
@@ -895,7 +895,7 @@ components for the “extra” attributes that are placed behind the first
 attribute. The framework makes sure that the extra attributes do not
 show up more than once.
 
-Note that for this to work properly, the attribute that the
+NOTE: for this to work properly, the attribute that the
 *groupTogetherWith* setting refers to must occur in the attribute order
 *after* the attribute that does the referring (for the example
 above, *region* must come after *country*). If this rule is not
@@ -2055,7 +2055,7 @@ protected Organization findIdenticalEntity(Organization entity) {
 }
 --
 
-Note that you do not have to check if the entity being returned is equal
+NOTE: you do not have to check if the entity being returned is equal
 to the entity being validated, the framework will take care of this for
 you.
 
@@ -3390,7 +3390,7 @@ The *EqualsFilter* is a filter on a single attribute value. This can be
 used for a wide range of data types: strings, Boolean, integers (when
 searching for an exact match), enumeration values etc.
 
-Note that in the case of a String value, the back-end will take care of
+NOTE: in the case of a String value, the back-end will take care of
 searching for substrings, case-sensitivity etc – the front-end only has
 to pass along the value to search for.
 
@@ -3526,6 +3526,39 @@ The *TimeRangeFilter* can be used to filter on a range of time stamps (e.g.
 including) and a “to” value (upper bound, inclusive). At least one of
 these must be filled.
 
+*ElementCollectionFilter*
+
+[source,typescript]
+--
+export function createElementCollectionFilter(
+  am: AttributeModelResponse,
+  vals: any[]
+): ElementCollectionFilterModel {
+  vals = vals.map((val) => {
+    if (
+      am.elementCollectionType ===
+      AttributeModelResponse.ElementCollectionTypeEnum.INTEGRAL
+    ) {
+      return parseInt(val);
+    }
+    return val;
+  });
+
+  let filter: ElementCollectionFilterModel = {
+    match: 'ELEMENT_COLLECTION',
+    name: am.name,
+    values: vals,
+  };
+  return filter;
+}
+--
+
+The ElementCollectionFilter is used to filter on the element on an
+element collection. The filter contains a *values* array which can
+contain either a list of integer or a list of strings. An entity
+will match the filter if the element collection contains at least
+one of the requested values.
+
 *OrFilter*
 
 [source,typescript]
@@ -3551,7 +3584,16 @@ return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA
 The *NotFilter* can be used to create a filter that negates the filter
 encloses in it.
 
-=== Updates
+*NullFilter*
+
+[source,typescript]
+--
+return createNullFilter('parent')
+--
+
+The *NullFilter* can be used to create a filter that checks if the value is NULL.
+
+==== Updates
 
 Some extra explanation is in order with regard to how the Dynamo
 framework deals with updates of existing entities. All updates of
@@ -3919,7 +3961,7 @@ table, or when you click the Add button. The functionality for
 navigating to a detail screen must be explicitly enabled. The easiest
 way to do this is by defining the *detailNavigationPath* (see below).
 
-====DetailNavigationPath
+==== DetailNavigationPath
 
 [source,angular17html]
 --
@@ -4124,7 +4166,7 @@ onRowSelect(row: any) {
 }
 --
 
-==== AfterSearchFormBuilt
+==== afterSearchFormBuilt
 
 The *afterSearchFormBuilt* event handler can be used to post-process the
 search form after it has been constructed by the framework. This can be
@@ -4151,7 +4193,7 @@ afterSearchFormBuilt(info: FormInfo) {
 --
 
 NOTE: when you are setting the value for a *multiselect* component, be
-sure that the value you are passing array.
+sure that the value you are passing an array.
 
 ==== Additional row actions
 
@@ -4347,7 +4389,10 @@ By default, the edit form will consist of a single column that spans most
 of the screen. The width of the edit form is actually governed by the
 value of the *formWidthClass* property. The default value is
 
+[source,html]
+--
 col-lg-8 col-md-10 col-sm-12
+--
 
 In addition to changing this setting, you can also change the number of
 columns that are used by changed the value of the *numberOfColumns*
@@ -4364,7 +4409,8 @@ done by implementing a function that takes as its parameters
 * The form group that contains the input components
 
 You can use these parameters to determine whether to show/hide a certain
-attribute.
+attribute. The *attributeVisible* function is called once for each attribute
+during the process of rendering an input form.
 
 [source,typescript]
 --
@@ -4426,9 +4472,8 @@ attribute name to an array of *FilterModel* objects
   }
 --
 
-
 This example sets up two field filters, one for the *countryOfOrigin*
-attribute and one for the *neighbourhoods* attribute**.** Both filters
+attribute and one for the *neighbourhoods* attribute. Both filters
 add a filter on the “name” attribute. This means that when the user
 wants to select one or more values using the input components for these
 attributes, they will only get to see options for which the name matches
@@ -4859,7 +4904,7 @@ necessary to include an additional container that binds the from group.
   </ng-template>
 --
 
-Note that this functionality can also be used inside a Split Layout or
+NOTE: that this functionality can also be used inside a Split Layout or
 an Editable Table Layout.
 
 ==== Free-form mode

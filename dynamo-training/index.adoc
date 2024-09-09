@@ -1636,7 +1636,7 @@ translations of a Gift:
 
 image:media/image14.png[image,width=560,height=191]
 
-(Note that you can press the button in the top right to add a new row to
+(Note that you can click the button in the top right to add a new row to
 the table). Go ahead and add some translations to the table, then press
 the Save button on the form and verify how the Gift plus its
 translations are neatly saved to the database.
@@ -1668,12 +1668,12 @@ table of the edit form.
 
 To make the screen behave, set the visibleInForm and visibleInGrid settings
 for *fromPerson*, *toPerson* and *gift* properties to SHOW. You may also want to set
-the *displayProperty* setting on the *Gift* class (to “name”) if you
+the *displayProperty* setting on the *Gift* class to "name" if you
 have not done so already, to make sure that a useful description of the
 gift shows up in the table and in the dropdown component.
 
 Now, when you restart the application and open the Deliveries screen,
-you will see a grid in which you can edit the displayed entities.
+you will see a table that you can use to edit the displayed entities.
 Initially, the grid will be empty, but you can use the *Add* button to
 add new entries. However, this is not very useful at the moment since
 you won’t be able to see (let alone fill in) all the required fields.
@@ -1753,22 +1753,19 @@ To do so, you can insert an ng-template element marked with the
     let-formGroup="mainForm"
   >
     <ng-container [formGroup]="formGroup">
-      <app-generic-field
+      <label for="name">Custom name</label>
+      <input type="text"
+        pInputText
         id="name"
-        name="name"
-        [am]="am"
         formControlName="name"
-        [formGroup]="formGroup"
-        ngDefaultControl
       >
-      </app-generic-field>
     </ng-container>
   </ng-template>
 --
 
 The *dOverrideField* on the template makes sure the mechanism picks up
 this custom component. The “attributeName” must be the name of the
-attribute for which to replace the input component.
+attribute for which you want to replace the input component.
 
 Inside the template you can create basically any component you like.
 Make sure to nest the custom component inside a formGroup though, or no
@@ -1793,9 +1790,10 @@ functionality cannot be automatically duplicated on the front-end. This
 is where custom front-end validations come in.
 
 We have already provided a custom validator in the CustomValidators
-class, and will now apply this to a field in the *person-search.component.html* that we created before.
+class, and will now apply this to a field in the *person-search.component.html*
+that we created before.
 
-In the app-generic-split-layout we create before, we add a template named
+In the *app-generic-split-layout* we created before, we add a template named
 *customValidatorTemplate* and bind this to the *customValidatorTemplate*
 property of the layout:
 
@@ -1829,15 +1827,15 @@ on the right refers to the class you import from the
 readonly CustomValidators = CustomValidators
 --
 
-Note: you must always include the appropriate validations in the
+*NOTE*: you must always include the appropriate validations in the
 back-end as well. Never rely on the front-end only for validating data,
 since it is always possible to bypass the front-end and call the
 back-end services directly.
 
 === Additional actions and buttons
 
-As you have probably seen, many of the composite components contain
-button bars that contains buttons to e.g. add entities, switch the
+As you have probably seen, many of the composite components offered by the
+Dynamo Framework contain button bars that contains buttons to e.g. add entities, switch the
 component to edit mode etc. It is possible to add additional buttons to
 these button bars in several ways.
 
@@ -1850,7 +1848,7 @@ In order to add an entity model action, we need the following things:
 
 * A data transfer object (DTO) to hold the relevant data
 * A service method that accepts that DTO as a parameter
-* An *@ModelAction* annotation on the service method.
+* An *@ModelAction* annotation on the service method implementation
 
 Let’s start with the DTO:
 
@@ -1889,7 +1887,7 @@ to (in this case the Organization). The framework constructs an entity
 model for the DTO in the same way as it does for an actual entity, so
 annotations like *@Model* and *@Attribute* work in the same way.
 
-In the OrganizationService(Impl) we add a method that we want to carry
+In the OrganizationService(Impl) we add the action method that we want to carry
 out:
 
 [source,java]
@@ -1917,8 +1915,7 @@ organization, then saves the updated organization to the database.
 
 As you can see the method is annotated with *@ModelAction* which means
 Dynamo will translate it to a button that will show up (in this case) in
-each row in the table (in this case it’s the button with the shield
-icon). The ModelAction has a unique ID, a display name (this will be
+each row in the table. The ModelAction has a unique ID, a display name (which will be
 shown in the tooltip of the button) and a type. The type can be either
 *CREATE* or *UPDATE* and determines where the button corresponding to the
 action will show up. *UPDATE* actions will show up in each button in a
@@ -1929,7 +1926,7 @@ image:media/image15.png[image,width=560,height=24]
 
 Pressing the button will open a pop-up dialog based on the
 *OrganizationNameDTO* we saw before. Any fields that match between the
-main entity (Organization) and the DTO, in this case the name, will be
+main entity (Organization) and the DTO, in this case the *name*, will be
 automatically filled in:
 
 image:media/image16.png[image,width=559,height=107]
@@ -1942,8 +1939,8 @@ the front-end. These come in three varieties:
 * *additionalGlobalActions* show up below the button bar below a results
 table.
 
-As an example of a global action, consider the following (which we add
-to organization-search.component.ts).
+As an example of a global action, consider the following code which we add
+to *organization-search.component.ts*).
 
 [source,typescript]
 --
@@ -2001,7 +1998,7 @@ that are currently displayed – Dynamo will iterate over the entire data set
 using pagination.
 
 By default, the export will contain only the columns that are visible
-in the table, but you can change the *exportMode* setting to FULL in
+in the table, but you can change the *exportMode* setting to *FULL* in
 order to include all attributes that have their *visibleInForm* setting
 equal to "true".
 
@@ -2036,8 +2033,7 @@ that whenever the property is shown in read-only mode, a hyperlink will
 be rendered instead of just a textual representation. Note that this
 applies to both detail forms and result tables.
 
-When the user
-clicks on the hyperlink, the application will navigate to a (detail)
+When the user clicks the hyperlink, the application will navigate to a (detail)
 screen by following the route */[lower cased name of the entity]/[entity
 id]*, in this case *“/organization/1”*. This is the route at which we
 configured our “*OrganizationFormComponent*” so the application will
@@ -2090,7 +2086,8 @@ assumptions with regard to how you build your menu.
 
 As a result, you manually have to disable the menu option if the user
 does not have the appropriate roles. The demo application supports this
-but since it’s not really part of core Dynamo, we do not cover it here.
+but since it’s not really part of core Dynamo, we do not cover it as part
+of this training.
 
 In addition to this, it is also possible/required to secure the Angular
 route so that only authorized users can access the route in the first
@@ -2124,7 +2121,7 @@ In addition to using the role-based authentication in the back-end, it is
 possible to use it in the front-end. To do this, you need to inject
 an instance of the AuthenticationService in your Typescript component.
 
-You can then use the *hasRole*  method to enable or disable certain functionalities.
+You can then use the *hasRole* method to enable or disable certain functionalities.
 As an example, see how we can modify the global action we defined earlier so
 that it is only enabled if the user has the "bogus" role.
 
@@ -2234,3 +2231,5 @@ values.
 In the example above we used an attribute of type Integer. It is also
 possible to use the element collection functionality with String
 attributes.
+
+

@@ -9,9 +9,9 @@ package org.dynamoframework.rest.crud;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -117,7 +117,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
                                                           @PathVariable("actionId") @Parameter(description = "The id of the action to execute") String actionId,
                                                           @RequestBody @Parameter(description = "The request body") String request,
                                                           @RequestParam(required = false) @Parameter(description = "Entity model reference") String reference,
-                                                          @RequestParam(required = false) @Parameter(description = "ID of the entity to update (in case of update actions)")String id) {
+                                                          @RequestParam(required = false) @Parameter(description = "ID of the entity to update (in case of update actions)") String id) {
 
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
@@ -173,7 +173,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
     public T put(@PathVariable("entityName") @Parameter(description = "The name of the entity") String entityName,
                  @PathVariable("id") @Parameter(description = "The ID of the entity") String id,
                  @RequestBody @Parameter(description = "The message body") String request,
-                 @RequestParam(required = false)@Parameter(description = "Reference to specify the entity model to use")  String reference) {
+                 @RequestParam(required = false) @Parameter(description = "Reference to specify the entity model to use") String reference) {
 
         Class<T> clazz = findClass(entityName);
         EntityModel<T> model = findEntityModel(reference, clazz);
@@ -418,19 +418,25 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
             return;
         }
 
-        Set<U> copySet = new HashSet<>();
+        Collection<U> copyCollection;
+        if (am.getType().isAssignableFrom(Set.class)) {
+            copyCollection = new HashSet<>();
+        } else {
+            copyCollection = new ArrayList<>();
+        }
+
         nestedEntities.forEach(nestedEntity -> {
             BaseService<ID2, U> nestedService = (BaseService<ID2, U>) serviceLocator.getServiceForEntity(am.getNestedEntityModel().getEntityClass());
             U found = nestedService.fetchById(nestedEntity.getId());
             if (found != null) {
-                copySet.add(found);
+                copyCollection.add(found);
             } else {
                 throw new OcsNotFoundException("Entity with name %s and ID %s cannot be found"
                         .formatted(am.getNestedEntityModel().getEntityClass(), nestedEntity.getId().toString()));
             }
         });
 
-        ClassUtils.setFieldValue(target, am.getName(), copySet);
+        ClassUtils.setFieldValue(target, am.getName(), copyCollection);
     }
 
     @SuppressWarnings("unchecked")
