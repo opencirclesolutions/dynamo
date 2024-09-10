@@ -2914,7 +2914,6 @@ The REST endpoints used by dynamo can be configured using properties. There
 are six endpoints that Dynamo requires to function. See <<_prefix_dynamoframework_defaults_endpoints>>
 for the settings and their default values.
 
-
 WARNING: The front-end code needs to be updated/regenerated when
 the endpoints are changed. See <<_code_generation>> on how to
 do this.
