@@ -5,6 +5,7 @@ import {
   DateRangeFilterModel,
   ElementCollectionFilterModel,
   EqualsFilterModel,
+  NullFilterModel,
   FilterModel,
   InstantRangeFilterModel,
   LocalDateTimeRangeFilterModel,
@@ -381,6 +382,21 @@ export function createEqualsFilter(
     match: 'EQUALS',
     name: attributeName,
     value: value,
+  };
+  return filter;
+}
+
+/**
+ * Creates a filter for filtering for NULL on a single attribute value
+ * @param attributeName the name of the attribute to filter on
+ * @returns the filter
+ */
+export function createNullFilter(
+    attributeName: string,
+): NullFilterModel {
+  let filter: NullFilterModel = {
+    match: 'IS_NULL',
+    name: attributeName,
   };
   return filter;
 }
