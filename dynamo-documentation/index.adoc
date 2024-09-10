@@ -14,11 +14,11 @@ Open Circle Solutions BV
 
 Dynamo: Web Application Accelerator Framework.
 
-Developed, maintained and sponsored by
+Developed, maintained and sponsored by:
 
 image:media/logo-ocs.png["Open Circle Solutons", 256, 53]
 
-Main committer: Bas Rutten
+The sources of Dynamo can be found at https://github.com/opencirclesolutions/dynamo[Github].
 
 Copyright © 2014 - 2024 Open Circle Solutions BV.
 
@@ -81,14 +81,14 @@ also APIs for uploading files, for exporting data to CSV/Excel, and for
 automatically filling forms based on LLM.
 * The developer also creates a front-end application, using the Dynamo
 Front End library based on Angular and PrimeNG. This application offers
-a number of reusable user interface components (e.g. a search screen, an
+a number of reusable user interface components (e.g., a search screen, an
 edit layout, a split layout, etc.) that allow the developer to quickly
 define CRUD screens. This generally takes just a couple of lines of code
 and is almost completely declarative.
 * At run-time, when the user accesses a screen, the Dynamo Framework
 will call the entity model API in order to retrieve the entity model for
 a certain entity. The data from this entity model will then be used to
-render the screen, e.g. to display the correct fields in a search form
+render the screen, e.g., to display the correct fields in a search form
 or the correct columns in a table. In conjunction with this, the
 framework will also call the CRUD API to retrieve the data to display.
 
@@ -119,7 +119,7 @@ screens or use cases, by calling the `getModel(String reference,
 Class<?> clazz)` method. This will construct the Entity Model based on
 the provided class (the second parameter), but it will allow you to
 override certain attributes using message bundle entries (more on this
-later). The *reference* string is the unique identifier that you assign
+later). The `reference` string is the unique identifier that you assign
 to the model (if you just call the `getModel()` variant with a single
 parameter, then the simple name of the class is used as the reference)
 and which is then used as part of the message bundle entry.
@@ -132,7 +132,7 @@ The classes for which you create an Entity Model must inherit from the
 The back-end application offers an API for retrieving the entity model
 for a certain entity. The entity model can be retrieved by doing a GET
 request to */api/dynamo/\{entityName}.* The entity name is the same as the
-simple name of the Java class. E.g. to retrieve the entity model for the
+simple name of the Java class. e.g., to retrieve the entity model for the
 “Organization” entity, make the following call:
 
 [source,httprequest]
@@ -140,7 +140,7 @@ simple name of the Java class. E.g. to retrieve the entity model for the
 GET /api/dynamo/Organization
 --
 
-Optionally, you can pass along a *reference* parameter to specify an
+Optionally, you can pass along a `reference` parameter to specify an
 exact version of the entity model to retrieve (we learn more about
 versions of entity models in section 3.5)
 
@@ -164,16 +164,16 @@ as the framework will do it for you.
 The Entity Model supports several attributes that define how the entity
 itself is represented. These include:
 
-* `displayName`: the name of the entity (e.g. “Car”)
+* `displayName`: the name of the entity (e.g., “Car”)
 * `displayNamePlural`: the name of the entity, in plural form (e.g.
 “Cars”)
 * `description`: textual description of the entity
 * `displayProperty`: the name of the property to use when displaying the
-entity inside e.g. a combo box. This property is also used as the title
+entity inside e.g., a combo box. This property is also used as the title
 of the entity that is placed above an edit form.
 * `sortOrder`: how the entities are sorted by default when displayed in
 a grid or list. The `sortOrder` consists of a comma separated list of
-attribute names and sort directions, e.g. `name asc, age desc`. The
+attribute names and sort directions, e.g., `name asc, age desc`. The
 direction is optional and if it is not supplied, “asc” will be used by
 default. This should be familiar to anybody who has worked with SQL.
 * `maxSearchResults` indicates the maximum number of results to return
@@ -197,7 +197,7 @@ is allowed.
 
 Every Entity Model consists of a number of *Attribute Models*. By
 default, an Attribute Model is created for every valid property of the
-entity. E.g. if you have an entity Person with properties “name” and
+entity. e.g., if you have an entity Person with properties “name” and
 “age”, then the attribute model for the Person entity will contain two
 attribute models, one for “name” and one for “age”.
 
@@ -206,11 +206,11 @@ The following rules apply when constructing the attribute models:
 * An attribute model will be created for every public, non-static,
 no-parameter getter-method that follows the JavaBean naming convention
 (e.g., `getAge()`; for Boolean or boolean properties, the getter may
-also start with “is”, e.g. `isValid()`).
+also start with “is”, e.g., `isValid()`).
 * You can use Lombok to generate getters and setters for you.
 * The entity class does not necessarily have to contain an actual field
 corresponding to the property. This allows you to create attribute
-models for read-only or composite properties (e.g. a `getNameAndAge()`
+models for read-only or composite properties (e.g., a `getNameAndAge()`
 method which concatenates the name and age as a String). Note that such
 an attribute will have to be defined as read-only.
 * Certain attributes are ignored. Currently this includes only “version”
@@ -248,24 +248,24 @@ AttributeModel getAttributeModel(String attributeName);
 
 For a nested attribute model, the name of the model consists of the
 concatenation of the names of the non-nested models separated by
-periods. E.g. if you have a Person entity that has an attribute
-`address` of type Address, then the “*houseNumber*” attribute model of
+periods. e.g., if you have a Person entity that has an attribute
+`address` of type Address, then the `houseNumber` attribute model of
 the address has the path `address.houseNumber`.
 
 This should all make sense as it corresponds to the paths that are used
-in e.g. JPQL queries and for data binding in Angular.
+in e.g., JPQL queries and for data binding in Angular.
 
 === Defaults and attribute overrides
 
 The Entity Model generation is based on sensible defaults and metadata.
-E.g. the value of the *type* setting of an Attribute Model is directly
+e.g., the value of the *type* setting of an Attribute Model is directly
 taken from the Java type of the property, and certain other aspects e.g.
 whether the attribute is visible in a grid or can be used in a search
-form are derived from this type (e.g. by default a complex attribute
+form are derived from this type (e.g., by default a complex attribute
 will not be visible in a grid).
 
 In addition to this, the Entity Model generation process will take
-certain JSR-303 annotations (e.g. `@NotNull`, `@Size`) into account. A
+certain JSR-303 annotations (e.g., `@NotNull`, `@Size`) into account. A
 detailed explanation for each setting will be given below.
 
 If the default values are not sufficient, you can override them by using
@@ -291,7 +291,7 @@ you can use both access types interchangeably.
 === Message bundle overrides
 
 The annotation override mechanism is quite powerful, but it has some
-drawbacks. E.g. it hard-codes certain String values (display name,
+drawbacks. e.g., it hard-codes certain String values (display name,
 description) into your application, and it does not directly allow for
 internationalization. It also only allows you to override the behaviour
 of the “default” Entity Model that is based directly on the class, and
@@ -307,7 +307,7 @@ Message bundle entries in general have the following structure:
 
 [source,properties]
 --
-[Reference].[Attribute Model Name].[Attribute]=[Value]
+[Reference].[AttributeModelName].[Attribute]=[Value]
 --
 
 Where:
@@ -373,7 +373,7 @@ values:
 ** `dynamoframework.defaults.time-format` (`HH:mm:ss`) for times
 ** `dynamoframework.defaults.date-time-format` (`dd-MM-yyyy HH:mm:ss`)
 * For the `visibleInForm` and `visibleInGrid` settings, both the
-enumeration values (SHOW/HIDE) and the Boolean values `true` and `false`
+enumeration values (`SHOW`/`HIDE`) and the Boolean values `true` and `false`
 are supported.
 
 == Attribute Model settings
@@ -395,9 +395,9 @@ property. By default, its value is empty, which means there are no
 restrictions on the file type.
 
 The value can be set to a comma-separated list of supported extensions,
-e.g. `bmp,jpg,png`. 
+e.g., `bmp,jpg,png`. 
 
-WARNING: Any `.` characters must not be included.
+WARNING: Do not include a `.` (dot) in the extension list.
 
 On the `@Attribute` annotation, you can use an array of String values
 instead of a comma-separated String. Extensions are not case-sensitive,
@@ -412,7 +412,7 @@ generation process and can have the following values:
 * `BASIC`: represents a simple property like a String, a number, a date,
 etc.
 * `DETAIL`: a property that appears as a `@OneToMany` or `@ManyToMany`
-relation in the entity class, e.g. the `orderLines` attribute inside an
+relation in the entity class, e.g., the `orderLines` attribute inside an
 `Order` entity will be considered a `DETAIL` attribute.
 * `MASTER`: a property that appears as a `@OneToOne` or `@ManyToOne` in
 the entity class.
@@ -435,7 +435,7 @@ displayed, based on the type of the property:
 For a String property, you can use the `textFieldMode` setting to render
 a text area or a password field instead. For an Integer field, you can
 use the `numberFieldMode` setting to render an “integer field” instead.
-** For a Boolean, a check box will be rendered by default. You can
+** For a Boolean, a checkbox will be rendered by default. You can
 change this to a toggle button by changing the value of the
 `booleanFieldMode` setting.
 ** For a `LocalTime` attribute, a time picker will be rendered.
@@ -455,7 +455,7 @@ of the `selectMode` setting.
 ** In case `nestedDetails` is set to true, a table that can be used to
 edit the details inline as part of the edit form is rendered. This is
 used for nested collections that cannot exist without the parent entity,
-e.g. the OrderLines belonging to an Order.
+e.g., the OrderLines belonging to an Order.
 ** In case `nestedDetails` is set to false, a multiple select component
 that can be used to select various (already existing) entities is
 rendered. You can switch this to a lookup field by changing the value of
@@ -485,7 +485,7 @@ single search field will appear.
 search field will be created. In this field you can select the date to
 search on.
 ** For a Boolean property, a three-way checkbox displayed. This checkbox
-has three possible values: true, false, and “no value”.
+has three possible values: "true", "false", and "no value".
 ** For an enumeration, a combo box containing all values of the
 enumeration is displayed.
 * For a `MASTER` property, by default a combo box containing all
@@ -517,7 +517,7 @@ bundle:
 
 [source,properties]
 --
-[Simple Class Name].[Enumeration Value]=[desired value]
+[SimpleClassName].[EnumerationValue]=[Desired value]
 --
 
 E.g.:
@@ -569,15 +569,15 @@ In message bundle:
 
 [source,properties]
 --
-cascade.[index] = [path to attribute]
-cascadeFilterPath.[index] = [path to attribute]
+cascade.[index] = [Path to attribute]
+cascadeFilterPath.[index] = [Path to attribute]
 cascadeMode.[index] = BOTH | EDIT | SEARCH
 --
 
 The `cascade` setting can be used to define “cascading search” for
 selection components. Cascading search means that when you select a
 value in a certain component, the available values in another component
-change based on this choice. E.g. suppose that you are editing or
+change based on this choice. e.g., suppose that you are editing or
 searching for an `Organization` and you have selection fields for a
 country and for a list of members of the organization– choosing a
 country from the list will limit the values in member list to the people
@@ -647,7 +647,7 @@ setting is changed to a valid https://www.iso.org/iso-4217-currency-codes.html[I
 currency code, then a currency  symbol will be displayed in front of the value
 of the property.
 
-If the specified currency code corresponds to a symbol (e.g. “$” for US
+If the specified currency code corresponds to a symbol (e.g., “$” for US
 dollar) then this symbol will be used instead of the code.
 
 === DateType
@@ -713,7 +713,7 @@ The `defaultSearchValueFrom` setting can be used to set the default
 value that appears as the lower bound inside a user interface component
 inside a search form. This is only supported for simple attributes like
 strings and number, not for entities. It is only used when two input
-components (upper and lower bound) are rendered for the search, e.g. in
+components (upper and lower bound) are rendered for the search, e.g., in
 case of a numeric value or date range.
 
 You always specify this setting as a String; if the value must be
@@ -738,7 +738,7 @@ The `defaultSearchValueTo` setting can be used to set the default value
 that appears as the upper bound inside a user interface component inside
 a search form. This is only supported for simple attributes like strings
 and number, not for entities. It is only used when two input components
-(upper and lower bound) are rendered for the search, e.g. in case of a
+(upper and lower bound) are rendered for the search, e.g., in case of a
 numeric value or date range.
 
 You always specify this setting as a String; if the value must be
@@ -803,7 +803,7 @@ formatted. It is supported for attributes of a Java 8 date/time type
 (LocalDate, LocalTime, etc).
 
 The value of the `displayFormat` attribute must be a valid Java
-data/time formatting pattern, e.g. “dd-MM-yyyy”, but you can use
+data/time formatting pattern, e.g., “dd-MM-yyyy”, but you can use
 different separators like “dd/MM-yyyy” or use formats like “yyyy-MM-dd”.
 
 If you do not explicitly specify a displayFormat for an attribute, the
@@ -824,7 +824,7 @@ displayName = [String]
 The `displayName` setting determines how the attribute will be named
 onscreen. By default, it is derived from the `name` setting, replacing
 CamelCase notation by spaces and then capitalizing individual words,
-e.g. `mininumAge` will be translated to “Minimum Age”. You can use the
+e.g., `mininumAge` will be translated to “Minimum Age”. You can use the
 system property `dynamoframework.capitalize-property-names` and set it to `false` so that
 only the first word will be capitalized.
 
@@ -860,7 +860,7 @@ and cannot be edited in the user interface.
 
 The special value `HIDDEN` can be used in cases in which an attribute
 must be filled with a value that is not directly entered inside the edit
-form but depends on another non-constant value. E.g. you are in detail
+form but depends on another non-constant value. e.g., you are in detail
 screen and have a reference to a parent object which must be set on the
 new entity.
 
@@ -1002,7 +1002,7 @@ ignoreInSearchFilter = true | false
 --
 
 This setting can be used for rare occasions in which you want to use an
-attribute inside a search form (e.g. for setting up cascading) but you
+attribute inside a search form (e.g., for setting up cascading) but you
 want to ignore the selected value when actually performing a search.
 
 === Image
@@ -1028,8 +1028,8 @@ lookupEntityReference = [string value]
 
 The `lookupEntityReference` setting can be used to specify the reference
 (unique identifier) that is to be used when looking up nested entities.
-E.g. suppose that you have an Organization entity that has an attribute
-Country. By default, when looking up countries (e.g. when filling a
+e.g., suppose that you have an Organization entity that has an attribute
+Country. By default, when looking up countries (e.g., when filling a
 dropdown list), the default “Country” entity model will be used. If you
 want to use a different entity model, you can specify this using this
 setting.
@@ -1130,7 +1130,7 @@ The `memberType` setting can be used to explicitly set the member type
 (i.e. the type of an individual entity) of an attribute type `DETAIL`.
 Normally, the member type can be derived from the source code
 automatically, but there are certain cases in which this is not
-possible, e.g. when working with a property that does not directly map
+possible, e.g., when working with a property that does not directly map
 to a member field, but rather returns a collection that is calculated on
 the fly. In this case, you can use the `memberType` to set the exact
 type of the members of the collection.
@@ -1152,12 +1152,12 @@ In message bundle:
 minLength = [Integer value]
 --
 
-The `minLength`setting can be used to specify the minimum allowed
+The `minLength` setting can be used to specify the minimum allowed
 length of an attribute of type String. This value is automatically
 derived from the `@Size(min=<value>)` annotation.
 
 It can also be used to set the minimum length of string values inside an
-element collection. In this case, you must set the `minLength`directly
+element collection. In this case, you must set the `minLength` directly
 on the `@Attribute` annotation.
 
 [source,java]
@@ -1405,7 +1405,7 @@ The application will carry out an automatic check for duplicates when
 the user tries to save the entity (based on the `findIdenticalEntity`
 functionality), and will then look for an error message stored under the
 “<short name of entity>.not.unique” key in order to display an error
-message. E.g. in the example above, you should add a
+message. e.g., in the example above, you should add a
 “Country.not.unique” message to the message bundle.
 
 === ReplacementSearchPath
@@ -1515,7 +1515,7 @@ will render two timestamp search fields that allow you to specify a
 search interval. When you change this setting to *true* then instead the
 application will render to date selection fields. Searching using these
 date selection fields will return any time stamps that fall within the
-specified date interval (inclusive). E.g. if you enter the search values
+specified date interval (inclusive). e.g., if you enter the search values
 `2020-04-04` to `2020-04-06` you will return any records for which the
 time stamp value matches the interval from `2020-04-04 00:00:00` up to
 `2020-04-06 23:59:599999999`
@@ -1548,7 +1548,7 @@ searchPrefixOnly = true | false
 
 The `searchPrefixOnly` setting determines whether search operations on
 the property check only for a prefix match. If this is set to *true*,
-then searching for e.g. “a” will only match “almond” (“a” appears at
+then searching for e.g., “a” will only match “almond” (“a” appears at
 start) but not “walnut” (“a” appears in the middle). If set to false,
 then “a” will match both “almond” and “walnut”.
 
@@ -1893,14 +1893,14 @@ from the top-level model for the entity. So, the direct model for the
 “Address” entity is a different model than the nested model for
 `Person.address`.
 
-Some settings behave differently for nested entity models. E.g. for any
+Some settings behave differently for nested entity models. e.g., for any
 properties of nested entities, the `searchable` and `visibleInGrid`
 settings will be set to false by default.
 
 You can override settings on nested attribute models in the same way as
 you can override attributes of non-nested entities, i.e. by including a
 message in the message bundle that contains the full path to the
-property (e.g. `Movie.director.name.displayName=Director Name`).
+property (e.g., `Movie.director.name.displayName=Director Name`).
 
 === Element collections
 
@@ -2058,7 +2058,7 @@ The framework supports several methods that make it possible to fetch
 data based on a primary key or collection of keys, and also allow you to
 specify with relations to fetch as part of the query.
 
-Note e.g. the following method defined in `BaseService`:
+Note e.g., the following method defined in `BaseService`:
 
 [source,java]
 --
@@ -2356,7 +2356,7 @@ constructor arguments, namely:
 fetch query (these will always be fetched using a left join).
 * Optionally, the name of the properties for which the values must be
 unique. You can use a comma-separated list to specify multiple
-properties, e.g. “code,name” means that both the “code” and “name”
+properties, e.g., “code,name” means that both the “code” and “name”
 properties must be unique.
 * Optionally, a boolean parameter that indicates whether the search for
 the unique value is case-sensitive (defaults to `false`).
@@ -2382,7 +2382,7 @@ The easiest way of declaring a property is by including it in the
 Boot, and as such you can add both your own system properties to it, as
 well as using it to modify any Spring Boot settings.
 
-You can use the default mechanisms offered by Spring Boot (e.g. external configuration
+You can use the default mechanisms offered by Spring Boot (e.g., external configuration
 file, explicitly set system parameters, using profiles) to override the
 values.
 
@@ -2415,14 +2415,14 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties`
 |===
 |Key|Type|Description|Default value
 
-|bedrock|BedrockProperties|Bedrock properties|
-|capitalize-property-names|Boolean|Indicates whether to capitalize individual words in property names|true
-|csv|CsvProperties|Properties related to csv, import and export|
-|defaults|DefaultProperties|Default properties|
-|ollama|OllamaProperties|Ollama properties|
-|openai|OpenAiProperties|OpenAI properties|
-|unaccent-function-name|String|The name of the database function used to replace accents|
-|vertexai|VertexAiProperties|VertexAI properties|
+|`bedrock`|BedrockProperties|Bedrock properties|
+|`capitalize-property-names`|Boolean|Indicates whether to capitalize individual words in property names|true
+|`csv`|CsvProperties|Properties related to csv, import and export|
+|`defaults`|DefaultProperties|Default properties|
+|`ollama`|OllamaProperties|Ollama properties|
+|`openai`|OpenAiProperties|OpenAI properties|
+|`unaccent-function-name`|String|The name of the database function used to replace accents|
+|`vertexai`|VertexAiProperties|VertexAI properties|
 |===
 
 === Prefix dynamoframework.ollama
@@ -2433,9 +2433,9 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaCo
 |===
 |Key|Type|Description|Default value
 
-|enabled|Boolean|Enable Ollama|false
-|model|String|The model to use|llama3
-|url|String|Ollama URL|
+|`enabled`|Boolean|Enable Ollama|`false`
+|`model`|String|The model to use|`llama3`
+|`url`|String|Ollama URL|
 |===
 
 === Prefix dynamoframework.openai
@@ -2446,10 +2446,10 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiCo
 |===
 |Key|Type|Description|Default value
 
-|api-key|String|The OpenAI API key|
-|enabled|Boolean|Enable OpenAI|false
-|max-tokens|Integer|Maximum number of tokens|4096
-|model|String|The model to use|gpt-4-turbo
+|`api-key`|String|The OpenAI API key|
+|`enabled`|Boolean|Enable OpenAI|`false`
+|`max-tokens`|Integer|Maximum number of tokens|`4096`
+|`model`|String|The model to use|`gpt-4-turbo`
 |===
 
 === Prefix dynamoframework.defaults
@@ -2460,28 +2460,28 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |===
 |Key|Type|Description|Default value
 
-|ai-service|String|The default AI service|
-|boolean-field-mode|AttributeBooleanFieldMode|Indicates the default mode to use for boolean components|
-|date-format|String|The default date format|dd-MM-yyyy
-|date-time-format|String|The default date/time (time stamp) format|dd-MM-yyyy HH:mm:ss
-|decimal-precision|Integer|The default decimal precision|2
-|element-collection-mode|ElementCollectionMode|Indicates the default mode to use for element collection fields|
-|endpoints|EndpointProperties|The configuration of the Dynamo endpoints|
-|enum-field-mode|AttributeEnumFieldMode|The default field type to use for enumeration attributes|
-|false-representation|String|The representation of the value &lt;code&gt;false&lt;/code&gt;|false
-|false-representations|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;false&lt;/code&gt;|
-|group-together-mode|GroupTogetherMode|The default group together mode|
-|group-together-width|Integer|The column width from grouping together|300
-|locale|Locale|The default locale|
-|nesting-depth|Integer|The default nesting depth|2
-|number-field-mode|NumberFieldMode|The default number field mode|
-|search-case-sensitive|Boolean|The default case sensitiveness for search|false
-|search-prefix-only|Boolean|Whether search is prefix only|false
-|time-format|String|The default time format|HH:mm:ss
-|trim-spaces|Boolean|Whether to trim white space for text inputs|false
-|true-representation|String|The representation of the value &lt;code&gt;true&lt;/code&gt;|true
-|true-representations|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;true&lt;/code&gt;|
-|use-prompt-value|Boolean|Indicates whether to use the display name as the input prompt by default|true
+|`ai-service`|String|The default AI service|
+|`boolean-field-mode`|AttributeBooleanFieldMode|Indicates the default mode to use for boolean components|
+|`date-format`|String|The default date format|`dd-MM-yyyy`
+|`date-time-format`|String|The default date/time (time stamp) format|`dd-MM-yyyy HH:mm:ss`
+|`decimal-precision`|Integer|The default decimal precision|`2`
+|`element-collection-mode`|ElementCollectionMode|Indicates the default mode to use for element collection fields|
+|`endpoints`|EndpointProperties|The configuration of the Dynamo endpoints|
+|`enum-field-mode`|AttributeEnumFieldMode|The default field type to use for enumeration attributes|
+|`false-representation`|String|The representation of the value &lt;code&gt;false&lt;/code&gt;|`false`
+|`false-representations`|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;false&lt;/code&gt;|
+|`group-together-mode`|GroupTogetherMode|The default group together mode|
+|`group-together-width`|Integer|The column width from grouping together|`300`
+|`locale`|Locale|The default locale|
+|`nesting-depth`|Integer|The default nesting depth|`2`
+|`number-field-mode`|NumberFieldMode|The default number field mode|
+|`search-case-sensitive`|Boolean|The default case sensitiveness for search|`false`
+|`search-prefix-only`|Boolean|Whether search is prefix only|`false`
+|`time-format`|String|The default time format|`HH:mm:ss`
+|`trim-spaces`|Boolean|Whether to trim white space for text inputs|`false`
+|`true-representation`|String|The representation of the value &lt;code&gt;true&lt;/code&gt;|`true`
+|`true-representations`|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;true&lt;/code&gt;|
+|`use-prompt-value`|Boolean|Indicates whether to use the display name as the input prompt by default|`true`
 |===
 
 === Prefix dynamoframework.defaults.endpoints
@@ -2493,12 +2493,12 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |===
 |Key|Type|Description|Default value
 
-|autofill|String|The endpoint for the autofill controller|/api/dynamo/autofill
-|crud|String|The endpoint for the crud controller|/api/dynamo/crud
-|export|String|The endpoint for the export controller|/api/dynamo/export
-|files|String|The endpoint for the file controller|/api/dynamo/file
-|model|String|The endpoint for the model controller|/api/dynamo/model
-|status|String|The endpoint for the status controller|/api/dynamo/status
+|`autofill`|String|The endpoint for the autofill controller|`/api/dynamo/autofill`
+|`crud`|String|The endpoint for the crud controller|`/api/dynamo/crud`
+|`export`|String|The endpoint for the export controller|`/api/dynamo/export`
+|`files`|String|The endpoint for the file controller|`/api/dynamo/file`
+|`model`|String|The endpoint for the model controller|`/api/dynamo/model`
+|`status`|String|The endpoint for the status controller|`/api/dynamo/status`
 |===
 // end::dynamoframework.defaults.endpoints[]
 
@@ -2510,11 +2510,11 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockC
 |===
 |Key|Type|Description|Default value
 
-|access-key|String|Access key|
-|access-secret|String|Access secret|
-|enabled|Boolean|Enable Bedrock|false
-|model-id|String|Model id|
-|region|String|Region|
+|`access-key`|String|Access key|
+|`access-secret`|String|Access secret|
+|`enabled`|Boolean|Enable Bedrock|`false`
+|`model-id`|String|Model id|
+|`region`|String|Region|
 |===
 
 === Prefix dynamoframework.vertexai
@@ -2525,10 +2525,10 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAi
 |===
 |Key|Type|Description|Default value
 
-|enabled|Boolean|Enable VertexAI|false
-|model|String|The model to use|gemini-1.5-flash-preview-0514
-|project-id|String|The project id|
-|project-region|String|The region of the project|europe-west1
+|`enabled`|Boolean|Enable VertexAI|`false`
+|`model`|String|The model to use|`gemini-1.5-flash-preview-0514`
+|`project-id`|String|The project id|
+|`project-region`|String|The region of the project|`europe-west1`
 |===
 
 === Prefix dynamoframework.csv
@@ -2539,15 +2539,20 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfi
 |===
 |Key|Type|Description|Default value
 
-|escape-char|String|The CSV escape character when importing/exporting|&quot;&quot;
-|max-rows-before-streaming|Integer|The number of rows that must be present in a result set before resorting to a streaming approach for Excel export|1000
-|quote-char|String|The CSV quote char when importing/exporting|&quot;&quot;
-|separator-char|String|The CSV separator when importing/exporting|;
-|thousands-grouping|Boolean|Whether to use thousands grouping in XLS files|false
+|`escape-char`|String|The CSV escape character when importing/exporting|`&quot;&quot;`
+|`max-rows-before-streaming`|Integer|The number of rows that must be present in a result set before resorting to a streaming approach for Excel export|`1000`
+|`quote-char`|String|The CSV quote char when importing/exporting|`&quot;&quot;`
+|`separator-char`|String|The CSV separator when importing/exporting|`;`
+|`thousands-grouping`|Boolean|Whether to use thousands grouping in XLS files|`false`
 |===
 
-You can use the static methods from the `SystemPropertyUtils` class to
-access these system properties from inside your code.
+You can use retrieve the Dynamo properties using the `DynamoPropertiesHolder`
+in the following way:
+
+[source,java]
+--
+DynamoProperties properties = DynamoPropertiesHolder.getDynamoProperties();
+--
 
 == Project set-up
 
@@ -2560,7 +2565,7 @@ Dynamo back-end.
 Replace the placeholders between square brackets by your own values
 
 This example POM also does not include any database drivers. This means you
-will likely need to add your own database driver (e.g. Postgresql).
+will likely need to add your own database driver (e.g., Postgresql).
 
 It also does not contain any dependencies for setting up application security,
 however the three dependencies that you need to set up Spring security based
@@ -2859,7 +2864,7 @@ have a reference to this `MessageService`.
 The message bundle that is most
 important for updating the application is the message bundle located at
 *src/main/resources/entitymodel.properties*. While the application will function
-without this message bundle, it is very useful for specifying e.g. localizations of
+without this message bundle, it is very useful for specifying e.g., localizations of
 enumeration values or for overriding entity model defaults defined in the annotations.
 
 The `MessageService` provides a number of methods for retrieving
@@ -2935,7 +2940,7 @@ public class MySecurityAdapter {
 * We create a class, and annotate it with the `@EnableWebSecurity` and
 `@EnableMethodSecurity` annotations in order to enable Spring security.
 * We create a `MvcRequestMatcher` that allows us to define certain patterns
-that are excluded form the authentication (e.g. the “status” endpoint).
+that are excluded form the authentication (e.g., the “status” endpoint).
 * We set up HTTP security, permitting access to some URIs based on the
 request matcher, and adding JWT-based security for all other endpoints.
 * We set up a way of extracting the roles from the JWT token. This part
@@ -3181,7 +3186,7 @@ for an example.
 To use localization, you can use the (standard) functionality provided
 by the `translateService`.
 
-Message bundles (named “<locale>.json”, e.g. “nl.json”, “en.json”) can
+Message bundles (named “<locale>.json”, e.g., “nl.json”, “en.json”) can
 be placed in the “assets/i18n” directory.
 
 The messages take the form “key” : “value”
@@ -3238,7 +3243,7 @@ message sticky/persistent.
 
 The Dynamo Framework uses a generic framework for executing search
 requests to the back-end. Normally the details of this framework are
-hidden from the developer, but in some cases e.g. when defining field
+hidden from the developer, but in some cases e.g., when defining field
 filters, it can be useful to know how the filter mechanism works in
 detail. The rest of this section will cover how to set up the various
 supported filters.
@@ -3530,11 +3535,11 @@ button to bring up a popup dialog containing a search form. This allows
 the user to carry out a complex search query. The search form is
 constructed using the entity model for the entity you are searching for.
 By default, this is the general entity model for that entity, but you can
-use the *lookupEntityReference* setting on the attribute model to
-specify a different entity model and the *lookupQueryType* to specify
+use the `lookupEntityReference` setting on the attribute model to
+specify a different entity model and the `lookupQueryType` to specify
 the query type.
 * A one-to-many relationship, for which the details cannot exist without
-the parent entity, e.g. an order with multiple order lines. In this
+the parent entity, e.g., an order with multiple order lines. In this
 case, the framework will render a table inside the form that can be used
 to modify the related entities while editing the parent entity. For this
 to work (properly), it is generally advisable to include the
@@ -3548,7 +3553,7 @@ image:media/image7.png[image,width=560,height=355]
 
 In rare cases, it can occur that your application contains an edit form
 for creating/updating entities that depends on an external value that is
-dependent on the context. E.g. you are creating a new person that is a
+dependent on the context. e.g., you are creating a new person that is a
 member of an organization, but this organization is not present as a
 field in the input form, however it is passed to the edit form based on
 a previous action. In this case, you can use a _hidden_ field to pass a
@@ -3584,7 +3589,7 @@ is hence identified by a unique ID) can be used with the Entity Model
 framework). This makes it relatively easy to use View Objects in the UI.
 In the case of a view object you are creating an object that is solely
 used to transfer data to the UI where it will be used for display
-purposes. This technique can be used to combine data from e.g. multiple
+purposes. This technique can be used to combine data from e.g., multiple
 sources
 
 In order to use a view object, take the following steps:
@@ -3615,13 +3620,13 @@ would normally, and instead use the name of the view object as the
 
 It is also possible to define actions on the entity model that will
 directly be translated to input dialogs in the UI. This can be used when
-you have an action that operates on part of an entity, e.g. you want a
+you have an action that operates on part of an entity, e.g., you want a
 dialog that can be used to change only an organization’s name.
 
 In order to use this functionality, you must perform a number of steps:
 
 * First, define a method on the service that is responsible for the
-entity model (e.g. for the Organization service use the
+entity model (e.g., for the Organization service use the
 `OrganizationService(Impl)`. This method must have a single parameter
 (which represents the DTO that holds the data that is being edited) and
 must return an instance of the entity that is managed by the service.
@@ -3675,7 +3680,7 @@ behave.
 
 In the UI, the framework will automatically generate buttons that bring
 up a modal dialog that can be used to carry out the action. This modal
-dialog will contain input components based on the entity model. E.g. for
+dialog will contain input components based on the entity model. e.g., for
 the action defined above, it will look as follows:
 
 image:media/image8.png[image,width=559,height=265]
@@ -3785,7 +3790,7 @@ user does not have at least one of the provided routes, and navigate to
 the “login” route instead.
 
 Secondly, you can use the `AuthenticationService` to check whether a
-user is in a certain role. You can e.g. use this when building a menu,
+user is in a certain role. You can e.g., use this when building a menu,
 to enable/disable certain routes.
 
 == Composite UI components
@@ -3849,7 +3854,7 @@ separate component (and include a route to it) for this detail page.
 
 If this value is set, no extra actions are needed to navigate to a
 detail screen for editing or creating an entity. If this value is not
-set (e.g. in case you want some custom behaviour when clicking on either
+set (e.g., in case you want some custom behaviour when clicking on either
 a row in the table or the Add button, use the `onAddButtonClick` or `onRowSelect` event
 handlers instead.
 
@@ -3908,7 +3913,7 @@ query type to use. The supported values are `PAGING` and `ID_BASED`, with
 Changing this setting will determine how the query will be carried out
 in the back-end. In many cases this will probably not be relevant, but
 there might be situations in which you will need to switch to ID_BASED,
-e.g. when you want to display values from a one-to-many relation inside
+e.g., when you want to display values from a one-to-many relation inside
 the table.
 
 ==== PreserveSearchTerms
@@ -3990,7 +3995,7 @@ return defaultFilters;
 
 ==== EntityModelReference
 
-The *entityModelReference* can be used to specify the specific reference
+The `entityModelReference` can be used to specify the specific reference
 of the entity model to use when constructing the screen.
 
 ==== PopupButtonMode
@@ -4198,7 +4203,7 @@ existing entities (based on the value of the entityId).
 By default, the form will contain a single column of input components,
 in the order specified by the `@AttributeOrder` defined on the entity.
 The type of the component that will be rendered depends on various
-settings on the attribute model (e.g. selectMode, textFieldMode).
+settings on the attribute model (e.g., selectMode, textFieldMode).
 
 Only the attributes for which `visibleInForm` is set to `true` will be
 included in the form, and only if they indeed editable (see the
@@ -4432,7 +4437,7 @@ overriding the `initialize()` method in the back-end instead (see section
 ==== Additional validations
 
 The Dynamo framework will automatically set up field validators based on
-the attribute model, e.g. to check whether required fields are filled,
+the attribute model, e.g., to check whether required fields are filled,
 whether minimum and maximum lengths are observed, etc. In addition to
 this, it is also possible to configure additional validations in the
 back-end. If this is not sufficient, it is also possible to extends the
@@ -4869,7 +4874,7 @@ It is possible to mix-and-match the use of generic fields and your own freely de
 a free-form-template. This allows you a high degree of control over the layout of a screen, while at
 the same time profiting from the efficiency of using the standard components.
 
-You can also define your own components, e.g. like this:
+You can also define your own components, for example this:
 
 [source,angular17html]
 --
@@ -4884,7 +4889,7 @@ You can also define your own components, e.g. like this:
 --
 
 In the Typescript definition, you can use `@ViewChild` to inject a
-reference to the form component, and delegate the logic (e.g. for
+reference to the form component, and delegate the logic (e.g., for
 looking up available options) to the child component.
 
 [source,java]
@@ -4938,7 +4943,7 @@ PAGING being the default.
 Changing this setting will determine how the query will be carried out
 in the back-end. In many cases this will probably not be relevant, but
 there might be situations in which you will need to switch to ID_BASED,
-e.g. when you want to display values from a one-to-many relation inside
+e.g., when you want to display values from a one-to-many relation inside
 the table.
 
 ==== DefaultFilters

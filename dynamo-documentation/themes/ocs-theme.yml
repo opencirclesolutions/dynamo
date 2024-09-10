@@ -1,5 +1,6 @@
 page:
   size: a4
+  margin: [25mm, 25mm, 25mm, 25mm]
 extends: default
 base:
   font-color: #515147
@@ -13,4 +14,17 @@ font:
       italic: Raleway-Italic.ttf
       bold: Raleway-Bold.ttf
       bold_italic: Raleway-BoldItalic.ttf
-
+    RobotoMono:
+      normal: RobotoMono-Regular.ttf
+      italic: RobotoMono-Italic.ttf
+      bold: RobotoMono-Bold.ttf
+      bold_italic: RobotoMono-BoldItalic.ttf
+code:
+  font-family: RobotoMono
+  background-color: #ffffff
+  border-radius: 4
+  border-color: #cccccc
+codespan:
+  font-family: RobotoMono
+  font-color: #833906
+#  font-color: #39A248
