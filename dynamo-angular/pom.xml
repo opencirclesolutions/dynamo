@@ -10,19 +10,29 @@
 		<artifactId>dynamo-parent</artifactId>
 		<version>4.0.0-SNAPSHOT</version>
 	</parent>
-	<organization>
-		<name>Open Circle Solutions</name>
-		<url>http://www.opencirclesolutions.nl</url>
-	</organization>
-	<licenses>
-		<license>
-			<name>Apache License Version 2.0</name>
-			<distribution>repo</distribution>
-			<url>http://www.apache.org/licenses/LICENSE-2.0</url>
-		</license>
-	</licenses>
 	<build>
 		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<classifier>model</classifier>
+					<classesDirectory>dynamo/model</classesDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<classifier>i18n</classifier>
+					<classesDirectory>i18n</classesDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<classifier>shared</classifier>
+					<classesDirectory>shared</classesDirectory>
+				</configuration>
+			</plugin>
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
