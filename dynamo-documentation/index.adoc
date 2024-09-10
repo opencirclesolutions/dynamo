@@ -36,7 +36,7 @@ configuration, model-driven development and DRY (don’t repeat yourself).
 At the core of Dynamo is the concept of the _Entity Model_. The Entity
 Model describes the attributes and behaviour of an entity (a.k.a. a
 domain object) in your application. This Entity Model can then be used
-as the basis for creating forms, , search screens etc.
+as the basis for creating forms, search screens, etc.
 
 The _Entity Model_ of an entity is automatically constructed based on
 the properties of the attributes of the entity (using sensible defaults
