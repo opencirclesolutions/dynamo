@@ -4,6 +4,7 @@ extends: default
 base:
   font-color: #515147
   font-family: Raleway
+  text-align: left
 font:
   catalog:
     merge: true
