@@ -2332,118 +2332,6 @@ the name of the bean is required:
 private BaseService<Integer, Country> countryService;
 --
 
-=== Cheat sheet – adding a new entity
-
-This section provides a handy overview of the steps that have to be
-carried out in order to add a new entity to the system
-
-* Create a new database table to hold the data.
-* Create a new entity class, and annotate it with the standard JPA
-annotations for ORM mapping and validation.
-* Annotate the entity with the *@Model* annotation to configure the
-entity model settings like *displayProperty*, *sortOrder*, and
-*createAllowed*
-* Annotate the entity with the *@AttributeOrder* (and optionally
-*@GridAttributeOrder* and *@SearchAttributeOrder)* in order to configure
-the attribute ordering.
-* Annotate the entity with one or more *@AttributeGroup* annotations if
-you want the attributes to be grouped in a specific way inside the edit
-form.
-* Use *@FetchJoins* to specify which relations to fetch in case of a
-search/list and in case of the retrieval of an individual entity.
-* Create the DAO and Service interfaces and their implementations
-
-Make sure the individual attribute settings are correct (this can
-involve a lot of tweaking since there are many settings, but this should
-cover the basics)
-
-* Set the correct values for *searchable*, *visibleInGrid* and
-*visibleInForm*. Note that by default no attributes are searchable,
-and that only basic attributes are visible inside grids and forms. For
-any complex attributes, you will have to set *visibleInGrid* or
-*visibleInForm* to true if you want these attributes to show up in
-respectively grids or forms.
-
-The following table lists some of the common things to look out for, for
-attributes of certain types
-
-[width="100%",cols="50%,50%",options="header",]
-|===
-|*Attribute type* |*Hints*
-|String a|
-* Set the *textFieldMode* to determine whether you want to use a text
-field or a text area
-* Use the *@Attribute(url=true)* when the field represents a URL
-
-|Integer or Long a|
-* Use the *numberFieldMode* to determine whether to use spinner
-buttons
-
-|Decimal number (BigDecimal) a|
-* Use the *currencyCode* or *percentage* settings when dealing with
-currencies or percentages
-
-|Enumeration a|
-* Make sure to provide translations for the enumeration values in
-_entityModel.properties_
-* Use the *enumFieldMode* to determine which input component to use.
-
-|(Local)Date a|
-* Set the displayFormat
-* Determine whether you want to search using *searchExactValue* if
-applicable
-
-|Instant or LocalDateTime a|
-* Set the displayFormat
-* Determine whether you want to search using *searchForDateOnly*
-
-|Many-to-one relationship (“master”) a|
-* Set the *selectMode* to distinguish between using a combo box, au
-autocomplete component or a lookup field
-* Make sure the “*displayProperty*” of the related entity is set
-* If this attribute is searchable, considers whether you wants to set
-*multipleSearch* to true to allow searching on multiple values.
-* Set the @Attribute(nestedDetails) setting to *false*
-
-|Many-to-many relationship a|
-
-* Set the *selectMode* to distinguish between using a multi-select
-component or a lookup field
-* Make sure the *displayProperty* of the related entity is set
-* Think about whether you want the *quickAddAllowed* setting to be
-*true*
-* *Make sure the entities are wired correctly (see below)*
-
-|One-to-many relationship (nested/dependent attributes) a|
-* Make sure the *nestedDetails* setting is set to true.
-
-|Element collection table a|
-* Make sure the *elementCollectionMode* is set correctly
-* Use *minLength* and *maxLength* to set the minimum and maximum length
-(in case of strings)
-
-|Boolean a|
-* Set the *booleanFieldMode* to the desired value
-* Consider adding custom *trueRepresentation* and *falseRepresentation*
-values
-
-|===
-
-For nested/dependent attributes it is important that the
-entities always wired correctly (meaning that the parent entity correctly refers
-to the nested entity and vice versa). The Dynamo Framework offers a
-utility method in the EntityUtils class for achieving this. Here you can
-see an example of this.
-
-[source,java]
---
-public void setTranslations(Set<GiftTranslation> translations) {
-    wireRelations(this, this.translations, translations, (translation, gift) -> translation.setGift(gift));
-}
---
-
-The *wireRelations* function is static function from the *EntityModelUtils* class.
-
 == System properties
 
 Dynamo supports several ways of dealing with (system) properties.
@@ -5411,3 +5299,119 @@ shows the configuration for PostgreSQL:
   </entity>
 </entity-mappings>
 --
+
+
+[appendix]
+= Cheat sheet – adding a new entity
+
+This section provides a handy overview of the steps that have to be
+carried out in order to add a new entity to the system
+
+* Create a new database table to hold the data.
+* Create a new entity class, and annotate it with the standard JPA
+annotations for ORM mapping and validation.
+* Annotate the entity with the *@Model* annotation to configure the
+entity model settings like *displayProperty*, *sortOrder*, and
+*createAllowed*
+* Annotate the entity with the *@AttributeOrder* (and optionally
+*@GridAttributeOrder* and *@SearchAttributeOrder)* in order to configure
+the attribute ordering.
+* Annotate the entity with one or more *@AttributeGroup* annotations if
+you want the attributes to be grouped in a specific way inside the edit
+form.
+* Use *@FetchJoins* to specify which relations to fetch in case of a
+search/list and in case of the retrieval of an individual entity.
+* Create the DAO and Service interfaces and their implementations
+
+Make sure the individual attribute settings are correct (this can
+involve a lot of tweaking since there are many settings, but this should
+cover the basics)
+
+* Set the correct values for *searchable*, *visibleInGrid* and
+*visibleInForm*. Note that by default no attributes are searchable,
+and that only basic attributes are visible inside grids and forms. For
+any complex attributes, you will have to set *visibleInGrid* or
+*visibleInForm* to true if you want these attributes to show up in
+respectively grids or forms.
+
+The following table lists some of the common things to look out for, for
+attributes of certain types
+
+[width="100%"]
+|===
+| Attribute type  | Hints
+
+|String a|
+* Set the *textFieldMode* to determine whether you want to use a text
+field or a text area
+* Use the *@Attribute(url=true)* when the field represents a URL
+
+|Integer or Long a|
+* Use the *numberFieldMode* to determine whether to use spinner
+buttons
+
+|Decimal number (BigDecimal) a|
+* Use the *currencyCode* or *percentage* settings when dealing with
+currencies or percentages
+
+|Enumeration a|
+* Make sure to provide translations for the enumeration values in
+_entityModel.properties_
+* Use the *enumFieldMode* to determine which input component to use.
+
+|(Local)Date a|
+* Set the displayFormat
+* Determine whether you want to search using *searchExactValue* if
+applicable
+
+|Instant or LocalDateTime a|
+* Set the displayFormat
+* Determine whether you want to search using *searchForDateOnly*
+
+|Many-to-one relationship (“master”) a|
+* Set the *selectMode* to distinguish between using a combo box, au
+autocomplete component or a lookup field
+* Make sure the “*displayProperty*” of the related entity is set
+* If this attribute is searchable, considers whether you wants to set
+*multipleSearch* to true to allow searching on multiple values.
+* Set the @Attribute(nestedDetails) setting to *false*
+
+|Many-to-many relationship a|
+
+* Set the *selectMode* to distinguish between using a multi-select
+component or a lookup field
+* Make sure the *displayProperty* of the related entity is set
+* Think about whether you want the *quickAddAllowed* setting to be
+*true*
+* *Make sure the entities are wired correctly (see below)*
+
+|One-to-many relationship (nested/dependent attributes) a|
+* Make sure the *nestedDetails* setting is set to true.
+
+|Element collection table a|
+* Make sure the *elementCollectionMode* is set correctly
+* Use *minLength* and *maxLength* to set the minimum and maximum length
+(in case of strings)
+
+|Boolean a|
+* Set the *booleanFieldMode* to the desired value
+* Consider adding custom *trueRepresentation* and *falseRepresentation*
+values
+
+|===
+
+For nested/dependent attributes it is important that the
+entities always wired correctly (meaning that the parent entity correctly refers
+to the nested entity and vice versa). The Dynamo Framework offers a
+utility method in the EntityUtils class for achieving this. Here you can
+see an example of this.
+
+[source,java]
+--
+public void setTranslations(Set<GiftTranslation> translations) {
+    wireRelations(this, this.translations, translations, (translation, gift) -> translation.setGift(gift));
+}
+--
+
+The *wireRelations* function is static function from the *EntityModelUtils* class.
+
