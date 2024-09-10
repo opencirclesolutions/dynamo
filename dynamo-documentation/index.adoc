@@ -100,7 +100,7 @@ framework will also call the CRUD API to retrieve the data to display.
 
 To create the entity model, you need access to an `EntityModelFactory`.
 The `EntityModelFactory` is a Spring singleton and can be acquired by
-injection (@Inject or @Autowired). You can also acquire a reference to
+injection (`@Inject` or `@Autowired`). You can also acquire a reference to
 the `EntityModelFactory` by calling the `getEntityModelFactory` method
 on the `ServiceLocator` which in turn can be retrieved by calling
 `ServiceLocatorFactory.getServiceLocator()`.
@@ -1782,7 +1782,7 @@ public class Organization extends AbstractEntity<Integer> {
 You can achieve the same effect by including a message like
 `Organization.attributeOrder=name,headquarters,address,countryOfOrigin,reputation`
 in the message bundle (use commas to separate the values). The message
-in the bundle will overwrite the ordering set by @AttributeOrder. If
+in the bundle will overwrite the ordering set by `@AttributeOrder`. If
 your entity has a large number of attributes this might get a bit
 unwieldy though.
 
@@ -2128,8 +2128,8 @@ paging is preferred. If you have a lot of relations to fetch (or if you
 must fetch any one-to-many or many-to-many relations), use the ID-based
 approach.
 
-In addition to defining the joins using the @FetchJoin annotation, it is
-also possible to configure the joins in the entitymodel.properties message bundle.
+In addition to defining the joins using the `@FetchJoin` annotation, it is
+also possible to configure the joins in the `entitymodel.properties` message bundle.
 
 This is done as follows
 
@@ -2241,7 +2241,7 @@ do this.
 
 The validation functionality offered by the Dynamo Framework are based
 on the JSR 303 (Bean Validation) standard: to express validation rules,
-simply use the standard annotations (@NotNull, @Size, @Min, etc.) on the
+simply use the standard annotations (`@NotNull`, `@Size`, `@Min`, etc.) on the
 properties of your entity.
 
 You can also use `@AssertTrue` and `@AssertFalse` to express more complex
@@ -2270,8 +2270,8 @@ appropriate Angular validators. The following validators are supported:
 
 * Minimum and maximum value (for numeric attribute)
 * Minimum and maximum length (for String attributes)
-* Email validation (for String attributes annotated with @Email)
-* URL validation (for String attributes annotated with @URL)
+* Email validation (for String attributes annotated with `@Email`)
+* URL validation (for String attributes annotated with `@URL`)
 * Required validator (all type of attributes)
 * Minimum and maximum collection size (many-to-many and one-to-many
 relations, element collections).
@@ -2579,7 +2579,7 @@ on OAuth are included in the pom but commented out.
     <relativePath/> <!-- lookup parent from repository -->
   </parent>
   <groupId>[YOUR GROUP ID]</groupId>
-  <artifactId>[YOUR ARTEFACT ID]</artifactId>
+  <artifactId>[YOUR ARTIFACT ID]</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>[YOUR NAME]</name>
   <properties>
@@ -2732,7 +2732,7 @@ on OAuth are included in the pom but commented out.
 ----
 
 With this in place, there is only a little bit of set-up needed to be able to use
-the application. First of all, include an ApplicationConfig class as follows
+the application. First of all, include an `ApplicationConfig` class as follows
 
 [source,java]
 ----
@@ -2803,7 +2803,6 @@ import org.springframework.data.jpa.repository.config.EnableJpaAuditing;
 @SpringBootApplication
 @ComponentScan(basePackages = {"[YOUR PACKAGE GOES HERE]","org.dynamoframework"})
 @EntityScan({"org.dynamoframework.functional.domain", "[YOUR PACKAGE GOES HERE]"})
-@EnableConfigurationProperties(DynamoConfigurationProperties.class)
 public class MyApplication {
 
     public static void main(String[] args) {
@@ -2813,7 +2812,7 @@ public class MyApplication {
 ----
 
 Be sure to replace the placeholders above by the directories that contain your
-entities (for the @EntityScan) and your services/components (for the @ComponentScan)
+entities (for the `@EntityScan`) and your services/components (for the `@ComponentScan`)
 
 The application also needs access to an implementation of the Dynamo
 interface `UserDetailsService`. This service is responsible for checking whether a user is in
@@ -4884,7 +4883,7 @@ You can also define your own components, e.g. like this:
   />
 --
 
-In the Typescript definition, you can use @ViewChild to inject a
+In the Typescript definition, you can use `@ViewChild` to inject a
 reference to the form component, and delegate the logic (e.g. for
 looking up available options) to the child component.
 
@@ -5416,7 +5415,7 @@ autocomplete component or a lookup field
 * Make sure the `displayProperty` of the related entity is set
 * If this attribute is searchable, considers whether you wants to set
 `multipleSearch` to true to allow searching on multiple values.
-* Set the @Attribute(nestedDetails) setting to `false`
+* Set the `@Attribute(nestedDetails)` setting to `false`
 
 |Many-to-many relationship a|
 
