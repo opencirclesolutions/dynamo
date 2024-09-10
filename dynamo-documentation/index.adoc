@@ -184,7 +184,7 @@ of a search will be capped at this maximum value – the table and
 paginator will only show results up to the maximum (and anything beyond
 that will appear to not exist).
 * `createAllowed` indicates whether creating new entities is allowed.
-* *updateAllowed* indicates whether updating existing entities is
+* `updateAllowed` indicates whether updating existing entities is
 allowed.
 * `listAllowed` indicates whether executing GET requests (without
 specifying an ID) to request the full list of entities is allowed.
