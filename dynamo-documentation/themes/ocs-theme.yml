@@ -1,0 +1,15 @@
+page:
+  size: a4
+extends: default
+base:
+  font-color: #515147
+  font-family: Raleway
+font:
+  catalog:
+    merge: true
+    Raleway:
+      normal: Raleway-Regular.ttf
+      italic: Raleway-Italic.ttf
+      bold: Raleway-Bold.ttf
+      bold_italic: Raleway-BoldItalic.ttf
+

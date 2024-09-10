@@ -2479,7 +2479,7 @@ dynamoframework:
     date-format: yyyy-MM-dd
 -----
 
-==== Prefix dynamoframework
+=== Prefix dynamoframework
 [width="100%",cols="52%,22%,26%",options="header",]
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties`
 [cols="2,1,3,1,1"]
@@ -2538,7 +2538,7 @@ dynamoframework:
 
 |===
 
-==== Prefix dynamoframework.ollama
+=== Prefix dynamoframework.ollama
 
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaConfigurationProperties`
 [cols="2,1,3,1,1"]
@@ -2567,7 +2567,7 @@ dynamoframework:
 
 |===
 
-==== Prefix dynamoframework.openai
+=== Prefix dynamoframework.openai
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiConfigurationProperties`
 [cols="2,1,3,1,1"]
 |===
@@ -2601,7 +2601,7 @@ dynamoframework:
 
 |===
 
-==== Prefix dynamoframework.defaults
+=== Prefix dynamoframework.defaults
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties`
 [cols="2,1,3,1,1"]
 |===
@@ -2743,7 +2743,7 @@ dynamoframework:
 
 |===
 
-==== Prefix dynamoframework.defaults.endpoints
+=== Prefix dynamoframework.defaults.endpoints
 
 // tag::dynamoframework.defaults.endpoints[]
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties$EndpointConfigurationProperties`
@@ -2792,7 +2792,7 @@ dynamoframework:
 |===
 // end::dynamoframework.defaults.endpoints[]
 
-==== Prefix dynamoframework.bedrock
+=== Prefix dynamoframework.bedrock
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
 [cols="2,1,3,1,1"]
 |===
@@ -2832,7 +2832,7 @@ dynamoframework:
 
 |===
 
-==== Prefix dynamoframework.vertexai
+=== Prefix dynamoframework.vertexai
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAiConfigurationProperties`
 [cols="2,1,3,1,1"]
 |===
@@ -2866,7 +2866,7 @@ dynamoframework:
 |===
 
 
-==== Prefix dynamoframework.csv
+=== Prefix dynamoframework.csv
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfigurationProperties`
 [cols="2,1,3,1,1"]
 |===

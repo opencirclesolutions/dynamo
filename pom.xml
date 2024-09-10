@@ -83,6 +83,7 @@
 		<module>dynamo-integration-camel</module>
 		<module>dynamo-integration-import</module>
 		<module>dynamo-angular</module>
+		<module>dynamo-documentation</module>
 
 <!--		<module>dynamo-parameter</module>-->
 <!--		<module>dynamo-envers</module>-->
