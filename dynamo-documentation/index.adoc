@@ -375,7 +375,11 @@ model.
 
 === AllowedExtensions
 
-In message bundle: *allowedExtensions = [String]*
+In message bundle:
+[source,properties]
+--
+allowedExtensions = [Comma separated list of extensions]
+--
 
 This setting can be used to specify the extensions of the files that are
 accepted by the file upload component that is generated for a LOB
@@ -518,7 +522,11 @@ Reputation.EXTREMELY_FEARSOME=Extremely [.underline]#fearsome#
 
 === AutofillInstructions
 
-In message bundle: *autofillInstructions = [String]*
+In message bundle:
+[source,properties]
+--
+autofillInstructions = [String]
+--
 
 The *autofillInstructions* setting can be used to define the
 attribute-specific instructions for automatically filling a form based
@@ -527,7 +535,11 @@ in the section <<FormFillEnabled>>.
 
 === BooleanFieldMode
 
-In message bundle: *booleanFieldMode = CHECKBOX | TOGGLE | SWITCH*
+In message bundle:
+[source,properties]
+--
+booleanFieldMode = CHECKBOX | TOGGLE | SWITCH
+--
 
 The *booleanFieldMode* setting can be used to change the type of user
 interface component that is used to modify an attribute of type Boolean.
@@ -613,7 +625,11 @@ Organization.cascadeMode.2=EDIT
 
 === CurrencyCode
 
-In message bundle: *currencyCode = <ISO currency code>*
+In message bundle:
+[source,properties]
+--
+currencyCode = [ISO currency code]
+--
 
 This setting can be used to specify that a numeric field (currently only
 supported for BigDecimal properties) contains a currency value. If this
@@ -625,7 +641,11 @@ dollar) then this symbol will be used instead of the code.
 
 === DateType
 
-In message bundle: *dateType = LOCAL_DATE_TIME | INSTANT | DATE | TIME*
+In message bundle:
+[source,properties]
+--
+dateType = LOCAL_DATE_TIME | INSTANT | DATE | TIME
+--
 
 The *dateType* setting can be used to determine how an attribute of type
 *LocalTime, LocalDate*, *LocalDateTime* or *Instant* will be managed:
@@ -646,7 +666,11 @@ java.sql.Date).
 
 === DefaultSearchValue
 
-In message bundle: *defaultSearchValue = [String]*
+In message bundle:
+[source,properties]
+--
+defaultSearchValue = [String]
+--
 
 The *defaultSearchValue* setting can be used to set the default value
 that appears inside an input component inside a search form. This is
@@ -668,7 +692,11 @@ _(dd-MM-yyyy HH:mm:ss)_.
 
 === DefaultSearchValueFrom
 
-In message bundle: *defaultSearchValueFrom = [String]*
+In message bundle:
+[source,properties]
+--
+defaultSearchValueFrom = [String]
+--
 
 The *defaultSearchValueFrom* setting can be used to set the default
 value that appears as the lower bound inside a user interface component
@@ -689,7 +717,11 @@ _(dd-MM-yyyy HH:mm:ss)_
 
 === DefaultSearchValueTo
 
-In message bundle: *defaultSearchValueTo = [String]*
+In message bundle:
+[source,properties]
+--
+defaultSearchValueTo = [String]
+--
 
 The *defaultSearchValueTo* setting can be used to set the default value
 that appears as the upper bound inside a user interface component inside
@@ -710,7 +742,11 @@ _(dd-MM-yyyy HH:mm:ss)_.
 
 === DefaultValue
 
-In message bundle: *defaultValue = [String]*
+In message bundle:
+[source,properties]
+--
+defaultValue = [String]
+--
 
 The *defaultValue* setting can be used to set the default value that
 appears inside a user interface component when creating a new entity.
@@ -729,7 +765,11 @@ _(dd-MM-yyyy HH:mm:ss)_
 
 === Description
 
-In message bundle: *description = [String]*
+In message bundle:
+[source,properties]
+--
+description = [String]
+--
 
 The *description* setting determines the value of the tooltip that the
 user will see when hovering over the input field for the property.
@@ -741,7 +781,11 @@ This setting supports localization.
 
 === DisplayFormat
 
-In message bundle: *displayFormat = [String]*
+In message bundle:
+[source,properties]
+--
+displayFormat = [String]
+--
 
 The *displayFormat* setting indicates how date/time values will be
 formatted. It is supported for attributes of a Java 8 date/time type
@@ -760,7 +804,11 @@ This setting supports localization.
 
 === DisplayName
 
-In message bundle: *displayName=[String]*
+In message bundle:
+[source,properties]
+--
+displayName = [String]
+--
 
 The *displayName* setting determines how the attribute will be named
 onscreen. By default, it is derived from the *name* setting, replacing
@@ -773,7 +821,11 @@ This setting supports localization.
 
 === DownloadAllowed
 
-In message bundle: *downloadAllowed= true | false*
+In message bundle:
+[source,properties]
+--
+downloadAllowed = true | false
+--
 
 The *downloadAllowed* setting indicates whether it is allowed to
 download files that were uploaded using the file upload functionality.
@@ -782,8 +834,11 @@ show up next to the preview of the image in a file upload component.
 
 === EditableType
 
-In message bundle: *editableType = READ_ONLY | CREATE_ONLY | EDITABLE |
-HIDDEN*
+In message bundle:
+[source,properties]
+--
+editableType = READ_ONLY | CREATE_ONLY | EDITABLE | HIDDEN
+--
 
 The *editableType* setting specifies when an attribute can be edited.
 The default value *EDITABLE* means that the attribute can be edited both
@@ -804,7 +859,11 @@ to change the values.
 
 === ElementCollectionMode
 
-In message bundle: *elementCollectionMode = CHIPS | DIALOG*
+In message bundle:
+[source,properties]
+--
+elementCollectionMode = CHIPS | DIALOG
+--
 
 This setting specifies the type of component to use for editing an
 attribute of type *ELEMENT_COLLECTION*. The default value, CHIPS, will
@@ -823,7 +882,11 @@ framework).
 
 === EnumfieldMode
 
-In message bundle: *enumFieldMode = DROPDOWN | RADIO*
+In message bundle:
+[source,properties]
+--
+enumFieldMode = DROPDOWN | RADIO
+--
 
 The *enumFieldMode* determines which input component to use when
 managing an attribute of type ENUM. By default, the value DROPDOWN is
@@ -837,7 +900,11 @@ dropdown component will always be used in order to save space.
 
 === FileNameProperty
 
-In message bundle: *fileNameProperty = [property name]*
+In message bundle:
+[source,properties]
+--
+fileNameProperty = [property name]
+--
 
 The *fileNameProperty* setting can be used to specify the name of the
 property that is used to store the name of an uploaded file after a file
@@ -877,8 +944,11 @@ actual file name is unknown.
 
 === GroupTogetherWith
 
-In message bundle: *groupTogetherWith = [comma separated list of
-attribute names]*
+In message bundle:
+[source,properties]
+--
+groupTogetherWith = [Comma separated list of attribute names]
+--
 
 The *groupTogetherWith* setting can be used to specify that the input
 components for several attributes must be placed together on a single
@@ -914,7 +984,11 @@ not be displayed properly.
 
 === IgnoreInSearchFilter
 
-In message bundle: *ignoreInSearchFilter = true | false*
+In message bundle:
+[source,properties]
+--
+ignoreInSearchFilter = true | false
+--
 
 This setting can be used for rare occasions in which you want to use an
 attribute inside a search form (e.g. for setting up cascading) but you
@@ -922,7 +996,11 @@ want to ignore the selected value when actually performing a search.
 
 === Image
 
-In message bundle: *image = true | false*
+In message bundle:
+[source,properties]
+--
+image = true | false
+--
 
 This setting can be used on a LOB property to specify whether it
 represents an image. By default, this setting has the value *false*.
@@ -931,7 +1009,11 @@ the value (byte contents) of the property.
 
 === LookupEntityReference
 
-In message bundle: *lookupEntityReference = <string value>*
+In message bundle:
+[source,properties]
+--
+lookupEntityReference = [string value]
+--
 
 The *lookupEntityReference* setting can be used to specify the reference
 (unique identifier) that is to be used when looking up nested entities.
@@ -946,7 +1028,11 @@ this entity model behaves.
 
 === LookupQueryType
 
-In message bundle: *lookupQueryType = PAGING | ID_BASED*
+In message bundle:
+[source,properties]
+--
+lookupQueryType = PAGING | ID_BASED
+--
 
 The *lookupQueryType* setting can be used to specify the query type to
 use inside a popup search dialog that is used inside a lookup field
@@ -961,7 +1047,11 @@ Validation *@Size* annotation.
 
 === MaxLength
 
-In message bundle: *maxLength = [integer value]*
+In message bundle:
+[source,properties]
+--
+maxLength = [Integer value]
+--
 
 The *maxLength* setting can be used to specify the maximum allowed
 length of an attribute of type String. This value is normally
@@ -982,7 +1072,11 @@ using the *@Attribute* annotation.
 
 === MaxLengthInGrid
 
-In message bundle: *maxLengthInGrid = [integer value]*
+In message bundle:
+[source,properties]
+--
+maxLengthInGrid = [Integer value]
+--
 
 The *maxLengthInGrid* setting can be used to set the maximum length of
 the value of a String property when it is displayed inside a grid – if
@@ -992,7 +1086,11 @@ save space in grids.
 
 === MaxValue
 
-In message bundle: *maxValue = [integer value]*
+In message bundle:
+[source,properties]
+--
+maxValue = [Integer value]
+--
 
 The *maxValue* setting can be used to specify the maximum value of a
 numeric attribute. This value is automatically derived from the *@Max*
@@ -1037,7 +1135,11 @@ annotation from the Java validation framework.
 
 === MinLength
 
-In message bundle: *minLength = [integer value]*
+In message bundle:
+[source,properties]
+--
+minLength = [Integer value]
+--
 
 The *minLength* setting can be used to specify the minimum allowed
 length of an attribute of type String. This value is automatically
@@ -1057,7 +1159,11 @@ private Set<@Size(min = 4, max = 12) String> tags = new HashSet<>();
 
 === MinValue
 
-In message bundle: *minValue = [integer value]*
+In message bundle:
+[source,properties]
+--
+minValue = [Integer value]
+--
 
 The *minValue* setting can be used to specify the minimum value for a
 numeric attribute. This value is automatically derived from the *@Min*
@@ -1080,7 +1186,11 @@ private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
 
 === MultipleSearch
 
-In message bundle: *multipleSearch = true | false*
+In message bundle:
+[source,properties]
+--
+multipleSearch = true | false
+--
 
 The *multipleSearch* setting can be used to allow searching on multiple
 values at once for attributes of type *MASTER*. By default, the user
@@ -1107,7 +1217,11 @@ private Country countryOfOrigin;
 
 === Navigable
 
-In message bundle: *navigable = true | false*
+In message bundle:
+[source,properties]
+--
+navigable = true | false
+--
 
 The *navigable* setting can be used to specify that a hyperlink for
 in-application navigation must be rendered for a certain property. This
@@ -1121,7 +1235,11 @@ is in read-only mode.
 
 === NavigationLink
 
-In message bundle: *navigationLink = <string value>*
+In message bundle:
+[source,properties]
+--
+navigationLink = [String value]
+--
 
 The *navigationLink* setting can be used to specify the path to use for
 intra-application navigation (see also under *navigable)*. By default,
@@ -1133,7 +1251,11 @@ used rather than the default.
 
 === NeededInData
 
-In message bundle: *neededInData = true | false*
+In message bundle:
+[source,properties]
+--
+neededInData = true | false
+--
 
 The Dynamo framework only returns the attributes that are actually
 needed for displaying or editing the entities to the front-end. In very
@@ -1146,7 +1268,11 @@ values anyway.
 
 === NumberFieldMode
 
-In message bundle: *numberFieldMode* = *TEXTFIELD | NUMBERFIELD*
+In message bundle:
+[source,properties]
+--
+numberFieldMode = TEXTFIELD | NUMBERFIELD
+--
 
 The *numberFieldMode* setting can be used to set the field mode to use
 for a numeric property When set to *TEXTFIELD* application will
@@ -1161,7 +1287,13 @@ variable *dynamoframework.defaults.number-field-mode*.
 
 === NumberFieldStep
 
-In message bundle: *numberFieldStep* = *<integer>*
+In message bundle:
+[source,properties]
+--
+numberFieldStep = [Integer value]]
+[source,properties]
+--
+
 
 The *numberFieldStep* setting can be used to set the step size to be used for a
 number field (see the previous section). The default value is 1, but you
@@ -1169,7 +1301,11 @@ can set this to any positive integer.
 
 === Percentage
 
-In message bundle: *percentage = true | false*
+In message bundle:
+[source,properties]
+--
+percentage = true | false
+--
 
 The *percentage* setting is used to indicate whether a numeric value
 represents a percentage. By default, this attribute has the value
@@ -1181,7 +1317,11 @@ is not converted or changed in any way.
 
 === Precision
 
-In message bundle: *precision = [Numeric value]*
+In message bundle:
+[source,properties]
+--
+precision = [Numeric value]
+--
 
 The *precision* setting determines the number of digits will be shown
 behind the decimal separator when displaying non-integer numbers. By
@@ -1190,7 +1330,11 @@ of the system property *dynamoframework.defaults.decimal-precision*.
 
 === Prompt
 
-In message bundle: *prompt=[String]*
+In message bundle:
+[source,properties]
+--
+prompt = [String]
+--
 
 The *prompt* setting determines the value of the prompt that shows up
 inside the editable field for the attribute (in Angular/PrimeNG this is
@@ -1200,7 +1344,11 @@ If not set, it defaults to the value of the *displayName* setting.
 
 === QuickAddAllowed
 
-In message bundle: *quickAddAllowed = true | false*
+In message bundle:
+[source,properties]
+--
+quickAddAllowed = true | false
+--
 
 The *quickAddAllowed* setting can be used to allow the creation of
 entities directly from inside a form, for a UI component that is used to
@@ -1251,7 +1399,11 @@ message. E.g. in the example above, you should add a
 
 === ReplacementSearchPath
 
-In message bundle: *replacementSearchPath = [desired string value]*
+In message bundle:
+[source,properties]
+--
+replacementSearchPath = [Desired string value]
+--
 
 The *replacementSearchPath* setting can be used to modify the search
 path that is used when translating search filters into a query – it can
@@ -1267,7 +1419,11 @@ back-end.
 
 === ReplacementSortPath
 
-In message bundle: *replacementSortPath = [desired string value]*
+In message bundle:
+[source,properties]
+--
+replacementSortPath = [Desired string value]
+--
 
 You can use this setting to override the path to sort on when the user
 clicks on a column header in a search results grid. By default, the
@@ -1279,7 +1435,11 @@ back-end.
 
 === RequiredForSearching
 
-In message bundle: *requiredForSearching = true | false*
+In message bundle:
+[source,properties]
+--
+requiredForSearching = true | false
+--
 
 The *requiredForSearching* setting determines if a property is required
 before a search can be carried out inside a *SearchLayout.* If you
@@ -1294,9 +1454,11 @@ The default value of this setting is *false.*
 
 === Searchable
 
-In message bundle: *searchable = NONE | ALWAYS | ADVANCED*
-
-*searchable = NONE | ALWAYS | ADVANCED*
+In message bundle:
+[source,properties]
+--
+searchable = NONE | ALWAYS | ADVANCED
+--
 
 The *searchable* setting determines whether a property will show up in a
 search form on a search screen. By default, it is set to *NONE* which
@@ -1307,7 +1469,11 @@ means it will not show up in a search form. Setting this property to
 
 === SearchCaseSensitive
 
-In message bundle: *searchCaseSensitive = true | false*
+In message bundle:
+[source,properties]
+--
+searchCaseSensitive = true | false
+--
 
 The *searchCaseSensitive* setting determines whether search operations
 on the attribute are case-sensitive. The default is given by the system
@@ -1322,7 +1488,11 @@ This setting is managed completely on the back-end.
 
 === SearchDateOnly
 
-In message bundle: *searchDateOnly = true | false*
+In message bundle:
+[source,properties]
+--
+searchDateOnly = true | false
+--
 
 The *searchDateOnly* setting determines whether search operations on an
 attribute that represents a date/time (either LocalDateTime or an
@@ -1341,7 +1511,11 @@ time stamp value matches the interval from *2020-04-04 00:00:00* up to
 
 === SearchForExactValue
 
-In message bundle: *searchForExactValue = true | false*
+In message bundle:
+[source,properties]
+--
+searchForExactValue = true | false
+--
 
 This setting determines whether to search for an exact value rather than
 a range, when searching for numeric or date values. By default, for such
@@ -1355,7 +1529,11 @@ allows the user to search for an exact value.
 
 === SearchPrefixOnly
 
-In message bundle: *searchPrefixOnly = true | false*
+In message bundle:
+[source,properties]
+--
+searchPrefixOnly = true | false
+--
 
 The *searchPrefixOnly* setting determines whether search operations on
 the property check only for a prefix match. If this is set to *true*,
@@ -1370,8 +1548,11 @@ This setting is managed completely on the back-end.
 
 === SearchSelectMode
 
-In message bundle: *searchSelectMode = AUTO_COMPLETE | COMBO | LOOKUP |
-MULTI_SELECT*
+In message bundle:
+[source,properties]
+--
+searchSelectMode = AUTO_COMPLETE | COMBO | LOOKUP | MULTI_SELECT
+--
 
 The *searchSelectMode* setting is used to specify how the component for
 searching an attribute of attribute type *MASTER* or *DETAIL* will be
@@ -1408,8 +1589,11 @@ used to perform a search.
 
 === SelectMode
 
-In message bundle: *selectMode = AUTO_COMPLETE | COMBO | LOOKUP |
-MULTI_SELECT*
+In message bundle:
+[source,properties]
+--
+selectMode = AUTO_COMPLETE | COMBO | LOOKUP | MULTI_SELECT
+--
 
 The *selectMode* setting is used to specify how the component for
 selecting an attribute of type *MASTER* or *DETAIL* will be rendered
@@ -1442,7 +1626,11 @@ used to perform a search.
 
 === Sortable
 
-In message bundle: *sortable = true | false*
+In message bundle:
+[source,properties]
+--
+sortable = true | false
+--
 
 The *sortable* setting can be used to specify whether a grid can be
 sorted on the attribute. By default, it is set to *true* for all
@@ -1460,7 +1648,11 @@ will be ignored inside a search form.
 
 === TrimSpaces
 
-In message bundle: *trimSpaces = true | false*
+In message bundle:
+[source,properties]
+--
+trimSpaces = true | false
+--
 
 This indicates whether extraneous space characters will be trimmed from
 the start and end of the input inside text areas and text fields. This
@@ -1476,8 +1668,12 @@ attribute.
 
 === TrueRepresentation and FalseRepresentation
 
-In message bundle: *trueRepresentation = [desired value]*,
-*falseRepresentation = [desired value]*
+In message bundle:
+[source,properties]
+--
+trueRepresentation = [desired value]
+falseRepresentation = [desired value]
+--
 
 The *trueRepresentation* and *falseRepresentation* settings can be used
 to modify how a Boolean value is displayed in read-only mode. By
@@ -1490,7 +1686,11 @@ toggle button will be rendered.
 
 === URL
 
-In message bundle: *url = true | false*
+In message bundle:
+[source,properties]
+--
+url = true | false
+--
 
 The *url* setting can be used to specify that a certain String property
 must be rendered as a clickable URL.
@@ -1504,7 +1704,11 @@ browser window.
 
 === VisibleInForm
 
-In message bundle: *visibleInForm = true | false | SHOW | HIDE*
+In message bundle:
+[source,properties]
+--
+visibleInForm = true | false | SHOW | HIDE
+--
 
 The *visibleInForm* setting determines whether a property will be
 displayed inside an edit form. It is not to be confused with the
@@ -1519,7 +1723,11 @@ Instead of *true* you can also use the value *SHOW* and instead of
 
 === VisibleInGrid
 
-In message bundle: *visibleInGrid = true | false | SHOW | HIDE*
+In message bundle:
+[source,properties]
+--
+visibleInGrid = true | false | SHOW | HIDE
+--
 
 The *visibleInGrid* setting determines whether a property will be
 displayed in a search results grid.
@@ -1534,8 +1742,11 @@ Instead of *true* you can also use the value *SHOW* and instead of
 
 === Attribute ordering
 
-In message bundle: *attributeOrder=[comma separated list of attribute
-names]*
+In message bundle:
+[source,properties]
+--
+attributeOrder = [Comma separated list of attribute names]
+--
 
 By default, the properties of an entity will be displayed in the order
 in which they appear in the Java class file. This can be overruled by
