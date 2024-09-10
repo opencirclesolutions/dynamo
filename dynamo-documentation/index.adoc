@@ -2055,14 +2055,14 @@ protected Organization findIdenticalEntity(Organization entity) {
 }
 --
 
-NOTE: you do not have to check if the entity being returned is equal
+NOTE: You do not have to check if the entity being returned is equal
 to the entity being validated, the framework will take care of this for
 you.
 
 === Default Services and DAOs
 
 It can happen that you have a very simple entity for which you will only
-need the default methods provided by *BaseService*_._ If this is the
+need the default methods provided by *BaseService*. If this is the
 case, then you do not have to go through the trouble of creating a DAO
 and Service class. Instead, you can configure a *DefaultServiceImpl*
 and/or *DefaultDaoImpl* in a configuration class. This looks as follows:
@@ -2096,7 +2096,7 @@ unique. You can use a comma-separated list to specify multiple
 properties, e.g. “code,name” means that both the “code” and “name”
 properties must be unique.
 * Optionally, a boolean parameter that indicates whether the search for
-the unique value is case sensitive (defaults to *false*).
+the unique value is case-sensitive (defaults to *false*).
 
 After you have configured a service like this, you can inject it into
 your code as follows. Note that an *@Qualifier* annotation that matches
@@ -2883,10 +2883,10 @@ the application. First of all, include an ApplicationConfig class as follows
 
 [source,java]
 ----
-package com.opencircle.gts.configuration;
+package com.opencirclesolutions.myapplication.configuration;
 
-import com.opencircle.gts.domain.MainActivity;
-import com.opencircle.gts.domain.QMainActivity;
+import com.opencirclesolutions.myapplication.domain.MainActivity;
+import com.opencirclesolutions.myapplication.domain.QMainActivity;
 import org.dynamoframework.configuration.ApplicationConfigurationSupport;
 import org.dynamoframework.dao.BaseDao;
 import org.dynamoframework.dao.impl.DefaultDaoImpl;
@@ -2935,7 +2935,7 @@ Finally, we need a Spring Boot Application class
 
 [source,java]
 ----
-package com.opencircle.gts;
+package com.opencirclesolutions.myapplication;
 
 import org.dynamoframework.configuration.DynamoConfigurationProperties;
 import org.springframework.boot.SpringApplication;
@@ -3048,7 +3048,7 @@ OAuth2 (with the backend serving as an OAuth resource server)
 @EnableWebSecurity
 @EnableMethodSecurity
 @Configuration
-public class GtsSecurityAdapter {
+public class MySecurityAdapter {
 
     @Bean
     MvcRequestMatcher.Builder mvc(HandlerMappingIntrospector introspector) {
@@ -3384,7 +3384,7 @@ filters, it can be useful to know how the filter mechanism works in
 detail. The rest of this section will cover how to set up the various
 supported filters.
 
-*EqualsFilter*
+==== EqualsFilter
 
 [source,typescript]
 --
@@ -3406,7 +3406,7 @@ NOTE: in the case of a String value, the back-end will take care of
 searching for substrings, case-sensitivity etc – the front-end only has
 to pass along the value to search for.
 
-*NumberRangeFilter*
+==== NumberRangeFilter
 
 [source,typescript]
 --
@@ -3426,7 +3426,7 @@ be used for both integral and decimal values. The filter contains a
 “from” value (lower bound, including) and a “to” value (upper bound,
 inclusive). At least one of these must be filled.
 
-*DateRangeFilter*
+==== DateRangeFilter
 
 [source,typescript]
 --
@@ -3455,7 +3455,7 @@ filtering on a Date are always string representations in ISO format
 always contain a time stamp) to ISO string, it is very common to end up
 with a date that is one day too early.
 
-*InstantRangeFilter/LocalDateTimeRangeFilter*
+==== InstantRangeFilter/LocalDateTimeRangeFilter
 
 [source,typescript]
 --
@@ -3489,7 +3489,7 @@ LocalDateTime values. The filter contains a “from” value (lower bound,
 including) and a “to” value (upper bound, inclusive). At least one of
 these must be filled.
 
-*NumberInFilter*
+==== NumberInFilter
 
 [source,typescript]
 --
@@ -3511,7 +3511,7 @@ This is used by the framework for filtering using components that allow
 the user to select multiple entities, i.e. the lookup field and the
 multi select field.
 
-*TimeRangeFilter*
+==== TimeRangeFilter
 
 [source,typescript]
 --
@@ -3538,7 +3538,7 @@ The *TimeRangeFilter* can be used to filter on a range of time stamps (e.g.
 including) and a “to” value (upper bound, inclusive). At least one of
 these must be filled.
 
-*ElementCollectionFilter*
+==== ElementCollectionFilter
 
 [source,typescript]
 --
@@ -3571,7 +3571,7 @@ contain either a list of integer or a list of strings. An entity
 will match the filter if the element collection contains at least
 one of the requested values.
 
-*OrFilter*
+==== OrFilter
 
 [source,typescript]
 --
@@ -3586,7 +3586,7 @@ return [createOrFilter([
 The OrFilter can be used to chain together a number of other filters using the logical OR
 operator:
 
-*NotFilter*
+==== NotFilter
 
 [source,typescript]
 --
@@ -3596,7 +3596,7 @@ return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA
 The *NotFilter* can be used to create a filter that negates the filter
 encloses in it.
 
-*NullFilter*
+==== NullFilter
 
 [source,typescript]
 --
