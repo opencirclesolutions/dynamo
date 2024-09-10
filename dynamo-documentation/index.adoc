@@ -2480,59 +2480,52 @@ dynamoframework:
 -----
 
 === Prefix dynamoframework
-[width="100%",cols="52%,22%,26%",options="header",]
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties`
-[cols="2,1,3,1,1"]
+
+[cols="1,1,1,1"]
+[caption="Hallo"]
 |===
-|Key |Type |Description |Default value |Deprecation
+|Key |Type |Description |Default value
 
 
 |bedrock
-|org.dynamoframework.configuration.BedrockProperties
+|BedrockProperties
 |Bedrock properties
-|
 |
 
 |capitalize-property-names
-|java.lang.Boolean
+|Boolean
 |Indicates whether to capitalize individual words in property names
 |true
-|
 
 |csv
-|org.dynamoframework.configuration.CsvProperties
+|CsvProperties
 |Properties related to csv, import and export
-|
 |
 
 |defaults
-|org.dynamoframework.configuration.DefaultProperties
+|DefaultProperties
 |Default properties
-|
 |
 
 |ollama
-|org.dynamoframework.configuration.OllamaProperties
+|OllamaProperties
 |Ollama properties
-|
 |
 
 |openai
-|org.dynamoframework.configuration.OpenAiProperties
+|OpenAiProperties
 |OpenAI properties
-|
 |
 
 |unaccent-function-name
-|java.lang.String
+|String
 |The name of the database function used to replace accents
-|
 |
 
 |vertexai
-|org.dynamoframework.configuration.VertexAiProperties
+|VertexAiProperties
 |VertexAI properties
-|
 |
 
 
@@ -2541,367 +2534,310 @@ dynamoframework:
 === Prefix dynamoframework.ollama
 
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaConfigurationProperties`
-[cols="2,1,3,1,1"]
+[cols="1,1,1,1"]
 |===
-|Key |Type |Description |Default value |Deprecation
+|Key |Type |Description |Default value
+
 
 
 |enabled
-|java.lang.Boolean
+|Boolean
 |Enable Ollama
 |false
-|
 
 |model
-|java.lang.String
+|String
 |The model to use
 |llama3
-|
 
 |url
-|java.lang.String
+|String
 |Ollama URL
 |
-|
-
 
 |===
 
 === Prefix dynamoframework.openai
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiConfigurationProperties`
-[cols="2,1,3,1,1"]
+[cols="1,1,1,1"]
 |===
-|Key |Type |Description |Default value |Deprecation
+|Key |Type |Description |Default value
+
 
 
 |api-key
-|java.lang.String
+|String
 |The OpenAI API key
-|
 |
 
 |enabled
-|java.lang.Boolean
+|Boolean
 |Enable OpenAI
 |false
-|
 
 |max-tokens
-|java.lang.Integer
+|Integer
 |Maximum number of tokens
 |4096
-|
 
 |model
-|java.lang.String
+|String
 |The model to use
 |gpt-4-turbo
-|
-
 
 |===
 
 === Prefix dynamoframework.defaults
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties`
-[cols="2,1,3,1,1"]
+[cols="1,1,1,1"]
 |===
-|Key |Type |Description |Default value |Deprecation
+|Key |Type |Description |Default value
 
 
 |ai-service
-|java.lang.String
+|String
 |The default AI service
-|
 |
 
 |boolean-field-mode
-|org.dynamoframework.domain.model.AttributeBooleanFieldMode
+|AttributeBooleanFieldMode
 |Indicates the default mode to use for boolean components
-|
 |
 
 |date-format
-|java.lang.String
+|String
 |The default date format
 |dd-MM-yyyy
-|
 
 |date-time-format
-|java.lang.String
+|String
 |The default date/time (time stamp) format
 |dd-MM-yyyy HH:mm:ss
-|
 
 |decimal-precision
-|java.lang.Integer
+|Integer
 |The default decimal precision
 |2
-|
 
 |element-collection-mode
-|org.dynamoframework.domain.model.ElementCollectionMode
+|ElementCollectionMode
 |Indicates the default mode to use for element collection fields
-|
 |
 
 |endpoints
-|org.dynamoframework.configuration.EndpointProperties
+|EndpointProperties
 |The configuration of the Dynamo endpoints
-|
 |
 
 |enum-field-mode
-|org.dynamoframework.domain.model.AttributeEnumFieldMode
+|AttributeEnumFieldMode
 |The default field type to use for enumeration attributes
-|
 |
 
 |false-representation
-|java.lang.String
+|String
 |The representation of the value &lt;code&gt;false&lt;/code&gt;
 |false
-|
 
 |false-representations
-|java.util.Map&lt;java.lang.String,java.lang.String&gt;
+|Map&lt;String,String&gt;
 |Localized representations of the value &lt;code&gt;false&lt;/code&gt;
-|
 |
 
 |group-together-mode
-|org.dynamoframework.domain.model.GroupTogetherMode
+|GroupTogetherMode
 |The default group together mode
-|
 |
 
 |group-together-width
-|java.lang.Integer
+|Integer
 |The column width from grouping together
 |300
-|
 
 |locale
-|java.util.Locale
+|Locale
 |The default locale
-|
 |
 
 |nesting-depth
-|java.lang.Integer
+|Integer
 |The default nesting depth
 |2
-|
 
 |number-field-mode
-|org.dynamoframework.domain.model.NumberFieldMode
+|NumberFieldMode
 |The default number field mode
-|
 |
 
 |search-case-sensitive
-|java.lang.Boolean
+|Boolean
 |The default case sensitiveness for search
 |false
-|
 
 |search-prefix-only
-|java.lang.Boolean
+|Boolean
 |Whether search is prefix only
 |false
-|
 
 |time-format
-|java.lang.String
+|String
 |The default time format
 |HH:mm:ss
-|
 
 |trim-spaces
-|java.lang.Boolean
+|Boolean
 |Whether to trim white space for text inputs
 |false
-|
 
 |true-representation
-|java.lang.String
+|String
 |The representation of the value &lt;code&gt;true&lt;/code&gt;
 |true
-|
 
 |true-representations
-|java.util.Map&lt;java.lang.String,java.lang.String&gt;
+|Map&lt;String,String&gt;
 |Localized representations of the value &lt;code&gt;true&lt;/code&gt;
-|
 |
 
 |use-prompt-value
-|java.lang.Boolean
+|Boolean
 |Indicates whether to use the display name as the input prompt by default
 |true
-|
-
 
 |===
 
 === Prefix dynamoframework.defaults.endpoints
 
-// tag::dynamoframework.defaults.endpoints[]
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties$EndpointConfigurationProperties`
-[cols="2,1,3,1,1"]
+[cols="1,1,1,1"]
 |===
-|Key |Type |Description |Default value |Deprecation
+|Key |Type |Description |Default value
 
 
 |autofill
-|java.lang.String
+|String
 |The endpoint for the autofill controller
 |/api/dynamo/autofill
-|
 
 |crud
-|java.lang.String
+|String
 |The endpoint for the crud controller
 |/api/dynamo/crud
-|
 
 |export
-|java.lang.String
+|String
 |The endpoint for the export controller
 |/api/dynamo/export
-|
 
 |files
-|java.lang.String
+|String
 |The endpoint for the file controller
 |/api/dynamo/file
-|
 
 |model
-|java.lang.String
+|String
 |The endpoint for the model controller
 |/api/dynamo/model
-|
 
 |status
-|java.lang.String
+|String
 |The endpoint for the status controller
 |/api/dynamo/status
-|
-
 
 |===
 // end::dynamoframework.defaults.endpoints[]
 
 === Prefix dynamoframework.bedrock
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
-[cols="2,1,3,1,1"]
+[cols="1,1,1,1"]
 |===
-|Key |Type |Description |Default value |Deprecation
-
+|Key |Type |Description |Default value
 
 |access-key
-|java.lang.String
+|String
 |Access key
-|
 |
 
 |access-secret
-|java.lang.String
+|String
 |Access secret
-|
 |
 
 |enabled
-|java.lang.Boolean
+|Boolean
 |Enable Bedrock
 |false
-|
 
 |model-id
-|java.lang.String
+|String
 |Model id
-|
 |
 
 |region
-|java.lang.String
+|String
 |Region
 |
-|
-
 
 |===
 
 === Prefix dynamoframework.vertexai
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAiConfigurationProperties`
-[cols="2,1,3,1,1"]
+[cols="1,1,1,1"]
 |===
-|Key |Type |Description |Default value |Deprecation
-
+|Key |Type |Description |Default value
 
 |enabled
-|java.lang.Boolean
+|Boolean
 |Enable VertexAI
 |false
-|
 
 |model
-|java.lang.String
+|String
 |The model to use
 |gemini-1.5-flash-preview-0514
-|
 
 |project-id
-|java.lang.String
+|String
 |The project id
-|
 |
 
 |project-region
-|java.lang.String
+|String
 |The region of the project
 |europe-west1
-|
 
 |===
-
 
 === Prefix dynamoframework.csv
 *Class:* `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfigurationProperties`
-[cols="2,1,3,1,1"]
+[cols="1,1,1,1"]
 |===
-|Key |Type |Description |Default value |Deprecation
-
+|Key |Type |Description |Default value
 
 |escape-char
-|java.lang.String
+|String
 |The CSV escape character when importing/exporting
 |&quot;&quot;
-|
 
 |max-rows-before-streaming
-|java.lang.Integer
+|Integer
 |The number of rows that must be present in a result set before resorting to a streaming approach for Excel export
 |1000
-|
 
 |quote-char
-|java.lang.String
+|String
 |The CSV quote char when importing/exporting
 |&quot;&quot;
-|
 
 |separator-char
-|java.lang.String
+|String
 |The CSV separator when importing/exporting
 |;
-|
 
 |thousands-grouping
-|java.lang.Boolean
+|Boolean
 |Whether to use thousands grouping in XLS files
 |false
-|
 
 |===
 
