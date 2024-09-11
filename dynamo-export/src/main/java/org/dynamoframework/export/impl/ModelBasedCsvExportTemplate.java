@@ -76,9 +76,9 @@ public class ModelBasedCsvExportTemplate<ID extends Serializable, T extends Abst
     protected byte[] generate(DataSetIterator<ID, T> iterator) throws IOException {
         try (ByteArrayOutputStream out = new ByteArrayOutputStream();
              CSVWriter writer = new CSVWriter(new OutputStreamWriter(out, StandardCharsets.UTF_8),
-                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getSeparatorChar().charAt(0),
-                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getQuoteChar().charAt(0),
-                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getEscapeChar().charAt(0), String.format("%n"))) {
+                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getSeparatorChar(),
+                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getQuoteChar(),
+                     DynamoPropertiesHolder.getDynamoProperties().getCsv().getEscapeChar(), String.format("%n"))) {
 
             addHeaderRow(writer);
 

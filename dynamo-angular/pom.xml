@@ -34,6 +34,18 @@
 				</configuration>
 			</plugin>
 			<plugin>
+				<artifactId>maven-install-plugin</artifactId>
+				<configuration>
+					<allowIncompleteProjects>true</allowIncompleteProjects>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-deploy-plugin</artifactId>
+				<configuration>
+					<allowIncompleteProjects>true</allowIncompleteProjects>
+				</configuration>
+			</plugin>
+			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
 				<configuration>

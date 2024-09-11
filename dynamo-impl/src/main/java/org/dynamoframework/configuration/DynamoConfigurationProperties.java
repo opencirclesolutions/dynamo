@@ -204,16 +204,16 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
         /**
          * The CSV escape character when importing/exporting
          */
-        private String escapeChar = "\"";
+        private char escapeChar = '\"';
         /**
          * The CSV quote char when importing/exporting
          */
-        private String quoteChar = "\"";
+        private char quoteChar = '\"';
 
         /**
          * The CSV separator when importing/exporting
          */
-        private String separatorChar = ";";
+        private char separatorChar = ';';
 
         /**
          * The number of rows that must be present in a result set before resorting to a

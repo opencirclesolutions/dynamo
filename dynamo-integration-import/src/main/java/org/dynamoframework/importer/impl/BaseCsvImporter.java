@@ -56,10 +56,10 @@ public class BaseCsvImporter extends BaseTextImporter {
      * @param quote     the quote char
      * @return the result of the read action
      */
-    protected List<String[]> readCsvFile(byte[] bytes, String separator, String quote) {
+    protected List<String[]> readCsvFile(byte[] bytes, char separator, char quote) {
         try (CharSequenceReader seq = new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8));
                 CSVReader reader = new CSVReaderBuilder(seq)
-                        .withCSVParser(new CSVParserBuilder().withSeparator(separator.charAt(0)).withQuoteChar(quote.charAt(0)).build())
+                        .withCSVParser(new CSVParserBuilder().withSeparator(separator).withQuoteChar(quote).build())
                         .build()) {
             return reader.readAll();
         } catch (IOException | CsvException ex) {

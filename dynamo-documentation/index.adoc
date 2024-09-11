@@ -2541,10 +2541,10 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfi
 |===
 |Key|Type|Description|Default value
 
-|`escape-char`|String|The CSV escape character when importing/exporting|`&quot;`
+|`escape-char`|char|The CSV escape character when importing/exporting|`&quot;`
 |`max-rows-before-streaming`|Integer|The number of rows that must be present in a result set before resorting to a streaming approach for Excel export|`1000`
-|`quote-char`|String|The CSV quote char when importing/exporting|`&quot;`
-|`separator-char`|String|The CSV separator when importing/exporting|`;`
+|`quote-char`|char|The CSV quote char when importing/exporting|`&quot;`
+|`separator-char`|char|The CSV separator when importing/exporting|`;`
 |`thousands-grouping`|Boolean|Whether to use thousands grouping in XLS files|`false`
 |===
 

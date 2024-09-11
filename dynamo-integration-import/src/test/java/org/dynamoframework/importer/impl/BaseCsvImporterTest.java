@@ -61,7 +61,7 @@ public class BaseCsvImporterTest {
 	@Test
 	public void testReadFile() throws IOException {
 		byte[] bytes = readFile("importertest.csv");
-		List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
+		List<String[]> lines = importer.readCsvFile(bytes, ';', '\'');
 
 		PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
 		assertNotNull(dto);
@@ -92,7 +92,7 @@ public class BaseCsvImporterTest {
 	public void testReadFile_NotNumeric() throws IOException {
 		try {
 			byte[] bytes = readFile("importertest_wrongnumeric.csv");
-			List<String[]> lines = importer.readCsvFile(bytes, ";", "'");
+			List<String[]> lines = importer.readCsvFile(bytes, ';', '\'');
 
 			importer.processRow(0, lines.get(0), PersonDTO.class);
 			fail();

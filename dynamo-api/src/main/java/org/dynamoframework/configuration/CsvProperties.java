@@ -21,11 +21,11 @@ package org.dynamoframework.configuration;
  */
 
 public interface CsvProperties {
-    String getEscapeChar();
+    char getEscapeChar();
 
-    String getQuoteChar();
+    char getQuoteChar();
 
-    String getSeparatorChar();
+    char getSeparatorChar();
 
     Integer getMaxRowsBeforeStreaming();
 
