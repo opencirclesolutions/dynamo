@@ -21,9 +21,10 @@ font:
       bold_italic: RobotoMono-BoldItalic.ttf
 code:
   font-family: RobotoMono
-  background-color: #ffffff
-  border-radius: 4
-  border-color: #cccccc
+  background-color: #F5F5F5
+  border-radius: 0
+  border-color: #F5F5F5
+  border-width: 0
 codespan:
   font-family: RobotoMono
   font-color: #833906
