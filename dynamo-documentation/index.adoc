@@ -7,7 +7,6 @@
 :!chapter-signifier:
 
 = Dynamo: Web Application Accelerator Framework
-:dynamo-version: "4.0.0"
 Open Circle Solutions BV
 :title-logo-image: image:media/logo-dynamo.png[Dynamo]
 :sectnums:
@@ -15,11 +14,15 @@ Open Circle Solutions BV
 [colophon]
 == Colophon
 
+image:media/logo-dynamo.png[image]
+
 Dynamo: Web Application Accelerator Framework.
 
 Developed, maintained and sponsored by:
 
 image:media/logo-ocs.png["Open Circle Solutons", 256, 53]
+
+Main committer: Bas Rutten
 
 The sources of Dynamo can be found at https://github.com/opencirclesolutions/dynamo[Github].
 

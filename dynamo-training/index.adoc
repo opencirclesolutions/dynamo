@@ -1,40 +1,53 @@
-= Dynamo
+
 :toc:
 :toclevels: 2
+:toc-title: Table of contents
+:toc: left
 :icons: font
+:doctype: book
+:!chapter-signifier:
+
+= Dynamo: Web Application Accelerator Framework
+Open Circle Solutions BV
+:title-logo-image: image:media/logo-dynamo.png[Dynamo]
+:sectnums:
+
+[colophon]
+== Colophon
 
 image:media/logo-dynamo.png[image]
 
-Web Application Accelerator Framework
+Dynamo: Web Application Accelerator Framework.
 
-Developed, maintained and sponsored by
+Developed, maintained and sponsored by:
 
-image:media/logo-opencirclesolutions.svg[image,width=256,height=53]
+image:media/logo-ocs.png["Open Circle Solutons", 256, 53]
 
 Main committer: Bas Rutten
 
+The sources of Dynamo can be found at https://github.com/opencirclesolutions/dynamo[Github].
+
 Copyright © 2014 - 2024 Open Circle Solutions BV.
 
-Nothing from this document may be copied and/or made public by use of
+_Nothing from this document may be copied and/or made public by use of
 print, photocopy, microfilm or by any other means, without prior
-permission of Open Circle Solutions BV.
+permission of Open Circle Solutions BV._
 
 == Introduction
 
 The Dynamo Web Application Accelerator Framework is a software
 development framework developed by Open Circle Solutions that aims to
 increase productivity by using design principles such as convention over
-configuration, model-driven development and the DRY (don’t repeat
-yourself) principle.
+configuration, model-driven development and DRY (don’t repeat yourself).
 
 At the core of Dynamo is the concept of the _Entity Model_. The Entity
-Model describes the attributes and behaviour of an entity (or domain
-object) in your application. This Entity Model can then be used as the
-basis for creating forms, grids, search screens etc.
+Model describes the attributes and behaviour of an entity (i.e., a
+domain object) in your application. This Entity Model can then be used
+as the basis for creating forms, search screens, etc.
 
 The _Entity Model_ of an entity is automatically constructed based on
 the properties of the attributes of the entity (using sensible defaults
-as prescribed by the convention over configuration principle) and can
+as described by the convention over configuration principle) and can
 further be modified by using annotations and message bundle entries. The
 main goal is to reduce the amount of (boilerplate) code required to
 perform common actions like creating search screens and edit forms.
@@ -43,14 +56,14 @@ Complementing the _Entity Model_ is a set of user interface components
 (widgets) that can be used to quickly construct screens for common use
 cases, and several base classes for the Data Access and Service layers.
 
-The Dynamo framework is built around several proven and highly
+The Dynamo framework is built around a number of proven and highly
 productive set of technologies:
 
-* JPA2 for ORM
-* QueryDSL for type-safe query generation
-* Spring Boot as the application framework
-* Angular as the user interface framework (using PrimeNG for a rich
-component suite).
+* https://jakarta.ee/specifications/persistence/[JPA3.1] for ORM
+* https://querydsl.com[QueryDSL] for type-safe query generation
+* https://docs.spring.io/spring-boot/index.html[Spring Boot] as the application framework
+* https://angular.dev[Angular (v16)] as the front-end framework of choice
+* https://primeng.org[PrimeNG] for a rich suite of components
 
 == The use case: GTS
 
@@ -87,13 +100,13 @@ The application uses a PostgreSQL database. For this to work, you will
 need to install PostgreSQL on your local machine or run it in Docker.
 
 To use Postgresql as the database system on your local machine, first
-download the latest *version 15* Postgresql distribution from
+download the latest _version 15_ Postgresql distribution from
 http://www.postgresql.org/download/. The installer is straightforward,
 but make sure that you write down the administrator password that you
 enter during the installation process.
 
 The Postgresql distribution comes with a simple database client named
-*pgAdmin*. After the installation is complete, open *pgAdmin*. You
+`pgAdmin`. After the installation is complete, open `pgAdmin`. You
 should see a database server configured at port 5432. Connect to this
 server (using the password you entered earlier) and create a database
 named “gts”.
@@ -102,10 +115,10 @@ You do not have to manually add any tables to this database for now –
 these will be created as part of the application start up process if they
 are not there yet.
 
-*NOTE*: this training assumes that you run Postgresql on the default port
+NOTE: This training assumes that you run Postgresql on the default port
 5432 and use the user “postgres” and password “admin”. If these settings
 are different for your application, you can modify them in the
-*application.properties* file.
+_application.properties_ file.
 
 === Obtaining the sources for the example project
 
@@ -115,21 +128,21 @@ following command:
 *TODO describe how/where to get the source code(s)*
 
 If your Postgresql settings are different from the default, open the
-“application.properties” file from the gts-ui project and modify the
+_application.properties_ file from the gts-ui project and modify the
 following properties so that they match your values:
 
 [source,properties]
 --
-spring.datasource.url=jdbc:postgresql://[.underline]#localhost#:[insert_your_port_here]/[.underline]#gts#
-spring.datasource.password=[.underline]#[insert your password here]#
-spring.datasource.username=[.underline]#[insert your username here]#
+spring.datasource.url=jdbc:postgresql://[HOST]:[PORT]/gts
+spring.datasource.username=[USERNAME]
+spring.datasource.password=[PASSWORD]
 --
 
 If your application does not build, and you get compilation errors like
 “QOrganiziation cannot be found”, you might need to add the folder that
 contains the generated sources to your class path. To do so, right-click
 on the “gts-web” project, then select “New -> Source Folder” and
-specify the “target/generated-sources/annotations” folder as a source
+specify the _target/generated-sources/annotations_ folder as a source
 folder.
 
 == First steps
@@ -144,29 +157,29 @@ for you.
 
 === Domain Model
 
-When you look inside the *com.opencircle.gts.domain* package you will
+When you look inside the `com.opencircle.gts.domain` package you will
 see a number of classes that together make up the domain model of our
 example application. These include:
 
-* *Organization* which represents a criminal organization we are
+* `Organization` which represents a criminal organization we are
 interested in tracking.
-* *Person* which represents a member of a criminal organization. Persons
+* `Person` which represents a member of a criminal organization. Persons
 sends gifts to one another.
-* *Gift* which represents the various types of gifts that can be sent.
-* *GiftLogo* which is used to store the logo for a gift.
-* *GiftTranslation* which represents the translation of the name of the
+* `Gift` which represents the various types of gifts that can be sent.
+* `GiftLogo` which is used to store the logo for a gift.
+* `GiftTranslation` which represents the translation of the name of the
 gift in various languages.
-* *Delivery* which represents one person sending a gift to another
+* `Delivery` which represents one person sending a gift to another
 person.
 
-The domain model also uses a class named *Country* which is taken from
+The domain model also uses a class named `Country` which is taken from
 the Dynamo framework, more specifically from the
-*dynamo-functional-domain* module. This module is covered in more detail
+_dynamo-functional-domain_ module. This module is covered in more detail
 later.
 
 === Data Access objects
 
-When you look inside the *com.opencircle.gts.dao* package and its
+When you look inside the `com.opencircle.gts.dao` package and its
 subpackages, you will see several Data Access Objects (DAOs) used
 for communication with the database. Typically, there is a DAO interface
 and an associated implementation for every entity class, although for
@@ -183,8 +196,8 @@ public interface GiftDao extends BaseDao<Integer,Gift> {
 }
 --
 
-In the easiest scenario, all you have to do is extend the *BaseDao*
-interface provided by the framework. This *BaseDao* contains several
+In the easiest scenario, all you have to do is extend the `BaseDao`
+interface provided by the framework. This `BaseDao` contains several
 dozen utility methods for saving, removing and retrieving entities.
 
 When you look inside a DAO implementation class, you will see that it is
@@ -208,10 +221,10 @@ public class GiftDaoImpl extends BaseDaoImpl<Integer, Gift> implements GiftDao {
 }
 --
 
-As you can see, the DAO implementation extends the *BaseDaoImpl* class
-(which, unsurprisingly, implements *BaseDao*) and must implement the DAO
+As you can see, the DAO implementation extends the `BaseDaoImpl` class
+(which, unsurprisingly, implements `BaseDao`) and must implement the DAO
 interface. In its most basic form, you only have to implement the
-(trivial) *getEntityClass* and *getDslRoot* methods – the
+(trivial) `getEntityClass()` and `getDslRoot()` methods – the
 latter returns the root path used when creating QueryDSL queries.
 QueryDSL is a library that we use for type-safe custom queries. It is a
 very useful technology which we encourage you to learn about online, but
@@ -224,14 +237,14 @@ bother with it all that much.
 
 === Services
 
-Inside the *com.opencircle.gts.service* package you will find the
+Inside the `com.opencircle.gts.service` package you will find the
 service layer for the GTS application. Like the DAO layer, this is a
 simple layer as since at the moment it contains almost no business logic. As
 with the DAOs, there is one service interface and one corresponding
 implementation per entity class (and again, for dependent entities you
 don’t have to create a service).
 
-If you look inside the *GiftService* class, you will see the following:
+If you look inside the `GiftService` class, you will see the following:
 
 [source,java]
 --
@@ -241,10 +254,10 @@ public interface GiftService extends BaseService<Integer, Gift> {
 --
 
 As you can see, all a service interface must do is extend the
-*BaseService* class – this gives the service access to the common
+`BaseService` class – this gives the service access to the common
 methods for retrieving, storing, and deleting entities.
 
-The *GiftServiceImpl* service implementation class is also quite simple:
+The `GiftServiceImpl` service implementation class is also quite simple:
 
 [source,java]
 --
@@ -261,40 +274,46 @@ public class GiftServiceImpl extends BaseServiceImpl<Integer, Gift> implements G
 }
 --
 
-All it needs to do is extend the *BaseServiceImpl* class (that, of
+All it needs to do is extend the `BaseServiceImpl` class (that, of
 course, contains the implementation of the common methods) and implement
 the corresponding service interface.
 
-It then needs a reference to the data access object (*GiftDao*) which
+It then needs a reference to the data access object (`GiftDao`) which
 can simply be injected as a Spring dependency, and an implementation of
-the *getDao* method which will simply return the DAO.
+the `getDao()` method which will simply return the DAO.
 
-Most of the methods from the *BaseServiceImpl* are delegate methods
-which directly forward the call to the *BaseDao* method, but the service
+Most of the methods from the `BaseServiceImpl` are delegate methods
+which directly forward the call to the `BaseDao` method, but the service
 layer does add some functionality:
 
 * Checking for duplicate entities – if you have a logical key that makes
 an entity unique (e.g. a code or an EAN number) but is not the primary
-key, you can overwrite the *findIdenticalEntity* method in your service
+key, you can overwrite the `findIdenticalEntity` method in your service
 implementation and have it perform the check for a duplicate. If this
 method return a non-null value, then an error message will automatically
 be displayed to the user when he tries to save the entity.
 * Validation – when you try to persist an entity or collection of
 entities, they are automatically validated using the Java Validation
-framework, and an *OCSValidationException* is thrown if there is a
+framework, and an `OCSValidationException` is thrown if there is a
 validation error. You can add extra validations by overwriting the
-*validate* method (don’t forget to call *super* if you do so).
+`validate()` method (don’t forget to call `super()` if you do so).
 
 === Your first Dynamo Screen
 
 After you have imported the projects into your IDE, make sure they all
-build properly. Then, open the *GtsApplication* class and run it. After
+build properly. Then, open the `GtsApplication` class and run it. After
 a couple of seconds
 
 In order to run the front-end, open a command prompt and navigate to the
-root folder of the front-end project. Execute the command *ng serve* to
-start the application, then open a web browser and navigate to
-*http://localhost:4200.*
+root folder of the front-end project. Execute the following to
+start the application. 
+
+[source,console]
+--
+ng serve
+--
+
+Then open a web browser and navigate to _http://localhost:4200_.
 
 You will see a mostly empty screen, and be given the option to log into
 the application (either via the button in the top right, or by pressing
@@ -304,13 +323,13 @@ After logging in, you will be able to view your first screen, which is a
 search screen that allows you to view the organizations that are stored
 in the system (we already created some by means of the creation script).
 
-This screen is an example of the *GenericSearchLayoutComponent*. This
+This screen is an example of the `GenericSearchLayoutComponent`. This
 component consists of a search form with a results grid, from which you
 can select an entity and navigate to a detail screen (which is a
 separate page/component in this version of Dynamo).
 
-The code for this search screen is included in the *organization-search*
-folder. This folder contains both an HMTL file and a Typescript file.
+The code for this search screen is included in the _organization-search_
+folder. This folder contains both an HTML file and a Typescript file.
 The HTML file is very small and looks as follows:
 
 [source,angular17html]
@@ -319,13 +338,13 @@ The HTML file is very small and looks as follows:
   detailNavigationPath="organization"></app-generic-search-layout>
 --
 
-* As you can see, we define an **<app-generic-search-layout>** component
+* As you can see, we define an `<app-generic-search-layout>` component
 which is the generic component from the Dynamo framework that consists
 of a search form and a results table.
 * It is instantiated here with only a couple of properties:
-** *entityName* is the name of the entity that is being managed by the
+** `entityName` is the name of the entity that is being managed by the
 component. This is basically the simple class name of the entity.
-** *detailNavigationPath* is the Angular route that is used to navigate
+** `detailNavigationPath` is the Angular route that is used to navigate
 to the detail screen (this will be covered a bit later).
 
 The Typescript file possibly even simpler, at least for now (although we
@@ -341,15 +360,15 @@ sure it performs as desired.
 
 The first thing you may notice about the screen is that, although it is
 a search screen, there currently aren’t any search fields. This is
-because none of the attributes are currently marked as *searchable*.
+because none of the attributes are currently marked as searchable.
 
 To change this, we need to modify the entity model generation process,
-by means of the *@Attribute* annotation. This is an annotation that can
+by means of the `@Attribute` annotation. This is an annotation that can
 be placed on a property or on a getter method and can be used to tweak
 how the entity model is built.
 
-Open the *Organization* class and place the *@Attribute* annotation on
-the *name* property. Then set the *searchable* setting to ALWAYS:
+Open the `Organization` class and place the `@Attribute` annotation on
+the `name` property. Then set the `searchable` setting to ALWAYS:
 
 [source,java]
 --
@@ -365,26 +384,26 @@ with the searching to find out that by default, the searching is not
 case-sensitive and will look for matches anywhere in the attribute
 value.
 
-*NOTE*: changes you make to the entity model always require you to
+NOTE: Changes you make to the entity model always require you to
 restart the back-end application. However, the (Angular) front-end has
 hot deployment and generally does not need to be restarted (simply
 refreshing your browser should be enough).
 
 You can change the default search behaviour by modifying the following
-settings on the *@Attribute* annotation:
+settings on the `@Attribute` annotation:
 
-* *searchCaseSensitive* determines if the searching is case-sensitive.
-The default value is *BooleanType.FALSE*.
-* *searchPrefixOnly* determines if the search query searches only for
+* `searchCaseSensitive` determines if the searching is case-sensitive.
+The default value is `BooleanType.FALSE`.
+* `searchPrefixOnly` determines if the search query searches only for
 matches at the start of the property value. The default is
-*BooleanType.FALSE*. E.g. if you set this property to “true” then the
+`BooleanType.FALSE`. E.g. if you set this property to “true” then the
 search term “or” will match “order” but not “boredom”.
-* *searchForExactValue* determines whether the application will search
+* `searchForExactValue` determines whether the application will search
 for an exact value rather than a range of values. This is only
 applicable to properties that contain a numerical value or a date – by
-default, *searchForExactValue* will be false and the application will
+default, `searchForExactValue` will be false and the application will
 allow you to search for a range of values, but if you set
-*searchForExactValue* to true then only a single search field will be
+`searchForExactValue` to true then only a single search field will be
 rendered.
 
 This is what it looks like in the code:
@@ -399,7 +418,7 @@ BooleanType.TRUE)
 private String name;
 --
 
-Now, set the “searchable” setting to ALWAYS on some of the other
+Now, set the `searchable` setting to ALWAYS on some of the other
 attributes.
 
 You will see that depending on the type of the attribute, a different
@@ -413,9 +432,9 @@ values.
 * For a numeric or date/time attribute, two text fields will be
 generated: one field for entering the lower boundary and one for
 entering the upper boundary (the boundaries are inclusive).
-* You can use the *searchForExactValue* setting for a numerical field
+* You can use the `searchForExactValue` setting for a numerical field
 if you want to search on an exact value instead.
-* For a timestamp field, you can set the *searchDateOnly* setting to
+* For a timestamp field, you can set the `searchDateOnly` setting to
 true. In this case the search form will only allow you to select a date,
 and the application will translate this to all time stamps that fall on
 that date.
@@ -435,7 +454,7 @@ this, change the searchable attribute for “headquarters” to ADVANCED.
 Now, when you restart the application, the headquarters search field
 should no longer appear.
 
-Next, in *organization-search.component.html* file, change the code so
+Next, in _organization-search.component.html_ file, change the code so
 that the line referring to FormOptions looks as follows:
 
 [source,angular17html]
@@ -447,19 +466,19 @@ that the line referring to FormOptions looks as follows:
 
 You will now see an additional button show up in the button bar.
 Clicking it will toggle between showing and hiding the search fields
-that are set to searchable=ADVANCED.
+that are set to `searchable=ADVANCED`.
 
 image:media/image3.png[image,width=458,height=70]
 
 === More searching 
 
-Go ahead at set the *searchable* setting on the *members* attribute to
-ALWAYS. After you do this and restart the application, you will see that
+Go ahead at set the `searchable` setting on the `members` attribute to
+`ALWAYS`. After you do this and restart the application, you will see that
 there now is a component that allows you to search for the members (to
 be interpreted as: search for all organizations of which the selected
 person is a member).
 
-You will now see a search component for the *members* attribute that
+You will now see a search component for the `members` attribute that
 looks as follows:
 
 image:media/image4.png[image,width=424,height=328]
@@ -468,8 +487,8 @@ By default, the application will render a multiple-select field from
 which you can select the members to search on. However, as you can see,
 the description of the members is currently empty.
 
-To fix this, open the *Person* class and, at the top of the class, add
-the *@Model* annotation like this:
+To fix this, open the `Person` class and, at the top of the class, add
+the `@Model` annotation like this:
 
 [source,java]
 --
@@ -479,50 +498,50 @@ the *@Model* annotation like this:
 public class Person extends AbstractEntity<Integer> {
 --
 
-*@Model* is like *@Attribute* except that it has to placed on the entity,
-rather than one of its attributes. *@Model* supports several settings:
+`@Model` is like `@Attribute` except that it has to placed on the entity,
+rather than one of its attributes. `@Model` supports several settings:
 
-* *displayProperty* (which you saw above) determines which property to
+* `displayProperty` (which you saw above) determines which property to
 use when displaying the entity inside a lookup component like a combo
-box or a listbox. In the above example, we use the “nickName” property
+box or a listbox. In the above example, we use the `nickName` property
 of the Person as the display property.
-* *displayName* determines how the class will be called in the screen.
+* `displayName` determines how the class will be called in the screen.
 It defaults to the class name, with camel case replaced by spaces. E.g.
 the display name of “Organization” is “Organization”.
-* *displayNamePlural* is the plural name of the class. It defaults to
-the *displayName* with an “s” added at the end.
-* *description* is a textual description of the entity. It will appear
+* `displayNamePlural` is the plural name of the class. It defaults to
+the `displayName` with an “s” added at the end.
+* `description` is a textual description of the entity. It will appear
 as a tooltip in e.g. a search results grid.
-* *sortOrder* takes a comma-separated list of fields and directions to
+* `sortOrder` takes a comma-separated list of fields and directions to
 sort on. This sort order will be used if no specific sort order is
 defined for a layout. It is also the sort order that will by default be
 used inside e.g. combo boxes. The format of this property is similar to
 a SQL sort order, e.g. “name” or “name asc” will sort by name in
 ascending order, “name desc” will sort by name in descending order,
 “name asc, age desc” will sort first by name and then by age.
-* In addition, there are several settings like *listAllowed,
-searchAllowed, createAllowed* that govern which actions are allowed
+* In addition, there are several settings like `listAllowed`,
+`searchAllowed`, `createAllowed` that govern which actions are allowed
 on this entity. These will be covered in more detail later on.
 
-Note that you set the *displayProperty* on the *Person* entity, not on the
+Note that you set the `displayProperty` on the `Person` entity, not on the
 *Organization* – this annotation will affect all references to the
 Person entity, so it will show up like this in any search or edit form.
 
 As you can see, by default the application will use a multi-select field
 for searching inside a many-to-many or one-to-many relationship.
-You can modify this behaviour by changing the value of the *selectMode* and *searchSelectMode* settings
-on *@Attribute*:
+You can modify this behaviour by changing the value of the `selectMode`
+and `searchSelectMode` settings on `@Attribute`:
 
-* *selectMode* determines the type of UI component to render for this
+* `selectMode` determines the type of UI component to render for this
 property inside an edit form.
-* *searchSelectMode* determines the type of UI component to render for
+* `searchSelectMode` determines the type of UI component to render for
 this property inside a search form (like the one we were working on). By
-default, the framework will use the value of the *selectMode* setting
+default, the framework will use the value of the `selectMode` setting
 here, but you can override it by explicitly setting a value for the
-*SearchSelectMode* attribute.
+`SearchSelectMode` attribute.
 
-Go ahead and set the *searchSelectMode* setting of the *members* field
-to *LOOKUP*. Restart the application and verify that
+Go ahead and set the `searchSelectMode` setting of the `members` field
+to `LOOKUP`. Restart the application and verify that
 you now see the following:
 
 image:media/image5.png[image,width=429,height=68]
@@ -532,35 +551,35 @@ displays the currently selected value(s), a button for clearing the
 currently selected value(s) and a button that brings up a search dialog
 when clicked,
 
-* You don’t normally have to specify a *searchSelectMode*: the
-application will by default use the value of the *selectMode* if no
-explicit *SearchSelectMode* is set.
-* There are several other supported *AttributeSelectModes*, e.g.
-*COMBO*, *AUTO_SELECT* and *LOOKUP*. Not all select modes make sense for every attribute. E.g.
-for editing a one-to-one relation you cannot use the *MULTI_SELECT* setting
+* You don’t normally have to specify a `searchSelectMode`: the
+application will by default use the value of the `selectMode` if no
+explicit `SearchSelectMode` is set.
+* There are several other supported `AttributeSelectModes`, e.g.
+`COMBO`, `AUTO_SELECT` and `LOOKUP`. Not all select modes make sense for every attribute. E.g.
+for editing a one-to-one relation you cannot use the `MULTI_SELECT` setting
 since this would allow you to select multiple values. The Dynamo
 framework will produce an exception when you try to use an illegal
 select mode.
 
 We will end this section with some additional remarks about searching:
 
-* It is possible to set the *requiredForSearching* setting on the
-*@Attribute* annotation to *true* – this means that you must enter a
+* It is possible to set the `requiredForSearching` setting on the
+`@Attribute` annotation to `true` – this means that you must enter a
 value for the associated property before you can carry out a search.
-Concretely, this means that the *Search* button will be disabled unless
+Concretely, this means that the "Search" button will be disabled unless
 you have filled in a value for all fields that are marked as
-*requiredForSearching.* (In case the application renders both
+`requiredForSearching`.* (In case the application renders both
 an upper and a lower bound field, it is enough to fill in at least one value)
 * For fields that contain a time stamp (java.time.LocalDateTime or
 java.time.Instant), normally two search fields are rendered – these can
 be used to define the upper and lower bound of the interval to search on.
-However, if you set the *searchDateOnly* setting to *true* then instead
+However, if you set the `searchDateOnly` setting to `true` then instead
 a single search field will be rendered. This field allows you to select
 a date (rather than a time stamp) and when you perform a search, only
 the records for which the date part of the value matches will be
 returned.
-* The *@Attribute* annotation also comes with the *defaultSearchValue* ,
-*defaultSearchValueFrom* and *defaultSearchValueTo* settings. These can be
+* The `@Attribute` annotation also comes with the `defaultSearchValue` ,
+`defaultSearchValueFrom` and `defaultSearchValueTo` settings. These can be
 used to respectively set:
 ** A default value for a simple attribute
 ** A default value for the lower bound when searching on an interval
@@ -580,14 +599,14 @@ Quarters” (it must not contain a space).
 Luckily, the framework contains several ways of tweaking the visual and
 textual representation of the generated screens.
 
-First, let’s go back to the *@Attribute* annotation. Like *@Model*, it
-has the *displayName, and *description* values that
+First, let’s go back to the `@Attribute` annotation. Like `@Model`, it
+has the `displayName`, and `description` values that
 can be used to modify the captions and labels that are displayed on the
 screen. Go ahead and use these to fix the caption of the “Headquarters”
 search field.
 
-Next, let’s change the attribute order – go to the *Organization* class
-and add the *@AttributeOrder* annotation to the class as seen below
+Next, let’s change the attribute order – go to the `Organization` class
+and add the `@AttributeOrder` annotation to the class as seen below
 
 [source,java]
 --
@@ -612,7 +631,7 @@ By default, the attribute order is used to determine the ordering in
 both the edit form (more on this later), the results grid, and the
 search form. If you would rather use a different attribute order for
 your search form or the result grid, you can use the
-*@SearchAttributeOrder* or *@GridAttributeOrder* to specify this.
+`@SearchAttributeOrder` or `@GridAttributeOrder` to specify this.
 
 [source,java]
 --
@@ -623,13 +642,13 @@ your search form or the result grid, you can use the
 public class Organization extends AbstractEntity<Integer> {
 --
 
-In the above example, we have added an *@GridAttributeOrder*. When
+In the above example, we have added an `@GridAttributeOrder`. When
 you restart the application after this, you will see that the grid
 starts with the "memberCount" and "yearlyMortalityRate" fields. Note
 that the other attributes are shown in alphabetical order.
 
 OK, now it’s time to fix the enumeration. Open the
-*ui.messages.properties* file and add the following:
+_i.messages.properties_ file and add the following:
 
 [source,properties]
 --
@@ -646,7 +665,7 @@ It can happen that you run out of room in a grid, i.e. you don’t have
 enough horizontal room to display the full descriptions of all
 attributes in the grid. In this case, you can limit the maximum length
 of the value of an attribute inside the grid by setting the
-*maxLengthInGrid* setting. Try this for the *name* attribute:
+`maxLengthInGrid` setting. Try this for the `name` attribute:
 
 [source,java]
 --
@@ -661,8 +680,8 @@ column are now truncated after 10 characters.
 
 Now that we are talking about message bundles, it is a good moment to
 point out that (almost) anything you can do by means of the entity model
-annotations like *@Attribute* and *@Model* can also be achieved by means
-a message bundle. For this, we use the *entitymodel.properties* message
+annotations like `@Attribute` and `@Model` can also be achieved by means
+a message bundle. For this, we use the _entitymodel.properties_ message
 bundle.
 
 Open this file and add the following line:
@@ -676,7 +695,7 @@ Restart the application and verify that we now see a percentage sign
 (“%”) near the values of the “yearly mortality rate”. This teaches us
 the following:
 
-* The “percentage” setting can be used to specify that a (numeric) value
+* The “`percentage`” setting can be used to specify that a (numeric) value
 should be rendered as a percentage. This is purely visual (it will not
 divide or multiply the value by anything).
 * You can tweak the entity model using the message bundle. The syntax
@@ -684,17 +703,17 @@ for this is
 
 [source,properties]
 --
-[entity name].[property name].[setting] = [value]
+[entityName].[propertyName].[setting] = [value]
 --
 
 You can also directly change the settings on the entity by not including
-a property name, e.g. *Organization.displayName=Organisatie*
+a property name, e.g. `Organization.displayName=Organisatie`
 
 You can also change the value of the percentage setting using the
-*@Attribute* annotation – this is just an example to show you that you
+`@Attribute` annotation – this is just an example to show you that you
 can also change it by using the message bundle.
 
-To practice a bit more, add the following lines to *entitymodel.properties*.
+To practice a bit more, add the following lines to _entitymodel.properties_.
 
 [source,properties]
 --
@@ -703,7 +722,7 @@ Organization.governmentSponsored.falseRepresentation=No Way!
 --
 
 Then, restart the application and verify that instead of the standard
-"true" and "false" values for the Boolean *governmentSponsored*
+"true" and "false" values for the Boolean `governmentSponsored`
 attribute, you will now see the custom descriptions shown above.
 
 The exact syntax and all the names of the settings you can tweak is an
@@ -716,12 +735,12 @@ the annotations.
 
 === Relation fetching 
 
-Now, let’s go back to the *Country of Origin* attribute. We want to
+Now, let’s go back to the `countryOfOrigin` attribute. We want to
 display this attribute in the grid, but it’s not there yet. This is
 because it is a _complex attribute_ that refers to another entity or
 collection of entities. By default, this type of attribute is not shown
-inside a table. To fix this, add the *@Attribute* annotation to the
-*countryOfOrigin* property and set the *visibleInGrid* setting to SHOW.
+inside a table. To fix this, add the `@Attribute` annotation to the
+`countryOfOrigin` property and set the `visibleInGrid` setting to SHOW.
 
 [source,java]
 --
@@ -733,14 +752,14 @@ private Country countryOfOrigin;
 --
 
 Now, after you restart the backend application, the country of origin
-column should appear in the table. Note that the "displayProperty" of the
-country is already set to the "name" property.
+column should appear in the table. Note that the `displayProperty` of the
+country is already set to the `name` property.
 
 The way the data is fetched is not very efficient right now. For every organization, that application performs
 an extra query in order to retrieve the country.
 
 In order to fix this, we can add a fetch join to the data retrieval. To
-do so, add the following annotation to the *Organization* entity:
+do so, add the following annotation to the `Organization` entity:
 
 [source,java]
 --
@@ -749,13 +768,13 @@ detailJoins = {@FetchJoin(attribute = "countryOfOrigin")})
 --
 
 This will make sure that whenever any Organizations are fetched by the
-framework, the *countryOfOrigin* relation of those organizations will be
+framework, the `countryOfOrigin` relation of those organizations will be
 fetched as well.
 
 Note that you can specify both “joins” and “detailJoins”. The “joins”
 are the relations that are fetched whenever a collection of entities is
 retrieved (basically, to display the in a search results table). The
-“detailJoins” are the relations that are fetched when retrieving a
+`detailJoins` are the relations that are fetched when retrieving a
 single entity from the back-end, this is mostly used when displaying the
 entity in a detail screen or pop-up window.
 
@@ -774,24 +793,24 @@ design decision.
 
 === Domain Values
 
-As you may have noticed, the *Country* class we have seen before isn’t
+As you may have noticed, the `Country` class we have seen before isn’t
 defined inside the GTS application – instead it comes from a Dynamo
-module named *dynamo-functional-domain*. This contains some useful
+module named _dynamo-functional-domain_. This contains some useful
 classes for dealing with “domains”, also known as “code tables” or
 “lookup tables”- they are basically simple entities that only consist of
 a name, or of a name and a (unique) code.
 
-The module contains several pre-defined domain classes like *Country*
+The module contains several pre-defined domain classes like `Country`
 which you can use if you include a database table named “domain” in your
 application and fill it with the proper values (this is straightforward,
 so we won’t go into it here).
 
-To properly use the values from the *Country* table, though, one more
+To properly use the values from the `Country` table, though, one more
 thing is needed and that is a service for retrieving them from the
 repository. Now, we could of course create the proper Java classes for
 this, but this is slightly tedious, and we can also use the Dynamo
 functionality for _Default Services_ and define the required service in
-Spring. Open the *ApplicationConfig.java* class and take note of the
+Spring. Open the _ApplicationConfig.java_ class and take note of the
 following code:
 
 [source,java]
@@ -807,24 +826,29 @@ following code:
     }
 --
 
-This defines a bean that is an instance of *DefaultServiceImpl* which
-has an inner bean of type *DefaultDaoImpl.* These are convenience
-classes that in turn inherit from the *BaseServiceImpl* and
-*BaseDaoImpl* classes and provide all the basic functionality for
+This defines a bean that is an instance of `DefaultServiceImpl` which
+has an inner bean of type `DefaultDaoImpl`.* These are convenience
+classes that in turn inherit from the `BaseServiceImpl` and
+`BaseDaoImpl` classes and provide all the basic functionality for
 retrieving, saving, and deleting entities. The only catch is of course
 that you cannot define any custom methods (e.g.
-*findCountriesInEurope*) but for such simple entities, this is usually
+`findCountriesInEurope()`) but for such simple entities, this is usually
 not an issue.
 
-*NOTE*: *ApplicationConfig* is an example of a Spring Boot configuration
-class and inherits from the *ApplicationConfigSupport* class from the
+[NOTE]
+--
+`ApplicationConfig` is an example of a Spring Boot configuration
+class and inherits from the `ApplicationConfigSupport` class from the
 Dynamo Framework. This class already takes care of some generic
 configuration which cannot be taken care of by Spring Boot
-automatically. When you build a Dynamo application it is advised that
-you create a configuration class which inherits from
-*ApplicationConfigSupport.*_
+automatically.
 
-Now, let’s return to the *countryOfOrigin* field in *Organization* for a
+When you build a Dynamo application it is advised that
+you create a configuration class which inherits from
+`ApplicationConfigSupport`.
+--
+
+Now, let’s return to the `countryOfOrigin` field in `Organization` for a
 bit. By default, the application will render a dropdown component that
 can be used to select a country to search on. Let’s play around with
 this a little bit and change it to a lookup component:
@@ -859,12 +883,12 @@ private Country countryOfOrigin;
 With this in place, the application will render a field that allows the
 user to start typing – the available options will be filtered so that
 only those that match the entered search term will be returned. Note
-that the matching is done on the basis of the *displayProperty* setting.
+that the matching is done on the basis of the `displayProperty` setting.
 
-As an extra exercise, set the *multipleSearch* setting to *true.* This
+As an extra exercise, set the `multipleSearch` setting to `true`. This
 allows you to search for multiple values for a normally single-valued
 relation – the search query will return all entities that match one of
-the provided search values. Note that when you set *multipleSearch* to
+the provided search values. Note that when you set `multipleSearch` to
 true, the application will switch to displaying a multi-select field
 instead of a drop-down. You can also use a lookup field.
 
@@ -872,9 +896,9 @@ instead of a drop-down. You can also use a lookup field.
 
 In addition to the search form functionality explained above, Dynamo
 offers an additional way of handling search requests. This is called the
-*Dynamic Search Layout* and basically consists of a search form to which
+_Dynamic Search Layout_ and basically consists of a search form to which
 search terms can be added dynamically. To enable this functionality add
-the following in *organization-search.component.ts:*
+the following in _organization-search.component.ts_:
 
 [source,typescript]
 --
@@ -902,7 +926,7 @@ image:media/image6.png[image,width=560,height=361]
 
 Each search row starts with a combo box that allows you to select the
 attribute you want to filter on. It includes all attributes with
-searchable set to either ADVANCED or ALWAYS, sorted in alphabetical
+searchable set to either `ADVANCED` or `ALWAYS`, sorted in alphabetical
 order.
 
 Selecting an attribute from the combo box will cause one or more input
@@ -910,7 +934,7 @@ components to appear based on the selected attribute (e.g. a text field
 for a string attribute, two number fields for an integer component
 etc.). This follows the exact same logic as the regular search form.
 
-When you mark an attribute as *requiredForSearching*, a row for
+When you mark an attribute as `requiredForSearching`, a row for
 that attribute will always be rendered; it cannot be removed and the
 selected attribute cannot change. If you define or more default values
 for an attribute, then a search row for that attribute will also be
@@ -924,19 +948,19 @@ can be removed and values can be added.
 We’ve now done about all we can do to make our search screen behave in
 the desired way, so let’s move on to adding new entities.
 
-As you can see, there is already an *Add* button below the search
+As you can see, there is already an “Add” button below the search
 results grid. If you click this button, the application will navigate to
 an edit form that allows you to add a new entity (in this case an
 Organization) to the application. Whether this button appears is in fact
-dependent on the *createAllowed* setting on the entity model (but this
-is *true* by default).
+dependent on the `createAllowed` setting on the entity model (but this
+is `true` by default).
 
-When you click the *Add* button the application will try to navigate to
+When you click the “Add” button the application will try to navigate to
 a separate page. Which page this is, is specified by the
-*detailNavigationPath* setting that was mentioned earlier (and which is
+`detailNavigationPath` setting that was mentioned earlier (and which is
 set to “organization”).
 
-When you look in *app-routing.module.ts* you will see that the following
+When you look in _app-routing.module.ts_ you will see that the following
 routes are defined (one for editing an existing entity and one for
 creating a new one):
 
@@ -954,7 +978,7 @@ creating a new one):
   },
 --
 
-Both routes point to the *OrganizationFormComponent* which looks as
+Both routes point to the `OrganizationFormComponent` which looks as
 follows:
 
 [source,angular17html]
@@ -966,14 +990,15 @@ navigateBackRoute="organizations">
 </app-generic-form>
 --
 
-This is a minimal set-up that includes a) the name of the entity b) the
-ID of the entity being edited (undefined when defining a new
-entity) and c) the route to use when navigating back to the search
-screen.
+This is a minimal set-up that includes:
+
+. the name of the entity
+. the ID of the entity being edited (undefined when defining a new entity)
+. the route to use when navigating back to the search screen.
 
 Note that in the (probably pretty rare) cases where you want to
 completely disable navigation from the screen, you can do so by setting
-the *navigationAllowed* property to false.
+the `navigationAllowed` property to false.
 
 By default, the form will already contain some input fields – as with
 the search fields, the entity model determines which type of user
@@ -985,7 +1010,7 @@ image:media/image7.png[image,width=560,height=570]
 By now, it should not come as a surprise that you will see text fields
 for String and numeric attributes, combo boxes for enumerations, etc.
 If you look closely, however, you will see that there is no component
-for editing the *country of origin* attribute. This
+for editing the `countryOfOrigin` attribute. This
 is because, by default, no components will be created for editing
 complex attributes. There is also no component for modifying the members
 but this is by design.
@@ -1007,17 +1032,17 @@ private Country countryOfOrigin;
 
 Now, go ahead and add a new organization to the system (be creative).
 Note that validations have automatically been added to the form based on
-the Java Validation API annotation like *@NotNull* and *@Size* that are
+the Java Validation API annotation like `@NotNull` and `@Size` that are
 present on the entity – you don’t have to do anything extra for this.
 
 Note that sometimes it’s not desirable to be able to directly edit an
 attribute – e.g. in case of a status field that is automatically set, a
 creation time stamp, etc. You can make sure that such an attribute shows
-up as read-only in the form by setting the *editable* setting of the
-*@Attribute* annotation to *READONLY.* It is also possible to specify the
-settings *CREATE_ONLY* and *EDITABLE*. When you use the setting
-*CREATE_ONLY* you will only be able to edit the attribute when creating
-a new entity. The *EDITABLE* value, which is the default value, means
+up as read-only in the form by setting the `editable` setting of the
+`@Attribute` annotation to `READONLY`. It is also possible to specify the
+settings `CREATE_ONLY` and `EDITABLE`. When you use the setting
+`CREATE_ONLY` you will only be able to edit the attribute when creating
+a new entity. The `EDITABLE` value, which is the default value, means
 that the attribute can always be edited.
 
 === Editing existing entities
@@ -1027,8 +1052,8 @@ click on any row in the table. This will cause the application to
 navigate to the detail screen you just saw, but now the details of the
 selected row will be shown.
 
-You can also set the *showDetailButton* setting on the
-generic-search-layout to *true*. With this setting in place, you can no
+You can also set the `showDetailButton` setting on the
+generic-search-layout to `true`. With this setting in place, you can no
 longer just click anywhere in the table. Instead, a “pencil” button will
 show up in each row in the table. Click this button to navigate to the
 detail screen.
@@ -1043,33 +1068,37 @@ detail screen.
 
 image:media/image8.png[image,width=559,height=26]
 
-Note that you can also set the *detailsModeEnabled* setting to *false*.
+Note that you can also set the `detailsModeEnabled` setting to `false`.
 This will completely disable the functionality to navigate to the detail
 screen for existing entities (however, you can still create new entities
-using the *Add* button).
+using the “Add” button).
 
 Some changes you can make to modify the behaviour of edit forms include:
 
-* Using the *defaultValue* setting on any simple attribute to define a
+* Using the `defaultValue` setting on any simple attribute to define a
 default value. This can be a string, integer, BigDecimal etc. Try this
-out on e.g. the “*yearlyMortalityRate*” attribute. Use a period (“.”) as
-the decimal separator if needed. Once you click the *Add* button to
+out on e.g. the “`yearlyMortalityRate`” attribute. Use a period (“.”) as
+the decimal separator if needed. Once you click the “Add” button to
 create a new entity, any fields for which a default value has been
 defined will be automatically set to this default value.
-* Using the *TextFieldMode* to switch between displaying a text field, a
-text area, or a password field. Try this on the *address* property.
-_This only works inside edit forms. The TextFieldMode will be
+* Using the `TextFieldMode` to switch between displaying a text field, a
+text area, or a password field. Try this on the `address` property.
+
+NOTE: This only works inside edit forms. The TextFieldMode will be
 ignored when creating a search form, since the text area in the search
 form would take up too much space, and it’s highly unlikely you’d want to
-search for an enormously long string match anyway._
-* Use the *booleanFieldMode* to switch between using a checkbox, a
+search for an enormously long string match anyway.
+
+* Use the `booleanFieldMode` to switch between using a checkbox, a
 toggle button, or a switch component for editing a Boolean property.
-_Note that this only has an effect inside an edit form. In a search
+
+NOTE: This only has an effect inside an edit form. In a search
 form, the framework will always use a tri-state checkbox as described
-earlier._
-* Use the *enumFieldMode* to switch between using a dropdown component
+earlier.
+
+* Use the `enumFieldMode` to switch between using a dropdown component
 or a set of radio buttons for editing an enumeration.
-* Use the *numberFieldMode* to switch between using a text field or a
+* Use the `numberFieldMode` to switch between using a text field or a
 numeric input field for a numeric property (this only works for integer
 or long properties). When you set this to “NUMBERFIELD”, e.g. for the
 “memberCount” property, you will see the following:
@@ -1078,11 +1107,11 @@ image:media/image9.png[image,width=560,height=53]
 
 * This is a numeric input field which will only accept numeric input and
 also contains plus and minus buttons for changing the value. You can use
-the *numberFieldStep* setting to modify the step size.
-* You can use the *groupTogetherWith* setting to specify that multiple
+the `numberFieldStep` setting to modify the step size.
+* You can use the `groupTogetherWith` setting to specify that multiple
 components must be placed on the same row in the edit form. To do so,
-use a *groupTogetherWith* value on the attribute you want to appear
-*first* in the row:
+use a `groupTogetherWith` value on the attribute you want to appear
+first in the row:
 
 [source,java]
 --
@@ -1096,7 +1125,7 @@ private String headQuarters;
 The above will make sure that the “address” field shows up on the same
 line as the “headQuarters” field. When using this setting, take care
 that the attributes are in the right order (the attribute on which you
-place the *groupTogetherWith* setting must occur in the ordering before
+place the `groupTogetherWith` setting must occur in the ordering before
 the attribute it refers to. Dynamo will produce an error if you define
 an incorrect attribute grouping)
 
@@ -1107,8 +1136,8 @@ image:media/image10.png[image,width=560,height=79]
 The Dynamo Framework also supports the functionality of turning certain
 fields into clickable URLs (that point to external resources).
 
-To demonstrate, set the “url” setting to *true* for the “url” property
-of the *Organization* class.
+To demonstrate, set the `url` setting to `true` for the `url` property
+of the `Organization` class.
 
 [source,java]
 --
@@ -1135,27 +1164,27 @@ the input fields. It will also not take up the entire width of the
 screen. Both of these things are fairly easy to change.
 
 In order to change the width of the entire form you can set the value of
-the *formWidthClass* property on the app-generic-form. This property
-expects standard Bootstrap expressions, e.g. “col-12” means use up all
+the `formWidthClass` property on the app-generic-form. This property
+expects standard Bootstrap expressions, e.g. `col-12` means use up all
 12 available columns
 
 If you want to change e.g. the number of columns being used, you can
-modify the *numberOfColumns* property. By default, this has the value *1*,
-but you can set it to *2* or *3.* Using a value other than 1 will cause
+modify the `numberOfColumns` property. By default, this has the value *1*,
+but you can set it to `2` or `3`. Using a value other than 1 will cause
 the input components to be displayed behind each other on the same row
 (provided there is enough room).
 
 === Attribute Grouping
 
 By default, all attributes inside an edit from will be displayed below
-and behind each other, in the order specified by the *@AttributeOrder*
+and behind each other, in the order specified by the `@AttributeOrder`
 annotation you saw before (with an exception for the attributes that
-have been mentioned in the *groupTogetherWith* setting). However,
+have been mentioned in the `groupTogetherWith` setting). However,
 sometimes, especially when you have many attributes, it can be useful to
 have a way of grouping certain attributes together.
 
 To demonstrate how this works, add the following annotations to
-the *Organization* class.
+the `Organization` class.
 
 [source,java]
 --
@@ -1188,9 +1217,9 @@ additional group that contains all attributes that were not explicitly
 assigned to any of the groups.
 
 Note that the order of the groups is specified by the
-*@AttributeGroup(s)* annotations, but the order of the attributes within
-the groups is still taken from the (general) attribute ordering
-specified by the *@AttributeOrder* annotation.
+`@AttributeGroup` and `@AttributeGroups` annotations, but the order of 
+the attributes within  the groups is still taken from the (general) 
+attribute ordering specified by the `@AttributeOrder` annotation.
 
 Also, by default the application will use panels to group the attributes
 together. If you prefer using tabs, define an attribute group mode
@@ -1209,8 +1238,8 @@ After you restart the application you should now see three tab sheets
 ===  Removing existing entities
 
 By default, the option to delete existing entities is disabled. You can
-easily enable this functionality by setting the *deleteAllowed* setting
-on the @Model annotation to *true*
+easily enable this functionality by setting the `deleteAllowed` setting
+on the `@Model` annotation to `true`.
 
 [source,java]
 --
@@ -1224,8 +1253,8 @@ red “Delete” button in every row in the search results table.
 
 As an alternative to using a separate detail screen, it is also possible
 to open a pop-up edit dialog directly from the results table. In order
-to enable this functionality, define a *popupButtonMode* variable in
-*organization-search.component.ts*:
+to enable this functionality, define a `popupButtonMode` variable in
+_organization-search.component.ts_:
 
 [source,typescript]
 --
@@ -1249,29 +1278,29 @@ means that no button to open the dialog will appear.
 === Additional GenericEditForm properties
 
 There are several more options available on the
-*GenericEditFormComponent* to govern how the component behaves:
+`GenericEditFormComponent` to govern how the component behaves:
 
-* *openInViewMode* (default: false) can be used to specify that the form
-must be in view mode after first opening it. In this case, an *Edit*
+* `openInViewMode` (default: `false`) can be used to specify that the form
+must be in view mode after first opening it. In this case, an "Edit"
 button will be provided to switch the screen to edit mode.
-* *confirmSave* determines whether to ask for confirmation before saving
-changes after the user presses the *Save* button. The default value is
-*false*.
+* `confirmSave` determines whether to ask for confirmation before saving
+changes after the user presses the "Save" button. The default value is
+`false`.
 
 === Additional GenericSearchLayout properties
 
 There are several more options available on the
-*GenericSearchLayoutComponent* to govern how the component behaves:
+`GenericSearchLayoutComponent` to govern how the component behaves:
 
-* *confirmClear* determines whether to ask for confirmation before
-removing all search filters after the user presses the *Clear* button.
-The default value is *false*.
-* *searchImmediately* determines whether to carry out a search right
+* `confirmClear` determines whether to ask for confirmation before
+removing all search filters after the user presses the "Clear" button.
+The default value is `false`.
+* `searchImmediately` determines whether to carry out a search right
 away when opening the screen. The default value for this setting is
-*true* which means that a search is carried out right away. If you set
-it to *false*, the search results grid will initially be hidden after you open the
+`true` which means that a search is carried out right away. If you set
+it to `false`, the search results grid will initially be hidden after you open the
 screen, and you must carry out a search first before it will show up.
-* *preserveSearchTerms* determines whether any search terms that you
+* `preserveSearchTerms` determines whether any search terms that you
 enter in a search form will be preserved when you navigate away from a
 screen and then navigate back to it. This is enabled by default, so you
 don’t normally need to do anything to get this functionality.
@@ -1291,7 +1320,7 @@ modify Organization.java so that it reads as follows:
 private MainActivity mainActivity;
 --
 
-Also, set the "displayProperty" of the MainActivity class to "name".
+Also, set the `displayProperty` of the `MainActivity` class to `name`.
 
 Now, when you open the detail page for an organization, you should see a
 “Main Activity” field in the edit form:
@@ -1300,7 +1329,7 @@ image:media/image12.png[image,width=462,height=61]
 
 Behind the input component, you will see a “plus” button that allows you
 to quickly add a new value for this lookup table. This button appears
-because you have set the “quickAddAllowed” setting to *true*. Clicking
+because you have set the `quickAddAllowed` setting to `true`. Clicking
 the button will bring up a dialog that allows the user to create a new
 entity. If the creation is successful, the new entity will be added to
 the list of available options in the component, and selected.
@@ -1309,10 +1338,13 @@ Dynamo contains automatic protection against entering duplicate values –
 when you try to add a new lookup table value with the same name as an
 already existing entity, the application will throw a validation
 exception. The message that is shown is expected to be in the message
-bundle under the *<DomainName>.not.unique* key. To make this work for
-the MainActivity, add the following to *entitymodel.properties*.
+bundle under the `<DomainName>.not.unique` key. To make this work for
+the MainActivity, add the following to _entitymodel.properties_.
 
+[source,properties]
+--
 MainActivity.not.unique=This main activity already exists
+--
 
 Now, restart the application, try to add a duplicate main activity and
 verify that you see the error message defined here.
@@ -1325,23 +1357,23 @@ good to briefly outline some additional settings here:
 
 * The Dynamo framework supports automatic validation of emails (syntax
 only) for fields that are annotated with the Java Validation framework
-*@Email* annotation. Simply adding this annotation is enough to enable
+`@Email` annotation. Simply adding this annotation is enough to enable
 e-mail validation in both the service layer and UI.
-* The setting *ignoreInSearchFilter* can be used to specify that a
+* The setting `ignoreInSearchFilter` can be used to specify that a
 property should be ignored when constructing the search filter when
-searching using a *GenericSearchLayoutComponent*. When you mark an
+searching using a `GenericSearchLayoutComponent`. When you mark an
 attribute as “searchable” but set “ignoreInSearchFilter” to true, a
 search field will be rendered inside the form, but the contents of the
 field will be ignored when actually searching. The most obvious use case for
 this is when working with cascading input fields (outside the scope of this
 training).
 * By default, sorting is enabled for all attributes. You can disable
-sorting for an attribute by setting the *sortable* setting to false.
+sorting for an attribute by setting the `sortable` setting to false.
 * Sometimes, when searching or sorting on an attribute, you will want to
 search or sort on an attribute path that is different from the actual
 path to the attribute. For these situations, you can use the
-*replacementSearchPath* and *replacementSortPath* settings.
-* The *trimSpaces* setting can be used to automatically remove spaces
+`replacementSearchPath` and `replacementSortPath` settings.
+* The `trimSpaces` setting can be used to automatically remove spaces
 from the start and end of a field value before saving the value to the
 database.
 
@@ -1349,10 +1381,10 @@ database.
 
 === Adding the PersonSearchComponent
 
-Now, let’s move to the *Person* entity which is used to represent the
+Now, let’s move to the `Person` entity which is used to represent the
 various members of the criminal organizations we are interested in.
 
-As with the *Organization* entity, the entity class, DAO, and service
+As with the `Organization` entity, the entity class, DAO, and service
 classes have already been provided for you. We will, however, be adding
 a new Angular component. First, create the skeleton for the component by
 running the following Angular CLI command:
@@ -1365,7 +1397,7 @@ ng generate component person-search --module app
 This will generate an Angular component (4 files in total) and add it to
 the application’s main module.
 
-In the *app-routing.module.ts* file, add the following to the *children*
+In the _app-routing.module.ts_ file, add the following to the `children`
 array:
 
 [source,yaml]
@@ -1378,7 +1410,7 @@ array:
 --
 
 This defines a new route to the persons component. Finally, in the
-*nav.component.ts* file, add a new menu item:
+_nav.component.ts_ file, add a new menu item:
 
 [source,yaml]
 --
@@ -1410,29 +1442,29 @@ image:media/image13.png[image,width=560,height=247]
 
 * You can select a row in the table to the left to make the details of
 that row show up in the form to the right.
-* If *createAllowed* is true for the entity, an “Add” button will show up
+* If `createAllowed` is true for the entity, an “Add” button will show up
 below the table. Clicking this button will bring up an empty form that
 allows you to create a new entity.
 
 Now, using everything you have learned so far, modify this screen in the following ways:
 
 * Make sure the “organization” property shows up in the grid and in the
-edit form (note: don’t forget to modify the relation fetching using the *@FetchJoin* annotation
-and to set a *displayProperty* for the Organization if
+edit form (note: don’t forget to modify the relation fetching using the `@FetchJoin` annotation
+and to set a `displayProperty` for the Organization if
 that has not been done already).
-* The attribute order reads “firstName”, “nickName”, “lastName”,
-“organization” “born”, “died”
-* The caption for the *nickName* property must be changed to “Nickname”
-* The *Remove* button must be displayed for each row in the table.
+* The attribute order reads `firstName`, `nickName`, `lastName`,
+`organization`, `born`, `died`.
+* The caption for the `nickName` property must be changed to “Nickname”
+* The "Remove" button must be displayed for each row in the table.
 
 Play around with the screen a bit and add, edit, or delete some
 entities.
 
 By default, the data that is displayed is not filtered in any way. You
-can change this by adding *default filters* to the layout. These are
+can change this by adding _default filters_ to the layout. These are
 filters that are automatically applied to any search request. In order
 to add default filters, define the following in the
-*person-search.component.ts*:
+_person-search.component.ts_:
 
 [source,typescript]
 --
@@ -1448,39 +1480,39 @@ return [createEqualsFilter('firstName', 'a')]
 </app-generic-split-layout>
 --
 
-This sets up a filter for filtering on the *firstName* property of the
+This sets up a filter for filtering on the `firstName` property of the
 person, and will match if this first name contains the letter “a” (note
-that the attribute model, specifically the *searchPrefixOnly* and
-*searchCaseSensitive* settings determine how exactly the search is
+that the attribute model, specifically the `searchPrefixOnly` and
+`searchCaseSensitive` settings determine how exactly the search is
 carried out. You don’t have to specify a “like” query or something in
 the front-end.)
 
 The Dynamo framework comes with a range of built-in filters. In addition,
-the *EqualsFilterModel* shown above, there are classes like
-*NumberRangeFilter, DateRangeFilter* and *NumberInFilter.* Please refer
+the `EqualsFilterModel` shown above, there are classes like
+`NumberRangeFilter`, `DateRangeFilter` and `NumberInFilter`. Please refer
 to the full Dynamo documentation for more details.
 
-Like the *GenericSearchLayout*, the *GenericSplitLayout* comes with a
+Like the `GenericSearchLayout`, the `GenericSplitLayout` comes with a
 number of useful properties that can be used to modify its behaviour.
 Some of these include:
 
-* The *quickSearchProperty* can be used to define a property that can be
+* The `quickSearchProperty` can be used to define a property that can be
 used to quickly filter the search results. When this property is set, a
 “quick search” text field will appear in the split layout above the
 search results table. Typing in this input field will filter the search
 results based on the specified property. Note that the property must be searchable.
-* If this is not sufficient, you can also set the *searchDialogEnabled*
-setting to true. With this in place, a “Search” button will be shown
+* If this is not sufficient, you can also set the `searchDialogEnabled`
+setting to `true`. With this in place, a “Search” button will be shown
 above the results table. Clicking this button will bring up a pop-up
 search dialog. This basically functions in the same way as the search
-form in the *GenericSearchLayout*, meaning that all attributes that are
+form in the `GenericSearchLayout`, meaning that all attributes that are
 marked as searchable will show up. You can carry out searches using this
 screen, and when you close it, the search results in the split layout
 will match those you selected in the dialog.
 
-The split layout also supports settings like *openInViewMode* and
-*confirmSave* that we already covered when discussing the
-*GenericSearchLayout*.
+The split layout also supports settings like `openInViewMode` and
+`confirmSave` that we already covered when discussing the
+`GenericSearchLayout`.
 
 == Split layouts
 
@@ -1496,7 +1528,7 @@ gifts. This basically follows the same set-up as
 ng generate component gift-search --module app
 --
 
-In the *app-routing.module.ts* file, add the following to the *children*
+In the _app-routing.module.ts_ file, add the following to the `children`
 array
 
 [source,commandline]
@@ -1509,7 +1541,7 @@ array
 --
 
 This defines a new route to the persons component. Finally, in the
-*nav.component.ts* file, add a new menu item:
+_nav.component.ts_ file, add a new menu item:
 
 [source,yaml]
 --
@@ -1530,12 +1562,12 @@ Defining the actual layout is pretty easy as well:
 One of the functionalities of the gifts screen is the option to upload
 an image to help us identify what the gift looks like. The application
 automatically renders a file upload component for attributes that are of
-type “byte[]”, in this case the “image” field in the nested “logo”
+type `byte[]`, in this case the `image` field in the nested `logo`
 attribute.
 
 When you start the application now, the upload functionality should be
 working, but it’s not very user-friendly yet. To make the application
-behave a bit better, open the *GiftLogo* class and find the *image*
+behave a bit better, open the `GiftLogo` class and find the `image`
 attribute. Annotate it as follows:
 
 [source,java]
@@ -1545,7 +1577,7 @@ attribute. Annotate it as follows:
 private byte[] image;
 --
 
-Also annotate the *fileName* property directly below it as follows:
+Also annotate the `fileName` property directly below it as follows:
 
 [source,java]
 --
@@ -1554,22 +1586,22 @@ VisibilityType.HIDE)
 private String fileName;
 --
 
-Note that we are using the full path of the attribute, “logo.fileName”
-rather than just “filename”. This is because the Logo is an embedded
+Note that we are using the full path of the attribute, `logo.fileName`
+rather than just `filename`. This is because the Logo is an embedded
 object of the Gift – embedded objects are more or less absorbed into the
 object that is embedding them and don’t have their own models. All the
 attributes of the embedded model become attributes of the embedding
 entity in the Entity Model, and must be referred to using their full
 paths.
 
-By changing the value of the *image* setting to true you mark this field
+By changing the value of the `image` setting to true you mark this field
 as an image, causing the application to try and render a preview of the
 contents of this field (it will of course still fail if you didn't
 upload an actual image).
 
-The *fileNameProperty* setting is used to automatically set the value of
+The `fileNameProperty` setting is used to automatically set the value of
 another property to the name of the file you uploaded – in this case the
-*fileName* property on the *GiftLogo*.
+`fileName` property on the `GiftLogo`.
 
 Now, when you try uploading a file again, the application will show
 you a preview of the image you uploaded (provided it’s actually an
@@ -1577,9 +1609,9 @@ image) and the "fileName" property will be automatically set after uploading the
 image.
 
 Now, if you want to restrict the type of files that the user can upload,
-you can use the *allowedExtensions* setting. This setting takes as its
-value an array of strings, e.g. "png", "gif". You can also set the
-*downloadAllowed* setting to make it so that a "download" button will
+you can use the `allowedExtensions` setting. This setting takes as its
+value an array of strings, e.g. `png`, `gif`. You can also set the
+`downloadAllowed` setting to make it so that a "download" button will
 show up in the file upload component.
 
 Play around with the file upload functionality for a bit if you want,
@@ -1595,11 +1627,11 @@ instead. Note that in these cases it is still possible to use the Dynamo
 entity model, but you have to modify the service logic to write the data
 to and retrieve it from the blob storage.
 
-Now, there is one more cool thing we can do with the *Gift* entity, and
+Now, there is one more cool thing we can do with the `Gift` entity, and
 that is displaying and editing a collection of dependent objects, in
-this case the *translations*.
+this case the `translations`.
 
-In the *Gift* class, annotate the *translations* property as follows.
+In the `Gift` class, annotate the `translations` property as follows.
 
 [source,java]
 --
@@ -1611,7 +1643,7 @@ In the *Gift* class, annotate the *translations* property as follows.
 private Set<GiftTranslation> translations = new HashSet<>();
 --
 
-Of note here is the *nestedDetails* setting that will ensure that the
+Of note here is the `nestedDetails` setting that will ensure that the
 framework treats this property as a nested detail property. Also note
 the use of the standard JPA cascade annotations that make sure that the
 detail entities are persisted whenever the parent entity is.
@@ -1627,8 +1659,8 @@ public void setTranslations(Set<GiftTranslation> translations) {
 }
 --
 
-The *wireRelations* method is a convenience method from the
-*EntityModelUtils* class.
+The `wireRelations()` method is a convenience method from the
+`EntityModelUtils` class.
 
 With these annotations in place, start the application and verify that
 the application now renders a table that can be used to edit the
@@ -1667,26 +1699,26 @@ number of complex attributes that are not present in either the results
 table of the edit form.
 
 To make the screen behave, set the visibleInForm and visibleInGrid settings
-for *fromPerson*, *toPerson* and *gift* properties to SHOW. You may also want to set
-the *displayProperty* setting on the *Gift* class to "name" if you
+for `fromPerson`, `toPerson` and `gift` properties to SHOW. You may also want to set
+the `displayProperty` setting on the `Gift` class to "name" if you
 have not done so already, to make sure that a useful description of the
 gift shows up in the table and in the dropdown component.
 
 Now, when you restart the application and open the Deliveries screen,
 you will see a table that you can use to edit the displayed entities.
-Initially, the grid will be empty, but you can use the *Add* button to
+Initially, the grid will be empty, but you can use the “Add” button to
 add new entries. However, this is not very useful at the moment since
 you won’t be able to see (let alone fill in) all the required fields.
 
 Now, start the application, open the Deliveries screen, and you will see
-an empty grid. You can use the *Add* button to add a new delivery.
+an empty grid. You can use the “Add” button to add a new delivery.
 Clicking this button will cause a pop-up dialog to appear, which you can
 then use to create the new entity. Go ahead and do so. The new entities
 that you added will show up in the grid.
 
 Note that at the end of every row there is a “Details” button that you
 can use to bring up the details of the current row/entity. If
-*updateEnabled* is set to true on the entity model, you can also use
+`updateEnabled` is set to true on the entity model, you can also use
 this dialog to edit the entity.
 
 == Filters, custom components, and callback methods
@@ -1702,11 +1734,11 @@ lookup component contains all the available values. In a small
 application like this, that is usually not an issue, but in a real
 application it is likely that you sometimes want to restrict the values
 that show up inside a selection component or lookup component. For this
-you can use the *field filter* mechanism.
+you can use the _field filter_ mechanism.
 
 As we’ve seen before with the default filters (in the SplitLayout), the
 field filters are defined in the component’s TypeScript file. As an
-example, we define the following in the *organization-form.component.ts*
+example, we define the following in the _organization-form.component.ts_
 
 [source,typescript]
 --
@@ -1726,8 +1758,8 @@ Also, in the HTML file we bind this method to the [fieldFilters]
 property.
 
 Now, if we open the screen to edit an organization (or create a new
-one), we will see that the available option in the *countryOfOrigin*
-component are limited to those countries that contain the substring “au”
+one), we will see that the available option in the `countryOfOrigin`
+component are limited to those countries that contain the substring `au`
 (e.g. Austria or Australia). This works regardless of the type of the
 input component, but it will of course show up in different ways.
 
@@ -1741,8 +1773,8 @@ way in which input components behave, it is possible to override the
 standard component generated by the framework with a custom one.
 
 To do so, you can insert an ng-template element marked with the
-*dOverrideField* annotation inside the component (in this case,
-*organization-form.component.html*.
+`dOverrideField` annotation inside the component (in this case,
+_organization-form.component.html_.
 
 [source,angular17html]
 --
@@ -1763,14 +1795,14 @@ To do so, you can insert an ng-template element marked with the
   </ng-template>
 --
 
-The *dOverrideField* on the template makes sure the mechanism picks up
+The `dOverrideField` on the template makes sure the mechanism picks up
 this custom component. The “attributeName” must be the name of the
 attribute for which you want to replace the input component.
 
 Inside the template you can create basically any component you like.
 Make sure to nest the custom component inside a formGroup though, or no
 data binding between the model and the component will take place. Also
-don’t forget to set te “formControlName” property to the name of the
+don’t forget to set the `formControlName` property to the name of the
 attribute.
 
 Using custom components like this is also supported for the search
@@ -1784,17 +1816,17 @@ custom validators to the default Dynamo components.
 
 As stated before, the framework will take care of adding validators to
 the front-end based on the Java Validation API annotations like @Min,
-@NotNull, @Size etc. In case this is not enough, it is of course
+`@NotNull`, `@Size` etc. In case this is not enough, it is of course
 possible to provide your own validation logic in the back-end, but this
 functionality cannot be automatically duplicated on the front-end. This
 is where custom front-end validations come in.
 
 We have already provided a custom validator in the CustomValidators
-class, and will now apply this to a field in the *person-search.component.html*
+class, and will now apply this to a field in the _person-search.component.html_
 that we created before.
 
-In the *app-generic-split-layout* we created before, we add a template named
-*customValidatorTemplate* and bind this to the *customValidatorTemplate*
+In the `app-generic-split-layout` we created before, we add a template named
+*customValidatorTemplate* and bind this to the `customValidatorTemplate`
 property of the layout:
 
 [source,angular17html]
@@ -1810,24 +1842,24 @@ property of the layout:
 --
 
 Inside the template we can create any number of templates annotated with
-the *dAdditionalValidators* template. Each template must contain the
+the `dAdditionalValidators` template. Each template must contain the
 following:
 
-* *attributeName* defines the attribute to bind to
-* *formGroup* is the form group that the input component belongs to
-* *validators* is an array of custom validators that you want to apply
+* `attributeName` defines the attribute to bind to
+* `formGroup` is the form group that the input component belongs to
+* `validators` is an array of custom validators that you want to apply
 to the field.
 
-In the typescript file, add the following, where the “CustomValidators”
+In the typescript file, add the following, where the _CustomValidators_
 on the right refers to the class you import from the
-*custom-validators.ts* file.
+_custom-validators.ts_ file.
 
 [source,typescript]
 --
 readonly CustomValidators = CustomValidators
 --
 
-*NOTE*: you must always include the appropriate validations in the
+NOTE: You must always include the appropriate validations in the
 back-end as well. Never rely on the front-end only for validating data,
 since it is always possible to bypass the front-end and call the
 back-end services directly.
@@ -1848,7 +1880,7 @@ In order to add an entity model action, we need the following things:
 
 * A data transfer object (DTO) to hold the relevant data
 * A service method that accepts that DTO as a parameter
-* An *@ModelAction* annotation on the service method implementation
+* An `@ModelAction` annotation on the service method implementation
 
 Let’s start with the DTO:
 
@@ -1881,13 +1913,13 @@ public class OrganizationNameDTO extends AbstractEntity<Integer> {
 }
 --
 
-The DTO class must extend the *AbstractEntity* class, and must have an ID
+The DTO class must extend the `AbstractEntity` class, and must have an ID
 field that has the same data type as the entity that the action belongs
 to (in this case the Organization). The framework constructs an entity
 model for the DTO in the same way as it does for an actual entity, so
-annotations like *@Model* and *@Attribute* work in the same way.
+annotations like `@Model` and `@Attribute` work in the same way.
 
-In the OrganizationService(Impl) we add the action method that we want to carry
+In the `OrganizationService(Impl)` we add the action method that we want to carry
 out:
 
 [source,java]
@@ -1903,30 +1935,30 @@ public Organization updateName(OrganizationNameDTO dto) {
 }
 --
 
-And in the *OrganizationService* we add the method definition
+And in the `OrganizationService` we add the method definition
 --
 Organization updateName(OrganizationNameDTO dto);
 --
 
-This is a fairly simple method that accepts the *OrganizationNameDTO* as a
+This is a fairly simple method that accepts the `OrganizationNameDTO` as a
 parameter, and must return the updated entity (in this case the
 Organization). The logic is easy – it just sets the name on the
 organization, then saves the updated organization to the database.
 
-As you can see the method is annotated with *@ModelAction* which means
+As you can see the method is annotated with `@ModelAction` which means
 Dynamo will translate it to a button that will show up (in this case) in
 each row in the table. The ModelAction has a unique ID, a display name (which will be
 shown in the tooltip of the button) and a type. The type can be either
-*CREATE* or *UPDATE* and determines where the button corresponding to the
-action will show up. *UPDATE* actions will show up in each button in a
-results table, and *CREATE* actions will show up in the button bar below
+`CREATE` or `UPDATE` and determines where the button corresponding to the
+action will show up. `UPDATE` actions will show up in each button in a
+results table, and `CREATE` actions will show up in the button bar below
 the table.
 
 image:media/image15.png[image,width=560,height=24]
 
 Pressing the button will open a pop-up dialog based on the
-*OrganizationNameDTO* we saw before. Any fields that match between the
-main entity (Organization) and the DTO, in this case the *name*, will be
+`OrganizationNameDTO` we saw before. Any fields that match between the
+main entity (Organization) and the DTO, in this case the `name`, will be
 automatically filled in:
 
 image:media/image16.png[image,width=559,height=107]
@@ -1940,7 +1972,7 @@ the front-end. These come in three varieties:
 table.
 
 As an example of a global action, consider the following code which we add
-to *organization-search.component.ts*).
+to _organization-search.component.ts_).
 
 [source,typescript]
 --
@@ -1985,7 +2017,7 @@ format.
 
 This functionality is enabled by default. It can be turned off on an
 entity model by entity model basis by setting the value of
-*exportAllowed* on the *@Model* annotation to false.
+`exportAllowed` on the `@Model` annotation to false.
 
 If exporting is enabled for an entity, a context menu will show up in
 any results table (in you right-click anywhere in the table). This menu
@@ -1998,8 +2030,8 @@ that are currently displayed – Dynamo will iterate over the entire data set
 using pagination.
 
 By default, the export will contain only the columns that are visible
-in the table, but you can change the *exportMode* setting to *FULL* in
-order to include all attributes that have their *visibleInForm* setting
+in the table, but you can change the `exportMode` setting to `FULL` in
+order to include all attributes that have their `visibleInForm` setting
 equal to "true".
 
 === Clickable Links
@@ -2008,8 +2040,8 @@ For some properties, it is possible to change the default way they are
 displayed (simply as a text or a label) inside a grid or an edit form to
 a hyperlink that allows navigation within the application.
 
-We will demonstrate this using the *organization* property of the
-*Person.* Change the code inside the Person class so that it reads as
+We will demonstrate this using the `organization` property of the
+`Person`. Change the code inside the Person class so that it reads as
 follows:
 
 [source,java]
@@ -2023,24 +2055,24 @@ private Organization organization;
 --
 
 This will lead to the following situation in the Person screen
-(note that you may have to set the "openInViewMode" to true in order to
+(note that you may have to set the `openInViewMode` to `true` in order to
 make the link show up)
 
 image:media/image17.png[image,width=503,height=407]
 
-The *navigable* setting on the *@Attribute* annotation will make sure
+The `navigable` setting on the `@Attribute` annotation will make sure
 that whenever the property is shown in read-only mode, a hyperlink will
 be rendered instead of just a textual representation. Note that this
 applies to both detail forms and result tables.
 
 When the user clicks the hyperlink, the application will navigate to a (detail)
-screen by following the route */[lower cased name of the entity]/[entity
-id]*, in this case *“/organization/1”*. This is the route at which we
-configured our “*OrganizationFormComponent*” so the application will
+screen by following the route _/[lower cased name of the entity]/[entity
+id]_, in this case _/organization/1_. This is the route at which we
+configured our `OrganizationFormComponent` so the application will
 then show a details screen for the selected organization.
 
 In case you want to navigate to a different detail screen, you can set
-the *navigationLink* setting on the attribute model in order to
+the `navigationLink` setting on the attribute model in order to
 configure a different route.
 
 == Authorization
@@ -2051,8 +2083,8 @@ and to disable or enable certain functionality within a screen (e.g.
 whether a certain button shows up or whether the user is allowed to
 modify a certain entity type).
 
-To test this, open the *Person* class and modify the class declaration
-by adding the *@Roles* annotation as follows:
+To test this, open the `Person` class and modify the class declaration
+by adding the `@Roles` annotation as follows:
 
 [source,java]
 --
@@ -2069,12 +2101,12 @@ considered eligible if they have at least one of the specified roles.
 Verify this by opening the Person screen again and making sure that you
 cannot add new persons or modify existing ones.
 
-In addition to the “writeRoles” functionality, the *@Roles* annotation
-also offers the “readRoles” and “deleteRoles” settings. The
-“deleteRoles” setting is easy, it will simply add or remove the option
+In addition to the “writeRoles” functionality, the `@Roles` annotation
+also offers the `readRoles` and `deleteRoles` settings. The
+`deleteRoles` setting is easy, it will simply add or remove the option
 to delete entities based on the user’s roles.
 
-When you specify one or more roles for the “readRoles” setting, the
+When you specify one or more roles for the `readRoles` setting, the
 component will only show up if the user has at least one of the
 specified role. If not, the user simply will see a “You are not allowed
 to view this component” message.
@@ -2093,8 +2125,8 @@ In addition to this, it is also possible/required to secure the Angular
 route so that only authorized users can access the route in the first
 place. Here, Dynamo does offer some functionality to help you.
 
-In the *app.routing.module.ts*, modify the entry for the
-*PersonSearchComponent* so that it reads as follows:
+In the _app.routing.module.ts_, modify the entry for the
+`PersonSearchComponent` so that it reads as follows:
 
 [source,yaml]
 --
@@ -2107,13 +2139,13 @@ In the *app.routing.module.ts*, modify the entry for the
   },
 --
 
-Compared to the old situation, we add a *canActivate* element that
-points to the *RoleGuard*, and using the “data” element we configure the
+Compared to the old situation, we add a `canActivate` element that
+points to the `RoleGuard`, and using the “data” element we configure the
 allowed roles.
 
-This will result in Angular using the *RoleGuard* to check whether the
+This will result in Angular using the `RoleGuard` to check whether the
 user is in any of the configured roles before navigating to the
-*PersonSearchComponent*. If the user does not have any of the roles, an
+`PersonSearchComponent`. If the user does not have any of the roles, an
 error message will be shown and the application will navigate to the
 “/home” route.
 
@@ -2121,7 +2153,7 @@ In addition to using the role-based authentication in the back-end, it is
 possible to use it in the front-end. To do this, you need to inject
 an instance of the AuthenticationService in your Typescript component.
 
-You can then use the *hasRole* method to enable or disable certain functionalities.
+You can then use the `hasRole()` method to enable or disable certain functionalities.
 As an example, see how we can modify the global action we defined earlier so
 that it is only enabled if the user has the "bogus" role.
 
@@ -2147,10 +2179,10 @@ that it is only enabled if the user has the "bogus" role.
 == Element collections
 
 One of the lesser known features of JPA is the ability to work with
-*element collections* and *collection tables*. An element collection is
+_element collections_ and _collection tables_. An element collection is
 basically a collection of primitive values (String, integer, etc.) that
 can be defined as a property on an entity. Within the context of our
-example, we could define the following in the *Person* class:
+example, we could define the following in the `Person` class:
 
 [source,java]
 --
@@ -2164,7 +2196,7 @@ example, we could define the following in the *Person* class:
 
 This will define a collection of integers that can be used to store a
 person’s lucky numbers. As you can see, these are stored in the database
-in a table named “person_lucky_numbers”. The definition for this table
+in a table named `person_lucky_numbers`. The definition for this table
 is as follows:
 
 [source,sql]
@@ -2191,11 +2223,11 @@ is possible to add multiple values like this.
 
 image:media/image18.png[image,width=560,height=81]
 
-The component comes with several validations, e.g. the *@Size* annotation
+The component comes with several validations, e.g. the `@Size` annotation
 that you can see in the code example above will be used to limit the
 maximum allowed number of elements (in this case 3).
 
-We can also use the *minValue* and *maxValue* settings on *@Attribute*
+We can also use the `minValue` and `maxValue` settings on `@Attribute`
 to set minimum and maximum values.
 
 [source,java]
@@ -2211,7 +2243,7 @@ to set minimum and maximum values.
 --
 
 In addition, it is possible to change the type of the component by
-setting the *elementCollectionMode* (in this case to DIALOG).
+setting the `elementCollectionMode` (in this case to `DIALOG`).
 
 [source,java]
 --

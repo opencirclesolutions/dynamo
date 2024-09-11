@@ -84,35 +84,30 @@
 		<module>dynamo-integration-import</module>
 		<module>dynamo-angular</module>
 		<module>dynamo-documentation</module>
-
-<!--		<module>dynamo-parameter</module>-->
-<!--		<module>dynamo-envers</module>-->
 	</modules>
 	<properties>
 		<java.version>21</java.version>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<maven.compiler.source>${java.version}</maven.compiler.source>
+		<maven.compiler.target>${java.version}</maven.compiler.target>
 		<project.build.compiler.version>21</project.build.compiler.version>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-		<commons.io.version>2.15.1</commons.io.version>
-		<commons.text.version>1.12.0</commons.text.version>
-		<poi.version>5.2.5</poi.version>
-		<opencsv.version>5.9</opencsv.version>
-		<spring.boot.version>3.3.1</spring.boot.version>
 		<com.maven.plugins.apt.version>1.1.3</com.maven.plugins.apt.version>
-		<org.apache.maven.plugins.gpg.version>3.1.0</org.apache.maven.plugins.gpg.version>
-		<github-release-plugin.version>1.4.0</github-release-plugin.version>
-		<org.sonatype.plugins.version>1.6.13</org.sonatype.plugins.version>
-		<junit.version>5.10.3</junit.version>
-		<spotbugs.version>4.8.4.0</spotbugs.version>
-		<h2.version>2.3.230</h2.version>
-		<lombok.version>1.18.32</lombok.version>
-		<querydsl.version>5.1.0</querydsl.version>
-		<maven.compiler.source>21</maven.compiler.source>
-		<maven.compiler.target>21</maven.compiler.target>
-		<spring.ai.version>0.8.1</spring.ai.version>
-		<jakarta.version>3.1.0</jakarta.version>
+		<commons.io.version>2.16.1</commons.io.version>
+		<commons.text.version>1.12.0</commons.text.version>
 		<dependency.skip>true</dependency.skip>
+		<github-release-plugin.version>1.4.0</github-release-plugin.version>
+		<jakarta.version>3.1.0</jakarta.version>
+		<junit.version>5.10.3</junit.version>
+		<lombok.version>1.18.34</lombok.version>
+		<opencsv.version>5.9</opencsv.version>
+		<org.apache.maven.plugins.gpg.version>3.1.0</org.apache.maven.plugins.gpg.version>
+		<org.sonatype.plugins.version>1.6.13</org.sonatype.plugins.version>
+		<poi.version>5.3.0</poi.version>
+		<querydsl.version>5.1.0</querydsl.version>
+		<spotbugs.version>4.8.s</spotbugs.version>
+		<spring.ai.version>0.8.1</spring.ai.version>
+		<spring.boot.version>3.3.3</spring.boot.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
@@ -175,12 +170,6 @@
 				<version>${querydsl.version}</version>
 				<classifier>jakarta</classifier>
 				<scope>provided</scope>
-			</dependency>
-			<dependency>
-				<groupId>com.h2database</groupId>
-				<artifactId>h2</artifactId>
-				<version>${h2.version}</version>
-				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.apache.poi</groupId>
@@ -504,9 +493,55 @@
 					</execution>
 				</executions>
 				<configuration>
-					<skip>dependency.skip</skip>
+					<skip>${dependency.skip}</skip>
 					<nvdApiKeyEnvironmentVariable>NVP_API_KEY</nvdApiKeyEnvironmentVariable>
 					<autoUpdate>false</autoUpdate>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>com.github.jinnovations</groupId>
+				<artifactId>attribution-maven-plugin</artifactId>
+				<version>0.9.9</version>
+				<executions>
+					<execution>
+						<goals>
+							<goal>generate-attribution-file</goal>
+						</goals>
+						<phase>generate-resources</phase>
+					</execution>
+				</executions>
+				<configuration>
+					<outputFile>${project.build.directory}/attribution.xml</outputFile>
+					<dependencyOverrides>
+						<dependencyOverride>
+							<forDependency>org.apache.axis:axis</forDependency>
+							<projectUrl>https://axis.apache.org/axis/</projectUrl>
+							<license>
+								<name>Apache License, Version 2.0</name>
+								<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+							</license>
+						</dependencyOverride>
+						<dependencyOverride>
+							<forDependency>net.iharder:base64</forDependency>
+							<license>
+								<name>Public Domain (any license you desire)</name>
+								<url>http://iharder.sourceforge.net/current/java/base64/</url>
+							</license>
+						</dependencyOverride>
+						<dependencyOverride>
+							<forDependency>javax.xml:jaxrpc-api</forDependency>
+							<projectUrl>https://java.net/projects/jax-rpc/</projectUrl>
+							<license>
+								<name>CDDL-1.0</name>
+								<url>https://opensource.org/licenses/cddl1.php</url>
+							</license>
+						</dependencyOverride>
+						<dependencyOverride>
+							<forDependency>org.hamcrest:hamcrest-core</forDependency>
+							<projectUrl>http://hamcrest.org/JavaHamcrest/</projectUrl>
+						</dependencyOverride>
+					</dependencyOverrides>
 				</configuration>
 			</plugin>
 		</plugins>
