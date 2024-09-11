@@ -104,7 +104,7 @@ framework will also call the CRUD API to retrieve the data to display.
 To create the entity model, you need access to an `EntityModelFactory`.
 The `EntityModelFactory` is a Spring singleton and can be acquired by
 injection (`@Inject` or `@Autowired`). You can also acquire a reference to
-the `EntityModelFactory` by calling the `getEntityModelFactory` method
+the `EntityModelFactory` by calling the `getEntityModelFactory()` method
 on the `ServiceLocator` which in turn can be retrieved by calling
 `ServiceLocatorFactory.getServiceLocator()`.
 
@@ -2176,7 +2176,7 @@ attributes. These default values are applied on the client side when
 creating a new entity. As an alternative to using these default values,
 you can also create an entity with default values in the back-end.
 
-In order to do this, override the *initialize()* method in the
+In order to do this, override the `initialize()` method in the
 implementation of the entity’s service. In this method you can
 initialize the entity with all the desired default values. This is
 especially useful when creating entities with nested collections.
@@ -2884,7 +2884,7 @@ specified parameters. If the message contains placeholders (\{0}, \{1},
 
 If a message with a certain key cannot be found, then a default warning
 message will be returned. If you do not want this behaviour, you can use
-the `getMessageNoDefault` version of the method instead. This version
+the `getMessageNoDefault()` version of the method instead. This version
 returns `null` when a message cannot be found.
 
 As a Dynamo application is a Spring Boot application, you can add or
@@ -3222,7 +3222,7 @@ maxValue: am.maxValue,
 In order to display notification messages, you can inject and use the
 `NotificationService` into your component.
 
-You can then use the `info`, `warn`, and `error` methods to display an
+You can then use the `info()`, `warn()`, and `error()` methods to display an
 error message
 
 [source,typescript]
