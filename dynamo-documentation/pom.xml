@@ -20,6 +20,7 @@
 	<build>
 		<defaultGoal>process-resources</defaultGoal>
 		<plugins>
+			<!--
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
@@ -73,6 +74,7 @@
 					</execution>
 				</executions>
 			</plugin>
+			-->
 		</plugins>
 	</build>
 </project>
