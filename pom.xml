@@ -83,7 +83,6 @@
 		<module>dynamo-integration-camel</module>
 		<module>dynamo-integration-import</module>
 		<module>dynamo-angular</module>
-		<module>dynamo-documentation</module>
 	</modules>
 	<properties>
 		<java.version>21</java.version>

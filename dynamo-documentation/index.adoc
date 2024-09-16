@@ -1,15 +1,19 @@
-:toc:
+:toc: right
 :toclevels: 2
-:toc-title: Table of contents
-:toc: left
 :icons: font
 :doctype: book
 :!chapter-signifier:
-
-= Dynamo: Web Application Accelerator Framework
-Open Circle Solutions BV
-:title-logo-image: image:media/logo-dynamo.png[Dynamo]
+:source-highlighter: rouge
 :sectnums:
+:text-align: justify
+:title-logo-image: image:media/logo-dynamo.png[Dynamo]
+:keywords: Dynamo, Open Circle Solutions, Web Application Accelerator Framework, Reference
+:pdf-fontsdir: ./fonts
+:pdf-themesdir: ./themes
+:pdf-theme: ocs
+
+= Dynamo: Reference documentation
+Open Circle Solutions BV
 
 [colophon]
 == Colophon
@@ -60,9 +64,15 @@ productive set of technologies:
 
 * https://jakarta.ee/specifications/persistence/[JPA3.1] for ORM
 * https://querydsl.com[QueryDSL] for type-safe query generation
-* https://docs.spring.io/spring-boot/index.html[Spring Boot] as the application framework
+* https://docs.spring.io/spring-boot/index.html[Spring Boot] as the
+application framework
 * https://angular.dev[Angular (v16)] as the front-end framework of choice
 * https://primeng.org[PrimeNG] for a rich suite of components
+
+The Dynamo Framework is distributed under the terms of the
+https://www.apache.org/licenses/LICENSE-2.0.txt[Apache License], a
+permissive open-source license for free and open-source software (FOSS).
+
 
 == Architectural overview
 
@@ -131,7 +141,8 @@ parameter, then the simple name of the class is used as the reference)
 and which is then used as part of the message bundle entry.
 
 The classes for which you create an Entity Model must inherit from the
-`org.dynamoframework.domain.AbstractEntity` class. See chapter 6 for details.
+`org.dynamoframework.domain.AbstractEntity` class. See chapter
+<<_data_access_service_layers_and_general_concepts>> for details.
 
 ==== API
 
@@ -529,10 +540,10 @@ E.g.:
 
 [source,properties]
 --
-Reputation.REALLY_NOT_FEARSOME=Really not [.underline]#fearsome#
-Reputation.MILDLY_FEARSOME=Mildly [.underline]#fearsome#
-Reputation.FEARSOME=[.underline]#Fearsome#
-Reputation.EXTREMELY_FEARSOME=Extremely [.underline]#fearsome#
+Reputation.REALLY_NOT_FEARSOME=Really not fearsome
+Reputation.MILDLY_FEARSOME=Mildly fearsome
+Reputation.FEARSOME=Fearsome
+Reputation.EXTREMELY_FEARSOME=Extremely fearsome
 --
 
 === AutofillInstructions
@@ -546,7 +557,7 @@ autofillInstructions = [String]
 The `autofillInstructions` setting can be used to define the
 attribute-specific instructions for automatically filling a form based
 on an AI service (Large Language Model). This is covered in more detail
-in the section <<FormFillEnabled>>.
+in the section <<_formfillenabled>>.
 
 === BooleanFieldMode
 
@@ -643,7 +654,7 @@ Organization.cascadeMode.2=EDIT
 In message bundle:
 [source,properties]
 --
-currencyCode = [ISO currency code]
+currencyCode = [ISO 4217 currency code]
 --
 
 This setting can be used to specify that a numeric field (currently only
@@ -845,9 +856,10 @@ downloadAllowed = true | false
 
 The `downloadAllowed` setting indicates whether it is allowed to
 download files that were uploaded using the file upload functionality.
-It defaults to `false`. When set to `true`, a “download” button will
+It defaults to `false`.When set to `true`, a “download” button will
 show up next to the preview of the image in a file upload component.
 
+[#_editabletype]
 === EditableType
 
 In message bundle:
@@ -1274,14 +1286,15 @@ neededInData = true | false
 --
 
 The Dynamo framework only returns the attributes that are actually
-needed for displaying or editing the entities to the front-end. In very
+needed for displaying or editing the entities to the front-end.In very
 rare occasions it can happen that there are attributes that are not
 directly needed in the UI but that are used as the input for certain
-other (read-only) attributes. By default, the values of these attributes
-are not returned by the API. In these cases, you can set the
+other (read-only) attributes.By default, the values of these attributes
+are not returned by the API.In these cases, you can set the
 `neededInData` setting to `true` in order to return these attribute
 values anyway.
 
+[#_numberfieldmode]
 === NumberFieldMode
 
 In message bundle:
@@ -1292,7 +1305,7 @@ numberFieldMode = TEXTFIELD | NUMBERFIELD
 
 The `numberFieldMode` setting can be used to set the field mode to use
 for a numeric property When set to `TEXTFIELD` application will
-render a text field. This field has input validation so that only
+render a text field.This field has input validation so that only
 numbers can be entered.
 
 When set to `NUMBERFIELD`, the application will render a text field
@@ -1409,7 +1422,7 @@ select it.
 The application will carry out an automatic check for duplicates when
 the user tries to save the entity (based on the `findIdenticalEntity`
 functionality), and will then look for an error message stored under the
-`<short name of entity>.not.unique”`key in order to display an error
+`<short name of entity>.not.unique`key in order to display an error
 message. e.g., in the example above, you should add a
 `Country.not.unique` message to the message bundle.
 
@@ -1931,6 +1944,8 @@ An example of a “chips” component used to manage an element collection:
 
 image:media/image5.png[image,width=411,height=129]
 
+
+[#_data_access_service_layers_and_general_concepts]
 == Data access, Service layers and general concepts
 
 === Data access layer and entities
@@ -2172,16 +2187,17 @@ Organization.detailJoin.3.attribute=countryOfOrigin
 Organization.detailJoin.3.joinType=INNER
 ---
 
+[#_entity_initialization]
 === Entity Initialization
 
 As you have seen before, it is possible to set default values for simple
-attributes. These default values are applied on the client side when
-creating a new entity. As an alternative to using these default values,
+attributes.These default values are applied on the client side when
+creating a new entity.As an alternative to using these default values,
 you can also create an entity with default values in the back-end.
 
 In order to do this, override the `initialize()` method in the
-implementation of the entity’s service. In this method you can
-initialize the entity with all the desired default values. This is
+implementation of the entity’s service.In this method you can
+initialize the entity with all the desired default values.This is
 especially useful when creating entities with nested collections.
 
 [source,java]
@@ -2219,7 +2235,7 @@ refers to the new entity, and all endpoints will work out of the box.
 
 There are six endpoints that Dynamo supplies by default.
 
-.Defualt Dynamo REST endpoints
+.Default Dynamo REST endpoints.
 [cols="1,1"]
 |===
 |Endpoint|Description
@@ -2367,7 +2383,7 @@ properties must be unique.
 the unique value is case-sensitive (defaults to `false`).
 
 After you have configured a service like this, you can inject it into
-your code as follows. Note that an `@Qualifier` annotation that matches
+your code as follows.Note that an `@Qualifier` annotation that matches
 the name of the bean is required:
 
 [source,java]
@@ -2377,13 +2393,14 @@ the name of the bean is required:
 private BaseService<Integer, Country> countryService;
 --
 
+[#_system_properties]
 == System properties
 
 Dynamo supports several ways of dealing with (system) properties.
 
 The easiest way of declaring a property is by including it in the
 _application.properties_ or _application.yml_ file which is located in the
-_src/main/resources_ directory. This is the standard file used by Spring
+_src/main/resources_ directory.This is the standard file used by Spring
 Boot, and as such you can add both your own system properties to it, as
 well as using it to modify any Spring Boot settings.
 
@@ -2415,7 +2432,7 @@ dynamoframework:
 === Prefix dynamoframework
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties`
 
-.Properties for dynamoframework
+.Properties for dynamoframework.
 [cols="1,1,2,2"]
 |===
 |Key|Type|Description|Default value
@@ -2432,7 +2449,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties`
 
 === Prefix dynamoframework.ollama
 
-.Properties for dynamoframework.ollama
+.Properties for dynamoframework.ollama.
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaConfigurationProperties`
 [cols="1,1,2,2"]
 |===
@@ -2445,7 +2462,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaCo
 
 === Prefix dynamoframework.openai
 
-.Properties for dynamoframework.openai
+.Properties for dynamoframework.openai.
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiConfigurationProperties`
 [cols="1,1,2,2"]
 |===
@@ -2460,7 +2477,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiCo
 === Prefix dynamoframework.defaults
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties`
 
-.Properties for dynamoframework.defaults
+.Properties for dynamoframework.defaults.
 [cols="1,1,2,2"]
 |===
 |Key|Type|Description|Default value
@@ -2489,11 +2506,12 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |`use-prompt-value`|Boolean|Indicates whether to use the display name as the input prompt by default|`true`
 |===
 
+[#_prefix_dynamoframework_defaults_endpoints]
 === Prefix dynamoframework.defaults.endpoints
 
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties$EndpointConfigurationProperties`
 
-.Properties for dynamoframework.defaults.endpoints
+.Properties for dynamoframework.defaults.endpoints.
 [cols="1,1,2,2"]
 |===
 |Key|Type|Description|Default value
@@ -2510,7 +2528,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 === Prefix dynamoframework.bedrock
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
 
-.Properties for dynamoframework.bedrock
+.Properties for dynamoframework.bedrock.
 [cols="1,1,2,2"]
 |===
 |Key|Type|Description|Default value
@@ -2525,7 +2543,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockC
 === Prefix dynamoframework.vertexai
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAiConfigurationProperties`
 
-.Properties for dynamoframework.vertexai
+.Properties for dynamoframework.vertexai.
 [cols="1,1,2,2"]
 |===
 |Key|Type|Description|Default value
@@ -2539,7 +2557,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAi
 === Prefix dynamoframework.csv
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfigurationProperties`
 
-.Properties for dynamoframework.csv
+.Properties for dynamoframework.csv.
 [cols="1,1,2,2"]
 |===
 |Key|Type|Description|Default value
@@ -2594,7 +2612,7 @@ on OAuth are included in the pom but commented out.
   <name>[YOUR NAME]</name>
   <properties>
     <java.version>21</java.version>
-    <dynamo.version>4.0.0-SNAPSHOT</dynamo.version>
+    <dynamo.version>4.0.0</dynamo.version>
   </properties>
   <repositories>
     <repository>
@@ -3055,7 +3073,7 @@ With that in place, you can copy the contents of the _dynamo-angular/shared_ fol
 to the _/src/app/shared_ folder in your application.
 
 TIP: Instead of downloading directly form the Dynamo sources, the artifact
-`org.dynamoframework:dynamo-angular:VERSION:shared` can also be downloaded. This artifact
+`org.dynamoframework:dynamo-angular:4.0.0:shared` can also be downloaded. This artifact
 contains the shared sources. Note the classified `shared`.
 
 You will also need the code used to communicate with the back-end. You can make this
@@ -3064,7 +3082,7 @@ to the _dynamo/model_ directory in your front-end application. You can also run 
 Open API tools generator as described below.
 
 TIP: Instead of downloading directly form the Dynamo sources, the artifact
-`org.dynamoframework:dynamo-angular:VERSION:model` can also be downloaded. This artifact
+`org.dynamoframework:dynamo-angular:4.0.0:model` can also be downloaded. This artifact
 contains the model. Note the classified `model`.
 
 Finally, the messages used for the internationalization of the Dynamo
@@ -3074,7 +3092,7 @@ English and Dutch are supported. These message need to be added to the
 message bundle files, typically under _/src/assets/i18n_
 
 TIP: Instead of downloading directly form the Dynamo sources, the artifact
-`org.dynamoframework:dynamo-angular:VERSION:i18n` can also be downloaded. This artifact
+`org.dynamoframework:dynamo-angular:4.0.0:i18n` can also be downloaded. This artifact
 contains the internationalization messages. Note the classified `i18n`.
 
 Finally, in case you are using the PDF viewer component and this produces errors, you might need
@@ -3093,6 +3111,7 @@ to add the following to your _angular.json_ file:
     ]
 --
 
+[#_code_generation]
 === Code generation
 
 ==== Using npx
@@ -3194,7 +3213,7 @@ To use localization, you can use the (standard) functionality provided
 by the `translateService`.
 
 Message bundles (named _<locale>.json_, e.g., _nl.json_, _en.json_) can
-be placed in the _assets/i18n` directory.
+be placed in the _assets/i18n_ directory.
 
 The messages take the form `key: value`:
 
@@ -3246,13 +3265,14 @@ message sticky/persistent.
 
 == General UI concepts
 
+[#_search_filters]
 === Search Filters
 
 The Dynamo Framework uses a generic framework for executing search
-requests to the back-end. Normally the details of this framework are
-hidden from the developer, but in some cases e.g., when defining field
+requests to the back-end.Normally the details of this framework are
+hidden from the developer, but in some cases, e.g., when defining field
 filters, it can be useful to know how the filter mechanism works in
-detail. The rest of this section will cover how to set up the various
+detail.The rest of this section will cover how to set up the various
 supported filters.
 
 ==== EqualsFilter
@@ -3270,11 +3290,11 @@ export function createEqualsFilter(attributeName: string, value: any) {
 --
 
 The `EqualsFilter` is a filter on a single attribute value. This can be
-used for a wide range of data types: strings, Boolean, integers (when
+used for a wide range of data types: strings, boolean, integers (when
 searching for an exact match), enumeration values, etc.
 
-NOTE: in the case of a String value, the back-end will take care of
-searching for substrings, case-sensitivity, etc. – the front-end only has
+NOTE: In the case of a String value, the back-end will take care of
+searching for substrings, case-sensitivity, etc. The front-end only has
 to pass along the value to search for.
 
 ==== NumberRangeFilter
@@ -3320,11 +3340,12 @@ time stamps). The filter contains a `from` value (lower bound,
 including) and a `to` value (upper bound, inclusive). At least one of
 these values must be filled.
 
-NOTE: the actual values that are sent to the back-end in case of
-filtering on a Date are always string representations in ISO format
-(yyyy-MM-dd). Be careful when converting from Javascript Dates (which
-always contain a time stamp) to ISO string, it is very common to end up
-with a date that is one day too early.
+NOTE: The actual values that are sent to the back-end in case of
+filtering on a Date are always string representations in
+https://en.wikipedia.org/wiki/ISO_8601[ISO 8601] format (i.e., `yyyy-MM-dd`).
+Be careful when converting from Javascript Dates (which always contain a
+time stamp) to ISO 8601 string, it is very common to end up with a date that
+is one day too early.
 
 ==== InstantRangeFilter/LocalDateTimeRangeFilter
 
@@ -3379,7 +3400,7 @@ on their IDs. This filter takes a `values` parameter which must be an
 array containing the IDs of the entities to filter on.
 
 This is used by the framework for filtering using components that allow
-the user to select multiple entities, i.e. the lookup field and the
+the user to select multiple entities, i.e., the lookup field and the
 multi select field.
 
 ==== TimeRangeFilter
@@ -3436,7 +3457,7 @@ export function createElementCollectionFilter(
 }
 --
 
-The ElementCollectionFilter is used to filter on the element on an
+The `ElementCollectionFilter` is used to filter on the element on an
 element collection. The filter contains a *values* array which can
 contain either a list of integer or a list of strings. An entity
 will match the filter if the element collection contains at least
@@ -3454,14 +3475,14 @@ return [createOrFilter([
 ])];
 --
 
-The OrFilter can be used to chain together a number of other filters using the logical OR
+The `OrFilter` can be used to chain together a number of other filters using the logical OR
 operator:
 
 ==== NotFilter
 
 [source,typescript]
 --
-return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA'))
+return [createNotFilter(createEqualsFilter('reservationCategory','RESERVED_EXTRA'));
 --
 
 The `NotFilter` can be used to create a filter that negates the filter
@@ -3471,18 +3492,22 @@ encloses in it.
 
 [source,typescript]
 --
-return createNullFilter('parent')
+return createNullFilter('parent');
 --
 
-The *NullFilter* can be used to create a filter that checks if the value is NULL.
+The `NullFilter` can be used to create a filter that checks if the value is NULL.
 
 === Updates
 
 Some extra explanation is in order with regard to how the Dynamo
 framework deals with updates of existing entities. All updates of
 existing entities are performed by doing a PUT call to
-`/api/dynamo/crud/\{entityName}/entityId`. The Dynamo Framework does
-not currently  support partial updates using the PATCH operation. In
+`/api/dynamo/crud/\{entityName}/entityId`.
+
+[IMPORTANT]
+--
+The Dynamo Framework does
+not currently support partial updates using the PATCH operation. In
 principle, this means that with every update the entire entity, including
 any nested entities, are updated.
 
@@ -3490,6 +3515,7 @@ However, the framework makes sure that any attributes that are not visible
 in the form, or that are visible in the form but cannot be edited because
 they are read-only, are not updated. This happens fully on the back-end and
 is not something that the front-end developers have to take into account.
+--
 
 === Editing complex attributes
 
@@ -4000,6 +4026,7 @@ return defaultFilters;
 }
 --
 
+[#_entitymodelreference]
 ==== EntityModelReference
 
 The `entityModelReference` can be used to specify the specific reference
@@ -4008,7 +4035,7 @@ of the entity model to use when constructing the screen.
 ==== PopupButtonMode
 
 The `popupButtonMode` can be used to add a popup button to every row in
-the table. Depending on the value of this property, the button can be
+the table.Depending on the value of this property, the button can be
 used to open a popup dialog for either viewing or editing the selected
 entity.
 
@@ -4532,13 +4559,14 @@ view mode and edit mode), EDIT (only in edit mode) or VIEW (only in view
 mode).
 * The CSS classes to apply to the button
 * An optional `enabled` function that determines when the action is
-enabled. If omitted, the action is enabled by default.
+enabled.If omitted, the action is enabled by default.
 
+[#_formfillenabled]
 ==== FormFillEnabled
 
 The `formFillEnabled` property can be used to enable functionality for
 automatically (partially) filling an input form using an AI service
-(Large Language Model). In order to use this functionality, you need to
+(Large Language Model).In order to use this functionality, you need to
 set up the appropriate LLM service, which can mostly be done using
 application properties.
 
@@ -4807,7 +4835,7 @@ To use this functionality, you must do the following:
 
 * Set the `freeFormMode` to `true` on the component declaration
 * Declare a template inside the form, and link it to the `freeFormTemplate`
-  property
+property
 * This freeform template is passed a reference to the `mainForm` form
 group that holds all the reactive form controls.
 
@@ -5448,7 +5476,7 @@ component or a lookup field
 
 |Boolean a|
 * Set the `booleanFieldMode` to the desired value
-* Consider adding custom `trueRepresentation` and 
+* Consider adding custom `trueRepresentation` and
 values
 
 |===
@@ -5467,4 +5495,3 @@ public void setTranslations(Set<GiftTranslation> translations) {
 --
 
 The `wireRelations()` function is static function from the `EntityModelUtils` class.
-

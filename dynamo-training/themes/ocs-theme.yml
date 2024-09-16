@@ -1,0 +1,31 @@
+page:
+  size: a4
+  margin: [25mm, 25mm, 25mm, 25mm]
+extends: default
+base:
+  font-color: #515147
+  font-family: Raleway
+  text-align: left
+font:
+  catalog:
+    merge: true
+    Raleway:
+      normal: Raleway-Regular.ttf
+      italic: Raleway-Italic.ttf
+      bold: Raleway-Bold.ttf
+      bold_italic: Raleway-BoldItalic.ttf
+    RobotoMono:
+      normal: RobotoMono-Regular.ttf
+      italic: RobotoMono-Italic.ttf
+      bold: RobotoMono-Bold.ttf
+      bold_italic: RobotoMono-BoldItalic.ttf
+code:
+  font-family: RobotoMono
+  background-color: #F5F5F5
+  border-radius: 0
+  border-color: #F5F5F5
+  border-width: 0
+codespan:
+  font-family: RobotoMono
+  font-color: #833906
+#  font-color: #39A248
