@@ -2994,7 +2994,7 @@ Dynamo framework. It comes with:
 on the endpoints offered by the back-end. These are included in the _dynamo/model_ directory
 * The generic components that make up the Dynamo framework. These are located
 in the _src/app/shared_ directory
-* A basic skeleton for the application (app.module.ts with all
+* A basic skeleton for the application (_app.module.ts_ with all
 the required dependencies)
 
 The fastest way to get started is to fork this project, then replace all
@@ -3016,7 +3016,7 @@ Inside this component, you can use the dynamo components like
 `<app-generic-search-layout>`.
 
 In order to be able to actually use the component, don't forget to add a route
-to it in the *app-routing.module.ts*, e.g.
+to it in the _app-routing.module.ts_, as shown below.
 
 [source,typescript]
 --

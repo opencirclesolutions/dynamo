@@ -82,9 +82,13 @@ title-page:
   subtitle:
     font-color: #39A248
     font-style: italic
-
 image:
   align: center
   caption:
     end: bottom
     text-align: center
+admonition:
+  column-rule-color: #515147
+  border-width: 0.5
+  border-color: #FFFFFF
+  background-color: #FFFFFF
