@@ -485,7 +485,8 @@ You will now see an additional button show up in the button bar.
 Clicking it will toggle between showing and hiding the search fields
 that are set to `searchable=ADVANCED`.
 
-image:media/image3.png[image,width=458,height=70]
+.Search buttons.
+image::media/image3.png[image,width=458,height=70]
 
 === More searching 
 
@@ -498,7 +499,8 @@ person is a member).
 You will now see a search component for the `members` attribute that
 looks as follows:
 
-image:media/image4.png[image,width=424,height=328]
+.Search component example.
+image::media/image4.png[image,width=424,height=328]
 
 By default, the application will render a multiple-select field from
 which you can select the members to search on. However, as you can see,
@@ -561,7 +563,8 @@ Go ahead and set the `searchSelectMode` setting of the `members` field
 to `LOOKUP`. Restart the application and verify that
 you now see the following:
 
-image:media/image5.png[image,width=429,height=68]
+.Lookup field.
+image::media/image5.png[image,width=429,height=68]
 
 You will now see a “lookup field” which consists of a label that
 displays the currently selected value(s), a button for clearing the
@@ -666,7 +669,7 @@ starts with the "memberCount" and "yearlyMortalityRate" fields.
 NOTE: The other attributes are shown in alphabetical order.
 
 OK, now it’s time to fix the enumeration. Open the
-_i.messages.properties_ file and add the following:
+_messages.properties_ file and add the following:
 
 [source,properties]
 --
@@ -679,7 +682,7 @@ Reputation.EXTREMELY_FEARSOME=Extremely fearsome
 Restart the application and see how the enumeration values have now been
 replaced by the values from the message bundle.
 
-It can happen that you run out of room in a grid, i.e. you don’t have
+It can happen that you run out of room in a grid, i.e., you don’t have
 enough horizontal room to display the full descriptions of all
 attributes in the grid. In this case, you can limit the maximum length
 of the value of an attribute inside the grid by setting the
@@ -943,11 +946,12 @@ And bind it in the *organization-search.component.html*:
 --
 
 Now, you will see that the search screen you saw before has been
-replaced by a (normally) initially empty search form, with an “Add
+replaced by a (normally) initially empty search form, with an Add
 filter” button below it. Pressing this button will add a row to the
 search form. This row can be used to add a search criterion.
 
-image:media/image6.png[image,width=560,height=361]
+.“Add filter” button in search.
+image::media/image6.png[image,width=560,height=361]
 
 Each search row starts with a combo box that allows you to select the
 attribute you want to filter on. It includes all attributes with
@@ -1030,7 +1034,8 @@ the search fields, the entity model determines which type of user
 interface component is rendered for which attribute. The edit form looks
 like this:
 
-image:media/image7.png[image,width=560,height=570]
+.An edit form.
+image::media/image7.png[image,width=560,height=570]
 
 By now, it should not come as a surprise that you will see text fields
 for String and numeric attributes, combo boxes for enumerations, etc.
@@ -1099,7 +1104,8 @@ detail screen.
 </app-generic-search-layout>
 --
 
-image:media/image8.png[image,width=559,height=26]
+.Field with a button to show details.
+image::media/image8.png[image,width=559,height=26]
 
 TIP: You can also set the `detailsModeEnabled` setting to `false`.
 This will completely disable the functionality to navigate to the detail
@@ -1133,10 +1139,11 @@ earlier.
 or a set of radio buttons for editing an enumeration.
 * Use the `numberFieldMode` to switch between using a text field or a
 numeric input field for a numeric property (this only works for integer
-or long properties). When you set this to “NUMBERFIELD”, e.g. for the
-“memberCount” property, you will see the following:
+or long properties). When you set this to `NUMBERFIEL`, e.g. for the
+`memberCount` property, you will see the following:
 
-image:media/image9.png[image,width=560,height=53]
+.Numeric input field.
+image::media/image9.png[image,width=560,height=53]
 
 * This is a numeric input field which will only accept numeric input and
 also contains plus and minus buttons for changing the value. You can use
@@ -1162,7 +1169,8 @@ place the `groupTogetherWith` setting must occur in the ordering before
 the attribute it refers to. Dynamo will produce an error if you define
 an incorrect attribute grouping)
 
-image:media/image10.png[image,width=560,height=79]
+.Grouped input fields.
+image::media/image10.png[image,width=560,height=79]
 
 === URL fields
 
@@ -1231,7 +1239,7 @@ Here, you define two attribute groups identified by the message keys
 “organization.first” and “organization.second” and place some attributes
 in each group.
 
-In the *entitymodel.properties* file, add the following lines:
+In the _entitymodel.properties_ file, add the following lines:
 
 [source,properties]
 --
@@ -1243,7 +1251,8 @@ dynamoframework.default.attribute.group=Others
 Restart the application and verify that the edit form now looks as
 follows:
 
-image:media/image11.png[image,width=560,height=279]
+.Updated edit form with attribute grouping.
+image::media/image11.png[image,width=560,height=279]
 
 You will see three attribute groups: the two groups you declared and an
 additional group that contains all attributes that were not explicitly
@@ -1263,7 +1272,7 @@ property in your Typescript file:
 attributeGroupMode: AttributeGroupMode = AttributeGroupMode.TAB;
 --
 
-And refer to that property in the HTML file (organization.form.html).
+And refer to that property in the HTML file (_organization.form.html_).
 
 After you restart the application you should now see three tab sheets
 (each containing a number of attributes) in the detail screen.
@@ -1358,7 +1367,8 @@ Also, set the `displayProperty` of the `MainActivity` class to `name`.
 Now, when you open the detail page for an organization, you should see a
 “Main Activity” field in the edit form:
 
-image:media/image12.png[image,width=462,height=61]
+.Main activity field.
+image::media/image12.png[image,width=462,height=61]
 
 Behind the input component, you will see a “plus” button that allows you
 to quickly add a new value for this lookup table. This button appears
@@ -1471,7 +1481,8 @@ even simpler than for the search layout:
 
 Which will produce a screen that looks as follows:
 
-image:media/image13.png[image,width=560,height=247]
+.Split layout screen.
+image::media/image13.png[image,width=560,height=247]
 
 * You can select a row in the table to the left to make the details of
 that row show up in the form to the right.
@@ -1710,7 +1721,8 @@ With these annotations in place, start the application and verify that
 the application now renders a table that can be used to edit the
 translations of a Gift:
 
-image:media/image14.png[image,width=560,height=191]
+.A table to edit translations.
+image::media/image14.png[image,width=560,height=191]
 
 (Note that you can click the button in the top right to add a new row to
 the table). Go ahead and add some translations to the table, then press
@@ -1992,20 +2004,24 @@ organization, then saves the updated organization to the database.
 As you can see the method is annotated with `@ModelAction` which means
 Dynamo will translate it to a button that will show up (in this case) in
 each row in the table. The ModelAction has a unique ID, a display name (which will be
-shown in the tooltip of the button) and a type. The type can be either
+shown in the tooltip of the button) and a type.
+
+The type can be either
 `CREATE` or `UPDATE` and determines where the button corresponding to the
 action will show up. `UPDATE` actions will show up in each button in a
 results table, and `CREATE` actions will show up in the button bar below
 the table.
 
-image:media/image15.png[image,width=560,height=24]
+.A table with update buttons.
+image::media/image15.png[image,width=560,height=24]
 
 Pressing the button will open a pop-up dialog based on the
 `OrganizationNameDTO` we saw before. Any fields that match between the
-main entity (Organization) and the DTO, in this case the `name`, will be
+main entity (`Organization`) and the DTO, in this case the `name`, will be
 automatically filled in:
 
-image:media/image16.png[image,width=559,height=107]
+.Automatically filled in name field.
+image::media/image16.png[image,width=559,height=107]
 
 In addition to this, you can also add actions/button that are managed on
 the front-end. These come in three varieties:
@@ -2069,7 +2085,7 @@ will contain the options to create exports to both Excel and CSV
 formats.
 
 The export file that will be created contains all the data in the result
-set (i.e. all data that matches the search criteria), not just the rows
+set (i.e., all data that matches the search criteria), not just the rows
 that are currently displayed – Dynamo will iterate over the entire data set
 using pagination.
 
@@ -2102,7 +2118,8 @@ This will lead to the following situation in the Person screen
 (note that you may have to set the `openInViewMode` to `true` in order to
 make the link show up).
 
-image:media/image17.png[image,width=503,height=407]
+.Person screen with link to organization.
+image::media/image17.png[image,width=503,height=407]
 
 The `navigable` setting on the `@Attribute` annotation will make sure
 that whenever the property is shown in read-only mode, a hyperlink will
@@ -2137,7 +2154,7 @@ public class Person extends AbstractEntity<Integer> {
 --
 
 This means that only users in the “bogus” role are allowed to perform
-write actions (i.e. create and update) on this entity. Since you don’t
+write actions (i.e., create and update) on this entity. Since you don’t
 have the “bogus” role, this should disable the edit functionality for
 the Person screen.
 
@@ -2267,7 +2284,8 @@ be empty. You can add values to it by typing directly inside the
 component and then pressing Enter when you are done with the input. It
 is possible to add multiple values like this.
 
-image:media/image18.png[image,width=560,height=81]
+.An example of a “chips” component used to manage an element collection.
+image::media/image18.png[image,width=560,height=81]
 
 The component comes with several validations, e.g. the `@Size` annotation
 that you can see in the code example above will be used to limit the

@@ -31,7 +31,8 @@ font:
       bold_italic: RobotoMono-BoldItalic.ttf
 code:
   font-family: RobotoMono
-  background-color: #F5F5F5
+#  background-color: #F5F5F5
+  background-color: #e9f0e8
   border-radius: 0
   border-color: #F5F5F5
   border-width: 0
@@ -41,8 +42,13 @@ codespan:
 toc:
   h2-font-style: bold
 table:
-  grid-color: #39A248
-  border-color: #39A248
+  grid-color: #ffffff
+#  grid-color: #39A248
+  border-color: #ffffff
+#  border-color: #39A248
+  body:
+    background-color: #e9f0e8
+    stripe-background-color: #cee0cf
   caption:
     end: bottom
     align: center
@@ -80,3 +86,8 @@ title-page:
     font-color: #39A248
     font-style: italic
 
+image:
+  align: center
+  caption:
+    end: bottom
+    text-align: center

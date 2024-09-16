@@ -996,7 +996,8 @@ private Country country;
 
 And this is the input form that will be generated:
 
-image:media/image2.png[image,width=560,height=64]
+.Generated region form.
+image::media/image2.png[image,width=560,height=64]
 
 You can still use all available settings to modify the behaviour of the
 components for the “extra” attributes that are placed behind the first
@@ -1412,7 +1413,8 @@ application, they will see an “Add” button behind the field that can be
 used to create a new country. Once pressed, the button will bring up the
 following dialog:
 
-image:media/image3.png[image,width=559,height=178]
+.Quick add screen.
+image::media/image3.png[image,width=559,height=178]
 
 The user can now enter the properties of the country in the popup – once
 they press the “OK” button the application will store the new Country,
@@ -1940,10 +1942,8 @@ The `@Size` annotation (from the Java validation framework) can be used
 to restrict the minimum and maximum number of elements that are allowed
 in the collection as a whole.
 
-An example of a “chips” component used to manage an element collection:
-
-image:media/image5.png[image,width=411,height=129]
-
+.An example of a “chips” component used to manage an element collection.
+image::media/image5.png[image,width=411,height=129]
 
 [#_data_access_service_layers_and_general_concepts]
 == Data access, Service layers and general concepts
@@ -2154,10 +2154,10 @@ also possible to configure the joins in the _entitymodel.properties_ message bun
 This is done as follows
 
 [source,properties]
----
+--
 [Entity Model Reference].[join|detailJoin].[number].attribute= [name of the attribute]
 [Entity Model Reference].[join|detailJoin].[number].joinType= LEFT | RIGHT | INNER
----
+--
 
 I.e.:
 - you can use "join" to define joins that are used when fetching multiple entities
@@ -2168,24 +2168,24 @@ and "detailJoin" to define joins that are used when fetching single entities
 E.g, to set up two joins for the Organization entity, you can do the following
 
 [source,properties]
----
+--
 Organization.join.1.attribute=mainActivity
 Organization.join.1.joinType=LEFT
 Organization.join.2.attribute=neighbourhoods
 Organization.join.2.joinType=LEFT
----
+--
 
 And to define three joins to be used when fetching a single entity:
 
 [source,properties]
----
+--
 Organization.detailJoin.1.attribute=mainActivity
 Organization.detailJoin.1.joinType=LEFT
 Organization.detailJoin.2.attribute=neighbourhoods
 Organization.detailJoin.2.joinType=LEFT
 Organization.detailJoin.3.attribute=countryOfOrigin
 Organization.detailJoin.3.joinType=INNER
----
+--
 
 [#_entity_initialization]
 === Entity Initialization
@@ -2236,7 +2236,7 @@ refers to the new entity, and all endpoints will work out of the box.
 There are six endpoints that Dynamo supplies by default.
 
 .Default Dynamo REST endpoints.
-[cols="1,1"]
+[cols="1,1", stripes=even]
 |===
 |Endpoint|Description
 
@@ -2416,24 +2416,25 @@ For instance, to set the default date-format to `yyyy-MM-dd`, configure it
 like this in a properties file:
 
 [source,properties]
-----
+--
 dynamoframework.defaults.date-format=yyyy-MM-dd
-----
+--
 
 If you use a yaml file, use:
 
 [source,yaml]
------
+--
 dynamoframework:
   defaults:
     date-format: yyyy-MM-dd
------
+--
 
 === Prefix dynamoframework
+
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties`
 
-.Properties for dynamoframework.
-[cols="1,1,2,2"]
+.Properties for `dynamoframework`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2449,9 +2450,10 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties`
 
 === Prefix dynamoframework.ollama
 
-.Properties for dynamoframework.ollama.
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaConfigurationProperties`
-[cols="1,1,2,2"]
+
+.Properties for `dynamoframework.ollama`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2462,9 +2464,10 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OllamaCo
 
 === Prefix dynamoframework.openai
 
-.Properties for dynamoframework.openai.
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiConfigurationProperties`
-[cols="1,1,2,2"]
+
+.Properties for `dynamoframework.openai`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2475,10 +2478,11 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$OpenAiCo
 |===
 
 === Prefix dynamoframework.defaults
+
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties`
 
-.Properties for dynamoframework.defaults.
-[cols="1,1,2,2"]
+.Properties for `dynamoframework.defaults`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2511,8 +2515,8 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultConfigurationProperties$EndpointConfigurationProperties`
 
-.Properties for dynamoframework.defaults.endpoints.
-[cols="1,1,2,2"]
+.Properties for `dynamoframework.defaults.endpoints`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2526,10 +2530,11 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 // end::dynamoframework.defaults.endpoints[]
 
 === Prefix dynamoframework.bedrock
+
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockConfigurationProperties`
 
-.Properties for dynamoframework.bedrock.
-[cols="1,1,2,2"]
+.Properties for `dynamoframework.bedrock`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2541,10 +2546,11 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$BedrockC
 |===
 
 === Prefix dynamoframework.vertexai
+
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAiConfigurationProperties`
 
-.Properties for dynamoframework.vertexai.
-[cols="1,1,2,2"]
+.Properties for `dynamoframework.vertexai`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2555,10 +2561,11 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$VertexAi
 |===
 
 === Prefix dynamoframework.csv
+
 Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfigurationProperties`
 
-.Properties for dynamoframework.csv.
-[cols="1,1,2,2"]
+.Properties for `dynamoframework.csv`.
+[cols="1,1,2,2",stripes=even]
 |===
 |Key|Type|Description|Default value
 
@@ -2569,8 +2576,8 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$CsvConfi
 |`thousands-grouping`|Boolean|Whether to use thousands grouping in XLS files|`false`
 |===
 
-You can use retrieve the Dynamo properties using the `DynamoPropertiesHolder`
-in the following way:
+You can retrieve the Dynamo properties using the `DynamoPropertiesHolder` in
+the following way:
 
 [source,java]
 --
@@ -2581,9 +2588,9 @@ DynamoProperties properties = DynamoPropertiesHolder.getDynamoProperties();
 
 === Back-end set-up
 
-Back-end applications that want to use the Dynamo framework are fairly standard
-Spring Boot applications. Below is a sample pom.xml file that shows the minimal set-up for a
-Dynamo back-end.
+Back-end applications that want to use the Dynamo framework are fairly
+standard Spring Boot applications. Below is a sample pom.xml file that shows
+the minimal set-up for a Dynamo back-end.
 
 Replace the placeholders between square brackets by your own values
 
@@ -2595,7 +2602,7 @@ however the three dependencies that you need to set up Spring security based
 on OAuth are included in the pom but commented out.
 
 [source,xml]
-----
+--
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
@@ -2757,13 +2764,13 @@ on OAuth are included in the pom but commented out.
     </plugins>
   </build>
 </project>
-----
+--
 
 With this in place, there is only a little bit of set-up needed to be able to use
 the application. First of all, include an `ApplicationConfig` class as follows
 
 [source,java]
-----
+--
 package com.opencirclesolutions.myapplication.configuration;
 
 import com.opencirclesolutions.myapplication.domain.MainActivity;
@@ -2810,12 +2817,12 @@ public class ApplicationConfig extends ApplicationConfigurationSupport {
 		return new DefaultServiceImpl<>(dao, "code");
 	}
 }
-----
+--
 
 Finally, we need a Spring Boot Application class
 
 [source,java]
-----
+--
 package com.opencirclesolutions.myapplication;
 
 import org.dynamoframework.configuration.DynamoConfigurationProperties;
@@ -2837,7 +2844,7 @@ public class MyApplication {
         SpringApplication.run(MyApplication.class, args);
     }
 }
-----
+--
 
 Be sure to replace the placeholders above by the directories that contain your
 entities (for the `@EntityScan`) and your services/components (for the `@ComponentScan`)
@@ -2850,7 +2857,7 @@ beyond the scope of this documentation. Below you find a dummy implementation th
 never reject a request.
 
 [source,java]
-----
+--
 @Service
 public class MockUserDetailsService implements UserDetailsService {
     @Override
@@ -2873,7 +2880,7 @@ public class MockUserDetailsService implements UserDetailsService {
 
     }
 }
-----
+--
 
 === Message bundles
 
@@ -3012,13 +3019,13 @@ In order to be able to actually use the component, don't forget to add a route
 to it in the *app-routing.module.ts*, e.g.
 
 [source,typescript]
-----
+--
   {
     path: '',
     title: 'Organizations',
     component: OrganizationSearchComponent
   },
-----
+--
 
 
 === Adding Dynamo to an existing front-end project
@@ -3029,7 +3036,7 @@ directly to your project.
 To do so, make sure that your project uses the following dependencies
 
 [source,yaml]
-----
+--
   "dependencies": {
     "@angular/animations": "^16.1.2",
     "@angular/common": "^16.1.2",
@@ -3065,7 +3072,7 @@ To do so, make sure that your project uses the following dependencies
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.1.3"
   }
-----
+--
 
 and that Bootstrap and ngx-translate are set up properly.
 
@@ -3224,7 +3231,7 @@ The messages take the form `key: value`:
 
 In the HTML components, messages can be referenced as follows:
 
-[source,angular17html]
+[source,html]
 --
 {{ 'server_unavailable' | translate }}
 --
@@ -3252,7 +3259,8 @@ error message
 this.messageService.warn('Selected something:' +  obj.firstName)
 --
 
-image:media/image6.png[image,width=427,height=108]
+.Example of a notification.
+image::media/image6.png[image,width=427,height=108]
 
 NOTE: The methods of the `NotificationService` take a String literal,
 not a key from the message bundle. If you want to display a value
@@ -3458,7 +3466,7 @@ export function createElementCollectionFilter(
 --
 
 The `ElementCollectionFilter` is used to filter on the element on an
-element collection. The filter contains a *values* array which can
+element collection. The filter contains a `values` array which can
 contain either a list of integer or a list of strings. An entity
 will match the filter if the element collection contains at least
 one of the requested values.
@@ -3495,7 +3503,7 @@ encloses in it.
 return createNullFilter('parent');
 --
 
-The `NullFilter` can be used to create a filter that checks if the value is NULL.
+The `NullFilter` can be used to create a filter that checks if the value is `NULL`.
 
 === Updates
 
@@ -3580,7 +3588,8 @@ relationship in the (detail) `@FetchJoins` of the entity. The entity
 model that is used to render the table is in this case a nested entity
 model that is part of the main entity model.
 
-image:media/image7.png[image,width=560,height=355]
+.Screen to manage translations.
+image::media/image7.png[image,width=560,height=355]
 
 === Hidden fields
 
@@ -3598,7 +3607,7 @@ and add the `dHiddenField` directive to it. Then provide the field name
 and value. In case this is an entity, it is sufficient to only include
 the primary key (`entityId` in the example below).
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-split-layout
   entityName="PersonalRelation"
@@ -3716,7 +3725,8 @@ up a modal dialog that can be used to carry out the action. This modal
 dialog will contain input components based on the entity model. e.g., for
 the action defined above, it will look as follows:
 
-image:media/image8.png[image,width=559,height=265]
+.Screen with buttons for modal dialogs.
+image::media/image8.png[image,width=559,height=265]
 
 Actions of type CREATE will appear in the button bar below the results
 table in a search layout, split layout, or editable table layout.
@@ -3835,7 +3845,7 @@ Layout” which offers a search form combined with a results table. To use
 a `GenericSearchLayout`, define your own component, then in the HTML for
 that component, include something like this
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout entityName="Organization”
   ></app-generic-search-layout>
@@ -3873,7 +3883,7 @@ way to do this is by defining the `detailNavigationPath` (see below).
 
 ==== DetailNavigationPath
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout entityName="Organization"
   detailNavigationPath="organization"
@@ -3893,7 +3903,7 @@ handlers instead.
 
 ==== SearchFormMode
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout entityName="Organization"
   [searchFormMode]="searchMode"
@@ -3918,7 +3928,8 @@ filter.
 
 As an example, consider the following:
 
-image:media/image9.png[image,width=560,height=165]
+.A search screen.
+image::media/image9.png[image,width=560,height=165]
 
 With regard to fields that are `requiredForSearching`, when using the
 dynamic search form, the application will render a row for every
@@ -3935,7 +3946,7 @@ You can use the `queryType` attribute on the layout to determine the
 query type to use. The supported values are `PAGING` and `ID_BASED`, with
 `PAGING` being the default.
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout entityName="Organization"
   queryType]="queryType"
@@ -4352,7 +4363,7 @@ from the back-end.
 
 In HTML, set a value for the `fieldFilters` property:
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-form
   entityName="Organization"
@@ -4398,7 +4409,7 @@ the input components (e.g., empty a field when another field has a
 certain value). You can set this up by setting the
 `postProcessInputForm` option.
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-form entityName="Person"
   [entityId]="entityId
@@ -4452,7 +4463,7 @@ follows:
   }
 --
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-form
   entityName="Organization"
@@ -4491,7 +4502,7 @@ form group
 validators (note that you can pass along the from group in order to set
 up validations across multiple fields if desired).
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-form
   entityName="Member"
@@ -4702,7 +4713,9 @@ entire request
 * Pressing the “OK”-button will send a request to the LLM service, which
 will try to translate the user input to valid property values, which
 will be pre-filled into the form.
-image:media/image10.png[image,width=559,height=221]
+
+.Autofill example.
+image::media/image10.png[image,width=559,height=221]
 
 You can set the default model to use by setting the value of the
 parameter *dynamoframework.defaults.ai-service* This setting accepts the values
@@ -4781,7 +4794,8 @@ manipulating the upload, consisting of:
 * A “clear” button for clearing the uploaded file
 * A “download” button (if `downloadAllowed` is set to `true`)
 
-image:media/image11.png[image,width=560,height=266]
+.Image component.
+image::media/image11.png[image,width=560,height=266]
 
 Under the covers, the framework will combine the regular post or put
 request with any requests to upload or remove files; the regular update
@@ -4800,7 +4814,7 @@ form and add the `dOverrideField` directive to it. Inside the template
 you can then include the custom component content. Note that is
 necessary to include an additional container that binds the from-group.
 
-[source,angular17html]
+[source,html]
 --
   <ng-template
     dOverrideField
@@ -4839,7 +4853,7 @@ property
 * This freeform template is passed a reference to the `mainForm` form
 group that holds all the reactive form controls.
 
-[source,angular17html]
+[source,html]
 --
   entityName="Organization"
   [entityId]="entityId"
@@ -4867,21 +4881,23 @@ the entity model)
 Inside the free form component, it is possible to use the convenient `<app-generic-field>` component
 as a shorthand for including the component as they would be generated by the Dynamo framework.
 
-The app-generic-field takes the following parameters:
+The `<app-generic-field>` accepts the parameters shown in the table below.
 
-[width="100%",cols="33%,67%",options="header"]
+.Properties for `<app-generic-field>`.
+[cols="1,3",stripes=even]
 |===
-|*Property Name* |*Explanation*
-| am             | The attribute model to base the field on
-| formGroup      | The form group that the component is part of
-| locale         | The locale to use when rendering the component
-| options        | The SelectOptions to choose from (for select-one and select-many components)
-| enumValues     | The enumeration values to use
+|Property Name     | Explanation
+
+| `am`             | The attribute model to base the field on.
+| `formGroup`      | The form group that the component is part of.
+| `locale`         | The locale to use when rendering the component.
+| `options`        | The SelectOptions to choose from (for select-one and select-many components).
+| `enumValues`     | The enumeration values to use.
 |===
 
 Example for a text field
 
-[source,angular17html]
+[source,html]
 --
 <label for="address">Address</label>
 <app-generic-field
@@ -4894,7 +4910,7 @@ Example for a text field
 
 Example for a multi-select field
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-field
   [formGroup]="mainForm"
@@ -4911,7 +4927,7 @@ the same time profiting from the efficiency of using the standard components.
 
 You can also define your own components, for example this:
 
-[source,angular17html]
+[source,html]
 --
   <label for="name">Organization Name</label>&nbsp;
   <input
@@ -4952,23 +4968,23 @@ table contains a selection of data, and selecting a row in the table
 will cause the details of that row to appear in the edit form. In its
 most basic form, the generic split layout can be used as follows:
 
-[source,angular17html]
+[source,html]
 --
   <app-generic-split-layout entityName="Person"
   ></app-generic-split-layout>
 --
 
-This renders the aforementioned layout. By default it shows all
+This renders the aforementioned layout. By default, it shows all
 entities, and when selecting a row in the table, the edit form will open
 in editable mode.
 
 ==== QueryType
 
-You can use the *queryType* attribute on the layout to determine the
+You can use the `queryType` attribute on the layout to determine the
 query type to use. The supported values are PAGING and ID_BASED, with
 PAGING being the default.
 
-[source,angular17html]
+[source,html]
 --
   <app-generic-split-layout entityName="Person"
  [queryType]="queryType"
@@ -5056,7 +5072,7 @@ The *GenericEditTableLayout* is a composite layout component that contains a
 tabular display of data that allows the user to modify data or add new
 data.
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-edit-table-layout
   entityName="Delivery"
@@ -5079,7 +5095,8 @@ the details of the selected entity.
 Below the table is an “Add” button that will bring up a dialog that can
 be used to add a new entity.
 
-image:media/image12.png[image,width=560,height=158]
+.Table with “Add” buttons.
+image::media/image12.png[image,width=560,height=158]
 
 Supported features (see under the other sections for details)
 
@@ -5100,7 +5117,7 @@ document can be provided as either an external URL, an internal URL, or a refere
 
 IN order to view a PDF file that is stored in a field on an entity, use the following set-up
 
-[source,angular17html]
+[source,html]
 --
   <app-pdf-viewer
     [mode]="mode"
@@ -5115,7 +5132,7 @@ field of the `Gift` entity with primary key `2`.
 
 To refer to an internal URL, use the following:
 
-[source,angular17html]
+[source,html]
 --
   <app-pdf-viewer
     [mode]="mode"
@@ -5157,7 +5174,7 @@ public class PdfController {
 
 Finally, to render a PDF file found at external URL the following can be used:
 
-[source,angular17html]
+[source,html]
 --
   <app-pdf-viewer
     [mode]="mode"
@@ -5172,7 +5189,7 @@ With the "mode" pointing to `PdfViewerMode.EXTERNAL_URL`. This will render the P
 Additionally, it is also possible to use the PDF viewer inside a popup-dialog. In order to use this
 component, include the following in your HTML file:
 
-[source,angular17html]
+[source,html]
 --
   <ng-template #popupDialogContainerRef></ng-template>
   <div class="btn-group" role="group">
@@ -5221,7 +5238,8 @@ any results table (in you right-click anywhere in the table). This menu
 will contain the options to create exports to both Excel and CSV
 formats.
 
-image:media/image13.png[image,width=194,height=136]
+.Export screen.
+image::media/image13.png[image,width=194,height=136]
 
 The export that will be created contains all the data in the result set
 (i.e., all data that matches the search criteria), not just the rows that
