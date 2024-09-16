@@ -73,7 +73,6 @@ The Dynamo Framework is distributed under the terms of the
 https://www.apache.org/licenses/LICENSE-2.0.txt[Apache License], a
 permissive open-source license for free and open-source software (FOSS).
 
-
 == Architectural overview
 
 The general principle of the Dynamo Framework is as follows:

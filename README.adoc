@@ -1,19 +1,156 @@
+:toc: right
+:toclevels: 2
+:icons: font
+:doctype: article
+:!chapter-signifier:
+:source-highlighter: rouge
+:!sectnums:
+:text-align: justify
+
 = Dynamo
 
-The Dynamo Web Application Accelerator is a software development framework initially developed by Open Circle Solutions that aims to increase productivity by using design principles such as convention over configuration, model-driven development and DRY (don’t repeat yourself).
+image:dynamo-documentation/media/logo-dynamo.png[image]
 
-At the core of Dynamo is the concept of the Entity Model. The Entity Model is defined as the model describes the attributes and behaviour of an entity (or domain object) in your application. This entity model can then be used as the basis for creating forms, tables, search screens etc. 
+Web Application Accelerator Framework
 
-The Entity Model of an entity can be automatically generated based on the properties of the attribute model (using sensible defaults as described by the convention over configuration principle) and can further be modified by using attributes and message bundle overwrites. The main goal is to reduce the amount of (boilerplate) code required to perform common actions like creating search screens and edit forms.
+Developed, maintained and sponsored by
 
-Complementing the Entity Model is a set of user interface components (widgets) that can be used to quickly construct screens for common use cases, and a number of base classes for the Data Access and Service layers.
-The Framework is built around a number of proven and highly productive set of technologies:
-* Angular as the user interface framework
-* Spring as the application framework
-* JPA2 for ORM
-* QueryDSL for type-safe query generation
-* Apache Camel for integration
+image:dynamo-documentation/media/logo-opencirclesolutions.svg[image,width=256,height=53]
+
+_Copyright © 2014 - 2024 Open Circle Solutions BV._
+
+== Introduction
+
+The Dynamo Web Application Accelerator Framework is a software
+development framework developed by https://www.opencirclesolution.nl[Open Circle Solutions]
+that aims to  increase productivity by using design principles such as
+convention over configuration, model-driven development and DRY (don’t
+repeat yourself).
+
+At the core of Dynamo is the concept of the _Entity Model_. The Entity
+Model describes the attributes and behaviour of an entity (or domain
+object) in your application. This Entity Model can then be used as the
+basis for creating forms, tables, search screens etc.
+
+The _Entity Model_ of an entity is automatically constructed based on
+the properties of the attributes of the entity (using sensible defaults
+as described by the convention over configuration principle) and can
+further be modified by using annotations and message bundle entries. The
+main goal is to reduce the amount of (boilerplate) code required to
+perform common actions like creating search screens and edit forms.
+
+Complementing the _Entity Model_ is a set of user interface components
+(widgets) that can be used to quickly construct screens for common use
+cases, and several base classes for the Data Access and Service layers.
+
+The Dynamo framework is built around a number of proven and highly
+productive set of technologies:
+
+* https://jakarta.ee/specifications/persistence/[JPA3.1] for ORM
+* https://querydsl.com[QueryDSL] for type-safe query generation
+* https://docs.spring.io/spring-boot/index.html[Spring Boot] as the
+application framework
+* https://angular.dev[Angular (v16)] as the front-end framework of choice
+* https://primeng.org[PrimeNG] for a rich suite of components
+
+The Dynamo Framework is distributed under the terms of the
+https://www.apache.org/licenses/LICENSE-2.0.txt[Apache License], a
+permissive open-source license for free and open-source software (FOSS).
+
+The sources of Dynamo can be found at https://raw.githubusercontent.com/opencirclesolutions/dynamo[Github].
+
+== Dynamo versions and innovation
+
+Please note that there currently two different Dynamo versions:
+
+1. Version 4.x and beyond that implements the generated UI with Angular and PrimeNG
+
+2. The older version 3.x that implements the generated UI with Vaadin
+
+The master branch will focus on innovation for Dynamo v4 and beyond. Dynamo V3.x will be maintained with updates of dependencies when needed, but new functions of Dynamo V4 will only be backported when demand and business requirements are sufficient.
+
+=== Features and benefits of the different Dynamo versions
+
+Dynamo has many features and functionality, which are not covered fully in this summary. But this overview is intended to summarize the most notable features and benefits.
+
+=== Features in both Dynamo versions
+
+==== UI features
+
+* Runtime generation of complete UI in several different layouts to support various use cases
+* Choice of layouts:
+** A _simple search_ layout consisting of a search form based on the Dynamo Entity Model and a results table
+** An _edit form_ that can be used to create new entities or modify existing ones
+** A _split layout_ that can be used to display a results table and an input form next to each other. The results table can optionaly be filtered with a simple quick search or a search popup dialog
+** A _search dialog_ to filter and select one or more entities from a potential large resultset
+** The _FlexibleSearchLayout_ is a search layout that allows the user to create complex search query’s by adding/removing search criteria
+** The _EntityPopupDialog_ is a popup dialog that allows the user to create or modify a single entity.
+* Automatic form filler using AI (LLM), copy your unstructured data to the form filler dialog and the AI will interpret the data and automatically translate, transform, convert and fill in the form fields
+* Automatic generation of applicable components for fields based on datatype and/or declaration:
+** Nested detail table (children)
+** Dropdown (n-1 relationship to other entity)
+** Multi-select (n-m relationship to other entity)
+** Auto-complete (n-1 relationship to other entity)
+** Lookup field (n-1 relationship to other entity)
+** Option to edit element collections (children)
+** Radio buttons
+** Check boxes
+** Date picker
+* The functionality to dynamically replace the standard Dynamo input components by custom components
+* Functionality to search, filter, add, update and remove entities
+* File upload component
+* Fields can be grouped together in panels or tabs
+* Field ordering can be declared
+* Integrated bean validation with fields in UI
+* Custom validation support in UI
+* Paging and Lazy loading of large resultsets
+* Default transformation of Enum values to select component
+* Automatic link generation to navigate from a child relationship to the applicable detail form
+* The option to post-process the edit form after the components have been created (e.g. to add dependencies between fields)
+* The option to export data from a table to CSV or Excel
+* Nested entities and entity collections are supported
+* Can be styled by using themes or custom
+
+==== Backend features
+
+* Default services API for business logic (extensible)
+* Default data access layer (extensible)
+* No need to write query or persistence logic (extensible)
+* Simple but powerful fluent filter logic
+* Paging and Lazy loading of large result sets
+* Entity query optimization by the use of declarative (fetch)joins which promotes the JPA advise of lazy loading of relationships
+* Search results can furthermore be limited to prevent large results and timeouts
+* Services are transactional by default
+
+==== Additional (optional) features
+
+* The _MultiDomainEditLayout_ is a layout that can be used to easily edit multiple types of simple domain (code table) entities
+* The _MultiDomainEditLayout_ provides a default backend implementation with JPA entities and entity model
+* The Hibernate envers module adds supports history on entities
+* The parameters module adds form to manage parameter lists
+
+=== Differences between the Dynamo versions
+
+|===
+|Feature |Dynamo V3.x |Dynamo V4.x
+
+|UI Framework|Vaadin|Angular
+|UI Widgets|Vaadin|PrimeNG
+|Out of the box https://www.w3.org/WAI/standards-guidelines/wcag/[WCAG] compliance|https://vaadin.com/accessibility[Yes]|https://primeng.org/guides/accessibility[Yes]
+|Default REST API for entity CRUDS|No|Yes
+|Default REST API for entity model|No|Yes
+|Declarative security for pages|Yes|Yes
+|Declarative security for REST|No|Yes
+|Declarative security for Menus|Yes|No
+|Replacing generated UI components|Subclass layout component|Declarative
+|Custom actions as buttons with dialog|Subclass layout component, but not intuitive|Easy and concise with code and declaration
+
+|===
+
+
+== Documentation and further reading
 
 Documentation of Dynamo can be found xref:dynamo-documentation/index.adoc[here].
+Training documentation can be found here xref:dynamo-documentation/training.adoc[here].
 
 Interested in contributing? Check our https://github.com/opencirclesolutions/dynamo/wiki[wiki]!
