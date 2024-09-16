@@ -1,7 +1,7 @@
 ifdef::backend-pdf[]
 :toc: macro
 endif::[]
-ifdef::backend-html5[]
+ifndef::backend-pdf[]
 :toc: right
 endif::[]
 :toclevels: 2
