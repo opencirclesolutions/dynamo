@@ -1,69 +1,28 @@
-
-:toc:
+:toc: right
 :toclevels: 2
-:toc-title: Table of contents
-:toc: left
 :icons: font
 :doctype: book
 :!chapter-signifier:
-
-= Dynamo: Web Application Accelerator Framework
-Open Circle Solutions BV
-:title-logo-image: image:media/logo-dynamo.png[Dynamo]
+:source-highlighter: rouge
 :sectnums:
+:text-align: justify
+:title-logo-image: image:media/logo-dynamo.png[Dynamo]
+:keywords: Dynamo, Open Circle Solutions, Web Application Accelerator Framework, Training
+:pdf-fontsdir: ./fonts
+:pdf-themesdir: ./themes
+:pdf-theme: ocs
+
+= Dynamo: Training
+Open Circle Solutions BV
 
 [colophon]
 == Colophon
 
-image:media/logo-dynamo.png[image]
-
-Dynamo: Web Application Accelerator Framework.
-
-Developed, maintained and sponsored by:
-
-image:media/logo-ocs.png["Open Circle Solutons", 256, 53]
-
-Main committer: Bas Rutten
-
-The sources of Dynamo can be found at https://github.com/opencirclesolutions/dynamo[Github].
-
-Copyright © 2014 - 2024 Open Circle Solutions BV.
-
-_Nothing from this document may be copied and/or made public by use of
-print, photocopy, microfilm or by any other means, without prior
-permission of Open Circle Solutions BV._
+include::includes/colophon.include[]
 
 == Introduction
 
-The Dynamo Web Application Accelerator Framework is a software
-development framework developed by Open Circle Solutions that aims to
-increase productivity by using design principles such as convention over
-configuration, model-driven development and DRY (don’t repeat yourself).
-
-At the core of Dynamo is the concept of the _Entity Model_. The Entity
-Model describes the attributes and behaviour of an entity (i.e., a
-domain object) in your application. This Entity Model can then be used
-as the basis for creating forms, search screens, etc.
-
-The _Entity Model_ of an entity is automatically constructed based on
-the properties of the attributes of the entity (using sensible defaults
-as described by the convention over configuration principle) and can
-further be modified by using annotations and message bundle entries. The
-main goal is to reduce the amount of (boilerplate) code required to
-perform common actions like creating search screens and edit forms.
-
-Complementing the _Entity Model_ is a set of user interface components
-(widgets) that can be used to quickly construct screens for common use
-cases, and several base classes for the Data Access and Service layers.
-
-The Dynamo framework is built around a number of proven and highly
-productive set of technologies:
-
-* https://jakarta.ee/specifications/persistence/[JPA3.1] for ORM
-* https://querydsl.com[QueryDSL] for type-safe query generation
-* https://docs.spring.io/spring-boot/index.html[Spring Boot] as the application framework
-* https://angular.dev[Angular (v16)] as the front-end framework of choice
-* https://primeng.org[PrimeNG] for a rich suite of components
+include::includes/introduction.include[]
 
 == The use case: GTS
 
@@ -115,8 +74,8 @@ You do not have to manually add any tables to this database for now –
 these will be created as part of the application start up process if they
 are not there yet.
 
-NOTE: This training assumes that you run Postgresql on the default port
-5432 and use the user “postgres” and password “admin”. If these settings
+IMPORTANT: This training assumes that you run Postgresql on the default port
+5432 and use the user _postgres_ and password _admin_. If these settings
 are different for your application, you can modify them in the
 _application.properties_ file.
 
@@ -138,12 +97,16 @@ spring.datasource.username=[USERNAME]
 spring.datasource.password=[PASSWORD]
 --
 
+[TIP]
+--
 If your application does not build, and you get compilation errors like
-“QOrganiziation cannot be found”, you might need to add the folder that
-contains the generated sources to your class path. To do so, right-click
-on the “gts-web” project, then select “New -> Source Folder” and
-specify the _target/generated-sources/annotations_ folder as a source
-folder.
+“QOrganization cannot be found”, you might need to add the folder that
+contains the generated sources to your class path.
+
+To do so, right-click on the “gts-web” project, then select “New ->
+Source Folder” and specify the _target/generated-sources/annotations_
+folder as a source folder.
+--
 
 == First steps
 
@@ -226,11 +189,12 @@ As you can see, the DAO implementation extends the `BaseDaoImpl` class
 interface. In its most basic form, you only have to implement the
 (trivial) `getEntityClass()` and `getDslRoot()` methods – the
 latter returns the root path used when creating QueryDSL queries.
+
 QueryDSL is a library that we use for type-safe custom queries. It is a
 very useful technology which we encourage you to learn about online, but
 it is outside the scope of the training.
 
-For now, this is all you must know about DAOs in Dynamo applications –
+For now, this is all you need to know about DAOs in Dynamo applications –
 the basic functionality is both quite simple and quite nicely hidden
 behind several layers of abstraction, so you don’t normally have to
 bother with it all that much.
@@ -238,7 +202,7 @@ bother with it all that much.
 === Services
 
 Inside the `com.opencircle.gts.service` package you will find the
-service layer for the GTS application. Like the DAO layer, this is a
+_service layer_ for the GTS application. Like the DAO layer, this is a
 simple layer as since at the moment it contains almost no business logic. As
 with the DAOs, there is one service interface and one corresponding
 implementation per entity class (and again, for dependent entities you
@@ -301,12 +265,11 @@ validation error. You can add extra validations by overwriting the
 === Your first Dynamo Screen
 
 After you have imported the projects into your IDE, make sure they all
-build properly. Then, open the `GtsApplication` class and run it. After
-a couple of seconds
+build properly. Then, open the `GtsApplication` class and run it.
 
 In order to run the front-end, open a command prompt and navigate to the
 root folder of the front-end project. Execute the following to
-start the application. 
+start the application.
 
 [source,console]
 --
@@ -318,6 +281,8 @@ Then open a web browser and navigate to _http://localhost:4200_.
 You will see a mostly empty screen, and be given the option to log into
 the application (either via the button in the top right, or by pressing
 the button on the login screen.)
+
+*TODO: Authentication using something other than SSO for the training?*
 
 After logging in, you will be able to view your first screen, which is a
 search screen that allows you to view the organizations that are stored
@@ -384,7 +349,7 @@ with the searching to find out that by default, the searching is not
 case-sensitive and will look for matches anywhere in the attribute
 value.
 
-NOTE: Changes you make to the entity model always require you to
+TIP: Changes you make to the entity model always require you to
 restart the back-end application. However, the (Angular) front-end has
 hot deployment and generally does not need to be restarted (simply
 refreshing your browser should be enough).
@@ -523,8 +488,8 @@ ascending order, “name desc” will sort by name in descending order,
 `searchAllowed`, `createAllowed` that govern which actions are allowed
 on this entity. These will be covered in more detail later on.
 
-Note that you set the `displayProperty` on the `Person` entity, not on the
-*Organization* – this annotation will affect all references to the
+IMPORTANT: You should set the `displayProperty` on the `Person` entity, not on the
+`Organization` – this annotation will affect all references to the
 Person entity, so it will show up like this in any search or edit form.
 
 As you can see, by default the application will use a multi-select field
@@ -623,7 +588,7 @@ form, the results grid, and the edit screen (which you will see later).
 Also, note that some fields like “country of origin” do not show up yet
 in the grid, but we will cover this later.
 
-Note that the attribute order is not complete – any attributes that
+NOTE: If the attribute order is not complete, any attributes that
 are not explicitly mentioned will be included behind the ones that you did
 mention, in the default (alphabetical) order.
 
@@ -644,8 +609,9 @@ public class Organization extends AbstractEntity<Integer> {
 
 In the above example, we have added an `@GridAttributeOrder`. When
 you restart the application after this, you will see that the grid
-starts with the "memberCount" and "yearlyMortalityRate" fields. Note
-that the other attributes are shown in alphabetical order.
+starts with the "memberCount" and "yearlyMortalityRate" fields.
+
+NOTE: The other attributes are shown in alphabetical order.
 
 OK, now it’s time to fix the enumeration. Open the
 _i.messages.properties_ file and add the following:
@@ -771,12 +737,16 @@ This will make sure that whenever any Organizations are fetched by the
 framework, the `countryOfOrigin` relation of those organizations will be
 fetched as well.
 
-Note that you can specify both “joins” and “detailJoins”. The “joins”
+[TIP]
+--
+You can specify both `joins` and `detailJoins`. The `joins`
 are the relations that are fetched whenever a collection of entities is
-retrieved (basically, to display the in a search results table). The
-`detailJoins` are the relations that are fetched when retrieving a
+retrieved (basically, to display the in a search results table).
+
+The `detailJoins` are the relations that are fetched when retrieving a
 single entity from the back-end, this is mostly used when displaying the
 entity in a detail screen or pop-up window.
+--
 
 Fetching is an important concept in the Dynamo framework since it is a
 powerful way to limit the number of queries that is carried out and can
@@ -882,15 +852,18 @@ private Country countryOfOrigin;
 
 With this in place, the application will render a field that allows the
 user to start typing – the available options will be filtered so that
-only those that match the entered search term will be returned. Note
-that the matching is done on the basis of the `displayProperty` setting.
+only those that match the entered search term will be returned.
+
+NOTE: The matching is done on the basis of the `displayProperty` setting.
 
 As an extra exercise, set the `multipleSearch` setting to `true`. This
 allows you to search for multiple values for a normally single-valued
 relation – the search query will return all entities that match one of
-the provided search values. Note that when you set `multipleSearch` to
-true, the application will switch to displaying a multi-select field
-instead of a drop-down. You can also use a lookup field.
+the provided search values.
+
+TIP: When you set `multipleSearch` to `true`, the application will
+switch to displaying a multi-select field instead of a drop-down. You
+can also use a lookup field.
 
 === Dynamic search layout
 
@@ -996,7 +969,7 @@ This is a minimal set-up that includes:
 . the ID of the entity being edited (undefined when defining a new entity)
 . the route to use when navigating back to the search screen.
 
-Note that in the (probably pretty rare) cases where you want to
+TIP: In the (probably pretty rare) cases where you want to
 completely disable navigation from the screen, you can do so by setting
 the `navigationAllowed` property to false.
 
@@ -1031,19 +1004,27 @@ private Country countryOfOrigin;
 --
 
 Now, go ahead and add a new organization to the system (be creative).
-Note that validations have automatically been added to the form based on
+
+[NOTE]
+--
+The validations have automatically been added to the form based on
 the Java Validation API annotation like `@NotNull` and `@Size` that are
 present on the entity – you don’t have to do anything extra for this.
+--
 
-Note that sometimes it’s not desirable to be able to directly edit an
+[TIP]
+--
+Sometimes it’s not desirable to be able to directly edit an
 attribute – e.g. in case of a status field that is automatically set, a
 creation time stamp, etc. You can make sure that such an attribute shows
 up as read-only in the form by setting the `editable` setting of the
-`@Attribute` annotation to `READONLY`. It is also possible to specify the
-settings `CREATE_ONLY` and `EDITABLE`. When you use the setting
-`CREATE_ONLY` you will only be able to edit the attribute when creating
-a new entity. The `EDITABLE` value, which is the default value, means
-that the attribute can always be edited.
+`@Attribute` annotation to `READONLY`.
+
+It is also possible to specify the  settings `CREATE_ONLY` and `EDITABLE`.
+When you use the setting `CREATE_ONLY` you will only be able to edit the
+attribute when creating a new entity. The `EDITABLE` value, which is the
+default value, means  that the attribute can always be edited.
+--
 
 === Editing existing entities
 
@@ -1068,7 +1049,7 @@ detail screen.
 
 image:media/image8.png[image,width=559,height=26]
 
-Note that you can also set the `detailsModeEnabled` setting to `false`.
+TIP: You can also set the `detailsModeEnabled` setting to `false`.
 This will completely disable the functionality to navigate to the detail
 screen for existing entities (however, you can still create new entities
 using the “Add” button).
@@ -1084,7 +1065,7 @@ defined will be automatically set to this default value.
 * Using the `TextFieldMode` to switch between displaying a text field, a
 text area, or a password field. Try this on the `address` property.
 
-NOTE: This only works inside edit forms. The TextFieldMode will be
+IMPORTANT: This only works inside edit forms. The TextFieldMode will be
 ignored when creating a search form, since the text area in the search
 form would take up too much space, and it’s highly unlikely you’d want to
 search for an enormously long string match anyway.
@@ -1092,7 +1073,7 @@ search for an enormously long string match anyway.
 * Use the `booleanFieldMode` to switch between using a checkbox, a
 toggle button, or a switch component for editing a Boolean property.
 
-NOTE: This only has an effect inside an edit form. In a search
+IMPORTANT: This only has an effect inside an edit form. In a search
 form, the framework will always use a tri-state checkbox as described
 earlier.
 
@@ -1216,10 +1197,10 @@ You will see three attribute groups: the two groups you declared and an
 additional group that contains all attributes that were not explicitly
 assigned to any of the groups.
 
-Note that the order of the groups is specified by the
-`@AttributeGroup` and `@AttributeGroups` annotations, but the order of 
-the attributes within  the groups is still taken from the (general) 
-attribute ordering specified by the `@AttributeOrder` annotation.
+NOTE: The order of the groups is specified by the `@AttributeGroup` and
+`@AttributeGroups` annotations, but the order of the attributes within
+the groups is still taken from the (general)  attribute ordering
+specified by the `@AttributeOrder` annotation.
 
 Also, by default the application will use panels to group the attributes
 together. If you prefer using tabs, define an attribute group mode
@@ -1449,8 +1430,11 @@ allows you to create a new entity.
 Now, using everything you have learned so far, modify this screen in the following ways:
 
 * Make sure the “organization” property shows up in the grid and in the
-edit form (note: don’t forget to modify the relation fetching using the `@FetchJoin` annotation
+edit form
+
+IMPORTANT: Don’t forget to modify the relation fetching using the `@FetchJoin` annotation
 and to set a `displayProperty` for the Organization if
+
 that has not been done already).
 * The attribute order reads `firstName`, `nickName`, `lastName`,
 `organization`, `born`, `died`.
@@ -1618,14 +1602,19 @@ Play around with the file upload functionality for a bit if you want,
 then have a look at the rest of the screen and make sure you get all the
 little details right (attribute order, captions etc.).
 
-Disclaimer: storing binary data in a relational database is not always
+[WARNING]
+--
+Storing binary data in a relational database is not always
 an optimal design decision, but we recognize that it is useful for
 scenarios like this where you want to display a quick image or thumbnail
 or something similar. When storing large amounts of data, you might want
 to use a cloud blob storage like Azure Blob Storage or Amazon S3
-instead. Note that in these cases it is still possible to use the Dynamo
+instead.
+
+In these cases it is still possible to use the Dynamo
 entity model, but you have to modify the service logic to write the data
 to and retrieve it from the blob storage.
+--
 
 Now, there is one more cool thing we can do with the `Gift` entity, and
 that is displaying and editing a collection of dependent objects, in
@@ -1643,10 +1632,13 @@ In the `Gift` class, annotate the `translations` property as follows.
 private Set<GiftTranslation> translations = new HashSet<>();
 --
 
-Of note here is the `nestedDetails` setting that will ensure that the
+[NOTE]
+--
+Here is the `nestedDetails` setting that will ensure that the
 framework treats this property as a nested detail property. Also note
 the use of the standard JPA cascade annotations that make sure that the
 detail entities are persisted whenever the parent entity is.
+--
 
 We also have to make sure that the wiring of the translations to the
 gifts is done properly. To do so, include the following in the Gift
@@ -1716,7 +1708,7 @@ Clicking this button will cause a pop-up dialog to appear, which you can
 then use to create the new entity. Go ahead and do so. The new entities
 that you added will show up in the grid.
 
-Note that at the end of every row there is a “Details” button that you
+TIP: At the end of every row there is a “Details” button that you
 can use to bring up the details of the current row/entity. If
 `updateEnabled` is set to true on the entity model, you can also use
 this dialog to edit the entity.
@@ -1859,7 +1851,7 @@ _custom-validators.ts_ file.
 readonly CustomValidators = CustomValidators
 --
 
-NOTE: You must always include the appropriate validations in the
+WARNING: You must always include the appropriate validations in the
 back-end as well. Never rely on the front-end only for validating data,
 since it is always possible to bypass the front-end and call the
 back-end services directly.
@@ -2056,7 +2048,7 @@ private Organization organization;
 
 This will lead to the following situation in the Person screen
 (note that you may have to set the `openInViewMode` to `true` in order to
-make the link show up)
+make the link show up).
 
 image:media/image17.png[image,width=503,height=407]
 
@@ -2095,8 +2087,10 @@ public class Person extends AbstractEntity<Integer> {
 This means that only users in the “bogus” role are allowed to perform
 write actions (i.e. create and update) on this entity. Since you don’t
 have the “bogus” role, this should disable the edit functionality for
-the Person screen. Note that if you specify multiple roles, the user is
-considered eligible if they have at least one of the specified roles.
+the Person screen.
+
+IMPORTANT: If you specify multiple roles, the user is  considered eligible
+if they have at least one of the specified roles.
 
 Verify this by opening the Person screen again and making sure that you
 cannot add new persons or modify existing ones.
@@ -2263,5 +2257,4 @@ values.
 In the example above we used an attribute of type Integer. It is also
 possible to use the element collection functionality with String
 attributes.
-
 
