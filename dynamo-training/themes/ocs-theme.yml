@@ -31,7 +31,6 @@ font:
       bold_italic: RobotoMono-BoldItalic.ttf
 code:
   font-family: RobotoMono
-  #  background-color: #F5F5F5
   background-color: #e9f0e8
   border-radius: 0
   border-color: #F5F5F5
@@ -43,9 +42,7 @@ toc:
   h2-font-style: bold
 table:
   grid-color: #ffffff
-  #  grid-color: #39A248
   border-color: #ffffff
-  #  border-color: #39A248
   body:
     background-color: #e9f0e8
     stripe-background-color: #cee0cf

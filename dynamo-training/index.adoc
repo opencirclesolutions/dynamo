@@ -349,7 +349,7 @@ The code for this search screen is included in the _organization-search_
 folder. This folder contains both an HTML file and a Typescript file.
 The HTML file is very small and looks as follows:
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout entityName="Organization"
   detailNavigationPath="organization"></app-generic-search-layout>
@@ -474,7 +474,7 @@ should no longer appear.
 Next, in _organization-search.component.html_ file, change the code so
 that the line referring to FormOptions looks as follows:
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout entityName="Organization"
   detailNavigationPath="organization" [advancedModeEnabled]="true">
@@ -935,7 +935,7 @@ searchFormMode: SearchFormMode = SearchFormMode.DYNAMIC;
 
 And bind it in the *organization-search.component.html*:
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout
   entityName="Organization"
@@ -1010,7 +1010,7 @@ creating a new one):
 Both routes point to the `OrganizationFormComponent` which looks as
 follows:
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-form
 entityName="Organization"
@@ -1096,7 +1096,7 @@ longer just click anywhere in the table. Instead, a “pencil” button will
 show up in each row in the table. Click this button to navigate to the
 detail screen.
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-search-layout entityName="Organization"
  detailNavigationPath="organization" [advancedModeEnabled]="true"
@@ -1473,7 +1473,7 @@ is a layout that consists of a search results table on the left and a
 form for displaying the selected row on the right. Implementing it is
 even simpler than for the search layout:
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-split-layout entityName="Person">
 </app-generic-split-layout>
@@ -1520,7 +1520,7 @@ return [createEqualsFilter('firstName', 'a')]
 }
 --
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-split-layout entityName="Person"
   [defaultFilters]="getDefaultFilters()">
@@ -1601,7 +1601,7 @@ _nav.component.ts_ file, add a new menu item:
 
 Defining the actual layout is pretty easy as well:
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-split-layout entityName="Gift"></app-generic-split-layout>
 --
@@ -1744,7 +1744,7 @@ ng generate component delivery-table --module app
 
 The component itself is again deceptively simple
 
-[source,angular17html]
+[source,html]
 --
 <app-generic-edit-table-layout entityName="Delivery">
 --
@@ -1832,7 +1832,7 @@ To do so, you can insert an ng-template element marked with the
 `dOverrideField` annotation inside the component (in this case,
 _organization-form.component.html_.
 
-[source,angular17html]
+[source,html]
 --
   <ng-template
     dOverrideField
@@ -1885,7 +1885,7 @@ In the `app-generic-split-layout` we created before, we add a template named
 *customValidatorTemplate* and bind this to the `customValidatorTemplate`
 property of the layout:
 
-[source,angular17html]
+[source,html]
 --
   <ng-template #customValidatorTemplate let-formGroup>
     <ng-template
