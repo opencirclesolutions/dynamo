@@ -38,10 +38,11 @@ permission of Open Circle Solutions BV._
 
 == Introduction
 
-The Dynamo Web Application Accelerator Framework is a software
-development framework developed by Open Circle Solutions that aims to
-increase productivity by using design principles such as convention over
-configuration, model-driven development and DRY (don’t repeat yourself).
+The _Dynamo Web Application Accelerator Framework_ is a software
+development framework developed by https://www.opencirclesolution.nl[Open Circle Solutions]
+that aims to  increase productivity by using design principles such as
+convention over configuration, model-driven development and DRY (don’t
+repeat yourself).
 
 At the core of Dynamo is the concept of the _Entity Model_. The Entity
 Model describes the attributes and behaviour of an entity (i.e., a
@@ -60,7 +61,7 @@ Complementing the _Entity Model_ is a set of user interface components
 cases, and several base classes for the Data Access and Service layers.
 
 The Dynamo framework is built around a number of proven and highly
-productive set of technologies:
+productive technologies:
 
 * https://jakarta.ee/specifications/persistence/[JPA3.1] for ORM
 * https://querydsl.com[QueryDSL] for type-safe query generation

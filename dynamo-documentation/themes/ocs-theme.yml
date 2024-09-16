@@ -1,11 +1,21 @@
+extends: default
 page:
   size: a4
   margin: [25mm, 25mm, 25mm, 25mm]
-extends: default
+  numbering:
+    start-at: cover
 base:
   font-color: #515147
   font-family: Raleway
-  text-align: left
+  text-align: justify
+heading:
+  font-color: #515147
+  h1-font-size: $base-font-size * 1.5
+  h2-font-size: $base-font-size * 1.5
+  h3-font-size: $base-font-size * 1.3
+  h4-font-size: $base-font-size * 1.2
+  h5-font-size: $base-font-size * 1.15
+  h6-font-size: $base-font-size * 1.1
 font:
   catalog:
     merge: true
@@ -27,5 +37,46 @@ code:
   border-width: 0
 codespan:
   font-family: RobotoMono
-  font-color: #833906
-#  font-color: #39A248
+  font-color: #515147
+toc:
+  h2-font-style: bold
+table:
+  grid-color: #39A248
+  border-color: #39A248
+  caption:
+    end: bottom
+    align: center
+  head:
+    background-color: #39A248
+    font-color: #ffffff
+running-content:
+  start-at: toc
+footer:
+  border-color: #39A248
+  line-height: 1
+  recto:
+    right:
+      content: 'page {page-number} of {page-count}'
+    left:
+      content: '{document-title}: {document-subtitle}'
+  verso:
+    right:
+      content: 'page {page-number} of {page-count}'
+    left:
+      content: '{document-title}: {document-subtitle}'
+header:
+  height: 25mm
+  line-height: 1
+  recto:
+    right:
+      content: image::../media/logo-ocs-horizontal.png[pdfwidth=30mm]
+  verso:
+    right:
+      content: image::../media/logo-ocs-horizontal.png[pdfwidth=30mm]
+title-page:
+  title:
+    font-color: #515147
+  subtitle:
+    font-color: #39A248
+    font-style: italic
+
