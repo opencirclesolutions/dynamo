@@ -1,0 +1,159 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseTextImporter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Integration Import</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.importer.impl</a> &gt; <span class="el_source">BaseTextImporter.java</span></div><h1>BaseTextImporter.java</h1><pre class="source lang-java linenums">package org.dynamoframework.importer.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.exception.OCSImportException;
+import org.dynamoframework.importer.ImportField;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+/**
+ * Base class for importers that read data from a text file
+ * 
+ * @author bas.rutten
+ */
+<span class="fc" id="L36">public abstract class BaseTextImporter extends BaseImporter&lt;String[], String&gt; {</span>
+
+	/**
+	 * Tries to convert a String value to a Boolean (empty String or null
+	 * resolves to false)
+	 * 
+	 * @param unit
+	 *            the String
+	 * @return the Boolean value
+	 */
+	protected Boolean getBooleanValue(String unit) {
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if (StringUtils.isEmpty(unit)) {</span>
+<span class="nc" id="L48">			return Boolean.FALSE;</span>
+		}
+<span class="fc" id="L50">		return Boolean.valueOf(unit);</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Boolean getBooleanValueWithDefault(String unit, ImportField field) {
+<span class="fc" id="L58">		Boolean result = getBooleanValue(unit);</span>
+<span class="pc bpc" id="L59" title="3 of 4 branches missed.">		if (result == null &amp;&amp; !StringUtils.isEmpty(field.defaultValue())) {</span>
+<span class="nc" id="L60">			return Boolean.valueOf(field.defaultValue());</span>
+		}
+<span class="fc" id="L62">		return result;</span>
+	}
+
+	/**
+	 * Tries to convert a String value to a Date
+	 * 
+	 * @param unit
+	 *            the String value to convert
+	 * @return the LocalDate value
+	 */
+	protected LocalDate getDateValue(String unit) {
+<span class="fc bfc" id="L73" title="All 2 branches covered.">        if (!StringUtils.isEmpty(unit)) {</span>
+<span class="fc" id="L74">			return LocalDate.parse(unit, DateTimeFormatter.ofPattern(&quot;dd-MM-yyyy&quot;));</span>
+
+		}
+<span class="fc" id="L77">		return null;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected LocalDate getDateValueWithDefault(String unit, ImportField field) {
+<span class="fc" id="L85">		LocalDate value = getDateValue(unit);</span>
+<span class="pc bpc" id="L86" title="1 of 4 branches missed.">		if (value == null &amp;&amp; field.defaultValue() != null) {</span>
+<span class="fc" id="L87">			return getDateValue(field.defaultValue());</span>
+		}
+<span class="fc" id="L89">		return value;</span>
+	}
+
+	/**
+	 * Tries to convert a String to a numeric value
+	 * 
+	 * @param unit
+	 *            the String value to convert
+	 * @return the Double value
+	 */
+	protected Double getNumericValue(String unit) {
+<span class="fc bfc" id="L100" title="All 2 branches covered.">        if (StringUtils.isEmpty(unit)) {</span>
+<span class="fc" id="L101">			return null;</span>
+		}
+		try {
+<span class="fc" id="L104">			return Double.valueOf(unit);</span>
+<span class="fc" id="L105">		} catch (NumberFormatException ex) {</span>
+<span class="fc" id="L106">			throw new OCSImportException(unit + &quot; cannot be converted to a number&quot;);</span>
+		}
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Double getNumericValueWithDefault(String unit, ImportField field) {
+<span class="fc" id="L115">		Double value = getNumericValue(unit);</span>
+<span class="fc bfc" id="L116" title="All 4 branches covered.">		if (value == null &amp;&amp; !StringUtils.isEmpty(field.defaultValue())) {</span>
+<span class="fc" id="L117">			value = Double.valueOf(field.defaultValue());</span>
+		}
+<span class="fc" id="L119">		return value;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected String getStringValueWithDefault(String unit, ImportField field) {
+<span class="fc" id="L127">		String result = unit;</span>
+<span class="pc bpc" id="L128" title="1 of 4 branches missed.">		if (StringUtils.isEmpty(result) &amp;&amp; !StringUtils.isEmpty(field.defaultValue())) {</span>
+<span class="fc" id="L129">			result = field.defaultValue();</span>
+		}
+<span class="fc" id="L131">		return result;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected String getUnit(String[] row, ImportField field) {
+<span class="fc" id="L139">		return row[field.index()];</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	public boolean isPercentageCorrectionSupported() {
+<span class="fc" id="L147">		return false;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isWithinRange(String[] row, ImportField field) {
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">		return field.index() &lt; row.length;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

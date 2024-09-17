@@ -1,0 +1,2043 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EntityModelFactoryImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.domain.model.impl</a> &gt; <span class="el_source">EntityModelFactoryImpl.java</span></div><h1>EntityModelFactoryImpl.java</h1><pre class="source lang-java linenums">package org.dynamoframework.domain.model.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.*;
+import lombok.NoArgsConstructor;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.configuration.DynamoProperties;
+import org.dynamoframework.constants.DynamoConstants;
+import org.dynamoframework.dao.FetchJoinInformation;
+import org.dynamoframework.dao.JoinType;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.domain.model.*;
+import org.dynamoframework.domain.model.annotation.*;
+import org.dynamoframework.exception.OCSRuntimeException;
+import org.dynamoframework.service.BaseService;
+import org.dynamoframework.service.MessageService;
+import org.dynamoframework.service.ServiceLocator;
+import org.dynamoframework.service.ServiceLocatorFactory;
+import org.dynamoframework.utils.ClassUtils;
+import org.dynamoframework.utils.DateUtils;
+import org.dynamoframework.utils.NumberUtils;
+import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+
+import java.beans.PropertyDescriptor;
+import java.lang.reflect.Method;
+import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.*;
+import java.util.Map.Entry;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
+import java.util.function.BiConsumer;
+import java.util.function.Consumer;
+import java.util.stream.Collectors;
+
+/**
+ * Implementation of the entity model factory - creates models that hold
+ * metadata about an entity
+ *
+ * @author bas.rutten
+ */
+<span class="fc" id="L68">@Slf4j</span>
+<span class="fc" id="L69">@NoArgsConstructor</span>
+public class EntityModelFactoryImpl implements EntityModelFactory {
+
+    private static final String CLASS = &quot;class&quot;;
+
+    private static final String PLURAL_POSTFIX = &quot;s&quot;;
+
+    private static final String VERSION = &quot;version&quot;;
+
+<span class="pc" id="L78">    private final ConcurrentMap&lt;String, Class&lt;?&gt;&gt; alreadyProcessed = new ConcurrentHashMap&lt;&gt;();</span>
+
+<span class="pc" id="L80">    private final ConcurrentMap&lt;String, EntityModel&lt;?&gt;&gt; cache = new ConcurrentHashMap&lt;&gt;();</span>
+
+    private EntityModelFactory[] delegatedModelFactories;
+
+    @Autowired(required = false)
+    private MessageService messageService;
+
+    @Autowired
+    private DynamoProperties dynamoProperties;
+
+<span class="pc" id="L90">    private ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();</span>
+
+    /**
+     * Use this constructor when one needs to delegate creation of models to other
+     * model factories
+     *
+     * @param delegatedModelFactories the delegates
+     */
+<span class="nc" id="L98">    public EntityModelFactoryImpl(EntityModelFactory... delegatedModelFactories) {</span>
+<span class="nc" id="L99">        this.delegatedModelFactories = delegatedModelFactories;</span>
+<span class="nc" id="L100">    }</span>
+
+    /**
+     * Actually adds the attribute models to the entity model, in the correct group
+     *
+     * @param &lt;T&gt;             type parameter
+     * @param entityClass     the entity class
+     * @param entityModel     the entity model
+     * @param attributeModels the list of attribute models to add
+     */
+    private &lt;T&gt; void addAttributeModels(Class&lt;T&gt; entityClass, EntityModelImpl&lt;T&gt; entityModel,
+                                        List&lt;AttributeModel&gt; attributeModels) {
+<span class="fc" id="L112">        Map&lt;String, String&gt; attributeGroupMap = determineAttributeGroupMapping(entityModel, entityClass);</span>
+<span class="fc" id="L113">        entityModel.addAttributeGroup(EntityModel.DEFAULT_GROUP);</span>
+
+<span class="fc" id="L115">        attributeModels.sort(Comparator.comparing(AttributeModel::getOrder));</span>
+<span class="fc bfc" id="L116" title="All 2 branches covered.">        for (AttributeModel attributeModel : attributeModels) {</span>
+            // determine the attribute group name
+<span class="fc" id="L118">            String group = attributeGroupMap.get(attributeModel.getName());</span>
+<span class="fc bfc" id="L119" title="All 2 branches covered.">            if (StringUtils.isEmpty(group)) {</span>
+<span class="fc" id="L120">                group = EntityModel.DEFAULT_GROUP;</span>
+            }
+<span class="fc" id="L122">            entityModel.addAttributeModel(group, attributeModel);</span>
+<span class="fc" id="L123">        }</span>
+<span class="fc" id="L124">    }</span>
+
+    /**
+     * Adds overrides from annotation to entity model
+     *
+     * @param &lt;T&gt;         type parameter
+     * @param entityClass the entity class
+     * @param builder     the entity model builder
+     */
+    private &lt;T&gt; void addEntityModelAnnotationOverrides(Class&lt;?&gt; entityClass,
+                                                       EntityModelImpl.EntityModelImplBuilder&lt;T&gt; builder) {
+<span class="fc" id="L135">        Model modelAnnotation = entityClass.getAnnotation(Model.class);</span>
+<span class="fc bfc" id="L136" title="All 2 branches covered.">        if (modelAnnotation != null) {</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">            if (!StringUtils.isEmpty(modelAnnotation.displayName())) {</span>
+<span class="fc" id="L138">                builder.defaultDisplayName(modelAnnotation.displayName());</span>
+<span class="fc" id="L139">                builder.defaultDescription(modelAnnotation.description());</span>
+            }
+<span class="fc bfc" id="L141" title="All 2 branches covered.">            if (!StringUtils.isEmpty(modelAnnotation.displayNamePlural())) {</span>
+<span class="fc" id="L142">                builder.defaultDisplayNamePlural(modelAnnotation.displayNamePlural());</span>
+            }
+<span class="fc bfc" id="L144" title="All 2 branches covered.">            if (!StringUtils.isEmpty(modelAnnotation.description())) {</span>
+<span class="fc" id="L145">                builder.defaultDescription(modelAnnotation.description());</span>
+            }
+<span class="fc bfc" id="L147" title="All 2 branches covered.">            if (!StringUtils.isEmpty(modelAnnotation.displayProperty())) {</span>
+<span class="fc" id="L148">                builder.displayProperty(modelAnnotation.displayProperty());</span>
+            }
+
+<span class="fc bfc" id="L151" title="All 2 branches covered.">            if (modelAnnotation.nestingDepth() &gt; -1) {</span>
+<span class="fc" id="L152">                builder.nestingDepth(modelAnnotation.nestingDepth());</span>
+            }
+
+<span class="pc bpc" id="L155" title="1 of 2 branches missed.">            if (!modelAnnotation.listAllowed()) {</span>
+<span class="nc" id="L156">                builder.listAllowed(false);</span>
+            }
+<span class="pc bpc" id="L158" title="1 of 2 branches missed.">            if (!modelAnnotation.searchAllowed()) {</span>
+<span class="nc" id="L159">                builder.searchAllowed(false);</span>
+            }
+<span class="fc bfc" id="L161" title="All 2 branches covered.">            if (!modelAnnotation.createAllowed()) {</span>
+<span class="fc" id="L162">                builder.createAllowed(false);</span>
+            }
+<span class="fc bfc" id="L164" title="All 2 branches covered.">            if (!modelAnnotation.updateAllowed()) {</span>
+<span class="fc" id="L165">                builder.updateAllowed(false);</span>
+            }
+
+<span class="fc bfc" id="L168" title="All 2 branches covered.">            if (modelAnnotation.deleteAllowed()) {</span>
+<span class="fc" id="L169">                builder.deleteAllowed(true);</span>
+            }
+
+<span class="fc bfc" id="L172" title="All 2 branches covered.">            if (!modelAnnotation.exportAllowed()) {</span>
+<span class="fc" id="L173">                builder.exportAllowed(false);</span>
+            }
+
+<span class="fc" id="L176">            builder.maxSearchResults(modelAnnotation.maxSearchResults());</span>
+<span class="fc" id="L177">            builder.autofillInstructions(modelAnnotation.autofillInstructions());</span>
+        }
+
+<span class="fc" id="L180">        Roles rolesAnnotation = entityClass.getAnnotation(Roles.class);</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">        if (rolesAnnotation != null) {</span>
+<span class="fc" id="L182">            builder.readRoles(Arrays.asList(rolesAnnotation.readRoles()));</span>
+<span class="fc" id="L183">            builder.writeRoles(Arrays.asList(rolesAnnotation.writeRoles()));</span>
+<span class="fc" id="L184">            builder.deleteRoles(Arrays.asList(rolesAnnotation.deleteRoles()));</span>
+        }
+<span class="fc" id="L186">    }</span>
+
+    /**
+     * Adds overrides from message bundle to entity model
+     *
+     * @param &lt;T&gt;       type parameter
+     * @param reference the entity model reference
+     * @param builder   the entity model builder
+     */
+    private &lt;T&gt; void addEntityModelMessageBundleOverrides(String reference,
+                                                          EntityModelImpl.EntityModelImplBuilder&lt;T&gt; builder) {
+<span class="fc" id="L197">        setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_NAME),</span>
+<span class="fc" id="L198">                builder::defaultDisplayName);</span>
+<span class="fc" id="L199">        setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_NAME_PLURAL),</span>
+<span class="fc" id="L200">                builder::defaultDisplayNamePlural);</span>
+<span class="fc" id="L201">        setStringSetting(getEntityMessage(reference, EntityModel.DESCRIPTION),</span>
+<span class="fc" id="L202">                builder::defaultDescription);</span>
+<span class="fc" id="L203">        setStringSetting(getEntityMessage(reference, EntityModel.DISPLAY_PROPERTY),</span>
+<span class="fc" id="L204">                builder::displayProperty);</span>
+<span class="fc" id="L205">        setStringSetting(getEntityMessage(reference, EntityModel.AUTO_FILL_INSTRUCTIONS),</span>
+<span class="fc" id="L206">                builder::autofillInstructions);</span>
+
+<span class="fc" id="L208">        setIntSettingIfAbove(getEntityMessage(reference, EntityModel.NESTING_DEPTH), -1, builder::nestingDepth);</span>
+
+<span class="fc" id="L210">        setIntSettingIfBelow(getEntityMessage(reference, EntityModel.MAX_SEARCH_RESULTS),</span>
+<span class="fc" id="L211">                Integer.MAX_VALUE, builder::maxSearchResults);</span>
+
+<span class="fc" id="L213">        setBooleanSetting(getEntityMessage(reference, EntityModel.LIST_ALLOWED),</span>
+<span class="fc" id="L214">                builder::listAllowed);</span>
+<span class="fc" id="L215">        setBooleanSetting(getEntityMessage(reference, EntityModel.SEARCH_ALLOWED),</span>
+<span class="fc" id="L216">                builder::searchAllowed);</span>
+
+<span class="fc" id="L218">        setBooleanSetting(getEntityMessage(reference, EntityModel.CREATE_ALLOWED),</span>
+<span class="fc" id="L219">                builder::createAllowed);</span>
+<span class="fc" id="L220">        setBooleanSetting(getEntityMessage(reference, EntityModel.DELETE_ALLOWED),</span>
+<span class="fc" id="L221">                builder::deleteAllowed);</span>
+<span class="fc" id="L222">        setBooleanSetting(getEntityMessage(reference, EntityModel.UPDATE_ALLOWED),</span>
+<span class="fc" id="L223">                builder::updateAllowed);</span>
+<span class="fc" id="L224">        setBooleanSetting(getEntityMessage(reference, EntityModel.EXPORT_ALLOWED),</span>
+<span class="fc" id="L225">                builder::exportAllowed);</span>
+
+<span class="fc" id="L227">        setMessageBundleRoleOverrides(reference, EntityModel.READ_ROLES,</span>
+<span class="fc" id="L228">                builder::readRoles);</span>
+<span class="fc" id="L229">        setMessageBundleRoleOverrides(reference, EntityModel.WRITE_ROLES,</span>
+<span class="fc" id="L230">                builder::writeRoles);</span>
+<span class="fc" id="L231">        setMessageBundleRoleOverrides(reference, EntityModel.DELETE_ROLES,</span>
+<span class="fc" id="L232">                builder::deleteRoles);</span>
+<span class="fc" id="L233">    }</span>
+
+    /**
+     * Sets roles based on message bundle overrides
+     *
+     * @param reference reference of the entity model
+     * @param name      name of the setting to look up
+     * @param consumer  the consumer that is used to set the values
+     */
+    private void setMessageBundleRoleOverrides(String reference, String name,
+                                               Consumer&lt;List&lt;String&gt;&gt; consumer) {
+<span class="fc" id="L244">        String roleMessage = getEntityMessage(reference, name);</span>
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        if (roleMessage != null) {</span>
+<span class="fc" id="L246">            String[] roles = roleMessage.split(&quot;,&quot;);</span>
+<span class="fc" id="L247">            setStringListSetting(Arrays.asList(roles), consumer);</span>
+        }
+<span class="fc" id="L249">    }</span>
+
+    private void addMissingAttributeNames(List&lt;String&gt; explicitAttributeNames, List&lt;AttributeModel&gt; attributeModels,
+                                          List&lt;String&gt; additionalNames) {
+<span class="fc bfc" id="L253" title="All 2 branches covered.">        for (AttributeModel am : attributeModels) {</span>
+<span class="fc" id="L254">            String name = am.getName();</span>
+<span class="pc bpc" id="L255" title="1 of 4 branches missed.">            if (!skipAttribute(name) &amp;&amp; !explicitAttributeNames.contains(name)) {</span>
+<span class="fc" id="L256">                additionalNames.add(name);</span>
+            }
+<span class="fc" id="L258">        }</span>
+<span class="fc" id="L259">    }</span>
+
+    /**
+     * Indicates whether this factory can provide the model for the specified
+     * combination of reference and entity class
+     *
+     * @param reference   the reference
+     * @param entityClass the entity class
+     */
+    @Override
+    public &lt;T&gt; boolean canProvideModel(String reference, Class&lt;T&gt; entityClass) {
+<span class="nc" id="L270">        return true;</span>
+    }
+
+    /**
+     * Collect attribute group data by checking the @AttributeGroup(s) annotations
+     *
+     * @param &lt;T&gt;         the type parameter
+     * @param model       the entity model
+     * @param entityClass the entity class
+     * @return a mapping from attribute name to the associated group
+     */
+    private &lt;T&gt; Map&lt;String, String&gt; collectAttributeGroups(EntityModel&lt;T&gt; model, Class&lt;T&gt; entityClass) {
+
+<span class="fc" id="L283">        Map&lt;String, String&gt; result = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L284">        AttributeGroups groups = entityClass.getAnnotation(AttributeGroups.class);</span>
+
+<span class="fc" id="L286">        AttributeGroup[] groupArray = new AttributeGroup[0];</span>
+<span class="fc bfc" id="L287" title="All 2 branches covered.">        if (groups != null) {</span>
+<span class="fc" id="L288">            groupArray = groups.value();</span>
+        } else {
+            // just a single group
+<span class="fc" id="L291">            AttributeGroup group = entityClass.getAnnotation(AttributeGroup.class);</span>
+<span class="pc bpc" id="L292" title="1 of 2 branches missed.">            if (group != null) {</span>
+<span class="nc" id="L293">                groupArray = new AttributeGroup[]{group};</span>
+            }
+        }
+
+<span class="fc bfc" id="L297" title="All 2 branches covered.">        for (AttributeGroup attributeGroup : groupArray) {</span>
+<span class="fc" id="L298">            model.addAttributeGroup(attributeGroup.messageKey());</span>
+<span class="fc bfc" id="L299" title="All 2 branches covered.">            for (String attributeName : attributeGroup.attributeNames()) {</span>
+<span class="fc" id="L300">                result.put(attributeName, attributeGroup.messageKey());</span>
+            }
+        }
+<span class="fc" id="L303">        return result;</span>
+
+    }
+
+    /**
+     * Constructs an attribute model for a property
+     *
+     * @param descriptor  the property descriptor
+     * @param entityModel the entity model
+     * @param parentClass the type of the direct parent of the attribute (relevant
+     *                    in case of embedded attributes)
+     * @param nested      whether this is a nested attribute
+     * @param prefix      the prefix to apply to the attribute name (in case of
+     *                    nested attributes)
+     * @return the constructed attribute model
+     */
+    protected &lt;T&gt; List&lt;AttributeModel&gt; constructAttributeModel(PropertyDescriptor descriptor,
+                                                               EntityModel&lt;T&gt; entityModel, Class&lt;?&gt; parentClass, boolean nested,
+                                                               String prefix) {
+<span class="fc" id="L322">        List&lt;AttributeModel&gt; result = new ArrayList&lt;&gt;();</span>
+
+        // ignore methods annotated with @AssertTrue or @AssertFalse
+<span class="fc" id="L325">        String fieldName = descriptor.getName();</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">        Class&lt;?&gt; pClass = parentClass != null ? parentClass : entityModel.getEntityClass();</span>
+<span class="fc" id="L327">        AssertTrue assertTrue = ClassUtils.getAnnotation(pClass, fieldName, AssertTrue.class);</span>
+<span class="fc" id="L328">        AssertFalse assertFalse = ClassUtils.getAnnotation(pClass, fieldName, AssertFalse.class);</span>
+<span class="pc bpc" id="L329" title="1 of 4 branches missed.">        if (assertTrue != null || assertFalse != null) {</span>
+<span class="fc" id="L330">            return result;</span>
+        }
+
+<span class="fc" id="L333">        AttributeModelImpl model = new AttributeModelImpl(dynamoProperties);</span>
+<span class="fc" id="L334">        model.setEntityModel(entityModel);</span>
+
+<span class="fc" id="L336">        setAttributeModelDefaults(descriptor, entityModel, parentClass, prefix, fieldName, model);</span>
+
+<span class="fc" id="L338">        setNestedEntityModel(entityModel, model);</span>
+
+        // only basic attributes are shown in the grid by default. nested attributes are hidden
+        // unless they are IDs
+<span class="fc" id="L342">        boolean isId = model.getName().equals(DynamoConstants.ID);</span>
+<span class="fc" id="L343">        boolean displayProperty = model.getName().equals(entityModel.getDisplayProperty());</span>
+
+<span class="fc bfc" id="L345" title="All 8 branches covered.">        model.setVisibleInGrid((isId || displayProperty || !nested) &amp;&amp; (AttributeType.BASIC.equals(model.getAttributeType())));</span>
+<span class="fc bfc" id="L346" title="All 4 branches covered.">        model.setVisibleInForm(!isId &amp;&amp; (AttributeType.BASIC.equals(model.getAttributeType()) ||</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">                AttributeType.LOB.equals(model.getAttributeType())));</span>
+
+<span class="fc bfc" id="L349" title="All 2 branches covered.">        boolean isIdOrNestedId = model.getName().equals(DynamoConstants.ID) ||</span>
+<span class="pc bpc" id="L350" title="1 of 2 branches missed.">                model.getName().endsWith(DynamoConstants.ID);</span>
+<span class="fc bfc" id="L351" title="All 2 branches covered.">        model.setEditableType(isIdOrNestedId ? EditableType.READ_ONLY : EditableType.EDITABLE);</span>
+
+<span class="fc bfc" id="L353" title="All 2 branches covered.">        if (getMessageService() != null) {</span>
+<span class="fc" id="L354">            model.setDefaultTrueRepresentation(dynamoProperties.getDefaults().getTrueRepresentation());</span>
+<span class="fc" id="L355">            model.setDefaultFalseRepresentation(dynamoProperties.getDefaults().getFalseRepresentation());</span>
+        }
+
+<span class="fc bfc" id="L358" title="All 2 branches covered.">        AttributeSelectMode defaultMode = AttributeType.DETAIL.equals(model.getAttributeType())</span>
+<span class="fc" id="L359">                ? AttributeSelectMode.MULTI_SELECT</span>
+<span class="fc" id="L360">                : AttributeSelectMode.COMBO;</span>
+
+<span class="fc" id="L362">        model.setSelectMode(defaultMode);</span>
+<span class="fc" id="L363">        model.setTextFieldMode(AttributeTextFieldMode.TEXTFIELD);</span>
+<span class="fc" id="L364">        model.setSearchSelectMode(defaultMode);</span>
+<span class="fc" id="L365">        model.setBooleanFieldMode(dynamoProperties.getDefaults().getBooleanFieldMode());</span>
+<span class="fc" id="L366">        model.setElementCollectionMode(dynamoProperties.getDefaults().getElementCollectionMode());</span>
+<span class="fc" id="L367">        model.setEnumFieldMode(dynamoProperties.getDefaults().getEnumFieldMode());</span>
+
+<span class="fc" id="L369">        Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,</span>
+                Email.class);
+<span class="fc bfc" id="L371" title="All 2 branches covered.">        if (email != null) {</span>
+<span class="fc" id="L372">            model.setEmail(true);</span>
+        }
+
+<span class="fc" id="L375">        setAttributeModelAnnotationOverrides(parentClass, model, descriptor, nested);</span>
+<span class="fc" id="L376">        setAttributeModelMessageBundleOverrides(entityModel, model);</span>
+
+<span class="fc bfc" id="L378" title="All 2 branches covered.">        if (!model.isEmbedded()) {</span>
+<span class="fc" id="L379">            result.add(model);</span>
+        } else {
+<span class="fc" id="L381">            processEmbeddedAttributeModel(result, model, entityModel, nested);</span>
+        }
+<span class="fc" id="L383">        validateAttributeModel(model);</span>
+
+<span class="fc" id="L385">        return result;</span>
+    }
+
+    /**
+     * Processes an embedded attribute model. This will make sure that the
+     * properties of the embedded attribute are added to the parent entity model
+     *
+     * @param &lt;T&gt;         the type of the entity model
+     * @param result      list of attributes so far
+     * @param model       the nested attribute model
+     * @param entityModel the entity model
+     * @param nested      whether the attribute is nested
+     */
+    private &lt;T&gt; void processEmbeddedAttributeModel(List&lt;AttributeModel&gt; result, AttributeModel model,
+                                                   EntityModel&lt;T&gt; entityModel, boolean nested) {
+        // an embedded entity does not get its own entity model, but its properties are
+        // added
+        // to the parent entity
+<span class="pc bpc" id="L403" title="1 of 2 branches missed.">        if (model.getType().equals(entityModel.getEntityClass())) {</span>
+<span class="nc" id="L404">            throw new IllegalStateException(&quot;Embedding a class in itself is not allowed&quot;);</span>
+        }
+<span class="fc" id="L406">        PropertyDescriptor[] embeddedDescriptors = BeanUtils.getPropertyDescriptors(model.getType());</span>
+<span class="fc bfc" id="L407" title="All 2 branches covered.">        for (PropertyDescriptor embeddedDescriptor : embeddedDescriptors) {</span>
+<span class="fc" id="L408">            String name = embeddedDescriptor.getName();</span>
+<span class="fc bfc" id="L409" title="All 2 branches covered.">            if (!skipAttribute(name)) {</span>
+<span class="fc" id="L410">                List&lt;AttributeModel&gt; embeddedModels = constructAttributeModel(embeddedDescriptor, entityModel,</span>
+<span class="fc" id="L411">                        model.getType(), nested, model.getName());</span>
+<span class="fc" id="L412">                result.addAll(embeddedModels);</span>
+            }
+        }
+<span class="fc" id="L415">    }</span>
+
+    /**
+     * Iterates over the properties of an entity and created attribute models for
+     * each of them
+     *
+     * @param &lt;T&gt;         the type parameter
+     * @param reference   reference of the entity model
+     * @param entityClass the entity class
+     * @param entityModel the entity model
+     * @return the constructed attribute models
+     */
+    private &lt;T&gt; List&lt;AttributeModel&gt; constructAttributeModels(String reference, Class&lt;T&gt; entityClass,
+                                                              EntityModelImpl&lt;T&gt; entityModel) {
+<span class="fc bfc" id="L429" title="All 2 branches covered.">        boolean nested = reference.indexOf('.') &gt;= 0;</span>
+
+<span class="fc" id="L431">        PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(entityClass);</span>
+<span class="fc" id="L432">        List&lt;AttributeModel&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L433" title="All 2 branches covered.">        for (PropertyDescriptor descriptor : descriptors) {</span>
+<span class="fc bfc" id="L434" title="All 2 branches covered.">            if (!skipAttribute(descriptor.getName())) {</span>
+<span class="fc" id="L435">                List&lt;AttributeModel&gt; attributeModels = constructAttributeModel(descriptor, entityModel,</span>
+<span class="fc" id="L436">                        entityModel.getEntityClass(), nested, null);</span>
+<span class="fc" id="L437">                result.addAll(attributeModels);</span>
+            }
+        }
+<span class="fc" id="L440">        return result;</span>
+    }
+
+    /**
+     * Constructs the model for an entity
+     *
+     * @param reference   unique reference to the entity model
+     * @param entityClass the class of the entity
+     * @return the constructed model
+     */
+    protected synchronized &lt;T&gt; EntityModel&lt;T&gt; constructModel(String reference, Class&lt;T&gt; entityClass) {
+
+        // Delegate to other factories first
+<span class="fc" id="L453">        EntityModelImpl&lt;T&gt; entityModel = null;</span>
+<span class="pc bpc" id="L454" title="1 of 2 branches missed.">        if (delegatedModelFactories != null) {</span>
+<span class="nc bnc" id="L455" title="All 2 branches missed.">            for (EntityModelFactory delegate : delegatedModelFactories) {</span>
+<span class="nc bnc" id="L456" title="All 2 branches missed.">                if (delegate.canProvideModel(reference, entityClass)) {</span>
+<span class="nc" id="L457">                    entityModel = (EntityModelImpl&lt;T&gt;) delegate.getModel(reference, entityClass);</span>
+<span class="nc bnc" id="L458" title="All 2 branches missed.">                    if (entityModel != null) {</span>
+<span class="nc" id="L459">                        break;</span>
+                    }
+                }
+            }
+        }
+
+<span class="pc bpc" id="L465" title="1 of 2 branches missed.">        if (entityModel != null) {</span>
+<span class="nc" id="L466">            return entityModel;</span>
+        }
+<span class="fc" id="L468">        return constructModelInner(entityClass, reference);</span>
+    }
+
+    /**
+     * Constructs the entity model for a class
+     *
+     * @param entityClass the entity class
+     * @param reference   the unique reference for the entity model
+     * @return the constructed entity model
+     */
+    private &lt;T&gt; EntityModelImpl&lt;T&gt; constructModelInner(Class&lt;T&gt; entityClass, String reference) {
+
+<span class="fc" id="L480">        String displayName = org.dynamoframework.utils.StringUtils.propertyIdToHumanFriendly(entityClass.getSimpleName(), dynamoProperties.isCapitalizePropertyNames());</span>
+
+<span class="fc" id="L482">        EntityModelImpl.EntityModelImplBuilder&lt;T&gt; builder = EntityModelImpl.builder();</span>
+<span class="fc" id="L483">        builder.reference(reference).nestingDepth(dynamoProperties.getDefaults().getNestingDepth())</span>
+<span class="fc" id="L484">                .defaultDescription(displayName).defaultDisplayName(displayName)</span>
+<span class="fc" id="L485">                .defaultDisplayNamePlural(displayName + PLURAL_POSTFIX).entityClass(entityClass);</span>
+
+<span class="fc" id="L487">        builder.listAllowed(true);</span>
+<span class="fc" id="L488">        builder.createAllowed(true);</span>
+<span class="fc" id="L489">        builder.searchAllowed(true);</span>
+<span class="fc" id="L490">        builder.updateAllowed(true);</span>
+<span class="fc" id="L491">        builder.exportAllowed(true);</span>
+<span class="fc" id="L492">        builder.maxSearchResults(Integer.MAX_VALUE);</span>
+
+<span class="fc" id="L494">        addEntityModelAnnotationOverrides(entityClass, builder);</span>
+<span class="fc" id="L495">        addEntityModelMessageBundleOverrides(reference, builder);</span>
+
+<span class="fc" id="L497">        EntityModelImpl&lt;T&gt; entityModel = builder.build();</span>
+<span class="fc" id="L498">        alreadyProcessed.put(reference, entityClass);</span>
+
+<span class="fc" id="L500">        addEntityModelActions(entityModel);</span>
+
+<span class="fc" id="L502">        List&lt;AttributeModel&gt; attributeModels = constructAttributeModels(reference, entityClass, entityModel);</span>
+
+        // calculate the various attribute orders
+<span class="fc" id="L505">        attributeModels.sort((a, b) -&gt; a.getName().compareToIgnoreCase(b.getName()));</span>
+<span class="fc" id="L506">        determineAttributeOrder(entityClass, reference, attributeModels);</span>
+<span class="fc" id="L507">        boolean gridOrder = determineGridAttributeOrder(entityClass, reference, attributeModels);</span>
+<span class="fc" id="L508">        boolean searchOrder = determineSearchAttributeOrder(entityClass, reference, attributeModels);</span>
+<span class="fc" id="L509">        entityModel.setGridOrderSet(gridOrder);</span>
+<span class="fc" id="L510">        entityModel.setSearchOrderSet(searchOrder);</span>
+
+<span class="fc" id="L512">        addAttributeModels(entityClass, entityModel, attributeModels);</span>
+
+<span class="fc" id="L514">        validateGroupTogetherSettings(entityModel);</span>
+
+<span class="fc" id="L516">        String sortOrder = null;</span>
+<span class="fc" id="L517">        Model modelAnnotation = entityClass.getAnnotation(Model.class);</span>
+<span class="fc bfc" id="L518" title="All 4 branches covered.">        if (modelAnnotation != null &amp;&amp; !StringUtils.isEmpty(modelAnnotation.sortOrder())) {</span>
+<span class="fc" id="L519">            sortOrder = modelAnnotation.sortOrder();</span>
+        }
+
+<span class="fc" id="L522">        String sortOrderMsg = getEntityMessage(reference, EntityModel.SORT_ORDER);</span>
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">        if (!StringUtils.isEmpty(sortOrderMsg)) {</span>
+<span class="nc" id="L524">            sortOrder = sortOrderMsg;</span>
+        }
+<span class="fc" id="L526">        setSortOrder(entityModel, sortOrder);</span>
+
+<span class="fc" id="L528">        entityModel.setFetchJoins(new ArrayList&lt;&gt;());</span>
+<span class="fc" id="L529">        entityModel.setDetailJoins(new ArrayList&lt;&gt;());</span>
+
+<span class="fc" id="L531">        processJoinAnnotations(entityClass, entityModel);</span>
+<span class="fc" id="L532">        processMessageBundleJoinOverrides(entityModel);</span>
+
+<span class="fc" id="L534">        cache.put(reference, entityModel);</span>
+
+<span class="fc" id="L536">        return entityModel;</span>
+    }
+
+
+    private &lt;T&gt; void processJoinAnnotations(Class&lt;T&gt; entityClass, EntityModelImpl&lt;T&gt; entityModel) {
+<span class="fc" id="L541">        FetchJoins joins = entityClass.getAnnotation(FetchJoins.class);</span>
+<span class="fc bfc" id="L542" title="All 2 branches covered.">        if (joins != null) {</span>
+<span class="fc" id="L543">            List&lt;FetchJoinInformation&gt; mapped = Arrays.stream(joins.joins())</span>
+<span class="fc" id="L544">                    .map(join -&gt; FetchJoinInformation.of(join.attribute(), join.type()))</span>
+<span class="fc" id="L545">                    .toList();</span>
+<span class="fc" id="L546">            entityModel.setFetchJoins(mapped);</span>
+<span class="fc" id="L547">            entityModel.setDetailJoins(mapped);</span>
+
+<span class="pc bpc" id="L549" title="2 of 4 branches missed.">            if (joins.detailJoins() != null &amp;&amp; joins.detailJoins().length &gt; 0) {</span>
+<span class="nc" id="L550">                mapped = Arrays.stream(joins.detailJoins())</span>
+<span class="nc" id="L551">                        .map(join -&gt; FetchJoinInformation.of(join.attribute(), join.type()))</span>
+<span class="nc" id="L552">                        .toList();</span>
+<span class="nc" id="L553">                entityModel.setDetailJoins(mapped);</span>
+            }
+        }
+<span class="fc" id="L556">    }</span>
+
+    private &lt;T&gt; void addEntityModelActions(EntityModelImpl&lt;T&gt; entityModel) {
+
+<span class="fc" id="L560">        List&lt;EntityModelAction&gt; modelActions = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L561">        BaseService&lt;?, ?&gt; service = serviceLocator.getServiceForEntity(entityModel.getEntityClass());</span>
+<span class="fc bfc" id="L562" title="All 2 branches covered.">        if (service != null) {</span>
+<span class="fc" id="L563">            Class&lt;?&gt; clazz = org.springframework.util.ClassUtils.getUserClass(service);</span>
+<span class="fc" id="L564">            Method[] methods = clazz.getMethods();</span>
+<span class="fc bfc" id="L565" title="All 2 branches covered.">            for (Method method : methods) {</span>
+<span class="fc" id="L566">                addEntityModelAction(method, modelActions);</span>
+            }
+        }
+<span class="fc" id="L569">        entityModel.setEntityModelActions(modelActions);</span>
+<span class="fc" id="L570">    }</span>
+
+    /**
+     * Potentially adds an entity model action for the provided method
+     *
+     * @param method       the method
+     * @param modelActions the model actions
+     */
+    private void addEntityModelAction(Method method, List&lt;EntityModelAction&gt; modelActions) {
+<span class="fc" id="L579">        ModelAction action = ClassUtils.getAnnotationOnMethod(method, ModelAction.class);</span>
+<span class="fc bfc" id="L580" title="All 2 branches covered.">        if (action != null) {</span>
+
+<span class="pc bpc" id="L582" title="1 of 2 branches missed.">            if (method.getParameters().length == 0) {</span>
+<span class="nc" id="L583">                throw new OCSRuntimeException(&quot;@ModelAction annotation found on method %s without parameters&quot;</span>
+<span class="nc" id="L584">                        .formatted(method.getName()));</span>
+            }
+
+<span class="pc bpc" id="L587" title="1 of 2 branches missed.">            if (StringUtils.isEmpty(action.id())) {</span>
+<span class="nc" id="L588">                throw new OCSRuntimeException(&quot;@ModelAction annotation found on method %s without an action ID&quot;</span>
+<span class="nc" id="L589">                        .formatted(method.getName()));</span>
+            }
+
+<span class="fc" id="L592">            Class&lt;?&gt; actionClass = method.getParameters()[0].getType();</span>
+<span class="fc" id="L593">            EntityModelActionImpl actionImpl = new EntityModelActionImpl();</span>
+<span class="fc" id="L594">            actionImpl.setEntityClass(actionClass);</span>
+<span class="fc" id="L595">            actionImpl.setReference(action.id());</span>
+<span class="fc" id="L596">            actionImpl.setId(action.id());</span>
+<span class="fc" id="L597">            actionImpl.setDefaultDisplayName(action.displayName());</span>
+<span class="fc" id="L598">            actionImpl.setMethodName(method.getName());</span>
+<span class="fc" id="L599">            actionImpl.setType(action.type());</span>
+<span class="fc" id="L600">            actionImpl.setIcon(action.icon());</span>
+<span class="fc" id="L601">            actionImpl.setRoles(Arrays.asList(action.roles()));</span>
+
+<span class="fc" id="L603">            EntityModel&lt;?&gt; actionModel = constructModel(action.id(), actionClass);</span>
+<span class="fc" id="L604">            actionImpl.setEntityModel(actionModel);</span>
+<span class="fc" id="L605">            modelActions.add(actionImpl);</span>
+
+<span class="fc" id="L607">            processEntityModelActionMessageBundleOverrides(actionImpl);</span>
+        }
+<span class="fc" id="L609">    }</span>
+
+    private void processEntityModelActionMessageBundleOverrides(EntityModelActionImpl action) {
+
+<span class="fc" id="L613">        setMessageBundleRoleOverrides(action.getReference(), EntityModel.ACTION_ROLES,</span>
+<span class="fc" id="L614">                action::setRoles);</span>
+<span class="fc" id="L615">        setStringSetting(getEntityMessage(action.getReference(), EntityModel.ICON),</span>
+<span class="fc" id="L616">                action::setIcon);</span>
+<span class="fc" id="L617">    }</span>
+
+    /**
+     * Process message bundle join overrides for an entity
+     *
+     * @param entityModel the entity model
+     * @param &lt;T&gt;         type parameter, the type of the entity
+     */
+    private &lt;T&gt; void processMessageBundleJoinOverrides(EntityModelImpl&lt;T&gt; entityModel) {
+<span class="fc" id="L626">        List&lt;FetchJoinInformation&gt; overrideJoins = processMessageBundleFetchJoinOverrides(</span>
+                entityModel, EntityModel.JOIN);
+<span class="fc bfc" id="L628" title="All 2 branches covered.">        if (!overrideJoins.isEmpty()) {</span>
+<span class="fc" id="L629">            entityModel.setFetchJoins(overrideJoins);</span>
+        }
+
+<span class="fc" id="L632">        List&lt;FetchJoinInformation&gt; overrideDetailJoins = processMessageBundleFetchJoinOverrides(</span>
+                entityModel, EntityModel.DETAIL_JOIN);
+<span class="pc bpc" id="L634" title="1 of 2 branches missed.">        if (!overrideDetailJoins.isEmpty()) {</span>
+<span class="nc" id="L635">            entityModel.setDetailJoins(overrideDetailJoins);</span>
+        }
+<span class="fc" id="L637">    }</span>
+
+    /**
+     * Processes message bundle fetch joins overrides for a specific type
+     *
+     * @param model    the entity model
+     * @param joinName the name of the join
+     * @param &lt;T&gt;      type parameter
+     * @return the list of fetch joins (possibly empty)
+     */
+    protected &lt;T&gt; List&lt;FetchJoinInformation&gt; processMessageBundleFetchJoinOverrides(EntityModel&lt;T&gt; model,
+                                                                                    String joinName) {
+<span class="fc" id="L649">        List&lt;FetchJoinInformation&gt; result = new ArrayList&lt;&gt;();</span>
+
+        // look for message bundle overwrites
+<span class="fc" id="L652">        int i = 1;</span>
+<span class="fc bfc" id="L653" title="All 2 branches covered.">        if (messageService != null) {</span>
+<span class="fc" id="L654">            String key = joinName + &quot;.&quot; + i + &quot;.&quot; + EntityModel.ATTRIBUTE;</span>
+<span class="fc" id="L655">            String joinAttribute = messageService.getEntityMessage(model.getReference(),</span>
+<span class="fc" id="L656">                    key, getLocale());</span>
+<span class="fc bfc" id="L657" title="All 2 branches covered.">            while (joinAttribute != null) {</span>
+<span class="fc" id="L658">                String joinType = messageService.getEntityMessage(model.getReference(),</span>
+<span class="fc" id="L659">                        joinName + &quot;.&quot; + i + &quot;.&quot; + EntityModel.JOIN_TYPE, getLocale());</span>
+
+<span class="pc bpc" id="L661" title="1 of 2 branches missed.">                if (joinType != null) {</span>
+<span class="fc" id="L662">                    result.add(new FetchJoinInformation(joinAttribute,</span>
+<span class="fc" id="L663">                            JoinType.valueOf(joinType)));</span>
+                } else {
+<span class="nc" id="L665">                    result.add(new FetchJoinInformation(joinAttribute));</span>
+                }
+<span class="fc" id="L667">                i++;</span>
+<span class="fc" id="L668">                joinAttribute = messageService.getEntityMessage(model.getReference(),</span>
+<span class="fc" id="L669">                        joinName + &quot;.&quot; + i + &quot;.&quot; + EntityModel.ATTRIBUTE, getLocale());</span>
+<span class="fc" id="L670">            }</span>
+
+        }
+<span class="fc" id="L673">        return result;</span>
+    }
+
+    /**
+     * Determines the attribute group mapping - from attribute name to the group it
+     * belongs to
+     *
+     * @param model       the entity model
+     * @param entityClass the entity class
+     * @return the mapping from attribute name to group
+     */
+    protected &lt;T&gt; Map&lt;String, String&gt; determineAttributeGroupMapping(EntityModel&lt;T&gt; model, Class&lt;T&gt; entityClass) {
+<span class="fc" id="L685">        Map&lt;String, String&gt; result = collectAttributeGroups(model, entityClass);</span>
+
+<span class="fc" id="L687">        int i = 1;</span>
+<span class="fc bfc" id="L688" title="All 2 branches covered.">        if (messageService != null) {</span>
+<span class="fc" id="L689">            String groupName = messageService.getEntityMessage(model.getReference(),</span>
+<span class="fc" id="L690">                    EntityModel.ATTRIBUTE_GROUP + &quot;.&quot; + i + &quot;.&quot; + EntityModel.MESSAGE_KEY, getLocale());</span>
+
+<span class="fc bfc" id="L692" title="All 2 branches covered.">            if (groupName != null) {</span>
+<span class="fc" id="L693">                result.clear();</span>
+<span class="fc" id="L694">                model.getAttributeGroups().clear();</span>
+            }
+
+<span class="fc bfc" id="L697" title="All 2 branches covered.">            while (groupName != null) {</span>
+<span class="fc" id="L698">                String attributeNames = messageService.getEntityMessage(model.getReference(),</span>
+<span class="fc" id="L699">                        EntityModel.ATTRIBUTE_GROUP + &quot;.&quot; + i + &quot;.&quot; + EntityModel.ATTRIBUTE_NAMES, getLocale());</span>
+
+<span class="pc bpc" id="L701" title="1 of 2 branches missed.">                if (attributeNames != null) {</span>
+<span class="fc" id="L702">                    model.addAttributeGroup(groupName);</span>
+<span class="fc bfc" id="L703" title="All 2 branches covered.">                    for (String s : attributeNames.split(&quot;,&quot;)) {</span>
+<span class="fc" id="L704">                        result.put(s, groupName);</span>
+                    }
+                }
+<span class="fc" id="L707">                i++;</span>
+<span class="fc" id="L708">                groupName = messageService.getEntityMessage(model.getReference(),</span>
+<span class="fc" id="L709">                        EntityModel.ATTRIBUTE_GROUP + &quot;.&quot; + i + &quot;.&quot; + EntityModel.MESSAGE_KEY, getLocale());</span>
+<span class="fc" id="L710">            }</span>
+        }
+<span class="fc" id="L712">        return result;</span>
+    }
+
+    /**
+     * Determines the (default) attribute ordering for an entity based on
+     * the @AttributeOrder annotation
+     *
+     * @param &lt;T&gt;             the type of the entity class
+     * @param entityClass     the entity class
+     * @param reference       the unique reference of the entity model
+     * @param attributeModels the list of attribute models to process
+     */
+    protected &lt;T&gt; void determineAttributeOrder(Class&lt;T&gt; entityClass, String reference,
+                                               List&lt;AttributeModel&gt; attributeModels) {
+<span class="fc" id="L726">        List&lt;String&gt; explicitAttributeNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L727">        AttributeOrder orderAnnotation = entityClass.getAnnotation(AttributeOrder.class);</span>
+<span class="fc bfc" id="L728" title="All 2 branches covered.">        if (orderAnnotation != null) {</span>
+<span class="fc" id="L729">            explicitAttributeNames = List.of(orderAnnotation.attributeNames());</span>
+        }
+
+        // set all orders
+<span class="fc" id="L733">        determineAttributeOrderInner(reference, EntityModel.ATTRIBUTE_ORDER, explicitAttributeNames, attributeModels,</span>
+                AttributeModelImpl::setOrder);
+<span class="fc" id="L735">    }</span>
+
+    /**
+     * Determines the order of the attributes - this will first pick up any
+     * attributes that are mentioned in one of the @AttributeOrder annotations (in
+     * the order in which they occur) and then add any attributes that are not
+     * explicitly mentioned
+     *
+     * @param reference              the unique reference to the entity model
+     * @param messageBundleKey       the key under which to look up the attribute
+     *                               overrides in the message bundle
+     * @param explicitAttributeNames the attribute names explicitly mentioned in the
+     *                               annotation
+     * @param attributeModels        the full set of attribute model
+     * @param consumer               the consumer that is called to actually set the
+     *                               proper order on the attribute model
+     * @return whether an explicit ordering is defined
+     */
+    protected boolean determineAttributeOrderInner(String reference, String messageBundleKey,
+                                                   List&lt;String&gt; explicitAttributeNames, List&lt;AttributeModel&gt; attributeModels,
+                                                   BiConsumer&lt;AttributeModelImpl, Integer&gt; consumer) {
+<span class="fc" id="L756">        List&lt;String&gt; additionalNames = new ArrayList&lt;&gt;();</span>
+
+        // overwrite by message bundle (if present)
+<span class="fc bfc" id="L759" title="All 2 branches covered.">        String msg = messageService == null ? null</span>
+<span class="fc" id="L760">                : messageService.getEntityMessage(reference, messageBundleKey, getLocale());</span>
+<span class="fc bfc" id="L761" title="All 2 branches covered.">        if (msg != null) {</span>
+<span class="fc" id="L762">            explicitAttributeNames = List.of(msg.replaceAll(&quot;\\s+&quot;, &quot;&quot;).split(&quot;,&quot;));</span>
+        }
+
+<span class="fc bfc" id="L765" title="All 2 branches covered.">        boolean explicit = !explicitAttributeNames.isEmpty();</span>
+<span class="fc" id="L766">        List&lt;String&gt; result = new ArrayList&lt;&gt;(explicitAttributeNames);</span>
+
+<span class="fc" id="L768">        addMissingAttributeNames(explicitAttributeNames, attributeModels, additionalNames);</span>
+<span class="fc" id="L769">        result.addAll(additionalNames);</span>
+
+        // loop over the attributes and set the orders
+<span class="fc" id="L772">        int i = 0;</span>
+<span class="fc bfc" id="L773" title="All 2 branches covered.">        for (String attributeName : result) {</span>
+<span class="fc" id="L774">            AttributeModel am = attributeModels.stream().filter(m -&gt; m.getName().equals(attributeName)).findFirst()</span>
+<span class="fc" id="L775">                    .orElse(null);</span>
+<span class="pc bpc" id="L776" title="1 of 2 branches missed.">            if (am != null) {</span>
+<span class="fc" id="L777">                consumer.accept((AttributeModelImpl) am, i);</span>
+<span class="fc" id="L778">                i++;</span>
+            } else {
+<span class="nc" id="L780">                throw new OCSRuntimeException(&quot;Attribute %s is not known&quot;.formatted(attributeName));</span>
+            }
+<span class="fc" id="L782">        }</span>
+
+<span class="fc" id="L784">        return explicit;</span>
+    }
+
+    /**
+     * Determines the attribute type
+     *
+     * @param parentClass the parent class on which the attribute is defined
+     * @param model       the model representation of the attribute
+     * @return the attribute type
+     */
+    protected AttributeType determineAttributeType(Class&lt;?&gt; parentClass, AttributeModelImpl model) {
+<span class="fc" id="L795">        AttributeType result = null;</span>
+<span class="fc" id="L796">        String name = model.getName();</span>
+<span class="fc" id="L797">        int p = name.lastIndexOf('.');</span>
+<span class="fc bfc" id="L798" title="All 2 branches covered.">        if (p &gt; 0) {</span>
+<span class="fc" id="L799">            name = name.substring(p + 1);</span>
+        }
+
+<span class="pc bpc" id="L802" title="1 of 4 branches missed.">        if (!BeanUtils.isSimpleValueType(model.getType()) &amp;&amp; !DateUtils.isJava8DateType(model.getType())) {</span>
+            // No relation type set in view model definition, hence derive
+            // defaults
+<span class="fc" id="L805">            Embedded embedded = ClassUtils.getAnnotation(parentClass, name, Embedded.class);</span>
+<span class="fc" id="L806">            Attribute attribute = ClassUtils.getAnnotation(parentClass, name, Attribute.class);</span>
+
+<span class="fc bfc" id="L808" title="All 2 branches covered.">            if (embedded != null) {</span>
+<span class="fc" id="L809">                result = AttributeType.EMBEDDED;</span>
+<span class="fc bfc" id="L810" title="All 2 branches covered.">            } else if (Collection.class.isAssignableFrom(model.getType())) {</span>
+<span class="pc bpc" id="L811" title="1 of 4 branches missed.">                if (attribute != null &amp;&amp; attribute.memberType() != null</span>
+<span class="fc bfc" id="L812" title="All 2 branches covered.">                        &amp;&amp; !attribute.memberType().equals(Object.class)) {</span>
+                    // if a member type is explicitly set, use that type
+<span class="fc" id="L814">                    result = AttributeType.DETAIL;</span>
+<span class="fc" id="L815">                    model.setMemberType(attribute.memberType());</span>
+<span class="pc bpc" id="L816" title="1 of 2 branches missed.">                } else if (ClassUtils.getAnnotation(parentClass, name, ManyToMany.class) != null</span>
+<span class="fc bfc" id="L817" title="All 2 branches covered.">                        || ClassUtils.getAnnotation(parentClass, name, OneToMany.class) != null) {</span>
+<span class="fc" id="L818">                    result = AttributeType.DETAIL;</span>
+<span class="fc" id="L819">                    model.setMemberType(ClassUtils.getResolvedType(parentClass, name, 0));</span>
+<span class="pc bpc" id="L820" title="1 of 2 branches missed.">                } else if (ClassUtils.getAnnotation(parentClass, name, ElementCollection.class) != null) {</span>
+<span class="fc" id="L821">                    result = AttributeType.ELEMENT_COLLECTION;</span>
+<span class="fc" id="L822">                    handleElementCollectionSettings(parentClass, model, name);</span>
+<span class="nc bnc" id="L823" title="All 2 branches missed.">                } else if (AbstractEntity.class.isAssignableFrom(model.getType())) {</span>
+                    // not a collection but a reference to another object
+<span class="nc" id="L825">                    result = AttributeType.MASTER;</span>
+                }
+<span class="fc bfc" id="L827" title="All 2 branches covered.">            } else if (model.getType().isArray()) {</span>
+<span class="fc" id="L828">                Lob lob = ClassUtils.getAnnotation(parentClass, name, Lob.class);</span>
+<span class="fc" id="L829">                Class&lt;?&gt; componentType = model.getType().getComponentType();</span>
+
+<span class="pc bpc" id="L831" title="3 of 4 branches missed.">                if (lob != null || componentType.equals(byte.class)) {</span>
+<span class="fc" id="L832">                    result = AttributeType.LOB;</span>
+                }
+<span class="fc" id="L834">            } else {</span>
+                // not a collection but a reference to another object
+<span class="fc" id="L836">                result = AttributeType.MASTER;</span>
+            }
+<span class="fc" id="L838">        } else {</span>
+            // simple attribute type
+<span class="fc" id="L840">            result = AttributeType.BASIC;</span>
+        }
+<span class="fc" id="L842">        return result;</span>
+    }
+
+    /**
+     * Determines the &quot;dateType&quot; for an attribute
+     *
+     * @param modelType the type of the attribute. Can be a java 8 LocalX type
+     * @return the data type
+     */
+    protected AttributeDateType determineDateType(Class&lt;?&gt; modelType) {
+        // set the date type
+<span class="fc bfc" id="L853" title="All 2 branches covered.">        if (LocalDate.class.equals(modelType)) {</span>
+<span class="fc" id="L854">            return AttributeDateType.DATE;</span>
+<span class="fc bfc" id="L855" title="All 2 branches covered.">        } else if (LocalDateTime.class.equals(modelType)) {</span>
+<span class="fc" id="L856">            return AttributeDateType.LOCAL_DATE_TIME;</span>
+<span class="fc bfc" id="L857" title="All 2 branches covered.">        } else if (LocalTime.class.equals(modelType)) {</span>
+<span class="fc" id="L858">            return AttributeDateType.TIME;</span>
+<span class="fc bfc" id="L859" title="All 2 branches covered.">        } else if (Instant.class.equals(modelType)) {</span>
+<span class="fc" id="L860">            return AttributeDateType.INSTANT;</span>
+        }
+<span class="fc" id="L862">        return null;</span>
+    }
+
+    /**
+     * Determines the default format to use for a date or time property
+     *
+     * @param type the type of the property
+     * @return the default display format
+     */
+    protected String determineDefaultDisplayFormat(Class&lt;?&gt; type) {
+<span class="fc" id="L872">        String format = null;</span>
+<span class="fc bfc" id="L873" title="All 2 branches covered.">        if (LocalDate.class.isAssignableFrom(type)) {</span>
+<span class="fc" id="L874">            format = dynamoProperties.getDefaults().getDateFormat();</span>
+<span class="fc bfc" id="L875" title="All 2 branches covered.">        } else if (LocalDateTime.class.isAssignableFrom(type)) {</span>
+<span class="fc" id="L876">            format = dynamoProperties.getDefaults().getDateTimeFormat();</span>
+<span class="fc bfc" id="L877" title="All 2 branches covered.">        } else if (LocalTime.class.isAssignableFrom(type)) {</span>
+<span class="fc" id="L878">            format = dynamoProperties.getDefaults().getTimeFormat();</span>
+<span class="fc bfc" id="L879" title="All 2 branches covered.">        } else if (Instant.class.isAssignableFrom(type)) {</span>
+<span class="fc" id="L880">            format = dynamoProperties.getDefaults().getDateTimeFormat();</span>
+        }
+<span class="fc" id="L882">        return format;</span>
+    }
+
+    /**
+     * Determines the order in which attributes must appear in a search results grid
+     * for an entity
+     *
+     * @param &lt;T&gt;             type parameter
+     * @param entityClass     the class of the entity model
+     * @param reference       unique reference of the entity model
+     * @param attributeModels the list of attribute models to order
+     * @return the attribute order
+     */
+    protected &lt;T&gt; boolean determineGridAttributeOrder(Class&lt;T&gt; entityClass, String reference,
+                                                      List&lt;AttributeModel&gt; attributeModels) {
+<span class="fc" id="L897">        List&lt;String&gt; explicitAttributeNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L898">        GridAttributeOrder orderAnnotation = entityClass.getAnnotation(GridAttributeOrder.class);</span>
+<span class="fc bfc" id="L899" title="All 2 branches covered.">        if (orderAnnotation != null) {</span>
+<span class="fc" id="L900">            explicitAttributeNames = List.of(orderAnnotation.attributeNames());</span>
+        }
+<span class="fc" id="L902">        return determineAttributeOrderInner(reference, EntityModel.GRID_ATTRIBUTE_ORDER, explicitAttributeNames,</span>
+                attributeModels, AttributeModelImpl::setGridOrder);
+    }
+
+    /**
+     * Determines the order in which attributes must appear in a search form for an
+     * entity
+     *
+     * @param &lt;T&gt;             the type of the class
+     * @param entityClass     the class of the entity model
+     * @param reference       unique reference of the entity model
+     * @param attributeModels the list of attribute models to order
+     * @return the attribute order
+     */
+    protected &lt;T&gt; boolean determineSearchAttributeOrder(Class&lt;T&gt; entityClass, String reference,
+                                                        List&lt;AttributeModel&gt; attributeModels) {
+<span class="fc" id="L918">        List&lt;String&gt; explicitAttributeNames = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L919">        SearchAttributeOrder orderAnnotation = entityClass.getAnnotation(SearchAttributeOrder.class);</span>
+<span class="fc bfc" id="L920" title="All 2 branches covered.">        if (orderAnnotation != null) {</span>
+<span class="fc" id="L921">            explicitAttributeNames = List.of(orderAnnotation.attributeNames());</span>
+        }
+<span class="fc" id="L923">        return determineAttributeOrderInner(reference, EntityModel.SEARCH_ATTRIBUTE_ORDER, explicitAttributeNames,</span>
+                attributeModels, AttributeModelImpl::setSearchOrder);
+    }
+
+    /**
+     * Looks up a possible delegated model factory for an entity model
+     *
+     * @param reference   the reference of the entity model
+     * @param entityClass the entity class
+     * @return the model factory
+     */
+    protected &lt;T&gt; EntityModelFactory findModelFactory(String reference, Class&lt;T&gt; entityClass) {
+<span class="fc" id="L935">        EntityModelFactory entityModelFactory = this;</span>
+<span class="pc bpc" id="L936" title="1 of 2 branches missed.">        if (delegatedModelFactories != null) {</span>
+<span class="nc bnc" id="L937" title="All 2 branches missed.">            for (EntityModelFactory delegate : delegatedModelFactories) {</span>
+<span class="nc bnc" id="L938" title="All 2 branches missed.">                if (delegate.canProvideModel(reference, entityClass)) {</span>
+<span class="nc" id="L939">                    entityModelFactory = delegate;</span>
+<span class="nc" id="L940">                    break;</span>
+                }
+            }
+        }
+<span class="fc" id="L944">        return entityModelFactory;</span>
+    }
+
+    /**
+     * Retrieves a message relating to an attribute from the message bundle
+     *
+     * @param model          the entity model
+     * @param attributeModel the attribute model
+     * @param propertyName   the name of the property
+     * @return the message
+     */
+    protected &lt;T&gt; String getAttributeMessage(EntityModel&lt;T&gt; model, AttributeModel attributeModel, String propertyName) {
+<span class="fc bfc" id="L956" title="All 2 branches covered.">        if (messageService != null) {</span>
+<span class="fc" id="L957">            return messageService.getAttributeMessage(model.getReference(), attributeModel, propertyName, getLocale());</span>
+        }
+<span class="fc" id="L959">        return null;</span>
+    }
+
+    /**
+     * Retrieves a message relating to an entity from the message bundle
+     *
+     * @param reference    the reference of the entity model
+     * @param propertyName the name of the property to retrieve the message for
+     * @return the message
+     */
+    protected String getEntityMessage(String reference, String propertyName) {
+<span class="fc bfc" id="L970" title="All 2 branches covered.">        if (messageService != null) {</span>
+<span class="fc" id="L971">            return messageService.getEntityMessage(reference, propertyName, getLocale());</span>
+        }
+<span class="fc" id="L973">        return null;</span>
+    }
+
+    protected Locale getLocale() {
+<span class="fc" id="L977">        return dynamoProperties.getDefaults().getLocale();</span>
+    }
+
+    public MessageService getMessageService() {
+<span class="fc" id="L981">        return messageService;</span>
+    }
+
+    @Override
+    public synchronized &lt;T&gt; EntityModel&lt;T&gt; getModel(Class&lt;T&gt; entityClass) {
+<span class="fc" id="L986">        return getModel(entityClass.getSimpleName(), entityClass);</span>
+    }
+
+    @Override
+    @SuppressWarnings({&quot;unchecked&quot;})
+    public synchronized &lt;T&gt; EntityModel&lt;T&gt; getModel(String reference, Class&lt;T&gt; entityClass) {
+<span class="fc" id="L992">        EntityModel&lt;T&gt; model = null;</span>
+<span class="pc bpc" id="L993" title="2 of 4 branches missed.">        if (!StringUtils.isEmpty(reference) &amp;&amp; entityClass != null) {</span>
+<span class="fc" id="L994">            model = (EntityModel&lt;T&gt;) cache.get(reference);</span>
+<span class="fc bfc" id="L995" title="All 2 branches covered.">            if (model == null) {</span>
+<span class="fc" id="L996">                log.debug(&quot;Creating entity model for {}, ({})&quot;, reference, entityClass);</span>
+<span class="fc" id="L997">                model = constructModel(reference, entityClass);</span>
+            }
+        }
+<span class="fc" id="L1000">        return model;</span>
+    }
+
+    /**
+     * Handles element collection settings for an attribute model
+     *
+     * @param parentClass the parent class on which the attribute is defined
+     * @param model       the attribute model
+     * @param name        the name of the attribute model
+     */
+    private void handleElementCollectionSettings(Class&lt;?&gt; parentClass, AttributeModelImpl model, String name) {
+<span class="fc" id="L1011">        model.setMemberType(ClassUtils.getResolvedType(parentClass, name, 0));</span>
+<span class="fc" id="L1012">        model.setCollectionTableName(model.getName());</span>
+<span class="fc" id="L1013">        model.setCollectionTableFieldName(model.getName());</span>
+
+        // override table name
+<span class="fc" id="L1016">        CollectionTable table = ClassUtils.getAnnotation(parentClass, name, CollectionTable.class);</span>
+<span class="pc bpc" id="L1017" title="1 of 4 branches missed.">        if (table != null &amp;&amp; table.name() != null) {</span>
+<span class="fc" id="L1018">            model.setCollectionTableName(table.name());</span>
+        }
+        // override field name
+<span class="fc" id="L1021">        Column col = ClassUtils.getAnnotation(parentClass, name, Column.class);</span>
+<span class="pc bpc" id="L1022" title="1 of 4 branches missed.">        if (col != null &amp;&amp; col.name() != null) {</span>
+<span class="fc" id="L1023">            model.setCollectionTableFieldName(col.name());</span>
+        }
+<span class="fc" id="L1025">    }</span>
+
+    /**
+     * Check if a certain entity model has already been processed
+     *
+     * @param type      the type of the entity
+     * @param reference the reference to the entity
+     * @return true if this is the case, false otherwise
+     */
+    protected boolean hasEntityModel(Class&lt;?&gt; type, String reference) {
+<span class="nc bnc" id="L1035" title="All 2 branches missed.">        for (Entry&lt;String, Class&lt;?&gt;&gt; entry : alreadyProcessed.entrySet()) {</span>
+<span class="nc bnc" id="L1036" title="All 4 branches missed.">            if (reference.equals(entry.getKey()) &amp;&amp; entry.getValue().equals(type)) {</span>
+                // only check for starting reference in order to prevent
+                // recursive looping between
+                // two-sided relations
+<span class="nc" id="L1040">                return true;</span>
+            }
+<span class="nc" id="L1042">        }</span>
+<span class="nc" id="L1043">        return false;</span>
+    }
+
+    /**
+     * Checks whether the model factory already contains a model for the specified
+     * reference
+     *
+     * @param reference the unique reference of the entity model
+     * @return true if this is the case, false otherwise
+     */
+    public boolean hasModel(String reference) {
+<span class="fc" id="L1054">        return cache.containsKey(reference);</span>
+    }
+
+    /**
+     * Check whether a message contains a value that marks the attribute as
+     * &quot;visible&quot;. &quot;true&quot; and SHOW are interpreted as positive values, &quot;false&quot; and
+     * HIDE are negative values
+     *
+     * @param msg the message
+     * @return true if this is the case, false otherwise
+     */
+    private boolean isVisible(String msg) {
+        try {
+<span class="nc" id="L1067">            VisibilityType other = VisibilityType.valueOf(msg);</span>
+<span class="nc" id="L1068">            return VisibilityType.SHOW.equals(other);</span>
+<span class="fc" id="L1069">        } catch (IllegalArgumentException ex) {</span>
+            // do nothing, threat as false
+        }
+<span class="fc" id="L1072">        return Boolean.parseBoolean(msg);</span>
+    }
+
+    /**
+     * Sets the custom settings for an attribute model based on the annotation
+     *
+     * @param attribute the attribute annotation
+     * @param model     the attribute model
+     */
+    private void setAnnotationCustomOverwrites(Attribute attribute, AttributeModel model) {
+<span class="pc bpc" id="L1082" title="1 of 2 branches missed.">        if (attribute.custom() != null) {</span>
+<span class="fc bfc" id="L1083" title="All 2 branches covered.">            for (CustomSetting s : attribute.custom()) {</span>
+<span class="pc bpc" id="L1084" title="1 of 2 branches missed.">                if (!StringUtils.isEmpty(s.name())) {</span>
+<span class="fc" id="L1085">                    String value = s.value();</span>
+<span class="fc bfc" id="L1086" title="All 2 branches covered.">                    if (CustomType.BOOLEAN.equals(s.type())) {</span>
+<span class="fc" id="L1087">                        model.setCustomSetting(s.name(), Boolean.valueOf(value));</span>
+<span class="fc bfc" id="L1088" title="All 2 branches covered.">                    } else if (CustomType.INT.equals(s.type())) {</span>
+<span class="fc" id="L1089">                        model.setCustomSetting(s.name(), Integer.parseInt(value));</span>
+                    } else {
+<span class="fc" id="L1091">                        model.setCustomSetting(s.name(), value);</span>
+                    }
+                }
+            }
+        }
+<span class="fc" id="L1096">    }</span>
+
+    /**
+     * Sets visibility settings for an attribute model based on annotation overrides
+     *
+     * @param attribute the attribute annotation
+     * @param model     the attribute model
+     * @param nested    whether we are dealing with a nested attribute
+     */
+    private void setAnnotationVisibilityOverrides(Attribute attribute, AttributeModelImpl model, boolean nested) {
+        // set visibility (hide nested attribute by default; they must be shown using
+        // the message bundle)
+<span class="pc bpc" id="L1108" title="1 of 6 branches missed.">        if (attribute.visibleInForm() != null &amp;&amp; !VisibilityType.INHERIT.equals(attribute.visibleInForm()) &amp;&amp; !nested) {</span>
+<span class="fc" id="L1109">            model.setVisibleInForm(VisibilityType.SHOW.equals(attribute.visibleInForm()));</span>
+        }
+
+        // set grid visibility
+<span class="pc bpc" id="L1113" title="1 of 6 branches missed.">        if (attribute.visibleInGrid() != null &amp;&amp; !VisibilityType.INHERIT.equals(attribute.visibleInGrid()) &amp;&amp; !nested) {</span>
+<span class="fc" id="L1114">            model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));</span>
+        }
+<span class="fc" id="L1116">    }</span>
+
+    /**
+     * Overwrite the default settings for an attribute model with the
+     *
+     * @param parentClass the entity class in which the attribute is declared
+     * @param model       the attribute model
+     * @param descriptor  the property descriptor for the attribute
+     * @param nested      whether the attribute is nested
+     */
+    private void setAttributeModelAnnotationOverrides(Class&lt;?&gt; parentClass, AttributeModelImpl model,
+                                                      PropertyDescriptor descriptor, boolean nested) {
+<span class="fc" id="L1128">        Attribute attribute = ClassUtils.getAnnotation(parentClass, descriptor.getName(), Attribute.class);</span>
+
+<span class="fc bfc" id="L1130" title="All 2 branches covered.">        if (attribute != null) {</span>
+<span class="fc bfc" id="L1131" title="All 2 branches covered.">            if (!StringUtils.isEmpty(attribute.displayName())) {</span>
+<span class="fc" id="L1132">                model.setDefaultDisplayName(attribute.displayName());</span>
+<span class="fc" id="L1133">                model.setDefaultDescription(attribute.displayName());</span>
+<span class="fc" id="L1134">                model.setDefaultPrompt(attribute.displayName());</span>
+            }
+
+<span class="fc" id="L1137">            setStringSetting(attribute.description(), model::setDefaultDescription);</span>
+<span class="fc" id="L1138">            setStringSetting(attribute.prompt(), model::setDefaultPrompt);</span>
+<span class="fc" id="L1139">            setStringSetting(attribute.displayFormat(), model::setDefaultDisplayFormat);</span>
+<span class="fc" id="L1140">            setStringSetting(attribute.trueRepresentation(), model::setDefaultTrueRepresentation);</span>
+<span class="fc" id="L1141">            setStringSetting(attribute.falseRepresentation(), model::setDefaultFalseRepresentation);</span>
+<span class="fc" id="L1142">            setStringSetting(attribute.currencyCode(), model::setCurrencyCode);</span>
+<span class="fc" id="L1143">            setStringSetting(attribute.lookupEntityReference(), model::setLookupEntityReference);</span>
+<span class="fc" id="L1144">            setStringSetting(attribute.navigationLink(), model::setNavigationLink);</span>
+<span class="fc" id="L1145">            setStringSetting(attribute.autoFillInstructions(), model::setAutofillInstructions);</span>
+
+<span class="fc bfc" id="L1147" title="All 2 branches covered.">            boolean isId = model.getName().equals(DynamoConstants.ID) ||</span>
+<span class="pc bpc" id="L1148" title="1 of 2 branches missed.">                    model.getName().endsWith(DynamoConstants.ID);</span>
+<span class="fc bfc" id="L1149" title="All 2 branches covered.">            model.setEditableType(isId ? EditableType.READ_ONLY : attribute.editable());</span>
+
+<span class="fc" id="L1151">            setAnnotationVisibilityOverrides(attribute, model, nested);</span>
+
+<span class="fc bfc" id="L1153" title="All 6 branches covered.">            if ((SearchMode.ADVANCED.equals(attribute.searchable()) || SearchMode.ALWAYS.equals(attribute.searchable()))</span>
+                    &amp;&amp; !nested) {
+<span class="fc" id="L1155">                model.setSearchMode(attribute.searchable());</span>
+            }
+
+<span class="pc bpc" id="L1158" title="1 of 4 branches missed.">            if (attribute.requiredForSearching() &amp;&amp; !nested) {</span>
+<span class="fc" id="L1159">                model.setRequiredForSearching(true);</span>
+            }
+
+<span class="fc" id="L1162">            setBooleanTrueSetting(attribute.image(), model::setImage);</span>
+<span class="fc" id="L1163">            setBooleanTrueSetting(attribute.downloadAllowed(), model::setDownloadAllowed);</span>
+<span class="fc" id="L1164">            setBooleanTrueSetting(attribute.percentage(), model::setPercentage);</span>
+<span class="fc" id="L1165">            setBooleanTrueSetting(attribute.url(), model::setUrl);</span>
+<span class="fc" id="L1166">            setBooleanTrueSetting(attribute.showPassword(), model::setShowPassword);</span>
+<span class="fc" id="L1167">            setBooleanTrueSetting(attribute.quickAddAllowed(), model::setQuickAddAllowed);</span>
+<span class="fc" id="L1168">            setBooleanTrueSetting(attribute.neededInData(), model::setNeededInData);</span>
+<span class="fc" id="L1169">            setBooleanTrueSetting(attribute.nestedDetails(), model::setNestedDetails);</span>
+
+<span class="fc" id="L1171">            setBooleanFalseSetting(attribute.sortable(), model::setSortable);</span>
+
+<span class="pc bpc" id="L1173" title="1 of 4 branches missed.">            if (attribute.allowedExtensions() != null &amp;&amp; attribute.allowedExtensions().length &gt; 0) {</span>
+<span class="fc" id="L1174">                Set&lt;String&gt; set = Arrays.stream(attribute.allowedExtensions()).map(String::toLowerCase)</span>
+<span class="fc" id="L1175">                        .collect(Collectors.toSet());</span>
+<span class="fc" id="L1176">                model.setAllowedExtensions(set);</span>
+            }
+
+<span class="pc bpc" id="L1179" title="1 of 2 branches missed.">            if (attribute.cascade() != null) {</span>
+<span class="fc bfc" id="L1180" title="All 2 branches covered.">                for (Cascade cascade : attribute.cascade()) {</span>
+<span class="fc" id="L1181">                    model.addCascade(cascade.cascadeTo(), cascade.filterPath(), cascade.mode());</span>
+                }
+            }
+
+<span class="fc" id="L1185">            setAnnotationCustomOverwrites(attribute, model);</span>
+
+<span class="pc bpc" id="L1187" title="1 of 2 branches missed.">            if (attribute.groupTogetherWith() != null) {</span>
+<span class="fc bfc" id="L1188" title="All 2 branches covered.">                for (String attributeName : attribute.groupTogetherWith()) {</span>
+<span class="fc" id="L1189">                    model.addGroupTogetherWith(attributeName);</span>
+                }
+            }
+
+<span class="pc bpc" id="L1193" title="1 of 4 branches missed.">            if (attribute.dateType() != null &amp;&amp; !AttributeDateType.INHERIT.equals(attribute.dateType())) {</span>
+<span class="fc" id="L1194">                model.setDateType(attribute.dateType());</span>
+            }
+
+<span class="pc bpc" id="L1197" title="1 of 4 branches missed.">            if (attribute.selectMode() != null &amp;&amp; !AttributeSelectMode.INHERIT.equals(attribute.selectMode())) {</span>
+                // setting the select mode also sets the search and grid modes
+<span class="fc" id="L1199">                model.setSelectMode(attribute.selectMode());</span>
+<span class="fc" id="L1200">                model.setSearchSelectMode(attribute.selectMode());</span>
+            }
+
+            // multiple search for master object (default to token)
+<span class="fc bfc" id="L1204" title="All 2 branches covered.">            if (attribute.multipleSearch()) {</span>
+<span class="fc" id="L1205">                model.setMultipleSearch(true);</span>
+<span class="fc" id="L1206">                model.setSearchSelectMode(AttributeSelectMode.MULTI_SELECT);</span>
+            }
+
+<span class="fc bfc" id="L1209" title="All 2 branches covered.">            if (!AttributeSelectMode.INHERIT.equals(attribute.searchSelectMode())) {</span>
+<span class="fc" id="L1210">                model.setSearchSelectMode(attribute.searchSelectMode());</span>
+                // for a basic attribute, automatically set multiple search when a token field
+                // is selected
+<span class="pc bpc" id="L1213" title="1 of 2 branches missed.">                if (AttributeType.BASIC.equals(model.getAttributeType())</span>
+<span class="nc bnc" id="L1214" title="All 2 branches missed.">                        &amp;&amp; AttributeSelectMode.MULTI_SELECT.equals(model.getSearchSelectMode())) {</span>
+<span class="nc" id="L1215">                    model.setMultipleSearch(true);</span>
+                }
+            }
+
+<span class="fc" id="L1219">            setEnumValueUnless(attribute.searchCaseSensitive(), BooleanType.INHERIT,</span>
+<span class="fc" id="L1220">                    value -&gt; model.setSearchCaseSensitive(value.toBoolean()));</span>
+<span class="fc" id="L1221">            setEnumValueUnless(attribute.searchPrefixOnly(), BooleanType.INHERIT,</span>
+<span class="fc" id="L1222">                    value -&gt; model.setSearchPrefixOnly(value.toBoolean()));</span>
+<span class="fc" id="L1223">            setEnumValueUnless(attribute.enumFieldMode(), AttributeEnumFieldMode.INHERIT,</span>
+<span class="fc" id="L1224">                    model::setEnumFieldMode);</span>
+<span class="fc" id="L1225">            setEnumValueUnless(attribute.lookupQueryType(), QueryType.INHERIT,</span>
+<span class="fc" id="L1226">                    model::setLookupQueryType);</span>
+
+<span class="pc bpc" id="L1228" title="1 of 2 branches missed.">            if (attribute.textFieldMode() != null</span>
+<span class="fc bfc" id="L1229" title="All 2 branches covered.">                    &amp;&amp; !AttributeTextFieldMode.INHERIT.equals(attribute.textFieldMode())) {</span>
+<span class="fc" id="L1230">                model.setTextFieldMode(attribute.textFieldMode());</span>
+            }
+
+<span class="fc" id="L1233">            setIntSetting(attribute.precision(), -1, model::setPrecision);</span>
+<span class="fc" id="L1234">            setIntSetting(attribute.minLength(), -1, model::setMinLength);</span>
+<span class="fc" id="L1235">            setIntSetting(attribute.maxLength(), -1, model::setMaxLength);</span>
+<span class="fc" id="L1236">            setIntSetting(attribute.maxLengthInGrid(), -1, model::setMaxLengthInGrid);</span>
+
+<span class="fc" id="L1238">            setBigDecimalSetting(attribute.minValue(), Double.MIN_VALUE, true, model::setMinValue);</span>
+<span class="fc" id="L1239">            setBigDecimalSetting(attribute.maxValue(), Double.MAX_VALUE, false, model::setMaxValue);</span>
+
+<span class="fc" id="L1241">            setStringSetting(attribute.replacementSearchPath(), model::setReplacementSearchPath);</span>
+<span class="fc" id="L1242">            setStringSetting(attribute.replacementSortPath(), model::setReplacementSortPath);</span>
+
+<span class="fc" id="L1244">            setBooleanTrueSetting(attribute.searchForExactValue(), model::setSearchForExactValue);</span>
+<span class="fc" id="L1245">            setStringSetting(attribute.fileNameProperty(), model::setFileNameProperty);</span>
+
+<span class="fc" id="L1247">            model.setSearchDateOnly(attribute.searchDateOnly());</span>
+
+<span class="fc" id="L1249">            setDefaultValue(model, attribute);</span>
+<span class="fc" id="L1250">            setDefaultSearchValue(model, attribute);</span>
+<span class="fc" id="L1251">            setDefaultSearchValueFrom(model, attribute);</span>
+<span class="fc" id="L1252">            setDefaultSearchValueTo(model, attribute);</span>
+
+<span class="fc" id="L1254">            model.setNavigable(attribute.navigable());</span>
+<span class="fc" id="L1255">            model.setIgnoreInSearchFilter(attribute.ignoreInSearchFilter());</span>
+
+<span class="fc" id="L1257">            setEnumValueUnless(attribute.trimSpaces(), TrimType.INHERIT,</span>
+<span class="fc" id="L1258">                    ts -&gt; model.setTrimSpaces(TrimType.TRIM.equals(ts)));</span>
+<span class="fc" id="L1259">            setEnumValueUnless(attribute.numberFieldMode(), NumberFieldMode.INHERIT, model::setNumberFieldMode);</span>
+<span class="fc" id="L1260">            setEnumValueUnless(attribute.booleanFieldMode(), AttributeBooleanFieldMode.INHERIT,</span>
+<span class="fc" id="L1261">                    model::setBooleanFieldMode);</span>
+<span class="fc" id="L1262">            setEnumValueUnless(attribute.elementCollectionMode(), ElementCollectionMode.INHERIT,</span>
+<span class="fc" id="L1263">                    model::setElementCollectionMode);</span>
+
+<span class="fc" id="L1265">            setIntSetting(attribute.numberFieldStep(), 0, model::setNumberFieldStep);</span>
+        }
+<span class="fc" id="L1267">    }</span>
+
+    /**
+     * Sets the default values for an attribute model
+     *
+     * @param &lt;T&gt;         the class of the entity model
+     * @param descriptor  the property descriptor to base the attribute model on
+     * @param entityModel the entity model
+     * @param parentClass the parent class
+     * @param prefix      the prefix of the attribute path (for nested attributes)
+     * @param fieldName   the name of the field
+     * @param model       the attribute model
+     */
+    private &lt;T&gt; void setAttributeModelDefaults(PropertyDescriptor descriptor, EntityModel&lt;T&gt; entityModel,
+                                               Class&lt;?&gt; parentClass, String prefix, String fieldName, AttributeModelImpl model) {
+<span class="fc" id="L1282">        String displayName = org.dynamoframework.utils.StringUtils.propertyIdToHumanFriendly(fieldName, dynamoProperties.isCapitalizePropertyNames());</span>
+<span class="fc" id="L1283">        model.setDefaultDisplayName(displayName);</span>
+<span class="fc bfc" id="L1284" title="All 2 branches covered.">        model.setHasSetterMethod(descriptor.getWriteMethod() != null);</span>
+<span class="fc" id="L1285">        model.setDefaultDescription(displayName);</span>
+<span class="fc" id="L1286">        model.setDefaultPrompt(displayName);</span>
+<span class="fc" id="L1287">        model.setSearchMode(SearchMode.NONE);</span>
+<span class="fc bfc" id="L1288" title="All 2 branches covered.">        model.setName((prefix == null ? &quot;&quot; : (prefix + &quot;.&quot;)) + fieldName);</span>
+<span class="fc" id="L1289">        model.setImage(false);</span>
+<span class="pc bpc" id="L1290" title="1 of 2 branches missed.">        model.setEditableType(descriptor.isHidden() ? EditableType.READ_ONLY : EditableType.EDITABLE);</span>
+<span class="fc" id="L1291">        model.setSortable(true);</span>
+<span class="fc" id="L1292">        model.setPrecision(dynamoProperties.getDefaults().getDecimalPrecision());</span>
+<span class="fc" id="L1293">        model.setSearchCaseSensitive(dynamoProperties.getDefaults().isSearchCaseSensitive());</span>
+<span class="fc" id="L1294">        model.setSearchPrefixOnly(dynamoProperties.getDefaults().isSearchPrefixOnly());</span>
+<span class="fc" id="L1295">        model.setUrl(false);</span>
+<span class="fc" id="L1296">        model.setTrimSpaces(dynamoProperties.getDefaults().isTrimSpaces());</span>
+<span class="fc" id="L1297">        model.setType(descriptor.getPropertyType());</span>
+<span class="fc" id="L1298">        model.setDateType(determineDateType(model.getType()));</span>
+<span class="fc" id="L1299">        model.setDefaultDisplayFormat(determineDefaultDisplayFormat(model.getType()));</span>
+<span class="fc" id="L1300">        model.setNumberFieldMode(dynamoProperties.getDefaults().getNumberFieldMode());</span>
+<span class="fc" id="L1301">        model.setNumberFieldStep(1);</span>
+<span class="fc" id="L1302">        model.setLookupQueryType(QueryType.ID_BASED);</span>
+
+<span class="fc" id="L1304">        setRequiredAndMinMaxSetting(entityModel, model, parentClass, fieldName);</span>
+<span class="fc" id="L1305">    }</span>
+
+    /**
+     * Overwrite the values of an attribute model with values from a message bundle
+     *
+     * @param entityModel    the entity model
+     * @param attributeModel the attribute model implementation
+     */
+    private &lt;T&gt; void setAttributeModelMessageBundleOverrides(EntityModel&lt;T&gt; entityModel,
+                                                             AttributeModelImpl attributeModel) {
+
+<span class="fc" id="L1316">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_NAME),</span>
+<span class="fc" id="L1317">                attributeModel::setDefaultDisplayName);</span>
+<span class="fc" id="L1318">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DESCRIPTION),</span>
+<span class="fc" id="L1319">                attributeModel::setDefaultDescription);</span>
+<span class="fc" id="L1320">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_VALUE),</span>
+<span class="fc" id="L1321">                attributeModel::setDefaultValue);</span>
+<span class="fc" id="L1322">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_SEARCH_VALUE),</span>
+<span class="fc" id="L1323">                attributeModel::setDefaultSearchValue);</span>
+<span class="fc" id="L1324">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_SEARCH_VALUE_FROM),</span>
+<span class="fc" id="L1325">                attributeModel::setDefaultSearchValueFrom);</span>
+<span class="fc" id="L1326">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DEFAULT_SEARCH_VALUE_TO),</span>
+<span class="fc" id="L1327">                attributeModel::setDefaultSearchValueTo);</span>
+<span class="fc" id="L1328">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DISPLAY_FORMAT),</span>
+<span class="fc" id="L1329">                attributeModel::setDefaultDisplayFormat);</span>
+<span class="fc" id="L1330">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRUE_REPRESENTATION),</span>
+<span class="fc" id="L1331">                attributeModel::setDefaultTrueRepresentation);</span>
+<span class="fc" id="L1332">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.FALSE_REPRESENTATION),</span>
+<span class="fc" id="L1333">                attributeModel::setDefaultFalseRepresentation);</span>
+<span class="fc" id="L1334">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.CURRENCY_CODE),</span>
+<span class="fc" id="L1335">                attributeModel::setCurrencyCode);</span>
+<span class="fc" id="L1336">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.LOOKUP_ENTITY_REFERENCE),</span>
+<span class="fc" id="L1337">                attributeModel::setLookupEntityReference);</span>
+<span class="fc" id="L1338">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGATION_LINK),</span>
+<span class="fc" id="L1339">                attributeModel::setNavigationLink);</span>
+<span class="fc" id="L1340">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.AUTO_FILL_INSTRUCTIONS),</span>
+<span class="fc" id="L1341">                attributeModel::setAutofillInstructions);</span>
+
+<span class="fc" id="L1343">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REQUIRED_FOR_SEARCHING),</span>
+<span class="fc" id="L1344">                attributeModel::setRequiredForSearching);</span>
+<span class="fc" id="L1345">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SORTABLE),</span>
+<span class="fc" id="L1346">                attributeModel::setSortable);</span>
+<span class="fc" id="L1347">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IMAGE),</span>
+<span class="fc" id="L1348">                attributeModel::setImage);</span>
+<span class="fc" id="L1349">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DOWNLOAD_ALLOWED),</span>
+<span class="fc" id="L1350">                attributeModel::setDownloadAllowed);</span>
+<span class="fc" id="L1351">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NEEDED_IN_DATA),</span>
+<span class="fc" id="L1352">                attributeModel::setNeededInData);</span>
+
+<span class="fc" id="L1354">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SHOW_PASSWORD),</span>
+<span class="fc" id="L1355">                attributeModel::setShowPassword);</span>
+<span class="fc" id="L1356">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NESTED_DETAILS),</span>
+<span class="fc" id="L1357">                attributeModel::setNestedDetails);</span>
+
+<span class="fc" id="L1359">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_CASE_SENSITIVE),</span>
+<span class="fc" id="L1360">                attributeModel::setSearchCaseSensitive);</span>
+<span class="fc" id="L1361">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_PREFIX_ONLY),</span>
+<span class="fc" id="L1362">                attributeModel::setSearchPrefixOnly);</span>
+<span class="fc" id="L1363">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TRIM_SPACES),</span>
+<span class="fc" id="L1364">                attributeModel::setTrimSpaces);</span>
+<span class="fc" id="L1365">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.PERCENTAGE),</span>
+<span class="fc" id="L1366">                attributeModel::setPercentage);</span>
+<span class="fc" id="L1367">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.URL), attributeModel::setUrl);</span>
+
+        // check for read only (convenience only, overwritten by &quot;editable&quot;)
+<span class="fc" id="L1370">        String msg = getAttributeMessage(entityModel, attributeModel, EntityModel.READ_ONLY);</span>
+<span class="fc bfc" id="L1371" title="All 2 branches covered.">        if (!StringUtils.isEmpty(msg)) {</span>
+<span class="fc" id="L1372">            boolean editable = Boolean.parseBoolean(msg);</span>
+<span class="pc bpc" id="L1373" title="1 of 2 branches missed.">            if (editable) {</span>
+<span class="fc" id="L1374">                attributeModel.setEditableType(EditableType.READ_ONLY);</span>
+            } else {
+<span class="nc" id="L1376">                attributeModel.setEditableType(EditableType.EDITABLE);</span>
+            }
+        }
+<span class="fc" id="L1379">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.EDITABLE), EditableType.class,</span>
+<span class="fc" id="L1380">                attributeModel::setEditableType);</span>
+
+<span class="fc" id="L1382">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_FORM);</span>
+<span class="fc bfc" id="L1383" title="All 2 branches covered.">        if (!StringUtils.isEmpty(msg)) {</span>
+<span class="fc" id="L1384">            attributeModel.setVisibleInForm(isVisible(msg));</span>
+        }
+<span class="fc" id="L1386">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_GRID);</span>
+<span class="pc bpc" id="L1387" title="1 of 2 branches missed.">        if (!StringUtils.isEmpty(msg)) {</span>
+<span class="nc" id="L1388">            attributeModel.setVisibleInGrid(isVisible(msg));</span>
+        }
+
+        // &quot;searchable&quot; also supports true/false for legacy reasons
+<span class="fc" id="L1392">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCHABLE);</span>
+<span class="pc bpc" id="L1393" title="1 of 2 branches missed.">        if (!StringUtils.isEmpty(msg)) {</span>
+<span class="nc bnc" id="L1394" title="All 2 branches missed.">            if (&quot;true&quot;.equals(msg)) {</span>
+<span class="nc" id="L1395">                attributeModel.setSearchMode(SearchMode.ALWAYS);</span>
+<span class="nc bnc" id="L1396" title="All 2 branches missed.">            } else if (&quot;false&quot;.equals(msg)) {</span>
+<span class="nc" id="L1397">                attributeModel.setSearchMode(SearchMode.NONE);</span>
+            } else {
+<span class="nc" id="L1399">                attributeModel.setSearchMode(SearchMode.valueOf(msg));</span>
+            }
+        }
+
+<span class="fc" id="L1403">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.ALLOWED_EXTENSIONS);</span>
+<span class="pc bpc" id="L1404" title="3 of 4 branches missed.">        if (msg != null &amp;&amp; !StringUtils.isEmpty(msg)) {</span>
+<span class="nc" id="L1405">            String[] extensions = msg.split(&quot;,&quot;);</span>
+<span class="nc" id="L1406">            Set&lt;String&gt; hashSet = Set.of(extensions);</span>
+<span class="nc" id="L1407">            attributeModel.setAllowedExtensions(hashSet);</span>
+        }
+
+<span class="fc" id="L1410">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.GROUP_TOGETHER_WITH);</span>
+<span class="pc bpc" id="L1411" title="3 of 4 branches missed.">        if (msg != null &amp;&amp; !StringUtils.isEmpty(msg)) {</span>
+<span class="nc" id="L1412">            String[] extensions = msg.split(&quot;,&quot;);</span>
+<span class="nc bnc" id="L1413" title="All 2 branches missed.">            for (String s : extensions) {</span>
+<span class="nc" id="L1414">                attributeModel.addGroupTogetherWith(s);</span>
+            }
+        }
+
+<span class="fc" id="L1418">        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.PRECISION), -1,</span>
+<span class="fc" id="L1419">                attributeModel::setPrecision);</span>
+
+        // multiple search setting - setting this to true also sets the search select
+        // mode to TOKEN
+<span class="fc" id="L1423">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MULTIPLE_SEARCH);</span>
+<span class="pc bpc" id="L1424" title="3 of 4 branches missed.">        if (msg != null &amp;&amp; !StringUtils.isEmpty(msg)) {</span>
+<span class="nc" id="L1425">            attributeModel.setMultipleSearch(Boolean.parseBoolean(msg));</span>
+<span class="nc" id="L1426">            attributeModel.setSearchSelectMode(AttributeSelectMode.MULTI_SELECT);</span>
+        }
+
+        // set the select mode (also sets the search select mode and grid select mode)
+<span class="fc" id="L1430">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SELECT_MODE);</span>
+<span class="pc bpc" id="L1431" title="1 of 2 branches missed.">        if (!StringUtils.isEmpty(msg)) {</span>
+<span class="nc" id="L1432">            AttributeSelectMode mode = AttributeSelectMode.valueOf(msg);</span>
+<span class="nc" id="L1433">            attributeModel.setSelectMode(mode);</span>
+<span class="nc" id="L1434">            attributeModel.setSearchSelectMode(mode);</span>
+        }
+
+<span class="fc" id="L1437">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_SELECT_MODE),</span>
+<span class="fc" id="L1438">                AttributeSelectMode.class, attributeModel::setSearchSelectMode);</span>
+<span class="fc" id="L1439">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.DATE_TYPE), AttributeDateType.class,</span>
+<span class="fc" id="L1440">                attributeModel::setDateType);</span>
+<span class="fc" id="L1441">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.TEXT_FIELD_MODE),</span>
+<span class="fc" id="L1442">                AttributeTextFieldMode.class, attributeModel::setTextFieldMode);</span>
+<span class="fc" id="L1443">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.BOOLEAN_FIELD_MODE),</span>
+<span class="fc" id="L1444">                AttributeBooleanFieldMode.class, attributeModel::setBooleanFieldMode);</span>
+<span class="fc" id="L1445">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.ELEMENT_COLLECTION_MODE),</span>
+<span class="fc" id="L1446">                ElementCollectionMode.class, attributeModel::setElementCollectionMode);</span>
+<span class="fc" id="L1447">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.LOOKUP_QUERY_TYPE),</span>
+<span class="fc" id="L1448">                QueryType.class, attributeModel::setLookupQueryType);</span>
+
+<span class="fc" id="L1450">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_VALUE);</span>
+<span class="pc bpc" id="L1451" title="1 of 2 branches missed.">        if (!StringUtils.isEmpty(msg)) {</span>
+<span class="nc" id="L1452">            attributeModel.setMinValue(new BigDecimal(msg));</span>
+        }
+
+<span class="fc" id="L1455">        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.MIN_LENGTH), -1,</span>
+<span class="fc" id="L1456">                attributeModel::setMinLength);</span>
+<span class="fc" id="L1457">        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH), -1,</span>
+<span class="fc" id="L1458">                attributeModel::setMaxLength);</span>
+<span class="fc" id="L1459">        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_LENGTH_IN_GRID), -1,</span>
+<span class="fc" id="L1460">                attributeModel::setMaxLengthInGrid);</span>
+
+<span class="fc" id="L1462">        msg = getAttributeMessage(entityModel, attributeModel, EntityModel.MAX_VALUE);</span>
+<span class="pc bpc" id="L1463" title="1 of 2 branches missed.">        if (!StringUtils.isEmpty(msg)) {</span>
+<span class="nc" id="L1464">            attributeModel.setMaxValue(new BigDecimal(msg));</span>
+        }
+
+<span class="fc" id="L1467">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SEARCH_PATH),</span>
+<span class="fc" id="L1468">                attributeModel::setReplacementSearchPath);</span>
+<span class="fc" id="L1469">        setStringSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.REPLACEMENT_SORT_PATH),</span>
+<span class="fc" id="L1470">                attributeModel::setReplacementSortPath);</span>
+<span class="fc" id="L1471">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.QUICK_ADD_ALLOWED),</span>
+<span class="fc" id="L1472">                attributeModel::setQuickAddAllowed);</span>
+
+<span class="fc" id="L1474">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_EXACT_VALUE),</span>
+<span class="fc" id="L1475">                attributeModel::setSearchForExactValue);</span>
+<span class="fc" id="L1476">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NAVIGABLE),</span>
+<span class="fc" id="L1477">                attributeModel::setNavigable);</span>
+<span class="fc" id="L1478">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.SEARCH_DATE_ONLY),</span>
+<span class="fc" id="L1479">                attributeModel::setSearchDateOnly);</span>
+<span class="fc" id="L1480">        setBooleanSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.IGNORE_IN_SEARCH_FILTER),</span>
+<span class="fc" id="L1481">                attributeModel::setIgnoreInSearchFilter);</span>
+
+<span class="fc" id="L1483">        setEnumSetting(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_MODE),</span>
+<span class="fc" id="L1484">                NumberFieldMode.class, attributeModel::setNumberFieldMode);</span>
+
+<span class="fc" id="L1486">        setIntSettingIfAbove(getAttributeMessage(entityModel, attributeModel, EntityModel.NUMBER_FIELD_STEP), -1,</span>
+<span class="fc" id="L1487">                attributeModel::setNumberFieldStep);</span>
+
+<span class="fc" id="L1489">        setMessageBundleCascadeOverrides(entityModel, attributeModel);</span>
+<span class="fc" id="L1490">        setMessageBundleCustomOverrides(entityModel, attributeModel);</span>
+<span class="fc" id="L1491">    }</span>
+
+    /**
+     * Sets a value on an attribute model if the provided boolean value is false
+     *
+     * @param value    the boolean value
+     * @param receiver the code that is executed to set the value
+     */
+    private void setBooleanFalseSetting(Boolean value, Consumer&lt;Boolean&gt; receiver) {
+<span class="fc bfc" id="L1500" title="All 2 branches covered.">        if (!value) {</span>
+<span class="fc" id="L1501">            receiver.accept(false);</span>
+        }
+<span class="fc" id="L1503">    }</span>
+
+    /**
+     * Sets a boolean setting if it is non-null
+     *
+     * @param value    the value
+     * @param receiver the receiver function
+     */
+    private void setBooleanSetting(String value, Consumer&lt;Boolean&gt; receiver) {
+<span class="fc bfc" id="L1512" title="All 2 branches covered.">        if (value != null) {</span>
+<span class="fc" id="L1513">            receiver.accept(Boolean.valueOf(value));</span>
+        }
+<span class="fc" id="L1515">    }</span>
+
+    /**
+     * Sets a value on the attribute model if the provided boolean value is true
+     *
+     * @param value    the boolean value
+     * @param receiver the code that is executed to set the value
+     */
+    private void setBooleanTrueSetting(Boolean value, Consumer&lt;Boolean&gt; receiver) {
+<span class="fc bfc" id="L1524" title="All 2 branches covered.">        if (value) {</span>
+<span class="fc" id="L1525">            receiver.accept(true);</span>
+        }
+<span class="fc" id="L1527">    }</span>
+
+    /**
+     * Sets the default value on the attribute model (translates a String to the
+     * appropriate type)
+     *
+     * @param model        the attribute model
+     * @param defaultValue the default value to set
+     * @param search       whether we are dealing with search mode
+     * @param
+     */
+    @SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+    private void setDefaultValue(AttributeModelImpl model, String defaultValue, boolean search, Consumer&lt;Object&gt; consumer) {
+<span class="pc bpc" id="L1540" title="1 of 2 branches missed.">        if (model.getType().isEnum()) {</span>
+<span class="nc" id="L1541">            Class&lt;? extends Enum&gt; enumType = model.getType().asSubclass(Enum.class);</span>
+<span class="nc" id="L1542">            consumer.accept(Enum.valueOf(enumType, defaultValue));</span>
+<span class="pc bfc" id="L1543" title="All 2 branches covered.">        } else if (DateUtils.isJava8DateType(model.getType())) {</span>
+
+            Object object;
+<span class="pc bpc" id="L1546" title="1 of 4 branches missed.">            if (search &amp;&amp; model.isSearchDateOnly()) {</span>
+<span class="fc" id="L1547">                object = DateUtils.createJava8Date(LocalDate.class, defaultValue,</span>
+<span class="fc" id="L1548">                        dynamoProperties.getDefaults().getDateFormat());</span>
+            } else {
+<span class="fc" id="L1550">                object = DateUtils.createJava8Date(model.getType(), defaultValue,</span>
+<span class="fc" id="L1551">                        DateUtils.getDefaultDisplayFormat(model.getType()));</span>
+            }
+<span class="fc" id="L1553">            consumer.accept(object);</span>
+
+<span class="pc bpc" id="L1555" title="2 of 4 branches missed.">        } else if (Boolean.class.equals(model.getType()) || boolean.class.equals(model.getType())) {</span>
+<span class="nc" id="L1556">            consumer.accept(Boolean.valueOf(defaultValue));</span>
+        } else {
+<span class="fc" id="L1558">            consumer.accept(ClassUtils.instantiateClass(model.getType(), defaultValue));</span>
+        }
+<span class="fc" id="L1560">    }</span>
+
+    /**
+     * Sets the default value of an attribute based on the annotation
+     *
+     * @param model     the attribute model
+     * @param attribute the annotation
+     */
+    private void setDefaultValue(AttributeModelImpl model, Attribute attribute) {
+<span class="fc bfc" id="L1569" title="All 2 branches covered.">        if (!StringUtils.isEmpty(attribute.defaultValue())) {</span>
+<span class="pc bpc" id="L1570" title="1 of 2 branches missed.">            if (!AttributeType.BASIC.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1571">                throw new OCSRuntimeException(&quot;%s: setting a default value is only allowed for BASIC attributes&quot;</span>
+<span class="nc" id="L1572">                        .formatted(model.getName()));</span>
+            }
+
+<span class="fc" id="L1575">            String defaultValue = attribute.defaultValue();</span>
+<span class="fc" id="L1576">            setDefaultValue(model, defaultValue, false, model::setDefaultValue);</span>
+        }
+<span class="fc" id="L1578">    }</span>
+
+    /**
+     * Sets the default search value of an attribute based on the annotation
+     *
+     * @param model     the attribute model
+     * @param attribute the annotation
+     */
+    private void setDefaultSearchValue(AttributeModelImpl model, Attribute attribute) {
+<span class="fc bfc" id="L1587" title="All 2 branches covered.">        if (!StringUtils.isEmpty(attribute.defaultSearchValue())) {</span>
+<span class="pc bpc" id="L1588" title="1 of 2 branches missed.">            if (!AttributeType.BASIC.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1589">                throw new OCSRuntimeException(&quot;%s: setting a default search value is only allowed for BASIC attributes&quot;</span>
+<span class="nc" id="L1590">                        .formatted(model.getName()));</span>
+            }
+
+<span class="fc" id="L1593">            String defaultValue = attribute.defaultSearchValue();</span>
+<span class="fc" id="L1594">            setDefaultValue(model, defaultValue, true, model::setDefaultSearchValue);</span>
+        }
+<span class="fc" id="L1596">    }</span>
+
+    /**
+     * Sets the default search value of an attribute based on the annotation
+     *
+     * @param model     the attribute model
+     * @param attribute the annotation
+     */
+    private void setDefaultSearchValueFrom(AttributeModelImpl model, Attribute attribute) {
+<span class="fc bfc" id="L1605" title="All 2 branches covered.">        if (!StringUtils.isEmpty(attribute.defaultSearchValueFrom())) {</span>
+<span class="pc bpc" id="L1606" title="1 of 2 branches missed.">            if (!AttributeType.BASIC.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1607">                throw new OCSRuntimeException(&quot;%s: setting a default search from value is only allowed for BASIC attributes&quot;</span>
+<span class="nc" id="L1608">                        .formatted(model.getName()));</span>
+            }
+
+<span class="fc" id="L1611">            String defaultValue = attribute.defaultSearchValueFrom();</span>
+<span class="fc" id="L1612">            setDefaultValue(model, defaultValue, true, model::setDefaultSearchValueFrom);</span>
+        }
+<span class="fc" id="L1614">    }</span>
+
+    /**
+     * Sets the default search value of an attribute based on the annotation
+     *
+     * @param model     the attribute model
+     * @param attribute the annotation
+     */
+    private void setDefaultSearchValueTo(AttributeModelImpl model, Attribute attribute) {
+<span class="fc bfc" id="L1623" title="All 2 branches covered.">        if (!StringUtils.isEmpty(attribute.defaultSearchValueTo())) {</span>
+<span class="pc bpc" id="L1624" title="1 of 2 branches missed.">            if (!AttributeType.BASIC.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1625">                throw new OCSRuntimeException(&quot;%s: setting a default search to value is only allowed for BASIC attributes&quot;</span>
+<span class="nc" id="L1626">                        .formatted(model.getName()));</span>
+            }
+
+<span class="fc" id="L1629">            String defaultValue = attribute.defaultSearchValueTo();</span>
+<span class="fc" id="L1630">            setDefaultValue(model, defaultValue, true, model::setDefaultSearchValueTo);</span>
+        }
+<span class="fc" id="L1632">    }</span>
+
+    /**
+     * Sets an enum field based on a string value from a message bundle
+     *
+     * @param &lt;E&gt;       the type of the class
+     * @param value     the string value
+     * @param enumClass the type of the enum
+     * @param receiver  receiver function
+     */
+<span class="pc" id="L1642">    @SneakyThrows</span>
+    @SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+    private &lt;E extends Enum&gt; void setEnumSetting(String value, Class&lt;E&gt; enumClass, Consumer&lt;E&gt; receiver) {
+<span class="fc bfc" id="L1645" title="All 2 branches covered.">        if (!StringUtils.isEmpty(value)) {</span>
+<span class="fc" id="L1646">            E enumValue = (E) Enum.valueOf(enumClass, value);</span>
+<span class="fc" id="L1647">            receiver.accept(enumValue);</span>
+        }
+<span class="fc" id="L1649">    }</span>
+
+    /**
+     * Sets an enum value on the attribute model, unless the value is the specified
+     * excluded value
+     *
+     * @param &lt;E&gt;      enum type parameter
+     * @param value    the value
+     * @param exclude  the value to exclude
+     * @param consumer consumer to call when the value is not equal to the excluded
+     *                 value
+     */
+    private &lt;E extends Enum&lt;?&gt;&gt; void setEnumValueUnless(E value, E exclude, Consumer&lt;E&gt; consumer) {
+<span class="fc bfc" id="L1662" title="All 2 branches covered.">        if (!exclude.equals(value)) {</span>
+<span class="fc" id="L1663">            consumer.accept(value);</span>
+        }
+<span class="fc" id="L1665">    }</span>
+
+    /**
+     * Sets an integer value on the attribute model if the value is above the
+     * specified limit
+     *
+     * @param value    the integer value
+     * @param limit    the lower limit
+     * @param receiver the receiver function
+     */
+    private void setIntSetting(Integer value, int limit, Consumer&lt;Integer&gt; receiver) {
+<span class="pc bpc" id="L1676" title="1 of 4 branches missed.">        if (value != null &amp;&amp; value &gt; limit) {</span>
+<span class="fc" id="L1677">            receiver.accept(value);</span>
+        }
+<span class="fc" id="L1679">    }</span>
+
+    /**
+     * Sets an integer value on the attribute model if the value is above the
+     * specified limit
+     *
+     * @param value    the integer value
+     * @param limit    the lower limit
+     * @param receiver the receiver function
+     */
+    private void setIntSettingIfAbove(String value, int limit, Consumer&lt;Integer&gt; receiver) {
+<span class="fc bfc" id="L1690" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L1691">            return;</span>
+        }
+
+<span class="fc" id="L1694">        int intValue = Integer.parseInt(value);</span>
+<span class="pc bpc" id="L1695" title="1 of 2 branches missed.">        if (intValue &gt; limit) {</span>
+<span class="fc" id="L1696">            receiver.accept(intValue);</span>
+        }
+<span class="fc" id="L1698">    }</span>
+
+    /**
+     * Sets an integer value on the attribute model if the value is above the
+     * specified limit
+     *
+     * @param value    the integer value
+     * @param limit    the lower limit
+     * @param receiver the receiver function
+     */
+    private void setIntSettingIfBelow(String value, int limit, Consumer&lt;Integer&gt; receiver) {
+<span class="fc bfc" id="L1709" title="All 2 branches covered.">        if (value == null) {</span>
+<span class="fc" id="L1710">            return;</span>
+        }
+
+<span class="fc" id="L1713">        int intValue = Integer.parseInt(value);</span>
+<span class="pc bpc" id="L1714" title="1 of 2 branches missed.">        if (intValue &lt; limit) {</span>
+<span class="fc" id="L1715">            receiver.accept(intValue);</span>
+        }
+<span class="fc" id="L1717">    }</span>
+
+    /**
+     * Sets a long value on the attribute model if it is either above or below the
+     * specified limit
+     *
+     * @param value    the value
+     * @param limit    the limit
+     * @param above    whether to check if the value is above the limit
+     * @param receiver the function to call if the condition is met
+     */
+    private void setBigDecimalSetting(Double value, Double limit, boolean above, Consumer&lt;BigDecimal&gt; receiver) {
+<span class="pc bpc" id="L1729" title="1 of 8 branches missed.">        if (value != null &amp;&amp; (above &amp;&amp; value.compareTo(limit) &gt; 0 || value.compareTo(limit) &lt; 0)) {</span>
+<span class="fc" id="L1730">            receiver.accept(BigDecimal.valueOf(value));</span>
+        }
+<span class="fc" id="L1732">    }</span>
+
+    /**
+     * Reads cascade settings for an attribute from the message bundle
+     *
+     * @param entityModel the entity model
+     * @param model       the attribute model
+     */
+    private void setMessageBundleCascadeOverrides(EntityModel&lt;?&gt; entityModel, AttributeModel model) {
+<span class="fc" id="L1741">        String msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE_OFF);</span>
+<span class="pc bpc" id="L1742" title="1 of 2 branches missed.">        if (msg != null) {</span>
+            // completely cancel all cascades for this attribute
+<span class="nc" id="L1744">            model.removeCascades();</span>
+        } else {
+<span class="fc" id="L1746">            int cascadeIndex = 1;</span>
+<span class="fc" id="L1747">            msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + &quot;.&quot; + cascadeIndex);</span>
+<span class="fc bfc" id="L1748" title="All 2 branches covered.">            while (msg != null) {</span>
+<span class="fc" id="L1749">                String filter = getAttributeMessage(entityModel, model,</span>
+                        EntityModel.CASCADE_FILTER_PATH + &quot;.&quot; + cascadeIndex);
+                // optional mode (defaults to BOTH when omitted)
+<span class="fc" id="L1752">                String mode = getAttributeMessage(entityModel, model, EntityModel.CASCADE_MODE + &quot;.&quot; + cascadeIndex);</span>
+
+<span class="pc bpc" id="L1754" title="2 of 4 branches missed.">                if (filter != null &amp;&amp; mode != null) {</span>
+<span class="fc" id="L1755">                    model.addCascade(msg, filter, CascadeMode.valueOf(mode));</span>
+                } else {
+<span class="nc" id="L1757">                    throw new OCSRuntimeException(&quot;Incomplete cascade definition for &quot; + model.getPath());</span>
+                }
+
+<span class="fc" id="L1760">                cascadeIndex++;</span>
+<span class="fc" id="L1761">                msg = getAttributeMessage(entityModel, model, EntityModel.CASCADE + &quot;.&quot; + cascadeIndex);</span>
+<span class="fc" id="L1762">            }</span>
+        }
+<span class="fc" id="L1764">    }</span>
+
+    /**
+     * Adds custom setting overrides. These take the form of &quot;custom.1&quot;,
+     * &quot;customValue.1&quot; and &quot;customType.1&quot;
+     *
+     * @param entityModel the entity model that is being processed
+     * @param model       the attribute model
+     */
+    private void setMessageBundleCustomOverrides(EntityModel&lt;?&gt; entityModel, AttributeModel model) {
+
+<span class="fc" id="L1775">        int customIndex = 1;</span>
+<span class="fc" id="L1776">        String name = getAttributeMessage(entityModel, model, EntityModel.CUSTOM + &quot;.&quot; + customIndex);</span>
+<span class="fc bfc" id="L1777" title="All 2 branches covered.">        while (name != null) {</span>
+<span class="fc" id="L1778">            String value = getAttributeMessage(entityModel, model, EntityModel.CUSTOM_VALUE + &quot;.&quot; + customIndex);</span>
+<span class="fc" id="L1779">            String type = getAttributeMessage(entityModel, model, EntityModel.CUSTOM_TYPE + &quot;.&quot; + customIndex);</span>
+<span class="fc" id="L1780">            CustomType t = CustomType.STRING;</span>
+<span class="fc bfc" id="L1781" title="All 2 branches covered.">            if (type != null) {</span>
+<span class="fc" id="L1782">                t = CustomType.valueOf(type);</span>
+            }
+
+<span class="pc bpc" id="L1785" title="1 of 2 branches missed.">            if (value != null) {</span>
+<span class="fc bfc" id="L1786" title="All 2 branches covered.">                if (CustomType.BOOLEAN.equals(t)) {</span>
+<span class="fc" id="L1787">                    model.setCustomSetting(name, Boolean.valueOf(value));</span>
+<span class="fc bfc" id="L1788" title="All 2 branches covered.">                } else if (CustomType.INT.equals(t)) {</span>
+<span class="fc" id="L1789">                    model.setCustomSetting(name, Integer.parseInt(value));</span>
+                } else {
+<span class="fc" id="L1791">                    model.setCustomSetting(name, value);</span>
+                }
+<span class="fc" id="L1793">                customIndex++;</span>
+<span class="fc" id="L1794">                name = getAttributeMessage(entityModel, model, EntityModel.CUSTOM + &quot;.&quot; + customIndex);</span>
+            }
+<span class="fc" id="L1796">        }</span>
+<span class="fc" id="L1797">    }</span>
+
+    /**
+     * Calculates the entity model for a nested property, recursively up until a
+     * certain depth
+     *
+     * @param parentEntityModel the parent entity model
+     * @param attributeModel    the attribute model
+     */
+    protected void setNestedEntityModel(EntityModel&lt;?&gt; parentEntityModel, AttributeModelImpl attributeModel) {
+<span class="fc" id="L1807">        EntityModel&lt;?&gt; em = attributeModel.getEntityModel();</span>
+<span class="fc bfc" id="L1808" title="All 2 branches covered.">        if (StringUtils.countMatches(em.getReference(), &quot;.&quot;) &lt; parentEntityModel.getNestingDepth()) {</span>
+<span class="fc" id="L1809">            Class&lt;?&gt; type = null;</span>
+
+            // only needed for master and detail attributes
+<span class="fc bfc" id="L1812" title="All 4 branches covered.">            if (AttributeType.MASTER.equals(attributeModel.getAttributeType()) || AttributeType.EMBEDDED.equals(</span>
+<span class="fc" id="L1813">                    attributeModel.getAttributeType())) {</span>
+<span class="fc" id="L1814">                type = attributeModel.getType();</span>
+<span class="fc bfc" id="L1815" title="All 2 branches covered.">            } else if (AttributeType.DETAIL.equals(attributeModel.getAttributeType())) {</span>
+<span class="fc" id="L1816">                type = attributeModel.getMemberType();</span>
+            }
+
+<span class="fc bfc" id="L1819" title="All 2 branches covered.">            if (type != null) {</span>
+                String ref;
+<span class="pc bpc" id="L1821" title="1 of 2 branches missed.">                if (StringUtils.isEmpty(em.getReference())) {</span>
+<span class="nc" id="L1822">                    ref = em.getEntityClass() + &quot;.&quot; + attributeModel.getName();</span>
+                } else {
+<span class="fc" id="L1824">                    ref = em.getReference() + &quot;.&quot; + attributeModel.getName();</span>
+                }
+
+//                if (type.equals(em.getEntityClass()) || !hasEntityModel(type, ref)) {
+<span class="fc" id="L1828">                EntityModel&lt;?&gt; nestedModel = findModelFactory(ref, type).getModel(ref, type);</span>
+<span class="fc" id="L1829">                attributeModel.setNestedEntityModel(nestedModel);</span>
+//                } else {
+//                    //EntityModel&lt;?&gt; nestedModel = findModelFactory(ref, type).getModel(ref, type);
+//                    //attributeModel.setNestedEntityModel(nestedModel);
+//                }
+            }
+        }
+<span class="fc" id="L1836">    }</span>
+
+    /**
+     * Sets the &quot;required&quot; setting on an attribute based on JPA validation
+     * annotations
+     *
+     * @param &lt;T&gt;         the type parameter
+     * @param entityModel the entity model that the attribute model is part of
+     * @param model       the attribute model
+     * @param parentClass the parent class
+     * @param fieldName   the name of the field
+     */
+    private &lt;T&gt; void setRequiredAndMinMaxSetting(EntityModel&lt;T&gt; entityModel, AttributeModelImpl model,
+                                                 Class&lt;?&gt; parentClass, String fieldName) {
+        // determine if the attribute is required based on the @NotNull
+        // annotation
+<span class="fc" id="L1852">        NotNull notNull = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, NotNull.class);</span>
+<span class="fc bfc" id="L1853" title="All 2 branches covered.">        model.setRequired(notNull != null);</span>
+
+        // also set to required when it is a collection with a size greater than 0
+<span class="fc" id="L1856">        model.setAttributeType(determineAttributeType(parentClass, model));</span>
+<span class="fc" id="L1857">        Size size = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Size.class);</span>
+<span class="pc bpc" id="L1858" title="3 of 6 branches missed.">        if (size != null &amp;&amp; size.min() &gt; 0 &amp;&amp; AttributeType.DETAIL.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1859">            model.setRequired(true);</span>
+        }
+
+        // minimum and maximum size for collections
+<span class="pc bpc" id="L1863" title="1 of 4 branches missed.">        if (size != null &amp;&amp; AttributeType.DETAIL.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1864">            model.setMinCollectionSize(size.min());</span>
+<span class="nc" id="L1865">            model.setMaxCollectionSize(size.max());</span>
+        }
+
+        // minimum and maximum length based on the @Size annotation
+<span class="fc bfc" id="L1869" title="All 4 branches covered.">        if (model.getType() == String.class &amp;&amp; size != null) {</span>
+<span class="fc" id="L1870">            model.setMinLength(size.min());</span>
+<span class="fc" id="L1871">            model.setMaxLength(size.max());</span>
+        }
+
+<span class="pc bpc" id="L1874" title="1 of 4 branches missed.">        if (model.getAttributeType() == AttributeType.ELEMENT_COLLECTION &amp;&amp; size != null) {</span>
+<span class="nc" id="L1875">            model.setMinCollectionSize(size.min());</span>
+<span class="nc" id="L1876">            model.setMaxCollectionSize(size.max());</span>
+        }
+
+<span class="fc" id="L1879">        Min min = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Min.class);</span>
+<span class="pc bpc" id="L1880" title="1 of 6 branches missed.">        if ((model.isNumerical() || model.getAttributeType() == AttributeType.ELEMENT_COLLECTION) &amp;&amp; min != null) {</span>
+<span class="nc" id="L1881">            model.setMinValue(BigDecimal.valueOf(min.value()));</span>
+        }
+
+<span class="fc" id="L1884">        Max max = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName, Max.class);</span>
+<span class="pc bpc" id="L1885" title="1 of 6 branches missed.">        if ((model.isNumerical() || model.getAttributeType() == AttributeType.ELEMENT_COLLECTION) &amp;&amp; max != null) {</span>
+<span class="nc" id="L1886">            model.setMaxValue(BigDecimal.valueOf(max.value()));</span>
+        }
+<span class="fc" id="L1888">    }</span>
+
+    /**
+     * Sets the sort order on an entity model
+     *
+     * @param model        the entity model
+     * @param sortOrderMsg the sort order from the message bundle
+     */
+    protected &lt;T&gt; void setSortOrder(EntityModel&lt;T&gt; model, String sortOrderMsg) {
+<span class="fc bfc" id="L1897" title="All 2 branches covered.">        if (!StringUtils.isEmpty(sortOrderMsg)) {</span>
+<span class="fc" id="L1898">            String[] tokens = sortOrderMsg.split(&quot;,&quot;);</span>
+<span class="fc bfc" id="L1899" title="All 2 branches covered.">            for (String token : tokens) {</span>
+<span class="fc" id="L1900">                String[] sd = token.trim().split(&quot; &quot;);</span>
+<span class="pc bpc" id="L1901" title="2 of 6 branches missed.">                if (sd.length &gt; 0 &amp;&amp; !StringUtils.isEmpty(sd[0]) &amp;&amp; model.getAttributeModel(sd[0]) != null) {</span>
+<span class="fc bfc" id="L1902" title="All 2 branches covered.">                    model.getSortOrder().put(model.getAttributeModel(sd[0]),</span>
+<span class="pc bpc" id="L1903" title="1 of 4 branches missed.">                            sd.length == 1 || (!&quot;DESC&quot;.equalsIgnoreCase(sd[1]) &amp;&amp; !&quot;DSC&quot;.equalsIgnoreCase(sd[1])));</span>
+                }
+            }
+        }
+<span class="fc" id="L1907">    }</span>
+
+    /**
+     * Sets a String field value if the provided argument is not empty
+     *
+     * @param value    the string value
+     * @param receiver the code that is executed to set the value
+     */
+    private void setStringSetting(String value, Consumer&lt;String&gt; receiver) {
+<span class="fc bfc" id="L1916" title="All 2 branches covered.">        if (!StringUtils.isEmpty(value)) {</span>
+<span class="fc" id="L1917">            receiver.accept(value);</span>
+        }
+<span class="fc" id="L1919">    }</span>
+
+    /**
+     * Sets a String field value if the provided argument is not empty
+     *
+     * @param value    the string value
+     * @param receiver the code that is executed to set the value
+     */
+    private void setStringListSetting(List&lt;String&gt; value, Consumer&lt;List&lt;String&gt;&gt; receiver) {
+<span class="pc bpc" id="L1928" title="2 of 4 branches missed.">        if (value != null &amp;&amp; !value.isEmpty()) {</span>
+<span class="fc" id="L1929">            receiver.accept(value);</span>
+        }
+<span class="fc" id="L1931">    }</span>
+
+    /**
+     * Indicates whether to skip an attribute since it does not constitute an actual
+     * property but rather a generic or technical field that all entities have
+     *
+     * @param name the name of the attribute
+     * @return true if this is case, false otherwise
+     */
+    private boolean skipAttribute(String name) {
+<span class="fc bfc" id="L1941" title="All 4 branches covered.">        return CLASS.equals(name) || VERSION.equals(name);</span>
+    }
+
+    /**
+     * Validates an attribute model, by checking for illegal combinations of
+     * settings
+     *
+     * @param model the attribute model to check
+     */
+    private void validateAttributeModel(AttributeModel model) {
+        // multiple select fields not allowed for some attribute types
+<span class="fc bfc" id="L1952" title="All 2 branches covered.">        if (AttributeSelectMode.MULTI_SELECT.equals(model.getSelectMode())</span>
+<span class="pc bpc" id="L1953" title="1 of 2 branches missed.">                &amp;&amp; (!AttributeType.DETAIL.equals(model.getAttributeType()))) {</span>
+<span class="nc" id="L1954">            throw new OCSRuntimeException(&quot;Multi-select field not allowed for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+<span class="fc bfc" id="L1957" title="All 2 branches covered.">        if (AttributeSelectMode.MULTI_SELECT.equals(model.getSearchSelectMode())</span>
+<span class="pc bpc" id="L1958" title="1 of 4 branches missed.">                &amp;&amp; !(AttributeType.DETAIL.equals(model.getAttributeType()) || isMultiSelectMaster(model))) {</span>
+<span class="nc" id="L1959">            throw new OCSRuntimeException(&quot;Multi-select field not allowed for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+<span class="pc bpc" id="L1962" title="1 of 2 branches missed.">        if (AttributeSelectMode.AUTO_COMPLETE.equals(model.getSelectMode())</span>
+<span class="nc bnc" id="L1963" title="All 2 branches missed.">                &amp;&amp; AttributeType.DETAIL.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1964">            throw new OCSRuntimeException(&quot;Auto-complete field not allowed for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+<span class="fc bfc" id="L1967" title="All 2 branches covered.">        if (AttributeSelectMode.COMBO.equals(model.getSelectMode())</span>
+<span class="pc bpc" id="L1968" title="1 of 2 branches missed.">                &amp;&amp; AttributeType.DETAIL.equals(model.getAttributeType())) {</span>
+<span class="nc" id="L1969">            throw new OCSRuntimeException(&quot;Combo box not allowed for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+<span class="fc bfc" id="L1972" title="All 2 branches covered.">        if (AttributeSelectMode.COMBO.equals(model.getSearchSelectMode())</span>
+<span class="pc bpc" id="L1973" title="1 of 2 branches missed.">                &amp;&amp; model.isMultipleSearch()) {</span>
+<span class="nc" id="L1974">            throw new OCSRuntimeException(&quot;Combo box not allowed for multiple search for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+<span class="pc bpc" id="L1977" title="1 of 2 branches missed.">        if (AttributeSelectMode.AUTO_COMPLETE.equals(model.getSearchSelectMode())</span>
+<span class="nc bnc" id="L1978" title="All 2 branches missed.">                &amp;&amp; model.isMultipleSearch()) {</span>
+<span class="nc" id="L1979">            throw new OCSRuntimeException(&quot;Auto-complete field not allowed for multiple search for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+        // navigating only allowed in case of a many-to-one relation
+<span class="pc bpc" id="L1983" title="1 of 4 branches missed.">        if (!AttributeType.MASTER.equals(model.getAttributeType()) &amp;&amp; model.isNavigable()) {</span>
+<span class="nc" id="L1984">            throw new OCSRuntimeException(&quot;Navigation is not possible for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+        // searching on a LOB is pointless
+<span class="pc bpc" id="L1988" title="1 of 4 branches missed.">        if (AttributeType.LOB.equals(model.getAttributeType()) &amp;&amp; model.isSearchable()) {</span>
+<span class="nc" id="L1989">            throw new OCSRuntimeException(&quot;Searching on a LOB is not allowed for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+        // &quot;search date only&quot; is only supported for date/time fields
+<span class="pc bpc" id="L1993" title="1 of 4 branches missed.">        if (model.isSearchDateOnly() &amp;&amp; !LocalDateTime.class.equals(model.getType())</span>
+<span class="nc bnc" id="L1994" title="All 2 branches missed.">                &amp;&amp; !Instant.class.equals(model.getType())) {</span>
+<span class="nc" id="L1995">            throw new OCSRuntimeException(&quot;SearchDateOnly is not allowed for attribute %s&quot;.formatted(model.getName()));</span>
+        }
+
+        // field cannot be percentage and currency at the same time
+<span class="pc bpc" id="L1999" title="1 of 4 branches missed.">        if (model.isPercentage() &amp;&amp; !StringUtils.isEmpty(model.getCurrencyCode())) {</span>
+<span class="nc" id="L2000">            throw new OCSRuntimeException(&quot;%s is not allowed to be both a percentage and a currency&quot;.formatted(model.getName()));</span>
+        }
+
+        // element collection only supported for strings or integral numbers
+<span class="fc bfc" id="L2004" title="All 4 branches covered.">        if (model.getAttributeType() == AttributeType.ELEMENT_COLLECTION &amp;&amp; (!model.getMemberType().equals(String.class)</span>
+<span class="pc bpc" id="L2005" title="1 of 4 branches missed.">                &amp;&amp; !NumberUtils.isLong(model.getMemberType()) &amp;&amp; !NumberUtils.isInteger(model.getMemberType()))) {</span>
+<span class="nc" id="L2006">            throw new OCSRuntimeException(&quot;Element collection for %s is not allowed (not a String or an integral number)&quot;</span>
+<span class="nc" id="L2007">                    .formatted(model.getName()));</span>
+        }
+<span class="fc" id="L2009">    }</span>
+
+    /**
+     * Validates the &quot;group together with&quot; settings for all attributes in the
+     * specified entity model
+     *
+     * @param &lt;T&gt;         type parameter, type of the class managed by the entity model
+     * @param entityModel the entity model
+     */
+    private &lt;T&gt; void validateGroupTogetherSettings(EntityModel&lt;T&gt; entityModel) {
+<span class="fc" id="L2019">        Set&lt;String&gt; alreadyUsed = new HashSet&lt;&gt;();</span>
+        // check if there aren't any illegal &quot;group together&quot; settings
+<span class="fc bfc" id="L2021" title="All 2 branches covered.">        for (AttributeModel am : entityModel.getAttributeModels()) {</span>
+<span class="fc" id="L2022">            alreadyUsed.add(am.getName());</span>
+<span class="fc bfc" id="L2023" title="All 2 branches covered.">            if (!am.getGroupTogetherWith().isEmpty()) {</span>
+<span class="fc bfc" id="L2024" title="All 2 branches covered.">                for (String together : am.getGroupTogetherWith()) {</span>
+<span class="fc bfc" id="L2025" title="All 2 branches covered.">                    if (alreadyUsed.contains(together)) {</span>
+<span class="fc" id="L2026">                        AttributeModel other = entityModel.getAttributeModel(together);</span>
+<span class="pc bpc" id="L2027" title="1 of 2 branches missed.">                        if (together != null) {</span>
+<span class="fc" id="L2028">                            ((AttributeModelImpl) other).setAlreadyGrouped(true);</span>
+<span class="fc" id="L2029">                            throw new OCSRuntimeException(&quot;Incorrect groupTogetherWith found: %s refers to %s&quot;.formatted(am.getName(), together));</span>
+                        }
+                    }
+<span class="fc" id="L2032">                }</span>
+            }
+<span class="fc" id="L2034">        }</span>
+<span class="fc" id="L2035">    }</span>
+
+    private boolean isMultiSelectMaster(AttributeModel attributeModel) {
+<span class="pc bpc" id="L2038" title="1 of 2 branches missed.">        return attributeModel.getAttributeType() == AttributeType.MASTER</span>
+<span class="pc bpc" id="L2039" title="1 of 2 branches missed.">                &amp;&amp; attributeModel.isMultipleSearch();</span>
+    }
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamoConfigurationProperties.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.configuration</a> &gt; <span class="el_source">DynamoConfigurationProperties.java</span></div><h1>DynamoConfigurationProperties.java</h1><pre class="source lang-java linenums">package org.dynamoframework.configuration;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.Data;
+import org.dynamoframework.domain.model.*;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.validation.annotation.Validated;
+
+import java.io.Serial;
+import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Locale;
+import java.util.Map;
+
+@ConfigurationProperties(prefix = &quot;dynamoframework&quot;)
+<span class="pc bpc" id="L35" title="58 of 66 branches missed.">@Data</span>
+@Validated
+public class DynamoConfigurationProperties implements Serializable, DynamoProperties {
+    @Serial
+    private static final long serialVersionUID = -8329492319537273489L;
+<span class="fc" id="L40">    private boolean capitalizePropertyNames = true;</span>
+
+    /**
+     * Default properties
+     */
+<span class="fc" id="L45">    private DefaultProperties defaults = new DefaultConfigurationProperties();</span>
+
+<span class="pc bpc" id="L47" title="144 of 166 branches missed.">    @Data</span>
+    @ConfigurationProperties(prefix = &quot;dynamoframework.defaults&quot;)
+    public static class DefaultConfigurationProperties implements Serializable, DefaultProperties {
+        @Serial
+        private static final long serialVersionUID = -3229613809797417359L;
+
+        /**
+         * Indicates the default mode to use for boolean components
+         */
+<span class="fc" id="L56">        private AttributeBooleanFieldMode booleanFieldMode = AttributeBooleanFieldMode.CHECKBOX;</span>
+
+        /**
+         * The default date format
+         */
+<span class="fc" id="L61">        private String dateFormat = &quot;dd-MM-yyyy&quot;;</span>
+
+        /**
+         * The default date/time (time stamp) format
+         */
+<span class="fc" id="L66">        private String dateTimeFormat = &quot;dd-MM-yyyy HH:mm:ss&quot;;</span>
+        /**
+         * The default decimal precision
+         */
+<span class="fc" id="L70">        private Integer decimalPrecision = 2;</span>
+
+        /**
+         * Indicates the default mode to use for element collection fields
+         */
+<span class="fc" id="L75">        private ElementCollectionMode elementCollectionMode = ElementCollectionMode.CHIPS;</span>
+
+        /**
+         * The default field type to use for enumeration attributes
+         */
+<span class="fc" id="L80">        private AttributeEnumFieldMode enumFieldMode = AttributeEnumFieldMode.DROPDOWN;</span>
+
+        /**
+         * The representation of the value &lt;code&gt;false&lt;/code&gt;
+         */
+<span class="fc" id="L85">        private String falseRepresentation = &quot;false&quot;;</span>
+
+        /**
+         * Localized representations of the value &lt;code&gt;false&lt;/code&gt;
+         */
+<span class="fc" id="L90">        private Map&lt;String, String&gt; falseRepresentations = new HashMap&lt;&gt;();</span>
+
+        /**
+         * Localized representations of the value &lt;code&gt;true&lt;/code&gt;
+         */
+<span class="fc" id="L95">        private Map&lt;String, String&gt; trueRepresentations = new HashMap&lt;&gt;();</span>
+
+        /**
+         * The representation of the value &lt;code&gt;true&lt;/code&gt;
+         */
+<span class="fc" id="L100">        private String trueRepresentation = &quot;true&quot;;</span>
+
+        /**
+         * The default group together mode
+         */
+<span class="fc" id="L105">        private GroupTogetherMode groupTogetherMode;</span>
+
+        /**
+         * The column width from grouping together
+         */
+<span class="fc" id="L110">        private Integer groupTogetherWidth = 300;</span>
+
+        /**
+         * The default locale
+         */
+<span class="fc" id="L115">        private Locale locale = Locale.ENGLISH;;</span>
+
+        /**
+         * The default nesting depth
+         */
+<span class="fc" id="L120">        private Integer nestingDepth = 2;</span>
+
+        /**
+         * The default number field mode
+         */
+<span class="fc" id="L125">        private NumberFieldMode numberFieldMode = NumberFieldMode.TEXTFIELD;</span>
+
+        /**
+         * The default case sensitiveness for search
+         */
+<span class="fc" id="L130">        private boolean searchCaseSensitive = false;</span>
+
+        /**
+         * Whether search is prefix only
+         */
+<span class="fc" id="L135">        private boolean searchPrefixOnly = false;</span>
+
+        /**
+         * The default time format
+         */
+<span class="fc" id="L140">        private String timeFormat = &quot;HH:mm:ss&quot;;</span>
+
+        /**
+         * Indicates whether to use the display name as the input prompt by default
+         */
+<span class="fc" id="L145">        private boolean usePromptValue = true;</span>
+
+        /**
+         * Whether to trim white space for text inputs
+         */
+<span class="fc" id="L150">        private boolean trimSpaces = false;</span>
+
+        /**
+         * The default AI service
+         */
+<span class="fc" id="L155">        private String aiService;</span>
+
+        /**
+         * The configuration of the Dynamo endpoints
+         */
+<span class="fc" id="L160">        private EndpointProperties endpoints = new EndpointConfigurationProperties();</span>
+
+<span class="pc bpc" id="L162" title="48 of 54 branches missed.">        @Data</span>
+        @ConfigurationProperties(prefix = &quot;dynamoframework.defaults.endpoints&quot;)
+        public static class EndpointConfigurationProperties implements Serializable, EndpointProperties {
+            /**
+             * The endpoint for the export controller
+             */
+<span class="fc" id="L168">            private String export = &quot;/api/dynamo/export&quot;;</span>
+            /**
+             * The endpoint for the model controller
+             */
+<span class="fc" id="L172">            private String model = &quot;/api/dynamo/model&quot;;</span>
+            /**
+             * The endpoint for the autofill controller
+             */
+<span class="fc" id="L176">            private String autofill = &quot;/api/dynamo/autofill&quot;;</span>
+            /**
+             * The endpoint for the status controller
+             */
+<span class="fc" id="L180">            private String status = &quot;/api/dynamo/status&quot;;</span>
+            /**
+             * The endpoint for the crud controller
+             */
+<span class="fc" id="L184">            private String crud = &quot;/api/dynamo/crud&quot;;</span>
+            /**
+             * The endpoint for the file controller
+             */
+<span class="fc" id="L188">            private String file = &quot;/api/dynamo/file&quot;;</span>
+        }
+
+    }
+
+    /**
+     * Properties related to csv, import and export
+     */
+<span class="fc" id="L196">    private CsvProperties csv = new CsvConfigurationProperties();</span>
+
+<span class="pc bpc" id="L198" title="22 of 24 branches missed.">    @Data</span>
+    @ConfigurationProperties(prefix = &quot;dynamoframework.csv&quot;)
+    public static class CsvConfigurationProperties implements Serializable, CsvProperties {
+        @Serial
+        private static final long serialVersionUID = 6909139472091672387L;
+
+        /**
+         * The CSV escape character when importing/exporting
+         */
+<span class="fc" id="L207">        private char escapeChar = '\&quot;';</span>
+        /**
+         * The CSV quote char when importing/exporting
+         */
+<span class="fc" id="L211">        private char quoteChar = '\&quot;';</span>
+
+        /**
+         * The CSV separator when importing/exporting
+         */
+<span class="fc" id="L216">        private char separatorChar = ';';</span>
+
+        /**
+         * The number of rows that must be present in a result set before resorting to a
+         * streaming approach for Excel export
+         */
+<span class="fc" id="L222">        private Integer maxRowsBeforeStreaming = 1000;</span>
+
+        /**
+         * Whether to use thousands grouping in XLS files
+         */
+<span class="fc" id="L227">        private boolean thousandsGrouping = false;</span>
+    }
+
+    /**
+     * OpenAI properties
+     */
+<span class="fc" id="L233">    private OpenAiProperties openai = new OpenAiConfigurationProperties();</span>
+
+<span class="pc bpc" id="L235" title="30 of 34 branches missed.">    @Data</span>
+    @ConfigurationProperties(prefix = &quot;dynamoframework.openai&quot;)
+    public static class OpenAiConfigurationProperties implements Serializable, OpenAiProperties {
+        @Serial
+        private static final long serialVersionUID = 4426516280121454055L;
+        /**
+         * Enable OpenAI
+         */
+<span class="fc" id="L243">        private boolean enabled = false;</span>
+        /**
+         * The OpenAI API key
+         */
+<span class="fc" id="L247">        private String apiKey;</span>
+        /**
+         * The model to use
+         */
+<span class="fc" id="L251">        private String model = &quot;gpt-4-turbo&quot;;</span>
+        /**
+         * Maximum number of tokens
+         */
+<span class="fc" id="L255">        private Integer maxTokens = 4096;</span>
+
+    }
+
+    /**
+     * Ollama properties
+     */
+<span class="fc" id="L262">    private OllamaProperties ollama = new OllamaConfigurationProperties();</span>
+
+<span class="pc bpc" id="L264" title="23 of 26 branches missed.">    @Data</span>
+    @ConfigurationProperties(prefix = &quot;dynamoframework.ollama&quot;)
+    public static class OllamaConfigurationProperties implements Serializable, OllamaProperties {
+
+        private static final long serialVersionUID = -2357577501146838042L;
+        /**
+         * Enable Ollama
+         */
+<span class="fc" id="L272">        private boolean enabled = false;</span>
+        /**
+         * Ollama URL
+         */
+<span class="fc" id="L276">        private String url;</span>
+        /**
+         * The model to use
+         */
+<span class="fc" id="L280">        private String model = &quot;llama3&quot;;</span>
+    }
+
+    /**
+     * VertexAI properties
+     */
+<span class="fc" id="L286">    private VertexAiProperties vertexai = new VertexAiConfigurationProperties();</span>
+
+<span class="pc bpc" id="L288" title="30 of 34 branches missed.">    @Data</span>
+    @ConfigurationProperties(prefix = &quot;dynamoframework.vertexai&quot;)
+    public static class VertexAiConfigurationProperties implements Serializable, VertexAiProperties {
+        @Serial
+        private static final long serialVersionUID = -1404865335552095931L;
+        /**
+         * Enable VertexAI
+         */
+<span class="fc" id="L296">        private boolean enabled = false;</span>
+        /**
+         * The project id
+         */
+<span class="fc" id="L300">        private String projectId;</span>
+        /**
+         * The region of the project
+         */
+<span class="fc" id="L304">        private String projectRegion = &quot;europe-west1&quot;;</span>
+        /**
+         * The model to use
+         */
+<span class="fc" id="L308">        private String model = &quot;gemini-1.5-flash-preview-0514&quot;;</span>
+    }
+
+    /**
+     * Bedrock properties
+     */
+<span class="fc" id="L314">    private BedrockProperties bedrock = new BedrockConfigurationProperties();</span>
+
+<span class="pc bpc" id="L316" title="37 of 42 branches missed.">    @Data</span>
+    @ConfigurationProperties(prefix = &quot;dynamoframework.bedrock&quot;)
+    public static class BedrockConfigurationProperties implements Serializable, BedrockProperties {
+        @Serial
+        private static final long serialVersionUID = -6324259015491446578L;
+        /**
+         * Enable Bedrock
+         */
+<span class="fc" id="L324">        private boolean enabled = false;</span>
+        /**
+         * Access key
+         */
+<span class="fc" id="L328">        private String accessKey;</span>
+        /**
+         * Access secret
+         */
+<span class="fc" id="L332">        private String accessSecret;</span>
+        /**
+         * Model id
+         */
+<span class="fc" id="L336">        private String modelId;</span>
+        /**
+         * Region
+         */
+<span class="fc" id="L340">        private String region;</span>
+    }
+
+    /**
+     * The name of the database function used to replace accents
+     */
+<span class="fc" id="L346">    private String unaccentFunctionName = &quot;&quot;;</span>
+
+
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
