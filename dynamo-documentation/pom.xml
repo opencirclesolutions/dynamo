@@ -22,16 +22,15 @@
                 <executions>
                     <execution>
                         <id>convert-to-html</id>
-                        <phase>site</phase>
+                        <phase>pre-site</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
                         <configuration>
                             <backend>html</backend>
                             <sourceDocumentName>index.adoc</sourceDocumentName>
-                            <sourceDirectory>${project.basedir}</sourceDirectory>
-                            <outputDirectory>../target/staging</outputDirectory>
-                            <outputFile>reference.html</outputFile>
+                            <outputDirectory>../target/staging/reference</outputDirectory>
+                            <outputFile>index.html</outputFile>
                         </configuration>
                     </execution>
                     <execution>
@@ -43,7 +42,6 @@
                         <configuration>
                             <backend>pdf</backend>
                             <sourceDocumentName>index.adoc</sourceDocumentName>
-                            <sourceDirectory>${project.basedir}</sourceDirectory>
                             <outputDirectory>../target/staging</outputDirectory>
                             <outputFile>Dynamo reference.pdf</outputFile>
                         </configuration>

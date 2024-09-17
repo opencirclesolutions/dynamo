@@ -45,8 +45,8 @@
                             <backend>html</backend>
                             <sourceDocumentName>index.adoc</sourceDocumentName>
                             <sourceDirectory>${project.basedir}</sourceDirectory>
-                            <outputDirectory>../target/staging</outputDirectory>
-                            <outputFile>training.html</outputFile>
+                            <outputDirectory>../target/staging/training</outputDirectory>
+                            <outputFile>index.html</outputFile>
                         </configuration>
                     </execution>
                     <execution>

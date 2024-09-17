@@ -12,4 +12,4 @@ mvn -Ddependency.skip="${DEPENDENCY_SKIP}" \
     -DdatabaseUser="$(op read "op://sxetjycambbujpjbtcztimp7xa/CVE database/username")" \
     -DdatabasePassword="$(op read "op://sxetjycambbujpjbtcztimp7xa/CVE database/password")" \
     -DdatabaseDriverName="org.postgresql.Driver" \
-    clean verify site site:stage
+    clean site site:stage

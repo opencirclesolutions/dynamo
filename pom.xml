@@ -477,7 +477,6 @@
                         <configuration>
                             <backend>html</backend>
                             <sourceDocumentName>README.adoc</sourceDocumentName>
-                            <sourceDirectory>${project.basedir}</sourceDirectory>
                             <outputDirectory>${project.build.directory}/staging</outputDirectory>
                             <outputFile>index.html</outputFile>
                         </configuration>

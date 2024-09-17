@@ -40,7 +40,7 @@
                 <name>Dynamo Framework</name>
                 <alt>Dynamo Framework</alt>
                 <src>../images/logo-dynamo.png</src>
-                <href>../../index.html</href>
+                <href>../index.html</href>
             </topBarIcon>
         </fluidoSkin>
     </custom>
