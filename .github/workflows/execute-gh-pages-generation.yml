@@ -2,8 +2,7 @@ name: asciidoctor-ghpages
 on:
   push:
     branches:
-      - gh-pages
-      - main
+      - non-existent
 jobs:
   # This workflow contains a single job called "build"
   build:
