@@ -66,5 +66,15 @@ public interface DefaultProperties {
     String getAiService();
 
     EndpointProperties getEndpoints();
+
+    /**
+     * Whether to scan the class path for entities
+     */
+    boolean isEntityClassPathScan();
+
+    /**
+     * Explicit packages containing entities
+     */
+    String getEntityPackages();
 }
 

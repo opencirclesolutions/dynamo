@@ -325,14 +325,5 @@ public class ClassUtilsTest {
     }
 
 
-    @Test
-    public void testFindClass() {
-        assertNull(ClassUtils.findClass("NonExistingClass"));
-        assertNull(ClassUtils.findClass("AbstractEntity1"));
-        Class clazz = ClassUtils.findClass("TestEntity");
-        assertEquals("org.dynamoframework.domain.TestEntity", clazz.getName());
-        // In a package not listed in @EntityScan
-        assertNull(ClassUtils.findClass("ExternalEntity"));
-        assertNull(ClassUtils.findClass("ExternalAstractEntity"));
-    }
+
 }

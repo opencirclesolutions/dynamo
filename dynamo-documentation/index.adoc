@@ -2468,6 +2468,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |`element-collection-mode`|ElementCollectionMode|Indicates the default mode to use for element collection fields|
 |`endpoints`|EndpointProperties|The configuration of the Dynamo endpoints|
 |`enum-field-mode`|AttributeEnumFieldMode|The default field type to use for enumeration attributes|
+|`entityClassPathScan`|String
 |`false-representation`|String|The representation of the value &lt;code&gt;false&lt;/code&gt;|`false`
 |`false-representations`|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;false&lt;/code&gt;|
 |`group-together-mode`|GroupTogetherMode|The default group together mode|

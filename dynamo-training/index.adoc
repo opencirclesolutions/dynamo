@@ -2164,23 +2164,7 @@ example, we could define the following in the *Person* class:
 
 This will define a collection of integers that can be used to store a
 person’s lucky numbers. As you can see, these are stored in the database
-in a table named “person_lucky_numbers”. The definition for this table
-is as follows:
-
-[source,sql]
---
-CREATE TABLE person_lucky_numbers(
-  id serial NOT NULL,
-  person_id integer,
-  lucky_number integer,
-  primary key(id)
-);
-
-ALTER TABLE person_lucky_numbers ADD CONSTRAINT
-fk_person_lucky_numbers_person FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE;
---
-
-Go ahead and execute these commands in your SQL client.
+in a table named “person_lucky_numbers” (which is already present).
 
 Restart the application and navigate to the screen for managing persons.
 Select a Person and verify that you will now see a so-called “chips”

@@ -32,6 +32,7 @@ import org.dynamoframework.domain.model.EntityModelAction;
 import org.dynamoframework.domain.model.EntityModelFactory;
 import org.dynamoframework.exception.OCSValidationException;
 import org.dynamoframework.exception.OcsNotFoundException;
+import org.dynamoframework.service.impl.EntityScanner;
 import org.dynamoframework.utils.ClassUtils;
 import org.springframework.web.bind.annotation.*;
 
@@ -47,6 +48,8 @@ public class EntityModelController {
 
     private final EntityModelMapper entityModelMapper;
 
+    private final EntityScanner entityScanner;
+
     /**
      * Retrieves an entity model based on the name of the entity
      *
@@ -58,7 +61,7 @@ public class EntityModelController {
     @Operation(summary = "Retrieve an entity model")
     public EntityModelResponse getEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
                                               @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
-        Class<?> clazz = ClassUtils.findClass(entityName);
+        Class<?> clazz = entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
         }
@@ -79,7 +82,7 @@ public class EntityModelController {
     public EntityModelResponse getNestedEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
                                                     @PathVariable @Parameter(description = "The name of the attribute") String attributeName,
                                                     @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
-        Class<?> clazz = ClassUtils.findClass(entityName);
+        Class<?> clazz = entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
         }
@@ -106,7 +109,7 @@ public class EntityModelController {
     public EntityModelResponse getActionEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
                                                     @PathVariable @Parameter(description = "The ID of the action") String actionId,
                                                     @RequestParam(required = false) String reference) {
-        Class<?> clazz = ClassUtils.findClass(entityName);
+        Class<?> clazz = entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
         }
