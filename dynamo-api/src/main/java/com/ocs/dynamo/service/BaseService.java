@@ -16,6 +16,7 @@ package com.ocs.dynamo.service;
 import java.util.List;
 
 import com.ocs.dynamo.dao.FetchJoinInformation;
+import com.ocs.dynamo.dao.Pageable;
 import com.ocs.dynamo.dao.SortOrder;
 import com.ocs.dynamo.dao.SortOrders;
 import com.ocs.dynamo.domain.AbstractEntity;
@@ -268,6 +269,10 @@ public interface BaseService<ID, T extends AbstractEntity<ID>> {
 	 * @return the list of properties
 	 */
 	List<?> findProperties(Filter filter, String[] selectProperties, SortOrders sortOrders);
+
+	List<?> findSelect(Filter filter, String[] selectProperties, SortOrders orders);
+
+	List<?> findSelect(Filter filter, String[] selectProperties, Pageable pageable);
 
 	/**
 	 * Returns the class of the entity managed by this DAO
