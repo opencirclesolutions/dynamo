@@ -44,7 +44,6 @@
                         <configuration>
                             <backend>html</backend>
                             <sourceDocumentName>index.adoc</sourceDocumentName>
-                            <sourceDirectory>${project.basedir}</sourceDirectory>
                             <outputDirectory>../target/staging/training</outputDirectory>
                             <outputFile>index.html</outputFile>
                         </configuration>
@@ -58,7 +57,6 @@
                         <configuration>
                             <backend>pdf</backend>
                             <sourceDocumentName>index.adoc</sourceDocumentName>
-                            <sourceDirectory>${project.basedir}</sourceDirectory>
                             <outputDirectory>../target/staging</outputDirectory>
                             <outputFile>Dynamo training.pdf</outputFile>
                         </configuration>
