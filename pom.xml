@@ -490,6 +490,10 @@
                 <inherited>false</inherited>
                 <configuration>
                     <scmBranch>gh-pages-tommy</scmBranch>
+                    <content>${project.build.directory}/staging</content>
+                    <addUniqueDirectory>true</addUniqueDirectory>
+                    <excludes>.git</excludes>
+                    <skipDeletedFiles>true</skipDeletedFiles>
                 </configuration>
             </plugin>
             <plugin>

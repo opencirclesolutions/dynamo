@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <artifactId>dynamo-training</artifactId>
+    <packaging>jar</packaging>
+    <name>Training</name>
+    <description>Dynamo Framework training.</description>
+    <parent>
+        <groupId>org.dynamoframework</groupId>
+        <artifactId>dynamo-parent</artifactId>
+        <version>4.0.0-SNAPSHOT</version>
+    </parent>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.asciidoctor</groupId>
+                <artifactId>asciidoctor-maven-plugin</artifactId>
+                <version>${asciidoctor.maven.plugin.version}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj-pdf</artifactId>
+                        <version>${asciidoctorj.pdf.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.jruby</groupId>
+                        <artifactId>jruby</artifactId>
+                        <version>${jruby.version}</version>
+                    </dependency>
+                    <dependency>
+                        <groupId>org.asciidoctor</groupId>
+                        <artifactId>asciidoctorj</artifactId>
+                        <version>${asciidoctorj.version}</version>
+                    </dependency>
+                </dependencies>
+                <executions>
+                    <execution>
+                        <id>convert-to-html</id>
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>html</backend>
+                            <sourceDocumentName>index.adoc</sourceDocumentName>
+                            <sourceDirectory>${project.basedir}</sourceDirectory>
+                            <outputDirectory>../target/staging</outputDirectory>
+                            <outputFile>training.html</outputFile>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>convert-to-pdf</id>
+                        <phase>pre-site</phase>
+                        <goals>
+                            <goal>process-asciidoc</goal>
+                        </goals>
+                        <configuration>
+                            <backend>pdf</backend>
+                            <sourceDocumentName>index.adoc</sourceDocumentName>
+                            <sourceDirectory>${project.basedir}</sourceDirectory>
+                            <outputDirectory>../target/staging</outputDirectory>
+                            <outputFile>Dynamo training.pdf</outputFile>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-site-plugin</artifactId>
+                <configuration>
+                    <stagingDirectory>../target/staging/maven</stagingDirectory>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>
