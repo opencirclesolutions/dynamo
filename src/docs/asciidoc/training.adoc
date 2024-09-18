@@ -29,7 +29,7 @@ endif::[]
 image:media/logo-dynamo.png[image]
 
 [.text-center]
-Dynamo: Web Application Accelerator Framework.
+Dynamo: Web Application Accelerator Framework, version {dynamo-version}.
 
 [.text-center]
 Developed, maintained and sponsored by:
@@ -37,56 +37,15 @@ Developed, maintained and sponsored by:
 [.text-center]
 image:media/logo-ocs.png["Open Circle Solutons", 256, 53]
 
-[.text-center]
-Copyright © 2014 - 2024 Open Circle Solutions BV.
+---
 
-_Nothing from this document may be copied and/or made public by use of
-print, photocopy, microfilm or by any other means, without prior
-permission of Open Circle Solutions BV._
+include::_copyright.adoc[]
 
 ifdef::backend-pdf[]
 toc::[]
 endif::[]
 
-== Introduction
-
-The _Dynamo Web Application Accelerator Framework_ is a software
-development framework developed by https://www.opencirclesolution.nl[Open Circle Solutions]
-that aims to  increase productivity by using design principles such as
-convention over configuration, model-driven development and DRY (don’t
-repeat yourself).
-
-At the core of Dynamo is the concept of the _Entity Model_. The Entity
-Model describes the attributes and behaviour of an entity (i.e., a
-domain object) in your application. This Entity Model can then be used
-as the basis for creating forms, search screens, etc.
-
-The _Entity Model_ of an entity is automatically constructed based on
-the properties of the attributes of the entity (using sensible defaults
-as described by the convention over configuration principle) and can
-further be modified by using annotations and message bundle entries. The
-main goal is to reduce the amount of (boilerplate) code required to
-perform common actions like creating search screens and edit forms.
-
-Complementing the _Entity Model_ is a set of user interface components
-(widgets) that can be used to quickly construct screens for common use
-cases, and several base classes for the Data Access and Service layers.
-
-The Dynamo framework is built around a number of proven and highly
-productive technologies:
-
-* https://jakarta.ee/specifications/persistence/[JPA3.1] for ORM
-* https://querydsl.com[QueryDSL] for type-safe query generation
-* https://docs.spring.io/spring-boot/index.html[Spring Boot] as the
-application framework
-* https://angular.dev[Angular (v16)] as the front-end framework of choice
-* https://primeng.org[PrimeNG] for a rich suite of components
-
-The Dynamo Framework is distributed under the terms of the
-https://www.apache.org/licenses/LICENSE-2.0.txt[Apache License], a
-permissive open-source license for free and open-source software (FOSS).
-
-
+include::_introduction.adoc[]
 
 == The use case: GTS
 
@@ -498,7 +457,7 @@ Clicking it will toggle between showing and hiding the search fields
 that are set to `searchable=ADVANCED`.
 
 .Search buttons.
-image::media/image3.png[image,width=458,height=70]
+image::media/training/image3.png[image,width=458,height=70]
 
 === More searching 
 
@@ -512,7 +471,7 @@ You will now see a search component for the `members` attribute that
 looks as follows:
 
 .Search component example.
-image::media/image4.png[image,width=424,height=328]
+image::media/training/image4.png[image,width=424,height=328]
 
 By default, the application will render a multiple-select field from
 which you can select the members to search on. However, as you can see,
@@ -576,7 +535,7 @@ to `LOOKUP`. Restart the application and verify that
 you now see the following:
 
 .Lookup field.
-image::media/image5.png[image,width=429,height=68]
+image::media/training/image5.png[image,width=429,height=68]
 
 You will now see a “lookup field” which consists of a label that
 displays the currently selected value(s), a button for clearing the
@@ -963,7 +922,7 @@ filter” button below it. Pressing this button will add a row to the
 search form. This row can be used to add a search criterion.
 
 .“Add filter” button in search.
-image::media/image6.png[image,width=560,height=361]
+image::media/training/image6.png[image,width=560,height=361]
 
 Each search row starts with a combo box that allows you to select the
 attribute you want to filter on. It includes all attributes with
@@ -1047,7 +1006,7 @@ interface component is rendered for which attribute. The edit form looks
 like this:
 
 .An edit form.
-image::media/image7.png[image,width=560,height=570]
+image::media/training/image7.png[image,width=560,height=570]
 
 By now, it should not come as a surprise that you will see text fields
 for String and numeric attributes, combo boxes for enumerations, etc.
@@ -1117,7 +1076,7 @@ detail screen.
 --
 
 .Field with a button to show details.
-image::media/image8.png[image,width=559,height=26]
+image::media/training/image8.png[image,width=559,height=26]
 
 TIP: You can also set the `detailsModeEnabled` setting to `false`.
 This will completely disable the functionality to navigate to the detail
@@ -1155,7 +1114,7 @@ or long properties). When you set this to `NUMBERFIEL`, e.g. for the
 `memberCount` property, you will see the following:
 
 .Numeric input field.
-image::media/image9.png[image,width=560,height=53]
+image::media/training/image9.png[image,width=560,height=53]
 
 * This is a numeric input field which will only accept numeric input and
 also contains plus and minus buttons for changing the value. You can use
@@ -1182,7 +1141,7 @@ the attribute it refers to. Dynamo will produce an error if you define
 an incorrect attribute grouping)
 
 .Grouped input fields.
-image::media/image10.png[image,width=560,height=79]
+image::media/training/image10.png[image,width=560,height=79]
 
 === URL fields
 
@@ -1264,7 +1223,7 @@ Restart the application and verify that the edit form now looks as
 follows:
 
 .Updated edit form with attribute grouping.
-image::media/image11.png[image,width=560,height=279]
+image::media/training/image11.png[image,width=560,height=279]
 
 You will see three attribute groups: the two groups you declared and an
 additional group that contains all attributes that were not explicitly
@@ -1380,7 +1339,7 @@ Now, when you open the detail page for an organization, you should see a
 “Main Activity” field in the edit form:
 
 .Main activity field.
-image::media/image12.png[image,width=462,height=61]
+image::media/training/image12.png[image,width=462,height=61]
 
 Behind the input component, you will see a “plus” button that allows you
 to quickly add a new value for this lookup table. This button appears
@@ -1494,7 +1453,7 @@ even simpler than for the search layout:
 Which will produce a screen that looks as follows:
 
 .Split layout screen.
-image::media/image13.png[image,width=560,height=247]
+image::media/training/image13.png[image,width=560,height=247]
 
 * You can select a row in the table to the left to make the details of
 that row show up in the form to the right.
@@ -1734,7 +1693,7 @@ the application now renders a table that can be used to edit the
 translations of a Gift:
 
 .A table to edit translations.
-image::media/image14.png[image,width=560,height=191]
+image::media/training/image14.png[image,width=560,height=191]
 
 (Note that you can click the button in the top right to add a new row to
 the table). Go ahead and add some translations to the table, then press
@@ -2025,7 +1984,7 @@ results table, and `CREATE` actions will show up in the button bar below
 the table.
 
 .A table with update buttons.
-image::media/image15.png[image,width=560,height=24]
+image::media/training/image15.png[image,width=560,height=24]
 
 Pressing the button will open a pop-up dialog based on the
 `OrganizationNameDTO` we saw before. Any fields that match between the
@@ -2033,7 +1992,7 @@ main entity (`Organization`) and the DTO, in this case the `name`, will be
 automatically filled in:
 
 .Automatically filled in name field.
-image::media/image16.png[image,width=559,height=107]
+image::media/training/image16.png[image,width=559,height=107]
 
 In addition to this, you can also add actions/button that are managed on
 the front-end. These come in three varieties:
@@ -2131,7 +2090,7 @@ This will lead to the following situation in the Person screen
 make the link show up).
 
 .Person screen with link to organization.
-image::media/image17.png[image,width=503,height=407]
+image::media/training/image17.png[image,width=503,height=407]
 
 The `navigable` setting on the `@Attribute` annotation will make sure
 that whenever the property is shown in read-only mode, a hyperlink will
@@ -2297,7 +2256,7 @@ component and then pressing Enter when you are done with the input. It
 is possible to add multiple values like this.
 
 .An example of a “chips” component used to manage an element collection.
-image::media/image18.png[image,width=560,height=81]
+image::media/training/image18.png[image,width=560,height=81]
 
 The component comes with several validations, e.g. the `@Size` annotation
 that you can see in the code example above will be used to limit the

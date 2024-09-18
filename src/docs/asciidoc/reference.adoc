@@ -30,7 +30,7 @@ endif::[]
 image:media/logo-dynamo.png[image]
 
 [.text-center]
-Dynamo: Web Application Accelerator Framework.
+Dynamo: Web Application Accelerator Framework, version {dynamo-version}.
 
 [.text-center]
 Developed, maintained and sponsored by:
@@ -38,54 +38,15 @@ Developed, maintained and sponsored by:
 [.text-center]
 image:media/logo-ocs.png["Open Circle Solutons", 256, 53]
 
-[.text-center]
-Copyright © 2014 - 2024 Open Circle Solutions BV.
+---
 
-_Nothing from this document may be copied and/or made public by use of
-print, photocopy, microfilm or by any other means, without prior
-permission of Open Circle Solutions BV._
+include::_copyright.adoc[]
 
 ifdef::backend-pdf[]
 toc::[]
 endif::[]
 
-== Introduction
-
-The _Dynamo Web Application Accelerator Framework_ is a software
-development framework developed by https://www.opencirclesolution.nl[Open Circle Solutions]
-that aims to  increase productivity by using design principles such as
-convention over configuration, model-driven development and DRY (don’t
-repeat yourself).
-
-At the core of Dynamo is the concept of the _Entity Model_. The Entity
-Model describes the attributes and behaviour of an entity (i.e., a
-domain object) in your application. This Entity Model can then be used
-as the basis for creating forms, search screens, etc.
-
-The _Entity Model_ of an entity is automatically constructed based on
-the properties of the attributes of the entity (using sensible defaults
-as described by the convention over configuration principle) and can
-further be modified by using annotations and message bundle entries. The
-main goal is to reduce the amount of (boilerplate) code required to
-perform common actions like creating search screens and edit forms.
-
-Complementing the _Entity Model_ is a set of user interface components
-(widgets) that can be used to quickly construct screens for common use
-cases, and several base classes for the Data Access and Service layers.
-
-The Dynamo framework is built around a number of proven and highly
-productive technologies:
-
-* https://jakarta.ee/specifications/persistence/[JPA3.1] for ORM
-* https://querydsl.com[QueryDSL] for type-safe query generation
-* https://docs.spring.io/spring-boot/index.html[Spring Boot] as the
-application framework
-* https://angular.dev[Angular (v16)] as the front-end framework of choice
-* https://primeng.org[PrimeNG] for a rich suite of components
-
-The Dynamo Framework is distributed under the terms of the
-https://www.apache.org/licenses/LICENSE-2.0.txt[Apache License], a
-permissive open-source license for free and open-source software (FOSS).
+include::_introduction.adoc[]
 
 == Architectural overview
 
@@ -1010,7 +971,7 @@ private Country country;
 And this is the input form that will be generated:
 
 .Generated region form.
-image::media/image2.png[image,width=560,height=64]
+image::media/reference/image2.png[image,width=560,height=64]
 
 You can still use all available settings to modify the behaviour of the
 components for the “extra” attributes that are placed behind the first
@@ -1427,7 +1388,7 @@ used to create a new country. Once pressed, the button will bring up the
 following dialog:
 
 .Quick add screen.
-image::media/image3.png[image,width=559,height=178]
+image::media/reference/image3.png[image,width=559,height=178]
 
 The user can now enter the properties of the country in the popup – once
 they press the “OK” button the application will store the new Country,
@@ -1956,7 +1917,7 @@ to restrict the minimum and maximum number of elements that are allowed
 in the collection as a whole.
 
 .An example of a “chips” component used to manage an element collection.
-image::media/image5.png[image,width=411,height=129]
+image::media/reference/image5.png[image,width=411,height=129]
 
 [#_data_access_service_layers_and_general_concepts]
 == Data access, Service layers and general concepts
@@ -2614,7 +2575,7 @@ It also does not contain any dependencies for setting up application security,
 however the three dependencies that you need to set up Spring security based
 on OAuth are included in the pom but commented out.
 
-[source,xml]
+[source,xml,subs="+attributes"]
 --
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -2632,7 +2593,7 @@ on OAuth are included in the pom but commented out.
   <name>[YOUR NAME]</name>
   <properties>
     <java.version>21</java.version>
-    <dynamo.version>4.0.0</dynamo.version>
+    <dynamo.version>{dynamo-version}</dynamo.version>
   </properties>
   <repositories>
     <repository>
@@ -3093,7 +3054,7 @@ With that in place, you can copy the contents of the _dynamo-angular/shared_ fol
 to the _/src/app/shared_ folder in your application.
 
 TIP: Instead of downloading directly form the Dynamo sources, the artifact
-`org.dynamoframework:dynamo-angular:4.0.0:shared` can also be downloaded. This artifact
+`org.dynamoframework:dynamo-angular:{dynamo-version}:shared` can also be downloaded. This artifact
 contains the shared sources. Note the classified `shared`.
 
 You will also need the code used to communicate with the back-end. You can make this
@@ -3102,7 +3063,7 @@ to the _dynamo/model_ directory in your front-end application. You can also run 
 Open API tools generator as described below.
 
 TIP: Instead of downloading directly form the Dynamo sources, the artifact
-`org.dynamoframework:dynamo-angular:4.0.0:model` can also be downloaded. This artifact
+`org.dynamoframework:dynamo-angular:{dynamo-version}:model` can also be downloaded. This artifact
 contains the model. Note the classified `model`.
 
 Finally, the messages used for the internationalization of the Dynamo
@@ -3112,7 +3073,7 @@ English and Dutch are supported. These message need to be added to the
 message bundle files, typically under _/src/assets/i18n_
 
 TIP: Instead of downloading directly form the Dynamo sources, the artifact
-`org.dynamoframework:dynamo-angular:4.0.0:i18n` can also be downloaded. This artifact
+`org.dynamoframework:dynamo-angular:{dynamo-version}:i18n` can also be downloaded. This artifact
 contains the internationalization messages. Note the classified `i18n`.
 
 Finally, in case you are using the PDF viewer component and this produces errors, you might need
@@ -3273,7 +3234,7 @@ this.messageService.warn('Selected something:' +  obj.firstName)
 --
 
 .Example of a notification.
-image::media/image6.png[image,width=427,height=108]
+image::media/reference/image6.png[image,width=427,height=108]
 
 NOTE: The methods of the `NotificationService` take a String literal,
 not a key from the message bundle. If you want to display a value
@@ -3602,7 +3563,7 @@ model that is used to render the table is in this case a nested entity
 model that is part of the main entity model.
 
 .Screen to manage translations.
-image::media/image7.png[image,width=560,height=355]
+image::media/reference/image7.png[image,width=560,height=355]
 
 === Hidden fields
 
@@ -3739,7 +3700,7 @@ dialog will contain input components based on the entity model. e.g., for
 the action defined above, it will look as follows:
 
 .Screen with buttons for modal dialogs.
-image::media/image8.png[image,width=559,height=265]
+image::media/reference/image8.png[image,width=559,height=265]
 
 Actions of type CREATE will appear in the button bar below the results
 table in a search layout, split layout, or editable table layout.
@@ -3942,7 +3903,7 @@ filter.
 As an example, consider the following:
 
 .A search screen.
-image::media/image9.png[image,width=560,height=165]
+image::media/reference/image9.png[image,width=560,height=165]
 
 With regard to fields that are `requiredForSearching`, when using the
 dynamic search form, the application will render a row for every
@@ -4728,7 +4689,7 @@ will try to translate the user input to valid property values, which
 will be pre-filled into the form.
 
 .Autofill example.
-image::media/image10.png[image,width=559,height=221]
+image::media/reference/image10.png[image,width=559,height=221]
 
 You can set the default model to use by setting the value of the
 parameter *dynamoframework.defaults.ai-service* This setting accepts the values
@@ -4808,7 +4769,7 @@ manipulating the upload, consisting of:
 * A “download” button (if `downloadAllowed` is set to `true`)
 
 .Image component.
-image::media/image11.png[image,width=560,height=266]
+image::media/reference/image11.png[image,width=560,height=266]
 
 Under the covers, the framework will combine the regular post or put
 request with any requests to upload or remove files; the regular update
@@ -5109,7 +5070,7 @@ Below the table is an “Add” button that will bring up a dialog that can
 be used to add a new entity.
 
 .Table with “Add” buttons.
-image::media/image12.png[image,width=560,height=158]
+image::media/reference/image12.png[image,width=560,height=158]
 
 Supported features (see under the other sections for details)
 
@@ -5252,7 +5213,7 @@ will contain the options to create exports to both Excel and CSV
 formats.
 
 .Export screen.
-image::media/image13.png[image,width=194,height=136]
+image::media/reference/image13.png[image,width=194,height=136]
 
 The export that will be created contains all the data in the result set
 (i.e., all data that matches the search criteria), not just the rows that
