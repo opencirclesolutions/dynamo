@@ -35,7 +35,7 @@ Dynamo: Web Application Accelerator Framework, version {asciidoc-dynamo-version}
 Developed, maintained and sponsored by:
 
 [.text-center]
-image:media/logo-ocs.png["Open Circle Solutons", 256, 53]
+image:media/logo-ocs.png["Open Circle Solutions", 256, 53]
 
 ---
 
@@ -76,7 +76,7 @@ have the following software installed on your machine:
 * Git version 1.9+
 * A recent version of npm.
 
-=== Postgresql Setup
+=== Postgresql setup
 
 The application uses a PostgreSQL database. For this to work, you will
 need to install PostgreSQL on your local machine or run it in Docker.
@@ -141,7 +141,7 @@ fairly typical Spring Boot application.
 We have already created the domain objects, DAOs, and service classes
 for you.
 
-=== Domain Model
+=== Domain model
 
 When you look inside the `com.opencircle.gts.domain` package you will
 see a number of classes that together make up the domain model of our
@@ -163,7 +163,7 @@ the Dynamo framework, more specifically from the
 _dynamo-functional-domain_ module. This module is covered in more detail
 later.
 
-=== Data Access objects
+=== Data access objects
 
 When you look inside the `com.opencircle.gts.dao` package and its
 subpackages, you will see several Data Access Objects (DAOs) used
@@ -285,7 +285,7 @@ framework, and an `OCSValidationException` is thrown if there is a
 validation error. You can add extra validations by overwriting the
 `validate()` method (don’t forget to call `super()` if you do so).
 
-=== Your first Dynamo Screen
+=== Your first Dynamo screen
 
 After you have imported the projects into your IDE, make sure they all
 build properly. Then, open the `GtsApplication` class and run it.
@@ -787,7 +787,7 @@ So, figuring out which relations to fetch and which not to fetch (or
 whether to model those relations in the first place) can be an important
 design decision.
 
-=== Domain Values
+=== Domain values
 
 As you may have noticed, the `Country` class we have seen before isn’t
 defined inside the GTS application – instead it comes from a Dynamo
@@ -1186,7 +1186,7 @@ but you can set it to `2` or `3`. Using a value other than 1 will cause
 the input components to be displayed behind each other on the same row
 (provided there is enough room).
 
-=== Attribute Grouping
+=== Attribute grouping
 
 By default, all attributes inside an edit from will be displayed below
 and behind each other, in the order specified by the `@AttributeOrder`
@@ -1754,7 +1754,7 @@ The above chapters should have given you a good idea of some of the
 capabilities of the Dynamo Framework, but it can do a lot more. We will
 now go over some of the more common use cases.
 
-=== Field Filters 
+=== Field filters
 
 So far, you have only seen occasions in which a combo box or other
 lookup component contains all the available values. In a small
@@ -2040,7 +2040,7 @@ Adding form actions and row actions goes in much the same way, although
 the exact attributes differ based on the action type. Refer to the full
 Dynamo documentation for more information.
 
-=== Excel and CSV Exports
+=== Excel and CSV exports
 
 The Dynamo Framework offers some functionality for automatically
 exporting data that is displayed in results grid to Excel (.xlsx) or CSV
@@ -2065,7 +2065,7 @@ in the table, but you can change the `exportMode` setting to `FULL` in
 order to include all attributes that have their `visibleInForm` setting
 equal to "true".
 
-=== Clickable Links
+=== Clickable links
 
 For some properties, it is possible to change the default way they are
 displayed (simply as a text or a label) inside a grid or an edit form to
