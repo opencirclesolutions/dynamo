@@ -476,9 +476,7 @@
                         </goals>
                         <configuration>
                             <backend>html</backend>
-<!--                            <sourceDocumentName>README.adoc</sourceDocumentName>-->
                             <outputDirectory>${project.build.directory}/staging</outputDirectory>
-<!--                            <outputFile>index.html</outputFile>-->
                         </configuration>
                     </execution>
                     <execution>
@@ -688,7 +686,6 @@
             <id>release</id>
             <build>
                 <plugins>
-                    <!-- Create javadoc jars. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-javadoc-plugin</artifactId>
@@ -705,7 +702,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Sign artifacts. -->
                     <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-gpg-plugin</artifactId>
@@ -720,7 +716,6 @@
                             </execution>
                         </executions>
                     </plugin>
-                    <!-- Publish to central repositories. -->
                     <plugin>
                         <groupId>org.sonatype.plugins</groupId>
                         <artifactId>nexus-staging-maven-plugin</artifactId>
@@ -734,7 +729,6 @@
                             <autoReleaseAfterClose>false</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-                    <!-- Publish to GitHub Releases. -->
                     <plugin>
                         <groupId>de.jutzig</groupId>
                         <artifactId>github-release-plugin</artifactId>
