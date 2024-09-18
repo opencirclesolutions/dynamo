@@ -12,13 +12,13 @@ endif::[]
 :sectnums:
 :text-align: justify
 :title-logo-image: image:media/logo-dynamo.png[Dynamo]
-:keywords: Dynamo, Open Circle Solutions, Web Application Accelerator Framework, Training
+:keywords: Dynamo, {asciidoc-organization-name}, Web Application Accelerator Framework, Training
 :pdf-fontsdir: ./fonts
 :pdf-themesdir: ./themes
 :pdf-theme: ocs
 
 = Dynamo: Training
-Open Circle Solutions BV
+{asciidoc-organization-name}
 
 ifdef::backend-pdf[]
 [colophon]
@@ -29,7 +29,7 @@ endif::[]
 image:media/logo-dynamo.png[image]
 
 [.text-center]
-Dynamo: Web Application Accelerator Framework, version {dynamo-version}.
+Dynamo: Web Application Accelerator Framework, version {asciidoc-dynamo-version}.
 
 [.text-center]
 Developed, maintained and sponsored by:

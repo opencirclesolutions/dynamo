@@ -1,7 +1,7 @@
 == Introduction
 
 The _Dynamo Web Application Accelerator Framework_ is a software
-development framework developed by https://www.opencirclesolution.nl[Open Circle Solutions]
+development framework developed by {asciidoc-organization-url}[{asciidoc-organization-name}]
 that aims to  increase productivity by using design principles such as
 convention over configuration, model-driven development and DRY (don’t
 repeat yourself).
@@ -36,4 +36,4 @@ The Dynamo Framework is distributed under the terms of the
 https://www.apache.org/licenses/LICENSE-2.0.txt[Apache License], a
 permissive open-source license for free and open-source software (FOSS).
 
-The sources of Dynamo can be found at https://github.com/opencirclesolutions/dynamo[Github].
+The sources of Dynamo can be found at {asciidoc-github-url}[Github].

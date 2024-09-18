@@ -10,7 +10,7 @@
     <description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
     <url>https://www.dynamoframework.org</url>
     <organization>
-        <name>Open Circle Solutions</name>
+        <name>Open Circle Solutions BV</name>
         <url>https://www.opencirclesolutions.nl</url>
     </organization>
     <inceptionYear>2014</inceptionYear>
@@ -118,7 +118,14 @@
         <asciidoctorj.pdf.version>2.3.18</asciidoctorj.pdf.version>
         <asciidoctorj.version>2.5.13</asciidoctorj.version>
         <jruby.version>9.4.6.0</jruby.version>
-        <dynamo.version>${project.version}</dynamo.version>
+        <asciidoc.dynamo.version>${project.version}</asciidoc.dynamo.version>
+        <asciidoc.inception.year>${project.inceptionYear}</asciidoc.inception.year>
+        <maven.build.timestamp.format>yyyy</maven.build.timestamp.format>
+        <asciidoc.inception.year>${project.inceptionYear}</asciidoc.inception.year>
+        <asciidoc.current.year>${maven.build.timestamp}</asciidoc.current.year>
+        <asciidoc.organization.name>${project.organization.name}</asciidoc.organization.name>
+        <asciidoc.organization.url>${project.organization.url}</asciidoc.organization.url>
+        <asciidoc.github.url>${project.scm.url}</asciidoc.github.url>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -464,6 +471,24 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.12</version>
+                <executions>
+                    <execution>
+                        <id>timestamp-property</id>
+                        <goals>
+                            <goal>timestamp-property</goal>
+                        </goals>
+                        <phase>validate</phase>
+                        <configuration>
+                            <name>current.year</name>
+                            <pattern>yyyy</pattern>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.asciidoctor</groupId>
                 <artifactId>asciidoctor-maven-plugin</artifactId>

@@ -17,7 +17,7 @@
 image:media/logo-dynamo.png[image]
 
 [.text-center]
-Dynamo: Web Application Accelerator Framework, version {dynamo-version}.
+Dynamo: Web Application Accelerator Framework, version {asciidoc-dynamo-version}.
 
 [.text-center]
 Developed, maintained and sponsored by:
@@ -135,4 +135,4 @@ The Maven generated site with reports can be found xref:maven/index.html[here].
 
 === Contributing
 
-Interested in contributing? Check our https://github.com/opencirclesolutions/dynamo/wiki[wiki]!
+Interested in contributing? Check our {asciidoc-github-url}/wiki[wiki]!
