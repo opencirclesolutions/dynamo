@@ -36,7 +36,7 @@ Dynamo: Web Application Accelerator Framework, version {asciidoc-dynamo-version}
 Developed, maintained and sponsored by:
 
 [.text-center]
-image:media/logo-ocs.png["Open Circle Solutions", 256, 53]
+image:media/logo-ocs.png["{asciidoc-organization-name}", 256, 53]
 
 ---
 
