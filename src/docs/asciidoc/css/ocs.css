@@ -59,10 +59,21 @@ code {
 
 a {
     color: #39A248;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #39A248;
+    text-decoration: underline;
 }
 
 #toc a {
     color: #515147;
+}
+
+#toc a:hover {
+    color: #39A248;
+    text-decoration: none;
 }
 
 #toc.toc2 {

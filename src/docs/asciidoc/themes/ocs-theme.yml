@@ -46,7 +46,7 @@ toc:
   h5-font-style: italic
 table:
   grid-color: #39A248
-  border-color: #ffffff
+  border-color: #39A248
   body:
     background-color: #ffffff
     stripe-background-color: #cee0cf
