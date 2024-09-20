@@ -58,14 +58,14 @@ that can communicate with a relational database for storing and
 retrieving data.
 * The back-end application contains any number of domain
 objects/entities that correspond to the database tables.
-* Based on these entities, Dynamo constructs _Entity Models_ that
+* Based on these entities, Dynamo constructs _entity models_ that
 describe the behaviour of the user interface that can be used to
 manipulate these entities. This includes things like being able to
 define whether it is possible to search on certain attributes, when and
 how attributes can be edited, which values are allowed, how the values
 are formatted, etc. (there are dozens of different settings).
 * The back-end application offers several APIs that are used by the
-front-end: one API that can be used to retrieve the Entity Model for a
+front-end: one API that can be used to retrieve the entity model for a
 certain entity, and one API that can be used (in a generic fashion) to
 perform CRUD operations on the entity. In addition to this there are
 also APIs for uploading files, for exporting data to CSV/Excel, and for
@@ -83,7 +83,7 @@ render the screen, e.g., to display the correct fields in a search form
 or the correct columns in a table. In conjunction with this, the
 framework will also call the CRUD API to retrieve the data to display.
 
-==  The Entity Model
+==  The entity model
 
 === Basics
 
@@ -107,7 +107,7 @@ This also means that the same entity model is in principle used by all
 screens within an application. Since this would be too restrictive in
 practice, it is possible to construct separate instances for separate
 screens or use cases, by calling the `getModel(String reference,
-Class<?> clazz)` method. This will construct the Entity Model based on
+Class<?> clazz)` method. This will construct the entity model based on
 the provided class (the second parameter), but it will allow you to
 override certain attributes using message bundle entries (more on this
 later). The `reference` string is the unique identifier that you assign
@@ -115,7 +115,7 @@ to the model (if you just call the `getModel()` variant with a single
 parameter, then the simple name of the class is used as the reference)
 and which is then used as part of the message bundle entry.
 
-The classes for which you create an Entity Model must inherit from the
+The classes for which you create an entity model must inherit from the
 `org.dynamoframework.domain.AbstractEntity` class. See chapter
 <<_data_access_service_layers_and_general_concepts>> for details.
 
@@ -153,7 +153,7 @@ as the framework will do it for you.
 
 === Entity level settings
 
-The Entity Model supports several attributes that define how the entity
+The entity model supports several attributes that define how the entity
 itself is represented. These include:
 
 * `displayName`: the name of the entity (e.g., “Car”)
@@ -186,8 +186,8 @@ is allowed.
 
 === Attributes
 
-Every Entity Model consists of a number of _Attribute Models_. By
-default, an Attribute Model is created for every valid property of the
+Every entity model consists of a number of _attribute models_. By
+default, an attribute model is created for every valid property of the
 entity. e.g., if you have an entity Person with properties “name” and
 “age”, then the attribute model for the Person entity will contain two
 attribute models, one for “name” and one for “age”.
@@ -209,7 +209,7 @@ an attribute will have to be defined as read-only.
 `getClass()` method).
 * Attributes can be simple (String, Integer, Long, enumerated types,
 etc.) or complex (a reference to another entity, a collection of
-primitive values, or a collection of other entities). The Entity Model
+primitive values, or a collection of other entities). The entity model
 generation is nested, which means that if a property of an entity is
 again an entity, then an entity model for the nested property will also
 be generated. This entity model is separate from the non-nested entity
@@ -248,14 +248,14 @@ in e.g., JPQL queries and for data binding in Angular.
 
 === Defaults and attribute overrides
 
-The Entity Model generation is based on sensible defaults and metadata.
-e.g., the value of the *type* setting of an Attribute Model is directly
+The entity model generation is based on sensible defaults and metadata.
+e.g., the value of the *type* setting of an attribute model is directly
 taken from the Java type of the property, and certain other aspects e.g.
 whether the attribute is visible in a grid or can be used in a search
 form are derived from this type (e.g., by default a complex attribute
 will not be visible in a grid).
 
-In addition to this, the Entity Model generation process will take
+In addition to this, the entity model generation process will take
 certain JSR-303 annotations (e.g., `@NotNull`, `@Size`) into account. A
 detailed explanation for each setting will be given below.
 
@@ -285,10 +285,10 @@ The annotation override mechanism is quite powerful, but it has some
 drawbacks. e.g., it hard-codes certain String values (display name,
 description) into your application, and it does not directly allow for
 internationalization. It also only allows you to override the behaviour
-of the “default” Entity Model that is based directly on the class, and
-not the behaviour of any derived Entity Models.
+of the “default” entity model that is based directly on the class, and
+not the behaviour of any derived entity models.
 
-If you need to override the behaviour of a derived Entity Model, you can
+If you need to override the behaviour of a derived entity model, you can
 use the message bundle mechanism to achieve this. Message bundle
 overrides must be placed in the _src/main/resources/META-INF/entitymodel.properties_ file
 (create a locale-specific version of this file if you need to; the normal Java
@@ -306,7 +306,7 @@ Where:
 * `[Reference]` is the reference to the attribute model. This is the
 simple class name of the entity for a standard entity model, and the
 user-provided reference for a non-standard model.
-* `[Attribute Model Name]` is the (possibly nested) name of the
+* `[AttributeModelName]` is the (possibly nested) name of the
 attribute model. This is empty in case you are directly overriding a
 setting of the Entity.
 * `[Attribute]` is the setting that you want to modify. For a full list,
@@ -314,8 +314,8 @@ see the `EntityModel` class which contains constants that denote the
 possible values (or refer to the sections below).
 * `[Value]` is the desired value of the setting.
 
-The `[Attribute Model Name]` part must be omitted when you want to
-directly set an attribute of the Entity Model itself.
+The `[AttributeModelName]` part must be omitted when you want to
+directly set an attribute of the entity model itself.
 
 Some examples:
 
@@ -367,7 +367,7 @@ values:
 enumeration values (`SHOW`/`HIDE`) and the Boolean values `true` and `false`
 are supported.
 
-== Attribute Model settings
+== Attribute model settings
 
 In this section, we explain all the supported settings of the attribute
 model.
@@ -397,7 +397,7 @@ IMPORTANT: When defining extensions in Dynamo, never include a `.` (dot).
 === AttributeType
 
 The `attributeType` setting is a classification of the type of the
-property. It is determined automatically during the Entity Model
+property. It is determined automatically during the entity model
 generation process and can have the following values:
 
 * `BASIC`: represents a simple property like a String, a number, a date,
@@ -409,7 +409,7 @@ relation in the entity class, e.g., the `orderLines` attribute inside an
 the entity class.
 * `LOB`: a property that is annotated with `@Lob` and represents a large
 binary object (like a file or an image).
-* `EMBEDDED`: used during the Entity Model construction process to
+* `EMBEDDED`: used during the entity model construction process to
 handle embedded properties (using the `@Embedded` annotation). This will
 be covered in the _Advanced_ section.
 * `ELEMENT_COLLECTION`: a property that is annotated with the
@@ -1899,7 +1899,7 @@ property (e.g., `Movie.director.name.displayName=Director Name`).
 
 === Element collections
 
-The Entity Model framework also supports dealing with “element
+The entity model framework also supports dealing with “element
 collection” properties, i.e. properties that are collections of simple
 types (currently String, Integer, Long and BigDecimal are supported) and
 that are annotated with the `@ElementCollection` annotation.
@@ -1921,7 +1921,7 @@ in the collection as a whole.
 image::media/reference/image5.png[image,width=411,height=129]
 
 [#_data_access_service_layers_and_general_concepts]
-== Data access, Service layers and general concepts
+== Data access, service layers and general concepts
 
 === Data access layer and entities
 
@@ -2126,21 +2126,22 @@ approach.
 In addition to defining the joins using the `@FetchJoin` annotation, it is
 also possible to configure the joins in the _entitymodel.properties_ message bundle.
 
-This is done as follows
+This is done as follows:
 
 [source,properties]
 --
-[Entity Model Reference].[join|detailJoin].[number].attribute= [name of the attribute]
-[Entity Model Reference].[join|detailJoin].[number].joinType= LEFT | RIGHT | INNER
+[EntityModelReference].[join|detailJoin].[number].attribute= [name of the attribute]
+[EntityModelReference].[join|detailJoin].[number].joinType= LEFT | RIGHT | INNER
 --
 
-I.e.:
-- you can use "join" to define joins that are used when fetching multiple entities
-and "detailJoin" to define joins that are used when fetching single entities
-- Joins (per type) are numbered, starting with 1
-- Use "attribute" to specify the name of the attribute
+Some clarifications:
 
-E.g, to set up two joins for the Organization entity, you can do the following
+. You can use `join` to define joins that are used when fetching multiple entities
+and "detailJoin" to define joins that are used when fetching single entities;
+. Joins (per type) are numbered, starting with 1;
+. Use `attribute` to specify the name of the attribute.
+
+To set up two joins for the `Organization` entity, you can do the following:
 
 [source,properties]
 --
@@ -2163,7 +2164,7 @@ Organization.detailJoin.3.joinType=INNER
 --
 
 [#_entity_initialization]
-=== Entity Initialization
+=== Entity initialization
 
 As you have seen before, it is possible to set default values for simple
 attributes.These default values are applied on the client side when
@@ -2261,7 +2262,7 @@ class, you can do so by overriding the `validate()` method in the Service
 implementation class for that entity.
 
 The settings that are relevant for validation will also be exposed via
-the Entity Model API to the front-end, and will be used to create the
+the entity model API to the front-end, and will be used to create the
 appropriate Angular validators. The following validators are supported:
 
 * Minimum and maximum value (for numeric attribute)
@@ -2318,7 +2319,7 @@ NOTE: You do not have to check if the entity being returned is equal
 to the entity being validated, the framework will take care of this for
 you.
 
-=== Default Services and DAOs
+=== Default services and DAOs
 
 It can happen that you have a very simple entity for which you will only
 need the default methods provided by `BaseService`. If this is the
@@ -3249,7 +3250,7 @@ message sticky/persistent.
 == General UI concepts
 
 [#_search_filters]
-=== Search Filters
+=== Search filters
 
 The Dynamo Framework uses a generic framework for executing search
 requests to the back-end.Normally the details of this framework are
@@ -3602,7 +3603,7 @@ the primary key (`entityId` in the example below).
 In general, Dynamo is not particularly concerned with whether the
 objects you are displaying in the UI are actual entities backed by a
 database table – any class that extends the `AbstractEntity` class (and
-is hence identified by a unique ID) can be used with the Entity Model
+is hence identified by a unique ID) can be used with the entity model
 framework). This makes it relatively easy to use View Objects in the UI.
 In the case of a view object you are creating an object that is solely
 used to transfer data to the UI where it will be used for display
@@ -3633,7 +3634,7 @@ attribute model settings on the view object.
 would normally, and instead use the name of the view object as the
 `entityName`.
 
-=== Entity Model Actions
+=== Entity model actions
 
 It is also possible to define actions on the entity model that will
 directly be translated to input dialogs in the UI. This can be used when
@@ -4223,7 +4224,7 @@ existing entities (based on the value of the entityId).
 By default, the form will contain a single column of input components,
 in the order specified by the `@AttributeOrder` defined on the entity.
 The type of the component that will be rendered depends on various
-settings on the attribute model (e.g., selectMode, textFieldMode).
+settings on the attribute model (e.g., `selectMode`, `textFieldMode`).
 
 Only the attributes for which `visibleInForm` is set to `true` will be
 included in the form, and only if they indeed editable (see the
@@ -5085,12 +5086,12 @@ the popup dialog)
 * PostProcessInputForm
 * AdditionalValidation
 
-=== PDF Viewer
+=== PDF viewer
 
 The Dynamo framework provides a convenient component for viewing PDF documents. The source
 document can be provided as either an external URL, an internal URL, or a reference to the entity model.
 
-IN order to view a PDF file that is stored in a field on an entity, use the following set-up
+In order to view a PDF file that is stored in a field on an entity, use the following set-up
 
 [source,html]
 --
@@ -5159,7 +5160,7 @@ Finally, to render a PDF file found at external URL the following can be used:
 
 With the "mode" pointing to `PdfViewerMode.EXTERNAL_URL`. This will render the PDF file found at the external URL
 
-=== PDF Viewer Dialog
+=== PDF viewer dialog
 
 Additionally, it is also possible to use the PDF viewer inside a popup-dialog. In order to use this
 component, include the following in your HTML file:
@@ -5197,9 +5198,9 @@ component, and use the `showDialog()` method to open it.
 
 The `PdfViewerDialogComponent` supports the same modes (and associated attributes) as the `app-pdf-viewer`
 
-== Additional Functionality
+== Additional functionality
 
-=== Excel and CSV Export
+=== Excel and CSV export
 
 The Dynamo Framework offers some functionality for automatically
 exporting data that is displayed in results grid to Excel (`.xlsx`) or CSV
