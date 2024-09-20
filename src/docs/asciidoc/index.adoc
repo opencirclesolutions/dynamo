@@ -10,6 +10,7 @@
 :pdf-fontsdir: ../../dynamo-documentation/fonts
 :pdf-themesdir: ../../dynamo-documentation/themes
 :pdf-theme: ocs
+:stylesheet: ./css/ocs.css
 
 = Dynamo
 
@@ -26,8 +27,6 @@ Developed, maintained and sponsored by:
 image:media/logo-ocs.png["{asciidoc-organization-name}", 256, 53]
 
 ---
-
-include::_copyright.adoc[]
 
 include::_introduction.adoc[]
 
@@ -106,6 +105,7 @@ But this overview is intended to summarize the most notable features and benefit
 
 === Differences between the Dynamo versions
 
+[cols="2,1,1", stripes=even]
 |===
 |Feature |Dynamo V3.x |Dynamo V4.x
 
@@ -136,3 +136,7 @@ The Maven generated site with reports can be found xref:maven/index.html[here].
 === Contributing
 
 Interested in contributing? Check our {asciidoc-github-url}/wiki[wiki]!
+
+---
+
+include::_copyright.adoc[]

@@ -17,6 +17,7 @@ endif::[]
 :pdf-fontsdir: ./fonts
 :pdf-themesdir: ./themes
 :pdf-theme: ocs
+:stylesheet: ./css/ocs.css
 
 = Dynamo: Reference documentation
 {asciidoc-organization-name}

@@ -9,7 +9,9 @@ base:
   font-family: Raleway
   text-align: justify
 heading:
-  font-color: #515147
+#  font-color: #515147
+  font-color: #39A248
+  font-style: normal
   h1-font-size: $base-font-size * 1.5
   h2-font-size: $base-font-size * 1.5
   h3-font-size: $base-font-size * 1.3
@@ -39,12 +41,14 @@ codespan:
   font-family: RobotoMono
   font-color: #515147
 toc:
-  h2-font-style: bold
+  h3-font-style: italic
+  h4-font-style: italic
+  h5-font-style: italic
 table:
-  grid-color: #ffffff
+  grid-color: #39A248
   border-color: #ffffff
   body:
-    background-color: #e9f0e8
+    background-color: #ffffff
     stripe-background-color: #cee0cf
   caption:
     end: bottom
@@ -92,3 +96,5 @@ admonition:
   border-width: 0.5
   border-color: #FFFFFF
   background-color: #FFFFFF
+link:
+  font-color: #39A248

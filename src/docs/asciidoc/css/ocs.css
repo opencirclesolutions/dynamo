@@ -1,0 +1,88 @@
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+@import "https://cdn.jsdelivr.net/gh/asciidoctor/asciidoctor@2.0/data/stylesheets/asciidoctor-default.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+body {
+    color: #515147;
+    font-family: Raleway;
+}
+
+body.toc2.toc-right #toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+#toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+
+h1, h2, h3, h4, h5, h6, #toctitle {
+    color: #39A248;
+    font-family: Raleway;
+}
+
+code {
+    font-family: "Roboto Mono";
+    background: white;
+}
+
+:not(pre):not([class^=L]) > code {
+    background: white;
+}
+
+
+#toc {
+    font-family: Raleway;
+    background: white;
+}
+
+a {
+    color: #39A248;
+}
+
+#toc a {
+    color: #515147;
+}
+
+#toc.toc2 {
+    background: white;
+}
+
+#toc ul {
+    font-family: Raleway;
+}
+
+#footer {
+    background: white;
+    text-align: right;
+}
+
+#footer-text {
+    color: #515147;
+    font-style: italic;
+}
+
+table.tableblock, th.tableblock, td.tableblock {
+    border: 0 solid #39A248;
+}
+
+table thead, table tfoot {
+    background-color: #39A248;
+}
+
+table.stripes-all > * > tr, table.stripes-odd > * > tr:nth-of-type(odd), table.stripes-even > * > tr:nth-of-type(even), table.stripes-hover > * > tr:hover {
+    background: #cee0cf;
+}
+
+table thead tr th, table tfoot tr th {
+    color: white;
+    font-weight: bold;
+}
+
+.admonitionblock td.content > .title, .audioblock > .title, .exampleblock > .title, .imageblock > .title, .listingblock > .title, .literalblock > .title, .stemblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, table.tableblock > .title, .verseblock > .title, .videoblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title {
+    font-family: Raleway;
+    color: #515147;
+}
+

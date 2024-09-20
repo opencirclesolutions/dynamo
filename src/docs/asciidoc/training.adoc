@@ -16,6 +16,7 @@ endif::[]
 :pdf-fontsdir: ./fonts
 :pdf-themesdir: ./themes
 :pdf-theme: ocs
+:stylesheet: ./css/ocs.css
 
 = Dynamo: Training
 {asciidoc-organization-name}
