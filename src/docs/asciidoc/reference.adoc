@@ -5411,7 +5411,7 @@ respectively grids or forms.
 The following table lists some of the common things to look out for, for
 attributes of certain types
 
-[width="100%"]
+[cols="2,5", stripes=even]
 |===
 | Attribute type  | Hints
 

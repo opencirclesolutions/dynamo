@@ -44,11 +44,11 @@ h1, h2, h3, h4, h5, h6, #toctitle {
 
 code {
     font-family: "Roboto Mono";
-    background: white;
+    background: inherit;
 }
 
 :not(pre):not([class^=L]) > code {
-    background: white;
+    background: inherit;
 }
 
 
