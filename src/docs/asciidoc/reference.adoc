@@ -89,7 +89,7 @@ The entity model describes the behaviour of the user interface that can
 be used to  manipulate these entities. This includes things like being
 able to  define whether it is possible to search on certain attributes,
 when and how attributes can be edited, which values are allowed, how the
-values are formatted, etc. (there are dozens of different settings).
+values are formatted, etc.
 
 === Basics
 
