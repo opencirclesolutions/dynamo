@@ -39,7 +39,7 @@ code:
   border-width: 0
 codespan:
   font-family: RobotoMono
-  font-color: #515147
+  font-color: #39A248
 toc:
   h3-font-style: italic
   h4-font-style: italic

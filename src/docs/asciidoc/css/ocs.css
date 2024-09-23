@@ -49,6 +49,7 @@ code {
 
 :not(pre):not([class^=L]) > code {
     background: inherit;
+    color: #39A248;
 }
 
 
