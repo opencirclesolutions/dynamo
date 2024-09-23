@@ -2376,19 +2376,20 @@ private BaseService<Integer, Country> countryService;
 --
 
 [#_system_properties]
-== System properties
+== Configuration
 
-Dynamo supports several ways of dealing with (system) properties.
+Dynamo supports several ways of dealing with (system) properties in order
+to configure the behaviour of the framework.
 
 The easiest way of declaring a property is by including it in the
 _application.properties_ or _application.yml_ file which is located in the
-_src/main/resources_ directory.This is the standard file used by Spring
+_src/main/resources_ directory. This is the standard file used by Spring
 Boot, and as such you can add both your own system properties to it, as
 well as using it to modify any Spring Boot settings.
 
-You can use the default mechanisms offered by Spring Boot (e.g., external configuration
-file, explicitly set system parameters, using profiles) to override the
-values.
+You can use the default mechanisms offered by Spring Boot (e.g., external
+configuration file, explicitly set system parameters, using profiles) to
+override the values.
 
 The Dynamo Framework manages all properties using `@ConfigurationProperties`.
 In the next sections an overview of all available properties is given. In
