@@ -85,6 +85,12 @@ framework will also call the CRUD API to retrieve the data to display.
 
 ==  The entity model
 
+The entity model describes the behaviour of the user interface that can
+be used to  manipulate these entities. This includes things like being
+able to  define whether it is possible to search on certain attributes,
+when and how attributes can be edited, which values are allowed, how the
+values are formatted, etc. (there are dozens of different settings).
+
 === Basics
 
 ==== Back-end
@@ -248,12 +254,12 @@ in e.g., JPQL queries and for data binding in Angular.
 
 === Defaults and attribute overrides
 
-The entity model generation is based on sensible defaults and metadata.
-e.g., the value of the *type* setting of an attribute model is directly
-taken from the Java type of the property, and certain other aspects e.g.
-whether the attribute is visible in a grid or can be used in a search
-form are derived from this type (e.g., by default a complex attribute
-will not be visible in a grid).
+The entity model generation is based on sensible defaults and metadata:
+e.g., the value of the `type` setting of an attribute model is directly
+taken from the Java type of the property. Also, certain other aspects
+such as whether the attribute is visible in a grid or can be used in a
+search form are derived from this type (e.g., by default a complex
+attribute will not be visible in a grid).
 
 In addition to this, the entity model generation process will take
 certain JSR-303 annotations (e.g., `@NotNull`, `@Size`) into account. A
