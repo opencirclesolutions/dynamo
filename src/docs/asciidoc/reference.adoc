@@ -378,7 +378,7 @@ are supported.
 In this section, we explain all the supported settings of the attribute
 model.
 
-=== AllowedExtensions
+=== Allowed extensions
 
 In message bundle:
 [source,properties]
@@ -400,7 +400,7 @@ and you must not include the “.” character.
 
 IMPORTANT: When defining extensions in Dynamo, never include a `.` (dot).
 
-=== AttributeType
+=== Attribute type
 
 The `attributeType` setting is a classification of the type of the
 property. It is determined automatically during the entity model
@@ -527,7 +527,7 @@ Reputation.FEARSOME=Fearsome
 Reputation.EXTREMELY_FEARSOME=Extremely fearsome
 --
 
-=== AutofillInstructions
+=== Autofill instructions
 
 In message bundle:
 [source,properties]
@@ -540,7 +540,7 @@ attribute-specific instructions for automatically filling a form based
 on an AI service (Large Language Model). This is covered in more detail
 in the section <<_formfillenabled>>.
 
-=== BooleanFieldMode
+=== Boolean field mode
 
 In message bundle:
 [source,properties]
@@ -630,7 +630,7 @@ Organization.cascadeFilterPath.2=[some other path]
 Organization.cascadeMode.2=EDIT
 --
 
-=== CurrencyCode
+=== Currency code
 
 In message bundle:
 [source,properties]
@@ -647,7 +647,7 @@ of the property.
 If the specified currency code corresponds to a symbol (e.g., “$” for US
 dollar) then this symbol will be used instead of the code.
 
-=== DateType
+=== Date type
 
 In message bundle:
 [source,properties]
@@ -672,7 +672,7 @@ type of the property. You do not normally have to manually override it.
 Dynamo does not support the legacy Java date types (java.util.Date and
 java.sql.Date).
 
-=== DefaultSearchValue
+=== Default search value
 
 In message bundle:
 [source,properties]
@@ -698,7 +698,7 @@ the system properties `dynamoframework.defaults.date-format` (`dd-MM-yyyy`),
 `dynamoframework.defaults.time-format` (`HH:mm:ss`),
 `dynamoframework.defaults.date-time-format` (`dd-MM-yyyy HH:mm:ss`).
 
-=== DefaultSearchValueFrom
+=== Default search value from
 
 In message bundle:
 [source,properties]
@@ -723,7 +723,7 @@ the system properties `dynamoframework.defaults.date-format` (`dd-MM-yyyy`),
 `dynamoframework.defaults.time-format` (`HH:mm:ss`),
 `dynamoframework.defaults.date-time-format` (`dd-MM-yyyy HH:mm:ss`).
 
-=== DefaultSearchValueTo
+=== Default search value to
 
 In message bundle:
 [source,properties]
@@ -748,7 +748,7 @@ the system properties `dynamoframework.defaults.date-format` (`dd-MM-yyyy`),
 `dynamoframework.defaults.time-format` (`HH:mm:ss`),
 `dynamoframework.defaults.date-time-format` (`dd-MM-yyyy HH:mm:ss`).
 
-=== DefaultValue
+=== Default value
 
 In message bundle:
 [source,properties]
@@ -787,7 +787,7 @@ setting.
 
 This setting supports localization.
 
-=== DisplayFormat
+=== Display format
 
 In message bundle:
 [source,properties]
@@ -810,7 +810,7 @@ variables depending on the `dateType` of the attribute model.
 
 This setting supports localization.
 
-=== DisplayName
+=== Display name
 
 In message bundle:
 [source,properties]
@@ -827,7 +827,7 @@ only the first word will be capitalized.
 
 This setting supports localization.
 
-=== DownloadAllowed
+=== Download allowed
 
 In message bundle:
 [source,properties]
@@ -841,7 +841,7 @@ It defaults to `false`.When set to `true`, a “download” button will
 show up next to the preview of the image in a file upload component.
 
 [#_editabletype]
-=== EditableType
+=== Editable type
 
 In message bundle:
 [source,properties]
@@ -866,7 +866,7 @@ The values of properties that are set to `EDITABLE` or `CREATE_ONLY`
 will still be shown inside edit forms, however it will not be possible
 to change the values.
 
-=== ElementCollectionMode
+=== Element collection mode
 
 In message bundle:
 [source,properties]
@@ -889,7 +889,7 @@ valid email address. It is automatically set to `true` if the property
 is annotated with the `@Email` annotation (from the Java validation
 framework).
 
-=== EnumfieldMode
+=== Enum field mode
 
 In message bundle:
 [source,properties]
@@ -907,7 +907,7 @@ set of radio buttons will be used instead.
 NOTE: within a search form, this setting will be ignored, and a
 dropdown component will always be used in order to save space.
 
-=== FileNameProperty
+=== File name property
 
 In message bundle:
 [source,properties]
@@ -951,7 +951,7 @@ for file upload, the upload and download will still work, however when
 downloading a file, it will be assigned a default file name because the
 actual file name is unknown.
 
-=== GroupTogetherWith
+=== Group together with
 
 In message bundle:
 [source,properties]
@@ -992,7 +992,7 @@ above, `region` must come after `country`). If this rule is not
 observed, then an exception will be thrown and the component will
 not be displayed properly.
 
-=== IgnoreInSearchFilter
+=== Ignore in search filter
 
 In message bundle:
 [source,properties]
@@ -1017,7 +1017,7 @@ represents an image. By default, this setting has the value `false`.
 If set to `true`, the application will try to render a preview image of
 the value (byte contents) of the property.
 
-=== LookupEntityReference
+=== Lookup entity reference
 
 In message bundle:
 [source,properties]
@@ -1036,7 +1036,7 @@ setting.
 You can use the message bundle (_entitymodel.properties_) to modify how
 this entity model behaves.
 
-=== LookupQueryType
+=== Lookup query type
 
 In message bundle:
 [source,properties]
@@ -1048,14 +1048,14 @@ The `lookupQueryType` setting can be used to specify the query type to
 use inside a popup search dialog that is used inside a lookup field
 component.
 
-=== MaxCollectionSize
+=== Max collection size
 
 The `maxCollectionSize` setting determines the maximum number of allowed
 elements in an element collection, one-to-many relation, or many-to-many
 relation. Its value is derived from the `max` value on the standard Java
 Validation `@Size` annotation.
 
-=== MaxLength
+=== Max length
 
 In message bundle:
 [source,properties]
@@ -1080,7 +1080,7 @@ using the `@Attribute` annotation.
         minLength = 4, maxLength = 12, elementCollectionMode = ElementCollectionMode.DIALOG)
 ---
 
-=== MaxLengthInGrid
+=== Max length in grid
 
 In message bundle:
 [source,properties]
@@ -1094,7 +1094,7 @@ the value of the property is longer than this, the value will be
 truncated after the first `maxLengthInGrid` characters. This can help
 save space in grids.
 
-=== MaxValue
+=== Max value
 
 In message bundle:
 [source,properties]
@@ -1121,7 +1121,7 @@ using the `@Attribute` annotation.
 private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
 ---
 
-=== MemberType
+=== Member type
 
 This setting is not configurable using a message bundle.
 
@@ -1136,14 +1136,14 @@ type of the members of the collection.
 
 This setting is only supported as an annotation override.
 
-=== MinCollectionSize
+=== Min collection size
 
 The `minCollectionSize` setting determines the minimum number of allowed
 elements in an element collection, one-to-many relation, or many-to-many
 relation. Its value is derived from the `min` value on the `@Size`
 annotation from the Java validation framework.
 
-=== MinLength
+=== Min length
 
 In message bundle:
 [source,properties]
@@ -1167,7 +1167,7 @@ on the `@Attribute` annotation.
 private Set<@Size(min = 4, max = 12) String> tags = new HashSet<>();
 --
 
-=== MinValue
+=== Min value
 
 In message bundle:
 [source,properties]
@@ -1194,7 +1194,7 @@ using the `@Attribute` annotation.
 private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
 --
 
-=== MultipleSearch
+=== Multiple search
 
 In message bundle:
 [source,properties]
@@ -1243,7 +1243,7 @@ In order to use this form of navigation, you first need to set the
 attribute values clickable inside results tables, and inside a form that
 is in read-only mode.
 
-=== NavigationLink
+=== Navigation link
 
 In message bundle:
 [source,properties]
@@ -1259,7 +1259,7 @@ can be modified by setting the navigation link. If this setting has a
 value that is not equal to the empty string, then this setting will be
 used rather than the default.
 
-=== NeededInData
+=== Needed in data
 
 In message bundle:
 [source,properties]
@@ -1277,7 +1277,7 @@ are not returned by the API.In these cases, you can set the
 values anyway.
 
 [#_numberfieldmode]
-=== NumberFieldMode
+=== Number field mode
 
 In message bundle:
 [source,properties]
@@ -1296,7 +1296,7 @@ with a pair of spinner buttons that can be used to increase or decrease the valu
 The default value of this setting can be modified by changing the system
 variable `dynamoframework.defaults.number-field-mode`.
 
-=== NumberFieldStep
+=== Number field step
 
 In message bundle:
 [source,properties]
@@ -1353,7 +1353,7 @@ known as the “placeholder”)
 
 If not set, it defaults to the value of the `displayName` setting.
 
-=== QuickAddAllowed
+=== Quick-add allowed
 
 In message bundle:
 [source,properties]
@@ -1409,7 +1409,7 @@ functionality), and will then look for an error message stored under the
 message. e.g., in the example above, you should add a
 `Country.not.unique` message to the message bundle.
 
-=== ReplacementSearchPath
+=== Replacement search path
 
 In message bundle:
 [source,properties]
@@ -1429,7 +1429,7 @@ to use during the search.
 The `replacementSearchPath` setting is managed completely in the
 back-end.
 
-=== ReplacementSortPath
+=== Replacement sort path
 
 In message bundle:
 [source,properties]
@@ -1445,7 +1445,7 @@ application will then sort on the exact path to the property, but if the
 The `replacementSortPath` setting is managed completely in the
 back-end.
 
-=== RequiredForSearching
+=== Required for searching
 
 In message bundle:
 [source,properties]
@@ -1479,7 +1479,7 @@ means it will not show up in a search form. Setting this property to
 `ADVANCED` means it will only show up in search forms for which the
 “advanced search” mode has been enabled.
 
-=== SearchCaseSensitive
+=== Search case-sensitive
 
 In message bundle:
 [source,properties]
@@ -1498,7 +1498,7 @@ BooleanType.FALSE.
 
 This setting is managed completely on the back-end.
 
-=== SearchDateOnly
+=== Search date only
 
 In message bundle:
 [source,properties]
@@ -1521,7 +1521,7 @@ specified date interval (inclusive). e.g., if you enter the search values
 time stamp value matches the interval from `2020-04-04 00:00:00` up to
 `2020-04-06 23:59:599999999`
 
-=== SearchForExactValue
+=== Search for exact value
 
 In message bundle:
 [source,properties]
@@ -1539,7 +1539,7 @@ By default, this setting has the value `false`. If set to `true`, then
 instead of the two search fields, a single field will be rendered that
 allows the user to search for an exact value.
 
-=== SearchPrefixOnly
+=== Search prefix only
 
 In message bundle:
 [source,properties]
@@ -1558,7 +1558,7 @@ used for attributes of type String and ignored in all other cases.
 
 This setting is managed completely on the back-end.
 
-=== SearchSelectMode
+=== Search select mode
 
 In message bundle:
 [source,properties]
@@ -1599,7 +1599,7 @@ based on the `displayProperty` of the entity and the value entered by the user.
 the user can press a button to bring up a search dialog which can be
 used to perform a search.
 
-=== SelectMode
+=== Select mode
 
 In message bundle:
 [source,properties]
@@ -1648,7 +1648,7 @@ The *sortable* setting can be used to specify whether a grid can be
 sorted on the attribute. By default, it is set to `true` for all
 attributes.
 
-=== TextFieldMode
+=== Text field mode
 
 In message bundle:
 [source,properties]
@@ -1662,7 +1662,7 @@ attribute of type String. The default is `TEXTFIELD`. The value
 `TEXTAREA` will be ignored inside a search form. The value `PASSWORD`
 will be ignored inside a search form.
 
-=== TrimSpaces
+=== Trim spaces
 
 In message bundle:
 [source,properties]
@@ -1682,7 +1682,7 @@ will just use the value of the system property. With TRIM and NO_TRIM
 you can either enable or disable the trimming for this specific
 attribute.
 
-=== TrueRepresentation and FalseRepresentation
+=== True and false representation
 
 In message bundle:
 [source,properties]
@@ -1718,7 +1718,7 @@ the framework will render a clickable URL containing the value of
 the attribute – when clicked it will open the provided URL in a separate
 browser window.
 
-=== VisibleInForm
+=== Visible in form
 
 In message bundle:
 [source,properties]
@@ -1737,7 +1737,7 @@ By default, all simple properties will have `visibleInForm` set to
 Instead of `true` you can also use the value `SHOW` and instead of
 `false` you can also sue the value `HIDE`.
 
-=== VisibleInGrid
+=== Visible in grid
 
 In message bundle:
 [source,properties]
