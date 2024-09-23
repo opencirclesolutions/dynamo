@@ -5288,12 +5288,12 @@ If you want to use Dynamo’s functionality for easily managing lookup
 tables, you will have to include the following dependency in your
 pom.xml file:
 
-[source,xml]
+[source,xml,subs="+attributes"]
 --
 <dependency>
   <groupId>org.dynamoframework</groupId>
   <artifactId>dynamo-functional-domain</artifactId>
-  <version>${dynamo.version}</version>
+  <version>{asciidoc-dynamo-version}</version>
 </dependency>
 --
 
