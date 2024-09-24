@@ -95,21 +95,37 @@ a:hover {
     font-style: italic;
 }
 
+table.grid-all > * > tr > * {
+    border-width: 2px;
+}
+
 table.tableblock, th.tableblock, td.tableblock {
-    border: 0 solid #39A248;
+    border: 2px solid #ffffff;
 }
 
-table thead, table tfoot {
-    background-color: #39A248;
+table tbody tr {
+    background-color: #e9f0e8;
 }
 
-table.stripes-all > * > tr, table.stripes-odd > * > tr:nth-of-type(odd), table.stripes-even > * > tr:nth-of-type(even), table.stripes-hover > * > tr:hover {
-    background: #cee0cf;
+table thead tr,
+table tfoot tr {
+    background-color: #39a248;
+}
+
+table.stripes-all > * > tr,
+table.stripes-odd > * > tr:nth-of-type(odd),
+table.stripes-even > * > tr:nth-of-type(even),
+table.stripes-hover > * > tr:hover {
+    background-color: #cee0cf;
 }
 
 table thead tr th, table tfoot tr th {
     color: white;
     font-weight: bold;
+}
+
+table thead, table tfoot {
+    background-color: #39a248;
 }
 
 .admonitionblock td.content > .title, .audioblock > .title, .exampleblock > .title, .imageblock > .title, .listingblock > .title, .literalblock > .title, .stemblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, table.tableblock > .title, .verseblock > .title, .videoblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title {

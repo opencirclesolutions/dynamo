@@ -45,10 +45,11 @@ toc:
   h4-font-style: italic
   h5-font-style: italic
 table:
-  grid-color: #39A248
-  border-color: #39A248
+  grid-color: #ffffff
+  border-color: #ffffff
+  grid-width: 1.1
   body:
-    background-color: #ffffff
+    background-color: #e9f0e8
     stripe-background-color: #cee0cf
   caption:
     end: bottom
