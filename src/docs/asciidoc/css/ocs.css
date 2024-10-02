@@ -138,5 +138,5 @@ table thead, table tfoot {
 }
 
 pre.rouge {
-    background-color: #cee0cf;
+    background-color: #cee0cf !important;
 }
