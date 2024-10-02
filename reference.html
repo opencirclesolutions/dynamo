@@ -8,432 +8,143 @@
 <meta name="keywords" content="Dynamo, Open Circle Solutions BV, Web Application Accelerator Framework, Reference">
 <meta name="author" content="Open Circle Solutions BV">
 <title>Dynamo: Reference documentation</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700">
 <style>
-/*! Asciidoctor default stylesheet | MIT License | https://asciidoctor.org */
-/* Uncomment the following line when using as a custom stylesheet */
-/* @import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700"; */
-html{font-family:sans-serif;-webkit-text-size-adjust:100%}
-a{background:none}
-a:focus{outline:thin dotted}
-a:active,a:hover{outline:0}
-h1{font-size:2em;margin:.67em 0}
-b,strong{font-weight:bold}
-abbr{font-size:.9em}
-abbr[title]{cursor:help;border-bottom:1px dotted #dddddf;text-decoration:none}
-dfn{font-style:italic}
-hr{height:0}
-mark{background:#ff0;color:#000}
-code,kbd,pre,samp{font-family:monospace;font-size:1em}
-pre{white-space:pre-wrap}
-q{quotes:"\201C" "\201D" "\2018" "\2019"}
-small{font-size:80%}
-sub,sup{font-size:75%;line-height:0;position:relative;vertical-align:baseline}
-sup{top:-.5em}
-sub{bottom:-.25em}
-img{border:0}
-svg:not(:root){overflow:hidden}
-figure{margin:0}
-audio,video{display:inline-block}
-audio:not([controls]){display:none;height:0}
-fieldset{border:1px solid silver;margin:0 2px;padding:.35em .625em .75em}
-legend{border:0;padding:0}
-button,input,select,textarea{font-family:inherit;font-size:100%;margin:0}
-button,input{line-height:normal}
-button,select{text-transform:none}
-button,html input[type=button],input[type=reset],input[type=submit]{-webkit-appearance:button;cursor:pointer}
-button[disabled],html input[disabled]{cursor:default}
-input[type=checkbox],input[type=radio]{padding:0}
-button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0}
-textarea{overflow:auto;vertical-align:top}
-table{border-collapse:collapse;border-spacing:0}
-*,::before,::after{box-sizing:border-box}
-html,body{font-size:100%}
-body{background:#fff;color:rgba(0,0,0,.8);padding:0;margin:0;font-family:"Noto Serif","DejaVu Serif",serif;line-height:1;position:relative;cursor:auto;-moz-tab-size:4;-o-tab-size:4;tab-size:4;word-wrap:anywhere;-moz-osx-font-smoothing:grayscale;-webkit-font-smoothing:antialiased}
-a:hover{cursor:pointer}
-img,object,embed{max-width:100%;height:auto}
-object,embed{height:100%}
-img{-ms-interpolation-mode:bicubic}
-.left{float:left!important}
-.right{float:right!important}
-.text-left{text-align:left!important}
-.text-right{text-align:right!important}
-.text-center{text-align:center!important}
-.text-justify{text-align:justify!important}
-.hide{display:none}
-img,object,svg{display:inline-block;vertical-align:middle}
-textarea{height:auto;min-height:50px}
-select{width:100%}
-.subheader,.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{line-height:1.45;color:#7a2518;font-weight:400;margin-top:0;margin-bottom:.25em}
-div,dl,dt,dd,ul,ol,li,h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6,pre,form,p,blockquote,th,td{margin:0;padding:0}
-a{color:#2156a5;text-decoration:underline;line-height:inherit}
-a:hover,a:focus{color:#1d4b8f}
-a img{border:0}
-p{line-height:1.6;margin-bottom:1.25em;text-rendering:optimizeLegibility}
-p aside{font-size:.875em;line-height:1.35;font-style:italic}
-h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{font-family:"Open Sans","DejaVu Sans",sans-serif;font-weight:300;font-style:normal;color:#ba3925;text-rendering:optimizeLegibility;margin-top:1em;margin-bottom:.5em;line-height:1.0125em}
-h1 small,h2 small,h3 small,#toctitle small,.sidebarblock>.content>.title small,h4 small,h5 small,h6 small{font-size:60%;color:#e99b8f;line-height:0}
-h1{font-size:2.125em}
-h2{font-size:1.6875em}
-h3,#toctitle,.sidebarblock>.content>.title{font-size:1.375em}
-h4,h5{font-size:1.125em}
-h6{font-size:1em}
-hr{border:solid #dddddf;border-width:1px 0 0;clear:both;margin:1.25em 0 1.1875em}
-em,i{font-style:italic;line-height:inherit}
-strong,b{font-weight:bold;line-height:inherit}
-small{font-size:60%;line-height:inherit}
-code{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;font-weight:400;color:rgba(0,0,0,.9)}
-ul,ol,dl{line-height:1.6;margin-bottom:1.25em;list-style-position:outside;font-family:inherit}
-ul,ol{margin-left:1.5em}
-ul li ul,ul li ol{margin-left:1.25em;margin-bottom:0}
-ul.circle{list-style-type:circle}
-ul.disc{list-style-type:disc}
-ul.square{list-style-type:square}
-ul.circle ul:not([class]),ul.disc ul:not([class]),ul.square ul:not([class]){list-style:inherit}
-ol li ul,ol li ol{margin-left:1.25em;margin-bottom:0}
-dl dt{margin-bottom:.3125em;font-weight:bold}
-dl dd{margin-bottom:1.25em}
-blockquote{margin:0 0 1.25em;padding:.5625em 1.25em 0 1.1875em;border-left:1px solid #ddd}
-blockquote,blockquote p{line-height:1.6;color:rgba(0,0,0,.85)}
-@media screen and (min-width:768px){h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2}
-h1{font-size:2.75em}
-h2{font-size:2.3125em}
-h3,#toctitle,.sidebarblock>.content>.title{font-size:1.6875em}
-h4{font-size:1.4375em}}
-table{background:#fff;margin-bottom:1.25em;border:1px solid #dedede;word-wrap:normal}
-table thead,table tfoot{background:#f7f8f7}
-table thead tr th,table thead tr td,table tfoot tr th,table tfoot tr td{padding:.5em .625em .625em;font-size:inherit;color:rgba(0,0,0,.8);text-align:left}
-table tr th,table tr td{padding:.5625em .625em;font-size:inherit;color:rgba(0,0,0,.8)}
-table tr.even,table tr.alt{background:#f8f8f7}
-table thead tr th,table tfoot tr th,table tbody tr td,table tr td,table tfoot tr td{line-height:1.6}
-h1,h2,h3,#toctitle,.sidebarblock>.content>.title,h4,h5,h6{line-height:1.2;word-spacing:-.05em}
-h1 strong,h2 strong,h3 strong,#toctitle strong,.sidebarblock>.content>.title strong,h4 strong,h5 strong,h6 strong{font-weight:400}
-.center{margin-left:auto;margin-right:auto}
-.stretch{width:100%}
-.clearfix::before,.clearfix::after,.float-group::before,.float-group::after{content:" ";display:table}
-.clearfix::after,.float-group::after{clear:both}
-:not(pre).nobreak{word-wrap:normal}
-:not(pre).nowrap{white-space:nowrap}
-:not(pre).pre-wrap{white-space:pre-wrap}
-:not(pre):not([class^=L])>code{font-size:.9375em;font-style:normal!important;letter-spacing:0;padding:.1em .5ex;word-spacing:-.15em;background:#f7f7f8;border-radius:4px;line-height:1.45;text-rendering:optimizeSpeed}
-pre{color:rgba(0,0,0,.9);font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;line-height:1.45;text-rendering:optimizeSpeed}
-pre code,pre pre{color:inherit;font-size:inherit;line-height:inherit}
-pre>code{display:block}
-pre.nowrap,pre.nowrap pre{white-space:pre;word-wrap:normal}
-em em{font-style:normal}
-strong strong{font-weight:400}
-.keyseq{color:rgba(51,51,51,.8)}
-kbd{font-family:"Droid Sans Mono","DejaVu Sans Mono",monospace;display:inline-block;color:rgba(0,0,0,.8);font-size:.65em;line-height:1.45;background:#f7f7f7;border:1px solid #ccc;border-radius:3px;box-shadow:0 1px 0 rgba(0,0,0,.2),inset 0 0 0 .1em #fff;margin:0 .15em;padding:.2em .5em;vertical-align:middle;position:relative;top:-.1em;white-space:nowrap}
-.keyseq kbd:first-child{margin-left:0}
-.keyseq kbd:last-child{margin-right:0}
-.menuseq,.menuref{color:#000}
-.menuseq b:not(.caret),.menuref{font-weight:inherit}
-.menuseq{word-spacing:-.02em}
-.menuseq b.caret{font-size:1.25em;line-height:.8}
-.menuseq i.caret{font-weight:bold;text-align:center;width:.45em}
-b.button::before,b.button::after{position:relative;top:-1px;font-weight:400}
-b.button::before{content:"[";padding:0 3px 0 2px}
-b.button::after{content:"]";padding:0 2px 0 3px}
-p a>code:hover{color:rgba(0,0,0,.9)}
-#header,#content,#footnotes,#footer{width:100%;margin:0 auto;max-width:62.5em;*zoom:1;position:relative;padding-left:.9375em;padding-right:.9375em}
-#header::before,#header::after,#content::before,#content::after,#footnotes::before,#footnotes::after,#footer::before,#footer::after{content:" ";display:table}
-#header::after,#content::after,#footnotes::after,#footer::after{clear:both}
-#content{margin-top:1.25em}
-#content::before{content:none}
-#header>h1:first-child{color:rgba(0,0,0,.85);margin-top:2.25rem;margin-bottom:0}
-#header>h1:first-child+#toc{margin-top:8px;border-top:1px solid #dddddf}
-#header>h1:only-child{border-bottom:1px solid #dddddf;padding-bottom:8px}
-#header .details{border-bottom:1px solid #dddddf;line-height:1.45;padding-top:.25em;padding-bottom:.25em;padding-left:.25em;color:rgba(0,0,0,.6);display:flex;flex-flow:row wrap}
-#header .details span:first-child{margin-left:-.125em}
-#header .details span.email a{color:rgba(0,0,0,.85)}
-#header .details br{display:none}
-#header .details br+span::before{content:"\00a0\2013\00a0"}
-#header .details br+span.author::before{content:"\00a0\22c5\00a0";color:rgba(0,0,0,.85)}
-#header .details br+span#revremark::before{content:"\00a0|\00a0"}
-#header #revnumber{text-transform:capitalize}
-#header #revnumber::after{content:"\00a0"}
-#content>h1:first-child:not([class]){color:rgba(0,0,0,.85);border-bottom:1px solid #dddddf;padding-bottom:8px;margin-top:0;padding-top:1rem;margin-bottom:1.25rem}
-#toc{border-bottom:1px solid #e7e7e9;padding-bottom:.5em}
-#toc>ul{margin-left:.125em}
-#toc ul.sectlevel0>li>a{font-style:italic}
-#toc ul.sectlevel0 ul.sectlevel1{margin:.5em 0}
-#toc ul{font-family:"Open Sans","DejaVu Sans",sans-serif;list-style-type:none}
-#toc li{line-height:1.3334;margin-top:.3334em}
-#toc a{text-decoration:none}
-#toc a:active{text-decoration:underline}
-#toctitle{color:#7a2518;font-size:1.2em}
-@media screen and (min-width:768px){#toctitle{font-size:1.375em}
-body.toc2{padding-left:15em;padding-right:0}
-body.toc2 #header>h1:nth-last-child(2){border-bottom:1px solid #dddddf;padding-bottom:8px}
-#toc.toc2{margin-top:0!important;background:#f8f8f7;position:fixed;width:15em;left:0;top:0;border-right:1px solid #e7e7e9;border-top-width:0!important;border-bottom-width:0!important;z-index:1000;padding:1.25em 1em;height:100%;overflow:auto}
-#toc.toc2 #toctitle{margin-top:0;margin-bottom:.8rem;font-size:1.2em}
-#toc.toc2>ul{font-size:.9em;margin-bottom:0}
-#toc.toc2 ul ul{margin-left:0;padding-left:1em}
-#toc.toc2 ul.sectlevel0 ul.sectlevel1{padding-left:0;margin-top:.5em;margin-bottom:.5em}
-body.toc2.toc-right{padding-left:0;padding-right:15em}
-body.toc2.toc-right #toc.toc2{border-right-width:0;border-left:1px solid #e7e7e9;left:auto;right:0}}
-@media screen and (min-width:1280px){body.toc2{padding-left:20em;padding-right:0}
-#toc.toc2{width:20em}
-#toc.toc2 #toctitle{font-size:1.375em}
-#toc.toc2>ul{font-size:.95em}
-#toc.toc2 ul ul{padding-left:1.25em}
-body.toc2.toc-right{padding-left:0;padding-right:20em}}
-#content #toc{border:1px solid #e0e0dc;margin-bottom:1.25em;padding:1.25em;background:#f8f8f7;border-radius:4px}
-#content #toc>:first-child{margin-top:0}
-#content #toc>:last-child{margin-bottom:0}
-#footer{max-width:none;background:rgba(0,0,0,.8);padding:1.25em}
-#footer-text{color:hsla(0,0%,100%,.8);line-height:1.44}
-#content{margin-bottom:.625em}
-.sect1{padding-bottom:.625em}
-@media screen and (min-width:768px){#content{margin-bottom:1.25em}
-.sect1{padding-bottom:1.25em}}
-.sect1:last-child{padding-bottom:0}
-.sect1+.sect1{border-top:1px solid #e7e7e9}
-#content h1>a.anchor,h2>a.anchor,h3>a.anchor,#toctitle>a.anchor,.sidebarblock>.content>.title>a.anchor,h4>a.anchor,h5>a.anchor,h6>a.anchor{position:absolute;z-index:1001;width:1.5ex;margin-left:-1.5ex;display:block;text-decoration:none!important;visibility:hidden;text-align:center;font-weight:400}
-#content h1>a.anchor::before,h2>a.anchor::before,h3>a.anchor::before,#toctitle>a.anchor::before,.sidebarblock>.content>.title>a.anchor::before,h4>a.anchor::before,h5>a.anchor::before,h6>a.anchor::before{content:"\00A7";font-size:.85em;display:block;padding-top:.1em}
-#content h1:hover>a.anchor,#content h1>a.anchor:hover,h2:hover>a.anchor,h2>a.anchor:hover,h3:hover>a.anchor,#toctitle:hover>a.anchor,.sidebarblock>.content>.title:hover>a.anchor,h3>a.anchor:hover,#toctitle>a.anchor:hover,.sidebarblock>.content>.title>a.anchor:hover,h4:hover>a.anchor,h4>a.anchor:hover,h5:hover>a.anchor,h5>a.anchor:hover,h6:hover>a.anchor,h6>a.anchor:hover{visibility:visible}
-#content h1>a.link,h2>a.link,h3>a.link,#toctitle>a.link,.sidebarblock>.content>.title>a.link,h4>a.link,h5>a.link,h6>a.link{color:#ba3925;text-decoration:none}
-#content h1>a.link:hover,h2>a.link:hover,h3>a.link:hover,#toctitle>a.link:hover,.sidebarblock>.content>.title>a.link:hover,h4>a.link:hover,h5>a.link:hover,h6>a.link:hover{color:#a53221}
-details,.audioblock,.imageblock,.literalblock,.listingblock,.stemblock,.videoblock{margin-bottom:1.25em}
-details{margin-left:1.25rem}
-details>summary{cursor:pointer;display:block;position:relative;line-height:1.6;margin-bottom:.625rem;outline:none;-webkit-tap-highlight-color:transparent}
-details>summary::-webkit-details-marker{display:none}
-details>summary::before{content:"";border:solid transparent;border-left:solid;border-width:.3em 0 .3em .5em;position:absolute;top:.5em;left:-1.25rem;transform:translateX(15%)}
-details[open]>summary::before{border:solid transparent;border-top:solid;border-width:.5em .3em 0;transform:translateY(15%)}
-details>summary::after{content:"";width:1.25rem;height:1em;position:absolute;top:.3em;left:-1.25rem}
-.admonitionblock td.content>.title,.audioblock>.title,.exampleblock>.title,.imageblock>.title,.listingblock>.title,.literalblock>.title,.stemblock>.title,.openblock>.title,.paragraph>.title,.quoteblock>.title,table.tableblock>.title,.verseblock>.title,.videoblock>.title,.dlist>.title,.olist>.title,.ulist>.title,.qlist>.title,.hdlist>.title{text-rendering:optimizeLegibility;text-align:left;font-family:"Noto Serif","DejaVu Serif",serif;font-size:1rem;font-style:italic}
-table.tableblock.fit-content>caption.title{white-space:nowrap;width:0}
-.paragraph.lead>p,#preamble>.sectionbody>[class=paragraph]:first-of-type p{font-size:1.21875em;line-height:1.6;color:rgba(0,0,0,.85)}
-.admonitionblock>table{border-collapse:separate;border:0;background:none;width:100%}
-.admonitionblock>table td.icon{text-align:center;width:80px}
-.admonitionblock>table td.icon img{max-width:none}
-.admonitionblock>table td.icon .title{font-weight:bold;font-family:"Open Sans","DejaVu Sans",sans-serif;text-transform:uppercase}
-.admonitionblock>table td.content{padding-left:1.125em;padding-right:1.25em;border-left:1px solid #dddddf;color:rgba(0,0,0,.6);word-wrap:anywhere}
-.admonitionblock>table td.content>:last-child>:last-child{margin-bottom:0}
-.exampleblock>.content{border:1px solid #e6e6e6;margin-bottom:1.25em;padding:1.25em;background:#fff;border-radius:4px}
-.sidebarblock{border:1px solid #dbdbd6;margin-bottom:1.25em;padding:1.25em;background:#f3f3f2;border-radius:4px}
-.sidebarblock>.content>.title{color:#7a2518;margin-top:0;text-align:center}
-.exampleblock>.content>:first-child,.sidebarblock>.content>:first-child{margin-top:0}
-.exampleblock>.content>:last-child,.exampleblock>.content>:last-child>:last-child,.exampleblock>.content .olist>ol>li:last-child>:last-child,.exampleblock>.content .ulist>ul>li:last-child>:last-child,.exampleblock>.content .qlist>ol>li:last-child>:last-child,.sidebarblock>.content>:last-child,.sidebarblock>.content>:last-child>:last-child,.sidebarblock>.content .olist>ol>li:last-child>:last-child,.sidebarblock>.content .ulist>ul>li:last-child>:last-child,.sidebarblock>.content .qlist>ol>li:last-child>:last-child{margin-bottom:0}
-.literalblock pre,.listingblock>.content>pre{border-radius:4px;overflow-x:auto;padding:1em;font-size:.8125em}
-@media screen and (min-width:768px){.literalblock pre,.listingblock>.content>pre{font-size:.90625em}}
-@media screen and (min-width:1280px){.literalblock pre,.listingblock>.content>pre{font-size:1em}}
-.literalblock pre,.listingblock>.content>pre:not(.highlight),.listingblock>.content>pre[class=highlight],.listingblock>.content>pre[class^="highlight "]{background:#f7f7f8}
-.literalblock.output pre{color:#f7f7f8;background:rgba(0,0,0,.9)}
-.listingblock>.content{position:relative}
-.listingblock code[data-lang]::before{display:none;content:attr(data-lang);position:absolute;font-size:.75em;top:.425rem;right:.5rem;line-height:1;text-transform:uppercase;color:inherit;opacity:.5}
-.listingblock:hover code[data-lang]::before{display:block}
-.listingblock.terminal pre .command::before{content:attr(data-prompt);padding-right:.5em;color:inherit;opacity:.5}
-.listingblock.terminal pre .command:not([data-prompt])::before{content:"$"}
-.listingblock pre.highlightjs{padding:0}
-.listingblock pre.highlightjs>code{padding:1em;border-radius:4px}
-.listingblock pre.prettyprint{border-width:0}
-.prettyprint{background:#f7f7f8}
-pre.prettyprint .linenums{line-height:1.45;margin-left:2em}
-pre.prettyprint li{background:none;list-style-type:inherit;padding-left:0}
-pre.prettyprint li code[data-lang]::before{opacity:1}
-pre.prettyprint li:not(:first-child) code[data-lang]::before{display:none}
-table.linenotable{border-collapse:separate;border:0;margin-bottom:0;background:none}
-table.linenotable td[class]{color:inherit;vertical-align:top;padding:0;line-height:inherit;white-space:normal}
-table.linenotable td.code{padding-left:.75em}
-table.linenotable td.linenos,pre.pygments .linenos{border-right:1px solid;opacity:.35;padding-right:.5em;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}
-pre.pygments span.linenos{display:inline-block;margin-right:.75em}
-.quoteblock{margin:0 1em 1.25em 1.5em;display:table}
-.quoteblock:not(.excerpt)>.title{margin-left:-1.5em;margin-bottom:.75em}
-.quoteblock blockquote,.quoteblock p{color:rgba(0,0,0,.85);font-size:1.15rem;line-height:1.75;word-spacing:.1em;letter-spacing:0;font-style:italic;text-align:justify}
-.quoteblock blockquote{margin:0;padding:0;border:0}
-.quoteblock blockquote::before{content:"\201c";float:left;font-size:2.75em;font-weight:bold;line-height:.6em;margin-left:-.6em;color:#7a2518;text-shadow:0 1px 2px rgba(0,0,0,.1)}
-.quoteblock blockquote>.paragraph:last-child p{margin-bottom:0}
-.quoteblock .attribution{margin-top:.75em;margin-right:.5ex;text-align:right}
-.verseblock{margin:0 1em 1.25em}
-.verseblock pre{font-family:"Open Sans","DejaVu Sans",sans-serif;font-size:1.15rem;color:rgba(0,0,0,.85);font-weight:300;text-rendering:optimizeLegibility}
-.verseblock pre strong{font-weight:400}
-.verseblock .attribution{margin-top:1.25rem;margin-left:.5ex}
-.quoteblock .attribution,.verseblock .attribution{font-size:.9375em;line-height:1.45;font-style:italic}
-.quoteblock .attribution br,.verseblock .attribution br{display:none}
-.quoteblock .attribution cite,.verseblock .attribution cite{display:block;letter-spacing:-.025em;color:rgba(0,0,0,.6)}
-.quoteblock.abstract blockquote::before,.quoteblock.excerpt blockquote::before,.quoteblock .quoteblock blockquote::before{display:none}
-.quoteblock.abstract blockquote,.quoteblock.abstract p,.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{line-height:1.6;word-spacing:0}
-.quoteblock.abstract{margin:0 1em 1.25em;display:block}
-.quoteblock.abstract>.title{margin:0 0 .375em;font-size:1.15em;text-align:center}
-.quoteblock.excerpt>blockquote,.quoteblock .quoteblock{padding:0 0 .25em 1em;border-left:.25em solid #dddddf}
-.quoteblock.excerpt,.quoteblock .quoteblock{margin-left:0}
-.quoteblock.excerpt blockquote,.quoteblock.excerpt p,.quoteblock .quoteblock blockquote,.quoteblock .quoteblock p{color:inherit;font-size:1.0625rem}
-.quoteblock.excerpt .attribution,.quoteblock .quoteblock .attribution{color:inherit;font-size:.85rem;text-align:left;margin-right:0}
-p.tableblock:last-child{margin-bottom:0}
-td.tableblock>.content{margin-bottom:1.25em;word-wrap:anywhere}
-td.tableblock>.content>:last-child{margin-bottom:-1.25em}
-table.tableblock,th.tableblock,td.tableblock{border:0 solid #dedede}
-table.grid-all>*>tr>*{border-width:1px}
-table.grid-cols>*>tr>*{border-width:0 1px}
-table.grid-rows>*>tr>*{border-width:1px 0}
-table.frame-all{border-width:1px}
-table.frame-ends{border-width:1px 0}
-table.frame-sides{border-width:0 1px}
-table.frame-none>colgroup+*>:first-child>*,table.frame-sides>colgroup+*>:first-child>*{border-top-width:0}
-table.frame-none>:last-child>:last-child>*,table.frame-sides>:last-child>:last-child>*{border-bottom-width:0}
-table.frame-none>*>tr>:first-child,table.frame-ends>*>tr>:first-child{border-left-width:0}
-table.frame-none>*>tr>:last-child,table.frame-ends>*>tr>:last-child{border-right-width:0}
-table.stripes-all>*>tr,table.stripes-odd>*>tr:nth-of-type(odd),table.stripes-even>*>tr:nth-of-type(even),table.stripes-hover>*>tr:hover{background:#f8f8f7}
-th.halign-left,td.halign-left{text-align:left}
-th.halign-right,td.halign-right{text-align:right}
-th.halign-center,td.halign-center{text-align:center}
-th.valign-top,td.valign-top{vertical-align:top}
-th.valign-bottom,td.valign-bottom{vertical-align:bottom}
-th.valign-middle,td.valign-middle{vertical-align:middle}
-table thead th,table tfoot th{font-weight:bold}
-tbody tr th{background:#f7f8f7}
-tbody tr th,tbody tr th p,tfoot tr th,tfoot tr th p{color:rgba(0,0,0,.8);font-weight:bold}
-p.tableblock>code:only-child{background:none;padding:0}
-p.tableblock{font-size:1em}
-ol{margin-left:1.75em}
-ul li ol{margin-left:1.5em}
-dl dd{margin-left:1.125em}
-dl dd:last-child,dl dd:last-child>:last-child{margin-bottom:0}
-li p,ul dd,ol dd,.olist .olist,.ulist .ulist,.ulist .olist,.olist .ulist{margin-bottom:.625em}
-ul.checklist,ul.none,ol.none,ul.no-bullet,ol.no-bullet,ol.unnumbered,ul.unstyled,ol.unstyled{list-style-type:none}
-ul.no-bullet,ol.no-bullet,ol.unnumbered{margin-left:.625em}
-ul.unstyled,ol.unstyled{margin-left:0}
-li>p:empty:only-child::before{content:"";display:inline-block}
-ul.checklist>li>p:first-child{margin-left:-1em}
-ul.checklist>li>p:first-child>.fa-square-o:first-child,ul.checklist>li>p:first-child>.fa-check-square-o:first-child{width:1.25em;font-size:.8em;position:relative;bottom:.125em}
-ul.checklist>li>p:first-child>input[type=checkbox]:first-child{margin-right:.25em}
-ul.inline{display:flex;flex-flow:row wrap;list-style:none;margin:0 0 .625em -1.25em}
-ul.inline>li{margin-left:1.25em}
-.unstyled dl dt{font-weight:400;font-style:normal}
-ol.arabic{list-style-type:decimal}
-ol.decimal{list-style-type:decimal-leading-zero}
-ol.loweralpha{list-style-type:lower-alpha}
-ol.upperalpha{list-style-type:upper-alpha}
-ol.lowerroman{list-style-type:lower-roman}
-ol.upperroman{list-style-type:upper-roman}
-ol.lowergreek{list-style-type:lower-greek}
-.hdlist>table,.colist>table{border:0;background:none}
-.hdlist>table>tbody>tr,.colist>table>tbody>tr{background:none}
-td.hdlist1,td.hdlist2{vertical-align:top;padding:0 .625em}
-td.hdlist1{font-weight:bold;padding-bottom:1.25em}
-td.hdlist2{word-wrap:anywhere}
-.literalblock+.colist,.listingblock+.colist{margin-top:-.5em}
-.colist td:not([class]):first-child{padding:.4em .75em 0;line-height:1;vertical-align:top}
-.colist td:not([class]):first-child img{max-width:none}
-.colist td:not([class]):last-child{padding:.25em 0}
-.thumb,.th{line-height:0;display:inline-block;border:4px solid #fff;box-shadow:0 0 0 1px #ddd}
-.imageblock.left{margin:.25em .625em 1.25em 0}
-.imageblock.right{margin:.25em 0 1.25em .625em}
-.imageblock>.title{margin-bottom:0}
-.imageblock.thumb,.imageblock.th{border-width:6px}
-.imageblock.thumb>.title,.imageblock.th>.title{padding:0 .125em}
-.image.left,.image.right{margin-top:.25em;margin-bottom:.25em;display:inline-block;line-height:0}
-.image.left{margin-right:.625em}
-.image.right{margin-left:.625em}
-a.image{text-decoration:none;display:inline-block}
-a.image object{pointer-events:none}
-sup.footnote,sup.footnoteref{font-size:.875em;position:static;vertical-align:super}
-sup.footnote a,sup.footnoteref a{text-decoration:none}
-sup.footnote a:active,sup.footnoteref a:active,#footnotes .footnote a:first-of-type:active{text-decoration:underline}
-#footnotes{padding-top:.75em;padding-bottom:.75em;margin-bottom:.625em}
-#footnotes hr{width:20%;min-width:6.25em;margin:-.25em 0 .75em;border-width:1px 0 0}
-#footnotes .footnote{padding:0 .375em 0 .225em;line-height:1.3334;font-size:.875em;margin-left:1.2em;margin-bottom:.2em}
-#footnotes .footnote a:first-of-type{font-weight:bold;text-decoration:none;margin-left:-1.05em}
-#footnotes .footnote:last-of-type{margin-bottom:0}
-#content #footnotes{margin-top:-.625em;margin-bottom:0;padding:.75em 0}
-div.unbreakable{page-break-inside:avoid}
-.big{font-size:larger}
-.small{font-size:smaller}
-.underline{text-decoration:underline}
-.overline{text-decoration:overline}
-.line-through{text-decoration:line-through}
-.aqua{color:#00bfbf}
-.aqua-background{background:#00fafa}
-.black{color:#000}
-.black-background{background:#000}
-.blue{color:#0000bf}
-.blue-background{background:#0000fa}
-.fuchsia{color:#bf00bf}
-.fuchsia-background{background:#fa00fa}
-.gray{color:#606060}
-.gray-background{background:#7d7d7d}
-.green{color:#006000}
-.green-background{background:#007d00}
-.lime{color:#00bf00}
-.lime-background{background:#00fa00}
-.maroon{color:#600000}
-.maroon-background{background:#7d0000}
-.navy{color:#000060}
-.navy-background{background:#00007d}
-.olive{color:#606000}
-.olive-background{background:#7d7d00}
-.purple{color:#600060}
-.purple-background{background:#7d007d}
-.red{color:#bf0000}
-.red-background{background:#fa0000}
-.silver{color:#909090}
-.silver-background{background:#bcbcbc}
-.teal{color:#006060}
-.teal-background{background:#007d7d}
-.white{color:#bfbfbf}
-.white-background{background:#fafafa}
-.yellow{color:#bfbf00}
-.yellow-background{background:#fafa00}
-span.icon>.fa{cursor:default}
-a span.icon>.fa{cursor:inherit}
-.admonitionblock td.icon [class^="fa icon-"]{font-size:2.5em;text-shadow:1px 1px 2px rgba(0,0,0,.5);cursor:default}
-.admonitionblock td.icon .icon-note::before{content:"\f05a";color:#19407c}
-.admonitionblock td.icon .icon-tip::before{content:"\f0eb";text-shadow:1px 1px 2px rgba(155,155,0,.8);color:#111}
-.admonitionblock td.icon .icon-warning::before{content:"\f071";color:#bf6900}
-.admonitionblock td.icon .icon-caution::before{content:"\f06d";color:#bf3400}
-.admonitionblock td.icon .icon-important::before{content:"\f06a";color:#bf0000}
-.conum[data-value]{display:inline-block;color:#fff!important;background:rgba(0,0,0,.8);border-radius:50%;text-align:center;font-size:.75em;width:1.67em;height:1.67em;line-height:1.67em;font-family:"Open Sans","DejaVu Sans",sans-serif;font-style:normal;font-weight:bold}
-.conum[data-value] *{color:#fff!important}
-.conum[data-value]+b{display:none}
-.conum[data-value]::after{content:attr(data-value)}
-pre .conum[data-value]{position:relative;top:-.125em}
-b.conum *{color:inherit!important}
-.conum:not([data-value]):empty{display:none}
-dt,th.tableblock,td.content,div.footnote{text-rendering:optimizeLegibility}
-h1,h2,p,td.content,span.alt,summary{letter-spacing:-.01em}
-p strong,td.content strong,div.footnote strong{letter-spacing:-.005em}
-p,blockquote,dt,td.content,td.hdlist1,span.alt,summary{font-size:1.0625rem}
-p{margin-bottom:1.25rem}
-.sidebarblock p,.sidebarblock dt,.sidebarblock td.content,p.tableblock{font-size:1em}
-.exampleblock>.content{background:#fffef7;border-color:#e0e0dc;box-shadow:0 1px 4px #e0e0dc}
-.print-only{display:none!important}
-@page{margin:1.25cm .75cm}
-@media print{*{box-shadow:none!important;text-shadow:none!important}
-html{font-size:80%}
-a{color:inherit!important;text-decoration:underline!important}
-a.bare,a[href^="#"],a[href^="mailto:"]{text-decoration:none!important}
-a[href^="http:"]:not(.bare)::after,a[href^="https:"]:not(.bare)::after{content:"(" attr(href) ")";display:inline-block;font-size:.875em;padding-left:.25em}
-abbr[title]{border-bottom:1px dotted}
-abbr[title]::after{content:" (" attr(title) ")"}
-pre,blockquote,tr,img,object,svg{page-break-inside:avoid}
-thead{display:table-header-group}
-svg{max-width:100%}
-p,blockquote,dt,td.content{font-size:1em;orphans:3;widows:3}
-h2,h3,#toctitle,.sidebarblock>.content>.title{page-break-after:avoid}
-#header,#content,#footnotes,#footer{max-width:none}
-#toc,.sidebarblock,.exampleblock>.content{background:none!important}
-#toc{border-bottom:1px solid #dddddf!important;padding-bottom:0!important}
-body.book #header{text-align:center}
-body.book #header>h1:first-child{border:0!important;margin:2.5em 0 1em}
-body.book #header .details{border:0!important;display:block;padding:0!important}
-body.book #header .details span:first-child{margin-left:0!important}
-body.book #header .details br{display:block}
-body.book #header .details br+span::before{content:none!important}
-body.book #toc{border:0!important;text-align:left!important;padding:0!important;margin:0!important}
-body.book #toc,body.book #preamble,body.book h1.sect0,body.book .sect1>h2{page-break-before:always}
-.listingblock code[data-lang]::before{display:block}
-#footer{padding:0 .9375em}
-.hide-on-print{display:none!important}
-.print-only{display:block!important}
-.hide-for-print{display:none!important}
-.show-for-print{display:inherit!important}}
-@media amzn-kf8,print{#header>h1:first-child{margin-top:1.25rem}
-.sect1{padding:0!important}
-.sect1+.sect1{border:0}
-#footer{background:none}
-#footer-text{color:rgba(0,0,0,.6);font-size:.9em}}
-@media amzn-kf8{#header,#content,#footnotes,#footer{padding:0}}
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions BV
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ * 
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ * 
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+@import "https://cdn.jsdelivr.net/gh/asciidoctor/asciidoctor@2.0/data/stylesheets/asciidoctor-default.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+body {
+    color: #515147;
+    font-family: Raleway;
+}
+
+body.toc2.toc-right #toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+#toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+
+h1, h2, h3, h4, h5, h6, #toctitle {
+    color: #39A248;
+    font-family: Raleway;
+}
+
+code {
+    font-family: "Roboto Mono";
+    background: inherit;
+}
+
+:not(pre):not([class^=L]) > code {
+    background: inherit;
+    color: #39A248;
+}
+
+
+#toc {
+    font-family: Raleway;
+    background: white;
+}
+
+a {
+    color: #39A248;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #39A248;
+    text-decoration: underline;
+}
+
+#toc a {
+    color: #515147;
+}
+
+#toc a:hover {
+    color: #39A248;
+    text-decoration: none;
+}
+
+#toc.toc2 {
+    background: white;
+}
+
+#toc ul {
+    font-family: Raleway;
+}
+
+#footer {
+    background: white;
+    text-align: right;
+}
+
+#footer-text {
+    color: #515147;
+    font-style: italic;
+}
+
+table.grid-all > * > tr > * {
+    border-width: 2px;
+}
+
+table.tableblock, th.tableblock, td.tableblock {
+    border: 2px solid #ffffff;
+}
+
+table tbody tr {
+    background-color: #e9f0e8;
+}
+
+table thead tr,
+table tfoot tr {
+    background-color: #39a248;
+}
+
+table.stripes-all > * > tr,
+table.stripes-odd > * > tr:nth-of-type(odd),
+table.stripes-even > * > tr:nth-of-type(even),
+table.stripes-hover > * > tr:hover {
+    background-color: #cee0cf;
+}
+
+table thead tr th, table tfoot tr th {
+    color: white;
+    font-weight: bold;
+}
+
+table thead, table tfoot {
+    background-color: #39a248;
+}
+
+.admonitionblock td.content > .title, .audioblock > .title, .exampleblock > .title, .imageblock > .title, .listingblock > .title, .literalblock > .title, .stemblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, table.tableblock > .title, .verseblock > .title, .videoblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title {
+    font-family: Raleway;
+    color: #515147;
+}
+
+
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
 <style>
@@ -663,7 +374,7 @@ pre.rouge {
 <ul class="sectlevel1">
 <li><a href="#_introduction">1. Introduction</a></li>
 <li><a href="#_architectural_overview">2. Architectural overview</a></li>
-<li><a href="#_the_entity_model">3. The Entity Model</a>
+<li><a href="#_the_entity_model">3. The entity model</a>
 <ul class="sectlevel2">
 <li><a href="#_basics">3.1. Basics</a></li>
 <li><a href="#_entity_level_settings">3.2. Entity level settings</a></li>
@@ -672,68 +383,68 @@ pre.rouge {
 <li><a href="#_message_bundle_overrides">3.5. Message bundle overrides</a></li>
 </ul>
 </li>
-<li><a href="#_attribute_model_settings">4. Attribute Model settings</a>
+<li><a href="#_attribute_model_settings">4. Attribute model settings</a>
 <ul class="sectlevel2">
-<li><a href="#_allowedextensions">4.1. AllowedExtensions</a></li>
-<li><a href="#_attributetype">4.2. AttributeType</a></li>
-<li><a href="#_autofillinstructions">4.3. AutofillInstructions</a></li>
-<li><a href="#_booleanfieldmode">4.4. BooleanFieldMode</a></li>
+<li><a href="#_allowed_extensions">4.1. Allowed extensions</a></li>
+<li><a href="#_attribute_type">4.2. Attribute type</a></li>
+<li><a href="#_autofill_instructions">4.3. Autofill instructions</a></li>
+<li><a href="#_boolean_field_mode">4.4. Boolean field mode</a></li>
 <li><a href="#_cascade">4.5. Cascade</a></li>
-<li><a href="#_currencycode">4.6. CurrencyCode</a></li>
-<li><a href="#_datetype">4.7. DateType</a></li>
-<li><a href="#_defaultsearchvalue">4.8. DefaultSearchValue</a></li>
-<li><a href="#_defaultsearchvaluefrom">4.9. DefaultSearchValueFrom</a></li>
-<li><a href="#_defaultsearchvalueto">4.10. DefaultSearchValueTo</a></li>
-<li><a href="#_defaultvalue">4.11. DefaultValue</a></li>
+<li><a href="#_currency_code">4.6. Currency code</a></li>
+<li><a href="#_date_type">4.7. Date type</a></li>
+<li><a href="#_default_search_value">4.8. Default search value</a></li>
+<li><a href="#_default_search_value_from">4.9. Default search value from</a></li>
+<li><a href="#_default_search_value_to">4.10. Default search value to</a></li>
+<li><a href="#_default_value">4.11. Default value</a></li>
 <li><a href="#_description">4.12. Description</a></li>
-<li><a href="#_displayformat">4.13. DisplayFormat</a></li>
-<li><a href="#_displayname">4.14. DisplayName</a></li>
-<li><a href="#_downloadallowed">4.15. DownloadAllowed</a></li>
-<li><a href="#_editabletype">4.16. EditableType</a></li>
-<li><a href="#_elementcollectionmode">4.17. ElementCollectionMode</a></li>
+<li><a href="#_display_format">4.13. Display format</a></li>
+<li><a href="#_display_name">4.14. Display name</a></li>
+<li><a href="#_download_allowed">4.15. Download allowed</a></li>
+<li><a href="#_editabletype">4.16. Editable type</a></li>
+<li><a href="#_element_collection_mode">4.17. Element collection mode</a></li>
 <li><a href="#_email">4.18. Email</a></li>
-<li><a href="#_enumfieldmode">4.19. EnumfieldMode</a></li>
-<li><a href="#_filenameproperty">4.20. FileNameProperty</a></li>
-<li><a href="#_grouptogetherwith">4.21. GroupTogetherWith</a></li>
-<li><a href="#_ignoreinsearchfilter">4.22. IgnoreInSearchFilter</a></li>
+<li><a href="#_enum_field_mode">4.19. Enum field mode</a></li>
+<li><a href="#_file_name_property">4.20. File name property</a></li>
+<li><a href="#_group_together_with">4.21. Group together with</a></li>
+<li><a href="#_ignore_in_search_filter">4.22. Ignore in search filter</a></li>
 <li><a href="#_image">4.23. Image</a></li>
-<li><a href="#_lookupentityreference">4.24. LookupEntityReference</a></li>
-<li><a href="#_lookupquerytype">4.25. LookupQueryType</a></li>
-<li><a href="#_maxcollectionsize">4.26. MaxCollectionSize</a></li>
-<li><a href="#_maxlength">4.27. MaxLength</a></li>
-<li><a href="#_maxlengthingrid">4.28. MaxLengthInGrid</a></li>
-<li><a href="#_maxvalue">4.29. MaxValue</a></li>
-<li><a href="#_membertype">4.30. MemberType</a></li>
-<li><a href="#_mincollectionsize">4.31. MinCollectionSize</a></li>
-<li><a href="#_minlength">4.32. MinLength</a></li>
-<li><a href="#_minvalue">4.33. MinValue</a></li>
-<li><a href="#_multiplesearch">4.34. MultipleSearch</a></li>
+<li><a href="#_lookup_entity_reference">4.24. Lookup entity reference</a></li>
+<li><a href="#_lookup_query_type">4.25. Lookup query type</a></li>
+<li><a href="#_max_collection_size">4.26. Max collection size</a></li>
+<li><a href="#_max_length">4.27. Max length</a></li>
+<li><a href="#_max_length_in_grid">4.28. Max length in grid</a></li>
+<li><a href="#_max_value">4.29. Max value</a></li>
+<li><a href="#_member_type">4.30. Member type</a></li>
+<li><a href="#_min_collection_size">4.31. Min collection size</a></li>
+<li><a href="#_min_length">4.32. Min length</a></li>
+<li><a href="#_min_value">4.33. Min value</a></li>
+<li><a href="#_multiple_search">4.34. Multiple search</a></li>
 <li><a href="#_navigable">4.35. Navigable</a></li>
-<li><a href="#_navigationlink">4.36. NavigationLink</a></li>
-<li><a href="#_neededindata">4.37. NeededInData</a></li>
-<li><a href="#_numberfieldmode">4.38. NumberFieldMode</a></li>
-<li><a href="#_numberfieldstep">4.39. NumberFieldStep</a></li>
+<li><a href="#_navigation_link">4.36. Navigation link</a></li>
+<li><a href="#_needed_in_data">4.37. Needed in data</a></li>
+<li><a href="#_numberfieldmode">4.38. Number field mode</a></li>
+<li><a href="#_number_field_step">4.39. Number field step</a></li>
 <li><a href="#_percentage">4.40. Percentage</a></li>
 <li><a href="#_precision">4.41. Precision</a></li>
 <li><a href="#_prompt">4.42. Prompt</a></li>
-<li><a href="#_quickaddallowed">4.43. QuickAddAllowed</a></li>
-<li><a href="#_replacementsearchpath">4.44. ReplacementSearchPath</a></li>
-<li><a href="#_replacementsortpath">4.45. ReplacementSortPath</a></li>
-<li><a href="#_requiredforsearching">4.46. RequiredForSearching</a></li>
+<li><a href="#_quick_add_allowed">4.43. Quick-add allowed</a></li>
+<li><a href="#_replacement_search_path">4.44. Replacement search path</a></li>
+<li><a href="#_replacement_sort_path">4.45. Replacement sort path</a></li>
+<li><a href="#_required_for_searching">4.46. Required for searching</a></li>
 <li><a href="#_searchable">4.47. Searchable</a></li>
-<li><a href="#_searchcasesensitive">4.48. SearchCaseSensitive</a></li>
-<li><a href="#_searchdateonly">4.49. SearchDateOnly</a></li>
-<li><a href="#_searchforexactvalue">4.50. SearchForExactValue</a></li>
-<li><a href="#_searchprefixonly">4.51. SearchPrefixOnly</a></li>
-<li><a href="#_searchselectmode">4.52. SearchSelectMode</a></li>
-<li><a href="#_selectmode">4.53. SelectMode</a></li>
+<li><a href="#_search_case_sensitive">4.48. Search case-sensitive</a></li>
+<li><a href="#_search_date_only">4.49. Search date only</a></li>
+<li><a href="#_search_for_exact_value">4.50. Search for exact value</a></li>
+<li><a href="#_search_prefix_only">4.51. Search prefix only</a></li>
+<li><a href="#_search_select_mode">4.52. Search select mode</a></li>
+<li><a href="#_select_mode">4.53. Select mode</a></li>
 <li><a href="#_sortable">4.54. Sortable</a></li>
-<li><a href="#_textfieldmode">4.55. TextFieldMode</a></li>
-<li><a href="#_trimspaces">4.56. TrimSpaces</a></li>
-<li><a href="#_truerepresentation_and_falserepresentation">4.57. TrueRepresentation and FalseRepresentation</a></li>
+<li><a href="#_text_field_mode">4.55. Text field mode</a></li>
+<li><a href="#_trim_spaces">4.56. Trim spaces</a></li>
+<li><a href="#_true_and_false_representation">4.57. True and false representation</a></li>
 <li><a href="#_url">4.58. URL</a></li>
-<li><a href="#_visibleinform">4.59. VisibleInForm</a></li>
-<li><a href="#_visibleingrid">4.60. VisibleInGrid</a></li>
+<li><a href="#_visible_in_form">4.59. Visible in form</a></li>
+<li><a href="#_visible_in_grid">4.60. Visible in grid</a></li>
 </ul>
 </li>
 <li><a href="#_attribute_ordering_and_grouping">5. Attribute ordering and grouping</a>
@@ -749,19 +460,19 @@ pre.rouge {
 <li><a href="#_element_collections">6.2. Element collections</a></li>
 </ul>
 </li>
-<li><a href="#_data_access_service_layers_and_general_concepts">7. Data access, Service layers and general concepts</a>
+<li><a href="#_data_access_service_layers_and_general_concepts">7. Data access, service layers and general concepts</a>
 <ul class="sectlevel2">
 <li><a href="#_data_access_layer_and_entities">7.1. Data access layer and entities</a></li>
 <li><a href="#_service">7.2. Service</a></li>
 <li><a href="#_fetching_and_paging">7.3. Fetching and paging</a></li>
-<li><a href="#_entity_initialization">7.4. Entity Initialization</a></li>
+<li><a href="#_entity_initialization">7.4. Entity initialization</a></li>
 <li><a href="#_rest_api">7.5. REST API</a></li>
 <li><a href="#_validation">7.6. Validation</a></li>
 <li><a href="#_checking_for_identical_entities">7.7. Checking for identical entities</a></li>
-<li><a href="#_default_services_and_daos">7.8. Default Services and DAOs</a></li>
+<li><a href="#_default_services_and_daos">7.8. Default services and DAOs</a></li>
 </ul>
 </li>
-<li><a href="#_system_properties">8. System properties</a>
+<li><a href="#_system_properties">8. Configuration</a>
 <ul class="sectlevel2">
 <li><a href="#_prefix_dynamoframework">8.1. Prefix dynamoframework</a></li>
 <li><a href="#_prefix_dynamoframework_ollama">8.2. Prefix dynamoframework.ollama</a></li>
@@ -791,12 +502,12 @@ pre.rouge {
 </li>
 <li><a href="#_general_ui_concepts">11. General UI concepts</a>
 <ul class="sectlevel2">
-<li><a href="#_search_filters">11.1. Search Filters</a></li>
+<li><a href="#_search_filters">11.1. Search filters</a></li>
 <li><a href="#_updates">11.2. Updates</a></li>
 <li><a href="#_editing_complex_attributes">11.3. Editing complex attributes</a></li>
 <li><a href="#_hidden_fields">11.4. Hidden fields</a></li>
 <li><a href="#_view_objects">11.5. View objects</a></li>
-<li><a href="#_entity_model_actions">11.6. Entity Model Actions</a></li>
+<li><a href="#_entity_model_actions">11.6. Entity model actions</a></li>
 <li><a href="#_authorization">11.7. Authorization</a></li>
 </ul>
 </li>
@@ -806,13 +517,13 @@ pre.rouge {
 <li><a href="#_genericform">12.2. GenericForm</a></li>
 <li><a href="#_genericsplitlayout">12.3. GenericSplitLayout</a></li>
 <li><a href="#_genericedittablelayout">12.4. GenericEditTableLayout</a></li>
-<li><a href="#_pdf_viewer">12.5. PDF Viewer</a></li>
-<li><a href="#_pdf_viewer_dialog">12.6. PDF Viewer Dialog</a></li>
+<li><a href="#_pdf_viewer">12.5. PDF viewer</a></li>
+<li><a href="#_pdf_viewer_dialog">12.6. PDF viewer dialog</a></li>
 </ul>
 </li>
-<li><a href="#_additional_functionality">13. Additional Functionality</a>
+<li><a href="#_additional_functionality">13. Additional functionality</a>
 <ul class="sectlevel2">
-<li><a href="#_excel_and_csv_export">13.1. Excel and CSV Export</a></li>
+<li><a href="#_excel_and_csv_export">13.1. Excel and CSV export</a></li>
 <li><a href="#_lookup_tables">13.2. Lookup tables</a></li>
 </ul>
 </li>
@@ -833,7 +544,7 @@ pre.rouge {
 <p>Developed, maintained and sponsored by:</p>
 </div>
 <div class="paragraph text-center">
-<p><span class="image"><img src="media/logo-ocs.png" alt="Open Circle Solutions" width="256" height="53"></span></p>
+<p><span class="image"><img src="media/logo-ocs.png" alt="Open Circle Solutions BV" width="256" height="53"></span></p>
 </div>
 <hr>
 <div class="paragraph">
@@ -905,7 +616,7 @@ application framework</p>
 permissive open-source license for free and open-source software (FOSS).</p>
 </div>
 <div class="paragraph">
-<p>The sources of Dynamo can be found at <a href="https://github.com/opencirclesolutions/dynamo">Github</a>.</p>
+<p>The sources of Dynamo can be found at <a href="https://github.com/opencirclesolutions/dynamo">GitHub</a>.</p>
 </div>
 </div>
 </div>
@@ -927,7 +638,7 @@ retrieving data.</p>
 objects/entities that correspond to the database tables.</p>
 </li>
 <li>
-<p>Based on these entities, Dynamo constructs <em>Entity Models</em> that
+<p>Based on these entities, Dynamo constructs <em>entity models</em> that
 describe the behaviour of the user interface that can be used to
 manipulate these entities. This includes things like being able to
 define whether it is possible to search on certain attributes, when and
@@ -936,7 +647,7 @@ are formatted, etc. (there are dozens of different settings).</p>
 </li>
 <li>
 <p>The back-end application offers several APIs that are used by the
-front-end: one API that can be used to retrieve the Entity Model for a
+front-end: one API that can be used to retrieve the entity model for a
 certain entity, and one API that can be used (in a generic fashion) to
 perform CRUD operations on the entity. In addition to this there are
 also APIs for uploading files, for exporting data to CSV/Excel, and for
@@ -963,8 +674,15 @@ framework will also call the CRUD API to retrieve the data to display.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_the_entity_model">3. The Entity Model</h2>
+<h2 id="_the_entity_model">3. The entity model</h2>
 <div class="sectionbody">
+<div class="paragraph">
+<p>The entity model describes the behaviour of the user interface that can
+be used to  manipulate these entities. This includes things like being
+able to  define whether it is possible to search on certain attributes,
+when and how attributes can be edited, which values are allowed, how the
+values are formatted, etc.</p>
+</div>
 <div class="sect2">
 <h3 id="_basics">3.1. Basics</h3>
 <div class="sect3">
@@ -990,7 +708,7 @@ instance per Spring application context).</p>
 screens within an application. Since this would be too restrictive in
 practice, it is possible to construct separate instances for separate
 screens or use cases, by calling the <code>getModel(String reference,
-Class&lt;?&gt; clazz)</code> method. This will construct the Entity Model based on
+Class&lt;?&gt; clazz)</code> method. This will construct the entity model based on
 the provided class (the second parameter), but it will allow you to
 override certain attributes using message bundle entries (more on this
 later). The <code>reference</code> string is the unique identifier that you assign
@@ -999,9 +717,9 @@ parameter, then the simple name of the class is used as the reference)
 and which is then used as part of the message bundle entry.</p>
 </div>
 <div class="paragraph">
-<p>The classes for which you create an Entity Model must inherit from the
+<p>The classes for which you create an entity model must inherit from the
 <code>org.dynamoframework.domain.AbstractEntity</code> class. See chapter
-<a href="#_data_access_service_layers_and_general_concepts">Data access, Service layers and general concepts</a> for details.</p>
+<a href="#_data_access_service_layers_and_general_concepts">Data access, service layers and general concepts</a> for details.</p>
 </div>
 </div>
 <div class="sect3">
@@ -1045,7 +763,7 @@ as the framework will do it for you.</p>
 <div class="sect2">
 <h3 id="_entity_level_settings">3.2. Entity level settings</h3>
 <div class="paragraph">
-<p>The Entity Model supports several attributes that define how the entity
+<p>The entity model supports several attributes that define how the entity
 itself is represented. These include:</p>
 </div>
 <div class="ulist">
@@ -1105,8 +823,8 @@ is allowed.</p>
 <div class="sect2">
 <h3 id="_attributes">3.3. Attributes</h3>
 <div class="paragraph">
-<p>Every Entity Model consists of a number of <em>Attribute Models</em>. By
-default, an Attribute Model is created for every valid property of the
+<p>Every entity model consists of a number of <em>attribute models</em>. By
+default, an attribute model is created for every valid property of the
 entity. e.g., if you have an entity Person with properties “name” and
 “age”, then the attribute model for the Person entity will contain two
 attribute models, one for “name” and one for “age”.</p>
@@ -1140,7 +858,7 @@ an attribute will have to be defined as read-only.</p>
 <li>
 <p>Attributes can be simple (String, Integer, Long, enumerated types,
 etc.) or complex (a reference to another entity, a collection of
-primitive values, or a collection of other entities). The Entity Model
+primitive values, or a collection of other entities). The entity model
 generation is nested, which means that if a property of an entity is
 again an entity, then an entity model for the nested property will also
 be generated. This entity model is separate from the non-nested entity
@@ -1196,15 +914,15 @@ in e.g., JPQL queries and for data binding in Angular.</p>
 <div class="sect2">
 <h3 id="_defaults_and_attribute_overrides">3.4. Defaults and attribute overrides</h3>
 <div class="paragraph">
-<p>The Entity Model generation is based on sensible defaults and metadata.
-e.g., the value of the <strong>type</strong> setting of an Attribute Model is directly
-taken from the Java type of the property, and certain other aspects e.g.
-whether the attribute is visible in a grid or can be used in a search
-form are derived from this type (e.g., by default a complex attribute
-will not be visible in a grid).</p>
+<p>The entity model generation is based on sensible defaults and metadata:
+e.g., the value of the <code>type</code> setting of an attribute model is directly
+taken from the Java type of the property. Also, certain other aspects
+such as whether the attribute is visible in a grid or can be used in a
+search form are derived from this type (e.g., by default a complex
+attribute will not be visible in a grid).</p>
 </div>
 <div class="paragraph">
-<p>In addition to this, the Entity Model generation process will take
+<p>In addition to this, the entity model generation process will take
 certain JSR-303 annotations (e.g., <code>@NotNull</code>, <code>@Size</code>) into account. A
 detailed explanation for each setting will be given below.</p>
 </div>
@@ -1246,11 +964,11 @@ you can use both access types interchangeably.</p>
 drawbacks. e.g., it hard-codes certain String values (display name,
 description) into your application, and it does not directly allow for
 internationalization. It also only allows you to override the behaviour
-of the “default” Entity Model that is based directly on the class, and
-not the behaviour of any derived Entity Models.</p>
+of the “default” entity model that is based directly on the class, and
+not the behaviour of any derived entity models.</p>
 </div>
 <div class="paragraph">
-<p>If you need to override the behaviour of a derived Entity Model, you can
+<p>If you need to override the behaviour of a derived entity model, you can
 use the message bundle mechanism to achieve this. Message bundle
 overrides must be placed in the <em>src/main/resources/META-INF/entitymodel.properties</em> file
 (create a locale-specific version of this file if you need to; the normal Java
@@ -1275,7 +993,7 @@ simple class name of the entity for a standard entity model, and the
 user-provided reference for a non-standard model.</p>
 </li>
 <li>
-<p><code>[Attribute Model Name]</code> is the (possibly nested) name of the
+<p><code>[AttributeModelName]</code> is the (possibly nested) name of the
 attribute model. This is empty in case you are directly overriding a
 setting of the Entity.</p>
 </li>
@@ -1290,8 +1008,8 @@ possible values (or refer to the sections below).</p>
 </ul>
 </div>
 <div class="paragraph">
-<p>The <code>[Attribute Model Name]</code> part must be omitted when you want to
-directly set an attribute of the Entity Model itself.</p>
+<p>The <code>[AttributeModelName]</code> part must be omitted when you want to
+directly set an attribute of the entity model itself.</p>
 </div>
 <div class="paragraph">
 <p>Some examples:</p>
@@ -1376,14 +1094,14 @@ are supported.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_attribute_model_settings">4. Attribute Model settings</h2>
+<h2 id="_attribute_model_settings">4. Attribute model settings</h2>
 <div class="sectionbody">
 <div class="paragraph">
 <p>In this section, we explain all the supported settings of the attribute
 model.</p>
 </div>
 <div class="sect2">
-<h3 id="_allowedextensions">4.1. AllowedExtensions</h3>
+<h3 id="_allowed_extensions">4.1. Allowed extensions</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1421,10 +1139,10 @@ When defining extensions in Dynamo, never include a <code>.</code> (dot).
 </div>
 </div>
 <div class="sect2">
-<h3 id="_attributetype">4.2. AttributeType</h3>
+<h3 id="_attribute_type">4.2. Attribute type</h3>
 <div class="paragraph">
 <p>The <code>attributeType</code> setting is a classification of the type of the
-property. It is determined automatically during the Entity Model
+property. It is determined automatically during the entity model
 generation process and can have the following values:</p>
 </div>
 <div class="ulist">
@@ -1447,7 +1165,7 @@ the entity class.</p>
 binary object (like a file or an image).</p>
 </li>
 <li>
-<p><code>EMBEDDED</code>: used during the Entity Model construction process to
+<p><code>EMBEDDED</code>: used during the entity model construction process to
 handle embedded properties (using the <code>@Embedded</code> annotation). This will
 be covered in the <em>Advanced</em> section.</p>
 </li>
@@ -1648,7 +1366,7 @@ bundle:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_autofillinstructions">4.3. AutofillInstructions</h3>
+<h3 id="_autofill_instructions">4.3. Autofill instructions</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1665,7 +1383,7 @@ in the section <a href="#_formfillenabled">FormFillEnabled</a>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_booleanfieldmode">4.4. BooleanFieldMode</h3>
+<h3 id="_boolean_field_mode">4.4. Boolean field mode</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1776,7 +1494,7 @@ that would look like this:</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_currencycode">4.6. CurrencyCode</h3>
+<h3 id="_currency_code">4.6. Currency code</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1798,7 +1516,7 @@ dollar) then this symbol will be used instead of the code.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_datetype">4.7. DateType</h3>
+<h3 id="_date_type">4.7. Date type</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1839,7 +1557,7 @@ java.sql.Date).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_defaultsearchvalue">4.8. DefaultSearchValue</h3>
+<h3 id="_default_search_value">4.8. Default search value</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1871,7 +1589,7 @@ the system properties <code>dynamoframework.defaults.date-format</code> (<code>d
 </div>
 </div>
 <div class="sect2">
-<h3 id="_defaultsearchvaluefrom">4.9. DefaultSearchValueFrom</h3>
+<h3 id="_default_search_value_from">4.9. Default search value from</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1902,7 +1620,7 @@ the system properties <code>dynamoframework.defaults.date-format</code> (<code>d
 </div>
 </div>
 <div class="sect2">
-<h3 id="_defaultsearchvalueto">4.10. DefaultSearchValueTo</h3>
+<h3 id="_default_search_value_to">4.10. Default search value to</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1933,7 +1651,7 @@ the system properties <code>dynamoframework.defaults.date-format</code> (<code>d
 </div>
 </div>
 <div class="sect2">
-<h3 id="_defaultvalue">4.11. DefaultValue</h3>
+<h3 id="_default_value">4.11. Default value</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -1984,7 +1702,7 @@ setting.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_displayformat">4.13. DisplayFormat</h3>
+<h3 id="_display_format">4.13. Display format</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2014,7 +1732,7 @@ variables depending on the <code>dateType</code> of the attribute model.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_displayname">4.14. DisplayName</h3>
+<h3 id="_display_name">4.14. Display name</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2036,7 +1754,7 @@ only the first word will be capitalized.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_downloadallowed">4.15. DownloadAllowed</h3>
+<h3 id="_download_allowed">4.15. Download allowed</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2053,7 +1771,7 @@ show up next to the preview of the image in a file upload component.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_editabletype">4.16. EditableType</h3>
+<h3 id="_editabletype">4.16. Editable type</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2084,7 +1802,7 @@ to change the values.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_elementcollectionmode">4.17. ElementCollectionMode</h3>
+<h3 id="_element_collection_mode">4.17. Element collection mode</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2114,7 +1832,7 @@ framework).</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_enumfieldmode">4.19. EnumfieldMode</h3>
+<h3 id="_enum_field_mode">4.19. Enum field mode</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2146,7 +1864,7 @@ dropdown component will always be used in order to save space.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_filenameproperty">4.20. FileNameProperty</h3>
+<h3 id="_file_name_property">4.20. File name property</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2198,7 +1916,7 @@ actual file name is unknown.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_grouptogetherwith">4.21. GroupTogetherWith</h3>
+<h3 id="_group_together_with">4.21. Group together with</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2258,7 +1976,7 @@ not be displayed properly.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_ignoreinsearchfilter">4.22. IgnoreInSearchFilter</h3>
+<h3 id="_ignore_in_search_filter">4.22. Ignore in search filter</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2291,7 +2009,7 @@ the value (byte contents) of the property.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_lookupentityreference">4.24. LookupEntityReference</h3>
+<h3 id="_lookup_entity_reference">4.24. Lookup entity reference</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2315,7 +2033,7 @@ this entity model behaves.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_lookupquerytype">4.25. LookupQueryType</h3>
+<h3 id="_lookup_query_type">4.25. Lookup query type</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2331,7 +2049,7 @@ component.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_maxcollectionsize">4.26. MaxCollectionSize</h3>
+<h3 id="_max_collection_size">4.26. Max collection size</h3>
 <div class="paragraph">
 <p>The <code>maxCollectionSize</code> setting determines the maximum number of allowed
 elements in an element collection, one-to-many relation, or many-to-many
@@ -2340,7 +2058,7 @@ Validation <code>@Size</code> annotation.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_maxlength">4.27. MaxLength</h3>
+<h3 id="_max_length">4.27. Max length</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2372,7 +2090,7 @@ using the <code>@Attribute</code> annotation.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_maxlengthingrid">4.28. MaxLengthInGrid</h3>
+<h3 id="_max_length_in_grid">4.28. Max length in grid</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2390,7 +2108,7 @@ save space in grids.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_maxvalue">4.29. MaxValue</h3>
+<h3 id="_max_value">4.29. Max value</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2424,7 +2142,7 @@ using the <code>@Attribute</code> annotation.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_membertype">4.30. MemberType</h3>
+<h3 id="_member_type">4.30. Member type</h3>
 <div class="paragraph">
 <p>This setting is not configurable using a message bundle.</p>
 </div>
@@ -2443,7 +2161,7 @@ type of the members of the collection.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_mincollectionsize">4.31. MinCollectionSize</h3>
+<h3 id="_min_collection_size">4.31. Min collection size</h3>
 <div class="paragraph">
 <p>The <code>minCollectionSize</code> setting determines the minimum number of allowed
 elements in an element collection, one-to-many relation, or many-to-many
@@ -2452,7 +2170,7 @@ annotation from the Java validation framework.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_minlength">4.32. MinLength</h3>
+<h3 id="_min_length">4.32. Min length</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2481,7 +2199,7 @@ on the <code>@Attribute</code> annotation.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_minvalue">4.33. MinValue</h3>
+<h3 id="_min_value">4.33. Min value</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2513,7 +2231,7 @@ using the <code>@Attribute</code> annotation.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_multiplesearch">4.34. MultipleSearch</h3>
+<h3 id="_multiple_search">4.34. Multiple search</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2572,7 +2290,7 @@ is in read-only mode.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_navigationlink">4.36. NavigationLink</h3>
+<h3 id="_navigation_link">4.36. Navigation link</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2592,7 +2310,7 @@ used rather than the default.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_neededindata">4.37. NeededInData</h3>
+<h3 id="_needed_in_data">4.37. Needed in data</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2613,7 +2331,7 @@ values anyway.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_numberfieldmode">4.38. NumberFieldMode</h3>
+<h3 id="_numberfieldmode">4.38. Number field mode</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2638,7 +2356,7 @@ variable <code>dynamoframework.defaults.number-field-mode</code>.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_numberfieldstep">4.39. NumberFieldStep</h3>
+<h3 id="_number_field_step">4.39. Number field step</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2650,7 +2368,7 @@ variable <code>dynamoframework.defaults.number-field-mode</code>.</p>
 </div>
 <div class="paragraph">
 <p>The <code>numberFieldStep</code> setting can be used to set the step size to be used for a
-number field (see section <a href="#_numberfieldmode">NumberFieldMode</a>). The default value is <code>1</code>, but you
+number field (see section <a href="#_numberfieldmode">Number field mode</a>). The default value is <code>1</code>, but you
 can set this to any positive integer.</p>
 </div>
 </div>
@@ -2712,7 +2430,7 @@ known as the “placeholder”)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_quickaddallowed">4.43. QuickAddAllowed</h3>
+<h3 id="_quick_add_allowed">4.43. Quick-add allowed</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2781,7 +2499,7 @@ message. e.g., in the example above, you should add a
 </div>
 </div>
 <div class="sect2">
-<h3 id="_replacementsearchpath">4.44. ReplacementSearchPath</h3>
+<h3 id="_replacement_search_path">4.44. Replacement search path</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2806,7 +2524,7 @@ back-end.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_replacementsortpath">4.45. ReplacementSortPath</h3>
+<h3 id="_replacement_sort_path">4.45. Replacement sort path</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2827,7 +2545,7 @@ back-end.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_requiredforsearching">4.46. RequiredForSearching</h3>
+<h3 id="_required_for_searching">4.46. Required for searching</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2870,7 +2588,7 @@ means it will not show up in a search form. Setting this property to
 </div>
 </div>
 <div class="sect2">
-<h3 id="_searchcasesensitive">4.48. SearchCaseSensitive</h3>
+<h3 id="_search_case_sensitive">4.48. Search case-sensitive</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2895,7 +2613,7 @@ BooleanType.FALSE.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_searchdateonly">4.49. SearchDateOnly</h3>
+<h3 id="_search_date_only">4.49. Search date only</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2923,7 +2641,7 @@ time stamp value matches the interval from <code>2020-04-04 00:00:00</code> up t
 </div>
 </div>
 <div class="sect2">
-<h3 id="_searchforexactvalue">4.50. SearchForExactValue</h3>
+<h3 id="_search_for_exact_value">4.50. Search for exact value</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2946,7 +2664,7 @@ allows the user to search for an exact value.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_searchprefixonly">4.51. SearchPrefixOnly</h3>
+<h3 id="_search_prefix_only">4.51. Search prefix only</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -2971,7 +2689,7 @@ used for attributes of type String and ignored in all other cases.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_searchselectmode">4.52. SearchSelectMode</h3>
+<h3 id="_search_select_mode">4.52. Search select mode</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -3037,7 +2755,7 @@ used to perform a search.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_selectmode">4.53. SelectMode</h3>
+<h3 id="_select_mode">4.53. Select mode</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -3114,7 +2832,7 @@ attributes.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_textfieldmode">4.55. TextFieldMode</h3>
+<h3 id="_text_field_mode">4.55. Text field mode</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -3132,7 +2850,7 @@ will be ignored inside a search form.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_trimspaces">4.56. TrimSpaces</h3>
+<h3 id="_trim_spaces">4.56. Trim spaces</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -3157,7 +2875,7 @@ attribute.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_truerepresentation_and_falserepresentation">4.57. TrueRepresentation and FalseRepresentation</h3>
+<h3 id="_true_and_false_representation">4.57. True and false representation</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -3203,7 +2921,7 @@ browser window.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_visibleinform">4.59. VisibleInForm</h3>
+<h3 id="_visible_in_form">4.59. Visible in form</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -3228,7 +2946,7 @@ grid.</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_visibleingrid">4.60. VisibleInGrid</h3>
+<h3 id="_visible_in_grid">4.60. Visible in grid</h3>
 <div class="paragraph">
 <p>In message bundle:</p>
 </div>
@@ -3440,7 +3158,7 @@ property (e.g., <code>Movie.director.name.displayName=Director Name</code>).</p>
 <div class="sect2">
 <h3 id="_element_collections">6.2. Element collections</h3>
 <div class="paragraph">
-<p>The Entity Model framework also supports dealing with “element
+<p>The entity model framework also supports dealing with “element
 collection” properties, i.e. properties that are collections of simple
 types (currently String, Integer, Long and BigDecimal are supported) and
 that are annotated with the <code>@ElementCollection</code> annotation.</p>
@@ -3470,7 +3188,7 @@ in the collection as a whole.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_data_access_service_layers_and_general_concepts">7. Data access, Service layers and general concepts</h2>
+<h2 id="_data_access_service_layers_and_general_concepts">7. Data access, service layers and general concepts</h2>
 <div class="sectionbody">
 <div class="sect2">
 <h3 id="_data_access_layer_and_entities">7.1. Data access layer and entities</h3>
@@ -3710,23 +3428,33 @@ approach.</p>
 also possible to configure the joins in the <em>entitymodel.properties</em> message bundle.</p>
 </div>
 <div class="paragraph">
-<p>This is done as follows</p>
+<p>This is done as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="properties"><span class="err">[Entity</span> <span class="err">Model</span> <span class="err">Reference].[join|detailJoin].[number]</span><span class="py">.attribute</span><span class="p">=</span> <span class="s">[name of the attribute]</span>
-<span class="err">[Entity</span> <span class="err">Model</span> <span class="err">Reference].[join|detailJoin].[number]</span><span class="py">.joinType</span><span class="p">=</span> <span class="s">LEFT | RIGHT | INNER</span></code></pre>
+<pre class="rouge highlight"><code data-lang="properties"><span class="err">[EntityModelReference].[join|detailJoin].[number]</span><span class="py">.attribute</span><span class="p">=</span> <span class="s">[name of the attribute]</span>
+<span class="err">[EntityModelReference].[join|detailJoin].[number]</span><span class="py">.joinType</span><span class="p">=</span> <span class="s">LEFT | RIGHT | INNER</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
-<p>I.e.:
-- you can use "join" to define joins that are used when fetching multiple entities
-and "detailJoin" to define joins that are used when fetching single entities
-- Joins (per type) are numbered, starting with 1
-- Use "attribute" to specify the name of the attribute</p>
+<p>Some clarifications:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>You can use <code>join</code> to define joins that are used when fetching multiple entities
+and "detailJoin" to define joins that are used when fetching single entities;</p>
+</li>
+<li>
+<p>Joins (per type) are numbered, starting with 1;</p>
+</li>
+<li>
+<p>Use <code>attribute</code> to specify the name of the attribute.</p>
+</li>
+</ol>
 </div>
 <div class="paragraph">
-<p>E.g, to set up two joins for the Organization entity, you can do the following</p>
+<p>To set up two joins for the <code>Organization</code> entity, you can do the following:</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -3751,7 +3479,7 @@ and "detailJoin" to define joins that are used when fetching single entities
 </div>
 </div>
 <div class="sect2">
-<h3 id="_entity_initialization">7.4. Entity Initialization</h3>
+<h3 id="_entity_initialization">7.4. Entity initialization</h3>
 <div class="paragraph">
 <p>As you have seen before, it is possible to set default values for simple
 attributes.These default values are applied on the client side when
@@ -3898,7 +3626,7 @@ implementation class for that entity.</p>
 </div>
 <div class="paragraph">
 <p>The settings that are relevant for validation will also be exposed via
-the Entity Model API to the front-end, and will be used to create the
+the entity model API to the front-end, and will be used to create the
 appropriate Angular validators. The following validators are supported:</p>
 </div>
 <div class="ulist">
@@ -3989,7 +3717,7 @@ you.
 </div>
 </div>
 <div class="sect2">
-<h3 id="_default_services_and_daos">7.8. Default Services and DAOs</h3>
+<h3 id="_default_services_and_daos">7.8. Default services and DAOs</h3>
 <div class="paragraph">
 <p>It can happen that you have a very simple entity for which you will only
 need the default methods provided by <code>BaseService</code>. If this is the
@@ -4064,22 +3792,23 @@ the name of the bean is required:</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_system_properties">8. System properties</h2>
+<h2 id="_system_properties">8. Configuration</h2>
 <div class="sectionbody">
 <div class="paragraph">
-<p>Dynamo supports several ways of dealing with (system) properties.</p>
+<p>Dynamo supports several ways of dealing with (system) properties in order
+to configure the behaviour of the framework.</p>
 </div>
 <div class="paragraph">
 <p>The easiest way of declaring a property is by including it in the
 <em>application.properties</em> or <em>application.yml</em> file which is located in the
-<em>src/main/resources</em> directory.This is the standard file used by Spring
+<em>src/main/resources</em> directory. This is the standard file used by Spring
 Boot, and as such you can add both your own system properties to it, as
 well as using it to modify any Spring Boot settings.</p>
 </div>
 <div class="paragraph">
-<p>You can use the default mechanisms offered by Spring Boot (e.g., external configuration
-file, explicitly set system parameters, using profiles) to override the
-values.</p>
+<p>You can use the default mechanisms offered by Spring Boot (e.g., external
+configuration file, explicitly set system parameters, using profiles) to
+override the values.</p>
 </div>
 <div class="paragraph">
 <p>The Dynamo Framework manages all properties using <code>@ConfigurationProperties</code>.
@@ -5015,7 +4744,7 @@ returns <code>null</code> when a message cannot be found.</p>
 modify any properties by changing the <em>application.properties</em> (or
 <em>application.yml</em>) file which should be located in the <em>src/main/resources</em>
 directory of the UI subproject. The properties specific to Dynamo will
-be covered in the section <a href="#_system_properties">System properties</a>.</p>
+be covered in the section <a href="#_system_properties">Configuration</a>.</p>
 </div>
 </div>
 <div class="sect2">
@@ -5497,7 +5226,7 @@ message sticky/persistent.</p>
 <h2 id="_general_ui_concepts">11. General UI concepts</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_search_filters">11.1. Search Filters</h3>
+<h3 id="_search_filters">11.1. Search filters</h3>
 <div class="paragraph">
 <p>The Dynamo Framework uses a generic framework for executing search
 requests to the back-end.Normally the details of this framework are
@@ -5945,7 +5674,7 @@ the primary key (<code>entityId</code> in the example below).</p>
 <p>In general, Dynamo is not particularly concerned with whether the
 objects you are displaying in the UI are actual entities backed by a
 database table – any class that extends the <code>AbstractEntity</code> class (and
-is hence identified by a unique ID) can be used with the Entity Model
+is hence identified by a unique ID) can be used with the entity model
 framework). This makes it relatively easy to use View Objects in the UI.
 In the case of a view object you are creating an object that is solely
 used to transfer data to the UI where it will be used for display
@@ -5994,7 +5723,7 @@ would normally, and instead use the name of the view object as the
 </div>
 </div>
 <div class="sect2">
-<h3 id="_entity_model_actions">11.6. Entity Model Actions</h3>
+<h3 id="_entity_model_actions">11.6. Entity model actions</h3>
 <div class="paragraph">
 <p>It is also possible to define actions on the entity model that will
 directly be translated to input dialogs in the UI. This can be used when
@@ -6002,7 +5731,7 @@ you have an action that operates on part of an entity, e.g., you want a
 dialog that can be used to change only an organization’s name.</p>
 </div>
 <div class="paragraph">
-<p>In order to use this functionality, you must perform a number of steps:</p>
+<p>In order to use this functionality, you must perform a number of steps:x</p>
 </div>
 <div class="ulist">
 <ul>
@@ -6809,12 +6538,12 @@ existing entities (based on the value of the entityId).</p>
 <p>By default, the form will contain a single column of input components,
 in the order specified by the <code>@AttributeOrder</code> defined on the entity.
 The type of the component that will be rendered depends on various
-settings on the attribute model (e.g., selectMode, textFieldMode).</p>
+settings on the attribute model (e.g., <code>selectMode</code>, <code>textFieldMode</code>).</p>
 </div>
 <div class="paragraph">
 <p>Only the attributes for which <code>visibleInForm</code> is set to <code>true</code> will be
 included in the form, and only if they indeed editable (see the
-<a href="#_editabletype">EditableType</a> for more details). If an attribute cannot be edited, then
+<a href="#_editabletype">Editable type</a> for more details). If an attribute cannot be edited, then
 the attribute’s current value will be shown as a label.</p>
 </div>
 <div class="sect3">
@@ -7083,7 +6812,7 @@ being filled with “Australia”</p>
 <td class="content">
 If this approach is too cumbersome for your purposes, consider
 overriding the <code>initialize()</code> method in the back-end instead (see section
-<a href="#_entity_initialization">Entity Initialization</a>).
+<a href="#_entity_initialization">Entity initialization</a>).
 </td>
 </tr>
 </table>
@@ -7815,7 +7544,7 @@ results table.</p>
 <div class="paragraph">
 <p>The <code>defaultFilters</code> property takes an array of FilterModel objects that
 specify which filters to use. More about constructing filters can be
-found in section <a href="#_search_filters">Search Filters</a>.</p>
+found in section <a href="#_search_filters">Search filters</a>.</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -7964,13 +7693,13 @@ the popup dialog)</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_pdf_viewer">12.5. PDF Viewer</h3>
+<h3 id="_pdf_viewer">12.5. PDF viewer</h3>
 <div class="paragraph">
 <p>The Dynamo framework provides a convenient component for viewing PDF documents. The source
 document can be provided as either an external URL, an internal URL, or a reference to the entity model.</p>
 </div>
 <div class="paragraph">
-<p>IN order to view a PDF file that is stored in a field on an entity, use the following set-up</p>
+<p>In order to view a PDF file that is stored in a field on an entity, use the following set-up</p>
 </div>
 <div class="listingblock">
 <div class="content">
@@ -8047,7 +7776,7 @@ entity containing the byte representation of the file</p>
 </div>
 </div>
 <div class="sect2">
-<h3 id="_pdf_viewer_dialog">12.6. PDF Viewer Dialog</h3>
+<h3 id="_pdf_viewer_dialog">12.6. PDF viewer dialog</h3>
 <div class="paragraph">
 <p>Additionally, it is also possible to use the PDF viewer inside a popup-dialog. In order to use this
 component, include the following in your HTML file:</p>
@@ -8092,10 +7821,10 @@ component, and use the <code>showDialog()</code> method to open it.</p>
 </div>
 </div>
 <div class="sect1">
-<h2 id="_additional_functionality">13. Additional Functionality</h2>
+<h2 id="_additional_functionality">13. Additional functionality</h2>
 <div class="sectionbody">
 <div class="sect2">
-<h3 id="_excel_and_csv_export">13.1. Excel and CSV Export</h3>
+<h3 id="_excel_and_csv_export">13.1. Excel and CSV export</h3>
 <div class="paragraph">
 <p>The Dynamo Framework offers some functionality for automatically
 exporting data that is displayed in results grid to Excel (<code>.xlsx</code>) or CSV
@@ -8201,7 +7930,7 @@ pom.xml file:</p>
 <pre class="rouge highlight"><code data-lang="xml"><span class="nt">&lt;dependency&gt;</span>
   <span class="nt">&lt;groupId&gt;</span>org.dynamoframework<span class="nt">&lt;/groupId&gt;</span>
   <span class="nt">&lt;artifactId&gt;</span>dynamo-functional-domain<span class="nt">&lt;/artifactId&gt;</span>
-  <span class="nt">&lt;version&gt;</span>${dynamo.version}<span class="nt">&lt;/version&gt;</span>
+  <span class="nt">&lt;version&gt;</span>4.0.0-SNAPSHOT<span class="nt">&lt;/version&gt;</span>
 <span class="nt">&lt;/dependency&gt;</span></code></pre>
 </div>
 </div>
@@ -8370,10 +8099,10 @@ respectively grids or forms.</p>
 <p>The following table lists some of the common things to look out for, for
 attributes of certain types</p>
 </div>
-<table class="tableblock frame-all grid-all stretch">
+<table class="tableblock frame-all grid-all stripes-even stretch">
 <colgroup>
-<col style="width: 50%;">
-<col style="width: 50%;">
+<col style="width: 28.5714%;">
+<col style="width: 71.4286%;">
 </colgroup>
 <thead>
 <tr>
@@ -8563,7 +8292,7 @@ see an example of this.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-09-18 13:30:03 +0200
+Last updated 2024-10-02 13:45:16 +0200
 </div>
 </div>
 </body>
