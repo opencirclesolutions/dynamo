@@ -133,3 +133,10 @@ table thead, table tfoot {
     color: #515147;
 }
 
+.admonitionblock > table tbody tr {
+    background-color: white;
+}
+
+pre.rouge {
+    background-color: #cee0cf;
+}

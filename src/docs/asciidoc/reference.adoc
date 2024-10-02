@@ -163,7 +163,7 @@ The entity model supports several attributes that define how the entity
 itself is represented. These include:
 
 * `displayName`: the name of the entity (e.g., “Car”)
-* `displayNamePlural`: the name of the entity, in plural form (e.g. “Cars”)
+* `displayNamePlural`: the name of the entity, in plural form (e.g., “Cars”)
 * `description`: textual description of the entity
 * `displayProperty`: the name of the property to use when displaying the
 entity inside e.g., a combo box. This property is also used as the title
