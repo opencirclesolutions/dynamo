@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dynamo-formfill</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Framework - Form Fill Functionality</name>
+	<name>Form Fill Functionality</name>
 	<description>Dynamo Framework form fill functionality project.</description>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
@@ -115,22 +115,18 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- Enforce compile version. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
-			<!-- Enforce coding Standards and Guidelines. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 			</plugin>
-			<!-- Check for bugs. -->
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
-			<!-- Generate jar for Unit/Integration testing. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -150,15 +146,28 @@
 				<groupId>com.mysema.maven</groupId>
 				<artifactId>apt-maven-plugin</artifactId>
 			</plugin>
-			<!-- Build Release. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 			</plugin>
-			<!-- Code coverage. -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>${asciidoctor.maven.plugin.version}</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<stagingDirectory>../target/staging/maven</stagingDirectory>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

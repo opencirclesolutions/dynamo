@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dynamo-parameter</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Framework - Functional extension - Parameter</name>
+	<name>Functional extension - Parameter</name>
 	<description>Dynamo Framework functional parameter extension project.</description>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
