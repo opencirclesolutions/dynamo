@@ -157,3 +157,8 @@ table.tableblock > .title,
 pre.rouge {
     background-color: #e9f0e8 !important;
 }
+
+p {
+  text-align: justify;
+  text-justify: inter-word;
+}
