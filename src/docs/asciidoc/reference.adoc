@@ -5110,7 +5110,7 @@ In order to view a PDF file that is stored in a field on an entity, use the foll
   ></app-pdf-viewer>
 --
 
-With the "mode" pointing to `PdfViewerMode.MODEL`. This will render a PDF file stored in the `logo.image`
+With the `mode` pointing to `PdfViewerMode.MODEL`. This will render a PDF file stored in the `logo.image`
 field of the `Gift` entity with primary key `2`.
 
 To refer to an internal URL, use the following:
