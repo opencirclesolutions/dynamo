@@ -2103,13 +2103,11 @@ using the <code>@Attribute</code> annotation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="o">---</span>
-<span class="nd">@ElementCollection</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@ElementCollection</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
 <span class="nd">@CollectionTable</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"person_tags"</span><span class="o">)</span>
 <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"tag"</span><span class="o">)</span>
 <span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">HIDE</span><span class="o">,</span>
-        <span class="n">minLength</span> <span class="o">=</span> <span class="mi">4</span><span class="o">,</span> <span class="n">maxLength</span> <span class="o">=</span> <span class="mi">12</span><span class="o">,</span> <span class="n">elementCollectionMode</span> <span class="o">=</span> <span class="nc">ElementCollectionMode</span><span class="o">.</span><span class="na">DIALOG</span><span class="o">)</span>
-<span class="o">---</span></code></pre>
+        <span class="n">minLength</span> <span class="o">=</span> <span class="mi">4</span><span class="o">,</span> <span class="n">maxLength</span> <span class="o">=</span> <span class="mi">12</span><span class="o">,</span> <span class="n">elementCollectionMode</span> <span class="o">=</span> <span class="nc">ElementCollectionMode</span><span class="o">.</span><span class="na">DIALOG</span><span class="o">)</span></code></pre>
 </div>
 </div>
 </div>
@@ -2153,15 +2151,13 @@ using the <code>@Attribute</code> annotation.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="java"><span class="o">---</span>
-<span class="nd">@ElementCollection</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@ElementCollection</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
 <span class="nd">@CollectionTable</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"person_lucky_numbers"</span><span class="o">)</span>
 <span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"lucky_number"</span><span class="o">)</span>
 <span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">HIDE</span><span class="o">,</span>
         <span class="n">minValue</span> <span class="o">=</span> <span class="mi">10</span><span class="o">,</span> <span class="n">maxValue</span> <span class="o">=</span> <span class="mi">100</span><span class="o">,</span> <span class="n">elementCollectionMode</span> <span class="o">=</span> <span class="nc">ElementCollectionMode</span><span class="o">.</span><span class="na">CHIPS</span><span class="o">)</span>
 <span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">3</span><span class="o">)</span>
-<span class="kd">private</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nd">@Min</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="nd">@Max</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">100</span><span class="o">)</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">luckyNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span>
-<span class="o">---</span></code></pre>
+<span class="kd">private</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nd">@Min</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="nd">@Max</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">100</span><span class="o">)</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">luckyNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span></code></pre>
 </div>
 </div>
 </div>
@@ -8316,7 +8312,7 @@ see an example of this.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-10-03 12:19:53 +0200
+Last updated 2024-10-03 12:28:02 +0200
 </div>
 </div>
 </body>
