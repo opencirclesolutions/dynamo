@@ -26,7 +26,6 @@ import org.dynamoframework.exception.OCSRuntimeException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Properties;
 
 /**
  * Factory class for creating a service locator.
@@ -34,42 +33,42 @@ import java.util.Properties;
  * @author bas.rutten
  */
 @UtilityClass
-<span class="fc" id="L37">@Slf4j</span>
-<span class="nc" id="L38">public final class ServiceLocatorFactory {</span>
+<span class="fc" id="L36">@Slf4j</span>
+<span class="nc" id="L37">public final class ServiceLocatorFactory {</span>
 
-    private static volatile ServiceLocator serviceLocator;
+	private static volatile ServiceLocator serviceLocator;
 
-    private static final String DEFAULT_CLASS_NAME = &quot;org.dynamoframework.SpringWebServiceLocator&quot;;
+	private static final String DEFAULT_CLASS_NAME = &quot;org.dynamoframework.SpringWebServiceLocator&quot;;
 
-    @SuppressWarnings(&quot;deprecation&quot;)
-    public static ServiceLocator getServiceLocator() {
-<span class="nc bnc" id="L46" title="All 2 branches missed.">        if (serviceLocator == null) {</span>
-<span class="nc" id="L47">            synchronized (ServiceLocatorFactory.class) {</span>
-<span class="nc bnc" id="L48" title="All 2 branches missed.">                if (serviceLocator == null) {</span>
-<span class="nc" id="L49">                    String serviceLocatorClassName = getServiceLocatorClassName();</span>
-<span class="nc" id="L50">                    log.info(&quot;Using service locator class {} &quot;, serviceLocatorClassName);</span>
-                    try {
-<span class="nc" id="L52">                        serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();</span>
-<span class="nc" id="L53">                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {</span>
-<span class="nc" id="L54">                        throw new OCSRuntimeException(e.getMessage());</span>
-<span class="nc" id="L55">                    }</span>
-                }
-<span class="nc" id="L57">            }</span>
-        }
-<span class="nc" id="L59">        return serviceLocator;</span>
-    }
+	@SuppressWarnings(&quot;deprecation&quot;)
+	public static ServiceLocator getServiceLocator() {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">		if (serviceLocator == null) {</span>
+<span class="nc" id="L46">			synchronized (ServiceLocatorFactory.class) {</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">				if (serviceLocator == null) {</span>
+<span class="nc" id="L48">					String serviceLocatorClassName = getServiceLocatorClassName();</span>
+<span class="nc" id="L49">					log.info(&quot;Using service locator class {} &quot;, serviceLocatorClassName);</span>
+					try {
+<span class="nc" id="L51">						serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();</span>
+<span class="nc" id="L52">					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {</span>
+<span class="nc" id="L53">						throw new OCSRuntimeException(e.getMessage());</span>
+<span class="nc" id="L54">					}</span>
+				}
+<span class="nc" id="L56">			}</span>
+		}
+<span class="nc" id="L58">		return serviceLocator;</span>
+	}
 
-    protected static String getServiceLocatorClassName() {
-<span class="fc" id="L63">        try (BufferedReader in = new BufferedReader(new InputStreamReader(ServiceLocatorFactory.class.getClassLoader().getResourceAsStream(&quot;dynamoservicelocator&quot;)))) {</span>
-<span class="fc" id="L64">            String className = in.readLine();</span>
-<span class="fc bfc" id="L65" title="All 2 branches covered.">            if (className != null) {</span>
-<span class="fc" id="L66">                return className;</span>
-            }
-<span class="fc" id="L68">        } catch (Exception e) {</span>
-<span class="fc" id="L69">            log.debug(&quot;Resource dynamoservicelocator not found or could not be read, using default service locator&quot;);</span>
-<span class="fc" id="L70">        }</span>
-<span class="fc" id="L71">        return DEFAULT_CLASS_NAME;</span>
-    }
+	protected static String getServiceLocatorClassName() {
+<span class="fc" id="L62">		try (BufferedReader in = new BufferedReader(new InputStreamReader(ServiceLocatorFactory.class.getClassLoader().getResourceAsStream(&quot;dynamoservicelocator&quot;)))) {</span>
+<span class="fc" id="L63">			String className = in.readLine();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (className != null) {</span>
+<span class="fc" id="L65">				return className;</span>
+			}
+<span class="fc" id="L67">		} catch (Exception e) {</span>
+<span class="fc" id="L68">			log.debug(&quot;Resource dynamoservicelocator not found or could not be read, using default service locator&quot;);</span>
+<span class="fc" id="L69">		}</span>
+<span class="fc" id="L70">		return DEFAULT_CLASS_NAME;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

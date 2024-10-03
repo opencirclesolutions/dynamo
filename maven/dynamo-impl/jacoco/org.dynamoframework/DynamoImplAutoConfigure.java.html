@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,23 +32,23 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Auto configuration for Dynamo implementation classes
- * @author Bas Rutten
  *
+ * @author Bas Rutten
  */
 @Configuration
 @EnableConfigurationProperties(DynamoConfigurationProperties.class)
 <span class="fc" id="L40">public class DynamoImplAutoConfigure {</span>
 
-    @Bean
-    @ConditionalOnMissingBean(value = MessageService.class)
-    public MessageService messageService() {
-<span class="fc" id="L45">        return new MessageServiceImpl();</span>
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean(value = EntityModelFactory.class)
-    public EntityModelFactory entityModelFactory() {
-<span class="fc" id="L51">        return new EntityModelFactoryImpl();</span>
-    }
+	@Bean
+	@ConditionalOnMissingBean(value = MessageService.class)
+	public MessageService messageService() {
+<span class="fc" id="L45">		return new MessageServiceImpl();</span>
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(value = EntityModelFactory.class)
+	public EntityModelFactory entityModelFactory() {
+<span class="fc" id="L51">		return new EntityModelFactoryImpl();</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

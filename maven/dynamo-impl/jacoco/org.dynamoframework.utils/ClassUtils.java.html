@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -47,476 +47,476 @@ import java.util.*;
 @UtilityClass
 <span class="nc" id="L48">public final class ClassUtils {</span>
 
-    private static final String GET = &quot;get&quot;;
+	private static final String GET = &quot;get&quot;;
 
-    private static final String IS = &quot;is&quot;;
+	private static final String IS = &quot;is&quot;;
 
-    private static final String SET = &quot;set&quot;;
+	private static final String SET = &quot;set&quot;;
 
-<span class="fc" id="L56">    private static Set&lt;String&gt; basePackages = null;</span>
+<span class="fc" id="L56">	private static Set&lt;String&gt; basePackages = null;</span>
 
-<span class="fc" id="L58">    private static Map&lt;String, Class&gt; entityClasses = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L58">	private static Map&lt;String, Class&gt; entityClasses = new HashMap&lt;&gt;();</span>
 
-    static {
-<span class="pc bpc" id="L61" title="1 of 2 branches missed.">        if (basePackages == null) {</span>
-<span class="fc" id="L62">            synchronized (ClassUtils.class) {</span>
-<span class="fc" id="L63">                ClassPathScanningCandidateComponentProvider entityScanProvider = new ClassPathScanningCandidateComponentProvider(false);</span>
-<span class="fc" id="L64">                entityScanProvider.addIncludeFilter(new AnnotationTypeFilter(EntityScan.class));</span>
-<span class="fc" id="L65">                basePackages = new HashSet&lt;&gt;();</span>
-<span class="fc" id="L66">                Set&lt;BeanDefinition&gt; beanDefs = entityScanProvider.findCandidateComponents(&quot;&quot;);</span>
-<span class="fc bfc" id="L67" title="All 2 branches covered.">                for (BeanDefinition bd : beanDefs) {</span>
-<span class="pc bpc" id="L68" title="1 of 2 branches missed.">                    if (bd instanceof AnnotatedBeanDefinition) {</span>
-<span class="fc" id="L69">                        Map&lt;String, Object&gt; annotAttributeMap = ((AnnotatedBeanDefinition) bd).getMetadata().getAnnotationAttributes(EntityScan.class.getCanonicalName());</span>
-<span class="fc" id="L70">                        Collections.addAll(basePackages, ((String[]) annotAttributeMap.get(&quot;basePackages&quot;)));</span>
-                    }
-<span class="fc" id="L72">                }</span>
-<span class="fc" id="L73">            }</span>
-        }
-<span class="fc" id="L75">    }</span>
+	static {
+<span class="pc bpc" id="L61" title="1 of 2 branches missed.">		if (basePackages == null) {</span>
+<span class="fc" id="L62">			synchronized (ClassUtils.class) {</span>
+<span class="fc" id="L63">				ClassPathScanningCandidateComponentProvider entityScanProvider = new ClassPathScanningCandidateComponentProvider(false);</span>
+<span class="fc" id="L64">				entityScanProvider.addIncludeFilter(new AnnotationTypeFilter(EntityScan.class));</span>
+<span class="fc" id="L65">				basePackages = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L66">				Set&lt;BeanDefinition&gt; beanDefs = entityScanProvider.findCandidateComponents(&quot;&quot;);</span>
+<span class="fc bfc" id="L67" title="All 2 branches covered.">				for (BeanDefinition bd : beanDefs) {</span>
+<span class="pc bpc" id="L68" title="1 of 2 branches missed.">					if (bd instanceof AnnotatedBeanDefinition) {</span>
+<span class="fc" id="L69">						Map&lt;String, Object&gt; annotAttributeMap = ((AnnotatedBeanDefinition) bd).getMetadata().getAnnotationAttributes(EntityScan.class.getCanonicalName());</span>
+<span class="fc" id="L70">						Collections.addAll(basePackages, ((String[]) annotAttributeMap.get(&quot;basePackages&quot;)));</span>
+					}
+<span class="fc" id="L72">				}</span>
+<span class="fc" id="L73">			}</span>
+		}
+<span class="fc" id="L75">	}</span>
 
-    /**
-     * Checks if the specified property can be set for the specified object. This
-     * method supports nested properties
-     *
-     * @param obj       the object
-     * @param fieldName the name of the field
-     * @return true if this is the case, false otherwise
-     */
-    public static boolean canSetProperty(Object obj, String fieldName) {
-        try {
-<span class="fc" id="L87">            int p = fieldName.indexOf('.');</span>
-<span class="fc bfc" id="L88" title="All 2 branches covered.">            if (p &gt;= 0) {</span>
-<span class="fc" id="L89">                String firstProperty = fieldName.substring(0, p);</span>
-<span class="fc" id="L90">                Object first = MethodUtils.invokeMethod(obj,</span>
-<span class="fc" id="L91">                        GET + StringUtils.capitalize(firstProperty));</span>
-<span class="fc bfc" id="L92" title="All 2 branches covered.">                if (first != null) {</span>
-<span class="fc" id="L93">                    return canSetProperty(first, fieldName.substring(p + 1));</span>
-                }
-<span class="fc" id="L95">                return false;</span>
-            } else {
-<span class="fc" id="L97">                return hasMethod(obj, SET + StringUtils.capitalize(fieldName));</span>
-            }
-<span class="nc" id="L99">        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
-<span class="nc" id="L100">            throw new OCSRuntimeException(e.getMessage(), e);</span>
-        }
-    }
+	/**
+	 * Checks if the specified property can be set for the specified object. This
+	 * method supports nested properties
+	 *
+	 * @param obj       the object
+	 * @param fieldName the name of the field
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean canSetProperty(Object obj, String fieldName) {
+		try {
+<span class="fc" id="L87">			int p = fieldName.indexOf('.');</span>
+<span class="fc bfc" id="L88" title="All 2 branches covered.">			if (p &gt;= 0) {</span>
+<span class="fc" id="L89">				String firstProperty = fieldName.substring(0, p);</span>
+<span class="fc" id="L90">				Object first = MethodUtils.invokeMethod(obj,</span>
+<span class="fc" id="L91">					GET + StringUtils.capitalize(firstProperty));</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">				if (first != null) {</span>
+<span class="fc" id="L93">					return canSetProperty(first, fieldName.substring(p + 1));</span>
+				}
+<span class="fc" id="L95">				return false;</span>
+			} else {
+<span class="fc" id="L97">				return hasMethod(obj, SET + StringUtils.capitalize(fieldName));</span>
+			}
+<span class="nc" id="L99">		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
+<span class="nc" id="L100">			throw new OCSRuntimeException(e.getMessage(), e);</span>
+		}
+	}
 
-    /**
-     * Clears an attribute value
-     *
-     * @param obj           the object on which to clear the field
-     * @param attributeName the name of the attribute
-     * @param argType       the argument type
-     */
-    public static void clearAttributeValue(Object obj, String attributeName, Class&lt;?&gt; argType) {
-        try {
-<span class="fc" id="L113">            int p = attributeName.indexOf('.');</span>
-<span class="fc bfc" id="L114" title="All 2 branches covered.">            if (p &gt;= 0) {</span>
-<span class="fc" id="L115">                String firstProperty = attributeName.substring(0, p);</span>
-<span class="fc" id="L116">                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));</span>
-<span class="pc bpc" id="L117" title="1 of 2 branches missed.">                if (first != null) {</span>
-<span class="fc" id="L118">                    clearAttributeValue(first, attributeName.substring(p + 1), argType);</span>
-                }
-<span class="fc" id="L120">            } else {</span>
-<span class="fc" id="L121">                Method method = obj.getClass().getMethod(SET + StringUtils.capitalize(attributeName), argType);</span>
-<span class="fc" id="L122">                method.invoke(obj, (Object) null);</span>
-            }
-<span class="nc" id="L124">        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
-<span class="nc" id="L125">            throw new OCSRuntimeException(e.getMessage(), e);</span>
-<span class="fc" id="L126">        }</span>
-<span class="fc" id="L127">    }</span>
+	/**
+	 * Clears an attribute value
+	 *
+	 * @param obj           the object on which to clear the field
+	 * @param attributeName the name of the attribute
+	 * @param argType       the argument type
+	 */
+	public static void clearAttributeValue(Object obj, String attributeName, Class&lt;?&gt; argType) {
+		try {
+<span class="fc" id="L113">			int p = attributeName.indexOf('.');</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">			if (p &gt;= 0) {</span>
+<span class="fc" id="L115">				String firstProperty = attributeName.substring(0, p);</span>
+<span class="fc" id="L116">				Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));</span>
+<span class="pc bpc" id="L117" title="1 of 2 branches missed.">				if (first != null) {</span>
+<span class="fc" id="L118">					clearAttributeValue(first, attributeName.substring(p + 1), argType);</span>
+				}
+<span class="fc" id="L120">			} else {</span>
+<span class="fc" id="L121">				Method method = obj.getClass().getMethod(SET + StringUtils.capitalize(attributeName), argType);</span>
+<span class="fc" id="L122">				method.invoke(obj, (Object) null);</span>
+			}
+<span class="nc" id="L124">		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
+<span class="nc" id="L125">			throw new OCSRuntimeException(e.getMessage(), e);</span>
+<span class="fc" id="L126">		}</span>
+<span class="fc" id="L127">	}</span>
 
-    /**
-     * Tries to retrieve an annotation, by first looking at the field name, and then
-     * at the getter method
-     *
-     * @param clazz           the class
-     * @param attributeName   the name of the field
-     * @param annotationClass the annotation class to look for
-     * @return the annotation
-     */
-    public static &lt;T extends Annotation&gt; T getAnnotation(Class&lt;?&gt; clazz, String attributeName, Class&lt;T&gt; annotationClass) {
-<span class="fc" id="L139">        T entity = getAnnotationOnMethod(clazz, attributeName, annotationClass);</span>
-<span class="fc bfc" id="L140" title="All 2 branches covered.">        if (entity == null) {</span>
-<span class="fc" id="L141">            entity = getAnnotationOnField(clazz, attributeName, annotationClass);</span>
-        }
-<span class="fc" id="L143">        return entity;</span>
-    }
+	/**
+	 * Tries to retrieve an annotation, by first looking at the field name, and then
+	 * at the getter method
+	 *
+	 * @param clazz           the class
+	 * @param attributeName   the name of the field
+	 * @param annotationClass the annotation class to look for
+	 * @return the annotation
+	 */
+	public static &lt;T extends Annotation&gt; T getAnnotation(Class&lt;?&gt; clazz, String attributeName, Class&lt;T&gt; annotationClass) {
+<span class="fc" id="L139">		T entity = getAnnotationOnMethod(clazz, attributeName, annotationClass);</span>
+<span class="fc bfc" id="L140" title="All 2 branches covered.">		if (entity == null) {</span>
+<span class="fc" id="L141">			entity = getAnnotationOnField(clazz, attributeName, annotationClass);</span>
+		}
+<span class="fc" id="L143">		return entity;</span>
+	}
 
-    /**
-     * Get the value of a field in an annotation
-     *
-     * @param field           The field with annotations
-     * @param annotationClass The class of the annotation
-     * @param attributeName   The name of the attribute on the annotation type to find
-     *                        the value
-     * @return the value of the field of the annotation or null when not found
-     */
-    @SuppressWarnings(&quot;unchecked&quot;)
-    public static &lt;T extends Annotation, R&gt; R getAnnotationAttributeValue(Field field, Class&lt;T&gt; annotationClass,
-                                                                          String attributeName) {
-<span class="fc" id="L158">        R result = null;</span>
-<span class="fc" id="L159">        Annotation annotation = getAnnotationOnField(field, annotationClass);</span>
-<span class="pc bpc" id="L160" title="1 of 2 branches missed.">        if (annotation != null) {</span>
-<span class="fc" id="L161">            result = (R) AnnotationUtils.getValue(annotation, attributeName);</span>
-        }
-<span class="fc" id="L163">        return result;</span>
-    }
+	/**
+	 * Get the value of a field in an annotation
+	 *
+	 * @param field           The field with annotations
+	 * @param annotationClass The class of the annotation
+	 * @param attributeName   The name of the attribute on the annotation type to find
+	 *                        the value
+	 * @return the value of the field of the annotation or null when not found
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static &lt;T extends Annotation, R&gt; R getAnnotationAttributeValue(Field field, Class&lt;T&gt; annotationClass,
+																		  String attributeName) {
+<span class="fc" id="L158">		R result = null;</span>
+<span class="fc" id="L159">		Annotation annotation = getAnnotationOnField(field, annotationClass);</span>
+<span class="pc bpc" id="L160" title="1 of 2 branches missed.">		if (annotation != null) {</span>
+<span class="fc" id="L161">			result = (R) AnnotationUtils.getValue(annotation, attributeName);</span>
+		}
+<span class="fc" id="L163">		return result;</span>
+	}
 
-    /**
-     * Return an annotation on a certain field
-     *
-     * @param clazz           the class
-     * @param fieldName       the field name
-     * @param annotationClass the class of the annotation
-     * @return the annotation
-     */
-    public static &lt;T extends Annotation&gt; T getAnnotationOnField(Class&lt;?&gt; clazz, String fieldName,
-                                                                Class&lt;T&gt; annotationClass) {
-<span class="fc" id="L176">        Field field = getField(clazz, fieldName);</span>
-<span class="fc bfc" id="L177" title="All 2 branches covered.">        if (field != null) {</span>
-<span class="fc" id="L178">            return getAnnotationOnField(field, annotationClass);</span>
-        }
-<span class="fc" id="L180">        return null;</span>
-    }
+	/**
+	 * Return an annotation on a certain field
+	 *
+	 * @param clazz           the class
+	 * @param fieldName       the field name
+	 * @param annotationClass the class of the annotation
+	 * @return the annotation
+	 */
+	public static &lt;T extends Annotation&gt; T getAnnotationOnField(Class&lt;?&gt; clazz, String fieldName,
+																Class&lt;T&gt; annotationClass) {
+<span class="fc" id="L176">		Field field = getField(clazz, fieldName);</span>
+<span class="fc bfc" id="L177" title="All 2 branches covered.">		if (field != null) {</span>
+<span class="fc" id="L178">			return getAnnotationOnField(field, annotationClass);</span>
+		}
+<span class="fc" id="L180">		return null;</span>
+	}
 
-    /**
-     * Returns an annotation on a certain field
-     *
-     * @param field           the field
-     * @param annotationClass the annotation class
-     * @return the annotation
-     */
-    @SuppressWarnings(&quot;unchecked&quot;)
-    public static &lt;T extends Annotation&gt; T getAnnotationOnField(Field field, Class&lt;T&gt; annotationClass) {
-<span class="fc" id="L192">        T result = null;</span>
-<span class="pc bpc" id="L193" title="1 of 2 branches missed.">        if (field != null) {</span>
-<span class="fc bfc" id="L194" title="All 2 branches covered.">            for (Annotation a : field.getDeclaredAnnotations()) {</span>
-<span class="fc bfc" id="L195" title="All 2 branches covered.">                if (a.annotationType().equals(annotationClass)) {</span>
-<span class="fc" id="L196">                    result = (T) a;</span>
-                }
-            }
-        }
-<span class="fc" id="L200">        return result;</span>
-    }
+	/**
+	 * Returns an annotation on a certain field
+	 *
+	 * @param field           the field
+	 * @param annotationClass the annotation class
+	 * @return the annotation
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static &lt;T extends Annotation&gt; T getAnnotationOnField(Field field, Class&lt;T&gt; annotationClass) {
+<span class="fc" id="L192">		T result = null;</span>
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (field != null) {</span>
+<span class="fc bfc" id="L194" title="All 2 branches covered.">			for (Annotation a : field.getDeclaredAnnotations()) {</span>
+<span class="fc bfc" id="L195" title="All 2 branches covered.">				if (a.annotationType().equals(annotationClass)) {</span>
+<span class="fc" id="L196">					result = (T) a;</span>
+				}
+			}
+		}
+<span class="fc" id="L200">		return result;</span>
+	}
 
-    /**
-     * Looks for an annotation on a getter method
-     *
-     * @param clazz           the class
-     * @param fieldName       the name of the field (will be prepended with &quot;get&quot;)
-     * @param annotationClass the class of the annotation to look for
-     * @return the annotation
-     */
-    public static &lt;T extends Annotation&gt; T getAnnotationOnMethod(Class&lt;?&gt; clazz, String fieldName,
-                                                                 Class&lt;T&gt; annotationClass) {
-<span class="fc" id="L213">        Method method = getGetterMethod(clazz, fieldName);</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">        if (method != null) {</span>
-<span class="fc" id="L215">            return getAnnotationOnMethod(method, annotationClass);</span>
-        }
-<span class="fc" id="L217">        return null;</span>
-    }
+	/**
+	 * Looks for an annotation on a getter method
+	 *
+	 * @param clazz           the class
+	 * @param fieldName       the name of the field (will be prepended with &quot;get&quot;)
+	 * @param annotationClass the class of the annotation to look for
+	 * @return the annotation
+	 */
+	public static &lt;T extends Annotation&gt; T getAnnotationOnMethod(Class&lt;?&gt; clazz, String fieldName,
+																 Class&lt;T&gt; annotationClass) {
+<span class="fc" id="L213">		Method method = getGetterMethod(clazz, fieldName);</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		if (method != null) {</span>
+<span class="fc" id="L215">			return getAnnotationOnMethod(method, annotationClass);</span>
+		}
+<span class="fc" id="L217">		return null;</span>
+	}
 
-    /**
-     * Looks for an annotation on a (getter) method
-     *
-     * @param method          the method
-     * @param annotationClass the class of the annotation
-     * @return the annotation
-     */
-    @SuppressWarnings(&quot;unchecked&quot;)
-    public static &lt;T extends Annotation&gt; T getAnnotationOnMethod(Method method, Class&lt;T&gt; annotationClass) {
-<span class="fc" id="L229">        T result = null;</span>
-<span class="pc bpc" id="L230" title="1 of 2 branches missed.">        if (method != null) {</span>
-<span class="fc bfc" id="L231" title="All 2 branches covered.">            for (Annotation a : method.getDeclaredAnnotations()) {</span>
-<span class="fc bfc" id="L232" title="All 2 branches covered.">                if (a.annotationType().equals(annotationClass)) {</span>
-<span class="fc" id="L233">                    result = (T) a;</span>
-                }
-            }
-        }
-<span class="fc" id="L237">        return result;</span>
-    }
+	/**
+	 * Looks for an annotation on a (getter) method
+	 *
+	 * @param method          the method
+	 * @param annotationClass the class of the annotation
+	 * @return the annotation
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static &lt;T extends Annotation&gt; T getAnnotationOnMethod(Method method, Class&lt;T&gt; annotationClass) {
+<span class="fc" id="L229">		T result = null;</span>
+<span class="pc bpc" id="L230" title="1 of 2 branches missed.">		if (method != null) {</span>
+<span class="fc bfc" id="L231" title="All 2 branches covered.">			for (Annotation a : method.getDeclaredAnnotations()) {</span>
+<span class="fc bfc" id="L232" title="All 2 branches covered.">				if (a.annotationType().equals(annotationClass)) {</span>
+<span class="fc" id="L233">					result = (T) a;</span>
+				}
+			}
+		}
+<span class="fc" id="L237">		return result;</span>
+	}
 
-    /**
-     * Retrieves the contents of a field as a byte array
-     *
-     * @param obj       the object
-     * @param fieldName the name of the field
-     * @return the content, as a byte array
-     */
-    public static byte[] getBytes(Object obj, String fieldName) {
-<span class="fc" id="L248">        return (byte[]) getFieldValue(obj, fieldName);</span>
-    }
+	/**
+	 * Retrieves the contents of a field as a byte array
+	 *
+	 * @param obj       the object
+	 * @param fieldName the name of the field
+	 * @return the content, as a byte array
+	 */
+	public static byte[] getBytes(Object obj, String fieldName) {
+<span class="fc" id="L248">		return (byte[]) getFieldValue(obj, fieldName);</span>
+	}
 
-    /**
-     * Find constructor based on the types of the given arguments used to
-     * instantiate the class with the found constructor
-     *
-     * @param clazz the class for which to find the constructor
-     * @param args  the arguments
-     * @return the constructor
-     */
-    public static &lt;T&gt; Constructor&lt;T&gt; getConstructor(Class&lt;T&gt; clazz, Object... args) {
-<span class="fc" id="L260">        Constructor&lt;T&gt; constructor = null;</span>
-<span class="fc" id="L261">        List&lt;Class&lt;?&gt;&gt; types = new ArrayList&lt;&gt;();</span>
-<span class="fc bfc" id="L262" title="All 2 branches covered.">        for (Object arg : args) {</span>
-<span class="fc" id="L263">            types.add(arg.getClass());</span>
-        }
-        try {
-<span class="pc bpc" id="L266" title="1 of 2 branches missed.">            if (types.isEmpty()) {</span>
-<span class="nc" id="L267">                constructor = clazz.getConstructor();</span>
-            } else {
-<span class="fc" id="L269">                constructor = clazz.getConstructor(types.toArray(new Class&lt;?&gt;[0]));</span>
-            }
-<span class="nc" id="L271">        } catch (Exception e) {</span>
-<span class="nc" id="L272">            log.error(e.getMessage(), e);</span>
-<span class="fc" id="L273">        }</span>
-<span class="fc" id="L274">        return constructor;</span>
-    }
+	/**
+	 * Find constructor based on the types of the given arguments used to
+	 * instantiate the class with the found constructor
+	 *
+	 * @param clazz the class for which to find the constructor
+	 * @param args  the arguments
+	 * @return the constructor
+	 */
+	public static &lt;T&gt; Constructor&lt;T&gt; getConstructor(Class&lt;T&gt; clazz, Object... args) {
+<span class="fc" id="L260">		Constructor&lt;T&gt; constructor = null;</span>
+<span class="fc" id="L261">		List&lt;Class&lt;?&gt;&gt; types = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L262" title="All 2 branches covered.">		for (Object arg : args) {</span>
+<span class="fc" id="L263">			types.add(arg.getClass());</span>
+		}
+		try {
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">			if (types.isEmpty()) {</span>
+<span class="nc" id="L267">				constructor = clazz.getConstructor();</span>
+			} else {
+<span class="fc" id="L269">				constructor = clazz.getConstructor(types.toArray(new Class&lt;?&gt;[0]));</span>
+			}
+<span class="nc" id="L271">		} catch (Exception e) {</span>
+<span class="nc" id="L272">			log.error(e.getMessage(), e);</span>
+<span class="fc" id="L273">		}</span>
+<span class="fc" id="L274">		return constructor;</span>
+	}
 
-    /**
-     * Returns a field with a certain name from a class
-     *
-     * @param clazz     the class
-     * @param fieldName the name of the filed
-     * @return the field
-     */
-    public static Field getField(Class&lt;?&gt; clazz, String fieldName) {
-<span class="fc" id="L285">        Field field = null;</span>
-<span class="pc bpc" id="L286" title="1 of 2 branches missed.">        if (clazz != null) {</span>
-            try {
-<span class="fc" id="L288">                field = clazz.getDeclaredField(fieldName);</span>
-<span class="fc" id="L289">            } catch (NoSuchFieldException e) {</span>
-<span class="fc bfc" id="L290" title="All 2 branches covered.">                if (clazz.getSuperclass() != null) {</span>
-<span class="fc" id="L291">                    return getField(clazz.getSuperclass(), fieldName);</span>
-                }
-<span class="fc" id="L293">            }</span>
-        }
-<span class="fc" id="L295">        return field;</span>
-    }
+	/**
+	 * Returns a field with a certain name from a class
+	 *
+	 * @param clazz     the class
+	 * @param fieldName the name of the filed
+	 * @return the field
+	 */
+	public static Field getField(Class&lt;?&gt; clazz, String fieldName) {
+<span class="fc" id="L285">		Field field = null;</span>
+<span class="pc bpc" id="L286" title="1 of 2 branches missed.">		if (clazz != null) {</span>
+			try {
+<span class="fc" id="L288">				field = clazz.getDeclaredField(fieldName);</span>
+<span class="fc" id="L289">			} catch (NoSuchFieldException e) {</span>
+<span class="fc bfc" id="L290" title="All 2 branches covered.">				if (clazz.getSuperclass() != null) {</span>
+<span class="fc" id="L291">					return getField(clazz.getSuperclass(), fieldName);</span>
+				}
+<span class="fc" id="L293">			}</span>
+		}
+<span class="fc" id="L295">		return field;</span>
+	}
 
-    /**
-     * Retrieves a field value
-     *
-     * @param obj       the object from which to retrieve the field value
-     * @param fieldName the name of the field
-     * @return the field value
-     */
-    public static Object getFieldValue(Object obj, String fieldName) {
-        try {
-<span class="fc" id="L307">            int p = fieldName.indexOf('.');</span>
-<span class="fc bfc" id="L308" title="All 2 branches covered.">            if (p &gt;= 0) {</span>
-<span class="fc" id="L309">                String firstProperty = fieldName.substring(0, p);</span>
-<span class="fc" id="L310">                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));</span>
-<span class="pc bpc" id="L311" title="1 of 2 branches missed.">                return first == null ? null : getFieldValue(first, fieldName.substring(p + 1));</span>
-            } else {
-<span class="fc bfc" id="L313" title="All 2 branches covered.">                if (hasMethod(obj, GET + StringUtils.capitalize(fieldName))) {</span>
-                    // first check for a getter
-<span class="fc" id="L315">                    return MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(fieldName));</span>
-                } else {
-                    // next, check for an &quot;is&quot; method in case of a boolean
-<span class="nc" id="L318">                    return MethodUtils.invokeMethod(obj, IS + StringUtils.capitalize(fieldName));</span>
-                }
-            }
-<span class="fc" id="L321">        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
-<span class="fc" id="L322">            throw new OCSRuntimeException(&quot;Error getting of &quot; + obj + &quot;:&quot; + e.getMessage(), e);</span>
-        }
-    }
+	/**
+	 * Retrieves a field value
+	 *
+	 * @param obj       the object from which to retrieve the field value
+	 * @param fieldName the name of the field
+	 * @return the field value
+	 */
+	public static Object getFieldValue(Object obj, String fieldName) {
+		try {
+<span class="fc" id="L307">			int p = fieldName.indexOf('.');</span>
+<span class="fc bfc" id="L308" title="All 2 branches covered.">			if (p &gt;= 0) {</span>
+<span class="fc" id="L309">				String firstProperty = fieldName.substring(0, p);</span>
+<span class="fc" id="L310">				Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));</span>
+<span class="pc bpc" id="L311" title="1 of 2 branches missed.">				return first == null ? null : getFieldValue(first, fieldName.substring(p + 1));</span>
+			} else {
+<span class="fc bfc" id="L313" title="All 2 branches covered.">				if (hasMethod(obj, GET + StringUtils.capitalize(fieldName))) {</span>
+					// first check for a getter
+<span class="fc" id="L315">					return MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(fieldName));</span>
+				} else {
+					// next, check for an &quot;is&quot; method in case of a boolean
+<span class="nc" id="L318">					return MethodUtils.invokeMethod(obj, IS + StringUtils.capitalize(fieldName));</span>
+				}
+			}
+<span class="fc" id="L321">		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
+<span class="fc" id="L322">			throw new OCSRuntimeException(&quot;Error getting of &quot; + obj + &quot;:&quot; + e.getMessage(), e);</span>
+		}
+	}
 
-    /**
-     * Returns a field value as a String
-     *
-     * @param obj       the object
-     * @param fieldName the name of the field
-     * @return the field value, as a string
-     */
-    public static String getFieldValueAsString(Object obj, String fieldName) {
-<span class="fc" id="L334">        return getFieldValueAsString(obj, fieldName, null);</span>
-    }
+	/**
+	 * Returns a field value as a String
+	 *
+	 * @param obj       the object
+	 * @param fieldName the name of the field
+	 * @return the field value, as a string
+	 */
+	public static String getFieldValueAsString(Object obj, String fieldName) {
+<span class="fc" id="L334">		return getFieldValueAsString(obj, fieldName, null);</span>
+	}
 
-    /**
-     * Returns a field value as a String
-     *
-     * @param obj          the object
-     * @param fieldName    the name of the field
-     * @param defaultValue the default value that is used in case of a null value
-     * @return the field value as a String
-     */
-    public static String getFieldValueAsString(Object obj, String fieldName, String defaultValue) {
-<span class="fc" id="L346">        Object temp = getFieldValue(obj, fieldName);</span>
-<span class="fc bfc" id="L347" title="All 2 branches covered.">        return temp == null ? defaultValue : temp.toString();</span>
-    }
+	/**
+	 * Returns a field value as a String
+	 *
+	 * @param obj          the object
+	 * @param fieldName    the name of the field
+	 * @param defaultValue the default value that is used in case of a null value
+	 * @return the field value as a String
+	 */
+	public static String getFieldValueAsString(Object obj, String fieldName, String defaultValue) {
+<span class="fc" id="L346">		Object temp = getFieldValue(obj, fieldName);</span>
+<span class="fc bfc" id="L347" title="All 2 branches covered.">		return temp == null ? defaultValue : temp.toString();</span>
+	}
 
-    /**
-     * Retrieves the getter method for a certain property
-     *
-     * @param clazz     the class
-     * @param fieldName the name of the property
-     * @return the method
-     */
-    public static Method getGetterMethod(Class&lt;?&gt; clazz, String fieldName) {
-<span class="fc" id="L358">        Method method = null;</span>
-<span class="pc bpc" id="L359" title="1 of 2 branches missed.">        if (clazz != null) {</span>
-            try {
-                // first, try to find a &quot;get&quot; method
-<span class="fc" id="L362">                method = clazz.getDeclaredMethod(GET + StringUtils.capitalize(fieldName));</span>
-<span class="fc" id="L363">            } catch (NoSuchMethodException | SecurityException ex) {</span>
-                try {
-                    // next, try to find an &quot;is&quot; method
-<span class="fc" id="L366">                    method = clazz.getDeclaredMethod(IS + StringUtils.capitalize(fieldName));</span>
-<span class="fc" id="L367">                } catch (NoSuchMethodException | SecurityException ex2) {</span>
-                    // if that fails, try the superclass
-<span class="fc bfc" id="L369" title="All 2 branches covered.">                    if (clazz.getSuperclass() != null) {</span>
-<span class="fc" id="L370">                        return getGetterMethod(clazz.getSuperclass(), fieldName);</span>
-                    }
-<span class="fc" id="L372">                }</span>
-<span class="fc" id="L373">            }</span>
-        }
-<span class="fc" id="L375">        return method;</span>
-    }
+	/**
+	 * Retrieves the getter method for a certain property
+	 *
+	 * @param clazz     the class
+	 * @param fieldName the name of the property
+	 * @return the method
+	 */
+	public static Method getGetterMethod(Class&lt;?&gt; clazz, String fieldName) {
+<span class="fc" id="L358">		Method method = null;</span>
+<span class="pc bpc" id="L359" title="1 of 2 branches missed.">		if (clazz != null) {</span>
+			try {
+				// first, try to find a &quot;get&quot; method
+<span class="fc" id="L362">				method = clazz.getDeclaredMethod(GET + StringUtils.capitalize(fieldName));</span>
+<span class="fc" id="L363">			} catch (NoSuchMethodException | SecurityException ex) {</span>
+				try {
+					// next, try to find an &quot;is&quot; method
+<span class="fc" id="L366">					method = clazz.getDeclaredMethod(IS + StringUtils.capitalize(fieldName));</span>
+<span class="fc" id="L367">				} catch (NoSuchMethodException | SecurityException ex2) {</span>
+					// if that fails, try the superclass
+<span class="fc bfc" id="L369" title="All 2 branches covered.">					if (clazz.getSuperclass() != null) {</span>
+<span class="fc" id="L370">						return getGetterMethod(clazz.getSuperclass(), fieldName);</span>
+					}
+<span class="fc" id="L372">				}</span>
+<span class="fc" id="L373">			}</span>
+		}
+<span class="fc" id="L375">		return method;</span>
+	}
 
-    /**
-     * Returns the maximum allowed length of a field
-     *
-     * @param clazz     the clazz on which the field is located
-     * @param fieldName the name of the field
-     * @return the maximum length
-     */
-    public static int getMaxLength(Class&lt;?&gt; clazz, String fieldName) {
-<span class="fc" id="L386">        Size size = getAnnotation(clazz, fieldName, Size.class);</span>
-<span class="fc bfc" id="L387" title="All 2 branches covered.">        if (size != null) {</span>
-<span class="fc" id="L388">            return size.max();</span>
-        }
-<span class="fc" id="L390">        return -1;</span>
-    }
+	/**
+	 * Returns the maximum allowed length of a field
+	 *
+	 * @param clazz     the clazz on which the field is located
+	 * @param fieldName the name of the field
+	 * @return the maximum length
+	 */
+	public static int getMaxLength(Class&lt;?&gt; clazz, String fieldName) {
+<span class="fc" id="L386">		Size size = getAnnotation(clazz, fieldName, Size.class);</span>
+<span class="fc bfc" id="L387" title="All 2 branches covered.">		if (size != null) {</span>
+<span class="fc" id="L388">			return size.max();</span>
+		}
+<span class="fc" id="L390">		return -1;</span>
+	}
 
-    /**
-     * Return a Class&lt;?&gt; representing the generic parameter for the given indexes.
-     * Indexes are zero based; for example given the type Map&lt;Integer,
-     * List&lt;String&gt;&gt;, getGeneric(0) will access the Integer. Nested generics can be
-     * accessed by specifying multiple indexes; for example getGeneric(1, 0) will
-     * access the String from the nested List. For convenience, if no indexes are
-     * specified the first generic is returned.
-     *
-     * @param type      the class
-     * @param fieldName the name of the field
-     * @param indexes   the set of indexes
-     * @return the resolved type
-     */
-    public static &lt;T&gt; Class&lt;?&gt; getResolvedType(Class&lt;T&gt; type, String fieldName, int... indexes) {
-<span class="fc" id="L407">        Field field = getField(type, fieldName);</span>
-<span class="fc bfc" id="L408" title="All 2 branches covered.">        if (field != null) {</span>
-<span class="fc" id="L409">            ResolvableType rt = ResolvableType.forField(field);</span>
-<span class="pc bpc" id="L410" title="2 of 4 branches missed.">            if (indexes != null &amp;&amp; indexes.length &gt; 0) {</span>
-<span class="fc" id="L411">                rt = rt.getGeneric(indexes);</span>
-            }
-<span class="fc" id="L413">            return rt.resolve();</span>
-        }
-<span class="fc" id="L415">        return null;</span>
-    }
+	/**
+	 * Return a Class&lt;?&gt; representing the generic parameter for the given indexes.
+	 * Indexes are zero based; for example given the type Map&lt;Integer,
+	 * List&lt;String&gt;&gt;, getGeneric(0) will access the Integer. Nested generics can be
+	 * accessed by specifying multiple indexes; for example getGeneric(1, 0) will
+	 * access the String from the nested List. For convenience, if no indexes are
+	 * specified the first generic is returned.
+	 *
+	 * @param type      the class
+	 * @param fieldName the name of the field
+	 * @param indexes   the set of indexes
+	 * @return the resolved type
+	 */
+	public static &lt;T&gt; Class&lt;?&gt; getResolvedType(Class&lt;T&gt; type, String fieldName, int... indexes) {
+<span class="fc" id="L407">		Field field = getField(type, fieldName);</span>
+<span class="fc bfc" id="L408" title="All 2 branches covered.">		if (field != null) {</span>
+<span class="fc" id="L409">			ResolvableType rt = ResolvableType.forField(field);</span>
+<span class="pc bpc" id="L410" title="2 of 4 branches missed.">			if (indexes != null &amp;&amp; indexes.length &gt; 0) {</span>
+<span class="fc" id="L411">				rt = rt.getGeneric(indexes);</span>
+			}
+<span class="fc" id="L413">			return rt.resolve();</span>
+		}
+<span class="fc" id="L415">		return null;</span>
+	}
 
-    /**
-     * Check if the object has a (public) method that has the specified name
-     *
-     * @param obj        the object to check
-     * @param methodName the name of the method
-     * @return true if this is the case, false otherwise
-     */
-    public static boolean hasMethod(Object obj, String methodName) {
-<span class="fc" id="L426">        Method[] methods = obj.getClass().getMethods();</span>
-<span class="fc bfc" id="L427" title="All 2 branches covered.">        for (Method method : methods) {</span>
-<span class="pc bpc" id="L428" title="1 of 4 branches missed.">            if (method.getName().equals(methodName) &amp;&amp; Modifier.isPublic(method.getModifiers())) {</span>
-<span class="fc" id="L429">                return true;</span>
-            }
-        }
-<span class="fc" id="L432">        return false;</span>
-    }
+	/**
+	 * Check if the object has a (public) method that has the specified name
+	 *
+	 * @param obj        the object to check
+	 * @param methodName the name of the method
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean hasMethod(Object obj, String methodName) {
+<span class="fc" id="L426">		Method[] methods = obj.getClass().getMethods();</span>
+<span class="fc bfc" id="L427" title="All 2 branches covered.">		for (Method method : methods) {</span>
+<span class="pc bpc" id="L428" title="1 of 4 branches missed.">			if (method.getName().equals(methodName) &amp;&amp; Modifier.isPublic(method.getModifiers())) {</span>
+<span class="fc" id="L429">				return true;</span>
+			}
+		}
+<span class="fc" id="L432">		return false;</span>
+	}
 
-    /**
-     * Instantiate a class with the given arguments; assumed is that all arguments
-     * are not null so the types can be determined and a matching constructor can be
-     * found. When no constructor is found null is returned.
-     *
-     * @param clazz the class
-     * @param args  the constructor arguments to pass
-     * @return the instantiated class
-     */
-    public static &lt;T&gt; T instantiateClass(Class&lt;T&gt; clazz, Object... args) {
-<span class="fc" id="L445">        Constructor&lt;T&gt; constructor = getConstructor(clazz, args);</span>
-<span class="pc bpc" id="L446" title="1 of 2 branches missed.">        if (constructor != null) {</span>
-<span class="fc" id="L447">            return org.springframework.beans.BeanUtils.instantiateClass(constructor, args);</span>
-        }
-<span class="nc" id="L449">        return null;</span>
-    }
+	/**
+	 * Instantiate a class with the given arguments; assumed is that all arguments
+	 * are not null so the types can be determined and a matching constructor can be
+	 * found. When no constructor is found null is returned.
+	 *
+	 * @param clazz the class
+	 * @param args  the constructor arguments to pass
+	 * @return the instantiated class
+	 */
+	public static &lt;T&gt; T instantiateClass(Class&lt;T&gt; clazz, Object... args) {
+<span class="fc" id="L445">		Constructor&lt;T&gt; constructor = getConstructor(clazz, args);</span>
+<span class="pc bpc" id="L446" title="1 of 2 branches missed.">		if (constructor != null) {</span>
+<span class="fc" id="L447">			return org.springframework.beans.BeanUtils.instantiateClass(constructor, args);</span>
+		}
+<span class="nc" id="L449">		return null;</span>
+	}
 
-    public static void setBytes(byte[] bytes, Object obj, String fieldName) {
-<span class="fc bfc" id="L453" title="All 2 branches covered.">        if (bytes != null) {</span>
-<span class="fc" id="L454">            setFieldValue(obj, fieldName, bytes);</span>
-        } else {
-<span class="fc" id="L456">            clearAttributeValue(obj, fieldName, byte[].class);</span>
-        }
-<span class="fc" id="L458">    }</span>
+	public static void setBytes(byte[] bytes, Object obj, String fieldName) {
+<span class="fc bfc" id="L453" title="All 2 branches covered.">		if (bytes != null) {</span>
+<span class="fc" id="L454">			setFieldValue(obj, fieldName, bytes);</span>
+		} else {
+<span class="fc" id="L456">			clearAttributeValue(obj, fieldName, byte[].class);</span>
+		}
+<span class="fc" id="L458">	}</span>
 
-    /**
-     * Sets the value of the provided field on the provided object
-     *
-     * @param obj       the object
-     * @param fieldName the name of the field
-     * @param value     the value to set
-     */
-    public static void setFieldValue(Object obj, String fieldName, Object value) {
-        try {
-<span class="fc" id="L469">            int p = fieldName.indexOf('.');</span>
-<span class="fc bfc" id="L470" title="All 2 branches covered.">            if (p &gt;= 0) {</span>
-<span class="fc" id="L471">                String firstProperty = fieldName.substring(0, p);</span>
-<span class="fc" id="L472">                Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));</span>
-<span class="pc bpc" id="L473" title="1 of 2 branches missed.">                if (first != null) {</span>
-<span class="pc bpc" id="L474" title="1 of 2 branches missed.">                    if (first instanceof Collection&lt;?&gt; col) {</span>
-<span class="nc" id="L475">                        col.forEach(c -&gt; setFieldValue(c, fieldName.substring(p + 1), value));</span>
-                    } else {
-<span class="fc" id="L477">                        setFieldValue(first, fieldName.substring(p + 1), value);</span>
-                    }
-                }
-<span class="fc" id="L480">            } else {</span>
-<span class="fc" id="L481">                MethodUtils.invokeMethod(obj, SET + StringUtils.capitalize(fieldName), value);</span>
-            }
-<span class="fc" id="L483">        } catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
-<span class="fc" id="L484">            log.error(e.getMessage(), e);</span>
-<span class="fc" id="L485">            throw new OCSRuntimeException(e.getMessage(), e);</span>
-<span class="fc" id="L486">        }</span>
-<span class="fc" id="L487">    }</span>
+	/**
+	 * Sets the value of the provided field on the provided object
+	 *
+	 * @param obj       the object
+	 * @param fieldName the name of the field
+	 * @param value     the value to set
+	 */
+	public static void setFieldValue(Object obj, String fieldName, Object value) {
+		try {
+<span class="fc" id="L469">			int p = fieldName.indexOf('.');</span>
+<span class="fc bfc" id="L470" title="All 2 branches covered.">			if (p &gt;= 0) {</span>
+<span class="fc" id="L471">				String firstProperty = fieldName.substring(0, p);</span>
+<span class="fc" id="L472">				Object first = MethodUtils.invokeMethod(obj, GET + StringUtils.capitalize(firstProperty));</span>
+<span class="pc bpc" id="L473" title="1 of 2 branches missed.">				if (first != null) {</span>
+<span class="pc bpc" id="L474" title="1 of 2 branches missed.">					if (first instanceof Collection&lt;?&gt; col) {</span>
+<span class="nc" id="L475">						col.forEach(c -&gt; setFieldValue(c, fieldName.substring(p + 1), value));</span>
+					} else {
+<span class="fc" id="L477">						setFieldValue(first, fieldName.substring(p + 1), value);</span>
+					}
+				}
+<span class="fc" id="L480">			} else {</span>
+<span class="fc" id="L481">				MethodUtils.invokeMethod(obj, SET + StringUtils.capitalize(fieldName), value);</span>
+			}
+<span class="fc" id="L483">		} catch (NoSuchMethodException | IllegalAccessException | InvocationTargetException e) {</span>
+<span class="fc" id="L484">			log.error(e.getMessage(), e);</span>
+<span class="fc" id="L485">			throw new OCSRuntimeException(e.getMessage(), e);</span>
+<span class="fc" id="L486">		}</span>
+<span class="fc" id="L487">	}</span>
 
-    /**
-     * Translates the name of an entity to the fully qualified class name. The &lt;code&gt;@EntityScan&lt;/code&gt; base packages are searched.
-     *
-     * @param entityName the name of the entity; the class must be a concrete subclass of &lt;code&gt;AbstractEnity&lt;/code&gt;
-     * @return the class
-     */
-    public static Class&lt;?&gt; findClass(String entityName) {
-<span class="pc bpc" id="L496" title="1 of 2 branches missed.">        if (entityClasses.containsKey(entityName)) {</span>
-<span class="nc" id="L497">            log.debug(&quot;Getting class for {} from cache&quot;, entityName);</span>
-<span class="nc" id="L498">            return entityClasses.get(entityName);</span>
-        }
-<span class="fc" id="L500">        synchronized (ClassUtils.class) {</span>
-<span class="fc" id="L501">            ClassPathScanningCandidateComponentProvider entityProvider = new ClassPathScanningCandidateComponentProvider(false);</span>
-<span class="fc" id="L502">            entityProvider.addIncludeFilter(new AssignableTypeFilter(AbstractEntity.class));</span>
-<span class="fc bfc" id="L503" title="All 2 branches covered.">            for (String packageName : basePackages) {</span>
-<span class="fc" id="L504">                Set&lt;BeanDefinition&gt; beanDefs = entityProvider.findCandidateComponents(packageName);</span>
-<span class="fc bfc" id="L505" title="All 2 branches covered.">                for (BeanDefinition beanDef : beanDefs) {</span>
-<span class="pc bpc" id="L506" title="1 of 4 branches missed.">                    if (entityName.equals(beanDef.getBeanClassName().substring(beanDef.getBeanClassName().lastIndexOf(&quot;.&quot;) + 1)) &amp;&amp; !beanDef.isAbstract()) {</span>
-                        try {
-<span class="fc" id="L508">                            Class&lt;?&gt; clazz = Class.forName(beanDef.getBeanClassName());</span>
-<span class="fc" id="L509">                            entityClasses.put(entityName, clazz);</span>
-<span class="fc" id="L510">                            return clazz;</span>
-<span class="nc" id="L511">                        } catch (ClassNotFoundException e) {</span>
-<span class="nc" id="L512">                            log.warn(&quot;Class {} not found&quot;, beanDef.getBeanClassName());</span>
-                        }
-                    }
-<span class="fc" id="L515">                }</span>
-<span class="fc" id="L516">            }</span>
-<span class="fc" id="L517">        }</span>
-<span class="fc" id="L518">        return null;</span>
-    }
+	/**
+	 * Translates the name of an entity to the fully qualified class name. The &lt;code&gt;@EntityScan&lt;/code&gt; base packages are searched.
+	 *
+	 * @param entityName the name of the entity; the class must be a concrete subclass of &lt;code&gt;AbstractEnity&lt;/code&gt;
+	 * @return the class
+	 */
+	public static Class&lt;?&gt; findClass(String entityName) {
+<span class="pc bpc" id="L496" title="1 of 2 branches missed.">		if (entityClasses.containsKey(entityName)) {</span>
+<span class="nc" id="L497">			log.debug(&quot;Getting class for {} from cache&quot;, entityName);</span>
+<span class="nc" id="L498">			return entityClasses.get(entityName);</span>
+		}
+<span class="fc" id="L500">		synchronized (ClassUtils.class) {</span>
+<span class="fc" id="L501">			ClassPathScanningCandidateComponentProvider entityProvider = new ClassPathScanningCandidateComponentProvider(false);</span>
+<span class="fc" id="L502">			entityProvider.addIncludeFilter(new AssignableTypeFilter(AbstractEntity.class));</span>
+<span class="fc bfc" id="L503" title="All 2 branches covered.">			for (String packageName : basePackages) {</span>
+<span class="fc" id="L504">				Set&lt;BeanDefinition&gt; beanDefs = entityProvider.findCandidateComponents(packageName);</span>
+<span class="fc bfc" id="L505" title="All 2 branches covered.">				for (BeanDefinition beanDef : beanDefs) {</span>
+<span class="pc bpc" id="L506" title="1 of 4 branches missed.">					if (entityName.equals(beanDef.getBeanClassName().substring(beanDef.getBeanClassName().lastIndexOf(&quot;.&quot;) + 1)) &amp;&amp; !beanDef.isAbstract()) {</span>
+						try {
+<span class="fc" id="L508">							Class&lt;?&gt; clazz = Class.forName(beanDef.getBeanClassName());</span>
+<span class="fc" id="L509">							entityClasses.put(entityName, clazz);</span>
+<span class="fc" id="L510">							return clazz;</span>
+<span class="nc" id="L511">						} catch (ClassNotFoundException e) {</span>
+<span class="nc" id="L512">							log.warn(&quot;Class {} not found&quot;, beanDef.getBeanClassName());</span>
+						}
+					}
+<span class="fc" id="L515">				}</span>
+<span class="fc" id="L516">			}</span>
+<span class="fc" id="L517">		}</span>
+<span class="fc" id="L518">		return null;</span>
+	}
 
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

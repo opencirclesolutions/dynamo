@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,379 +43,379 @@ import java.util.concurrent.ConcurrentHashMap;
 <span class="nc" id="L43">@ToString</span>
 public class AttributeModelImpl implements AttributeModel {
 
-<span class="nc" id="L46">    private final DynamoProperties dynamoProperties;</span>
+<span class="nc" id="L46">	private final DynamoProperties dynamoProperties;</span>
 
-<span class="fc" id="L48">    private Set&lt;String&gt; allowedExtensions = new HashSet&lt;&gt;();</span>
+<span class="fc" id="L48">	private Set&lt;String&gt; allowedExtensions = new HashSet&lt;&gt;();</span>
 
-<span class="nc" id="L50">    private boolean alreadyGrouped;</span>
+<span class="nc" id="L50">	private boolean alreadyGrouped;</span>
 
-<span class="fc" id="L52">    private AttributeType attributeType;</span>
+<span class="fc" id="L52">	private AttributeType attributeType;</span>
 
-<span class="fc" id="L54">    private String autofillInstructions;</span>
+<span class="fc" id="L54">	private String autofillInstructions;</span>
 
-<span class="fc" id="L56">    private AttributeBooleanFieldMode booleanFieldMode;</span>
+<span class="fc" id="L56">	private AttributeBooleanFieldMode booleanFieldMode;</span>
 
-<span class="fc" id="L58">    private final Map&lt;String, String&gt; cascadeAttributes = new HashMap&lt;&gt;();</span>
+<span class="fc" id="L58">	private final Map&lt;String, String&gt; cascadeAttributes = new HashMap&lt;&gt;();</span>
 
-<span class="pc" id="L60">    private Map&lt;String, CascadeMode&gt; cascadeModes = new HashMap&lt;&gt;();</span>
+<span class="pc" id="L60">	private Map&lt;String, CascadeMode&gt; cascadeModes = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L62">    private String collectionTableFieldName;</span>
+<span class="fc" id="L62">	private String collectionTableFieldName;</span>
 
-<span class="fc" id="L64">    private String collectionTableName;</span>
+<span class="fc" id="L64">	private String collectionTableName;</span>
 
-<span class="fc" id="L66">    private String currencyCode;</span>
+<span class="fc" id="L66">	private String currencyCode;</span>
 
-<span class="pc" id="L68">    private Map&lt;String, Object&gt; customSettings = new HashMap&lt;&gt;();</span>
+<span class="pc" id="L68">	private Map&lt;String, Object&gt; customSettings = new HashMap&lt;&gt;();</span>
 
-<span class="fc" id="L70">    private AttributeDateType dateType;</span>
+<span class="fc" id="L70">	private AttributeDateType dateType;</span>
 
-<span class="nc" id="L72">    private String defaultDescription;</span>
+<span class="nc" id="L72">	private String defaultDescription;</span>
 
-<span class="nc" id="L74">    private String defaultDisplayFormat;</span>
+<span class="nc" id="L74">	private String defaultDisplayFormat;</span>
 
-<span class="nc" id="L76">    private String defaultDisplayName;</span>
+<span class="nc" id="L76">	private String defaultDisplayName;</span>
 
-<span class="nc" id="L78">    private String defaultFalseRepresentation;</span>
+<span class="nc" id="L78">	private String defaultFalseRepresentation;</span>
 
-<span class="nc" id="L80">    private String defaultPrompt;</span>
+<span class="nc" id="L80">	private String defaultPrompt;</span>
 
-<span class="nc" id="L82">    private String defaultTrueRepresentation;</span>
+<span class="nc" id="L82">	private String defaultTrueRepresentation;</span>
 
-<span class="fc" id="L84">    private Object defaultValue;</span>
+<span class="fc" id="L84">	private Object defaultValue;</span>
 
-<span class="fc" id="L86">    private Object defaultSearchValue;</span>
+<span class="fc" id="L86">	private Object defaultSearchValue;</span>
 
-<span class="fc" id="L88">    private Object defaultSearchValueFrom;</span>
+<span class="fc" id="L88">	private Object defaultSearchValueFrom;</span>
 
-<span class="fc" id="L90">    private Object defaultSearchValueTo;</span>
+<span class="fc" id="L90">	private Object defaultSearchValueTo;</span>
 
-<span class="pc" id="L92">    private Map&lt;String, Optional&lt;String&gt;&gt; descriptions = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L92">	private Map&lt;String, Optional&lt;String&gt;&gt; descriptions = new ConcurrentHashMap&lt;&gt;();</span>
 
-<span class="pc" id="L94">    private Map&lt;String, Optional&lt;String&gt;&gt; displayFormats = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L94">	private Map&lt;String, Optional&lt;String&gt;&gt; displayFormats = new ConcurrentHashMap&lt;&gt;();</span>
 
-<span class="pc" id="L96">    private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L96">	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
 
-<span class="fc" id="L98">    private boolean downloadAllowed;</span>
+<span class="fc" id="L98">	private boolean downloadAllowed;</span>
 
-<span class="fc" id="L100">    private EditableType editableType;</span>
+<span class="fc" id="L100">	private EditableType editableType;</span>
 
-<span class="nc" id="L102">    private ElementCollectionMode elementCollectionMode;</span>
+<span class="nc" id="L102">	private ElementCollectionMode elementCollectionMode;</span>
 
-<span class="fc" id="L104">    private boolean email;</span>
+<span class="fc" id="L104">	private boolean email;</span>
 
-<span class="nc" id="L106">    private AttributeEnumFieldMode enumFieldMode;</span>
+<span class="nc" id="L106">	private AttributeEnumFieldMode enumFieldMode;</span>
 
-    @ToString.Exclude
-<span class="fc" id="L109">    private EntityModel&lt;?&gt; entityModel;</span>
+	@ToString.Exclude
+<span class="fc" id="L109">	private EntityModel&lt;?&gt; entityModel;</span>
 
-<span class="pc" id="L111">    private Map&lt;String, Optional&lt;String&gt;&gt; falseRepresentations = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L111">	private Map&lt;String, Optional&lt;String&gt;&gt; falseRepresentations = new ConcurrentHashMap&lt;&gt;();</span>
 
-<span class="nc" id="L113">    private String fileNameProperty;</span>
+<span class="nc" id="L113">	private String fileNameProperty;</span>
 
-<span class="fc" id="L115">    private Integer gridOrder;</span>
+<span class="fc" id="L115">	private Integer gridOrder;</span>
 
-<span class="fc" id="L117">    private final List&lt;String&gt; groupTogetherWith = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L117">	private final List&lt;String&gt; groupTogetherWith = new ArrayList&lt;&gt;();</span>
 
-<span class="nc" id="L119">    private boolean ignoreInSearchFilter;</span>
+<span class="nc" id="L119">	private boolean ignoreInSearchFilter;</span>
 
-<span class="fc" id="L121">    private boolean image;</span>
+<span class="fc" id="L121">	private boolean image;</span>
 
-<span class="fc" id="L123">    private String lookupEntityReference;</span>
+<span class="fc" id="L123">	private String lookupEntityReference;</span>
 
-<span class="nc" id="L125">    private QueryType lookupQueryType;</span>
+<span class="nc" id="L125">	private QueryType lookupQueryType;</span>
 
-<span class="nc" id="L127">    private Integer maxCollectionSize;</span>
+<span class="nc" id="L127">	private Integer maxCollectionSize;</span>
 
-<span class="fc" id="L129">    private Integer maxLength;</span>
+<span class="fc" id="L129">	private Integer maxLength;</span>
 
-<span class="nc" id="L131">    private Integer maxLengthInGrid;</span>
+<span class="nc" id="L131">	private Integer maxLengthInGrid;</span>
 
-<span class="fc" id="L133">    private BigDecimal maxValue;</span>
+<span class="fc" id="L133">	private BigDecimal maxValue;</span>
 
-<span class="fc" id="L135">    private Class&lt;?&gt; memberType;</span>
+<span class="fc" id="L135">	private Class&lt;?&gt; memberType;</span>
 
-<span class="nc" id="L137">    private Integer minCollectionSize;</span>
+<span class="nc" id="L137">	private Integer minCollectionSize;</span>
 
-<span class="nc" id="L139">    private Integer minLength;</span>
+<span class="nc" id="L139">	private Integer minLength;</span>
 
-<span class="fc" id="L141">    private BigDecimal minValue;</span>
+<span class="fc" id="L141">	private BigDecimal minValue;</span>
 
-<span class="fc" id="L143">    private boolean multipleSearch;</span>
+<span class="fc" id="L143">	private boolean multipleSearch;</span>
 
-<span class="fc" id="L145">    private String name;</span>
+<span class="fc" id="L145">	private String name;</span>
 
-<span class="nc" id="L147">    private boolean neededInData;</span>
+<span class="nc" id="L147">	private boolean neededInData;</span>
 
-<span class="fc" id="L149">    private boolean navigable;</span>
+<span class="fc" id="L149">	private boolean navigable;</span>
 
-<span class="fc" id="L151">    private String navigationLink;</span>
+<span class="fc" id="L151">	private String navigationLink;</span>
 
-<span class="nc" id="L153">    private boolean nestedDetails;</span>
+<span class="nc" id="L153">	private boolean nestedDetails;</span>
 
-<span class="fc" id="L155">    private EntityModel&lt;?&gt; nestedEntityModel;</span>
+<span class="fc" id="L155">	private EntityModel&lt;?&gt; nestedEntityModel;</span>
 
-<span class="fc" id="L157">    private NumberFieldMode numberFieldMode;</span>
+<span class="fc" id="L157">	private NumberFieldMode numberFieldMode;</span>
 
-<span class="fc" id="L159">    private Integer numberFieldStep;</span>
+<span class="fc" id="L159">	private Integer numberFieldStep;</span>
 
-<span class="fc" id="L161">    private Integer order;</span>
+<span class="fc" id="L161">	private Integer order;</span>
 
-<span class="fc" id="L163">    private boolean percentage;</span>
+<span class="fc" id="L163">	private boolean percentage;</span>
 
-<span class="fc" id="L165">    private int precision;</span>
+<span class="fc" id="L165">	private int precision;</span>
 
-<span class="pc" id="L167">    private Map&lt;String, Optional&lt;String&gt;&gt; prompts = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L167">	private Map&lt;String, Optional&lt;String&gt;&gt; prompts = new ConcurrentHashMap&lt;&gt;();</span>
 
-<span class="nc" id="L169">    private boolean quickAddAllowed;</span>
+<span class="nc" id="L169">	private boolean quickAddAllowed;</span>
 
-<span class="fc" id="L171">    private String replacementSearchPath;</span>
+<span class="fc" id="L171">	private String replacementSearchPath;</span>
 
-<span class="nc" id="L173">    private String replacementSortPath;</span>
+<span class="nc" id="L173">	private String replacementSortPath;</span>
 
-<span class="fc" id="L175">    private boolean required;</span>
+<span class="fc" id="L175">	private boolean required;</span>
 
-<span class="fc" id="L177">    private boolean requiredForSearching;</span>
+<span class="fc" id="L177">	private boolean requiredForSearching;</span>
 
-<span class="fc" id="L179">    private boolean searchCaseSensitive;</span>
+<span class="fc" id="L179">	private boolean searchCaseSensitive;</span>
 
-<span class="fc" id="L181">    private boolean searchDateOnly;</span>
+<span class="fc" id="L181">	private boolean searchDateOnly;</span>
 
-<span class="nc" id="L183">    private boolean searchForExactValue;</span>
+<span class="nc" id="L183">	private boolean searchForExactValue;</span>
 
-<span class="fc" id="L185">    private SearchMode searchMode;</span>
+<span class="fc" id="L185">	private SearchMode searchMode;</span>
 
-<span class="fc" id="L187">    private Integer searchOrder;</span>
+<span class="fc" id="L187">	private Integer searchOrder;</span>
 
-<span class="fc" id="L189">    private boolean searchPrefixOnly;</span>
+<span class="fc" id="L189">	private boolean searchPrefixOnly;</span>
 
-<span class="fc" id="L191">    private AttributeSelectMode searchSelectMode;</span>
+<span class="fc" id="L191">	private AttributeSelectMode searchSelectMode;</span>
 
-<span class="fc" id="L193">    private AttributeSelectMode selectMode;</span>
+<span class="fc" id="L193">	private AttributeSelectMode selectMode;</span>
 
-<span class="nc" id="L195">    private boolean showPassword;</span>
+<span class="nc" id="L195">	private boolean showPassword;</span>
 
-<span class="fc" id="L197">    private boolean sortable;</span>
+<span class="fc" id="L197">	private boolean sortable;</span>
 
-<span class="fc" id="L199">    private AttributeTextFieldMode textFieldMode;</span>
+<span class="fc" id="L199">	private AttributeTextFieldMode textFieldMode;</span>
 
-<span class="fc" id="L201">    private boolean trimSpaces;</span>
+<span class="fc" id="L201">	private boolean trimSpaces;</span>
 
-<span class="pc" id="L203">    private Map&lt;String, Optional&lt;String&gt;&gt; trueRepresentations = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L203">	private Map&lt;String, Optional&lt;String&gt;&gt; trueRepresentations = new ConcurrentHashMap&lt;&gt;();</span>
 
-<span class="fc" id="L205">    private Class&lt;?&gt; type;</span>
+<span class="fc" id="L205">	private Class&lt;?&gt; type;</span>
 
-<span class="fc" id="L207">    private boolean url;</span>
+<span class="fc" id="L207">	private boolean url;</span>
 
-<span class="fc" id="L209">    private boolean visibleInForm;</span>
+<span class="fc" id="L209">	private boolean visibleInForm;</span>
 
-<span class="fc" id="L211">    private boolean visibleInGrid;</span>
+<span class="fc" id="L211">	private boolean visibleInGrid;</span>
 
-<span class="nc" id="L213">    private boolean setterMethod;</span>
+<span class="nc" id="L213">	private boolean setterMethod;</span>
 
-<span class="fc" id="L215">    public AttributeModelImpl(DynamoProperties dynamoProperties) {</span>
-<span class="fc" id="L216">        this.dynamoProperties = dynamoProperties;</span>
-<span class="fc" id="L217">    }</span>
+<span class="fc" id="L215">	public AttributeModelImpl(DynamoProperties dynamoProperties) {</span>
+<span class="fc" id="L216">		this.dynamoProperties = dynamoProperties;</span>
+<span class="fc" id="L217">	}</span>
 
-    @Override
-    public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
-<span class="fc" id="L221">        this.cascadeAttributes.put(cascadeTo, filterPath);</span>
-<span class="fc" id="L222">        this.cascadeModes.put(cascadeTo, mode);</span>
-<span class="fc" id="L223">    }</span>
+	@Override
+	public void addCascade(final String cascadeTo, final String filterPath, final CascadeMode mode) {
+<span class="fc" id="L221">		this.cascadeAttributes.put(cascadeTo, filterPath);</span>
+<span class="fc" id="L222">		this.cascadeModes.put(cascadeTo, mode);</span>
+<span class="fc" id="L223">	}</span>
 
-    @Override
-    public void addGroupTogetherWith(final String path) {
-<span class="fc" id="L227">        groupTogetherWith.add(path);</span>
-<span class="fc" id="L228">    }</span>
+	@Override
+	public void addGroupTogetherWith(final String path) {
+<span class="fc" id="L227">		groupTogetherWith.add(path);</span>
+<span class="fc" id="L228">	}</span>
 
-    @Override
-    public int compareTo(final AttributeModel other) {
-<span class="nc" id="L232">        return this.getOrder() - other.getOrder();</span>
-    }
+	@Override
+	public int compareTo(final AttributeModel other) {
+<span class="nc" id="L232">		return this.getOrder() - other.getOrder();</span>
+	}
 
-    @Override
-    public String getActualSearchPath() {
-<span class="pc bpc" id="L237" title="1 of 2 branches missed.">        return replacementSearchPath != null ? replacementSearchPath : getPath();</span>
-    }
+	@Override
+	public String getActualSearchPath() {
+<span class="pc bpc" id="L237" title="1 of 2 branches missed.">		return replacementSearchPath != null ? replacementSearchPath : getPath();</span>
+	}
 
-    @Override
-    public String getActualSortPath() {
-<span class="pc bpc" id="L242" title="1 of 2 branches missed.">        return replacementSortPath != null ? replacementSortPath : getPath();</span>
-    }
+	@Override
+	public String getActualSortPath() {
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">		return replacementSortPath != null ? replacementSortPath : getPath();</span>
+	}
 
-    @Override
-    public Set&lt;String&gt; getCascadeAttributes() {
-<span class="fc" id="L247">        return cascadeAttributes.keySet();</span>
-    }
+	@Override
+	public Set&lt;String&gt; getCascadeAttributes() {
+<span class="fc" id="L247">		return cascadeAttributes.keySet();</span>
+	}
 
-    @Override
-    public String getCascadeFilterPath(final String cascadeTo) {
-<span class="fc" id="L252">        return this.cascadeAttributes.get(cascadeTo);</span>
-    }
+	@Override
+	public String getCascadeFilterPath(final String cascadeTo) {
+<span class="fc" id="L252">		return this.cascadeAttributes.get(cascadeTo);</span>
+	}
 
-    @Override
-    public CascadeMode getCascadeMode(final String cascadeTo) {
-<span class="fc" id="L257">        return this.cascadeModes.get(cascadeTo);</span>
-    }
+	@Override
+	public CascadeMode getCascadeMode(final String cascadeTo) {
+<span class="fc" id="L257">		return this.cascadeModes.get(cascadeTo);</span>
+	}
 
-    @Override
-    public Object getCustomSetting(String name) {
-<span class="fc" id="L262">        return customSettings.get(name);</span>
-    }
+	@Override
+	public Object getCustomSetting(String name) {
+<span class="fc" id="L262">		return customSettings.get(name);</span>
+	}
 
-    @Override
-    public String getDescription(Locale locale) {
-        // lookup description, falling back to overridden display name or otherwise to
-        // the default description
-<span class="fc" id="L269">        String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);</span>
-<span class="fc" id="L270">        return lookup(descriptions, locale, EntityModel.DESCRIPTION, displayNameNoDefault, defaultDescription);</span>
-    }
+	@Override
+	public String getDescription(Locale locale) {
+		// lookup description, falling back to overridden display name or otherwise to
+		// the default description
+<span class="fc" id="L269">		String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);</span>
+<span class="fc" id="L270">		return lookup(descriptions, locale, EntityModel.DESCRIPTION, displayNameNoDefault, defaultDescription);</span>
+	}
 
-    @Override
-    public String getDisplayFormat(Locale locale) {
-<span class="fc" id="L275">        return lookup(displayFormats, locale, EntityModel.DISPLAY_FORMAT, defaultDisplayFormat, null);</span>
-    }
+	@Override
+	public String getDisplayFormat(Locale locale) {
+<span class="fc" id="L275">		return lookup(displayFormats, locale, EntityModel.DISPLAY_FORMAT, defaultDisplayFormat, null);</span>
+	}
 
-    @Override
-    public String getDisplayName(Locale locale) {
-<span class="fc" id="L280">        return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName, null);</span>
-    }
+	@Override
+	public String getDisplayName(Locale locale) {
+<span class="fc" id="L280">		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName, null);</span>
+	}
 
-    @Override
-    public String getFalseRepresentation(Locale locale) {
-<span class="fc" id="L285">        return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,</span>
-<span class="fc" id="L286">                dynamoProperties.getDefaults().getFalseRepresentations().get(locale.toString()), defaultFalseRepresentation);</span>
-    }
+	@Override
+	public String getFalseRepresentation(Locale locale) {
+<span class="fc" id="L285">		return lookup(falseRepresentations, locale, EntityModel.FALSE_REPRESENTATION,</span>
+<span class="fc" id="L286">			dynamoProperties.getDefaults().getFalseRepresentations().get(locale.toString()), defaultFalseRepresentation);</span>
+	}
 
-    @Override
-    public List&lt;String&gt; getGroupTogetherWith() {
-<span class="fc" id="L291">        return Collections.unmodifiableList(groupTogetherWith);</span>
-    }
+	@Override
+	public List&lt;String&gt; getGroupTogetherWith() {
+<span class="fc" id="L291">		return Collections.unmodifiableList(groupTogetherWith);</span>
+	}
 
-    @Override
-    public Class&lt;?&gt; getNormalizedType() {
-<span class="pc bpc" id="L296" title="1 of 2 branches missed.">        return getMemberType() != null ? getMemberType() : getType();</span>
-    }
+	@Override
+	public Class&lt;?&gt; getNormalizedType() {
+<span class="pc bpc" id="L296" title="1 of 2 branches missed.">		return getMemberType() != null ? getMemberType() : getType();</span>
+	}
 
-    @Override
-    public String getPath() {
-<span class="fc" id="L301">        String reference = entityModel.getReference();</span>
-<span class="fc" id="L302">        int p = reference.indexOf('.');</span>
-
-<span class="fc bfc" id="L304" title="All 2 branches covered.">        if (p &lt;= 0) {</span>
-<span class="fc" id="L305">            return name;</span>
-        } else {
-<span class="fc" id="L307">            return reference.substring(p + 1) + &quot;.&quot; + name;</span>
-        }
-    }
-
-    @Override
-    public String getPrompt(Locale locale) {
-<span class="pc bpc" id="L313" title="1 of 2 branches missed.">        if (!dynamoProperties.getDefaults().isUsePromptValue()) {</span>
-<span class="nc" id="L314">            return null;</span>
-        }
-
-        // look up prompt. If not defined, look up display name
-<span class="fc" id="L318">        String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);</span>
-<span class="fc" id="L319">        return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefault, defaultPrompt);</span>
-    }
-
-    @Override
-    public String getTrueRepresentation(Locale locale) {
-<span class="fc" id="L324">        return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,</span>
-<span class="fc" id="L325">                dynamoProperties.getDefaults().getTrueRepresentations().get(locale.toString()), defaultTrueRepresentation);</span>
-    }
-
-    @Override
-    public boolean isBoolean() {
-<span class="nc bnc" id="L330" title="All 4 branches missed.">        return Boolean.class.equals(type) || boolean.class.equals(type);</span>
-    }
-
-    @Override
-    public boolean isEmbedded() {
-<span class="fc" id="L335">        return AttributeType.EMBEDDED.equals(attributeType);</span>
-    }
-
-    @Override
-    public boolean isNumerical() {
-<span class="fc" id="L340">        return NumberUtils.isNumeric(type);</span>
-    }
-
-    @Override
-    public boolean isIntegral() {
-<span class="nc bnc" id="L345" title="All 4 branches missed.">        return NumberUtils.isInteger(type) || NumberUtils.isLong(type);</span>
-    }
-
-    public boolean isSearchable() {
-<span class="fc bfc" id="L349" title="All 4 branches covered.">        return SearchMode.ADVANCED.equals(searchMode) || SearchMode.ALWAYS.equals(searchMode);</span>
-    }
-
-    /**
-     * Looks up the translation of a value for a certain locale
-     *
-     * @param source         the translation cache
-     * @param locale         the locale
-     * @param key            the message key
-     * @param fallBack       the first fallback value
-     * @param secondFallBack the second fallback value
-     * @return the translation for the specified key
-     */
-    private String lookup(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key, String fallBack,
-                          String secondFallBack) {
-<span class="fc bfc" id="L364" title="All 2 branches covered.">        if (!source.containsKey(locale.toString())) {</span>
-            try {
-<span class="fc" id="L366">                ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
-<span class="fc" id="L367">                String str = rb.getString(getEntityModel().getReference() + &quot;.&quot; + getPath() + &quot;.&quot; + key);</span>
-<span class="fc" id="L368">                source.put(locale.toString(), Optional.of(str));</span>
-<span class="fc" id="L369">            } catch (MissingResourceException ex) {</span>
-<span class="fc" id="L370">                source.put(locale.toString(), Optional.empty());</span>
-<span class="fc" id="L371">            }</span>
-        }
-
-<span class="fc" id="L374">        Optional&lt;String&gt; optional = source.get(locale.toString());</span>
-<span class="fc bfc" id="L375" title="All 2 branches covered.">        return optional.orElse(fallBack != null ? fallBack : secondFallBack);</span>
-    }
-
-    /**
-     * Looks up a key from the message bundle, returning an empty optional if
-     * nothing can be found
-     *
-     * @param source the cache
-     * @param locale the locale
-     * @param key    the message key
-     * @return the value  that the key resolves to
-     */
-    private String lookupNoDefault(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key) {
-<span class="fc bfc" id="L388" title="All 2 branches covered.">        if (!source.containsKey(locale.toString())) {</span>
-            try {
-                // resource bundle has not been checked yet, check it now
-<span class="fc" id="L391">                ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
-<span class="nc" id="L392">                String str = rb.getString(getEntityModel().getReference() + &quot;.&quot; + getPath() + &quot;.&quot; + key);</span>
-<span class="nc" id="L393">                source.put(locale.toString(), Optional.of(str));</span>
-<span class="fc" id="L394">            } catch (MissingResourceException ex) {</span>
-                // nothing in resource bundle, store empty value
-<span class="fc" id="L396">                source.put(locale.toString(), Optional.empty());</span>
-<span class="nc" id="L397">            }</span>
-        }
-<span class="fc" id="L399">        return source.get(locale.toString()).orElse(null);</span>
-    }
-
-    @Override
-    public void removeCascades() {
-<span class="nc" id="L404">        this.cascadeAttributes.clear();</span>
-<span class="nc" id="L405">    }</span>
-
-    @Override
-    public void setCustomSetting(String name, Object value) {
-<span class="fc" id="L409">        this.customSettings.put(name, value);</span>
-<span class="fc" id="L410">    }</span>
-
-    @Override
-    public boolean hasSetterMethod() {
-<span class="nc" id="L414">        return setterMethod;</span>
-    }
-
-    public void setHasSetterMethod(boolean hasSetterMethod) {
-<span class="fc" id="L418">        this.setterMethod = hasSetterMethod;</span>
-<span class="fc" id="L419">    }</span>
+	@Override
+	public String getPath() {
+<span class="fc" id="L301">		String reference = entityModel.getReference();</span>
+<span class="fc" id="L302">		int p = reference.indexOf('.');</span>
+
+<span class="fc bfc" id="L304" title="All 2 branches covered.">		if (p &lt;= 0) {</span>
+<span class="fc" id="L305">			return name;</span>
+		} else {
+<span class="fc" id="L307">			return reference.substring(p + 1) + &quot;.&quot; + name;</span>
+		}
+	}
+
+	@Override
+	public String getPrompt(Locale locale) {
+<span class="pc bpc" id="L313" title="1 of 2 branches missed.">		if (!dynamoProperties.getDefaults().isUsePromptValue()) {</span>
+<span class="nc" id="L314">			return null;</span>
+		}
+
+		// look up prompt. If not defined, look up display name
+<span class="fc" id="L318">		String displayNameNoDefault = lookupNoDefault(displayNames, locale, EntityModel.DISPLAY_NAME);</span>
+<span class="fc" id="L319">		return lookup(prompts, locale, EntityModel.PROMPT, displayNameNoDefault, defaultPrompt);</span>
+	}
+
+	@Override
+	public String getTrueRepresentation(Locale locale) {
+<span class="fc" id="L324">		return lookup(trueRepresentations, locale, EntityModel.TRUE_REPRESENTATION,</span>
+<span class="fc" id="L325">			dynamoProperties.getDefaults().getTrueRepresentations().get(locale.toString()), defaultTrueRepresentation);</span>
+	}
+
+	@Override
+	public boolean isBoolean() {
+<span class="nc bnc" id="L330" title="All 4 branches missed.">		return Boolean.class.equals(type) || boolean.class.equals(type);</span>
+	}
+
+	@Override
+	public boolean isEmbedded() {
+<span class="fc" id="L335">		return AttributeType.EMBEDDED.equals(attributeType);</span>
+	}
+
+	@Override
+	public boolean isNumerical() {
+<span class="fc" id="L340">		return NumberUtils.isNumeric(type);</span>
+	}
+
+	@Override
+	public boolean isIntegral() {
+<span class="nc bnc" id="L345" title="All 4 branches missed.">		return NumberUtils.isInteger(type) || NumberUtils.isLong(type);</span>
+	}
+
+	public boolean isSearchable() {
+<span class="fc bfc" id="L349" title="All 4 branches covered.">		return SearchMode.ADVANCED.equals(searchMode) || SearchMode.ALWAYS.equals(searchMode);</span>
+	}
+
+	/**
+	 * Looks up the translation of a value for a certain locale
+	 *
+	 * @param source         the translation cache
+	 * @param locale         the locale
+	 * @param key            the message key
+	 * @param fallBack       the first fallback value
+	 * @param secondFallBack the second fallback value
+	 * @return the translation for the specified key
+	 */
+	private String lookup(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key, String fallBack,
+						  String secondFallBack) {
+<span class="fc bfc" id="L364" title="All 2 branches covered.">		if (!source.containsKey(locale.toString())) {</span>
+			try {
+<span class="fc" id="L366">				ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
+<span class="fc" id="L367">				String str = rb.getString(getEntityModel().getReference() + &quot;.&quot; + getPath() + &quot;.&quot; + key);</span>
+<span class="fc" id="L368">				source.put(locale.toString(), Optional.of(str));</span>
+<span class="fc" id="L369">			} catch (MissingResourceException ex) {</span>
+<span class="fc" id="L370">				source.put(locale.toString(), Optional.empty());</span>
+<span class="fc" id="L371">			}</span>
+		}
+
+<span class="fc" id="L374">		Optional&lt;String&gt; optional = source.get(locale.toString());</span>
+<span class="fc bfc" id="L375" title="All 2 branches covered.">		return optional.orElse(fallBack != null ? fallBack : secondFallBack);</span>
+	}
+
+	/**
+	 * Looks up a key from the message bundle, returning an empty optional if
+	 * nothing can be found
+	 *
+	 * @param source the cache
+	 * @param locale the locale
+	 * @param key    the message key
+	 * @return the value  that the key resolves to
+	 */
+	private String lookupNoDefault(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key) {
+<span class="fc bfc" id="L388" title="All 2 branches covered.">		if (!source.containsKey(locale.toString())) {</span>
+			try {
+				// resource bundle has not been checked yet, check it now
+<span class="fc" id="L391">				ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
+<span class="nc" id="L392">				String str = rb.getString(getEntityModel().getReference() + &quot;.&quot; + getPath() + &quot;.&quot; + key);</span>
+<span class="nc" id="L393">				source.put(locale.toString(), Optional.of(str));</span>
+<span class="fc" id="L394">			} catch (MissingResourceException ex) {</span>
+				// nothing in resource bundle, store empty value
+<span class="fc" id="L396">				source.put(locale.toString(), Optional.empty());</span>
+<span class="nc" id="L397">			}</span>
+		}
+<span class="fc" id="L399">		return source.get(locale.toString()).orElse(null);</span>
+	}
+
+	@Override
+	public void removeCascades() {
+<span class="nc" id="L404">		this.cascadeAttributes.clear();</span>
+<span class="nc" id="L405">	}</span>
+
+	@Override
+	public void setCustomSetting(String name, Object value) {
+<span class="fc" id="L409">		this.customSettings.put(name, value);</span>
+<span class="fc" id="L410">	}</span>
+
+	@Override
+	public boolean hasSetterMethod() {
+<span class="nc" id="L414">		return setterMethod;</span>
+	}
+
+	public void setHasSetterMethod(boolean hasSetterMethod) {
+<span class="fc" id="L418">		this.setterMethod = hasSetterMethod;</span>
+<span class="fc" id="L419">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

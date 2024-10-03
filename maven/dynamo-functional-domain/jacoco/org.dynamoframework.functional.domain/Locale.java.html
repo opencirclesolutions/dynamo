@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,31 +45,29 @@ public class Locale extends Domain {
 	/**
 	 * Constructor
 	 *
-	 * @param code
-	 *            the code of the currency
-	 * @param name
-	 *            the name of the currency
+	 * @param code the code of the currency
+	 * @param name the name of the currency
 	 */
 	public Locale(final String code, final String name) {
-<span class="nc" id="L54">		super(code, name);</span>
-<span class="nc" id="L55">	}</span>
+<span class="nc" id="L52">		super(code, name);</span>
+<span class="nc" id="L53">	}</span>
 
 	@Attribute(visibleInForm = VisibilityType.HIDE)
 	public String getCodeAndName() {
-<span class="nc" id="L59">		return getCode() + &quot; - &quot; + getName();</span>
+<span class="nc" id="L57">		return getCode() + &quot; - &quot; + getName();</span>
 	}
 
 	@Override
 	@NotNull
 	@Attribute(visibleInForm = VisibilityType.SHOW)
 	public String getCode() {
-<span class="nc" id="L66">		return super.getCode();</span>
+<span class="nc" id="L64">		return super.getCode();</span>
 	}
 
 	@Override
 	@Attribute(visibleInForm = VisibilityType.SHOW)
 	public String getName() {
-<span class="nc" id="L72">		return super.getName();</span>
+<span class="nc" id="L70">		return super.getName();</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

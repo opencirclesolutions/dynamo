@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,27 +30,26 @@ import org.dynamoframework.domain.model.annotation.Model;
 
 /**
  * A currency identified by an ISO currency code
- * 
- * @author bas.rutten
  *
+ * @author bas.rutten
  */
 @Entity
 @DiscriminatorValue(&quot;CURRENCY&quot;)
 @Model(displayNamePlural = &quot;Currencies&quot;, displayProperty = &quot;codeAndName&quot;, sortOrder = &quot;name asc&quot;)
-<span class="nc" id="L40">@NoArgsConstructor</span>
+<span class="nc" id="L39">@NoArgsConstructor</span>
 public class Currency extends Domain {
 
 	private static final long serialVersionUID = 3270223599926941961L;
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param code the code of the currency
 	 * @param name the name of the currency
 	 */
 	public Currency(String code, String name) {
-<span class="fc" id="L52">		super(code, name);</span>
-<span class="fc" id="L53">	}</span>
+<span class="fc" id="L51">		super(code, name);</span>
+<span class="fc" id="L52">	}</span>
 
 	/**
 	 * Overridden so we can modify the attribute model
@@ -59,12 +58,12 @@ public class Currency extends Domain {
 	@NotNull
 	@Attribute(visibleInForm = VisibilityType.SHOW)
 	public String getCode() {
-<span class="nc" id="L62">		return super.getCode();</span>
+<span class="nc" id="L61">		return super.getCode();</span>
 	}
 
 	@Attribute(visibleInForm = VisibilityType.HIDE)
 	public String getCodeAndName() {
-<span class="nc" id="L67">		return getCode() + &quot; - &quot; + getName();</span>
+<span class="nc" id="L66">		return getCode() + &quot; - &quot; + getName();</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

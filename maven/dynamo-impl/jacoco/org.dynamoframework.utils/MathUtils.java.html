@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,60 +33,52 @@ import java.math.RoundingMode;
 	/**
 	 * Divides the first argument by the second argument, then converts the
 	 * result to a percentage
-	 * 
-	 * @param first
-	 *            the first argument
-	 * @param second
-	 *            the second argument
-	 * @param scale the scale to use
+	 *
+	 * @param first  the first argument
+	 * @param second the second argument
+	 * @param scale  the scale to use
 	 * @return the result of the division
 	 */
 	public static BigDecimal dividePercentage(BigDecimal first, BigDecimal second, int scale) {
-<span class="nc bnc" id="L45" title="All 4 branches missed.">		if (second == null || BigDecimal.ZERO.subtract(second).abs().doubleValue() &lt; 0.00001) {</span>
-<span class="nc" id="L46">			return null;</span>
+<span class="nc bnc" id="L43" title="All 4 branches missed.">		if (second == null || BigDecimal.ZERO.subtract(second).abs().doubleValue() &lt; 0.00001) {</span>
+<span class="nc" id="L44">			return null;</span>
 		}
-<span class="nc" id="L48">		return first.multiply(HUNDRED).divide(second, scale, RoundingMode.HALF_UP);</span>
+<span class="nc" id="L46">		return first.multiply(HUNDRED).divide(second, scale, RoundingMode.HALF_UP);</span>
 	}
 
 	/**
 	 * Divides the first argument by the second argument, then converts to a
 	 * percentage
-	 * 
-	 * @param first
-	 *            the first argument
-	 * @param second
-	 *            the second argument
-	 * @param scale
-	 *            the desired scale
+	 *
+	 * @param first  the first argument
+	 * @param second the second argument
+	 * @param scale  the desired scale
 	 * @return the result of the division
 	 */
 	public static BigDecimal dividePercentage(Integer first, Integer second, int scale) {
-<span class="nc bnc" id="L64" title="All 2 branches missed.">		return dividePercentage(first == null ? BigDecimal.ZERO : new BigDecimal(first),</span>
-<span class="nc bnc" id="L65" title="All 2 branches missed.">				second == null ? null : new BigDecimal(second), scale);</span>
+<span class="nc bnc" id="L59" title="All 2 branches missed.">		return dividePercentage(first == null ? BigDecimal.ZERO : new BigDecimal(first),</span>
+<span class="nc bnc" id="L60" title="All 2 branches missed.">			second == null ? null : new BigDecimal(second), scale);</span>
 	}
 
 	/**
 	 * Returns the result of multiplying a value with a certain percentage,
 	 * rounded to the specified precision
-	 * 
-	 * @param percentage
-	 *            the percentage value
-	 * @param value
-	 *            the non-percentage value
-	 * @param scale
-	 *            the scale
+	 *
+	 * @param percentage the percentage value
+	 * @param value      the non-percentage value
+	 * @param scale      the scale
 	 * @return the result of the division
 	 */
 	public static BigDecimal multiplyPercentage(BigDecimal percentage, BigDecimal value, int scale) {
-<span class="nc" id="L81">		return percentage.multiply(value).divide(HUNDRED, scale, RoundingMode.HALF_UP);</span>
+<span class="nc" id="L73">		return percentage.multiply(value).divide(HUNDRED, scale, RoundingMode.HALF_UP);</span>
 	}
 
 	public static int nullSafeGet(Integer input) {
-<span class="nc bnc" id="L85" title="All 2 branches missed.">		return input == null ? 0 : input;</span>
+<span class="nc bnc" id="L77" title="All 2 branches missed.">		return input == null ? 0 : input;</span>
 	}
 
 	public static long nullSafeGet(Long input) {
-<span class="nc bnc" id="L89" title="All 2 branches missed.">		return input == null ? 0L : input;</span>
+<span class="nc bnc" id="L81" title="All 2 branches missed.">		return input == null ? 0L : input;</span>
 	}
 
 }

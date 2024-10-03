@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,49 +28,46 @@ import java.util.List;
 
 /**
  * Default class for importing from text-based files
- * 
- * @author Patrick Deenen (patrick@opencircle.solutions)
  *
- * @param &lt;ID&gt;
- *            the type of the ID of the entity
- * @param &lt;T&gt;
- *            the type of the entity
+ * @param &lt;ID&gt; the type of the ID of the entity
+ * @param &lt;T&gt;  the type of the entity
+ * @author Patrick Deenen (patrick@opencircle.solutions)
  */
 public class DefaultTextImportTemplate&lt;ID, T extends AbstractDTO&gt; extends TextImportTemplate&lt;ID, T&gt; {
 
-    private BaseTextImporter importer;
+	private BaseTextImporter importer;
 
-    private Class&lt;T&gt; type;
+	private Class&lt;T&gt; type;
 
-    /**
-     * Constructor
-     * 
-     * @param type
-     * @param messageService
-     * @param importer
-     * @param lines
-     * @param errors
-     */
-    public DefaultTextImportTemplate(Class&lt;T&gt; type, MessageService messageService,
-            BaseTextImporter importer, List&lt;String[]&gt; lines, List&lt;String&gt; errors) {
-<span class="nc" id="L56">        super(messageService, lines, errors, false);</span>
-<span class="nc" id="L57">        this.importer = importer;</span>
-<span class="nc" id="L58">        this.type = type;</span>
-<span class="nc" id="L59">    }</span>
+	/**
+	 * Constructor
+	 *
+	 * @param type
+	 * @param messageService
+	 * @param importer
+	 * @param lines
+	 * @param errors
+	 */
+	public DefaultTextImportTemplate(Class&lt;T&gt; type, MessageService messageService,
+									 BaseTextImporter importer, List&lt;String[]&gt; lines, List&lt;String&gt; errors) {
+<span class="nc" id="L53">		super(messageService, lines, errors, false);</span>
+<span class="nc" id="L54">		this.importer = importer;</span>
+<span class="nc" id="L55">		this.type = type;</span>
+<span class="nc" id="L56">	}</span>
 
-    @Override
-    protected boolean isAppropriateRow(String[] line) {
-<span class="nc" id="L63">        return true;</span>
-    }
+	@Override
+	protected boolean isAppropriateRow(String[] line) {
+<span class="nc" id="L60">		return true;</span>
+	}
 
-    @Override
-    protected ID getKeyFromRow(T row) {
-<span class="nc" id="L68">        return null;</span>
-    }
+	@Override
+	protected ID getKeyFromRow(T row) {
+<span class="nc" id="L65">		return null;</span>
+	}
 
-    @Override
-    protected T process(int rowNum, String[] row) {
-<span class="nc" id="L73">        return importer.processRow(rowNum, row, type);</span>
-    }
+	@Override
+	protected T process(int rowNum, String[] row) {
+<span class="nc" id="L70">		return importer.processRow(rowNum, row, type);</span>
+	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

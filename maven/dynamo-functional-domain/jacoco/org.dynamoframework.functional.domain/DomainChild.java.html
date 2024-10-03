@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,29 +29,29 @@ import java.io.Serializable;
 
 @Entity
 public abstract class DomainChild&lt;C extends DomainChild&lt;C, P&gt;, P extends DomainParent&lt;C, P&gt;&gt; extends Domain implements Serializable {
-    private static final long serialVersionUID = 2615942460028599211L;
-    @ManyToOne(
-            fetch = FetchType.LAZY,
-            targetEntity = DomainParent.class
-    )
-    @JoinColumn(
-            name = &quot;parent&quot;
-    )
-    private P parent;
+	private static final long serialVersionUID = 2615942460028599211L;
+	@ManyToOne(
+		fetch = FetchType.LAZY,
+		targetEntity = DomainParent.class
+	)
+	@JoinColumn(
+		name = &quot;parent&quot;
+	)
+	private P parent;
 
-    protected DomainChild(String code, String name) {
-<span class="fc" id="L43">        super(code, name);</span>
-<span class="fc" id="L44">    }</span>
+	protected DomainChild(String code, String name) {
+<span class="fc" id="L43">		super(code, name);</span>
+<span class="fc" id="L44">	}</span>
 
-    public P getParent() {
-<span class="nc" id="L47">        return this.parent;</span>
-    }
+	public P getParent() {
+<span class="nc" id="L47">		return this.parent;</span>
+	}
 
-    public void setParent(P parent) {
-<span class="nc" id="L51">        this.parent = parent;</span>
-<span class="nc" id="L52">    }</span>
+	public void setParent(P parent) {
+<span class="nc" id="L51">		this.parent = parent;</span>
+<span class="nc" id="L52">	}</span>
 
-<span class="fc" id="L54">    protected DomainChild() {</span>
-<span class="fc" id="L55">    }</span>
+<span class="fc" id="L54">	protected DomainChild() {</span>
+<span class="fc" id="L55">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

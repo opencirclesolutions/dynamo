@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -31,13 +31,13 @@ import java.util.function.Function;
 /**
  * An iterator for traversing large data sets without loading them all into
  * memory at once
- * 
- * @author bas.rutten
+ *
  * @param &lt;ID&gt; the type of the primary key of the entity
  * @param &lt;T&gt;  the type of the entity
+ * @author bas.rutten
  */
 public class PagingDataSetIterator&lt;ID extends Serializable, T extends AbstractEntity&lt;ID&gt;&gt;
-		implements DataSetIterator&lt;ID, T&gt; {
+	implements DataSetIterator&lt;ID, T&gt; {
 
 	private static final int PAGE_SIZE = 2000;
 
@@ -57,7 +57,7 @@ public class PagingDataSetIterator&lt;ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param idList the IDs of the relevant records
 	 */
 	public PagingDataSetIterator(List&lt;ID&gt; idList, Function&lt;List&lt;ID&gt;, List&lt;T&gt;&gt; mapper) {
@@ -66,7 +66,7 @@ public class PagingDataSetIterator&lt;ID extends Serializable, T extends Abstrac
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param idList   the IDs of the relevant records
 	 * @param pageSize the page size
 	 */

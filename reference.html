@@ -139,11 +139,35 @@ table thead, table tfoot {
     background-color: #39a248;
 }
 
-.admonitionblock td.content > .title, .audioblock > .title, .exampleblock > .title, .imageblock > .title, .listingblock > .title, .literalblock > .title, .stemblock > .title, .openblock > .title, .paragraph > .title, .quoteblock > .title, table.tableblock > .title, .verseblock > .title, .videoblock > .title, .dlist > .title, .olist > .title, .ulist > .title, .qlist > .title, .hdlist > .title {
+.admonitionblock td.content > .title,
+.audioblock > .title,
+.exampleblock > .title,
+.imageblock > .title,
+.listingblock > .title,
+.literalblock > .title,
+.stemblock > .title,
+.openblock > .title,
+.paragraph > .title,
+.quoteblock > .title,
+table.tableblock > .title,
+.verseblock > .title,
+.videoblock > .title,
+.dlist > .title,
+.olist > .title,
+.ulist > .title,
+.qlist > .title,
+.hdlist > .title {
     font-family: Raleway;
     color: #515147;
 }
 
+.admonitionblock > table tbody tr {
+    background-color: white;
+}
+
+pre.rouge {
+    background-color: #cee0cf !important;
+}
 
 </style>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
@@ -772,7 +796,7 @@ itself is represented. These include:</p>
 <p><code>displayName</code>: the name of the entity (e.g., “Car”)</p>
 </li>
 <li>
-<p><code>displayNamePlural</code>: the name of the entity, in plural form (e.g. “Cars”)</p>
+<p><code>displayNamePlural</code>: the name of the entity, in plural form (e.g., “Cars”)</p>
 </li>
 <li>
 <p><code>description</code>: textual description of the entity</p>
@@ -5731,7 +5755,7 @@ you have an action that operates on part of an entity, e.g., you want a
 dialog that can be used to change only an organization’s name.</p>
 </div>
 <div class="paragraph">
-<p>In order to use this functionality, you must perform a number of steps:x</p>
+<p>In order to use this functionality, you must perform a number of steps:</p>
 </div>
 <div class="ulist">
 <ul>
@@ -8292,7 +8316,7 @@ see an example of this.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2024-10-02 13:45:16 +0200
+Last updated 2024-10-03 11:45:29 +0200
 </div>
 </div>
 </body>

@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ import static java.lang.String.format;
 
 /**
  * Base class for services that can be used to import Excel files.
- * 
+ *
  * @author bas.rutten
  */
 <span class="fc" id="L51">public class BaseXlsImporter extends BaseImporter&lt;Row, Cell&gt; {</span>
@@ -54,7 +54,7 @@ import static java.lang.String.format;
 
 	/**
 	 * Checks if any cell in a row contains a certain (String) value
-	 * 
+	 *
 	 * @param row   the row to check
 	 * @param value the String value to check for
 	 * @return true if this is the case, false otherwise
@@ -98,9 +98,9 @@ import static java.lang.String.format;
 
 	/**
 	 * Creates a reader for processing an Excel file using streaming
-	 * 
-	 * @param bytes      the content of the file
-	 * @param cacheSize  the cache size
+	 *
+	 * @param bytes     the content of the file
+	 * @param cacheSize the cache size
 	 * @return the reader
 	 */
 	public Workbook createReader(byte[] bytes, int cacheSize) {
@@ -109,7 +109,7 @@ import static java.lang.String.format;
 
 	/**
 	 * Creates a workbook from an array of bytes
-	 * 
+	 *
 	 * @param bytes the byte content of the file
 	 * @return the workbook
 	 */
@@ -132,7 +132,7 @@ import static java.lang.String.format;
 
 	/**
 	 * Extracts a Boolean value from a cell
-	 * 
+	 *
 	 * @param cell the cell to extract the value from
 	 * @return the value
 	 */
@@ -161,7 +161,7 @@ import static java.lang.String.format;
 
 	/**
 	 * Retrieves a date value from a cell
-	 * 
+	 *
 	 * @param cell the cell to extract the value from
 	 * @return the value
 	 */
@@ -192,14 +192,14 @@ import static java.lang.String.format;
 <span class="fc" id="L192">		LocalDate value = getDateValue(cell);</span>
 <span class="pc bpc" id="L193" title="1 of 4 branches missed.">		if (value == null &amp;&amp; !StringUtils.isEmpty(field.defaultValue())) {</span>
 <span class="fc" id="L194">			value = LocalDate.parse(field.defaultValue(),</span>
-<span class="fc" id="L195">					DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));</span>
+<span class="fc" id="L195">				DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));</span>
 		}
 <span class="fc" id="L197">		return value;</span>
 	}
 
 	/**
 	 * Retrieves a numeric value for a cell
-	 * 
+	 *
 	 * @param cell the cell to retrieve the value from
 	 * @return the value
 	 */
@@ -214,7 +214,7 @@ import static java.lang.String.format;
 <span class="nc" id="L214">				return null;</span>
 <span class="nc" id="L215">			} catch (Exception ex) {</span>
 <span class="nc" id="L216">				throw new OCSImportException(format(&quot;Found an invalid numeric value: %s&quot;, cell.getStringCellValue()),</span>
-						ex);
+					ex);
 			}
 <span class="pc bpc" id="L219" title="1 of 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.STRING == cell.getCellType()) {</span>
 			// in case the value is not numeric, simply output a warning. If the
@@ -238,7 +238,7 @@ import static java.lang.String.format;
 	/**
 	 * Retrieves the numeric value of a cell, or falls back to a suitable default
 	 * value if the cell is empty and a default value has been specified
-	 * 
+	 *
 	 * @param cell  the cell to extract the value from
 	 * @param field the field definition
 	 * @return the value
@@ -255,7 +255,7 @@ import static java.lang.String.format;
 	/**
 	 * Retrieves the value of a cell as a string. Returns &lt;code&gt;null&lt;/code&gt; if the
 	 * cell does not contain a string
-	 * 
+	 *
 	 * @param cell the cell to extract the value from
 	 * @return the value
 	 */
@@ -281,7 +281,7 @@ import static java.lang.String.format;
 	/**
 	 * Retrieves the value of a cell as a String, or falls back to a default value
 	 * if the value is empty and a suitable default value is defined
-	 * 
+	 *
 	 * @param cell  the cell to extract the value from
 	 * @param field the field definition
 	 * @return the value
@@ -307,7 +307,7 @@ import static java.lang.String.format;
 
 	/**
 	 * Check if the specified row is completely empty
-	 * 
+	 *
 	 * @param row the row to check
 	 * @return true if ths is the case, false otherwise
 	 */
@@ -336,7 +336,7 @@ import static java.lang.String.format;
 
 	/**
 	 * Processes a number of consecutive rows and translates them into a DTO
-	 * 
+	 *
 	 * @param sheet         the sheet to read the values from
 	 * @param firstRowIndex the index of the first row to start reading from
 	 * @param colIndex      the index of the column that contains the values
@@ -368,11 +368,11 @@ import static java.lang.String.format;
 <span class="fc bfc" id="L368" title="All 2 branches covered.">						} else if (field.required()) {</span>
 							// a required value is missing!
 <span class="fc" id="L370">							throw new OCSImportException(</span>
-<span class="fc" id="L371">									format(&quot;Required value for field '%s' is missing&quot;, d.getName()));</span>
+<span class="fc" id="L371">								format(&quot;Required value for field '%s' is missing&quot;, d.getName()));</span>
 						}
 <span class="fc" id="L373">					} else {</span>
 <span class="fc" id="L374">						throw new OCSImportException(</span>
-<span class="fc" id="L375">								format(&quot;Input doesn't have enough rows: row %d does not exist&quot;, rowNum));</span>
+<span class="fc" id="L375">							format(&quot;Input doesn't have enough rows: row %d does not exist&quot;, rowNum));</span>
 					}
 				}
 			}

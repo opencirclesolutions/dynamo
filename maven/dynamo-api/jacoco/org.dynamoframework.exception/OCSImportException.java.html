@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,20 +24,20 @@ import lombok.NoArgsConstructor;
 
 /**
  * An exception that is used to indicate that something went wrong during an import
- * 
+ *
  * @author bas.rutten
  */
 <span class="nc" id="L30">@NoArgsConstructor</span>
 public class OCSImportException extends OCSRuntimeException {
 
-    private static final long serialVersionUID = -8031113801985156724L;
+	private static final long serialVersionUID = -8031113801985156724L;
 
-    public OCSImportException(String message) {
-<span class="nc" id="L36">        super(message);</span>
-<span class="nc" id="L37">    }</span>
+	public OCSImportException(String message) {
+<span class="nc" id="L36">		super(message);</span>
+<span class="nc" id="L37">	}</span>
 
-    public OCSImportException(String message, Throwable cause) {
-<span class="nc" id="L40">        super(message, cause);</span>
-<span class="nc" id="L41">    }</span>
+	public OCSImportException(String message, Throwable cause) {
+<span class="nc" id="L40">		super(message, cause);</span>
+<span class="nc" id="L41">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

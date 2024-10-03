@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,21 +70,23 @@ public class FetchJoinInformation {
 
 	/**
 	 * Create a FetchJoinInformation based on the provided property
+	 *
 	 * @param property the property
 	 * @return the created FetchJoinInformation object
 	 */
 	public static FetchJoinInformation of(String property) {
-<span class="nc" id="L77">		return new FetchJoinInformation(property);</span>
+<span class="nc" id="L78">		return new FetchJoinInformation(property);</span>
 	}
 
 	/**
 	 * Create a FetchJoinInformation based on the provided property and join type
+	 *
 	 * @param property the property
 	 * @param joinType the join type
 	 * @return the created FetchJoinInformation object
 	 */
 	public static FetchJoinInformation of(String property, JoinType joinType) {
-<span class="nc" id="L87">		return new FetchJoinInformation(property, joinType);</span>
+<span class="nc" id="L89">		return new FetchJoinInformation(property, joinType);</span>
 	}
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

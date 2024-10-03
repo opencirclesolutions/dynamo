@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -24,47 +24,46 @@ import lombok.Getter;
 
 /**
  * Implementation of an object that holds paging information
- * 
- * @author bas.rutten
  *
+ * @author bas.rutten
  */
 @Getter
 public class PageableImpl implements Pageable {
 
-<span class="fc" id="L34">    private final int pageNumber;</span>
+<span class="fc" id="L33">	private final int pageNumber;</span>
 
-<span class="nc" id="L36">    private final int pageSize;</span>
+<span class="nc" id="L35">	private final int pageSize;</span>
 
-<span class="fc" id="L38">    private final SortOrders sortOrders;</span>
+<span class="fc" id="L37">	private final SortOrders sortOrders;</span>
 
-    /**
-     * Constructor
-     * 
-     * @param pageNumber the page number
-     * @param pageSize the page size
-     * @param sortOrders the sort orders
-     */
-    public PageableImpl(int pageNumber, int pageSize, SortOrder... sortOrders) {
-<span class="fc" id="L48">        this(pageNumber, pageSize, new SortOrders(sortOrders));</span>
-<span class="fc" id="L49">    }</span>
+	/**
+	 * Constructor
+	 *
+	 * @param pageNumber the page number
+	 * @param pageSize   the page size
+	 * @param sortOrders the sort orders
+	 */
+	public PageableImpl(int pageNumber, int pageSize, SortOrder... sortOrders) {
+<span class="fc" id="L47">		this(pageNumber, pageSize, new SortOrders(sortOrders));</span>
+<span class="fc" id="L48">	}</span>
 
-    /**
-     * Constructor
-     *
-     * @param pageNumber the page number
-     * @param pageSize the page size
-     * @param sortOrders the sort orders
-     */
-<span class="fc" id="L58">    public PageableImpl(int pageNumber, int pageSize, SortOrders sortOrders) {</span>
-<span class="fc" id="L59">        this.pageNumber = pageNumber;</span>
-<span class="fc" id="L60">        this.pageSize = pageSize;</span>
-<span class="fc" id="L61">        this.sortOrders = sortOrders;</span>
-<span class="fc" id="L62">    }</span>
+	/**
+	 * Constructor
+	 *
+	 * @param pageNumber the page number
+	 * @param pageSize   the page size
+	 * @param sortOrders the sort orders
+	 */
+<span class="fc" id="L57">	public PageableImpl(int pageNumber, int pageSize, SortOrders sortOrders) {</span>
+<span class="fc" id="L58">		this.pageNumber = pageNumber;</span>
+<span class="fc" id="L59">		this.pageSize = pageSize;</span>
+<span class="fc" id="L60">		this.sortOrders = sortOrders;</span>
+<span class="fc" id="L61">	}</span>
 
-    @Override
-    public int getOffset() {
-<span class="fc" id="L66">        return pageNumber * pageSize;</span>
-    }
+	@Override
+	public int getOffset() {
+<span class="fc" id="L65">		return pageNumber * pageSize;</span>
+	}
 
 
 }

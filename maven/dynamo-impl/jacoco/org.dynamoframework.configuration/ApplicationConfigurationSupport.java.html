@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,30 +32,29 @@ import java.nio.charset.StandardCharsets;
 /**
  * Default configuration for Dynamo applications. Adds a message source and a
  * validator factory to the Spring context
- * 
- * @author Bas Rutten
  *
+ * @author Bas Rutten
  */
 @Configuration
 @EnableTransactionManagement
-<span class="nc" id="L41">public abstract class ApplicationConfigurationSupport {</span>
+<span class="nc" id="L40">public abstract class ApplicationConfigurationSupport {</span>
 
 	protected abstract String[] getBaseNames();
 
 	@Bean
 	public ReloadableResourceBundleMessageSource messageSource() {
-<span class="nc" id="L47">		ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();</span>
-<span class="nc" id="L48">		source.setBasenames(getBaseNames());</span>
-<span class="nc" id="L49">		source.setDefaultEncoding(StandardCharsets.UTF_8.name());</span>
-<span class="nc" id="L50">		source.setFallbackToSystemLocale(false);</span>
-<span class="nc" id="L51">		return source;</span>
+<span class="nc" id="L46">		ReloadableResourceBundleMessageSource source = new ReloadableResourceBundleMessageSource();</span>
+<span class="nc" id="L47">		source.setBasenames(getBaseNames());</span>
+<span class="nc" id="L48">		source.setDefaultEncoding(StandardCharsets.UTF_8.name());</span>
+<span class="nc" id="L49">		source.setFallbackToSystemLocale(false);</span>
+<span class="nc" id="L50">		return source;</span>
 	}
 
 	@Bean
 	public ValidatorFactory validatorFactory() {
-<span class="nc" id="L56">		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();</span>
-<span class="nc" id="L57">		validator.setValidationMessageSource(messageSource());</span>
-<span class="nc" id="L58">		return validator;</span>
+<span class="nc" id="L55">		LocalValidatorFactoryBean validator = new LocalValidatorFactoryBean();</span>
+<span class="nc" id="L56">		validator.setValidationMessageSource(messageSource());</span>
+<span class="nc" id="L57">		return validator;</span>
 	}
 
 }

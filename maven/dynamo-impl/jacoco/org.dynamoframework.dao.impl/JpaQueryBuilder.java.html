@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ import java.util.Map.Entry;
 /**
  * @author patrick.deenen
  * @author bas.rutten Class for constructing JPA queries built on the criteria
- *         API
+ * API
  */
 <span class="fc" id="L48">@Slf4j</span>
 @Component
@@ -62,13 +62,13 @@ public final class JpaQueryBuilder {
 	 * @param root       the query root
 	 * @param fetchJoins the fetch joins
 	 * @return &lt;code&gt;true&lt;/code&gt; if the fetches include a collection,
-	 *         &lt;code&gt;false&lt;/code&gt; otherwise
+	 * &lt;code&gt;false&lt;/code&gt; otherwise
 	 */
 	private static &lt;T&gt; boolean addFetchJoins(FetchParent&lt;T, ?&gt; root, FetchJoinInformation... fetchJoins) {
 <span class="fc" id="L68">		boolean collection = false;</span>
 
-<span class="fc" id="L70">		Map&lt;String,FetchParent&lt;T, ?&gt;&gt; fetchMap = new HashMap&lt;&gt;();</span>
-		
+<span class="fc" id="L70">		Map&lt;String, FetchParent&lt;T, ?&gt;&gt; fetchMap = new HashMap&lt;&gt;();</span>
+
 <span class="pc bpc" id="L72" title="1 of 4 branches missed.">		if (root != null &amp;&amp; fetchJoins != null) {</span>
 <span class="fc bfc" id="L73" title="All 2 branches covered.">			for (FetchJoinInformation s : fetchJoins) {</span>
 
@@ -76,18 +76,18 @@ public final class JpaQueryBuilder {
 <span class="fc" id="L76">				FetchParent&lt;T, ?&gt; fetch = root;</span>
 <span class="fc" id="L77">				String[] propertyPath = s.getProperty().split(&quot;\\.&quot;);</span>
 <span class="fc" id="L78">				String prefix = &quot;&quot;;</span>
-				
+
 <span class="fc bfc" id="L80" title="All 2 branches covered.">				for (String property : propertyPath) {</span>
 <span class="pc bpc" id="L81" title="1 of 2 branches missed.">					if (prefix.length() &gt; 0) {</span>
 <span class="nc" id="L82">						prefix = prefix + &quot;.&quot;;</span>
 					}
 <span class="fc" id="L84">					prefix += property;</span>
-					
+
 <span class="pc bpc" id="L86" title="1 of 2 branches missed.">					if (fetchMap.containsKey(prefix)) {</span>
 <span class="nc" id="L87">						fetch = fetchMap.get(prefix);</span>
 					} else {
-<span class="fc" id="L89">				      fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));</span>
-<span class="fc" id="L90">					  fetchMap.put(prefix, fetch);</span>
+<span class="fc" id="L89">						fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));</span>
+<span class="fc" id="L90">						fetchMap.put(prefix, fetch);</span>
 					}
 				}
 			}
@@ -110,7 +110,7 @@ public final class JpaQueryBuilder {
 	 * @return the query with the sorting clause appended to it
 	 */
 	private static &lt;T, R&gt; CriteriaQuery&lt;R&gt; addOrderBy(CriteriaBuilder builder, CriteriaQuery&lt;R&gt; cq, Root&lt;T&gt; root,
-			boolean distinct, SortOrder... sortOrders) {
+													  boolean distinct, SortOrder... sortOrders) {
 <span class="fc" id="L114">		return addOrderBy(builder, cq, root, null, distinct, sortOrders);</span>
 	}
 
@@ -127,7 +127,7 @@ public final class JpaQueryBuilder {
 	 * @return the criteria query with any relevant sorting instructions added to it
 	 */
 	private static &lt;T, R&gt; CriteriaQuery&lt;R&gt; addOrderBy(CriteriaBuilder builder, CriteriaQuery&lt;R&gt; cq, Root&lt;T&gt; root,
-			List&lt;Selection&lt;?&gt;&gt; multiSelect, boolean distinct, SortOrder... sortOrders) {
+													  List&lt;Selection&lt;?&gt;&gt; multiSelect, boolean distinct, SortOrder... sortOrders) {
 <span class="fc" id="L131">		List&lt;Selection&lt;?&gt;&gt; ms = new ArrayList&lt;&gt;();</span>
 <span class="pc bpc" id="L132" title="1 of 4 branches missed.">		if (multiSelect != null &amp;&amp; !multiSelect.isEmpty()) {</span>
 <span class="fc" id="L133">			ms.addAll(multiSelect);</span>
@@ -136,7 +136,7 @@ public final class JpaQueryBuilder {
 <span class="fc" id="L136">			List&lt;Order&gt; orders = new ArrayList&lt;&gt;();</span>
 <span class="fc bfc" id="L137" title="All 2 branches covered.">			for (SortOrder sortOrder : sortOrders) {</span>
 <span class="fc bfc" id="L138" title="All 2 branches covered.">				Expression&lt;?&gt; property = distinct ? getPropertyPath(root, sortOrder.getProperty(), true)</span>
-<span class="fc" id="L139">						: getPropertyPathForSort(root, sortOrder.getProperty());</span>
+<span class="fc" id="L139">					: getPropertyPathForSort(root, sortOrder.getProperty());</span>
 <span class="fc" id="L140">				ms.add(property);</span>
 <span class="fc bfc" id="L141" title="All 2 branches covered.">				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));</span>
 			}
@@ -158,7 +158,7 @@ public final class JpaQueryBuilder {
 	 * @return the predicate
 	 */
 	private static Predicate createAndPredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter,
-			Map&lt;String, Object&gt; parameters) {
+												Map&lt;String, Object&gt; parameters) {
 <span class="fc" id="L162">		And and = (And) filter;</span>
 <span class="fc" id="L163">		List&lt;Filter&gt; filters = new ArrayList&lt;&gt;(and.getFilters());</span>
 
@@ -183,18 +183,18 @@ public final class JpaQueryBuilder {
 	 * @param like    the predicate
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
 	private static Predicate createCaseInsensitiveLikePredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Like like) {
 <span class="fc" id="L188">		String unaccentName = dynamoProperties.getUnaccentFunctionName();</span>
 <span class="pc bpc" id="L189" title="1 of 2 branches missed.">		if (!StringUtils.isEmpty(unaccentName)) {</span>
 <span class="nc" id="L190">			return builder.like(</span>
-<span class="nc" id="L191">					builder.function(unaccentName, String.class,</span>
-<span class="nc" id="L192">							builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true))),</span>
-<span class="nc" id="L193">					removeAccents(like.getValue().toLowerCase()));</span>
+<span class="nc" id="L191">				builder.function(unaccentName, String.class,</span>
+<span class="nc" id="L192">					builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true))),</span>
+<span class="nc" id="L193">				removeAccents(like.getValue().toLowerCase()));</span>
 		}
 
 <span class="fc" id="L196">		return builder.like(builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true)),</span>
-<span class="fc" id="L197">				like.getValue().toLowerCase());</span>
+<span class="fc" id="L197">			like.getValue().toLowerCase());</span>
 	}
 
 	/**
@@ -205,7 +205,7 @@ public final class JpaQueryBuilder {
 	 * @param filter  the Compare filter
 	 * @return the predicate
 	 */
-	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
 	private static Predicate createComparePredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter) {
 <span class="fc" id="L210">		Compare compare = (Compare) filter;</span>
 <span class="fc" id="L211">		Path path = getPropertyPath(root, compare.getPropertyId(), true);</span>
@@ -227,22 +227,22 @@ public final class JpaQueryBuilder {
 		}
 
 <span class="pc bpc" id="L229" title="1 of 6 branches missed.">		switch (compare.getOperation()) {</span>
-		case EQUAL:
-<span class="pc bpc" id="L231" title="1 of 2 branches missed.">			if (value instanceof Class&lt;?&gt;) {</span>
-				// When instance of class the use type expression
-<span class="nc" id="L233">				return builder.equal(path.type(), builder.literal(value));</span>
-			}
-<span class="fc" id="L235">			return builder.equal(path, value);</span>
-		case GREATER:
-<span class="fc" id="L237">			return builder.greaterThan(path, (Comparable) value);</span>
-		case GREATER_OR_EQUAL:
-<span class="fc" id="L239">			return builder.greaterThanOrEqualTo(path, (Comparable) value);</span>
-		case LESS:
-<span class="fc" id="L241">			return builder.lessThan(path, (Comparable) value);</span>
-		case LESS_OR_EQUAL:
-<span class="fc" id="L243">			return builder.lessThanOrEqualTo(path, (Comparable) value);</span>
-		default:
-<span class="nc" id="L245">			return null;</span>
+			case EQUAL:
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">				if (value instanceof Class&lt;?&gt;) {</span>
+					// When instance of class the use type expression
+<span class="nc" id="L233">					return builder.equal(path.type(), builder.literal(value));</span>
+				}
+<span class="fc" id="L235">				return builder.equal(path, value);</span>
+			case GREATER:
+<span class="fc" id="L237">				return builder.greaterThan(path, (Comparable) value);</span>
+			case GREATER_OR_EQUAL:
+<span class="fc" id="L239">				return builder.greaterThanOrEqualTo(path, (Comparable) value);</span>
+			case LESS:
+<span class="fc" id="L241">				return builder.lessThan(path, (Comparable) value);</span>
+			case LESS_OR_EQUAL:
+<span class="fc" id="L243">				return builder.lessThanOrEqualTo(path, (Comparable) value);</span>
+			default:
+<span class="nc" id="L245">				return null;</span>
 		}
 	}
 
@@ -256,7 +256,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static &lt;T&gt; TypedQuery&lt;Long&gt; createCountQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
-			Filter filter, boolean distinct) {
+														Filter filter, boolean distinct) {
 <span class="fc" id="L260">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L261">		CriteriaQuery&lt;Long&gt; cq = builder.createQuery(Long.class);</span>
 <span class="fc" id="L262">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -285,7 +285,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static &lt;T&gt; TypedQuery&lt;Tuple&gt; createDistinctQuery(Filter filter, EntityManager entityManager,
-			Class&lt;T&gt; entityClass, String distinctField, SortOrder... sortOrders) {
+															Class&lt;T&gt; entityClass, String distinctField, SortOrder... sortOrders) {
 <span class="fc" id="L289">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L290">		CriteriaQuery&lt;Tuple&gt; cq = builder.createTupleQuery();</span>
 <span class="fc" id="L291">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -319,7 +319,7 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings(&quot;rawtypes&quot;)
 	public static &lt;ID, T&gt; TypedQuery&lt;T&gt; createFetchQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
-			List&lt;ID&gt; ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... fetchJoins) {
+														 List&lt;ID&gt; ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... fetchJoins) {
 <span class="fc" id="L323">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L324">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
 <span class="fc" id="L325">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -369,7 +369,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static &lt;ID, T&gt; TypedQuery&lt;T&gt; createFetchSingleObjectQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
-			ID id, FetchJoinInformation[] fetchJoins) {
+																	 ID id, FetchJoinInformation[] fetchJoins) {
 <span class="fc" id="L373">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L374">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
 <span class="fc" id="L375">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -412,7 +412,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static &lt;T&gt; TypedQuery&lt;Tuple&gt; createIdQuery(EntityManager entityManager, Class&lt;T&gt; entityClass, Filter filter,
-			SortOrder... sortOrders) {
+													  SortOrder... sortOrders) {
 <span class="fc" id="L416">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L417">		CriteriaQuery&lt;Tuple&gt; cq = builder.createTupleQuery();</span>
 <span class="fc" id="L418">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -465,13 +465,13 @@ public final class JpaQueryBuilder {
 	 * @param like    the Like filter
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
 	private static Predicate createLikePredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Like like) {
 <span class="fc" id="L470">		String unaccentName = dynamoProperties.getUnaccentFunctionName();</span>
 <span class="pc bpc" id="L471" title="1 of 2 branches missed.">		if (!StringUtils.isEmpty(unaccentName)) {</span>
 <span class="nc" id="L472">			return builder.like(</span>
-<span class="nc" id="L473">					builder.function(unaccentName, String.class, getPropertyPath(root, like.getPropertyId(), true)),</span>
-<span class="nc" id="L474">					removeAccents(like.getValue()));</span>
+<span class="nc" id="L473">				builder.function(unaccentName, String.class, getPropertyPath(root, like.getPropertyId(), true)),</span>
+<span class="nc" id="L474">				removeAccents(like.getValue()));</span>
 		}
 
 <span class="fc" id="L477">		return builder.like((Expression) getPropertyPath(root, like.getPropertyId(), true), like.getValue());</span>
@@ -485,17 +485,17 @@ public final class JpaQueryBuilder {
 	 * @param filter  the filter to apply
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ &quot;rawtypes&quot;, &quot;unchecked&quot; })
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
 	private static Predicate createModuloPredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter) {
 <span class="fc" id="L490">		Modulo modulo = (Modulo) filter;</span>
 <span class="fc bfc" id="L491" title="All 2 branches covered.">		if (modulo.getModExpression() != null) {</span>
 			// compare to a literal expression
 <span class="fc" id="L493">			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),</span>
-<span class="fc" id="L494">					(Expression) getPropertyPath(root, modulo.getModExpression(), true)), modulo.getResult());</span>
+<span class="fc" id="L494">				(Expression) getPropertyPath(root, modulo.getModExpression(), true)), modulo.getResult());</span>
 		} else {
 			// compare to a property
 <span class="fc" id="L497">			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),</span>
-<span class="fc" id="L498">					modulo.getModValue().intValue()), modulo.getResult());</span>
+<span class="fc" id="L498">				modulo.getModValue().intValue()), modulo.getResult());</span>
 		}
 	}
 
@@ -509,7 +509,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed predicate
 	 */
 	private static Predicate createOrPredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter,
-			Map&lt;String, Object&gt; parameters) {
+											   Map&lt;String, Object&gt; parameters) {
 <span class="fc" id="L513">		Or or = (Or) filter;</span>
 <span class="fc" id="L514">		List&lt;Filter&gt; filters = new ArrayList&lt;&gt;(or.getFilters());</span>
 
@@ -539,9 +539,9 @@ public final class JpaQueryBuilder {
 	 * @param root    the entity root
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ &quot;unchecked&quot;, &quot;rawtypes&quot; })
+	@SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
 	private static Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root&lt;?&gt; root,
-			Map&lt;String, Object&gt; parameters) {
+											 Map&lt;String, Object&gt; parameters) {
 <span class="fc bfc" id="L545" title="All 2 branches covered.">		if (filter == null) {</span>
 <span class="fc" id="L546">			return null;</span>
 		}
@@ -567,7 +567,7 @@ public final class JpaQueryBuilder {
 <span class="fc" id="L567">			return createLikePredicate(builder, root, filter);</span>
 <span class="pc bpc" id="L568" title="1 of 2 branches missed.">		} else if (filter instanceof Contains contains) {</span>
 <span class="nc" id="L569">			return builder.isMember(contains.getValue(),</span>
-<span class="nc" id="L570">					(Expression) getPropertyPath(root, contains.getPropertyId(), true));</span>
+<span class="nc" id="L570">				(Expression) getPropertyPath(root, contains.getPropertyId(), true));</span>
 <span class="fc bfc" id="L571" title="All 2 branches covered.">		} else if (filter instanceof In in) {</span>
 <span class="pc bpc" id="L572" title="1 of 4 branches missed.">			if (in.getValues() != null &amp;&amp; !in.getValues().isEmpty()) {</span>
 <span class="fc" id="L573">				Expression&lt;?&gt; exp = getPropertyPath(root, in.getPropertyId(), true);</span>
@@ -602,7 +602,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static &lt;T&gt; TypedQuery&lt;T&gt; createSelectQuery(Filter filter, EntityManager entityManager, Class&lt;T&gt; entityClass,
-			FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
+													  FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
 <span class="fc" id="L606">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L607">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
 <span class="fc" id="L608">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -633,7 +633,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static &lt;T&gt; CriteriaQuery&lt;T&gt; createUniquePropertyFetchQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
-			FetchJoinInformation[] fetchJoins, String propertyName, Object value, boolean caseSensitive) {
+																	  FetchJoinInformation[] fetchJoins, String propertyName, Object value, boolean caseSensitive) {
 <span class="fc" id="L637">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L638">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
 <span class="fc" id="L639">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -643,7 +643,7 @@ public final class JpaQueryBuilder {
 		Predicate equals;
 <span class="pc bpc" id="L644" title="1 of 4 branches missed.">		if (value instanceof String &amp;&amp; !caseSensitive) {</span>
 <span class="fc" id="L645">			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),</span>
-<span class="fc" id="L646">					((String) value).toUpperCase());</span>
+<span class="fc" id="L646">				((String) value).toUpperCase());</span>
 		} else {
 <span class="fc" id="L648">			equals = builder.equal(root.get(propertyName), value);</span>
 		}
@@ -664,7 +664,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static &lt;T&gt; CriteriaQuery&lt;T&gt; createUniquePropertyQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
-			String propertyName, Object value, boolean caseSensitive) {
+																 String propertyName, Object value, boolean caseSensitive) {
 <span class="fc" id="L668">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
 <span class="fc" id="L669">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
 <span class="fc" id="L670">		Root&lt;T&gt; root = cq.from(entityClass);</span>
@@ -672,7 +672,7 @@ public final class JpaQueryBuilder {
 		Predicate equals;
 <span class="pc bpc" id="L673" title="2 of 4 branches missed.">		if (value instanceof String &amp;&amp; !caseSensitive) {</span>
 <span class="fc" id="L674">			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),</span>
-<span class="fc" id="L675">					((String) value).toUpperCase());</span>
+<span class="fc" id="L675">				((String) value).toUpperCase());</span>
 		} else {
 <span class="nc" id="L677">			equals = builder.equal(root.get(propertyName), value);</span>
 		}
@@ -707,7 +707,7 @@ public final class JpaQueryBuilder {
 				// Reuse existing join
 <span class="nc" id="L708">				Join&lt;?, ?&gt; detailJoin = null;</span>
 <span class="nc bnc" id="L709" title="All 2 branches missed.">				Collection&lt;Join&lt;?, ?&gt;&gt; joins = (Collection&lt;Join&lt;?, ?&gt;&gt;) (curJoin == null ? root.getJoins()</span>
-<span class="nc" id="L710">						: curJoin.getJoins());</span>
+<span class="nc" id="L710">					: curJoin.getJoins());</span>
 <span class="nc bnc" id="L711" title="All 2 branches missed.">				if (joins != null) {</span>
 <span class="nc bnc" id="L712" title="All 2 branches missed.">					for (Join&lt;?, ?&gt; j : joins) {</span>
 <span class="nc bnc" id="L713" title="All 2 branches missed.">						if (part.equals(j.getAttribute().getName())) {</span>
@@ -755,7 +755,7 @@ public final class JpaQueryBuilder {
 				// Reuse existing join
 <span class="nc" id="L756">				Join&lt;?, ?&gt; detailJoin = null;</span>
 <span class="nc bnc" id="L757" title="All 2 branches missed.">				Collection&lt;Join&lt;?, ?&gt;&gt; joins = (Collection&lt;Join&lt;?, ?&gt;&gt;) (curJoin == null ? root.getJoins()</span>
-<span class="nc" id="L758">						: curJoin.getJoins());</span>
+<span class="nc" id="L758">					: curJoin.getJoins());</span>
 <span class="nc bnc" id="L759" title="All 2 branches missed.">				if (joins != null) {</span>
 <span class="nc bnc" id="L760" title="All 2 branches missed.">					for (Join&lt;?, ?&gt; j : joins) {</span>
 <span class="nc bnc" id="L761" title="All 2 branches missed.">						if (part.equals(j.getAttribute().getName())) {</span>
@@ -814,7 +814,7 @@ public final class JpaQueryBuilder {
 
 		try {
 <span class="pc bpc" id="L816" title="1 of 2 branches missed.">			entityOrCollection = path instanceof SqmEntityValuedSimplePath</span>
-<span class="pc bpc" id="L817" title="1 of 2 branches missed.">					|| Collection.class.isAssignableFrom(path.getJavaType());</span>
+<span class="pc bpc" id="L817" title="1 of 2 branches missed.">				|| Collection.class.isAssignableFrom(path.getJavaType());</span>
 <span class="nc" id="L818">		} catch (Exception ex) {</span>
 			// do nothing (new JPA is stricter on this than before)
 <span class="fc" id="L820">		}</span>
@@ -846,9 +846,9 @@ public final class JpaQueryBuilder {
 	 */
 	private static JoinType translateJoinType(org.dynamoframework.dao.JoinType type) {
 <span class="pc bpc" id="L848" title="2 of 3 branches missed.">		return switch (type) {</span>
-<span class="nc" id="L849">		case INNER -&gt; JoinType.INNER;</span>
-<span class="fc" id="L850">		case LEFT -&gt; JoinType.LEFT;</span>
-<span class="nc" id="L851">		default -&gt; JoinType.RIGHT;</span>
+<span class="nc" id="L849">			case INNER -&gt; JoinType.INNER;</span>
+<span class="fc" id="L850">			case LEFT -&gt; JoinType.LEFT;</span>
+<span class="nc" id="L851">			default -&gt; JoinType.RIGHT;</span>
 		};
 	}
 

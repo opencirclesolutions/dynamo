@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,51 +30,51 @@ import org.hibernate.Hibernate;
 @Entity
 @DiscriminatorValue(&quot;COUNTRY&quot;)
 @Model(
-        displayNamePlural = &quot;Countries&quot;,
-        displayProperty = &quot;name&quot;,
-        sortOrder = &quot;name asc&quot;)
-@AttributeOrder(attributeNames = { &quot;id&quot;, &quot;code&quot;, &quot;name&quot;})
-@FetchJoins(joins = { @FetchJoin(attribute = &quot;parent&quot;)})
+	displayNamePlural = &quot;Countries&quot;,
+	displayProperty = &quot;name&quot;,
+	sortOrder = &quot;name asc&quot;)
+@AttributeOrder(attributeNames = {&quot;id&quot;, &quot;code&quot;, &quot;name&quot;})
+@FetchJoins(joins = {@FetchJoin(attribute = &quot;parent&quot;)})
 public class Country extends DomainChild&lt;Country, Region&gt; {
 
-    private static final long serialVersionUID = 1410771214783677106L;
+	private static final long serialVersionUID = 1410771214783677106L;
 
-    public Country(String code, String name) {
-<span class="fc" id="L43">        super(code, name);</span>
-<span class="fc" id="L44">    }</span>
+	public Country(String code, String name) {
+<span class="fc" id="L43">		super(code, name);</span>
+<span class="fc" id="L44">	}</span>
 
-    public void setRegion(Region region) {
-<span class="nc" id="L47">        this.setParent(region);</span>
-<span class="nc" id="L48">    }</span>
+	public void setRegion(Region region) {
+<span class="nc" id="L47">		this.setParent(region);</span>
+<span class="nc" id="L48">	}</span>
 
-    public Region getRegion() {
-<span class="nc" id="L51">        return this.getParent();</span>
-    }
+	public Region getRegion() {
+<span class="nc" id="L51">		return this.getParent();</span>
+	}
 
-    @Attribute(
-            visibleInForm = VisibilityType.SHOW,
-            displayName = &quot;Region&quot;,
-            visibleInGrid = VisibilityType.HIDE,
-            searchable = SearchMode.ALWAYS
-    )
-    public Region getParent() {
-<span class="nc" id="L61">        return (Region) Hibernate.unproxy(super.getParent());</span>
-    }
+	@Attribute(
+		visibleInForm = VisibilityType.SHOW,
+		displayName = &quot;Region&quot;,
+		visibleInGrid = VisibilityType.HIDE,
+		searchable = SearchMode.ALWAYS
+	)
+	public Region getParent() {
+<span class="nc" id="L61">		return (Region) Hibernate.unproxy(super.getParent());</span>
+	}
 
-    @Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.SHOW)
-    public Integer getId() {
-<span class="fc" id="L66">        return super.getId();</span>
-    }
+	@Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.SHOW)
+	public Integer getId() {
+<span class="fc" id="L66">		return super.getId();</span>
+	}
 
-    @Attribute(
-            visibleInForm = VisibilityType.SHOW,
-            searchable = SearchMode.ALWAYS
-    )
-    public @NotNull String getCode() {
-<span class="nc" id="L74">        return super.getCode();</span>
-    }
+	@Attribute(
+		visibleInForm = VisibilityType.SHOW,
+		searchable = SearchMode.ALWAYS
+	)
+	public @NotNull String getCode() {
+<span class="nc" id="L74">		return super.getCode();</span>
+	}
 
-<span class="fc" id="L77">    public Country() {</span>
-<span class="fc" id="L78">    }</span>
+<span class="fc" id="L77">	public Country() {</span>
+<span class="fc" id="L78">	}</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

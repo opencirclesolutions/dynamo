@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,17 +28,17 @@ import java.util.Optional;
 
 /**
  * A list of SortOrder objects
- * 
- * @author bas.rutten
  *
+ * @author bas.rutten
  */
-<span class="nc" id="L35">@ToString</span>
+<span class="nc" id="L34">@ToString</span>
 public class SortOrders {
 
-<span class="fc" id="L38">	private List&lt;SortOrder&gt; orders = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L37">	private List&lt;SortOrder&gt; orders = new ArrayList&lt;&gt;();</span>
 
 	/**
 	 * Constructor
+	 *
 	 * @param orders the sort orders that must be used
 	 */
 <span class="fc" id="L44">	public SortOrders(SortOrder... orders) {</span>
@@ -53,7 +53,7 @@ public class SortOrders {
 
 	/**
 	 * Adds a sort order
-	 * 
+	 *
 	 * @param order the sort order that must be added
 	 * @return the SortOrders object
 	 */
@@ -66,7 +66,7 @@ public class SortOrders {
 
 	/**
 	 * Returns the first sort order for the specified property
-	 * 
+	 *
 	 * @param property the property
 	 * @return an Optional containing the sort order
 	 */

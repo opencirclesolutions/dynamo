@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,49 +35,50 @@ import java.util.concurrent.ConcurrentHashMap;
 <span class="pc" id="L35">@Setter</span>
 <span class="fc" id="L36">public class EntityModelActionImpl implements EntityModelAction {</span>
 
-<span class="fc" id="L38">    private String id;</span>
+<span class="fc" id="L38">	private String id;</span>
 
-<span class="nc" id="L40">    private String methodName;</span>
+<span class="nc" id="L40">	private String methodName;</span>
 
-<span class="fc" id="L42">    @ToString.Exclude</span>
-<span class="nc" id="L43">    private final List&lt;AttributeModel&gt; attributeModels = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L42">	@ToString.Exclude</span>
+<span class="nc" id="L43">	private final List&lt;AttributeModel&gt; attributeModels = new ArrayList&lt;&gt;();</span>
 
-<span class="nc" id="L45">    private String defaultDisplayName;</span>
+<span class="nc" id="L45">	private String defaultDisplayName;</span>
 
-<span class="nc" id="L47">    private Class&lt;?&gt; entityClass;</span>
+<span class="nc" id="L47">	private Class&lt;?&gt; entityClass;</span>
 
-<span class="fc" id="L49">    private String reference;</span>
+<span class="fc" id="L49">	private String reference;</span>
 
-<span class="fc" id="L51">    private EntityModel&lt;?&gt; entityModel;</span>
+<span class="fc" id="L51">	private EntityModel&lt;?&gt; entityModel;</span>
 
-<span class="fc" id="L53">    private EntityModelActionType type;</span>
+<span class="fc" id="L53">	private EntityModelActionType type;</span>
 
-<span class="fc" id="L55">    private String icon;</span>
+<span class="fc" id="L55">	private String icon;</span>
 
-<span class="fc" id="L57">    private List&lt;String&gt; roles;</span>
+<span class="fc" id="L57">	private List&lt;String&gt; roles;</span>
 
-<span class="pc" id="L59">    private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="pc" id="L59">	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
 
-    @Override
-    public String getDisplayName(Locale locale) {
-<span class="nc" id="L63">        return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);</span>
-    }
-    private String lookup(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key, String fallBack) {
-        // look up in message bundle and add to cache
-<span class="nc bnc" id="L67" title="All 2 branches missed.">        if (!source.containsKey(locale.toString())) {</span>
-            try {
-<span class="nc" id="L69">                ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
-<span class="nc" id="L70">                String str = rb.getString(id + &quot;.&quot; + key);</span>
-<span class="nc" id="L71">                source.put(locale.toString(), Optional.of(str));</span>
-<span class="nc" id="L72">            } catch (MissingResourceException ex) {</span>
-<span class="nc" id="L73">                source.put(locale.toString(), Optional.empty());</span>
-<span class="nc" id="L74">            }</span>
-        }
+	@Override
+	public String getDisplayName(Locale locale) {
+<span class="nc" id="L63">		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);</span>
+	}
 
-        // look up or return fallback value
-<span class="nc" id="L78">        Optional&lt;String&gt; optional = source.get(locale.toString());</span>
-<span class="nc" id="L79">        return optional.orElse(fallBack);</span>
-    }
+	private String lookup(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key, String fallBack) {
+		// look up in message bundle and add to cache
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		if (!source.containsKey(locale.toString())) {</span>
+			try {
+<span class="nc" id="L70">				ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
+<span class="nc" id="L71">				String str = rb.getString(id + &quot;.&quot; + key);</span>
+<span class="nc" id="L72">				source.put(locale.toString(), Optional.of(str));</span>
+<span class="nc" id="L73">			} catch (MissingResourceException ex) {</span>
+<span class="nc" id="L74">				source.put(locale.toString(), Optional.empty());</span>
+<span class="nc" id="L75">			}</span>
+		}
+
+		// look up or return fallback value
+<span class="nc" id="L79">		Optional&lt;String&gt; optional = source.get(locale.toString());</span>
+<span class="nc" id="L80">		return optional.orElse(fallBack);</span>
+	}
 }
 
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -9,9 +9,9 @@
  * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -211,16 +211,16 @@ import java.util.List;
 	 */
 	private static void replaceMasterDetailFilter(Filter filter, AttributeModel am) {
 <span class="fc bfc" id="L213" title="All 2 branches covered.">		if (AttributeType.DETAIL.equals(am.getAttributeType())</span>
-<span class="fc bfc" id="L214" title="All 2 branches covered.">				|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())</span>
-<span class="fc bfc" id="L215" title="All 2 branches covered.">				|| AttributeType.MASTER.equals(am.getAttributeType())</span>
-<span class="pc bpc" id="L216" title="1 of 4 branches missed.">				|| (AttributeType.BASIC.equals(am.getAttributeType()) &amp;&amp; am.isMultipleSearch())) {</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">			|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">			|| AttributeType.MASTER.equals(am.getAttributeType())</span>
+<span class="pc bpc" id="L216" title="1 of 4 branches missed.">			|| (AttributeType.BASIC.equals(am.getAttributeType()) &amp;&amp; am.isMultipleSearch())) {</span>
 <span class="fc" id="L217">			Filter detailFilter = extractFilter(filter, am.getPath());</span>
 <span class="fc bfc" id="L218" title="All 2 branches covered.">			if (detailFilter instanceof Compare.Equal equal) {</span>
 				// check which property to use in the query
 <span class="fc" id="L220">				String prop = am.getActualSearchPath();</span>
 
 <span class="pc bpc" id="L222" title="1 of 2 branches missed.">				if (AttributeType.DETAIL.equals(am.getAttributeType())</span>
-<span class="fc bfc" id="L223" title="All 2 branches covered.">						|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">					|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {</span>
 <span class="fc" id="L224">					replaceDetailOrElementCollectionFilter(filter, am, prop, equal);</span>
 				} else {
 					// master attribute - translate to an &quot;in&quot; filter
@@ -265,7 +265,7 @@ import java.util.List;
 	 * @param equal  the &quot;equal&quot; filter to replace
 	 */
 	private static void replaceDetailOrElementCollectionFilter(Filter filter, AttributeModel am, String prop,
-			Compare.Equal equal) {
+															   Compare.Equal equal) {
 <span class="fc bfc" id="L269" title="All 2 branches covered.">		if (equal.getValue() instanceof Collection&lt;?&gt; col) {</span>
 			// multiple values supplied - construct an OR filter
 
@@ -312,7 +312,7 @@ import java.util.List;
 	 * @param firstOnly  whether to only replace the first occurrence
 	 */
 	private static void replaceFilter(Filter parent, Filter original, Filter newFilter, String propertyId,
-			boolean firstOnly) {
+									  boolean firstOnly) {
 <span class="fc bfc" id="L316" title="All 2 branches covered.">		if (original instanceof AbstractJunctionFilter junction) {</span>
 			// junction filter, iterate over its children
 <span class="fc bfc" id="L318" title="All 2 branches covered.">			for (Filter child : junction.getFilters()) {</span>
