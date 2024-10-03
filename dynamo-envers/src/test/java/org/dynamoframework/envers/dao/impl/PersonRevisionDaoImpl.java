@@ -7,7 +7,7 @@ import org.dynamoframework.envers.domain.PersonRevision;
 
 @Repository
 public class PersonRevisionDaoImpl extends VersionedEntityDaoImpl<Integer, Person, PersonRevision>
-		implements PersonRevisionDao {
+	implements PersonRevisionDao {
 
 	@Override
 	public Class<PersonRevision> getEntityClass() {

@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -33,18 +33,16 @@ import java.util.List;
 
 /**
  * Base class for Importers that can be used to import fixed length files
- * 
+ *
  * @author bas.rutten
  */
 public class BaseFixedLengthImporter extends BaseTextImporter {
 
 	/**
 	 * Counts the number of rows in the file
-	 * 
-	 * @param bytes
-	 *            the byte content of the file
-	 * @param sheetIndex
-	 *            the index of the sheet (ignored)
+	 *
+	 * @param bytes      the byte content of the file
+	 * @param sheetIndex the index of the sheet (ignored)
 	 */
 	@Override
 	public int countRows(byte[] bytes, int sheetIndex) {
@@ -64,7 +62,7 @@ public class BaseFixedLengthImporter extends BaseTextImporter {
 
 	/**
 	 * Parses the comma-separated list of field lengths
-	 * 
+	 *
 	 * @param fieldLengths
 	 * @return
 	 */
@@ -86,17 +84,15 @@ public class BaseFixedLengthImporter extends BaseTextImporter {
 
 	/**
 	 * Reads a byte array into a CSV file
-	 * 
-	 * @param bytes
-	 *            the raw representation of the file
-	 * @param fieldLengths
-	 *            the field lengths
+	 *
+	 * @param bytes        the raw representation of the file
+	 * @param fieldLengths the field lengths
 	 * @return
 	 * @throws IOException
 	 */
 	protected List<String[]> readFixedLengthFile(byte[] bytes, List<Integer> fieldLengths) {
 		try (BufferedReader reader = new BufferedReader(
-		        new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8)))) {
+			new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8)))) {
 			List<String[]> result = new ArrayList<>();
 
 			String line = reader.readLine();

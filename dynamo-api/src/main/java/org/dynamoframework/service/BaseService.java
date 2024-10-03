@@ -9,9 +9,9 @@ package org.dynamoframework.service;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,57 +32,57 @@ import java.util.List;
  */
 public interface BaseService<ID, T extends AbstractEntity<ID>> extends BaseSearchService<ID, T> {
 
-    /**
-     * Deletes all entities in the provided list
-     *
-     * @param list the list of entities to delete
-     */
-    void delete(List<T> list);
+	/**
+	 * Deletes all entities in the provided list
+	 *
+	 * @param list the list of entities to delete
+	 */
+	void delete(List<T> list);
 
-    /**
-     * Deletes the provided entity
-     *
-     * @param entity the entity to delete
-     */
-    void delete(T entity);
+	/**
+	 * Deletes the provided entity
+	 *
+	 * @param entity the entity to delete
+	 */
+	void delete(T entity);
 
-    /**
-     * Returns the class of the entity managed by this DAO
-     *
-     * @return the entity class
-     */
-    Class<T> getEntityClass();
+	/**
+	 * Returns the class of the entity managed by this DAO
+	 *
+	 * @return the entity class
+	 */
+	Class<T> getEntityClass();
 
-    /**
-     * Saves the provided list of entities
-     *
-     * @param list the list of entities to save
-     * @return the list of saved entities
-     */
-    List<T> save(List<T> list);
+	/**
+	 * Saves the provided list of entities
+	 *
+	 * @param list the list of entities to save
+	 * @return the list of saved entities
+	 */
+	List<T> save(List<T> list);
 
-    /**
-     * Saves the provided entity
-     *
-     * @param entity the entity to save
-     * @return the saved entity
-     */
-    T save(T entity);
+	/**
+	 * Saves the provided entity
+	 *
+	 * @param entity the entity to save
+	 * @return the saved entity
+	 */
+	T save(T entity);
 
-    /**
-     * Validates the provided entity
-     *
-     * @param entity the entity to validate
-     */
-    void validate(T entity);
+	/**
+	 * Validates the provided entity
+	 *
+	 * @param entity the entity to validate
+	 */
+	void validate(T entity);
 
-    /**
-     * Deletes all entities
-     */
-    void deleteAll();
+	/**
+	 * Deletes all entities
+	 */
+	void deleteAll();
 
-    /**
-     * Initializes a new entity
-     */
-    T initialize();
+	/**
+	 * Initializes a new entity
+	 */
+	T initialize();
 }

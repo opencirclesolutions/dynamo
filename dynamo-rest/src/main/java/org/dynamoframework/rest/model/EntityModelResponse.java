@@ -9,9 +9,9 @@ package org.dynamoframework.rest.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -36,96 +36,96 @@ import java.util.Map;
 @Jacksonized
 public class EntityModelResponse {
 
-    /**
-     * The attribute models
-     */
-    @NotNull
-    @NotEmpty
-    private List<AttributeModelResponse> attributeModels;
+	/**
+	 * The attribute models
+	 */
+	@NotNull
+	@NotEmpty
+	private List<AttributeModelResponse> attributeModels;
 
-    @NotNull
-    @NotEmpty
-    private List<AttributeGroupResponse> attributeGroups;
+	@NotNull
+	@NotEmpty
+	private List<AttributeGroupResponse> attributeGroups;
 
-    /**
-     * Attribute names ordered for edit or detail screen
-     */
-    @NotNull
-    private List<String> attributeNamesOrdered;
+	/**
+	 * Attribute names ordered for edit or detail screen
+	 */
+	@NotNull
+	private List<String> attributeNamesOrdered;
 
-    /**
-     * Attribute names ordered for grid
-     */
-    @NotNull
-    private List<String> attributeNamesOrderedForGrid;
+	/**
+	 * Attribute names ordered for grid
+	 */
+	@NotNull
+	private List<String> attributeNamesOrderedForGrid;
 
-    /**
-     * Attribute names ordered for search form
-     */
-    @NotNull
-    private List<String> attributeNamesOrderedForSearch;
+	/**
+	 * Attribute names ordered for search form
+	 */
+	@NotNull
+	private List<String> attributeNamesOrderedForSearch;
 
-    /**
-     * Descriptions of the entity (in all supported locales)
-     */
-    @NotNull
-    private Map<String, String> descriptions;
+	/**
+	 * Descriptions of the entity (in all supported locales)
+	 */
+	@NotNull
+	private Map<String, String> descriptions;
 
-    /**
-     * Display names of the entity (in all supported locales)
-     */
-    @NotNull
-    private Map<String, String> displayNames;
+	/**
+	 * Display names of the entity (in all supported locales)
+	 */
+	@NotNull
+	private Map<String, String> displayNames;
 
-    /**
-     * Display names (plural form) of the entity (in all supported locales)
-     */
-    @NotNull
-    private Map<String, String> displayNamesPlural;
+	/**
+	 * Display names (plural form) of the entity (in all supported locales)
+	 */
+	@NotNull
+	private Map<String, String> displayNamesPlural;
 
-    /**
-     * Display property
-     */
-    private String displayProperty;
+	/**
+	 * Display property
+	 */
+	private String displayProperty;
 
-    /**
-     * The unique reference of the model
-     */
-    private String reference;
+	/**
+	 * The unique reference of the model
+	 */
+	private String reference;
 
-    /**
-     * The name of the property to sort on
-     */
-    @NotNull
-    private String sortProperty;
+	/**
+	 * The name of the property to sort on
+	 */
+	@NotNull
+	private String sortProperty;
 
-    /**
-     * Whether to sort in ascending direction
-     */
-    @NotNull
-    private boolean sortAscending;
+	/**
+	 * Whether to sort in ascending direction
+	 */
+	@NotNull
+	private boolean sortAscending;
 
-    @NotNull
-    private boolean deleteAllowed;
+	@NotNull
+	private boolean deleteAllowed;
 
-    @NotNull
-    private boolean listAllowed;
+	@NotNull
+	private boolean listAllowed;
 
-    @NotNull
-    private boolean createAllowed;
+	@NotNull
+	private boolean createAllowed;
 
-    @NotNull
-    private boolean updateAllowed;
+	@NotNull
+	private boolean updateAllowed;
 
-    @NotNull
-    private boolean exportAllowed;
+	@NotNull
+	private boolean exportAllowed;
 
-    private List<EntityModelActionResponse> actions;
+	private List<EntityModelActionResponse> actions;
 
-    private List<String> readRoles;
+	private List<String> readRoles;
 
-    private List<String> writeRoles;
+	private List<String> writeRoles;
 
-    private List<String> deleteRoles;
+	private List<String> deleteRoles;
 
 }

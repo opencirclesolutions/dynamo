@@ -30,15 +30,14 @@ import lombok.ToString;
 
 /**
  * Reusable parameter class
- * 
- * @author BasRutten
  *
+ * @author BasRutten
  */
 @Getter
 @Setter
 @ToString
 @Entity
-@AttributeOrder(attributeNames = { "name", "parameterType", "value", "createdBy", "createdOn" })
+@AttributeOrder(attributeNames = {"name", "parameterType", "value", "createdBy", "createdOn"})
 @Model(displayProperty = "name", sortOrder = "name asc")
 public class Parameter extends AbstractAuditableEntity<Integer> {
 

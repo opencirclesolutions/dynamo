@@ -40,6 +40,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.NoResultException;
+
 import java.time.Instant;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -52,15 +53,14 @@ import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Implementation of Data Access object for versioned entities
- * 
- * @author bas.rutten
  *
  * @param <ID> the type of the primary key
  * @param <T>  the type of the original entity
  * @param <U>  the type of the versioned entity
+ * @author bas.rutten
  */
 public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U extends VersionedEntity<ID, T>>
-		extends BaseDaoImpl<RevisionKey<ID>, U> implements VersionedEntityDao<ID, T, U> {
+	extends BaseDaoImpl<RevisionKey<ID>, U> implements VersionedEntityDao<ID, T, U> {
 
 	private static final String ENTITY_STRING = "entity.";
 
@@ -68,9 +68,9 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Adds any additional filters to an AuditQuery
-	 * 
-	 * @param auditQuery     the AuditQuery to which to add the filters
-	 * @param filter the filter to translate
+	 *
+	 * @param auditQuery the AuditQuery to which to add the filters
+	 * @param filter     the filter to translate
 	 */
 	private void addAdditionalFilters(AuditQuery auditQuery, Filter filter) {
 		AuditCriterion criterion = createAuditCriterion(filter);
@@ -81,7 +81,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Adds a search criteria for matching any of the provided keys
-	 * 
+	 *
 	 * @param ids the IDs to match on
 	 * @param aq  the audit query to which to add the criterion
 	 */
@@ -89,7 +89,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 		AuditCriterion criterion = null;
 		for (RevisionKey<ID> id : ids) {
 			AuditCriterion and = AuditEntity.and(AuditEntity.id().eq(id.getId()),
-					AuditEntity.revisionNumber().eq(id.getRevision()));
+				AuditEntity.revisionNumber().eq(id.getRevision()));
 			if (criterion == null) {
 				criterion = and;
 			} else {
@@ -104,7 +104,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Adds a filter on the ID field to an audit query
-	 * 
+	 *
 	 * @param aq     the audit query
 	 * @param filter the overall filter
 	 */
@@ -122,7 +122,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Add a sort order to an audit query
-	 * 
+	 *
 	 * @param aq the audit query
 	 * @param so the sort orders to add
 	 */
@@ -138,7 +138,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Adds multiple sort orders
-	 * 
+	 *
 	 * @param aq         the audit query
 	 * @param sortOrders the sort orders
 	 */
@@ -163,7 +163,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Translates a filter to an AuditCriterion
-	 * 
+	 *
 	 * @param filter the filter to translate
 	 * @return the resulting AuditCriterion
 	 */
@@ -207,14 +207,14 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 			return createAuditProperty(in.getPropertyId(), in.getValues()).in(in.getValues());
 		} else if (filter instanceof Contains c) {
 			throw new UnsupportedOperationException(
-					"Contains filter is not supported for property " + c.getPropertyId());
+				"Contains filter is not supported for property " + c.getPropertyId());
 		}
 		return null;
 	}
 
 	/**
 	 * Translates a property name to an AuditProperty
-	 * 
+	 *
 	 * @param prop  the name of the property
 	 * @param value the value of the property
 	 * @return the created AuditProperty
@@ -244,14 +244,14 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Creates a new instance of the versioned entity
-	 * 
+	 *
 	 * @return the newly created instance
 	 */
 	protected abstract U createVersionedEntity(T t, int revision);
 
 	/**
 	 * Perform mapping from the Envers revision entity to the full entity
-	 * 
+	 *
 	 * @param u the Envers revision entity to map
 	 */
 	protected void doMap(U u) {
@@ -312,7 +312,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	@Override
 	@Transactional
 	public List<U> fetchByIds(List<RevisionKey<ID>> ids, Filter additionalFilter, SortOrders sortOrders,
-			FetchJoinInformation... joins) {
+							  FetchJoinInformation... joins) {
 		AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true);
 
 		addIdCriteria(ids, aq);
@@ -336,7 +336,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	@Transactional
 	public List<RevisionKey<ID>> findIds(Filter filter, Integer maxResults, SortOrder... sortOrders) {
 		AuditQuery aq = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true)
-				.addProjection(AuditEntity.id()).addProjection(AuditEntity.revisionNumber());
+			.addProjection(AuditEntity.id()).addProjection(AuditEntity.revisionNumber());
 		addIdFilter(aq, filter);
 		addAdditionalFilters(aq, filter);
 
@@ -373,7 +373,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	@Transactional
 	public List<U> findRevisions(ID id) {
 		List<Object[]> revs = getAuditReader().createQuery().forRevisionsOfEntity(getBaseEntityClass(), false, true)
-				.add(AuditEntity.id().eq(id)).getResultList();
+			.add(AuditEntity.id().eq(id)).getResultList();
 		return revs.stream().map(this::mapRevision).toList();
 	}
 
@@ -405,7 +405,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 
 	/**
 	 * Determine whether a property value is an entity (or a collection of entities)
-	 * 
+	 *
 	 * @param value the value for which to determine this
 	 * @return true if this is the case, false otherwise
 	 */
@@ -423,7 +423,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 	 * Maps the data structure returned by Envers to a VersionedEntity. This
 	 * structure contains of the snapshot data (position 0), the revision data
 	 * (position 1) and the modification type (position 2)
-	 * 
+	 *
 	 * @param rev the data structure to map
 	 * @return the result of the mapping
 	 */
@@ -447,7 +447,7 @@ public abstract class VersionedEntityDaoImpl<ID, T extends AbstractEntity<ID>, U
 		return u;
 	}
 
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private RevisionKey<ID> mapRevisionKey(Object[] rev) {
 		return new RevisionKey(rev[0], (Integer) rev[1]);
 	}

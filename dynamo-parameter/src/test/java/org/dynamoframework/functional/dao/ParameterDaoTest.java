@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import javax.inject.Inject;
+
 import jakarta.validation.ConstraintViolation;
 import jakarta.validation.Validator;
 import jakarta.validation.ValidatorFactory;
@@ -22,9 +23,7 @@ import org.dynamoframework.functional.domain.Parameter;
 import org.dynamoframework.functional.domain.ParameterType;
 
 /**
- * 
  * @author Bas Rutten
- *
  */
 @SpringBootTest(classes = ParameterIntegrationTestConfig.class)
 public class ParameterDaoTest extends BackendIntegrationTest {

@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -46,14 +46,14 @@ public class BaseFixedLengthImporterTest {
 
 	/**
 	 * Test the import of a (correct) CSV file
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
 	public void testReadFile() throws IOException {
 		byte[] bytes = readFile("importertest.fixed");
 		List<String[]> lines = importer.readFixedLengthFile(bytes,
-				List.of(10, 10, 10, 10, 10, 10, 10, 10, 10));
+			List.of(10, 10, 10, 10, 10, 10, 10, 10, 10));
 
 		PersonDTO dto = importer.processRow(0, lines.get(0), PersonDTO.class);
 		assertNotNull(dto);

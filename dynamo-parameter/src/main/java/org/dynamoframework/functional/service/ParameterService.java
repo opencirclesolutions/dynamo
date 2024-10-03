@@ -21,30 +21,27 @@ import org.dynamoframework.service.BaseService;
  */
 public interface ParameterService extends BaseService<Integer, Parameter> {
 
-    /**
-     * Returns the value of a parameter as an integer
-     * 
-     * @param parameterName
-     *            the name of the parameter
-     * @return
-     */
-    Integer getValueAsInteger(String parameterName);
+	/**
+	 * Returns the value of a parameter as an integer
+	 *
+	 * @param parameterName the name of the parameter
+	 * @return
+	 */
+	Integer getValueAsInteger(String parameterName);
 
-    /**
-     * Returns the value of a parameter as a boolean
-     * 
-     * @param parameterName
-     *            the name of the parameter
-     * @return
-     */
-    Boolean getValueAsBoolean(String parameterName);
+	/**
+	 * Returns the value of a parameter as a boolean
+	 *
+	 * @param parameterName the name of the parameter
+	 * @return
+	 */
+	Boolean getValueAsBoolean(String parameterName);
 
-    /**
-     * Returns the value of a parameter as a string
-     * 
-     * @param parameterName
-     *            the name of the parameter
-     * @return
-     */
-    String getValueAsString(String parameterName);
+	/**
+	 * Returns the value of a parameter as a string
+	 *
+	 * @param parameterName the name of the parameter
+	 * @return
+	 */
+	String getValueAsString(String parameterName);
 }

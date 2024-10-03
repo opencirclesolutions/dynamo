@@ -9,9 +9,9 @@ package org.dynamoframework.configuration;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -23,48 +23,48 @@ package org.dynamoframework.configuration;
 import org.dynamoframework.domain.model.*;
 
 public interface DefaultProperties {
-    AttributeBooleanFieldMode getBooleanFieldMode();
+	AttributeBooleanFieldMode getBooleanFieldMode();
 
-    String getDateFormat();
+	String getDateFormat();
 
-    String getDateTimeFormat();
+	String getDateTimeFormat();
 
-    Integer getDecimalPrecision();
+	Integer getDecimalPrecision();
 
-    ElementCollectionMode getElementCollectionMode();
+	ElementCollectionMode getElementCollectionMode();
 
-    AttributeEnumFieldMode getEnumFieldMode();
+	AttributeEnumFieldMode getEnumFieldMode();
 
-    String getFalseRepresentation();
+	String getFalseRepresentation();
 
-    java.util.Map<String, String> getFalseRepresentations();
+	java.util.Map<String, String> getFalseRepresentations();
 
-    java.util.Map<String, String> getTrueRepresentations();
+	java.util.Map<String, String> getTrueRepresentations();
 
-    String getTrueRepresentation();
+	String getTrueRepresentation();
 
-    GroupTogetherMode getGroupTogetherMode();
+	GroupTogetherMode getGroupTogetherMode();
 
-    Integer getGroupTogetherWidth();
+	Integer getGroupTogetherWidth();
 
-    java.util.Locale getLocale();
+	java.util.Locale getLocale();
 
-    Integer getNestingDepth();
+	Integer getNestingDepth();
 
-    NumberFieldMode getNumberFieldMode();
+	NumberFieldMode getNumberFieldMode();
 
-    boolean isSearchCaseSensitive();
+	boolean isSearchCaseSensitive();
 
-    boolean isSearchPrefixOnly();
+	boolean isSearchPrefixOnly();
 
-    String getTimeFormat();
+	String getTimeFormat();
 
-    boolean isUsePromptValue();
+	boolean isUsePromptValue();
 
-    boolean isTrimSpaces();
+	boolean isTrimSpaces();
 
-    String getAiService();
+	String getAiService();
 
-    EndpointProperties getEndpoints();
+	EndpointProperties getEndpoints();
 }
 

@@ -9,9 +9,9 @@ package org.dynamoframework.domain.model.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -70,11 +70,11 @@ import static org.mockito.Mockito.when;
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	@Autowired
-	private  EntityModelFactoryImpl factory;// = new EntityModelFactoryImpl();
+	private EntityModelFactoryImpl factory;// = new EntityModelFactoryImpl();
 
 	private final ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
-	private  MessageService messageService = new MessageServiceImpl();
+	private MessageService messageService = new MessageServiceImpl();
 
 	private final Locale locale = new Locale.Builder().setLanguage("nl").build();
 
@@ -86,11 +86,11 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		ReflectionTestUtils.setField(factory, "serviceLocator", serviceLocator);
 		when(serviceLocator.getMessageService())
-				.thenReturn(messageService);
+			.thenReturn(messageService);
 
 		BaseServiceImpl<?, ?> service = new TestEntityServiceImpl();
 		Mockito.when(serviceLocator.getServiceForEntity(TestEntity.class))
-				.thenAnswer(a -> service);
+			.thenAnswer(a -> service);
 
 		source.setBasename("META-INF/entitymodel");
 		ReflectionTestUtils.setField(messageService, "source", source);
@@ -326,7 +326,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		BaseServiceImpl<?, ?> service = new TestEntityServiceImpl();
 		Mockito.when(serviceLocator.getServiceForEntity(TestEntity.class))
-				.thenAnswer(a -> service);
+			.thenAnswer(a -> service);
 
 		EntityModel<TestEntity> model = factory.getModel(TestEntity.class);
 		assertEquals(1, model.getEntityModelActions().size());
@@ -337,7 +337,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals(3, partialAction.getEntityModel().getAttributeModels().size());
 		assertEquals("PartialAction", partialAction.getEntityModel().getReference());
 		assertEquals("ChangedName", partialAction.getEntityModel()
-				.getAttributeModel("name").getDisplayName(locale));
+			.getAttributeModel("name").getDisplayName(locale));
 		assertTrue(partialAction.getRoles().contains("role12"));
 
 		// icon overridden in message bundle
@@ -461,7 +461,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		attributeModel = parent.getAttributeModel("calculatedChildren");
 		assertNotNull(attributeModel);
 		EntityModel<EntityGrandChild> grandChild = (EntityModel<EntityGrandChild>) attributeModel
-				.getNestedEntityModel();
+			.getNestedEntityModel();
 		assertNotNull(grandChild);
 		assertEquals("EntityParent.calculatedChildren", grandChild.getReference());
 		assertEquals(EntityGrandChild.class, attributeModel.getMemberType());
@@ -764,9 +764,9 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@Size(max = 55)
 		@Attribute(textFieldMode = AttributeTextFieldMode.TEXTAREA, custom = {
-				@CustomSetting(name = "bob", value = "ross"),
-				@CustomSetting(name = "bobInt", value = "4", type = CustomType.INT),
-				@CustomSetting(name = "bobBool", value = "true", type = CustomType.BOOLEAN)})
+			@CustomSetting(name = "bob", value = "ross"),
+			@CustomSetting(name = "bobInt", value = "4", type = CustomType.INT),
+			@CustomSetting(name = "bobBool", value = "true", type = CustomType.BOOLEAN)})
 		private String name;
 
 		@NotNull
@@ -777,7 +777,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private LocalDate birthDate;
 
 		@Attribute(trueRepresentation = "Yes", falseRepresentation = "No",
-				booleanFieldMode = AttributeBooleanFieldMode.TOGGLE)
+			booleanFieldMode = AttributeBooleanFieldMode.TOGGLE)
 		private Boolean bool;
 
 		@Email
@@ -805,25 +805,25 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 	}
 
 	@Model(description = "desc", displayName = "dis", displayNamePlural = "diss", displayProperty = "prop", sortOrder = "name asc",
-			createAllowed = false, updateAllowed = false, deleteAllowed = true, maxSearchResults = 100,
-			exportAllowed = false, autofillInstructions = "Fill me")
+		createAllowed = false, updateAllowed = false, deleteAllowed = true, maxSearchResults = 100,
+		exportAllowed = false, autofillInstructions = "Fill me")
 	@AttributeGroups(value = {@AttributeGroup(messageKey = "group1.key", attributeNames = {"name"}),
-			@AttributeGroup(messageKey = "group2.key", attributeNames = {"age"})})
+		@AttributeGroup(messageKey = "group2.key", attributeNames = {"age"})})
 	@FetchJoins(joins = @FetchJoin(attribute = "entity2"))
 	@Getter
 	@Setter
 	public static class Entity3 {
 
 		@Attribute(defaultValue = "Bas",
-				defaultSearchValue = "Bob", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, sortable = false,
-				autoFillInstructions = "Fill me carefully")
+			defaultSearchValue = "Bob", description = "Test", displayName = "Naampje", editable = EditableType.READ_ONLY, prompt = "Prompt", searchable = SearchMode.ALWAYS, sortable = false,
+			autoFillInstructions = "Fill me carefully")
 		private String name;
 
 		@Attribute(numberFieldStep = 3, searchCaseSensitive = BooleanType.TRUE,
-				searchPrefixOnly = BooleanType.TRUE, requiredForSearching = true,
-				searchable = SearchMode.ALWAYS, numberFieldMode = NumberFieldMode.NUMBERFIELD,
-				defaultSearchValueFrom = "4",
-				defaultSearchValueTo = "10")
+			searchPrefixOnly = BooleanType.TRUE, requiredForSearching = true,
+			searchable = SearchMode.ALWAYS, numberFieldMode = NumberFieldMode.NUMBERFIELD,
+			defaultSearchValueFrom = "4",
+			defaultSearchValueTo = "10")
 		private Integer age;
 
 		@Attribute(displayFormat = "dd/MM/yyyy")
@@ -831,7 +831,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 		@OneToOne
 		@Attribute(visibleInForm = VisibilityType.SHOW, navigable = true,
-				lookupEntityReference = "Entity2Ref", navigationLink = "navLink")
+			lookupEntityReference = "Entity2Ref", navigationLink = "navLink")
 		private Entity2 entity2;
 
 		@OneToMany
@@ -973,7 +973,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		private LocalDate localDate;
 
 		@Attribute(displayFormat = "dd/MM/yyyy HH-mm-ss", defaultValue = "01-01-1980 12:13:14",
-				searchDateOnly = true, defaultSearchValue = "01-01-1980")
+			searchDateOnly = true, defaultSearchValue = "01-01-1980")
 		private LocalDateTime localDateTime;
 
 		@Attribute(displayFormat = "HH-mm-ss", defaultValue = "12:13:14")
@@ -993,7 +993,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		@Lob
 		@Basic(fetch = FetchType.LAZY)
 		@Attribute(image = true, allowedExtensions = {"gif", "bmp"}
-				, downloadAllowed = true)
+			, downloadAllowed = true)
 		private byte[] logo;
 
 		@AssertTrue

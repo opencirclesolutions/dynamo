@@ -9,9 +9,9 @@ package org.dynamoframework.config;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,32 +43,32 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CustomSerializerModifier extends BeanSerializerModifier {
 
-    private final EntityModelFactory entityModelFactory;
+	private final EntityModelFactory entityModelFactory;
 
-    @Override
-    public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-                                                     BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
-        Class<?> beanClass = beanDesc.getBeanClass();
-        if (!AbstractEntity.class.isAssignableFrom(beanClass)) {
-            return beanProperties;
-        }
+	@Override
+	public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
+													 BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+		Class<?> beanClass = beanDesc.getBeanClass();
+		if (!AbstractEntity.class.isAssignableFrom(beanClass)) {
+			return beanProperties;
+		}
 
-        List<BeanPropertyWriter> copy = new ArrayList<>(beanProperties);
-        EntityModel<?> model = entityModelFactory.getModel(beanClass);
-        if (model != null) {
+		List<BeanPropertyWriter> copy = new ArrayList<>(beanProperties);
+		EntityModel<?> model = entityModelFactory.getModel(beanClass);
+		if (model != null) {
 
-            Iterator<BeanPropertyWriter> iterator = copy.iterator();
-            while (iterator.hasNext()) {
-                BeanPropertyWriter next = iterator.next();
+			Iterator<BeanPropertyWriter> iterator = copy.iterator();
+			while (iterator.hasNext()) {
+				BeanPropertyWriter next = iterator.next();
 
-                AttributeModel attributeModel = model.getAttributeModel(next.getName());
-                if (attributeModel == null && !model.hasEmbeddedAttributeModel(next.getName())) {
-                    log.debug("Removing unbacked property {}", next.getName());
-                    iterator.remove();
-                }
-            }
-        }
-        return copy;
-    }
+				AttributeModel attributeModel = model.getAttributeModel(next.getName());
+				if (attributeModel == null && !model.hasEmbeddedAttributeModel(next.getName())) {
+					log.debug("Removing unbacked property {}", next.getName());
+					iterator.remove();
+				}
+			}
+		}
+		return copy;
+	}
 
 }

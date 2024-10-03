@@ -29,39 +29,39 @@ import org.dynamoframework.service.impl.BaseServiceImpl;
 @Service("parameterService")
 public class ParameterServiceImpl extends BaseServiceImpl<Integer, Parameter> implements ParameterService {
 
-    @Inject
-    private ParameterDao parameterDao;
+	@Inject
+	private ParameterDao parameterDao;
 
-    @Override
-    protected BaseDao<Integer, Parameter> getDao() {
-        return parameterDao;
-    }
+	@Override
+	protected BaseDao<Integer, Parameter> getDao() {
+		return parameterDao;
+	}
 
-    @Override
-    public Integer getValueAsInteger(String parameterName) {
-        Parameter parameter = this.findByUniqueProperty(Parameter.ATTRIBUTE_NAME, parameterName, false);
-        if (parameter != null && ParameterType.INTEGER.equals(parameter.getParameterType())) {
-            return Integer.valueOf(parameter.getValue());
-        }
-        return null;
-    }
+	@Override
+	public Integer getValueAsInteger(String parameterName) {
+		Parameter parameter = this.findByUniqueProperty(Parameter.ATTRIBUTE_NAME, parameterName, false);
+		if (parameter != null && ParameterType.INTEGER.equals(parameter.getParameterType())) {
+			return Integer.valueOf(parameter.getValue());
+		}
+		return null;
+	}
 
-    @Override
-    public Boolean getValueAsBoolean(String parameterName) {
-        Parameter parameter = this.findByUniqueProperty(Parameter.ATTRIBUTE_NAME, parameterName, false);
-        if (parameter != null && ParameterType.BOOLEAN.equals(parameter.getParameterType())) {
-            return Boolean.valueOf(parameter.getValue());
-        }
-        return Boolean.FALSE;
-    }
+	@Override
+	public Boolean getValueAsBoolean(String parameterName) {
+		Parameter parameter = this.findByUniqueProperty(Parameter.ATTRIBUTE_NAME, parameterName, false);
+		if (parameter != null && ParameterType.BOOLEAN.equals(parameter.getParameterType())) {
+			return Boolean.valueOf(parameter.getValue());
+		}
+		return Boolean.FALSE;
+	}
 
-    @Override
-    public String getValueAsString(String parameterName) {
-        Parameter parameter = this.findByUniqueProperty(Parameter.ATTRIBUTE_NAME, parameterName, false);
-        if (parameter != null && ParameterType.STRING.equals(parameter.getParameterType())) {
-            return parameter.getValue();
-        }
-        return null;
-    }
+	@Override
+	public String getValueAsString(String parameterName) {
+		Parameter parameter = this.findByUniqueProperty(Parameter.ATTRIBUTE_NAME, parameterName, false);
+		if (parameter != null && ParameterType.STRING.equals(parameter.getParameterType())) {
+			return parameter.getValue();
+		}
+		return null;
+	}
 
 }

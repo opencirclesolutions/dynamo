@@ -9,9 +9,9 @@ package org.dynamoframework.functional.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -93,7 +93,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 
 		// remove all currencies
 		DomainUtil.updateDomains(Country.class, domains,
-				Set.of(new Country("USA", "United States Of America")));
+			Set.of(new Country("USA", "United States Of America")));
 		assertEquals(1, domains.size());
 	}
 
@@ -101,7 +101,7 @@ public class DomainUtilsTest extends BaseMockitoTest {
 	public void testGetDomainDescriptions() {
 
 		String res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains),
-				new Locale("en"));
+			new Locale("en"));
 		assertEquals("Dollar, Euro", res);
 
 		domains.add(new Currency("SEK", "Swedish Crown"));
@@ -109,10 +109,10 @@ public class DomainUtilsTest extends BaseMockitoTest {
 		domains.add(new Currency("DEK", "Danish Crown"));
 
 		when(messageService.getMessage(eq("dynamoframework.and.others"), any(Locale.class), anyInt()))
-				.thenAnswer(invocation -> " and " + invocation.getArguments()[2] + " others");
+			.thenAnswer(invocation -> " and " + invocation.getArguments()[2] + " others");
 
 		res = DomainUtil.getDomainDescriptions(messageService, DomainUtil.filterDomains(Currency.class, domains),
-				new Locale("nl"));
+			new Locale("nl"));
 
 		assertEquals("Danish Crown, Dollar, Euro and 2 others", res);
 	}

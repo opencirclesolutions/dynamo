@@ -9,9 +9,9 @@ package org.dynamoframework.export;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,18 +29,17 @@ import java.io.Serializable;
 
 /**
  * Interface for a custom Excel style generator
- * 
- * @author bas.rutten
  *
  * @param <ID> the type of the primary key
  * @param <T>  the type of the entity
+ * @author bas.rutten
  */
 @FunctionalInterface
 public interface CustomXlsStyleGenerator<ID extends Serializable, T extends AbstractEntity<ID>> {
 
 	/**
 	 * Returns the cell style for a certain cell
-	 * 
+	 *
 	 * @param workbook the workbook
 	 * @param entity   the entity that is displayed in the row
 	 * @param value    the cell value

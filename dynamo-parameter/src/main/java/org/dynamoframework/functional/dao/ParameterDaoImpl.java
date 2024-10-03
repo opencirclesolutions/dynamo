@@ -21,9 +21,8 @@ import org.springframework.stereotype.Repository;
 
 /**
  * Implementation of the DAO for the Parameter entity
- * 
- * @author BasRutten
  *
+ * @author BasRutten
  */
 @Repository("parameterDao")
 public class ParameterDaoImpl extends BaseDaoImpl<Integer, Parameter> implements ParameterDao {

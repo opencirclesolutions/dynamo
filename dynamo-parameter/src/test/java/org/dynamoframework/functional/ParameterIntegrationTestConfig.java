@@ -17,9 +17,8 @@ import org.springframework.data.repository.query.Param;
 
 /**
  * Configuration for integration tests in functional domain module
- * 
- * @author Bas Rutten
  *
+ * @author Bas Rutten
  */
 @TestConfiguration
 @ComponentScan(basePackages = "com.ocs.dynamo")

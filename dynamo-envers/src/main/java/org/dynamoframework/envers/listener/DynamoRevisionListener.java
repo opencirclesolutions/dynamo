@@ -22,9 +22,8 @@ import org.dynamoframework.service.impl.ApplicationContextProvider;
 
 /**
  * Custom Hibernate envers listener
- * 
- * @author bas.rutten
  *
+ * @author bas.rutten
  */
 public class DynamoRevisionListener implements RevisionListener {
 

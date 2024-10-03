@@ -9,9 +9,9 @@ package org.dynamoframework.domain.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -27,30 +27,30 @@ package org.dynamoframework.domain.model;
  */
 public interface EntityModelFactory {
 
-    /**
-     * Retrieves the entity model for a class
-     *
-     * @param entityClass the class of the entity
-     * @return the retrieved entity model
-     */
-    <T> EntityModel<T> getModel(Class<T> entityClass);
+	/**
+	 * Retrieves the entity model for a class
+	 *
+	 * @param entityClass the class of the entity
+	 * @return the retrieved entity model
+	 */
+	<T> EntityModel<T> getModel(Class<T> entityClass);
 
-    /**
-     * Retrieves a named entity model for a class
-     *
-     * @param reference   the unique reference of the model
-     * @param entityClass the class of the entity
-     * @return the retrieved entity model
-     */
-    <T> EntityModel<T> getModel(String reference, Class<T> entityClass);
+	/**
+	 * Retrieves a named entity model for a class
+	 *
+	 * @param reference   the unique reference of the model
+	 * @param entityClass the class of the entity
+	 * @return the retrieved entity model
+	 */
+	<T> EntityModel<T> getModel(String reference, Class<T> entityClass);
 
-    /**
-     * Checks whether the factory can provide a model for a certain entity
-     *
-     * @param reference   the unique reference of the model
-     * @param entityClass the  class of the entity
-     * @return true if the model can be provided, false otherwise
-     */
-    <T> boolean canProvideModel(String reference, Class<T> entityClass);
+	/**
+	 * Checks whether the factory can provide a model for a certain entity
+	 *
+	 * @param reference   the unique reference of the model
+	 * @param entityClass the  class of the entity
+	 * @return true if the model can be provided, false otherwise
+	 */
+	<T> boolean canProvideModel(String reference, Class<T> entityClass);
 
 }

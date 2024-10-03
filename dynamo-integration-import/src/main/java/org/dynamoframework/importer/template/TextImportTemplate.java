@@ -9,9 +9,9 @@ package org.dynamoframework.importer.template;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,11 +30,10 @@ import java.util.*;
 /**
  * Template class for importing data from a text (CSV or fixed width) file and
  * translating it to an entity
- * 
- * @author bas.rutten
- * 
+ *
  * @param <ID> the type of the ID of the entity
  * @param <T>  the type of the entity
+ * @author bas.rutten
  */
 @Slf4j
 public abstract class TextImportTemplate<ID, T> {
@@ -51,13 +50,13 @@ public abstract class TextImportTemplate<ID, T> {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param lines              the lines that make up the text file
 	 * @param errors             the errors that have occurred so far
 	 * @param checkForDuplicates whether to check for duplicate rows
 	 */
 	protected TextImportTemplate(MessageService messageService, List<String[]> lines, List<String> errors,
-			boolean checkForDuplicates) {
+								 boolean checkForDuplicates) {
 		this.lines = lines;
 		this.errors = errors;
 		this.checkForDuplicates = checkForDuplicates;
@@ -66,7 +65,7 @@ public abstract class TextImportTemplate<ID, T> {
 
 	/**
 	 * Indicates whether the row is appropriate and can be processed
-	 * 
+	 *
 	 * @param row the representation of the row
 	 * @return true if this is the case, false otherwise
 	 */
@@ -74,7 +73,7 @@ public abstract class TextImportTemplate<ID, T> {
 
 	/**
 	 * Processes a row
-	 * 
+	 *
 	 * @param rowNum the row number of the row
 	 * @param row    the row (as an array of strings denoting the individual field
 	 *               values)
@@ -84,6 +83,7 @@ public abstract class TextImportTemplate<ID, T> {
 
 	/**
 	 * Extracts a primary key value from a row
+	 *
 	 * @param row the row
 	 * @return the key value
 	 */
@@ -91,6 +91,7 @@ public abstract class TextImportTemplate<ID, T> {
 
 	/**
 	 * Executes the template
+	 *
 	 * @return the result of the processing
 	 */
 	public List<T> execute() {
@@ -113,7 +114,7 @@ public abstract class TextImportTemplate<ID, T> {
 
 	/**
 	 * Processes a single row
-	 * 
+	 *
 	 * @param i       the index of the row
 	 * @param row     the field values that together from the row
 	 * @param results the list of current results

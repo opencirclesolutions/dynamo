@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -34,37 +34,37 @@ import java.util.List;
 
 /**
  * Base class for importing CSV files
- * 
+ *
  * @author bas.rutten
  */
 public class BaseCsvImporter extends BaseTextImporter {
 
-    /**
-     * Counts the number of rows in the file
-     */
-    @Override
-    public int countRows(byte[] bytes, int sheetIndex) {
-        List<String[]> lines = readCsvFile(bytes, DynamoPropertiesHolder.getDynamoProperties().getCsv().getSeparatorChar(), DynamoPropertiesHolder.getDynamoProperties().getCsv().getQuoteChar());
-        return lines.size();
-    }
+	/**
+	 * Counts the number of rows in the file
+	 */
+	@Override
+	public int countRows(byte[] bytes, int sheetIndex) {
+		List<String[]> lines = readCsvFile(bytes, DynamoPropertiesHolder.getDynamoProperties().getCsv().getSeparatorChar(), DynamoPropertiesHolder.getDynamoProperties().getCsv().getQuoteChar());
+		return lines.size();
+	}
 
-    /**
-     * Reads a CSV file into a List of String arrays
-     * 
-     * @param bytes     the raw content of the CSV file
-     * @param separator the record separator
-     * @param quote     the quote char
-     * @return the result of the read action
-     */
-    protected List<String[]> readCsvFile(byte[] bytes, char separator, char quote) {
-        try (CharSequenceReader seq = new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8));
-                CSVReader reader = new CSVReaderBuilder(seq)
-                        .withCSVParser(new CSVParserBuilder().withSeparator(separator).withQuoteChar(quote).build())
-                        .build()) {
-            return reader.readAll();
-        } catch (IOException | CsvException ex) {
-            throw new OCSImportException(ex.getMessage(), ex);
-        }
-    }
+	/**
+	 * Reads a CSV file into a List of String arrays
+	 *
+	 * @param bytes     the raw content of the CSV file
+	 * @param separator the record separator
+	 * @param quote     the quote char
+	 * @return the result of the read action
+	 */
+	protected List<String[]> readCsvFile(byte[] bytes, char separator, char quote) {
+		try (CharSequenceReader seq = new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8));
+			 CSVReader reader = new CSVReaderBuilder(seq)
+				 .withCSVParser(new CSVParserBuilder().withSeparator(separator).withQuoteChar(quote).build())
+				 .build()) {
+			return reader.readAll();
+		} catch (IOException | CsvException ex) {
+			throw new OCSImportException(ex.getMessage(), ex);
+		}
+	}
 
 }

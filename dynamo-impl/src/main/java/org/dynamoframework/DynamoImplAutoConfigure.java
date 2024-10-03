@@ -9,9 +9,9 @@ package org.dynamoframework;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -32,22 +32,22 @@ import org.springframework.context.annotation.Configuration;
 
 /**
  * Auto configuration for Dynamo implementation classes
- * @author Bas Rutten
  *
+ * @author Bas Rutten
  */
 @Configuration
 @EnableConfigurationProperties(DynamoConfigurationProperties.class)
 public class DynamoImplAutoConfigure {
 
-    @Bean
-    @ConditionalOnMissingBean(value = MessageService.class)
-    public MessageService messageService() {
-        return new MessageServiceImpl();
-    }
-    
-    @Bean
-    @ConditionalOnMissingBean(value = EntityModelFactory.class)
-    public EntityModelFactory entityModelFactory() {
-        return new EntityModelFactoryImpl();
-    }
+	@Bean
+	@ConditionalOnMissingBean(value = MessageService.class)
+	public MessageService messageService() {
+		return new MessageServiceImpl();
+	}
+
+	@Bean
+	@ConditionalOnMissingBean(value = EntityModelFactory.class)
+	public EntityModelFactory entityModelFactory() {
+		return new EntityModelFactoryImpl();
+	}
 }

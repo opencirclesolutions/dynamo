@@ -23,10 +23,9 @@ import lombok.ToString;
 /**
  * Primary key object for versioned entities - key consists of the key of the
  * original entity plus the revision number
- * 
- * @author bas.rutten
  *
  * @param <ID>
+ * @author bas.rutten
  */
 @ToString
 @Getter
@@ -41,7 +40,7 @@ public class RevisionKey<ID> implements Serializable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param id       the ID of the original entity
 	 * @param revision the revision number
 	 */

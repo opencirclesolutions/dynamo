@@ -9,9 +9,9 @@ package org.dynamoframework.filter;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -211,16 +211,16 @@ public final class DynamoFilterUtil {
 	 */
 	private static void replaceMasterDetailFilter(Filter filter, AttributeModel am) {
 		if (AttributeType.DETAIL.equals(am.getAttributeType())
-				|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())
-				|| AttributeType.MASTER.equals(am.getAttributeType())
-				|| (AttributeType.BASIC.equals(am.getAttributeType()) && am.isMultipleSearch())) {
+			|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())
+			|| AttributeType.MASTER.equals(am.getAttributeType())
+			|| (AttributeType.BASIC.equals(am.getAttributeType()) && am.isMultipleSearch())) {
 			Filter detailFilter = extractFilter(filter, am.getPath());
 			if (detailFilter instanceof Compare.Equal equal) {
 				// check which property to use in the query
 				String prop = am.getActualSearchPath();
 
 				if (AttributeType.DETAIL.equals(am.getAttributeType())
-						|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
+					|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {
 					replaceDetailOrElementCollectionFilter(filter, am, prop, equal);
 				} else {
 					// master attribute - translate to an "in" filter
@@ -265,7 +265,7 @@ public final class DynamoFilterUtil {
 	 * @param equal  the "equal" filter to replace
 	 */
 	private static void replaceDetailOrElementCollectionFilter(Filter filter, AttributeModel am, String prop,
-			Compare.Equal equal) {
+															   Compare.Equal equal) {
 		if (equal.getValue() instanceof Collection<?> col) {
 			// multiple values supplied - construct an OR filter
 
@@ -312,7 +312,7 @@ public final class DynamoFilterUtil {
 	 * @param firstOnly  whether to only replace the first occurrence
 	 */
 	private static void replaceFilter(Filter parent, Filter original, Filter newFilter, String propertyId,
-			boolean firstOnly) {
+									  boolean firstOnly) {
 		if (original instanceof AbstractJunctionFilter junction) {
 			// junction filter, iterate over its children
 			for (Filter child : junction.getFilters()) {

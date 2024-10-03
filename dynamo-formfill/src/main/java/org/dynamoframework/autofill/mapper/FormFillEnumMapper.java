@@ -9,9 +9,9 @@ package org.dynamoframework.autofill.mapper;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,20 +30,20 @@ import java.util.stream.Stream;
 @Component
 public class FormFillEnumMapper implements FormFillMapper {
 
-    @Override
-    public boolean supports(AttributeModel model) {
-        return model.getType().isEnum();
-    }
+	@Override
+	public boolean supports(AttributeModel model) {
+		return model.getType().isEnum();
+	}
 
-    @Override
-    public FormFillRecord map(AttributeModel model) {
-        StringJoiner joiner = new StringJoiner("\" OR \"");
-        getEnumConstants(model.getType())
-                .forEach(enumValue -> joiner.add(enumValue.toString()));
-        return new FormFillRecord(model, "an enumeration value from one of these options \"" + joiner + "\"");
-    }
+	@Override
+	public FormFillRecord map(AttributeModel model) {
+		StringJoiner joiner = new StringJoiner("\" OR \"");
+		getEnumConstants(model.getType())
+			.forEach(enumValue -> joiner.add(enumValue.toString()));
+		return new FormFillRecord(model, "an enumeration value from one of these options \"" + joiner + "\"");
+	}
 
-    private static Stream<? extends Enum> getEnumConstants(Class<?> clazz) {
-        return Arrays.stream(clazz.asSubclass(Enum.class).getEnumConstants());
-    }
+	private static Stream<? extends Enum> getEnumConstants(Class<?> clazz) {
+		return Arrays.stream(clazz.asSubclass(Enum.class).getEnumConstants());
+	}
 }

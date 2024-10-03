@@ -9,9 +9,9 @@ package org.dynamoframework.filter;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import java.util.List;
 
 /**
  * Abstract class for composite filters
- * 
+ *
  * @author bas.rutten
  */
 public abstract class AbstractJunctionFilter extends AbstractFilter {
@@ -40,7 +40,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param filters the filters to include
 	 */
 	protected AbstractJunctionFilter(Filter... filters) {
@@ -49,7 +49,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param filters the filters to include
 	 */
 	protected AbstractJunctionFilter(Collection<Filter> filters) {
@@ -82,7 +82,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 
 	/**
 	 * Removes a filter
-	 * 
+	 *
 	 * @param filter the filter to remove
 	 */
 	public void remove(Filter filter) {
@@ -92,7 +92,7 @@ public abstract class AbstractJunctionFilter extends AbstractFilter {
 	/**
 	 * Replaces a filter by a new filter. Does nothing if the old filter is not
 	 * found
-	 * 
+	 *
 	 * @param oldFilter the filter that must be replaced
 	 * @param newFilter the filter that must replace the old filter
 	 * @param firstOnly indicates whether only the first match must be replaced

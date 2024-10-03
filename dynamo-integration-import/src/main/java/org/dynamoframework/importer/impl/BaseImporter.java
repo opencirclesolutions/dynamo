@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -37,10 +37,10 @@ import static java.lang.String.format;
 
 /**
  * Base class for smart upload functionality
- * 
- * @author bas.rutten
+ *
  * @param <R> the type of a single row
  * @param <U> the type of a single cell or field
+ * @author bas.rutten
  */
 public abstract class BaseImporter<R, U> {
 
@@ -49,7 +49,7 @@ public abstract class BaseImporter<R, U> {
 	/**
 	 * Counts the number of rows in the input. This method will count all rows,
 	 * including the header, and will not check if any of the rows are valid
-	 * 
+	 *
 	 * @param bytes      the byte representation of the input file
 	 * @param sheetIndex the index of the sheet (if appropriate)
 	 * @return the number of rows
@@ -59,7 +59,7 @@ public abstract class BaseImporter<R, U> {
 	/**
 	 * Retrieves a boolean value from the input and falls back to a default if the
 	 * value is empty or not defined
-	 * 
+	 *
 	 * @param unit  the unit of data value to process (string, Excel cell etc)
 	 * @param field the field definition
 	 * @return the Boolean value
@@ -69,7 +69,7 @@ public abstract class BaseImporter<R, U> {
 	/**
 	 * Retrieves a date value from the input and falls back to a default if the
 	 * value is empty or not defined
-	 * 
+	 *
 	 * @param unit  the unit of data to process
 	 * @param field the field definition
 	 * @return the LocalDate value
@@ -78,7 +78,7 @@ public abstract class BaseImporter<R, U> {
 
 	/**
 	 * Retrieves a value from a unit of data
-	 * 
+	 *
 	 * @param d     the property descriptor that tells the process the type of the
 	 *              value to retrieve
 	 * @param unit  the unit of data to process
@@ -104,7 +104,7 @@ public abstract class BaseImporter<R, U> {
 					obj = Enum.valueOf(enumType, value.toUpperCase());
 				} catch (IllegalArgumentException ex) {
 					throw new OCSImportException("Value " + value + " cannot be translated to an enumeration value",
-							ex);
+						ex);
 				}
 			}
 		} else if (isNumeric(d.getPropertyType())) {
@@ -150,7 +150,7 @@ public abstract class BaseImporter<R, U> {
 	/**
 	 * Retrieves a numeric value from an input unit and falls back to a default if
 	 * the value is empty or not defined
-	 * 
+	 *
 	 * @param unit  the input unit
 	 * @param field the field definition
 	 * @return the Double value
@@ -160,7 +160,7 @@ public abstract class BaseImporter<R, U> {
 	/**
 	 * Retrieves a string from the input and falls back to a default if the value is
 	 * empty or not defined
-	 * 
+	 *
 	 * @param unit  the input unit
 	 * @param field the field definition
 	 * @return the String value
@@ -169,7 +169,7 @@ public abstract class BaseImporter<R, U> {
 
 	/**
 	 * Retrieves a unit (a single cell or field) from a row
-	 * 
+	 *
 	 * @param row   the row
 	 * @param field the field definition
 	 * @return the retrieved unit
@@ -178,25 +178,25 @@ public abstract class BaseImporter<R, U> {
 
 	/**
 	 * Check if the class is a numeric class
-	 * 
+	 *
 	 * @param clazz the class to check
 	 * @return true if the value is numeric, false otherwise
 	 */
 	private boolean isNumeric(Class<?> clazz) {
 		return Number.class.isAssignableFrom(clazz) || int.class.equals(clazz) || long.class.equals(clazz)
-				|| double.class.equals(clazz) || float.class.equals(clazz);
+			|| double.class.equals(clazz) || float.class.equals(clazz);
 	}
 
 	/**
 	 * Indicates whether fraction values are automatically converted to percentages
-	 * 
+	 *
 	 * @return true if this is the case, false otherwise
 	 */
 	public abstract boolean isPercentageCorrectionSupported();
 
 	/**
 	 * Checks whether a field index is within the range of available columns
-	 * 
+	 *
 	 * @param row   the row to check
 	 * @param field the field definition
 	 * @return true if this is the case, false otherwise
@@ -205,7 +205,7 @@ public abstract class BaseImporter<R, U> {
 
 	/**
 	 * Processes a single row from the input and turns it into an object
-	 * 
+	 *
 	 * @param rowNum the row number
 	 * @param row    the row
 	 * @param clazz  the class of the object that must be created
@@ -228,7 +228,7 @@ public abstract class BaseImporter<R, U> {
 					} else if (field.required()) {
 						// a required value is missing!
 						throw new OCSImportException(
-								format("Required value for field '%s' is missing", descriptor.getName()));
+							format("Required value for field '%s' is missing", descriptor.getName()));
 					}
 				} else {
 					throw new OCSImportException(format("Row %d doesn't have enough columns", rowNum));
