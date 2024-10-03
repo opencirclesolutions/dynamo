@@ -1072,13 +1072,13 @@ element collection. In this case, you must set the `maxLength` directly
 using the `@Attribute` annotation.
 
 [source,java]
----
+--
 @ElementCollection(fetch = FetchType.LAZY)
 @CollectionTable(name = "person_tags")
 @Column(name = "tag")
 @Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.HIDE,
         minLength = 4, maxLength = 12, elementCollectionMode = ElementCollectionMode.DIALOG)
----
+--
 
 === Max length in grid
 
@@ -1111,7 +1111,7 @@ element collection. In this case, you must set the `maxValue` directly
 using the `@Attribute` annotation.
 
 [source,java]
----
+--
 @ElementCollection(fetch = FetchType.LAZY)
 @CollectionTable(name = "person_lucky_numbers")
 @Column(name = "lucky_number")
@@ -1119,7 +1119,7 @@ using the `@Attribute` annotation.
         minValue = 10, maxValue = 100, elementCollectionMode = ElementCollectionMode.CHIPS)
 @Size(max = 3)
 private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
----
+--
 
 === Member type
 
