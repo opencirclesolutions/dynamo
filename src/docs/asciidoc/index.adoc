@@ -55,8 +55,8 @@ But this overview is intended to summarize the most notable features and benefit
 * Choice of layouts:
 ** A _simple search_ layout consisting of a search form based on the Dynamo Entity Model and a results table
 ** An _edit form_ that can be used to create new entities or modify existing ones
-** A _split layout_ that can be used to display a results table and an input form next to each other. The results table can optionaly be filtered with a simple quick search or a search popup dialog
-** A _search dialog_ to filter and select one or more entities from a potential large resultset
+** A _split layout_ that can be used to display a results table and an input form next to each other. The results table can optionally be filtered with a simple quick search or a search popup dialog
+** A _search dialog_ to filter and select one or more entities from a potential large result set
 ** The _FlexibleSearchLayout_ is a search layout that allows the user to create complex search query’s by adding/removing search criteria
 ** The _EntityPopupDialog_ is a popup dialog that allows the user to create or modify a single entity.
 * Automatic form filler using AI (LLM), copy your unstructured data to the form filler dialog and the AI will interpret the data and automatically translate, transform, convert and fill in the form fields
@@ -77,7 +77,7 @@ But this overview is intended to summarize the most notable features and benefit
 * Field ordering can be declared
 * Integrated bean validation with fields in UI
 * Custom validation support in UI
-* Paging and Lazy loading of large resultsets
+* Paging and Lazy loading of large result sets
 * Default transformation of Enum values to select component
 * Automatic link generation to navigate from a child relationship to the applicable detail form
 * The option to post-process the edit form after the components have been created (e.g. to add dependencies between fields)
