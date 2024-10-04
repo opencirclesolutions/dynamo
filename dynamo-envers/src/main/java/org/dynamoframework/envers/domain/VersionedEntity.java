@@ -28,11 +28,10 @@ import lombok.Setter;
  * A versioned entity. This is a wrapper around the snapshot of the original
  * entity and adds some additional properties related to auditing (e.g. revision
  * number, time stamp of change, user responsible for the save)
- * 
- * @author bas.rutten
  *
  * @param <ID> the type of the ID of the entity
  * @param <T>  the type of the entity
+ * @author bas.rutten
  */
 @Getter
 @Setter
@@ -71,7 +70,7 @@ public abstract class VersionedEntity<ID, T extends AbstractEntity<ID>> extends 
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param entity   the original entity
 	 * @param revision the revision number
 	 */

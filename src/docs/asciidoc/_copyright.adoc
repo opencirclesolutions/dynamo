@@ -1,0 +1,5 @@
+Copyright © {asciidoc-inception-year} - {asciidoc-current-year} {asciidoc-organization-name}.
+
+_Nothing from this document may be copied and/or made public by use of
+print, photocopy, microfilm or by any other means, without prior
+permission of {asciidoc-organization-name}._

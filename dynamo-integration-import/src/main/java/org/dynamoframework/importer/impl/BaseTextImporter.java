@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,7 +30,7 @@ import java.time.format.DateTimeFormatter;
 
 /**
  * Base class for importers that read data from a text file
- * 
+ *
  * @author bas.rutten
  */
 public abstract class BaseTextImporter extends BaseImporter<String[], String> {
@@ -38,13 +38,12 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 	/**
 	 * Tries to convert a String value to a Boolean (empty String or null
 	 * resolves to false)
-	 * 
-	 * @param unit
-	 *            the String
+	 *
+	 * @param unit the String
 	 * @return the Boolean value
 	 */
 	protected Boolean getBooleanValue(String unit) {
-        if (StringUtils.isEmpty(unit)) {
+		if (StringUtils.isEmpty(unit)) {
 			return Boolean.FALSE;
 		}
 		return Boolean.valueOf(unit);
@@ -64,13 +63,12 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 
 	/**
 	 * Tries to convert a String value to a Date
-	 * 
-	 * @param unit
-	 *            the String value to convert
+	 *
+	 * @param unit the String value to convert
 	 * @return the LocalDate value
 	 */
 	protected LocalDate getDateValue(String unit) {
-        if (!StringUtils.isEmpty(unit)) {
+		if (!StringUtils.isEmpty(unit)) {
 			return LocalDate.parse(unit, DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 
 		}
@@ -91,13 +89,12 @@ public abstract class BaseTextImporter extends BaseImporter<String[], String> {
 
 	/**
 	 * Tries to convert a String to a numeric value
-	 * 
-	 * @param unit
-	 *            the String value to convert
+	 *
+	 * @param unit the String value to convert
 	 * @return the Double value
 	 */
 	protected Double getNumericValue(String unit) {
-        if (StringUtils.isEmpty(unit)) {
+		if (StringUtils.isEmpty(unit)) {
 			return null;
 		}
 		try {

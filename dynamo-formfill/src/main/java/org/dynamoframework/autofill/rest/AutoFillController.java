@@ -48,50 +48,50 @@ import java.util.List;
 @Tag(name = "Auto fill", description = "Dynamo auto fill controller")
 public class AutoFillController extends BaseController {
 
-    @Value("${dynamoframework.defaults.ai-service:CHAT_GPT}")
-    private String defaultValue;
+	@Value("${dynamoframework.defaults.ai-service:CHAT_GPT}")
+	private String defaultValue;
 
-    @Autowired
-    private FormFillService formFillService;
+	@Autowired
+	private FormFillService formFillService;
 
-    /**
-     * Makes a request to automatically fill a form
-     *
-     * @param entityName the name of the entity for which to fill a form
-     * @param request    request containing the input and desired AI service
-     * @param reference  optional reference to further specify the entity model
-     * @return an object containing the fields that could be automatically filled
-     */
-    @PostMapping(value = "/{entityName}", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.APPLICATION_JSON_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Makes a request to automatically fill a form")
-    public Object autoFill(@PathVariable("entityName") @Parameter(description = "The name of the entity for which to fill a form") String entityName,
-                           @RequestBody @Valid @Parameter(description = "Therequest containing the input and desired AI service") AutoFillRequest request,
-                           @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
+	/**
+	 * Makes a request to automatically fill a form
+	 *
+	 * @param entityName the name of the entity for which to fill a form
+	 * @param request    request containing the input and desired AI service
+	 * @param reference  optional reference to further specify the entity model
+	 * @return an object containing the fields that could be automatically filled
+	 */
+	@PostMapping(value = "/{entityName}", produces = MediaType.APPLICATION_JSON_VALUE,
+		consumes = MediaType.APPLICATION_JSON_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Makes a request to automatically fill a form")
+	public Object autoFill(@PathVariable("entityName") @Parameter(description = "The name of the entity for which to fill a form") String entityName,
+						   @RequestBody @Valid @Parameter(description = "Therequest containing the input and desired AI service") AutoFillRequest request,
+						   @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
 
-        Class<Object> clazz = findClass(entityName);
-        EntityModel<?> entityModel = findEntityModel(reference, clazz);
+		Class<Object> clazz = findClass(entityName);
+		EntityModel<?> entityModel = findEntityModel(reference, clazz);
 
-        return formFillService.autoFillForm(entityModel, request);
-    }
+		return formFillService.autoFillForm(entityModel, request);
+	}
 
-    /**
-     * @return the list of available AI services
-     */
-    @GetMapping(value = "/options", produces = MediaType.APPLICATION_JSON_VALUE,
-            consumes = MediaType.ALL_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Retrieve a list of available AI services")
-    public List<AutoFillOptions> getOptions() {
-        List<AutoFillOptions> list = formFillService.findSupportedServices()
-                .stream().map(type -> AutoFillOptions.builder()
-                        .type(type).description(type.toString()).build())
-                .toList();
+	/**
+	 * @return the list of available AI services
+	 */
+	@GetMapping(value = "/options", produces = MediaType.APPLICATION_JSON_VALUE,
+		consumes = MediaType.ALL_VALUE)
+	@ResponseStatus(HttpStatus.OK)
+	@Operation(summary = "Retrieve a list of available AI services")
+	public List<AutoFillOptions> getOptions() {
+		List<AutoFillOptions> list = formFillService.findSupportedServices()
+			.stream().map(type -> AutoFillOptions.builder()
+				.type(type).description(type.toString()).build())
+			.toList();
 
-        list.stream().filter(option -> option.getType().name().equalsIgnoreCase(defaultValue))
-                .forEach(option -> option.setDefaultValue(true));
+		list.stream().filter(option -> option.getType().name().equalsIgnoreCase(defaultValue))
+			.forEach(option -> option.setDefaultValue(true));
 
-        return list;
-    }
+		return list;
+	}
 }

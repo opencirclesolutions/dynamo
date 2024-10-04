@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>dynamo-integration-camel</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Framework - Camel Integration</name>
+	<name>Camel Integration</name>
 	<description>Dynamo Framework Apache Camel integration project.</description>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
@@ -47,22 +47,18 @@
 	</dependencies>
 	<build>
 		<plugins>
-			<!-- Enforce compile version. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
-			<!-- Enforce coding Standards and Guidelines. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-checkstyle-plugin</artifactId>
 			</plugin>
-			<!-- Check for bugs. -->
 			<plugin>
 				<groupId>com.github.spotbugs</groupId>
 				<artifactId>spotbugs-maven-plugin</artifactId>
 			</plugin>
-			<!-- Generate jar for Unit/Integration testing. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-jar-plugin</artifactId>
@@ -74,12 +70,10 @@
 					</execution>
 				</executions>
 			</plugin>
-			<!-- Build Release. -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-release-plugin</artifactId>
 			</plugin>
-			<!-- Code coverage. -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>
@@ -87,6 +81,21 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-surefire-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>${asciidoctor.maven.plugin.version}</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<stagingDirectory>../target/staging/maven</stagingDirectory>
+				</configuration>
 			</plugin>
 		</plugins>
 	</build>

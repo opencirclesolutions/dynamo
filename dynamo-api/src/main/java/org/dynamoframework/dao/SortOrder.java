@@ -9,9 +9,9 @@ package org.dynamoframework.dao;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import java.io.Serializable;
 
 /**
  * Object representing a sort order and direction
- * 
+ *
  * @author bas.rutten
  */
 @Getter
@@ -51,7 +51,7 @@ public class SortOrder implements Serializable {
 
 		/**
 		 * Translates the provided String into the corresponding Direction enum
-		 * 
+		 *
 		 * @param value the String representation of the Direction
 		 * @return the Direction
 		 */
@@ -66,7 +66,7 @@ public class SortOrder implements Serializable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param property  the property to sort on
 	 * @param direction the desired sort direction
 	 */
@@ -77,7 +77,7 @@ public class SortOrder implements Serializable {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param property the property to sort on (in ascending direction)
 	 */
 	public SortOrder(String property) {

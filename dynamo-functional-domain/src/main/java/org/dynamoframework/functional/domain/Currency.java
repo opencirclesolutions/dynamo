@@ -9,9 +9,9 @@ package org.dynamoframework.functional.domain;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,8 @@ import org.dynamoframework.domain.model.annotation.Model;
 
 /**
  * A currency identified by an ISO currency code
- * 
- * @author bas.rutten
  *
+ * @author bas.rutten
  */
 @Entity
 @DiscriminatorValue("CURRENCY")
@@ -44,7 +43,7 @@ public class Currency extends Domain {
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param code the code of the currency
 	 * @param name the name of the currency
 	 */

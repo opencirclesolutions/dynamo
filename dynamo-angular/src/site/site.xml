@@ -1,0 +1,28 @@
+<project name="Dynamo Framework">
+    <body>
+        <menu name="Documentation">
+            <item name="Reference" href="../../reference.html"/>
+            <item name="Training" href="../../training.html"/>
+        </menu>
+        <menu ref="parent"/>
+        <menu ref="modules"/>
+        <menu ref="reports"/>
+    </body>
+    <skin>
+        <groupId>org.apache.maven.skins</groupId>
+        <artifactId>maven-fluido-skin</artifactId>
+        <version>2.0.0-M10</version>
+    </skin>
+    <custom>
+        <fluidoSkin>
+            <topBarEnabled>true</topBarEnabled>
+            <sideBarEnabled>false</sideBarEnabled>
+            <topBarIcon>
+                <name>Dynamo Framework</name>
+                <alt>Dynamo Framework</alt>
+                <src>../images/logo-dynamo.png</src>
+                <href>../../index.html</href>
+            </topBarIcon>
+        </fluidoSkin>
+    </custom>
+</project>

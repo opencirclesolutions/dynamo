@@ -26,7 +26,6 @@ import org.dynamoframework.exception.OCSRuntimeException;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
-import java.util.Properties;
 
 /**
  * Factory class for creating a service locator.
@@ -37,38 +36,38 @@ import java.util.Properties;
 @Slf4j
 public final class ServiceLocatorFactory {
 
-    private static volatile ServiceLocator serviceLocator;
+	private static volatile ServiceLocator serviceLocator;
 
-    private static final String DEFAULT_CLASS_NAME = "org.dynamoframework.SpringWebServiceLocator";
+	private static final String DEFAULT_CLASS_NAME = "org.dynamoframework.SpringWebServiceLocator";
 
-    @SuppressWarnings("deprecation")
-    public static ServiceLocator getServiceLocator() {
-        if (serviceLocator == null) {
-            synchronized (ServiceLocatorFactory.class) {
-                if (serviceLocator == null) {
-                    String serviceLocatorClassName = getServiceLocatorClassName();
-                    log.info("Using service locator class {} ", serviceLocatorClassName);
-                    try {
-                        serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();
-                    } catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
-                        throw new OCSRuntimeException(e.getMessage());
-                    }
-                }
-            }
-        }
-        return serviceLocator;
-    }
+	@SuppressWarnings("deprecation")
+	public static ServiceLocator getServiceLocator() {
+		if (serviceLocator == null) {
+			synchronized (ServiceLocatorFactory.class) {
+				if (serviceLocator == null) {
+					String serviceLocatorClassName = getServiceLocatorClassName();
+					log.info("Using service locator class {} ", serviceLocatorClassName);
+					try {
+						serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();
+					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {
+						throw new OCSRuntimeException(e.getMessage());
+					}
+				}
+			}
+		}
+		return serviceLocator;
+	}
 
-    protected static String getServiceLocatorClassName() {
-        try (BufferedReader in = new BufferedReader(new InputStreamReader(ServiceLocatorFactory.class.getClassLoader().getResourceAsStream("dynamoservicelocator")))) {
-            String className = in.readLine();
-            if (className != null) {
-                return className;
-            }
-        } catch (Exception e) {
-            log.debug("Resource dynamoservicelocator not found or could not be read, using default service locator");
-        }
-        return DEFAULT_CLASS_NAME;
-    }
+	protected static String getServiceLocatorClassName() {
+		try (BufferedReader in = new BufferedReader(new InputStreamReader(ServiceLocatorFactory.class.getClassLoader().getResourceAsStream("dynamoservicelocator")))) {
+			String className = in.readLine();
+			if (className != null) {
+				return className;
+			}
+		} catch (Exception e) {
+			log.debug("Resource dynamoservicelocator not found or could not be read, using default service locator");
+		}
+		return DEFAULT_CLASS_NAME;
+	}
 
 }

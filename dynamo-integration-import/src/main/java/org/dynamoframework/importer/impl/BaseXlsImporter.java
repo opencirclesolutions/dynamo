@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -45,7 +45,7 @@ import static java.lang.String.format;
 
 /**
  * Base class for services that can be used to import Excel files.
- * 
+ *
  * @author bas.rutten
  */
 public class BaseXlsImporter extends BaseImporter<Row, Cell> {
@@ -54,7 +54,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
 	/**
 	 * Checks if any cell in a row contains a certain (String) value
-	 * 
+	 *
 	 * @param row   the row to check
 	 * @param value the String value to check for
 	 * @return true if this is the case, false otherwise
@@ -98,9 +98,9 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
 	/**
 	 * Creates a reader for processing an Excel file using streaming
-	 * 
-	 * @param bytes      the content of the file
-	 * @param cacheSize  the cache size
+	 *
+	 * @param bytes     the content of the file
+	 * @param cacheSize the cache size
 	 * @return the reader
 	 */
 	public Workbook createReader(byte[] bytes, int cacheSize) {
@@ -109,7 +109,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
 	/**
 	 * Creates a workbook from an array of bytes
-	 * 
+	 *
 	 * @param bytes the byte content of the file
 	 * @return the workbook
 	 */
@@ -132,7 +132,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
 	/**
 	 * Extracts a Boolean value from a cell
-	 * 
+	 *
 	 * @param cell the cell to extract the value from
 	 * @return the value
 	 */
@@ -161,7 +161,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
 	/**
 	 * Retrieves a date value from a cell
-	 * 
+	 *
 	 * @param cell the cell to extract the value from
 	 * @return the value
 	 */
@@ -192,14 +192,14 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 		LocalDate value = getDateValue(cell);
 		if (value == null && !StringUtils.isEmpty(field.defaultValue())) {
 			value = LocalDate.parse(field.defaultValue(),
-					DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));
+				DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));
 		}
 		return value;
 	}
 
 	/**
 	 * Retrieves a numeric value for a cell
-	 * 
+	 *
 	 * @param cell the cell to retrieve the value from
 	 * @return the value
 	 */
@@ -214,7 +214,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 				return null;
 			} catch (Exception ex) {
 				throw new OCSImportException(format("Found an invalid numeric value: %s", cell.getStringCellValue()),
-						ex);
+					ex);
 			}
 		} else if (cell != null && CellType.STRING == cell.getCellType()) {
 			// in case the value is not numeric, simply output a warning. If the
@@ -238,7 +238,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	/**
 	 * Retrieves the numeric value of a cell, or falls back to a suitable default
 	 * value if the cell is empty and a default value has been specified
-	 * 
+	 *
 	 * @param cell  the cell to extract the value from
 	 * @param field the field definition
 	 * @return the value
@@ -255,7 +255,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	/**
 	 * Retrieves the value of a cell as a string. Returns <code>null</code> if the
 	 * cell does not contain a string
-	 * 
+	 *
 	 * @param cell the cell to extract the value from
 	 * @return the value
 	 */
@@ -281,7 +281,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 	/**
 	 * Retrieves the value of a cell as a String, or falls back to a default value
 	 * if the value is empty and a suitable default value is defined
-	 * 
+	 *
 	 * @param cell  the cell to extract the value from
 	 * @param field the field definition
 	 * @return the value
@@ -307,7 +307,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
 	/**
 	 * Check if the specified row is completely empty
-	 * 
+	 *
 	 * @param row the row to check
 	 * @return true if ths is the case, false otherwise
 	 */
@@ -336,7 +336,7 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 
 	/**
 	 * Processes a number of consecutive rows and translates them into a DTO
-	 * 
+	 *
 	 * @param sheet         the sheet to read the values from
 	 * @param firstRowIndex the index of the first row to start reading from
 	 * @param colIndex      the index of the column that contains the values
@@ -368,11 +368,11 @@ public class BaseXlsImporter extends BaseImporter<Row, Cell> {
 						} else if (field.required()) {
 							// a required value is missing!
 							throw new OCSImportException(
-									format("Required value for field '%s' is missing", d.getName()));
+								format("Required value for field '%s' is missing", d.getName()));
 						}
 					} else {
 						throw new OCSImportException(
-								format("Input doesn't have enough rows: row %d does not exist", rowNum));
+							format("Input doesn't have enough rows: row %d does not exist", rowNum));
 					}
 				}
 			}

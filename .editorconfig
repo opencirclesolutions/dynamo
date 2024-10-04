@@ -1,0 +1,31 @@
+# Editor configuration, see https://editorconfig.org
+# Style settings for project
+root = true
+
+[*]
+charset = utf-8
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_size = 4
+indent_style = space
+
+[pom.xml]
+indent_style = tab
+
+[*.java]
+indent_style = tab
+
+[*.ts]
+indent_size = 2
+quote_type = single
+
+[*.md]
+max_line_length = off
+trim_trailing_whitespace = false
+
+[{*.json, *.yml, *.html}]
+indent_size = 4
+
+[*.css]
+indent_size = 2
+

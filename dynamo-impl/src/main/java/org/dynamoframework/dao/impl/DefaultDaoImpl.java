@@ -9,9 +9,9 @@ package org.dynamoframework.dao.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,24 +30,24 @@ import java.util.Arrays;
 /**
  * A default DAO implementation for handling database access for a simple
  *
- * @author bas.rutten
- *
  * @param <ID> the type of the primary key
  * @param <T>  the type of the entity
+ * @author bas.rutten
  */
 @Transactional
 public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImpl<ID, T> {
 
-    private final EntityPathBase<T> dslRoot;
+	private final EntityPathBase<T> dslRoot;
 
-    private final Class<T> entityClass;
+	private final Class<T> entityClass;
 
-    private final String[] fetchPropertyIds;
+	private final String[] fetchPropertyIds;
 
 	/**
 	 * Constructor
-	 * @param dslRoot          the query DSL root path
-	 * @param entityClass      the entity class
+	 *
+	 * @param dslRoot     the query DSL root path
+	 * @param entityClass the entity class
 	 */
 	public DefaultDaoImpl(EntityPathBase<T> dslRoot, Class<T> entityClass) {
 		this(dslRoot, entityClass, (String[]) null);
@@ -55,7 +55,7 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param dslRoot          the query DSL root path
 	 * @param entityClass      the entity class
 	 * @param fetchPropertyIds the IDs of the properties to fetch
@@ -83,7 +83,7 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 		}
 
 		return Arrays.stream(fetchPropertyIds).map(FetchJoinInformation::new).toList()
-				.toArray(new FetchJoinInformation[0]);
+			.toArray(new FetchJoinInformation[0]);
 	}
 
 	@Override
@@ -93,6 +93,6 @@ public class DefaultDaoImpl<ID, T extends AbstractEntity<ID>> extends BaseDaoImp
 		}
 
 		return Arrays.stream(fetchPropertyIds).map(FetchJoinInformation::new).toList()
-				.toArray(new FetchJoinInformation[0]);
+			.toArray(new FetchJoinInformation[0]);
 	}
 }

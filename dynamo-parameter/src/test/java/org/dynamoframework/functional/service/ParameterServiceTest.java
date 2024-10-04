@@ -19,55 +19,55 @@ import org.dynamoframework.test.BaseIntegrationTest;
 @SpringBootTest(classes = ParameterIntegrationTestConfig.class)
 public class ParameterServiceTest extends BaseIntegrationTest {
 
-    @Autowired
-    private ParameterService parameterService;
+	@Autowired
+	private ParameterService parameterService;
 
-    private Parameter maxPrograms;
+	private Parameter maxPrograms;
 
-    private Parameter showMargins;
+	private Parameter showMargins;
 
-    private Parameter insufficientFunds;
+	private Parameter insufficientFunds;
 
-    @BeforeEach
-    public void setup() {
-        maxPrograms = new Parameter();
-        maxPrograms.setName("maximumPrograms");
-        maxPrograms.setParameterType(ParameterType.INTEGER);
-        maxPrograms.setValue("12");
-        getEntityManager().persist(maxPrograms);
+	@BeforeEach
+	public void setup() {
+		maxPrograms = new Parameter();
+		maxPrograms.setName("maximumPrograms");
+		maxPrograms.setParameterType(ParameterType.INTEGER);
+		maxPrograms.setValue("12");
+		getEntityManager().persist(maxPrograms);
 
-        showMargins = new Parameter();
-        showMargins.setName("showMargins");
-        showMargins.setParameterType(ParameterType.BOOLEAN);
-        showMargins.setValue("true");
-        getEntityManager().persist(showMargins);
+		showMargins = new Parameter();
+		showMargins.setName("showMargins");
+		showMargins.setParameterType(ParameterType.BOOLEAN);
+		showMargins.setValue("true");
+		getEntityManager().persist(showMargins);
 
-        insufficientFunds = new Parameter();
-        insufficientFunds.setName("insufficientFunds");
-        insufficientFunds.setParameterType(ParameterType.STRING);
-        insufficientFunds.setValue("Insufficient funds");
-        getEntityManager().persist(insufficientFunds);
-    }
+		insufficientFunds = new Parameter();
+		insufficientFunds.setName("insufficientFunds");
+		insufficientFunds.setParameterType(ParameterType.STRING);
+		insufficientFunds.setValue("Insufficient funds");
+		getEntityManager().persist(insufficientFunds);
+	}
 
-    @Test
-    public void returnNullWhenIncorrectValue() {
-        assertNull(parameterService.getValueAsString("showMargins"));
-        assertNull(parameterService.getValueAsInteger("insufficientFunds"));
-        assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maximumPrograms"));
-    }
+	@Test
+	public void returnNullWhenIncorrectValue() {
+		assertNull(parameterService.getValueAsString("showMargins"));
+		assertNull(parameterService.getValueAsInteger("insufficientFunds"));
+		assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maximumPrograms"));
+	}
 
-    @Test
-    public void returnCorrectValueAndType() {
-        assertEquals(Integer.valueOf(12), parameterService.getValueAsInteger("maximumPrograms"));
-        assertEquals(Boolean.valueOf(true), parameterService.getValueAsBoolean("showMargins"));
-        assertEquals("Insufficient funds", parameterService.getValueAsString("insufficientFunds"));
-    }
+	@Test
+	public void returnCorrectValueAndType() {
+		assertEquals(Integer.valueOf(12), parameterService.getValueAsInteger("maximumPrograms"));
+		assertEquals(Boolean.valueOf(true), parameterService.getValueAsBoolean("showMargins"));
+		assertEquals("Insufficient funds", parameterService.getValueAsString("insufficientFunds"));
+	}
 
-    @Test
-    public void returnNullWhenNoParameterFound() {
-        assertNull(parameterService.getValueAsString("maverick"));
-        assertNull(parameterService.getValueAsInteger("maverick"));
-        assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maverick"));
-    }
+	@Test
+	public void returnNullWhenNoParameterFound() {
+		assertNull(parameterService.getValueAsString("maverick"));
+		assertNull(parameterService.getValueAsInteger("maverick"));
+		assertEquals(Boolean.FALSE, parameterService.getValueAsBoolean("maverick"));
+	}
 
 }

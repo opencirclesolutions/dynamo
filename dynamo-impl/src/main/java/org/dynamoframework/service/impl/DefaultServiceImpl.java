@@ -9,9 +9,9 @@ package org.dynamoframework.service.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,11 +28,10 @@ import org.dynamoframework.utils.ClassUtils;
 
 /**
  * Default implementation of BaseService for dealing with simple entities
- * 
- * @author Bas Rutten
  *
  * @param <ID> the type of the primary key of the entity
- * @param <T> the type of the entity
+ * @param <T>  the type of the entity
+ * @author Bas Rutten
  */
 public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseServiceImpl<ID, T> {
 
@@ -53,7 +52,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 
 	/**
 	 * Constructor - no unique property
-	 * 
+	 *
 	 * @param dslRoot     the DSL root
 	 * @param entityClass the entity class
 	 */
@@ -63,7 +62,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 
 	/**
 	 * Constructor - with unique property, not case sensitive
-	 * 
+	 *
 	 * @param dslRoot           the DSL root
 	 * @param entityClass       the entity class
 	 * @param uniquePropertyIds the unique property name
@@ -74,21 +73,20 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param dslRoot             the QueryDSL root
 	 * @param entityClass         the entity class
 	 * @param uniquePropertyIds
 	 * @param uniqueCaseSensitive
 	 */
 	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds,
-			boolean uniqueCaseSensitive) {
+							  boolean uniqueCaseSensitive) {
 		dao = new DefaultDaoImpl<>(dslRoot, entityClass);
 		this.uniquePropertyIds = uniquePropertyIds;
 		this.uniqueCaseSensitive = uniqueCaseSensitive;
 	}
 
 	/**
-	 * 
 	 * @param dao
 	 */
 	public DefaultServiceImpl(BaseDao<ID, T> dao) {
@@ -97,7 +95,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param dao               the DAO
 	 * @param uniquePropertyIds the name of the property that must be unique
 	 */
@@ -107,7 +105,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 
 	/**
 	 * Constructor
-	 * 
+	 *
 	 * @param dao                 the DAO used to retrieve the data
 	 * @param uniquePropertyIds   the unique property
 	 * @param uniqueCaseSensitive whether the unique property is case sensitive

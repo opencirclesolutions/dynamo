@@ -46,6 +46,6 @@ public class DynamoRevisionEntity extends DefaultRevisionEntity {
 	@Override
 	public String toString() {
 		return String.format("DynamoRevisionEntity(id=%d,timestamp=%s,username=%s)", getId(),
-				Instant.ofEpochMilli(getTimestamp()).toString(), getUsername());
+			Instant.ofEpochMilli(getTimestamp()).toString(), getUsername());
 	}
 }

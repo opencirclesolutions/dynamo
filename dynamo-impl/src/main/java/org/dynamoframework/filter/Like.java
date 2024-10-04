@@ -9,9 +9,9 @@ package org.dynamoframework.filter;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -25,7 +25,7 @@ import java.util.Objects;
 /**
  * A filter for checking if a string value contains a certain pattern. Use
  * percent signs ("%") to denote wildcards
- * 
+ *
  * @author bas.rutten
  */
 public class Like extends AbstractFilter implements PropertyFilter {
@@ -91,13 +91,13 @@ public class Like extends AbstractFilter implements PropertyFilter {
 		}
 		Like o = (Like) obj;
 		return Objects.equals(propertyId, o.getPropertyId()) && Objects.equals(value, o.getValue())
-				&& Objects.equals(caseSensitive, o.isCaseSensitive());
+			&& Objects.equals(caseSensitive, o.isCaseSensitive());
 	}
 
 	@Override
 	public String toString() {
 		return getPropertyId() + " " + super.toString() + " " + getValue()
-				+ (isCaseSensitive() ? "" : " (ignore case)");
+			+ (isCaseSensitive() ? "" : " (ignore case)");
 	}
 
 }

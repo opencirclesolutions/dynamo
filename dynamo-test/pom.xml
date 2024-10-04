@@ -8,7 +8,7 @@
 	</parent>
 	<artifactId>dynamo-test</artifactId>
 	<packaging>jar</packaging>
-	<name>Dynamo Framework - Supporting test classes</name>
+	<name>Supporting test classes</name>
 	<description>Dynamo Framework supporting test classes project.</description>
 	<dependencies>
 		<dependency>
@@ -45,4 +45,23 @@
 			<artifactId>slf4j-api</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.asciidoctor</groupId>
+				<artifactId>asciidoctor-maven-plugin</artifactId>
+				<version>${asciidoctor.maven.plugin.version}</version>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-site-plugin</artifactId>
+				<configuration>
+					<stagingDirectory>../target/staging/maven</stagingDirectory>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>

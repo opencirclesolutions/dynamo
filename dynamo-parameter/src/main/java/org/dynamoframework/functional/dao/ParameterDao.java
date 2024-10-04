@@ -18,9 +18,8 @@ import org.dynamoframework.functional.domain.Parameter;
 
 /**
  * DAO for the Parameter entity
- * 
- * @author BasRutten
  *
+ * @author BasRutten
  */
 public interface ParameterDao extends BaseDao<Integer, Parameter> {
 

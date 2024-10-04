@@ -9,9 +9,9 @@ package org.dynamoframework.dao.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,7 +43,7 @@ import java.util.Map.Entry;
 /**
  * @author patrick.deenen
  * @author bas.rutten Class for constructing JPA queries built on the criteria
- *         API
+ * API
  */
 @Slf4j
 @Component
@@ -62,13 +62,13 @@ public final class JpaQueryBuilder {
 	 * @param root       the query root
 	 * @param fetchJoins the fetch joins
 	 * @return <code>true</code> if the fetches include a collection,
-	 *         <code>false</code> otherwise
+	 * <code>false</code> otherwise
 	 */
 	private static <T> boolean addFetchJoins(FetchParent<T, ?> root, FetchJoinInformation... fetchJoins) {
 		boolean collection = false;
 
-		Map<String,FetchParent<T, ?>> fetchMap = new HashMap<>();
-		
+		Map<String, FetchParent<T, ?>> fetchMap = new HashMap<>();
+
 		if (root != null && fetchJoins != null) {
 			for (FetchJoinInformation s : fetchJoins) {
 
@@ -76,18 +76,18 @@ public final class JpaQueryBuilder {
 				FetchParent<T, ?> fetch = root;
 				String[] propertyPath = s.getProperty().split("\\.");
 				String prefix = "";
-				
+
 				for (String property : propertyPath) {
 					if (prefix.length() > 0) {
 						prefix = prefix + ".";
 					}
 					prefix += property;
-					
+
 					if (fetchMap.containsKey(prefix)) {
 						fetch = fetchMap.get(prefix);
 					} else {
-				      fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
-					  fetchMap.put(prefix, fetch);
+						fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
+						fetchMap.put(prefix, fetch);
 					}
 				}
 			}
@@ -110,7 +110,7 @@ public final class JpaQueryBuilder {
 	 * @return the query with the sorting clause appended to it
 	 */
 	private static <T, R> CriteriaQuery<R> addOrderBy(CriteriaBuilder builder, CriteriaQuery<R> cq, Root<T> root,
-			boolean distinct, SortOrder... sortOrders) {
+													  boolean distinct, SortOrder... sortOrders) {
 		return addOrderBy(builder, cq, root, null, distinct, sortOrders);
 	}
 
@@ -127,7 +127,7 @@ public final class JpaQueryBuilder {
 	 * @return the criteria query with any relevant sorting instructions added to it
 	 */
 	private static <T, R> CriteriaQuery<R> addOrderBy(CriteriaBuilder builder, CriteriaQuery<R> cq, Root<T> root,
-			List<Selection<?>> multiSelect, boolean distinct, SortOrder... sortOrders) {
+													  List<Selection<?>> multiSelect, boolean distinct, SortOrder... sortOrders) {
 		List<Selection<?>> ms = new ArrayList<>();
 		if (multiSelect != null && !multiSelect.isEmpty()) {
 			ms.addAll(multiSelect);
@@ -136,7 +136,7 @@ public final class JpaQueryBuilder {
 			List<Order> orders = new ArrayList<>();
 			for (SortOrder sortOrder : sortOrders) {
 				Expression<?> property = distinct ? getPropertyPath(root, sortOrder.getProperty(), true)
-						: getPropertyPathForSort(root, sortOrder.getProperty());
+					: getPropertyPathForSort(root, sortOrder.getProperty());
 				ms.add(property);
 				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));
 			}
@@ -158,7 +158,7 @@ public final class JpaQueryBuilder {
 	 * @return the predicate
 	 */
 	private static Predicate createAndPredicate(CriteriaBuilder builder, Root<?> root, Filter filter,
-			Map<String, Object> parameters) {
+												Map<String, Object> parameters) {
 		And and = (And) filter;
 		List<Filter> filters = new ArrayList<>(and.getFilters());
 
@@ -183,18 +183,18 @@ public final class JpaQueryBuilder {
 	 * @param like    the predicate
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Predicate createCaseInsensitiveLikePredicate(CriteriaBuilder builder, Root<?> root, Like like) {
 		String unaccentName = dynamoProperties.getUnaccentFunctionName();
 		if (!StringUtils.isEmpty(unaccentName)) {
 			return builder.like(
-					builder.function(unaccentName, String.class,
-							builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true))),
-					removeAccents(like.getValue().toLowerCase()));
+				builder.function(unaccentName, String.class,
+					builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true))),
+				removeAccents(like.getValue().toLowerCase()));
 		}
 
 		return builder.like(builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true)),
-				like.getValue().toLowerCase());
+			like.getValue().toLowerCase());
 	}
 
 	/**
@@ -205,7 +205,7 @@ public final class JpaQueryBuilder {
 	 * @param filter  the Compare filter
 	 * @return the predicate
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Predicate createComparePredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
 		Compare compare = (Compare) filter;
 		Path path = getPropertyPath(root, compare.getPropertyId(), true);
@@ -227,22 +227,22 @@ public final class JpaQueryBuilder {
 		}
 
 		switch (compare.getOperation()) {
-		case EQUAL:
-			if (value instanceof Class<?>) {
-				// When instance of class the use type expression
-				return builder.equal(path.type(), builder.literal(value));
-			}
-			return builder.equal(path, value);
-		case GREATER:
-			return builder.greaterThan(path, (Comparable) value);
-		case GREATER_OR_EQUAL:
-			return builder.greaterThanOrEqualTo(path, (Comparable) value);
-		case LESS:
-			return builder.lessThan(path, (Comparable) value);
-		case LESS_OR_EQUAL:
-			return builder.lessThanOrEqualTo(path, (Comparable) value);
-		default:
-			return null;
+			case EQUAL:
+				if (value instanceof Class<?>) {
+					// When instance of class the use type expression
+					return builder.equal(path.type(), builder.literal(value));
+				}
+				return builder.equal(path, value);
+			case GREATER:
+				return builder.greaterThan(path, (Comparable) value);
+			case GREATER_OR_EQUAL:
+				return builder.greaterThanOrEqualTo(path, (Comparable) value);
+			case LESS:
+				return builder.lessThan(path, (Comparable) value);
+			case LESS_OR_EQUAL:
+				return builder.lessThanOrEqualTo(path, (Comparable) value);
+			default:
+				return null;
 		}
 	}
 
@@ -256,7 +256,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static <T> TypedQuery<Long> createCountQuery(EntityManager entityManager, Class<T> entityClass,
-			Filter filter, boolean distinct) {
+														Filter filter, boolean distinct) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = builder.createQuery(Long.class);
 		Root<T> root = cq.from(entityClass);
@@ -285,7 +285,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static <T> TypedQuery<Tuple> createDistinctQuery(Filter filter, EntityManager entityManager,
-			Class<T> entityClass, String distinctField, SortOrder... sortOrders) {
+															Class<T> entityClass, String distinctField, SortOrder... sortOrders) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = builder.createTupleQuery();
 		Root<T> root = cq.from(entityClass);
@@ -319,7 +319,7 @@ public final class JpaQueryBuilder {
 	 */
 	@SuppressWarnings("rawtypes")
 	public static <ID, T> TypedQuery<T> createFetchQuery(EntityManager entityManager, Class<T> entityClass,
-			List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... fetchJoins) {
+														 List<ID> ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... fetchJoins) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -369,7 +369,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static <ID, T> TypedQuery<T> createFetchSingleObjectQuery(EntityManager entityManager, Class<T> entityClass,
-			ID id, FetchJoinInformation[] fetchJoins) {
+																	 ID id, FetchJoinInformation[] fetchJoins) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -412,7 +412,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static <T> TypedQuery<Tuple> createIdQuery(EntityManager entityManager, Class<T> entityClass, Filter filter,
-			SortOrder... sortOrders) {
+													  SortOrder... sortOrders) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<Tuple> cq = builder.createTupleQuery();
 		Root<T> root = cq.from(entityClass);
@@ -465,13 +465,13 @@ public final class JpaQueryBuilder {
 	 * @param like    the Like filter
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Predicate createLikePredicate(CriteriaBuilder builder, Root<?> root, Like like) {
 		String unaccentName = dynamoProperties.getUnaccentFunctionName();
 		if (!StringUtils.isEmpty(unaccentName)) {
 			return builder.like(
-					builder.function(unaccentName, String.class, getPropertyPath(root, like.getPropertyId(), true)),
-					removeAccents(like.getValue()));
+				builder.function(unaccentName, String.class, getPropertyPath(root, like.getPropertyId(), true)),
+				removeAccents(like.getValue()));
 		}
 
 		return builder.like((Expression) getPropertyPath(root, like.getPropertyId(), true), like.getValue());
@@ -485,17 +485,17 @@ public final class JpaQueryBuilder {
 	 * @param filter  the filter to apply
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@SuppressWarnings({"rawtypes", "unchecked"})
 	private static Predicate createModuloPredicate(CriteriaBuilder builder, Root<?> root, Filter filter) {
 		Modulo modulo = (Modulo) filter;
 		if (modulo.getModExpression() != null) {
 			// compare to a literal expression
 			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),
-					(Expression) getPropertyPath(root, modulo.getModExpression(), true)), modulo.getResult());
+				(Expression) getPropertyPath(root, modulo.getModExpression(), true)), modulo.getResult());
 		} else {
 			// compare to a property
 			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),
-					modulo.getModValue().intValue()), modulo.getResult());
+				modulo.getModValue().intValue()), modulo.getResult());
 		}
 	}
 
@@ -509,7 +509,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed predicate
 	 */
 	private static Predicate createOrPredicate(CriteriaBuilder builder, Root<?> root, Filter filter,
-			Map<String, Object> parameters) {
+											   Map<String, Object> parameters) {
 		Or or = (Or) filter;
 		List<Filter> filters = new ArrayList<>(or.getFilters());
 
@@ -539,9 +539,9 @@ public final class JpaQueryBuilder {
 	 * @param root    the entity root
 	 * @return the constructed predicate
 	 */
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	private static Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root<?> root,
-			Map<String, Object> parameters) {
+											 Map<String, Object> parameters) {
 		if (filter == null) {
 			return null;
 		}
@@ -567,7 +567,7 @@ public final class JpaQueryBuilder {
 			return createLikePredicate(builder, root, filter);
 		} else if (filter instanceof Contains contains) {
 			return builder.isMember(contains.getValue(),
-					(Expression) getPropertyPath(root, contains.getPropertyId(), true));
+				(Expression) getPropertyPath(root, contains.getPropertyId(), true));
 		} else if (filter instanceof In in) {
 			if (in.getValues() != null && !in.getValues().isEmpty()) {
 				Expression<?> exp = getPropertyPath(root, in.getPropertyId(), true);
@@ -602,7 +602,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static <T> TypedQuery<T> createSelectQuery(Filter filter, EntityManager entityManager, Class<T> entityClass,
-			FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
+													  FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -633,7 +633,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static <T> CriteriaQuery<T> createUniquePropertyFetchQuery(EntityManager entityManager, Class<T> entityClass,
-			FetchJoinInformation[] fetchJoins, String propertyName, Object value, boolean caseSensitive) {
+																	  FetchJoinInformation[] fetchJoins, String propertyName, Object value, boolean caseSensitive) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -643,7 +643,7 @@ public final class JpaQueryBuilder {
 		Predicate equals;
 		if (value instanceof String && !caseSensitive) {
 			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),
-					((String) value).toUpperCase());
+				((String) value).toUpperCase());
 		} else {
 			equals = builder.equal(root.get(propertyName), value);
 		}
@@ -664,7 +664,7 @@ public final class JpaQueryBuilder {
 	 * @return the constructed query
 	 */
 	public static <T> CriteriaQuery<T> createUniquePropertyQuery(EntityManager entityManager, Class<T> entityClass,
-			String propertyName, Object value, boolean caseSensitive) {
+																 String propertyName, Object value, boolean caseSensitive) {
 		CriteriaBuilder builder = entityManager.getCriteriaBuilder();
 		CriteriaQuery<T> cq = builder.createQuery(entityClass);
 		Root<T> root = cq.from(entityClass);
@@ -672,7 +672,7 @@ public final class JpaQueryBuilder {
 		Predicate equals;
 		if (value instanceof String && !caseSensitive) {
 			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),
-					((String) value).toUpperCase());
+				((String) value).toUpperCase());
 		} else {
 			equals = builder.equal(root.get(propertyName), value);
 		}
@@ -707,7 +707,7 @@ public final class JpaQueryBuilder {
 				// Reuse existing join
 				Join<?, ?> detailJoin = null;
 				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
-						: curJoin.getJoins());
+					: curJoin.getJoins());
 				if (joins != null) {
 					for (Join<?, ?> j : joins) {
 						if (part.equals(j.getAttribute().getName())) {
@@ -755,7 +755,7 @@ public final class JpaQueryBuilder {
 				// Reuse existing join
 				Join<?, ?> detailJoin = null;
 				Collection<Join<?, ?>> joins = (Collection<Join<?, ?>>) (curJoin == null ? root.getJoins()
-						: curJoin.getJoins());
+					: curJoin.getJoins());
 				if (joins != null) {
 					for (Join<?, ?> j : joins) {
 						if (part.equals(j.getAttribute().getName())) {
@@ -814,7 +814,7 @@ public final class JpaQueryBuilder {
 
 		try {
 			entityOrCollection = path instanceof SqmEntityValuedSimplePath
-					|| Collection.class.isAssignableFrom(path.getJavaType());
+				|| Collection.class.isAssignableFrom(path.getJavaType());
 		} catch (Exception ex) {
 			// do nothing (new JPA is stricter on this than before)
 		}
@@ -846,9 +846,9 @@ public final class JpaQueryBuilder {
 	 */
 	private static JoinType translateJoinType(org.dynamoframework.dao.JoinType type) {
 		return switch (type) {
-		case INNER -> JoinType.INNER;
-		case LEFT -> JoinType.LEFT;
-		default -> JoinType.RIGHT;
+			case INNER -> JoinType.INNER;
+			case LEFT -> JoinType.LEFT;
+			default -> JoinType.RIGHT;
 		};
 	}
 

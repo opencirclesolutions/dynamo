@@ -9,9 +9,9 @@ package org.dynamoframework.domain.model;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,9 @@ import java.util.stream.Stream;
 
 /**
  * An interface representing a model that contains an entity's metadata
- * 
- * @author bas.rutten
+ *
  * @param <T> the type of the entity
+ * @author bas.rutten
  */
 public interface EntityModel<T> {
 
@@ -194,7 +194,7 @@ public interface EntityModel<T> {
 	 */
 	String FALSE_REPRESENTATION = "falseRepresentation";
 
-    /**
+	/**
 	 * Attribute order in grid
 	 */
 	String GRID_ATTRIBUTE_ORDER = "gridAttributeOrder";
@@ -266,7 +266,7 @@ public interface EntityModel<T> {
 	 */
 	String MIN_VALUE = "minValue";
 
-    /**
+	/**
 	 * Whether to allow searching for multiple values in case of a MASTER attribute
 	 */
 	String MULTIPLE_SEARCH = "multipleSearch";
@@ -494,7 +494,7 @@ public interface EntityModel<T> {
 	 * model. The existing model will shift one position to the back of the list.
 	 * When the existing model is not found the attribute will be added to the end of
 	 * the list.
-	 * 
+	 *
 	 * @param attributeGroup The group to which the attribute model should be
 	 *                       registered
 	 * @param model          The model of the attribute
@@ -509,7 +509,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Looks up an attribute model by its name
-	 * 
+	 *
 	 * @param attributeName the name of the attribute
 	 * @return the attribute model, or null if this is not found
 	 */
@@ -517,7 +517,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Returns an attribute model based on the value of its actualSortPath
-	 * 
+	 *
 	 * @param actualSortPath the actual sort path
 	 * @return the attribute model, or null if this is not found
 	 */
@@ -530,7 +530,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Returns the attribute models for a certain group
-	 * 
+	 *
 	 * @param group the caption of the group
 	 * @return the attribute models that belong to this group
 	 */
@@ -541,7 +541,7 @@ public interface EntityModel<T> {
 	 * of the parameters is mandatory, when both are given both will be used in a
 	 * boolean AND. Will also look at the generic type of the attribute, e.g.
 	 * List<some generic type>.
-	 * 
+	 *
 	 * @param attributeType the attribute type
 	 * @param type          the type
 	 * @return the list of attribute models
@@ -559,7 +559,6 @@ public interface EntityModel<T> {
 	List<AttributeModel> getAttributeModelsSortedForSearch();
 
 	/**
-	 *
 	 * @return the entity-wide instructions for automatically filling a form using a LLM
 	 */
 	String getAutofillInstructions();
@@ -571,7 +570,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Return the textual description of an entity for the specified locale
-	 * 
+	 *
 	 * @param locale the locale
 	 * @return the description in the specified locale
 	 */
@@ -579,7 +578,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Returns the display name for a certain locale
-	 * 
+	 *
 	 * @param locale the locale
 	 * @return the display name in the specified locale
 	 */
@@ -587,7 +586,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Return the display name plural form of an entity for the specified locale
-	 * 
+	 *
 	 * @param locale the locale
 	 * @return the display name
 	 */
@@ -596,7 +595,7 @@ public interface EntityModel<T> {
 	/**
 	 * The name of the property that is used when displaying the entity inside a
 	 * select component (like a combo box) or a grid
-	 * 
+	 *
 	 * @return the name of the display property
 	 */
 	String getDisplayProperty();
@@ -612,7 +611,6 @@ public interface EntityModel<T> {
 	int getMaxSearchResults();
 
 	/**
-	 * 
 	 * @return the maximum nesting depth up to which to process attributes
 	 */
 	int getNestingDepth();
@@ -624,20 +622,20 @@ public interface EntityModel<T> {
 
 	/**
 	 * @return all attribute models for all attributes that are required for
-	 *         searching
+	 * searching
 	 */
 	List<AttributeModel> getRequiredForSearchingAttributeModels();
 
 	/**
 	 * Get the default sort order
-	 * 
+	 *
 	 * @return a map of attribute models for which sort orders are set
 	 */
 	Map<AttributeModel, Boolean> getSortOrder();
 
 	/**
 	 * Indicates whether an attribute group should be visible
-	 * 
+	 *
 	 * @param group    the attribute group
 	 * @param readOnly whether the group is in read-only mode
 	 * @return <code>true</code> if the group is visible, false otherwise
@@ -681,6 +679,7 @@ public interface EntityModel<T> {
 
 	/**
 	 * Returns the set of attribute models that match the provided predicate
+	 *
 	 * @param predicate the predicate
 	 * @return the list of matching attribute models
 	 */

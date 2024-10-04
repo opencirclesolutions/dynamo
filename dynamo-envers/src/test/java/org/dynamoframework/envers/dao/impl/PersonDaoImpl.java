@@ -26,5 +26,4 @@ public class PersonDaoImpl extends BaseDaoImpl<Integer, Person> implements Perso
 	}
 
 
-
 }

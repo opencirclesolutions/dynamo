@@ -15,9 +15,8 @@ package org.dynamoframework.envers.domain;
 
 /**
  * Revision types for auditing
- * 
- * @author bas.rutten
  *
+ * @author bas.rutten
  */
 public enum RevisionType {
 
@@ -25,7 +24,7 @@ public enum RevisionType {
 
 	/**
 	 * Translates the Envers revision type to the Dynamo revision type
-	 * 
+	 *
 	 * @param type the revision type to translate
 	 * @return the resulting revision type
 	 */

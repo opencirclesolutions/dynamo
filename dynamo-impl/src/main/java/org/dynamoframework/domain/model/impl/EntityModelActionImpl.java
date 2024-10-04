@@ -9,9 +9,9 @@ package org.dynamoframework.domain.model.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,48 +35,49 @@ import java.util.concurrent.ConcurrentHashMap;
 @Setter
 public class EntityModelActionImpl implements EntityModelAction {
 
-    private String id;
+	private String id;
 
-    private String methodName;
+	private String methodName;
 
-    @ToString.Exclude
-    private final List<AttributeModel> attributeModels = new ArrayList<>();
+	@ToString.Exclude
+	private final List<AttributeModel> attributeModels = new ArrayList<>();
 
-    private String defaultDisplayName;
+	private String defaultDisplayName;
 
-    private Class<?> entityClass;
+	private Class<?> entityClass;
 
-    private String reference;
+	private String reference;
 
-    private EntityModel<?> entityModel;
+	private EntityModel<?> entityModel;
 
-    private EntityModelActionType type;
+	private EntityModelActionType type;
 
-    private String icon;
+	private String icon;
 
-    private List<String> roles;
+	private List<String> roles;
 
-    private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
+	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
 
-    @Override
-    public String getDisplayName(Locale locale) {
-        return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);
-    }
-    private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack) {
-        // look up in message bundle and add to cache
-        if (!source.containsKey(locale.toString())) {
-            try {
-                ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
-                String str = rb.getString(id + "." + key);
-                source.put(locale.toString(), Optional.of(str));
-            } catch (MissingResourceException ex) {
-                source.put(locale.toString(), Optional.empty());
-            }
-        }
+	@Override
+	public String getDisplayName(Locale locale) {
+		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);
+	}
 
-        // look up or return fallback value
-        Optional<String> optional = source.get(locale.toString());
-        return optional.orElse(fallBack);
-    }
+	private String lookup(Map<String, Optional<String>> source, Locale locale, String key, String fallBack) {
+		// look up in message bundle and add to cache
+		if (!source.containsKey(locale.toString())) {
+			try {
+				ResourceBundle rb = ResourceBundle.getBundle("META-INF/entitymodel", locale);
+				String str = rb.getString(id + "." + key);
+				source.put(locale.toString(), Optional.of(str));
+			} catch (MissingResourceException ex) {
+				source.put(locale.toString(), Optional.empty());
+			}
+		}
+
+		// look up or return fallback value
+		Optional<String> optional = source.get(locale.toString());
+		return optional.orElse(fallBack);
+	}
 }
 

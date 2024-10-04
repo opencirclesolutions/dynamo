@@ -182,9 +182,9 @@ public class PersonRevisionDaoImplTest extends BackendIntegrationTest {
 			personRevisionDao.fetch(new Compare.Less("name", "Kevin"), (Pageable) null);
 			personRevisionDao.fetch(new Not(new Compare.Equal("name", "Kevin")), (Pageable) null);
 			personRevisionDao.fetch(new And(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
-					(Pageable) null);
+				(Pageable) null);
 			personRevisionDao.fetch(new Or(new Compare.Equal("name", "Kevin"), new Compare.Equal("name", "Bob")),
-					(Pageable) null);
+				(Pageable) null);
 		});
 	}
 

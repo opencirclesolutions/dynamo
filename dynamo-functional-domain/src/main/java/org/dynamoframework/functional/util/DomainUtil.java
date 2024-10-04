@@ -9,9 +9,9 @@ package org.dynamoframework.functional.util;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -30,9 +30,8 @@ import java.util.stream.Collectors;
 
 /**
  * Utility methods for dealing with domains
- * 
- * @author bas.rutten
  *
+ * @author bas.rutten
  */
 public final class DomainUtil {
 
@@ -43,7 +42,7 @@ public final class DomainUtil {
 
 	/**
 	 * Creates a new entity if it does not exist. Otherwise, returns the existing entity
-	 * 
+	 *
 	 * @param service       the service used to retrieve the item
 	 * @param clazz         the domain class
 	 * @param value         the value of the "name" attribute
@@ -51,7 +50,7 @@ public final class DomainUtil {
 	 * @return the existing or newly created entity
 	 */
 	public static <T extends Domain> T createIfNotExists(BaseService<?, T> service, Class<T> clazz, String value,
-                                                         boolean caseSensitive) {
+														 boolean caseSensitive) {
 		T entity = service.findByUniqueProperty(Domain.ATTRIBUTE_NAME, value, caseSensitive);
 		if (entity == null) {
 			entity = ClassUtils.instantiateClass(clazz);
@@ -63,7 +62,7 @@ public final class DomainUtil {
 
 	/**
 	 * Returns all domain entities that match the specified type
-	 * 
+	 *
 	 * @param clazz   the type
 	 * @param domains the set of all domain values
 	 * @return the set of matching entities
@@ -84,13 +83,13 @@ public final class DomainUtil {
 	/**
 	 * Updates a certain category of domain items, removing all current values and
 	 * replacing them by the new ones
-	 * 
+	 *
 	 * @param clazz     the domain type
 	 * @param domains   all current domain values
 	 * @param newValues the set of new values
 	 */
 	public static <T extends Domain> void updateDomains(Class<T> clazz, Collection<Domain> domains,
-			Collection<T> newValues) {
+														Collection<T> newValues) {
 		domains.removeIf(domain -> domain != null && domain.getClass().isAssignableFrom(clazz));
 		if (newValues != null) {
 			newValues.stream().filter(Objects::nonNull).forEach(domains::add);
@@ -100,14 +99,14 @@ public final class DomainUtil {
 	/**
 	 * Returns a string containing the descriptions of the supplied domain objects
 	 * (truncated after a number of items)
-	 * 
+	 *
 	 * @param domains the domains
 	 * @return the description string
 	 */
 	public static <T extends Domain> String getDomainDescriptions(MessageService messageService, Collection<T> domains,
-                                                                  Locale locale) {
+																  Locale locale) {
 		String result = domains.stream().map(Domain::getName).sorted().limit(MAX_DESCRIPTION_ITEMS)
-				.collect(Collectors.joining(", "));
+			.collect(Collectors.joining(", "));
 		if (domains.size() > MAX_DESCRIPTION_ITEMS) {
 			result += messageService.getMessage("dynamoframework.and.others", locale, domains.size() - MAX_DESCRIPTION_ITEMS);
 		}

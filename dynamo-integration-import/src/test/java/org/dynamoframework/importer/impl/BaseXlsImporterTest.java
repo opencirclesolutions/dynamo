@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,7 +41,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test that a simple row count works
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -53,7 +53,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test that creating a simple (non-streaming) workbook works
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -82,7 +82,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test that creating a simple (non-streaming) workbook works
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -144,7 +144,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test that an exception is raised if a row doesn't have enough columns
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -164,7 +164,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test that an exception occurs if a value for a required field is missing
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -183,7 +183,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test that an exception occurs if an illegal negative value is found
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -202,7 +202,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test that creating a simple (non-streaming) workbook works
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test
@@ -238,7 +238,7 @@ public class BaseXlsImporterTest {
 
 	/**
 	 * Test whether a certain row contains a cell with a certain string value
-	 * 
+	 *
 	 * @throws IOException
 	 */
 	@Test

@@ -9,9 +9,9 @@ package org.dynamoframework.importer.impl;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,7 +64,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		List<String> errors = new ArrayList<>();
 
 		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
-				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, false) {
+			messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, false) {
 
 			@Override
 			protected String extractKey(PersonDTO record) {
@@ -90,7 +90,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		List<String> errors = new ArrayList<>();
 
 		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
-				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
+			messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, false) {
 
 			@Override
 			protected String extractKey(PersonDTO record) {
@@ -108,7 +108,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		List<String> errors = new ArrayList<>();
 
 		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
-				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, true) {
+			messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 9, true) {
 
 			@Override
 			protected String extractKey(PersonDTO record) {
@@ -129,7 +129,7 @@ public class XlsRowImportTemplateTest extends BaseMockitoTest {
 		List<String> errors = new ArrayList<>();
 
 		XlsRowImportTemplate<String, PersonDTO> template = new XlsRowImportTemplate<>(importer,
-				messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
+			messageService, bytes, errors, PersonDTO.class, 0, 0, 1, 8, true) {
 
 			@Override
 			protected String extractKey(PersonDTO record) {

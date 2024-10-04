@@ -9,9 +9,9 @@ package org.dynamoframework.config;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -41,41 +41,41 @@ import org.springframework.context.annotation.Primary;
 @RequiredArgsConstructor
 public class JacksonConfig {
 
-    private final EntityModelFactory entityModelFactory;
+	private final EntityModelFactory entityModelFactory;
 
-    @Bean
-    @Primary
-    public ObjectMapper objectMapper() {
-        ObjectMapper mapper = new ObjectMapper();
+	@Bean
+	@Primary
+	public ObjectMapper objectMapper() {
+		ObjectMapper mapper = new ObjectMapper();
 
-        mapper.registerModule(new JavaTimeModule());
-        mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
-        mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
-        mapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);
-        mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
+		mapper.registerModule(new JavaTimeModule());
+		mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+		mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		mapper.configure(JsonGenerator.Feature.WRITE_BIGDECIMAL_AS_PLAIN, true);
+		mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
 
-        // always hide fields like "version"
-        mapper.setMixInResolver(new ClassIntrospector.MixInResolver() {
-            @Override
-            public Class<?> findMixInClassFor(Class<?> cls) {
-                return HidePropertiesMixin.class;
-            }
+		// always hide fields like "version"
+		mapper.setMixInResolver(new ClassIntrospector.MixInResolver() {
+			@Override
+			public Class<?> findMixInClassFor(Class<?> cls) {
+				return HidePropertiesMixin.class;
+			}
 
-            @Override
-            public ClassIntrospector.MixInResolver copy() {
-                return this;
-            }
-        });
+			@Override
+			public ClassIntrospector.MixInResolver copy() {
+				return this;
+			}
+		});
 
-        mapper.registerModule(new SimpleModule() {
+		mapper.registerModule(new SimpleModule() {
 
-            @Override
-            public void setupModule(SetupContext context) {
-                super.setupModule(context);
-                context.addBeanSerializerModifier(new CustomSerializerModifier(entityModelFactory));
-            }
-        });
+			@Override
+			public void setupModule(SetupContext context) {
+				super.setupModule(context);
+				context.addBeanSerializerModifier(new CustomSerializerModifier(entityModelFactory));
+			}
+		});
 
-        return mapper;
-    }
+		return mapper;
+	}
 }

@@ -9,9 +9,9 @@ package org.dynamoframework.dao;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -28,9 +28,9 @@ import java.util.List;
 /**
  * Interface that all DAO objects must implement
  *
- * @author bas.rutten
  * @param <ID> The type of the primary key of the entity managed by this DAO
  * @param <T>  The type of the entity managed by this DAO
+ * @author bas.rutten
  */
 public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 
@@ -90,7 +90,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param orders the desired sort order
 	 * @param joins  the desired relations to fetch
 	 * @return a list of entities that match the provided filter, sorted according
-	 *         to the provided sort orders
+	 * to the provided sort orders
 	 */
 	List<T> fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
 
@@ -119,7 +119,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param ids        the IDs of the entities to fetch
 	 * @param sortOrders the sort orders that must be used
 	 * @param joins      the desired relations to fetch
-	 * @return the list of entities 
+	 * @return the list of entities
 	 */
 	List<T> fetchByIds(List<ID> ids, SortOrders sortOrders, FetchJoinInformation... joins);
 
@@ -130,7 +130,6 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 * @param value         the value of the property
 	 * @param caseSensitive indicates whether the value is case-sensitive
 	 * @param joins         the desired relations to fetch
-	 *
 	 * @return the entity, or <code>null</code> if no entity can be found
 	 */
 	T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive, FetchJoinInformation... joins);
@@ -173,7 +172,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	 *
 	 * @param id the ID
 	 * @return the entity identified by the ID, or <code>null</code> if it cannot be
-	 *         found
+	 * found
 	 */
 	T findById(ID id);
 
@@ -220,7 +219,7 @@ public interface BaseDao<ID, T extends AbstractEntity<ID>> {
 	/**
 	 * Returns the IDS of the entities that match the provided filter
 	 *
-	 * @param filter the filter
+	 * @param filter     the filter
 	 * @param sortOrders the sort orders
 	 * @return the list of IDs
 	 */
