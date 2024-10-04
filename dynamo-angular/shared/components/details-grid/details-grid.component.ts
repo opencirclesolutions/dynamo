@@ -1,22 +1,3 @@
-/*-
- * #%L
- * Dynamo Framework
- * %%
- * Copyright (C) 2014 - 2024 Open Circle Solutions
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { SimpleChanges, TemplateRef } from '@angular/core';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
@@ -51,6 +32,7 @@ import { BaseCompositeComponent } from '../base-composite.component';
 import { TranslateService } from '@ngx-translate/core';
 import { AuthenticationService } from '../../service/authentication-service';
 import { SelectOption } from '../../model/select-option';
+import { concat, Observable, of, zip } from 'rxjs';
 
 /**
  * A component for displaying a table/grid used for editing a one-to-many relationship
@@ -64,6 +46,13 @@ export class DetailsGridComponent
   extends BaseCompositeComponent
   implements OnInit, OnChanges
 {
+
+  // parent entity name
+  @Input({required:true}) parentEntityName!: string;
+  // parent reference name
+  @Input() parentReference?: string;
+  // the name of the attribute
+  @Input({required:true}) attributeName!: string;
   // the entity model
   @Input() override entityModel?: EntityModelResponse = undefined;
   // the objects/rows that are being edited
@@ -76,6 +65,11 @@ export class DetailsGridComponent
   @Input() formArray: FormArray | undefined;
   // custom validators
   @Input() customValidatorTemplate?: TemplateRef<any>;
+  // mapping of attribute names to nested entity model. Used for binding nested forms
+  nestedEntityModelMap: Map<string, EntityModelResponse> = new Map<
+    string,
+    EntityModelResponse
+  >();
 
   index: number = 0;
 
@@ -135,9 +129,7 @@ export class DetailsGridComponent
     this.setupEnums(model);
     this.setupLookups(model);
 
-
     model.attributeNamesOrderedForGrid.forEach((attributeName) => {
-
       let attrib = this.entityModel
         ?.attributeModels!.filter((am) => am.visibleInForm && am.name !== 'id')
         .find((am) => am.name == attributeName);
@@ -159,6 +151,38 @@ export class DetailsGridComponent
         this.attributeModels.push(attrib);
       }
     });
+
+    // load nested entity models
+    let observables: Observable<
+      [AttributeModelResponse, EntityModelResponse]
+    >[] = this.attributeModels
+      .filter((am) => this.isMaster(am))
+      .map((am) => this.getNestedModel(am));
+
+    if (observables.length > 0) {
+      concat(...observables)
+        // .pipe(
+        //   finalize(() => {
+        //     this.bindExistingEntity(false);
+        //     this.initDone = true;
+        //   })
+        // )
+        .subscribe((p) => {
+          if (Array.isArray(p)) {
+            this.nestedEntityModelMap.set(p[0].name, p[1]);
+          }
+        });
+    }
+  }
+
+  getNestedModel(
+    am: AttributeModelResponse
+  ): Observable<[AttributeModelResponse, EntityModelResponse]> {
+    return this.entityModelService
+      .getNestedEntityModel2(this.parentEntityName, this.attributeName, am.name,
+          this.parentReference
+      )
+      .pipe((obs) => zip(of(am), obs));
   }
 
   getFormControlName(am: AttributeModelResponse): string {
@@ -287,5 +311,11 @@ export class DetailsGridComponent
 
   getTotalRecords() {
     return this.index;
+  }
+
+  getNestedEntityModel(
+    am: AttributeModelResponse
+  ): EntityModelResponse | undefined {
+    return this.nestedEntityModelMap.get(am.name);
   }
 }

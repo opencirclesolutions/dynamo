@@ -35,6 +35,7 @@ import java.util.Map;
 @Data
 @Validated
 public class DynamoConfigurationProperties implements Serializable, DynamoProperties {
+
     @Serial
     private static final long serialVersionUID = -8329492319537273489L;
     private boolean capitalizePropertyNames = true;
@@ -47,8 +48,19 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
     @Data
     @ConfigurationProperties(prefix = "dynamoframework.defaults")
     public static class DefaultConfigurationProperties implements Serializable, DefaultProperties {
+
         @Serial
         private static final long serialVersionUID = -3229613809797417359L;
+
+        /**
+         * Whether to scan the class path for entities
+         */
+        private boolean entityClassPathScan = true;
+
+        /**
+         * Explicit packages containing entities
+         */
+        private String entityPackages;
 
         /**
          * Indicates the default mode to use for boolean components

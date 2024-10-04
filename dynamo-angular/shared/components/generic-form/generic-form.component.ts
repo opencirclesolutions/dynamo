@@ -1,22 +1,3 @@
-/*-
- * #%L
- * Dynamo Framework
- * %%
- * Copyright (C) 2014 - 2024 Open Circle Solutions
- * %%
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- * 
- *      http://www.apache.org/licenses/LICENSE-2.0
- * 
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- * #L%
- */
 import {
   Component,
   ContentChildren,
@@ -397,7 +378,7 @@ export class GenericFormComponent
     am: AttributeModelResponse,
     control: AbstractControl<any, any>
   ) {
-    let values: any[] = this.editObject[am.name];
+    let values: any[] = getNestedValue(this.editObject, am.name);
     let matches: SelectOption[] = [];
     if (values) {
       // supplied values are objects containing an ID field
@@ -858,7 +839,7 @@ export class GenericFormComponent
     }
 
     let display: string = this.entityModel?.displayProperty || '';
-    let displayProp = display ? this.editObject[display] : 'Unknown';
+    let displayProp = display ? getNestedValue(this.editObject, display) : 'Unknown';
     let captionKey = this.readOnly
       ? 'view_entity_caption'
       : 'update_entity_caption';
@@ -1180,13 +1161,6 @@ export class GenericFormComponent
     this.bindFields(event);
   }
 
-  isAttributeVisible(am: AttributeModelResponse) {
-    if (this.attributeVisible) {
-      return this.attributeVisible(am, this.editObject, this.mainForm);
-    }
-    return true;
-  }
-
   /**
    * Determines whether to display an input field at full width
    * @param am the attribute model
@@ -1195,6 +1169,18 @@ export class GenericFormComponent
   showFullWidth(am: AttributeModelResponse): boolean {
     return (am.groupTogetherWith && am.groupTogetherWith?.length > 0)
     || this.isGroupedWithOther(this.visibleAttributeModels, am)
+  }
+
+  /**
+   * Determines whether an attribute is currently visible
+   * @param am the attribute model
+   * @returns
+   */
+  isAttributeVisible(am: AttributeModelResponse) {
+    if (this.attributeVisible) {
+      return this.attributeVisible(am, this.editObject, this.mainForm);
+    }
+    return true;
   }
 
 

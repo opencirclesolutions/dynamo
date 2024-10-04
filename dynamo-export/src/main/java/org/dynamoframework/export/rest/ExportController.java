@@ -40,6 +40,7 @@ import org.dynamoframework.export.type.ExportMode;
 import org.dynamoframework.filter.And;
 import org.dynamoframework.rest.crud.SearchService;
 import org.dynamoframework.rest.crud.search.SearchModel;
+import org.dynamoframework.service.impl.EntityScanner;
 import org.dynamoframework.utils.ClassUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -62,6 +63,8 @@ import java.util.Locale;
 @CrossOrigin(exposedHeaders = {"Content-Type", "Content-Disposition"})
 @Tag(name = "Export", description = "Dynamo export controller")
 public class ExportController {
+
+    private final EntityScanner entityScanner;
 
     private final EntityModelFactory entityModelFactory;
 
@@ -164,7 +167,7 @@ public class ExportController {
 
     @SuppressWarnings("unchecked")
     private <ID, T extends AbstractEntity<ID>> EntityModel<T> findEntityModel(String entityName, String reference) {
-        Class<T> clazz = (Class<T>) ClassUtils.findClass(entityName);
+        Class<T> clazz = (Class<T>) entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity for %s could not be found".formatted(entityName));
         }

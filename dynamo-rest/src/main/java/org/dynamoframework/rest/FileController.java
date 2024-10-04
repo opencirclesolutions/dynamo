@@ -38,6 +38,7 @@ import org.dynamoframework.exception.OcsNotFoundException;
 import org.dynamoframework.service.BaseService;
 import org.dynamoframework.service.ServiceLocator;
 import org.dynamoframework.service.ServiceLocatorFactory;
+import org.dynamoframework.service.impl.EntityScanner;
 import org.dynamoframework.utils.ClassUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -64,6 +65,8 @@ import java.util.Base64;
 public class FileController {
 
     private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
+
+    private final EntityScanner entityScanner;
 
     private final EntityModelFactory entityModelFactory;
 
@@ -209,7 +212,7 @@ public class FileController {
 
     @SuppressWarnings("unchecked")
     private <ID, T extends AbstractEntity<ID>> EntityModel<T> findEntityModel(String entityName) {
-        Class<T> clazz = (Class<T>) ClassUtils.findClass(entityName);
+        Class<T> clazz = (Class<T>) entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity for %s could not be found".formatted(entityName));
         }

@@ -24,6 +24,7 @@ import lombok.Getter;
 import org.dynamoframework.domain.model.EntityModel;
 import org.dynamoframework.domain.model.EntityModelFactory;
 import org.dynamoframework.exception.OcsNotFoundException;
+import org.dynamoframework.service.impl.EntityScanner;
 import org.dynamoframework.utils.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -32,6 +33,9 @@ public abstract class BaseController {
     @Autowired
     @Getter
     private EntityModelFactory entityModelFactory;
+
+    @Autowired
+    private EntityScanner entityScanner;
 
     /**
      * Looks up the class corresponding to the provided entity name. Throws an exception when no
@@ -42,7 +46,7 @@ public abstract class BaseController {
      */
     @SuppressWarnings("unchecked")
     protected <T> Class<T> findClass(String entityName) {
-        Class<T> clazz = (Class<T>) ClassUtils.findClass(entityName);
+        Class<T> clazz = (Class<T>) entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Endpoint for entity %s not found".formatted(entityName));
         }

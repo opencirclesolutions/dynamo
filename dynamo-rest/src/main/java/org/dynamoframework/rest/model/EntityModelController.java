@@ -32,7 +32,7 @@ import org.dynamoframework.domain.model.EntityModelAction;
 import org.dynamoframework.domain.model.EntityModelFactory;
 import org.dynamoframework.exception.OCSValidationException;
 import org.dynamoframework.exception.OcsNotFoundException;
-import org.dynamoframework.utils.ClassUtils;
+import org.dynamoframework.service.impl.EntityScanner;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -47,6 +47,8 @@ public class EntityModelController {
 
     private final EntityModelMapper entityModelMapper;
 
+    private final EntityScanner entityScanner;
+
     /**
      * Retrieves an entity model based on the name of the entity
      *
@@ -58,7 +60,7 @@ public class EntityModelController {
     @Operation(summary = "Retrieve an entity model")
     public EntityModelResponse getEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
                                               @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
-        Class<?> clazz = ClassUtils.findClass(entityName);
+        Class<?> clazz = entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
         }
@@ -68,9 +70,9 @@ public class EntityModelController {
     }
 
     /**
-     * Retrieves a nested entity model based on the main attribute name and the name of the attribute
+     * Retrieves a nested entity model based on entity name and the name of the attribute
      *
-     * @param entityName    the main entity name
+     * @param entityName    the entity name
      * @param attributeName the name of the attribute
      * @return the entity model
      */
@@ -79,18 +81,28 @@ public class EntityModelController {
     public EntityModelResponse getNestedEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
                                                     @PathVariable @Parameter(description = "The name of the attribute") String attributeName,
                                                     @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
-        Class<?> clazz = ClassUtils.findClass(entityName);
-        if (clazz == null) {
-            throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
-        }
+        return entityModelMapper.mapEntityModel(findNestedEntityModel(entityName, attributeName, reference));
+    }
 
-        EntityModel<?> model = getModel(reference, clazz);
-        AttributeModel am = model.getAttributeModel(attributeName);
+    /**
+     * Retrieves a nested entity model based on entity name and two nested attributes
+     *
+     * @param entityName    the main entity name
+     * @param attributeName the name of the attribute
+     * @return the entity model
+     */
+    @GetMapping("/{entityName}/attribute/{attributeName}/attribute/{secondAttribute}")
+    @Operation(summary = "Retrieve a nested entity model")
+    public EntityModelResponse getNestedEntityModel2(@PathVariable @Parameter(description = "The name of the entity") String entityName,
+                                                     @PathVariable @Parameter(description = "The name of the attribute") String attributeName,
+                                                     @PathVariable @Parameter(description = "The name of the second attribute") String secondAttribute,
+                                                     @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference) {
+        EntityModel<?> nestedModel = findNestedEntityModel(entityName, attributeName, reference);
+        AttributeModel am = nestedModel.getAttributeModel(secondAttribute);
         if (am == null) {
-            throw new OcsNotFoundException("Attribute model for attribute %s could not be found".formatted(attributeName));
+            throw new OcsNotFoundException("Attribute model for attribute %s could not be found".formatted(secondAttribute));
         }
         EntityModel<?> nested = am.getNestedEntityModel();
-
         return entityModelMapper.mapEntityModel(nested);
     }
 
@@ -106,7 +118,7 @@ public class EntityModelController {
     public EntityModelResponse getActionEntityModel(@PathVariable @Parameter(description = "The name of the entity") String entityName,
                                                     @PathVariable @Parameter(description = "The ID of the action") String actionId,
                                                     @RequestParam(required = false) String reference) {
-        Class<?> clazz = ClassUtils.findClass(entityName);
+        Class<?> clazz = entityScanner.findClass(entityName);
         if (clazz == null) {
             throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
         }
@@ -121,9 +133,24 @@ public class EntityModelController {
         return entityModelMapper.mapEntityModel(action.getEntityModel());
     }
 
-    private EntityModel<?> getModel(@RequestParam(required = false) String reference, Class<?> clazz) {
+    private EntityModel<?> getModel(String reference, Class<?> clazz) {
         return StringUtils.isEmpty(reference) ? entityModelFactory.getModel(clazz)
                 : entityModelFactory.getModel(reference, clazz);
+    }
+
+    private EntityModel<?> findNestedEntityModel(String entityName, String attributeName, String reference) {
+        Class<?> clazz = entityScanner.findClass(entityName);
+        if (clazz == null) {
+            throw new OcsNotFoundException("Entity model for class %s could not be found".formatted(entityName));
+        }
+
+        EntityModel<?> model = getModel(reference, clazz);
+        AttributeModel am = model.getAttributeModel(attributeName);
+        if (am == null) {
+            throw new OcsNotFoundException("Attribute model for attribute %s could not be found".formatted(attributeName));
+        }
+        return am.getNestedEntityModel();
+
     }
 
 
