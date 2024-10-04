@@ -109,13 +109,17 @@ are different for your application, you can modify them in the
 
 === Obtaining the sources for the example project
 
-Navigate to the root of your workspace directory and execute the
-following command:
+You will need to clone to Git repositories containing the project source code
 
-*TODO describe how/where to get the source code(s)*
+- https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-web contains the code for the back-end
+application
+- https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-angular contains the code for the
+Angular front-end
+
+**IN BOTH CASES YOU WILL NEED TO CHECK OUT THE DYNAMO-TRAINING BRANCH**
 
 If your Postgresql settings are different from the default, open the
-“application.properties” file from the gts-ui project and modify the
+“application.properties” file from the gts-web project and modify the
 following properties so that they match your values:
 
 [source,properties]
@@ -298,7 +302,7 @@ start the application, then open a web browser and navigate to
 
 You will see a mostly empty screen, and be given the option to log into
 the application (either via the button in the top right, or by pressing
-the button on the login screen.)
+the button on the login screen).
 
 After logging in, you will be able to view your first screen, which is a
 search screen that allows you to view the organizations that are stored

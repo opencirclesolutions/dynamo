@@ -848,7 +848,7 @@ show up next to the preview of the image in a file upload component.
 In message bundle:
 [source,properties]
 --
-editableType = READ_ONLY | CREATE_ONLY | EDITABLE | HIDDEN
+editable = READ_ONLY | CREATE_ONLY | EDITABLE | HIDDEN
 --
 
 The `editableType` setting specifies when an attribute can be edited.

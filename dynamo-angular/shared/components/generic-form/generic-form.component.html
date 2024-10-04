@@ -292,12 +292,14 @@
         >
         </app-generic-field>
         <app-details-grid
-          entityName="ignored"
+          [entityName]="am.lookupEntityName"
+          [attributeName]="am.name"
           [entityModel]="getNestedEntityModel(am)"
           [rows]="editObject[am.name]"
           [formBuilder]="this.formBuilder"
           [formArray]="getFormArray(am)"
           [locale]="locale"
+          [parentEntityName]="entityName"
           *ngIf="isNestedDetail(am) && getNestedEntityModel(am)"
         ></app-details-grid>
         <app-file-upload

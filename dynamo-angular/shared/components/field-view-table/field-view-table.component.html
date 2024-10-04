@@ -11,17 +11,17 @@
   [rowsPerPageOptions]="[10, 25, 50]"
   *ngIf="rows && rows.length > 0"
 >
-  <ng-template pTemplate="header" *ngIf="entityModel && initDone">
+  <ng-template pTemplate="header">
     <tr>
       <th
-        *ngFor="let am of this.attributeModels"
-        scope="am"
+        *ngFor="let col of attributeModels"
+        scope="col"
         [ngStyle]=""
         [pSortableColumnDisabled]="true"
         [pSortableColumn]="''"
       >
         <ng-container>
-          {{ am.displayNames[locale] }} {{ am.required ? "*" : "" }}
+          {{ col.displayNames[locale] }} {{ col.required ? "*" : "" }}
         </ng-container>
       </th>
     </tr>

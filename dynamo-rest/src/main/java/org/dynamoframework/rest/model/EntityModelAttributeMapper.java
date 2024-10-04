@@ -126,7 +126,7 @@ public class EntityModelAttributeMapper {
             } else {
                 log.warn("Expected a nested entity model for a MASTER or DETAIL attribute: {}",
                         model.getName());
-                throw new OCSValidationException("Expected a nested entity model for a MASTER or DETAIL attribute");
+                //throw new OCSValidationException("Expected a nested entity model for a MASTER or DETAIL attribute");
             }
         }
 

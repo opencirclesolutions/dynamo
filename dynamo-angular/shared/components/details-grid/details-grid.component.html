@@ -99,7 +99,7 @@
                 ngDefaultControl
               ></app-timestamp-field>
             </div>
-            <div *ngIf="isMaster(am)">
+            <div *ngIf="isMaster(am) && getNestedEntityModel(am)">
               <app-select-entity
                 [am]="am"
                 [options]="lookupEntities(am.lookupEntityName!)"
@@ -107,6 +107,7 @@
                 [formControl]="getFormControl(am, rowIndex)"
                 [nested]="true"
                 *ngIf="getFormControl(am, rowIndex)"
+                [entityModel]="getNestedEntityModel(am)"
                 ngDefaultControl
               >
               </app-select-entity>

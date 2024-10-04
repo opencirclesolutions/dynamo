@@ -87,6 +87,10 @@ export abstract class BaseEntityComponent extends BaseComponent {
       return false;
     }
 
+    if (!this.entityModel.createAllowed) {
+      return false;
+    }
+
     if (!this.entityModel.writeRoles || this.entityModel.writeRoles.length == 0) {
       return true;
     };
