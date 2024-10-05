@@ -9,7 +9,7 @@
     <parent>
         <groupId>org.dynamoframework</groupId>
         <artifactId>dynamo-parent</artifactId>
-        <version>4.0.0-SNAPSHOT</version>
+        <version>4.0.0-RC1-SNAPSHOT</version>
     </parent>
     <properties>
         <stagingDirectory>../target/staging/maven</stagingDirectory>
