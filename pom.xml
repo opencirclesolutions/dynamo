@@ -291,6 +291,7 @@
                         <arguments>-Prelease</arguments>
                         <!-- Release to the Central Repository. -->
                         <goals>deploy nexus-staging:release</goals>
+                        <tagNameFormat>dynamoframework-@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
                 <plugin>
