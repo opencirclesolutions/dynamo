@@ -24,6 +24,7 @@ import lombok.Getter;
 import org.dynamoframework.domain.model.EntityModel;
 import org.dynamoframework.domain.model.EntityModelFactory;
 import org.dynamoframework.exception.OcsNotFoundException;
+import org.dynamoframework.service.impl.EntityScanner;
 import org.dynamoframework.utils.ClassUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -33,31 +34,34 @@ public abstract class BaseController {
 	@Getter
 	private EntityModelFactory entityModelFactory;
 
-	/**
-	 * Looks up the class corresponding to the provided entity name. Throws an exception when no
-	 * matching class could be found
-	 *
-	 * @param entityName the entity name
-	 * @return the class
-	 */
-	@SuppressWarnings("unchecked")
-	protected <T> Class<T> findClass(String entityName) {
-		Class<T> clazz = (Class<T>) ClassUtils.findClass(entityName);
-		if (clazz == null) {
-			throw new OcsNotFoundException("Endpoint for entity %s not found".formatted(entityName));
-		}
-		return clazz;
-	}
+    @Autowired
+    private EntityScanner entityScanner;
 
-	/**
-	 * Retrieves the entity model for a class
-	 *
-	 * @param reference the reference to the entity model
-	 * @param clazz     the class
-	 * @return the entity model
-	 */
-	protected <T> EntityModel<T> findEntityModel(String reference, Class<T> clazz) {
-		return reference == null ? entityModelFactory.getModel(clazz) :
-			entityModelFactory.getModel(reference, clazz);
-	}
+    /**
+     * Looks up the class corresponding to the provided entity name. Throws an exception when no
+     * matching class could be found
+     *
+     * @param entityName the entity name
+     * @return the class
+     */
+    @SuppressWarnings("unchecked")
+    protected <T> Class<T> findClass(String entityName) {
+        Class<T> clazz = (Class<T>) entityScanner.findClass(entityName);
+        if (clazz == null) {
+            throw new OcsNotFoundException("Endpoint for entity %s not found".formatted(entityName));
+        }
+        return clazz;
+    }
+
+    /**
+     * Retrieves the entity model for a class
+     *
+     * @param reference the reference to the entity model
+     * @param clazz     the class
+     * @return the entity model
+     */
+    protected <T> EntityModel<T> findEntityModel(String reference, Class<T> clazz) {
+        return reference == null ? entityModelFactory.getModel(clazz) :
+                entityModelFactory.getModel(reference, clazz);
+    }
 }

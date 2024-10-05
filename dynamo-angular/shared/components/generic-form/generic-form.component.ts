@@ -397,7 +397,7 @@ export class GenericFormComponent
     am: AttributeModelResponse,
     control: AbstractControl<any, any>
   ) {
-    let values: any[] = this.editObject[am.name];
+    let values: any[] = getNestedValue(this.editObject, am.name);
     let matches: SelectOption[] = [];
     if (values) {
       // supplied values are objects containing an ID field
@@ -858,7 +858,7 @@ export class GenericFormComponent
     }
 
     let display: string = this.entityModel?.displayProperty || '';
-    let displayProp = display ? this.editObject[display] : 'Unknown';
+    let displayProp = display ? getNestedValue(this.editObject, display) : 'Unknown';
     let captionKey = this.readOnly
       ? 'view_entity_caption'
       : 'update_entity_caption';
@@ -1180,13 +1180,6 @@ export class GenericFormComponent
     this.bindFields(event);
   }
 
-  isAttributeVisible(am: AttributeModelResponse) {
-    if (this.attributeVisible) {
-      return this.attributeVisible(am, this.editObject, this.mainForm);
-    }
-    return true;
-  }
-
   /**
    * Determines whether to display an input field at full width
    * @param am the attribute model
@@ -1195,6 +1188,18 @@ export class GenericFormComponent
   showFullWidth(am: AttributeModelResponse): boolean {
     return (am.groupTogetherWith && am.groupTogetherWith?.length > 0)
     || this.isGroupedWithOther(this.visibleAttributeModels, am)
+  }
+
+  /**
+   * Determines whether an attribute is currently visible
+   * @param am the attribute model
+   * @returns
+   */
+  isAttributeVisible(am: AttributeModelResponse) {
+    if (this.attributeVisible) {
+      return this.attributeVisible(am, this.editObject, this.mainForm);
+    }
+    return true;
   }
 
 

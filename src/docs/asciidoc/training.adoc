@@ -105,12 +105,17 @@ _application.properties_ file.
 
 === Obtaining the sources for the example project
 
-Navigate to the root of your workspace directory and execute the
-following command:
+You will need to clone to Git repositories containing the project source code
 
-*TODO describe how/where to get the source code(s)*
+- https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-web contains the code for the back-end
+application
+- https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-angular contains the code for the
+Angular front-end
+
+**IN BOTH CASES YOU WILL NEED TO CHECK OUT THE DYNAMO-TRAINING BRANCH**
 
 If your Postgresql settings are different from the default, open the
+“application.properties” file from the gts-web project and modify the
 _application.properties_ file from the gts-ui project and modify the
 following properties so that they match your values:
 
@@ -304,7 +309,7 @@ Then open a web browser and navigate to _http://localhost:4200_.
 
 You will see a mostly empty screen, and be given the option to log into
 the application (either via the button in the top right, or by pressing
-the button on the login screen.)
+the button on the login screen).
 
 *TODO: Authentication using something other than SSO for the training?*
 
@@ -2231,23 +2236,7 @@ example, we could define the following in the `Person` class:
 
 This will define a collection of integers that can be used to store a
 person’s lucky numbers. As you can see, these are stored in the database
-in a table named `person_lucky_numbers`. The definition for this table
-is as follows:
-
-[source,sql]
---
-CREATE TABLE person_lucky_numbers(
-  id serial NOT NULL,
-  person_id integer,
-  lucky_number integer,
-  primary key(id)
-);
-
-ALTER TABLE person_lucky_numbers ADD CONSTRAINT
-fk_person_lucky_numbers_person FOREIGN KEY (person_id) REFERENCES person(id) ON DELETE CASCADE;
---
-
-Go ahead and execute these commands in your SQL client.
+in a table named “person_lucky_numbers” (which is already present).
 
 Restart the application and navigate to the screen for managing persons.
 Select a Person and verify that you will now see a so-called “chips”

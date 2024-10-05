@@ -40,6 +40,7 @@ import org.dynamoframework.export.type.ExportMode;
 import org.dynamoframework.filter.And;
 import org.dynamoframework.rest.crud.SearchService;
 import org.dynamoframework.rest.crud.search.SearchModel;
+import org.dynamoframework.service.impl.EntityScanner;
 import org.dynamoframework.utils.ClassUtils;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
@@ -63,125 +64,127 @@ import java.util.Locale;
 @Tag(name = "Export", description = "Dynamo export controller")
 public class ExportController {
 
-	private final EntityModelFactory entityModelFactory;
+    private final EntityScanner entityScanner;
 
-	private final ExportService exportService;
+    private final EntityModelFactory entityModelFactory;
 
-	private final SearchService searchService;
+    private final ExportService exportService;
 
-	private final CustomGeneratorService customGeneratorService;
+    private final SearchService searchService;
 
-	/**
-	 * Exports data to Excel
-	 *
-	 * @param entityName  the name of the entity to export
-	 * @param reference   optional entity model reference
-	 * @param searchModel the search model used to restrict the entries
-	 * @param locale      the locale
-	 * @param exportMode  the export mode
-	 * @param <ID>
-	 * @param <T>
-	 * @return the binary representation of the export
-	 */
-	@PostMapping(path = "/excel/{entityName}")
-	@SuppressWarnings("unchecked")
-	@Operation(summary = "Exports data to Excel")
-	public <ID extends Serializable, T extends AbstractEntity<ID>> ResponseEntity<Resource> exportExcel(
-		@PathVariable("entityName") @Parameter(description = "The name of the entity to export") String entityName,
-		@RequestParam(required = false) @Parameter(description = "The entity model reference") String reference,
-		@RequestBody @Valid @Parameter(description = "The search model used to restrict the entries") SearchModel searchModel,
-		@RequestParam(required = false, defaultValue = "en") @Parameter(description = "The locale to use") String locale,
-		@RequestParam @Parameter(description = "The export mode") ExportMode exportMode) {
+    private final CustomGeneratorService customGeneratorService;
 
-		EntityModel<T> entityModel = findEntityModel(entityName, reference);
-		if (!entityModel.isExportAllowed()) {
-			throw new OCSValidationException("Exporting this entity is not allowed");
-		}
+    /**
+     * Exports data to Excel
+     *
+     * @param entityName  the name of the entity to export
+     * @param reference   optional entity model reference
+     * @param searchModel the search model used to restrict the entries
+     * @param locale      the locale
+     * @param exportMode  the export mode
+     * @param <ID>
+     * @param <T>
+     * @return the binary representation of the export
+     */
+    @PostMapping(path = "/excel/{entityName}")
+    @SuppressWarnings("unchecked")
+    @Operation(summary = "Exports data to Excel")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> ResponseEntity<Resource> exportExcel(
+            @PathVariable("entityName") @Parameter(description = "The name of the entity to export") String entityName,
+            @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference,
+            @RequestBody @Valid @Parameter(description = "The search model used to restrict the entries") SearchModel searchModel,
+            @RequestParam(required = false, defaultValue = "en") @Parameter(description = "The locale to use") String locale,
+            @RequestParam @Parameter(description = "The export mode") ExportMode exportMode) {
 
-		And filter = searchService.createFilter(searchModel, entityModel);
-		SortOrders sortOrders = searchService.createSortOrders(searchModel, entityModel);
+        EntityModel<T> entityModel = findEntityModel(entityName, reference);
+        if (!entityModel.isExportAllowed()) {
+            throw new OCSValidationException("Exporting this entity is not allowed");
+        }
 
-		Locale loc = new Locale.Builder().setLanguage(locale).build();
+        And filter = searchService.createFilter(searchModel, entityModel);
+        SortOrders sortOrders = searchService.createSortOrders(searchModel, entityModel);
 
-		CustomXlsStyleGenerator<ID, T> customGenerator = (CustomXlsStyleGenerator<ID, T>) customGeneratorService.getCustomGenerator(entityModel.getEntityClass(), reference);
-		byte[] bytes = exportService.exportExcel(entityModel, exportMode,
-			filter, sortOrders.getOrders(), customGenerator == null ? null : () -> customGenerator, new Locale.Builder().setLanguage(locale).build(),
-			entityModel.getFetchJoins().toArray(new FetchJoinInformation[0]));
+        Locale loc = new Locale.Builder().setLanguage(locale).build();
 
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
-		return ResponseEntity.ok()
-			.header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=%s".formatted(
-				generateFileName(entityModel, loc, reference, "xlsx")
-			))
-			.contentLength(bytes.length)
-			.contentType(MediaType.APPLICATION_OCTET_STREAM)
-			.body(resource);
-	}
+        CustomXlsStyleGenerator<ID, T> customGenerator = (CustomXlsStyleGenerator<ID, T>) customGeneratorService.getCustomGenerator(entityModel.getEntityClass(), reference);
+        byte[] bytes = exportService.exportExcel(entityModel, exportMode,
+                filter, sortOrders.getOrders(), customGenerator == null ? null : () -> customGenerator, new Locale.Builder().setLanguage(locale).build(),
+                entityModel.getFetchJoins().toArray(new FetchJoinInformation[0]));
 
-	@PostMapping(path = "/csv/{entityName}")
-	@Operation(summary = "Exports data to csv")
-	public <ID extends Serializable, T extends AbstractEntity<ID>> ResponseEntity<Resource> exportCsv(
-		@PathVariable("entityName") @Parameter(description = "The name of the entity to export") String entityName,
-		@RequestParam(required = false) @Parameter(description = "The entity model reference") String reference,
-		@RequestBody @Valid @Parameter(description = "The search model used to restrict the entries") SearchModel searchModel,
-		@RequestParam(required = false, defaultValue = "en") @Parameter(description = "The locale to use") String locale,
-		@RequestParam @Parameter(description = "The export mode") ExportMode exportMode) {
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=%s".formatted(
+                        generateFileName(entityModel, loc, reference, "xlsx")
+                ))
+                .contentLength(bytes.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
 
-		EntityModel<T> entityModel = findEntityModel(entityName, reference);
-		if (!entityModel.isExportAllowed()) {
-			throw new OCSValidationException("Exporting this entity is not allowed");
-		}
+    @PostMapping(path = "/csv/{entityName}")
+    @Operation(summary = "Exports data to csv")
+    public <ID extends Serializable, T extends AbstractEntity<ID>> ResponseEntity<Resource> exportCsv(
+            @PathVariable("entityName") @Parameter(description = "The name of the entity to export") String entityName,
+            @RequestParam(required = false) @Parameter(description = "The entity model reference") String reference,
+            @RequestBody @Valid @Parameter(description = "The search model used to restrict the entries") SearchModel searchModel,
+            @RequestParam(required = false, defaultValue = "en") @Parameter(description = "The locale to use") String locale,
+            @RequestParam @Parameter(description = "The export mode") ExportMode exportMode) {
 
-		And filter = searchService.createFilter(searchModel, entityModel);
-		SortOrders sortOrders = searchService.createSortOrders(searchModel, entityModel);
+        EntityModel<T> entityModel = findEntityModel(entityName, reference);
+        if (!entityModel.isExportAllowed()) {
+            throw new OCSValidationException("Exporting this entity is not allowed");
+        }
 
-		Locale loc = new Locale.Builder().setLanguage(locale).build();
-		byte[] bytes = exportService.exportCsv(entityModel, exportMode,
-			filter, sortOrders.getOrders(), loc,
-			entityModel.getFetchJoins().toArray(new FetchJoinInformation[0]));
+        And filter = searchService.createFilter(searchModel, entityModel);
+        SortOrders sortOrders = searchService.createSortOrders(searchModel, entityModel);
 
-		InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
-		return ResponseEntity.ok()
-			.header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=%s".formatted(
-				generateFileName(entityModel, loc, reference, "csv")
-			))
-			.contentLength(bytes.length)
-			.contentType(MediaType.APPLICATION_OCTET_STREAM)
-			.body(resource);
-	}
+        Locale loc = new Locale.Builder().setLanguage(locale).build();
+        byte[] bytes = exportService.exportCsv(entityModel, exportMode,
+                filter, sortOrders.getOrders(), loc,
+                entityModel.getFetchJoins().toArray(new FetchJoinInformation[0]));
 
-	private <ID extends Serializable, T extends AbstractEntity<ID>> String generateFileName(EntityModel<T> entityModel,
-																							Locale locale, String reference, String extension) {
-		StringBuilder builder = new StringBuilder(entityModel.getDisplayNamePlural(locale)).append("_");
-		if (!StringUtils.isEmpty(reference)) {
-			builder.append(reference).append("_");
-		}
-		builder.append(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")));
-		builder.append(".").append(extension);
+        InputStreamResource resource = new InputStreamResource(new ByteArrayInputStream(bytes));
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_DISPOSITION, "inline;filename=%s".formatted(
+                        generateFileName(entityModel, loc, reference, "csv")
+                ))
+                .contentLength(bytes.length)
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                .body(resource);
+    }
 
-		return builder.toString();
-	}
+    private <ID extends Serializable, T extends AbstractEntity<ID>> String generateFileName(EntityModel<T> entityModel,
+                                                                                            Locale locale, String reference, String extension) {
+        StringBuilder builder = new StringBuilder(entityModel.getDisplayNamePlural(locale)).append("_");
+        if (!StringUtils.isEmpty(reference)) {
+            builder.append(reference).append("_");
+        }
+        builder.append(Instant.now().atOffset(ZoneOffset.UTC).format(DateTimeFormatter.ofPattern("yyyy_MM_dd_HH_mm_ss")));
+        builder.append(".").append(extension);
 
-	@SuppressWarnings("unchecked")
-	private <ID, T extends AbstractEntity<ID>> EntityModel<T> findEntityModel(String entityName, String reference) {
-		Class<T> clazz = (Class<T>) ClassUtils.findClass(entityName);
-		if (clazz == null) {
-			throw new OcsNotFoundException("Entity for %s could not be found".formatted(entityName));
-		}
+        return builder.toString();
+    }
 
-		EntityModel<T> model;
-		if (!StringUtils.isEmpty((reference))) {
-			model = entityModelFactory.getModel(reference, clazz);
-		} else {
-			model = entityModelFactory.getModel(clazz);
-		}
+    @SuppressWarnings("unchecked")
+    private <ID, T extends AbstractEntity<ID>> EntityModel<T> findEntityModel(String entityName, String reference) {
+        Class<T> clazz = (Class<T>) entityScanner.findClass(entityName);
+        if (clazz == null) {
+            throw new OcsNotFoundException("Entity for %s could not be found".formatted(entityName));
+        }
 
-		if (model == null) {
-			throw new OcsNotFoundException("Entity Model for %s could not be found".formatted(entityName));
-		}
+        EntityModel<T> model;
+        if (!StringUtils.isEmpty((reference))) {
+            model = entityModelFactory.getModel(reference, clazz);
+        } else {
+            model = entityModelFactory.getModel(clazz);
+        }
 
-		return model;
-	}
+        if (model == null) {
+            throw new OcsNotFoundException("Entity Model for %s could not be found".formatted(entityName));
+        }
+
+        return model;
+    }
 
 
 }

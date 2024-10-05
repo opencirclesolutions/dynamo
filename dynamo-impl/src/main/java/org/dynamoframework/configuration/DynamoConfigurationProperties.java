@@ -9,9 +9,9 @@ package org.dynamoframework.configuration;
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- *
+ * 
  *      http://www.apache.org/licenses/LICENSE-2.0
- *
+ * 
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -35,316 +35,328 @@ import java.util.Map;
 @Data
 @Validated
 public class DynamoConfigurationProperties implements Serializable, DynamoProperties {
-	@Serial
-	private static final long serialVersionUID = -8329492319537273489L;
-	private boolean capitalizePropertyNames = true;
 
-	/**
-	 * Default properties
-	 */
-	private DefaultProperties defaults = new DefaultConfigurationProperties();
+    @Serial
+    private static final long serialVersionUID = -8329492319537273489L;
+    private boolean capitalizePropertyNames = true;
 
-	@Data
-	@ConfigurationProperties(prefix = "dynamoframework.defaults")
-	public static class DefaultConfigurationProperties implements Serializable, DefaultProperties {
-		@Serial
-		private static final long serialVersionUID = -3229613809797417359L;
+    /**
+     * Default properties
+     */
+    private DefaultProperties defaults = new DefaultConfigurationProperties();
 
-		/**
-		 * Indicates the default mode to use for boolean components
-		 */
-		private AttributeBooleanFieldMode booleanFieldMode = AttributeBooleanFieldMode.CHECKBOX;
+    @Data
+    @ConfigurationProperties(prefix = "dynamoframework.defaults")
+    public static class DefaultConfigurationProperties implements Serializable, DefaultProperties {
 
-		/**
-		 * The default date format
-		 */
-		private String dateFormat = "dd-MM-yyyy";
+        @Serial
+        private static final long serialVersionUID = -3229613809797417359L;
 
-		/**
-		 * The default date/time (time stamp) format
-		 */
-		private String dateTimeFormat = "dd-MM-yyyy HH:mm:ss";
-		/**
-		 * The default decimal precision
-		 */
-		private Integer decimalPrecision = 2;
+        /**
+         * Whether to scan the class path for entities
+         */
+        private boolean entityClassPathScan = true;
 
-		/**
-		 * Indicates the default mode to use for element collection fields
-		 */
-		private ElementCollectionMode elementCollectionMode = ElementCollectionMode.CHIPS;
+        /**
+         * Explicit packages containing entities
+         */
+        private String entityPackages;
 
-		/**
-		 * The default field type to use for enumeration attributes
-		 */
-		private AttributeEnumFieldMode enumFieldMode = AttributeEnumFieldMode.DROPDOWN;
+        /**
+         * Indicates the default mode to use for boolean components
+         */
+        private AttributeBooleanFieldMode booleanFieldMode = AttributeBooleanFieldMode.CHECKBOX;
 
-		/**
-		 * The representation of the value <code>false</code>
-		 */
-		private String falseRepresentation = "false";
+        /**
+         * The default date format
+         */
+        private String dateFormat = "dd-MM-yyyy";
 
-		/**
-		 * Localized representations of the value <code>false</code>
-		 */
-		private Map<String, String> falseRepresentations = new HashMap<>();
+        /**
+         * The default date/time (time stamp) format
+         */
+        private String dateTimeFormat = "dd-MM-yyyy HH:mm:ss";
+        /**
+         * The default decimal precision
+         */
+        private Integer decimalPrecision = 2;
 
-		/**
-		 * Localized representations of the value <code>true</code>
-		 */
-		private Map<String, String> trueRepresentations = new HashMap<>();
+        /**
+         * Indicates the default mode to use for element collection fields
+         */
+        private ElementCollectionMode elementCollectionMode = ElementCollectionMode.CHIPS;
 
-		/**
-		 * The representation of the value <code>true</code>
-		 */
-		private String trueRepresentation = "true";
+        /**
+         * The default field type to use for enumeration attributes
+         */
+        private AttributeEnumFieldMode enumFieldMode = AttributeEnumFieldMode.DROPDOWN;
 
-		/**
-		 * The default group together mode
-		 */
-		private GroupTogetherMode groupTogetherMode;
+        /**
+         * The representation of the value <code>false</code>
+         */
+        private String falseRepresentation = "false";
 
-		/**
-		 * The column width from grouping together
-		 */
-		private Integer groupTogetherWidth = 300;
+        /**
+         * Localized representations of the value <code>false</code>
+         */
+        private Map<String, String> falseRepresentations = new HashMap<>();
 
-		/**
-		 * The default locale
-		 */
-		private Locale locale = Locale.ENGLISH;
-		;
+        /**
+         * Localized representations of the value <code>true</code>
+         */
+        private Map<String, String> trueRepresentations = new HashMap<>();
 
-		/**
-		 * The default nesting depth
-		 */
-		private Integer nestingDepth = 2;
+        /**
+         * The representation of the value <code>true</code>
+         */
+        private String trueRepresentation = "true";
 
-		/**
-		 * The default number field mode
-		 */
-		private NumberFieldMode numberFieldMode = NumberFieldMode.TEXTFIELD;
+        /**
+         * The default group together mode
+         */
+        private GroupTogetherMode groupTogetherMode;
 
-		/**
-		 * The default case sensitiveness for search
-		 */
-		private boolean searchCaseSensitive = false;
+        /**
+         * The column width from grouping together
+         */
+        private Integer groupTogetherWidth = 300;
 
-		/**
-		 * Whether search is prefix only
-		 */
-		private boolean searchPrefixOnly = false;
+        /**
+         * The default locale
+         */
+        private Locale locale = Locale.ENGLISH;;
 
-		/**
-		 * The default time format
-		 */
-		private String timeFormat = "HH:mm:ss";
+        /**
+         * The default nesting depth
+         */
+        private Integer nestingDepth = 2;
 
-		/**
-		 * Indicates whether to use the display name as the input prompt by default
-		 */
-		private boolean usePromptValue = true;
+        /**
+         * The default number field mode
+         */
+        private NumberFieldMode numberFieldMode = NumberFieldMode.TEXTFIELD;
 
-		/**
-		 * Whether to trim white space for text inputs
-		 */
-		private boolean trimSpaces = false;
+        /**
+         * The default case sensitiveness for search
+         */
+        private boolean searchCaseSensitive = false;
 
-		/**
-		 * The default AI service
-		 */
-		private String aiService;
+        /**
+         * Whether search is prefix only
+         */
+        private boolean searchPrefixOnly = false;
 
-		/**
-		 * The configuration of the Dynamo endpoints
-		 */
-		private EndpointProperties endpoints = new EndpointConfigurationProperties();
+        /**
+         * The default time format
+         */
+        private String timeFormat = "HH:mm:ss";
 
-		@Data
-		@ConfigurationProperties(prefix = "dynamoframework.defaults.endpoints")
-		public static class EndpointConfigurationProperties implements Serializable, EndpointProperties {
-			/**
-			 * The endpoint for the export controller
-			 */
-			private String export = "/api/dynamo/export";
-			/**
-			 * The endpoint for the model controller
-			 */
-			private String model = "/api/dynamo/model";
-			/**
-			 * The endpoint for the autofill controller
-			 */
-			private String autofill = "/api/dynamo/autofill";
-			/**
-			 * The endpoint for the status controller
-			 */
-			private String status = "/api/dynamo/status";
-			/**
-			 * The endpoint for the crud controller
-			 */
-			private String crud = "/api/dynamo/crud";
-			/**
-			 * The endpoint for the file controller
-			 */
-			private String file = "/api/dynamo/file";
-		}
+        /**
+         * Indicates whether to use the display name as the input prompt by default
+         */
+        private boolean usePromptValue = true;
 
-	}
+        /**
+         * Whether to trim white space for text inputs
+         */
+        private boolean trimSpaces = false;
 
-	/**
-	 * Properties related to csv, import and export
-	 */
-	private CsvProperties csv = new CsvConfigurationProperties();
+        /**
+         * The default AI service
+         */
+        private String aiService;
 
-	@Data
-	@ConfigurationProperties(prefix = "dynamoframework.csv")
-	public static class CsvConfigurationProperties implements Serializable, CsvProperties {
-		@Serial
-		private static final long serialVersionUID = 6909139472091672387L;
+        /**
+         * The configuration of the Dynamo endpoints
+         */
+        private EndpointProperties endpoints = new EndpointConfigurationProperties();
 
-		/**
-		 * The CSV escape character when importing/exporting
-		 */
-		private char escapeChar = '\"';
-		/**
-		 * The CSV quote char when importing/exporting
-		 */
-		private char quoteChar = '\"';
+        @Data
+        @ConfigurationProperties(prefix = "dynamoframework.defaults.endpoints")
+        public static class EndpointConfigurationProperties implements Serializable, EndpointProperties {
+            /**
+             * The endpoint for the export controller
+             */
+            private String export = "/api/dynamo/export";
+            /**
+             * The endpoint for the model controller
+             */
+            private String model = "/api/dynamo/model";
+            /**
+             * The endpoint for the autofill controller
+             */
+            private String autofill = "/api/dynamo/autofill";
+            /**
+             * The endpoint for the status controller
+             */
+            private String status = "/api/dynamo/status";
+            /**
+             * The endpoint for the crud controller
+             */
+            private String crud = "/api/dynamo/crud";
+            /**
+             * The endpoint for the file controller
+             */
+            private String file = "/api/dynamo/file";
+        }
 
-		/**
-		 * The CSV separator when importing/exporting
-		 */
-		private char separatorChar = ';';
+    }
 
-		/**
-		 * The number of rows that must be present in a result set before resorting to a
-		 * streaming approach for Excel export
-		 */
-		private Integer maxRowsBeforeStreaming = 1000;
+    /**
+     * Properties related to csv, import and export
+     */
+    private CsvProperties csv = new CsvConfigurationProperties();
 
-		/**
-		 * Whether to use thousands grouping in XLS files
-		 */
-		private boolean thousandsGrouping = false;
-	}
+    @Data
+    @ConfigurationProperties(prefix = "dynamoframework.csv")
+    public static class CsvConfigurationProperties implements Serializable, CsvProperties {
+        @Serial
+        private static final long serialVersionUID = 6909139472091672387L;
 
-	/**
-	 * OpenAI properties
-	 */
-	private OpenAiProperties openai = new OpenAiConfigurationProperties();
+        /**
+         * The CSV escape character when importing/exporting
+         */
+        private char escapeChar = '\"';
+        /**
+         * The CSV quote char when importing/exporting
+         */
+        private char quoteChar = '\"';
 
-	@Data
-	@ConfigurationProperties(prefix = "dynamoframework.openai")
-	public static class OpenAiConfigurationProperties implements Serializable, OpenAiProperties {
-		@Serial
-		private static final long serialVersionUID = 4426516280121454055L;
-		/**
-		 * Enable OpenAI
-		 */
-		private boolean enabled = false;
-		/**
-		 * The OpenAI API key
-		 */
-		private String apiKey;
-		/**
-		 * The model to use
-		 */
-		private String model = "gpt-4-turbo";
-		/**
-		 * Maximum number of tokens
-		 */
-		private Integer maxTokens = 4096;
+        /**
+         * The CSV separator when importing/exporting
+         */
+        private char separatorChar = ';';
 
-	}
+        /**
+         * The number of rows that must be present in a result set before resorting to a
+         * streaming approach for Excel export
+         */
+        private Integer maxRowsBeforeStreaming = 1000;
 
-	/**
-	 * Ollama properties
-	 */
-	private OllamaProperties ollama = new OllamaConfigurationProperties();
+        /**
+         * Whether to use thousands grouping in XLS files
+         */
+        private boolean thousandsGrouping = false;
+    }
 
-	@Data
-	@ConfigurationProperties(prefix = "dynamoframework.ollama")
-	public static class OllamaConfigurationProperties implements Serializable, OllamaProperties {
+    /**
+     * OpenAI properties
+     */
+    private OpenAiProperties openai = new OpenAiConfigurationProperties();
 
-		private static final long serialVersionUID = -2357577501146838042L;
-		/**
-		 * Enable Ollama
-		 */
-		private boolean enabled = false;
-		/**
-		 * Ollama URL
-		 */
-		private String url;
-		/**
-		 * The model to use
-		 */
-		private String model = "llama3";
-	}
+    @Data
+    @ConfigurationProperties(prefix = "dynamoframework.openai")
+    public static class OpenAiConfigurationProperties implements Serializable, OpenAiProperties {
+        @Serial
+        private static final long serialVersionUID = 4426516280121454055L;
+        /**
+         * Enable OpenAI
+         */
+        private boolean enabled = false;
+        /**
+         * The OpenAI API key
+         */
+        private String apiKey;
+        /**
+         * The model to use
+         */
+        private String model = "gpt-4-turbo";
+        /**
+         * Maximum number of tokens
+         */
+        private Integer maxTokens = 4096;
 
-	/**
-	 * VertexAI properties
-	 */
-	private VertexAiProperties vertexai = new VertexAiConfigurationProperties();
+    }
 
-	@Data
-	@ConfigurationProperties(prefix = "dynamoframework.vertexai")
-	public static class VertexAiConfigurationProperties implements Serializable, VertexAiProperties {
-		@Serial
-		private static final long serialVersionUID = -1404865335552095931L;
-		/**
-		 * Enable VertexAI
-		 */
-		private boolean enabled = false;
-		/**
-		 * The project id
-		 */
-		private String projectId;
-		/**
-		 * The region of the project
-		 */
-		private String projectRegion = "europe-west1";
-		/**
-		 * The model to use
-		 */
-		private String model = "gemini-1.5-flash-preview-0514";
-	}
+    /**
+     * Ollama properties
+     */
+    private OllamaProperties ollama = new OllamaConfigurationProperties();
 
-	/**
-	 * Bedrock properties
-	 */
-	private BedrockProperties bedrock = new BedrockConfigurationProperties();
+    @Data
+    @ConfigurationProperties(prefix = "dynamoframework.ollama")
+    public static class OllamaConfigurationProperties implements Serializable, OllamaProperties {
 
-	@Data
-	@ConfigurationProperties(prefix = "dynamoframework.bedrock")
-	public static class BedrockConfigurationProperties implements Serializable, BedrockProperties {
-		@Serial
-		private static final long serialVersionUID = -6324259015491446578L;
-		/**
-		 * Enable Bedrock
-		 */
-		private boolean enabled = false;
-		/**
-		 * Access key
-		 */
-		private String accessKey;
-		/**
-		 * Access secret
-		 */
-		private String accessSecret;
-		/**
-		 * Model id
-		 */
-		private String modelId;
-		/**
-		 * Region
-		 */
-		private String region;
-	}
+        private static final long serialVersionUID = -2357577501146838042L;
+        /**
+         * Enable Ollama
+         */
+        private boolean enabled = false;
+        /**
+         * Ollama URL
+         */
+        private String url;
+        /**
+         * The model to use
+         */
+        private String model = "llama3";
+    }
 
-	/**
-	 * The name of the database function used to replace accents
-	 */
-	private String unaccentFunctionName = "";
+    /**
+     * VertexAI properties
+     */
+    private VertexAiProperties vertexai = new VertexAiConfigurationProperties();
+
+    @Data
+    @ConfigurationProperties(prefix = "dynamoframework.vertexai")
+    public static class VertexAiConfigurationProperties implements Serializable, VertexAiProperties {
+        @Serial
+        private static final long serialVersionUID = -1404865335552095931L;
+        /**
+         * Enable VertexAI
+         */
+        private boolean enabled = false;
+        /**
+         * The project id
+         */
+        private String projectId;
+        /**
+         * The region of the project
+         */
+        private String projectRegion = "europe-west1";
+        /**
+         * The model to use
+         */
+        private String model = "gemini-1.5-flash-preview-0514";
+    }
+
+    /**
+     * Bedrock properties
+     */
+    private BedrockProperties bedrock = new BedrockConfigurationProperties();
+
+    @Data
+    @ConfigurationProperties(prefix = "dynamoframework.bedrock")
+    public static class BedrockConfigurationProperties implements Serializable, BedrockProperties {
+        @Serial
+        private static final long serialVersionUID = -6324259015491446578L;
+        /**
+         * Enable Bedrock
+         */
+        private boolean enabled = false;
+        /**
+         * Access key
+         */
+        private String accessKey;
+        /**
+         * Access secret
+         */
+        private String accessSecret;
+        /**
+         * Model id
+         */
+        private String modelId;
+        /**
+         * Region
+         */
+        private String region;
+    }
+
+    /**
+     * The name of the database function used to replace accents
+     */
+    private String unaccentFunctionName = "";
+
 
 
 }

@@ -30,6 +30,7 @@ import { NotificationService } from '../../service/notification-service';
 import { Router } from '@angular/router';
 import { AuthenticationService } from '../../service/authentication-service';
 import { BaseCompositeComponent } from '../base-composite.component';
+import { FormGroup } from '@angular/forms';
 
 /**
  * A component for displaying a form in view mode
@@ -46,6 +47,7 @@ export class GenericFormViewComponent
   @Input() entity: any = undefined;
   @Input() attributeGroupMode: AttributeGroupMode = AttributeGroupMode.PANEL;
   @Input() numberOfColumns: number = 1;
+  @Input({required: true}) formGroup!: FormGroup;
 
   @Input() nestedEntityModelMap: Map<string, EntityModelResponse> = new Map<
     string,
@@ -53,7 +55,8 @@ export class GenericFormViewComponent
   >();
   @Input() attributeVisible?: (
     am: AttributeModelResponse,
-    viewObject: any
+    editObject: any,
+    formGroup: FormGroup
   ) => boolean;
 
   constructor(
@@ -135,5 +138,12 @@ export class GenericFormViewComponent
 
   useGroupPanels() {
     return this.attributeGroupMode === AttributeGroupMode.PANEL;
+  }
+
+  isAttributeVisible(am: AttributeModelResponse) {
+    if (this.attributeVisible) {
+      return this.attributeVisible(am, this.entity, this.formGroup);
+    }
+    return true;
   }
 }

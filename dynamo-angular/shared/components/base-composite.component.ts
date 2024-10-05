@@ -168,13 +168,20 @@ export abstract class BaseCompositeComponent {
         (this.searchMode
           ? am.searchMode == AttributeModelResponse.SearchModeEnum.ALWAYS ||
             am.searchMode == AttributeModelResponse.SearchModeEnum.ADVANCED
-          : am.visibleInForm) &&
+          : am.visibleInForm && this.isLookupEditable(am)) &&
         am.lookupEntityName &&
         mustFetchListValues(am, this.searchMode)
       ) {
         this.fillOptions(am);
       }
     });
+  }
+
+  isLookupEditable(am: AttributeModelResponse) {
+    return (
+      am.editableType === AttributeModelResponse.EditableTypeEnum.EDITABLE ||
+      am.editableType === AttributeModelResponse.EditableTypeEnum.CREATE_ONLY
+    );
   }
 
   /**
@@ -432,5 +439,4 @@ export abstract class BaseCompositeComponent {
   }
 
   protected abstract onLookupFilled(am: AttributeModelResponse): void;
-
 }

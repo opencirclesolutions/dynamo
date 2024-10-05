@@ -846,7 +846,7 @@ show up next to the preview of the image in a file upload component.
 In message bundle:
 [source,properties]
 --
-editableType = READ_ONLY | CREATE_ONLY | EDITABLE | HIDDEN
+editable = READ_ONLY | CREATE_ONLY | EDITABLE | HIDDEN
 --
 
 The `editableType` setting specifies when an attribute can be edited.
@@ -2479,6 +2479,9 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |`enum-field-mode`|AttributeEnumFieldMode|The default field type to use for enumeration attributes|
 |`false-representation`|String|The representation of the value `false`|`false`
 |`false-representations`|Map&lt;String,String&gt;|Localized representations of the value `false`|
+|`entityClassPathScan`|String
+|`false-representation`|String|The representation of the value &lt;code&gt;false&lt;/code&gt;|`false`
+|`false-representations`|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;false&lt;/code&gt;|
 |`group-together-mode`|GroupTogetherMode|The default group together mode|
 |`group-together-width`|Integer|The column width from grouping together|`300`
 |`locale`|Locale|The default locale|
