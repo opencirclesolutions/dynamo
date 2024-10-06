@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EntityModelActionImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.domain.model.impl</a> &gt; <span class="el_source">EntityModelActionImpl.java</span></div><h1>EntityModelActionImpl.java</h1><pre class="source lang-java linenums">package org.dynamoframework.domain.model.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.Getter;
+import lombok.Setter;
+import lombok.ToString;
+import org.dynamoframework.domain.model.AttributeModel;
+import org.dynamoframework.domain.model.EntityModel;
+import org.dynamoframework.domain.model.EntityModelAction;
+import org.dynamoframework.domain.model.EntityModelActionType;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+
+@Getter
+<span class="pc" id="L35">@Setter</span>
+<span class="fc" id="L36">public class EntityModelActionImpl implements EntityModelAction {</span>
+
+<span class="fc" id="L38">	private String id;</span>
+
+<span class="nc" id="L40">	private String methodName;</span>
+
+<span class="fc" id="L42">	@ToString.Exclude</span>
+<span class="nc" id="L43">	private final List&lt;AttributeModel&gt; attributeModels = new ArrayList&lt;&gt;();</span>
+
+<span class="nc" id="L45">	private String defaultDisplayName;</span>
+
+<span class="nc" id="L47">	private Class&lt;?&gt; entityClass;</span>
+
+<span class="fc" id="L49">	private String reference;</span>
+
+<span class="fc" id="L51">	private EntityModel&lt;?&gt; entityModel;</span>
+
+<span class="fc" id="L53">	private EntityModelActionType type;</span>
+
+<span class="fc" id="L55">	private String icon;</span>
+
+<span class="fc" id="L57">	private List&lt;String&gt; roles;</span>
+
+<span class="pc" id="L59">	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
+
+	@Override
+	public String getDisplayName(Locale locale) {
+<span class="nc" id="L63">		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);</span>
+	}
+
+	private String lookup(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key, String fallBack) {
+		// look up in message bundle and add to cache
+<span class="nc bnc" id="L68" title="All 2 branches missed.">		if (!source.containsKey(locale.toString())) {</span>
+			try {
+<span class="nc" id="L70">				ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
+<span class="nc" id="L71">				String str = rb.getString(id + &quot;.&quot; + key);</span>
+<span class="nc" id="L72">				source.put(locale.toString(), Optional.of(str));</span>
+<span class="nc" id="L73">			} catch (MissingResourceException ex) {</span>
+<span class="nc" id="L74">				source.put(locale.toString(), Optional.empty());</span>
+<span class="nc" id="L75">			}</span>
+		}
+
+		// look up or return fallback value
+<span class="nc" id="L79">		Optional&lt;String&gt; optional = source.get(locale.toString());</span>
+<span class="nc" id="L80">		return optional.orElse(fallBack);</span>
+	}
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

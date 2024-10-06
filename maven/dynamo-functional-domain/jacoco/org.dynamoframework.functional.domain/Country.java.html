@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Country.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Functional extension - Domain</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.functional.domain</a> &gt; <span class="el_source">Country.java</span></div><h1>Country.java</h1><pre class="source lang-java linenums">package org.dynamoframework.functional.domain;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import jakarta.persistence.DiscriminatorValue;
+import jakarta.persistence.Entity;
+import jakarta.validation.constraints.NotNull;
+import org.dynamoframework.domain.model.VisibilityType;
+import org.dynamoframework.domain.model.annotation.*;
+import org.hibernate.Hibernate;
+
+@Entity
+@DiscriminatorValue(&quot;COUNTRY&quot;)
+@Model(
+	displayNamePlural = &quot;Countries&quot;,
+	displayProperty = &quot;name&quot;,
+	sortOrder = &quot;name asc&quot;)
+@AttributeOrder(attributeNames = {&quot;id&quot;, &quot;code&quot;, &quot;name&quot;})
+@FetchJoins(joins = {@FetchJoin(attribute = &quot;parent&quot;)})
+public class Country extends DomainChild&lt;Country, Region&gt; {
+
+	private static final long serialVersionUID = 1410771214783677106L;
+
+	public Country(String code, String name) {
+<span class="fc" id="L43">		super(code, name);</span>
+<span class="fc" id="L44">	}</span>
+
+	public void setRegion(Region region) {
+<span class="nc" id="L47">		this.setParent(region);</span>
+<span class="nc" id="L48">	}</span>
+
+	public Region getRegion() {
+<span class="nc" id="L51">		return this.getParent();</span>
+	}
+
+	@Attribute(
+		visibleInForm = VisibilityType.SHOW,
+		displayName = &quot;Region&quot;,
+		visibleInGrid = VisibilityType.HIDE,
+		searchable = SearchMode.ALWAYS
+	)
+	public Region getParent() {
+<span class="nc" id="L61">		return (Region) Hibernate.unproxy(super.getParent());</span>
+	}
+
+	@Attribute(visibleInForm = VisibilityType.SHOW, visibleInGrid = VisibilityType.SHOW)
+	public Integer getId() {
+<span class="fc" id="L66">		return super.getId();</span>
+	}
+
+	@Attribute(
+		visibleInForm = VisibilityType.SHOW,
+		searchable = SearchMode.ALWAYS
+	)
+	public @NotNull String getCode() {
+<span class="nc" id="L74">		return super.getCode();</span>
+	}
+
+<span class="fc" id="L77">	public Country() {</span>
+<span class="fc" id="L78">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

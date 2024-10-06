@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DomainParent.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Functional extension - Domain</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.functional.domain</a> &gt; <span class="el_source">DomainParent.java</span></div><h1>DomainParent.java</h1><pre class="source lang-java linenums">package org.dynamoframework.functional.domain;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.OneToMany;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+public abstract class DomainParent&lt;C extends DomainChild&lt;C, P&gt;, P extends DomainParent&lt;C, P&gt;&gt; extends Domain implements Serializable {
+	private static final long serialVersionUID = 20446010658685722L;
+<span class="pc" id="L35">	@OneToMany(</span>
+		mappedBy = &quot;parent&quot;,
+		fetch = FetchType.EAGER,
+		cascade = {CascadeType.ALL},
+		orphanRemoval = true,
+		targetEntity = DomainChild.class
+	)
+	private Set&lt;C&gt; children = new HashSet&lt;&gt;();
+
+	protected DomainParent(String code, String name) {
+<span class="fc" id="L45">		super(code, name);</span>
+<span class="fc" id="L46">	}</span>
+
+	//@JsonBackReference(&quot;domainparent-domainchild&quot;)
+	public Set&lt;C&gt; getChildren() {
+<span class="nc" id="L50">		return this.children;</span>
+	}
+
+	public void setChildren(Set&lt;C&gt; children) {
+<span class="nc" id="L54">		this.children = children;</span>
+<span class="nc" id="L55">	}</span>
+
+<span class="nc" id="L57">	public DomainParent() {</span>
+<span class="nc" id="L58">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

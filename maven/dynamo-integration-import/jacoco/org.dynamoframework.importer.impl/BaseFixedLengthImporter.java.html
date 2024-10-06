@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseFixedLengthImporter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Integration Import</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.importer.impl</a> &gt; <span class="el_source">BaseFixedLengthImporter.java</span></div><h1>BaseFixedLengthImporter.java</h1><pre class="source lang-java linenums">package org.dynamoframework.importer.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.apache.commons.io.input.CharSequenceReader;
+import org.dynamoframework.exception.OCSImportException;
+
+import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+
+/**
+ * Base class for Importers that can be used to import fixed length files
+ *
+ * @author bas.rutten
+ */
+<span class="fc" id="L39">public class BaseFixedLengthImporter extends BaseTextImporter {</span>
+
+	/**
+	 * Counts the number of rows in the file
+	 *
+	 * @param bytes      the byte content of the file
+	 * @param sheetIndex the index of the sheet (ignored)
+	 */
+	@Override
+	public int countRows(byte[] bytes, int sheetIndex) {
+<span class="fc" id="L49">		try (BufferedReader reader = new BufferedReader(new InputStreamReader(new ByteArrayInputStream(bytes)))) {</span>
+<span class="fc" id="L50">			int count = 0;</span>
+
+<span class="fc" id="L52">			String line = reader.readLine();</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">			while (line != null) {</span>
+<span class="fc" id="L54">				count++;</span>
+<span class="fc" id="L55">				line = reader.readLine();</span>
+			}
+<span class="fc" id="L57">			return count;</span>
+<span class="nc" id="L58">		} catch (IOException ex) {</span>
+<span class="nc" id="L59">			throw new OCSImportException(ex.getMessage(), ex);</span>
+		}
+	}
+
+	/**
+	 * Parses the comma-separated list of field lengths
+	 *
+	 * @param fieldLengths
+	 * @return
+	 */
+	protected List&lt;Integer&gt; parseFieldLengths(String fieldLengths) {
+		try {
+<span class="fc" id="L71">			String[] lengths = fieldLengths.split(&quot;,&quot;);</span>
+<span class="fc" id="L72">			List&lt;Integer&gt; result = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (String s : lengths) {</span>
+<span class="fc" id="L75">				Integer len = Integer.valueOf(s);</span>
+<span class="fc" id="L76">				result.add(len);</span>
+			}
+
+<span class="fc" id="L79">			return result;</span>
+<span class="fc" id="L80">		} catch (NumberFormatException ex) {</span>
+<span class="fc" id="L81">			throw new OCSImportException(&quot;Invalid field length entered&quot;, ex);</span>
+		}
+	}
+
+	/**
+	 * Reads a byte array into a CSV file
+	 *
+	 * @param bytes        the raw representation of the file
+	 * @param fieldLengths the field lengths
+	 * @return
+	 * @throws IOException
+	 */
+	protected List&lt;String[]&gt; readFixedLengthFile(byte[] bytes, List&lt;Integer&gt; fieldLengths) {
+<span class="fc" id="L94">		try (BufferedReader reader = new BufferedReader(</span>
+			new CharSequenceReader(new String(bytes, StandardCharsets.UTF_8)))) {
+<span class="fc" id="L96">			List&lt;String[]&gt; result = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L98">			String line = reader.readLine();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">			while (line != null) {</span>
+<span class="fc" id="L100">				List&lt;String&gt; temp = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L101">				int start = 0;</span>
+<span class="fc bfc" id="L102" title="All 2 branches covered.">				for (Integer len : fieldLengths) {</span>
+<span class="fc bfc" id="L103" title="All 2 branches covered.">					if (start + len &lt;= line.length()) {</span>
+						// there is space
+<span class="fc" id="L105">						String field = line.substring(start, start + len);</span>
+<span class="fc" id="L106">						temp.add(field.trim());</span>
+<span class="pc bpc" id="L107" title="1 of 2 branches missed.">					} else if (start &lt;= line.length()) {</span>
+<span class="fc" id="L108">						String field = line.substring(start, line.length());</span>
+<span class="fc" id="L109">						temp.add(field.trim());</span>
+					}
+<span class="fc" id="L111">					start += len;</span>
+<span class="fc" id="L112">				}</span>
+
+<span class="fc" id="L114">				result.add(temp.toArray(new String[0]));</span>
+<span class="fc" id="L115">				line = reader.readLine();</span>
+<span class="fc" id="L116">			}</span>
+<span class="fc" id="L117">			return result;</span>
+<span class="nc" id="L118">		} catch (IOException ex) {</span>
+<span class="nc" id="L119">			throw new OCSImportException(ex.getMessage(), ex);</span>
+		}
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

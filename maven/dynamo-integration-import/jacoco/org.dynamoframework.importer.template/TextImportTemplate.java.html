@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TextImportTemplate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Integration Import</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.importer.template</a> &gt; <span class="el_source">TextImportTemplate.java</span></div><h1>TextImportTemplate.java</h1><pre class="source lang-java linenums">package org.dynamoframework.importer.template;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.exception.OCSImportException;
+import org.dynamoframework.service.MessageService;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
+
+import java.util.*;
+
+/**
+ * Template class for importing data from a text (CSV or fixed width) file and
+ * translating it to an entity
+ *
+ * @param &lt;ID&gt; the type of the ID of the entity
+ * @param &lt;T&gt;  the type of the entity
+ * @author bas.rutten
+ */
+<span class="fc" id="L38">@Slf4j</span>
+public abstract class TextImportTemplate&lt;ID, T&gt; {
+
+	private final List&lt;String[]&gt; lines;
+
+	private final boolean checkForDuplicates;
+
+	private final List&lt;String&gt; errors;
+
+	private final MessageService messageService;
+
+<span class="fc" id="L49">	private final Set&lt;ID&gt; keys = new HashSet&lt;&gt;();</span>
+
+	/**
+	 * Constructor
+	 *
+	 * @param lines              the lines that make up the text file
+	 * @param errors             the errors that have occurred so far
+	 * @param checkForDuplicates whether to check for duplicate rows
+	 */
+	protected TextImportTemplate(MessageService messageService, List&lt;String[]&gt; lines, List&lt;String&gt; errors,
+<span class="fc" id="L59">								 boolean checkForDuplicates) {</span>
+<span class="fc" id="L60">		this.lines = lines;</span>
+<span class="fc" id="L61">		this.errors = errors;</span>
+<span class="fc" id="L62">		this.checkForDuplicates = checkForDuplicates;</span>
+<span class="fc" id="L63">		this.messageService = messageService;</span>
+<span class="fc" id="L64">	}</span>
+
+	/**
+	 * Indicates whether the row is appropriate and can be processed
+	 *
+	 * @param row the representation of the row
+	 * @return true if this is the case, false otherwise
+	 */
+	protected abstract boolean isAppropriateRow(String[] row);
+
+	/**
+	 * Processes a row
+	 *
+	 * @param rowNum the row number of the row
+	 * @param row    the row (as an array of strings denoting the individual field
+	 *               values)
+	 * @return the result of the processing
+	 */
+	protected abstract T process(int rowNum, String[] row);
+
+	/**
+	 * Extracts a primary key value from a row
+	 *
+	 * @param row the row
+	 * @return the key value
+	 */
+	protected abstract ID getKeyFromRow(T row);
+
+	/**
+	 * Executes the template
+	 *
+	 * @return the result of the processing
+	 */
+	public List&lt;T&gt; execute() {
+<span class="fc" id="L98">		List&lt;T&gt; results = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		for (int i = 0; i &lt; lines.size(); i++) {</span>
+<span class="fc" id="L100">			String[] row = lines.get(i);</span>
+<span class="pc bpc" id="L101" title="2 of 6 branches missed.">			if (row != null &amp;&amp; i &gt; 0 &amp;&amp; isAppropriateRow(row)) {</span>
+				try {
+<span class="fc" id="L103">					executeRow(i, row, results);</span>
+<span class="fc" id="L104">				} catch (OCSImportException ex) {</span>
+<span class="fc" id="L105">					log.error(ex.getMessage(), ex);</span>
+					// catch errors on a record by record level
+<span class="fc" id="L107">					errors.add(String.format(&quot;Row %d: %s&quot;, i + 1, ex.getMessage()));</span>
+<span class="fc" id="L108">				}</span>
+			}
+		}
+
+<span class="fc" id="L112">		return results;</span>
+	}
+
+	/**
+	 * Processes a single row
+	 *
+	 * @param i       the index of the row
+	 * @param row     the field values that together from the row
+	 * @param results the list of current results
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private void executeRow(int i, String[] row, List&lt;T&gt; results) {
+<span class="fc" id="L124">		T t = process(i, row);</span>
+<span class="fc" id="L125">		ID key = getKeyFromRow(t);</span>
+
+<span class="fc bfc" id="L127" title="All 2 branches covered.">		if (checkForDuplicates) {</span>
+
+			// lower case comparison for Strings
+<span class="pc bpc" id="L130" title="1 of 2 branches missed.">			if (key instanceof String) {</span>
+<span class="nc" id="L131">				key = (ID) ((String) key).toLowerCase();</span>
+			}
+
+<span class="fc bfc" id="L134" title="All 2 branches covered.">			if (!keys.contains(key)) {</span>
+<span class="fc" id="L135">				keys.add(key);</span>
+<span class="fc" id="L136">				results.add(t);</span>
+			} else {
+<span class="fc" id="L138">				errors.add(messageService.getMessage(&quot;dynamoframework.duplicate.row&quot;, Locale.US, i + 1, key));</span>
+			}
+		} else {
+<span class="fc" id="L141">			results.add(t);</span>
+		}
+<span class="fc" id="L143">	}</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PagingDataSetIterator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.domain.query</a> &gt; <span class="el_source">PagingDataSetIterator.java</span></div><h1>PagingDataSetIterator.java</h1><pre class="source lang-java linenums">package org.dynamoframework.domain.query;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.dynamoframework.domain.AbstractEntity;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.function.Function;
+
+/**
+ * An iterator for traversing large data sets without loading them all into
+ * memory at once
+ *
+ * @param &lt;ID&gt; the type of the primary key of the entity
+ * @param &lt;T&gt;  the type of the entity
+ * @author bas.rutten
+ */
+public class PagingDataSetIterator&lt;ID extends Serializable, T extends AbstractEntity&lt;ID&gt;&gt;
+	implements DataSetIterator&lt;ID, T&gt; {
+
+	private static final int PAGE_SIZE = 2000;
+
+	private final Function&lt;List&lt;ID&gt;, List&lt;T&gt;&gt; mapper;
+
+	private final List&lt;ID&gt; idList;
+
+	private List&lt;T&gt; page;
+
+	private int index;
+
+	private int lastRead;
+
+	private int indexInPage;
+
+	private final int pageSize;
+
+	/**
+	 * Constructor
+	 *
+	 * @param idList the IDs of the relevant records
+	 */
+	public PagingDataSetIterator(List&lt;ID&gt; idList, Function&lt;List&lt;ID&gt;, List&lt;T&gt;&gt; mapper) {
+<span class="nc" id="L64">		this(idList, mapper, PAGE_SIZE);</span>
+<span class="nc" id="L65">	}</span>
+
+	/**
+	 * Constructor
+	 *
+	 * @param idList   the IDs of the relevant records
+	 * @param pageSize the page size
+	 */
+<span class="fc" id="L73">	public PagingDataSetIterator(List&lt;ID&gt; idList, Function&lt;List&lt;ID&gt;, List&lt;T&gt;&gt; mapper, int pageSize) {</span>
+<span class="fc" id="L74">		this.idList = idList;</span>
+<span class="fc" id="L75">		index = 0;</span>
+<span class="fc" id="L76">		lastRead = 0;</span>
+<span class="fc" id="L77">		indexInPage = 0;</span>
+<span class="fc" id="L78">		this.pageSize = pageSize;</span>
+<span class="fc" id="L79">		this.mapper = mapper;</span>
+<span class="fc" id="L80">	}</span>
+
+	@Override
+	public T next() {
+<span class="pc bpc" id="L84" title="1 of 2 branches missed.">		if (index &gt; idList.size()) {</span>
+<span class="nc" id="L85">			return null;</span>
+		}
+
+<span class="fc" id="L88">		loadNextPageIfNeeded();</span>
+
+<span class="fc bfc" id="L90" title="All 2 branches covered.">		if (indexInPage &lt; page.size()) {</span>
+<span class="fc" id="L91">			T t = page.get(indexInPage);</span>
+<span class="fc" id="L92">			index++;</span>
+<span class="fc" id="L93">			indexInPage++;</span>
+<span class="fc" id="L94">			return t;</span>
+		}
+<span class="fc" id="L96">		return null;</span>
+	}
+
+	private void loadNextPageIfNeeded() {
+<span class="fc bfc" id="L100" title="All 2 branches covered.">		if (index &gt;= lastRead) {</span>
+<span class="fc" id="L101">			List&lt;ID&gt; ids = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L102" title="All 4 branches covered.">			for (int i = 0; i &lt; pageSize &amp;&amp; index + i &lt; idList.size(); i++) {</span>
+<span class="fc" id="L103">				ids.add(idList.get(index + i));</span>
+			}
+
+<span class="fc bfc" id="L106" title="All 2 branches covered.">			if (!ids.isEmpty()) {</span>
+<span class="fc" id="L107">				page = mapper.apply(ids);</span>
+			} else {
+<span class="fc" id="L109">				page = Collections.emptyList();</span>
+			}
+
+<span class="fc" id="L112">			lastRead = index + ids.size();</span>
+<span class="fc" id="L113">			indexInPage = 0;</span>
+		}
+<span class="fc" id="L115">	}</span>
+
+	@Override
+	public int size() {
+<span class="nc" id="L119">		return idList.size();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

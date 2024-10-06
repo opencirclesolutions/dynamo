@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DefaultServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.service.impl</a> &gt; <span class="el_source">DefaultServiceImpl.java</span></div><h1>DefaultServiceImpl.java</h1><pre class="source lang-java linenums">package org.dynamoframework.service.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import com.querydsl.core.types.dsl.EntityPathBase;
+import org.dynamoframework.dao.BaseDao;
+import org.dynamoframework.dao.impl.DefaultDaoImpl;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.utils.ClassUtils;
+
+/**
+ * Default implementation of BaseService for dealing with simple entities
+ *
+ * @param &lt;ID&gt; the type of the primary key of the entity
+ * @param &lt;T&gt;  the type of the entity
+ * @author Bas Rutten
+ */
+public class DefaultServiceImpl&lt;ID, T extends AbstractEntity&lt;ID&gt;&gt; extends BaseServiceImpl&lt;ID, T&gt; {
+
+	/**
+	 * The DAO
+	 */
+	private BaseDao&lt;ID, T&gt; dao;
+
+	/**
+	 * The name of the property that is used to check if a value is unique
+	 */
+	private String[] uniquePropertyIds;
+
+	/**
+	 * Whether the unique value is case sensitive
+	 */
+	private boolean uniqueCaseSensitive;
+
+	/**
+	 * Constructor - no unique property
+	 *
+	 * @param dslRoot     the DSL root
+	 * @param entityClass the entity class
+	 */
+	public DefaultServiceImpl(EntityPathBase&lt;T&gt; dslRoot, Class&lt;T&gt; entityClass) {
+<span class="fc" id="L60">		this(dslRoot, entityClass, null);</span>
+<span class="fc" id="L61">	}</span>
+
+	/**
+	 * Constructor - with unique property, not case sensitive
+	 *
+	 * @param dslRoot           the DSL root
+	 * @param entityClass       the entity class
+	 * @param uniquePropertyIds the unique property name
+	 */
+	public DefaultServiceImpl(EntityPathBase&lt;T&gt; dslRoot, Class&lt;T&gt; entityClass, String[] uniquePropertyIds) {
+<span class="fc" id="L71">		this(dslRoot, entityClass, uniquePropertyIds, false);</span>
+<span class="fc" id="L72">	}</span>
+
+	/**
+	 * Constructor
+	 *
+	 * @param dslRoot             the QueryDSL root
+	 * @param entityClass         the entity class
+	 * @param uniquePropertyIds
+	 * @param uniqueCaseSensitive
+	 */
+	public DefaultServiceImpl(EntityPathBase&lt;T&gt; dslRoot, Class&lt;T&gt; entityClass, String[] uniquePropertyIds,
+<span class="fc" id="L83">							  boolean uniqueCaseSensitive) {</span>
+<span class="fc" id="L84">		dao = new DefaultDaoImpl&lt;&gt;(dslRoot, entityClass);</span>
+<span class="fc" id="L85">		this.uniquePropertyIds = uniquePropertyIds;</span>
+<span class="fc" id="L86">		this.uniqueCaseSensitive = uniqueCaseSensitive;</span>
+<span class="fc" id="L87">	}</span>
+
+	/**
+	 * @param dao
+	 */
+	public DefaultServiceImpl(BaseDao&lt;ID, T&gt; dao) {
+<span class="fc" id="L93">		this(dao, (String[]) null);</span>
+<span class="fc" id="L94">	}</span>
+
+	/**
+	 * Constructor
+	 *
+	 * @param dao               the DAO
+	 * @param uniquePropertyIds the name of the property that must be unique
+	 */
+	public DefaultServiceImpl(BaseDao&lt;ID, T&gt; dao, String... uniquePropertyIds) {
+<span class="fc" id="L103">		this(dao, uniquePropertyIds, false);</span>
+<span class="fc" id="L104">	}</span>
+
+	/**
+	 * Constructor
+	 *
+	 * @param dao                 the DAO used to retrieve the data
+	 * @param uniquePropertyIds   the unique property
+	 * @param uniqueCaseSensitive whether the unique property is case sensitive
+	 */
+<span class="fc" id="L113">	public DefaultServiceImpl(BaseDao&lt;ID, T&gt; dao, String[] uniquePropertyIds, boolean uniqueCaseSensitive) {</span>
+<span class="fc" id="L114">		this.dao = dao;</span>
+<span class="fc" id="L115">		this.uniquePropertyIds = uniquePropertyIds;</span>
+<span class="fc" id="L116">		this.uniqueCaseSensitive = uniqueCaseSensitive;</span>
+<span class="fc" id="L117">	}</span>
+
+	@Override
+	protected BaseDao&lt;ID, T&gt; getDao() {
+<span class="fc" id="L121">		return dao;</span>
+	}
+
+	/**
+	 * Check for an identical entry - by default we to this by simply checking for a
+	 * unique property
+	 */
+	@Override
+	protected T findIdenticalEntity(T entity) {
+<span class="pc bpc" id="L130" title="1 of 4 branches missed.">		if (uniquePropertyIds == null || uniquePropertyIds.length == 0) {</span>
+<span class="fc" id="L131">			return super.findIdenticalEntity(entity);</span>
+		}
+
+<span class="fc bfc" id="L134" title="All 2 branches covered.">		for (String property : uniquePropertyIds) {</span>
+<span class="fc" id="L135">			T existing = getDao().findByUniqueProperty(property, ClassUtils.getFieldValue(entity, property), uniqueCaseSensitive);</span>
+<span class="pc bpc" id="L136" title="1 of 2 branches missed.">			if (existing != null) {</span>
+<span class="nc" id="L137">				return existing;</span>
+			}
+		}
+<span class="fc" id="L140">		return null;</span>
+	}
+
+	public String[] getUniquePropertyIds() {
+<span class="fc" id="L144">		return uniquePropertyIds;</span>
+	}
+
+	public boolean isUniqueCaseSensitive() {
+<span class="fc" id="L148">		return uniqueCaseSensitive;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

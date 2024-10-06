@@ -1,0 +1,859 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>JpaQueryBuilder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.dao.impl</a> &gt; <span class="el_source">JpaQueryBuilder.java</span></div><h1>JpaQueryBuilder.java</h1><pre class="source lang-java linenums">package org.dynamoframework.dao.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Tuple;
+import jakarta.persistence.TypedQuery;
+import jakarta.persistence.criteria.*;
+import jakarta.persistence.metamodel.Attribute;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.configuration.DynamoProperties;
+import org.dynamoframework.constants.DynamoConstants;
+import org.dynamoframework.dao.FetchJoinInformation;
+import org.dynamoframework.dao.SortOrder;
+import org.dynamoframework.dao.SortOrders;
+import org.dynamoframework.filter.*;
+import org.hibernate.query.sqm.tree.domain.SqmEntityValuedSimplePath;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+
+import java.util.*;
+import java.util.Map.Entry;
+
+/**
+ * @author patrick.deenen
+ * @author bas.rutten Class for constructing JPA queries built on the criteria
+ * API
+ */
+<span class="fc" id="L48">@Slf4j</span>
+@Component
+public final class JpaQueryBuilder {
+
+	static private DynamoProperties dynamoProperties;
+
+	@Autowired
+	public void init(DynamoProperties dynamoProperties) {
+<span class="fc" id="L56">		JpaQueryBuilder.dynamoProperties = dynamoProperties;</span>
+<span class="fc" id="L57">	}</span>
+
+	/**
+	 * Adds fetch join information to a query root
+	 *
+	 * @param root       the query root
+	 * @param fetchJoins the fetch joins
+	 * @return &lt;code&gt;true&lt;/code&gt; if the fetches include a collection,
+	 * &lt;code&gt;false&lt;/code&gt; otherwise
+	 */
+	private static &lt;T&gt; boolean addFetchJoins(FetchParent&lt;T, ?&gt; root, FetchJoinInformation... fetchJoins) {
+<span class="fc" id="L68">		boolean collection = false;</span>
+
+<span class="fc" id="L70">		Map&lt;String, FetchParent&lt;T, ?&gt;&gt; fetchMap = new HashMap&lt;&gt;();</span>
+
+<span class="pc bpc" id="L72" title="1 of 4 branches missed.">		if (root != null &amp;&amp; fetchJoins != null) {</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">			for (FetchJoinInformation s : fetchJoins) {</span>
+
+				// Support nested properties
+<span class="fc" id="L76">				FetchParent&lt;T, ?&gt; fetch = root;</span>
+<span class="fc" id="L77">				String[] propertyPath = s.getProperty().split(&quot;\\.&quot;);</span>
+<span class="fc" id="L78">				String prefix = &quot;&quot;;</span>
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">				for (String property : propertyPath) {</span>
+<span class="pc bpc" id="L81" title="1 of 2 branches missed.">					if (prefix.length() &gt; 0) {</span>
+<span class="nc" id="L82">						prefix = prefix + &quot;.&quot;;</span>
+					}
+<span class="fc" id="L84">					prefix += property;</span>
+
+<span class="pc bpc" id="L86" title="1 of 2 branches missed.">					if (fetchMap.containsKey(prefix)) {</span>
+<span class="nc" id="L87">						fetch = fetchMap.get(prefix);</span>
+					} else {
+<span class="fc" id="L89">						fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));</span>
+<span class="fc" id="L90">						fetchMap.put(prefix, fetch);</span>
+					}
+				}
+			}
+
+			// check if any collection is fetched. If so then the results need
+			// to be cleaned up using &quot;distinct&quot;
+<span class="fc" id="L97">			collection = isCollectionFetch(root);</span>
+		}
+<span class="fc" id="L99">		return collection;</span>
+	}
+
+	/**
+	 * Adds the &quot;order by&quot; clause to a criteria query
+	 *
+	 * @param builder    the criteria builder
+	 * @param cq         the criteria query
+	 * @param root       the query root
+	 * @param distinct   whether a &quot;distinct&quot; is applied to the query
+	 * @param sortOrders the sort orders
+	 * @return the query with the sorting clause appended to it
+	 */
+	private static &lt;T, R&gt; CriteriaQuery&lt;R&gt; addOrderBy(CriteriaBuilder builder, CriteriaQuery&lt;R&gt; cq, Root&lt;T&gt; root,
+													  boolean distinct, SortOrder... sortOrders) {
+<span class="fc" id="L114">		return addOrderBy(builder, cq, root, null, distinct, sortOrders);</span>
+	}
+
+	/**
+	 * Adds the &quot;order by&quot; clause to a criteria query
+	 *
+	 * @param builder     the criteria builder
+	 * @param cq          the criteria query
+	 * @param root        the query root
+	 * @param multiSelect whether to select multiple properties
+	 * @param distinct    whether a 'distinct' is applied to the query. This
+	 *                    influences how the sort part is built
+	 * @param sortOrders  the sort orders
+	 * @return the criteria query with any relevant sorting instructions added to it
+	 */
+	private static &lt;T, R&gt; CriteriaQuery&lt;R&gt; addOrderBy(CriteriaBuilder builder, CriteriaQuery&lt;R&gt; cq, Root&lt;T&gt; root,
+													  List&lt;Selection&lt;?&gt;&gt; multiSelect, boolean distinct, SortOrder... sortOrders) {
+<span class="fc" id="L131">		List&lt;Selection&lt;?&gt;&gt; ms = new ArrayList&lt;&gt;();</span>
+<span class="pc bpc" id="L132" title="1 of 4 branches missed.">		if (multiSelect != null &amp;&amp; !multiSelect.isEmpty()) {</span>
+<span class="fc" id="L133">			ms.addAll(multiSelect);</span>
+		}
+<span class="fc bfc" id="L135" title="All 4 branches covered.">		if (sortOrders != null &amp;&amp; sortOrders.length &gt; 0) {</span>
+<span class="fc" id="L136">			List&lt;Order&gt; orders = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L137" title="All 2 branches covered.">			for (SortOrder sortOrder : sortOrders) {</span>
+<span class="fc bfc" id="L138" title="All 2 branches covered.">				Expression&lt;?&gt; property = distinct ? getPropertyPath(root, sortOrder.getProperty(), true)</span>
+<span class="fc" id="L139">					: getPropertyPathForSort(root, sortOrder.getProperty());</span>
+<span class="fc" id="L140">				ms.add(property);</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">				orders.add(sortOrder.isAscending() ? builder.asc(property) : builder.desc(property));</span>
+			}
+<span class="fc" id="L143">			cq.orderBy(orders);</span>
+		}
+<span class="pc bpc" id="L145" title="1 of 4 branches missed.">		if (multiSelect != null &amp;&amp; !ms.isEmpty()) {</span>
+<span class="fc" id="L146">			cq.multiselect(ms);</span>
+		}
+<span class="fc" id="L148">		return cq;</span>
+	}
+
+	/**
+	 * Creates a predicate based on an &quot;And&quot; filter
+	 *
+	 * @param builder    the criteria builder
+	 * @param root       the root object
+	 * @param filter     the &quot;And&quot; filter
+	 * @param parameters the parameters passed to the query
+	 * @return the predicate
+	 */
+	private static Predicate createAndPredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter,
+												Map&lt;String, Object&gt; parameters) {
+<span class="fc" id="L162">		And and = (And) filter;</span>
+<span class="fc" id="L163">		List&lt;Filter&gt; filters = new ArrayList&lt;&gt;(and.getFilters());</span>
+
+<span class="fc" id="L165">		Predicate predicate = null;</span>
+<span class="pc bpc" id="L166" title="1 of 2 branches missed.">		if (!filters.isEmpty()) {</span>
+<span class="fc" id="L167">			predicate = createPredicate(filters.remove(0), builder, root, parameters);</span>
+<span class="fc bfc" id="L168" title="All 2 branches covered.">			while (!filters.isEmpty()) {</span>
+<span class="fc" id="L169">				Predicate next = createPredicate(filters.remove(0), builder, root, parameters);</span>
+<span class="pc bpc" id="L170" title="1 of 2 branches missed.">				if (next != null) {</span>
+<span class="fc" id="L171">					predicate = builder.and(predicate, next);</span>
+				}
+<span class="fc" id="L173">			}</span>
+		}
+<span class="fc" id="L175">		return predicate;</span>
+	}
+
+	/**
+	 * Creates a predicate based on a case-insensitive Like-predicate
+	 *
+	 * @param builder the criteria builder
+	 * @param root    the root object
+	 * @param like    the predicate
+	 * @return the constructed predicate
+	 */
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+	private static Predicate createCaseInsensitiveLikePredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Like like) {
+<span class="fc" id="L188">		String unaccentName = dynamoProperties.getUnaccentFunctionName();</span>
+<span class="pc bpc" id="L189" title="1 of 2 branches missed.">		if (!StringUtils.isEmpty(unaccentName)) {</span>
+<span class="nc" id="L190">			return builder.like(</span>
+<span class="nc" id="L191">				builder.function(unaccentName, String.class,</span>
+<span class="nc" id="L192">					builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true))),</span>
+<span class="nc" id="L193">				removeAccents(like.getValue().toLowerCase()));</span>
+		}
+
+<span class="fc" id="L196">		return builder.like(builder.lower((Expression) getPropertyPath(root, like.getPropertyId(), true)),</span>
+<span class="fc" id="L197">			like.getValue().toLowerCase());</span>
+	}
+
+	/**
+	 * Creates a predicate based on a &quot;Compare&quot; filter
+	 *
+	 * @param builder the criteria builder
+	 * @param root    the query root
+	 * @param filter  the Compare filter
+	 * @return the predicate
+	 */
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+	private static Predicate createComparePredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter) {
+<span class="fc" id="L210">		Compare compare = (Compare) filter;</span>
+<span class="fc" id="L211">		Path path = getPropertyPath(root, compare.getPropertyId(), true);</span>
+<span class="fc" id="L212">		Object value = compare.getValue();</span>
+
+		// number representation may contain locale specific separators.
+		// Here, we remove
+		// those and make sure a period is used in all cases
+<span class="fc bfc" id="L217" title="All 2 branches covered.">		if (value instanceof String str) {</span>
+
+			// strip out any &quot;%&quot; sign from decimal fields
+<span class="fc" id="L220">			value = str.replace('%', ' ').trim();</span>
+<span class="pc bpc" id="L221" title="1 of 2 branches missed.">			if (StringUtils.isNumeric(str.replace(&quot;.&quot;, &quot;&quot;).replace(&quot;,&quot;, &quot;&quot;))) {</span>
+				// first remove all periods (which may be used as
+				// thousands separators), then replace comma by period
+<span class="nc" id="L224">				str = str.replace(&quot;.&quot;, &quot;&quot;).replace(',', '.');</span>
+<span class="nc" id="L225">				value = str;</span>
+			}
+		}
+
+<span class="pc bpc" id="L229" title="1 of 6 branches missed.">		switch (compare.getOperation()) {</span>
+			case EQUAL:
+<span class="pc bpc" id="L231" title="1 of 2 branches missed.">				if (value instanceof Class&lt;?&gt;) {</span>
+					// When instance of class the use type expression
+<span class="nc" id="L233">					return builder.equal(path.type(), builder.literal(value));</span>
+				}
+<span class="fc" id="L235">				return builder.equal(path, value);</span>
+			case GREATER:
+<span class="fc" id="L237">				return builder.greaterThan(path, (Comparable) value);</span>
+			case GREATER_OR_EQUAL:
+<span class="fc" id="L239">				return builder.greaterThanOrEqualTo(path, (Comparable) value);</span>
+			case LESS:
+<span class="fc" id="L241">				return builder.lessThan(path, (Comparable) value);</span>
+			case LESS_OR_EQUAL:
+<span class="fc" id="L243">				return builder.lessThanOrEqualTo(path, (Comparable) value);</span>
+			default:
+<span class="nc" id="L245">				return null;</span>
+		}
+	}
+
+	/**
+	 * Creates a query that performs a count
+	 *
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param filter        the filter to apply
+	 * @param distinct      whether to return only distinct results
+	 * @return the constructed query
+	 */
+	public static &lt;T&gt; TypedQuery&lt;Long&gt; createCountQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
+														Filter filter, boolean distinct) {
+<span class="fc" id="L260">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L261">		CriteriaQuery&lt;Long&gt; cq = builder.createQuery(Long.class);</span>
+<span class="fc" id="L262">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+<span class="fc bfc" id="L264" title="All 2 branches covered.">		cq.select(distinct ? builder.countDistinct(root) : builder.count(root));</span>
+
+<span class="fc" id="L266">		Map&lt;String, Object&gt; pars = createParameterMap();</span>
+<span class="fc" id="L267">		Predicate predicate = createPredicate(filter, builder, root, pars);</span>
+<span class="fc bfc" id="L268" title="All 2 branches covered.">		if (predicate != null) {</span>
+<span class="fc" id="L269">			cq.where(predicate);</span>
+		}
+<span class="fc" id="L271">		TypedQuery&lt;Long&gt; query = entityManager.createQuery(cq);</span>
+<span class="fc" id="L272">		setParameters(query, pars);</span>
+<span class="fc" id="L273">		return query;</span>
+	}
+
+	/**
+	 * Creates a query for retrieving all distinct values for a certain field
+	 *
+	 * @param filter        the search filter
+	 * @param entityManager the entity manager
+	 * @param entityClass   the class of the entity to query
+	 * @param distinctField the name of the field for which to retrieve the distinct
+	 *                      values
+	 * @param sortOrders    the sort orders
+	 * @return the constructed query
+	 */
+	public static &lt;T&gt; TypedQuery&lt;Tuple&gt; createDistinctQuery(Filter filter, EntityManager entityManager,
+															Class&lt;T&gt; entityClass, String distinctField, SortOrder... sortOrders) {
+<span class="fc" id="L289">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L290">		CriteriaQuery&lt;Tuple&gt; cq = builder.createTupleQuery();</span>
+<span class="fc" id="L291">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+		// select only the distinctField
+<span class="fc" id="L294">		cq.multiselect(getPropertyPath(root, distinctField, true));</span>
+
+<span class="fc" id="L296">		Map&lt;String, Object&gt; pars = createParameterMap();</span>
+<span class="fc" id="L297">		Predicate predicate = createPredicate(filter, builder, root, pars);</span>
+<span class="fc bfc" id="L298" title="All 2 branches covered.">		if (predicate != null) {</span>
+<span class="fc" id="L299">			cq.where(predicate);</span>
+		}
+<span class="fc" id="L301">		cq.distinct(true);</span>
+<span class="fc" id="L302">		cq = addOrderBy(builder, cq, root, true, sortOrders);</span>
+
+<span class="fc" id="L304">		TypedQuery&lt;Tuple&gt; query = entityManager.createQuery(cq);</span>
+<span class="fc" id="L305">		setParameters(query, pars);</span>
+
+<span class="fc" id="L307">		return query;</span>
+	}
+
+	/**
+	 * Creates a query that fetches objects based on their IDs
+	 *
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param ids           the IDs of the desired entities
+	 * @param sortOrders    the sort orders
+	 * @param fetchJoins    the desired fetch joins
+	 * @return the constructed query
+	 */
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	public static &lt;ID, T&gt; TypedQuery&lt;T&gt; createFetchQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
+														 List&lt;ID&gt; ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... fetchJoins) {
+<span class="fc" id="L323">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L324">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
+<span class="fc" id="L325">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+<span class="fc" id="L327">		boolean distinct = addFetchJoins(root, fetchJoins);</span>
+<span class="pc bpc" id="L328" title="1 of 2 branches missed.">		if (distinct) {</span>
+<span class="nc" id="L329">			log.warn(&quot;Using distinct select, sorting on complex properties is not supported!&quot;);</span>
+		}
+
+		// use parameters to prevent Hibernate from creating different query plan
+		// every time
+<span class="fc" id="L334">		Expression&lt;String&gt; exp = root.get(DynamoConstants.ID);</span>
+<span class="fc" id="L335">		ParameterExpression&lt;List&gt; idExpression = builder.parameter(List.class, DynamoConstants.IDS);</span>
+<span class="fc" id="L336">		cq.distinct(distinct);</span>
+
+<span class="fc" id="L338">		Map&lt;String, Object&gt; pars = createParameterMap();</span>
+<span class="fc bfc" id="L339" title="All 2 branches covered.">		if (additionalFilter != null) {</span>
+<span class="fc" id="L340">			Predicate predicate = createPredicate(additionalFilter, builder, root, pars);</span>
+<span class="pc bpc" id="L341" title="1 of 2 branches missed.">			if (predicate != null) {</span>
+<span class="fc" id="L342">				cq.where(predicate, exp.in(idExpression));</span>
+			} else {
+<span class="nc" id="L344">				cq.where(exp.in(idExpression));</span>
+			}
+<span class="fc" id="L346">		} else {</span>
+<span class="fc" id="L347">			cq.where(exp.in(idExpression));</span>
+		}
+
+<span class="fc bfc" id="L350" title="All 2 branches covered.">		addOrderBy(builder, cq, root, distinct, sortOrders == null ? null : sortOrders.toArray());</span>
+<span class="fc" id="L351">		TypedQuery&lt;T&gt; query = entityManager.createQuery(cq);</span>
+
+<span class="fc" id="L353">		query.setParameter(DynamoConstants.IDS, ids);</span>
+
+<span class="fc bfc" id="L355" title="All 2 branches covered.">		if (additionalFilter != null) {</span>
+<span class="fc" id="L356">			setParameters(query, pars);</span>
+		}
+
+<span class="fc" id="L359">		return query;</span>
+	}
+
+	/**
+	 * Create a query for fetching a single object
+	 *
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param id            ID of the object to return
+	 * @param fetchJoins    fetch joins to include
+	 * @return the constructed query
+	 */
+	public static &lt;ID, T&gt; TypedQuery&lt;T&gt; createFetchSingleObjectQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
+																	 ID id, FetchJoinInformation[] fetchJoins) {
+<span class="fc" id="L373">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L374">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
+<span class="fc" id="L375">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+<span class="fc" id="L377">		addFetchJoins(root, fetchJoins);</span>
+<span class="fc" id="L378">		Expression&lt;String&gt; exp = root.get(DynamoConstants.ID);</span>
+
+<span class="fc" id="L380">		boolean parameterSet = true;</span>
+<span class="pc bpc" id="L381" title="1 of 2 branches missed.">		if (id instanceof Integer) {</span>
+<span class="fc" id="L382">			ParameterExpression&lt;Integer&gt; p = builder.parameter(Integer.class, DynamoConstants.ID);</span>
+<span class="fc" id="L383">			cq.where(builder.equal(exp, p));</span>
+<span class="pc bnc" id="L384" title="All 2 branches missed.">		} else if (id instanceof Long) {</span>
+<span class="nc" id="L385">			ParameterExpression&lt;Long&gt; p = builder.parameter(Long.class, DynamoConstants.ID);</span>
+<span class="nc" id="L386">			cq.where(builder.equal(exp, p));</span>
+<span class="nc bnc" id="L387" title="All 2 branches missed.">		} else if (id instanceof String) {</span>
+<span class="nc" id="L388">			ParameterExpression&lt;String&gt; p = builder.parameter(String.class, DynamoConstants.ID);</span>
+<span class="nc" id="L389">			cq.where(builder.equal(exp, p));</span>
+<span class="nc" id="L390">		} else {</span>
+			// no parameter but query directly
+<span class="nc" id="L392">			parameterSet = false;</span>
+<span class="nc" id="L393">			cq.where(builder.equal(root.get(DynamoConstants.ID), id));</span>
+		}
+
+<span class="fc" id="L396">		TypedQuery&lt;T&gt; query = entityManager.createQuery(cq);</span>
+<span class="pc bpc" id="L397" title="1 of 2 branches missed.">		if (parameterSet) {</span>
+<span class="fc" id="L398">			query.setParameter(DynamoConstants.ID, id);</span>
+		}
+
+<span class="fc" id="L401">		return query;</span>
+	}
+
+	/**
+	 * Creates a query for retrieving the IDs of the entities that match the
+	 * provided filter
+	 *
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param filter        the filter to apply
+	 * @param sortOrders    the sorting to apply
+	 * @return the constructed query
+	 */
+	public static &lt;T&gt; TypedQuery&lt;Tuple&gt; createIdQuery(EntityManager entityManager, Class&lt;T&gt; entityClass, Filter filter,
+													  SortOrder... sortOrders) {
+<span class="fc" id="L416">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L417">		CriteriaQuery&lt;Tuple&gt; cq = builder.createTupleQuery();</span>
+<span class="fc" id="L418">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+<span class="fc" id="L420">		List&lt;Selection&lt;?&gt;&gt; selection = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L421">		selection.add(root.get(DynamoConstants.ID));</span>
+
+<span class="fc" id="L423">		Map&lt;String, Object&gt; pars = createParameterMap();</span>
+<span class="fc" id="L424">		Predicate predicate = createPredicate(filter, builder, root, pars);</span>
+<span class="pc bpc" id="L425" title="1 of 2 branches missed.">		if (predicate != null) {</span>
+<span class="nc" id="L426">			cq.where(predicate);</span>
+		}
+
+		// When joins are added (by getPropertyPath) do distinct query
+<span class="pc bpc" id="L430" title="1 of 2 branches missed.">		if (!root.getJoins().isEmpty()) {</span>
+<span class="nc" id="L431">			cq.distinct(true);</span>
+		}
+
+		// add order by clause - this is also important in case of an ID query
+		// since we do need to return the correct IDs!
+		// note: &quot;distinct&quot; must be false here
+<span class="fc" id="L437">		cq = addOrderBy(builder, cq, root, selection, false, sortOrders);</span>
+<span class="fc" id="L438">		TypedQuery&lt;Tuple&gt; query = entityManager.createQuery(cq);</span>
+<span class="fc" id="L439">		setParameters(query, pars);</span>
+<span class="fc" id="L440">		return query;</span>
+	}
+
+	/**
+	 * Creates a predicate based on a &quot;Like&quot;-filter
+	 *
+	 * @param builder the criteria builder
+	 * @param root    the query root
+	 * @param filter  the filter
+	 * @return the constructed predicate
+	 */
+	private static Predicate createLikePredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter) {
+<span class="fc" id="L452">		Like like = (Like) filter;</span>
+<span class="fc bfc" id="L453" title="All 2 branches covered.">		if (like.isCaseSensitive()) {</span>
+<span class="fc" id="L454">			return createLikePredicate(builder, root, like);</span>
+		} else {
+<span class="fc" id="L456">			return createCaseInsensitiveLikePredicate(builder, root, like);</span>
+		}
+	}
+
+	/**
+	 * Creates a predicate based on a &quot;Like&quot;-filter (case-insensitive)
+	 *
+	 * @param builder the criteria builder
+	 * @param root    the query root
+	 * @param like    the Like filter
+	 * @return the constructed predicate
+	 */
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+	private static Predicate createLikePredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Like like) {
+<span class="fc" id="L470">		String unaccentName = dynamoProperties.getUnaccentFunctionName();</span>
+<span class="pc bpc" id="L471" title="1 of 2 branches missed.">		if (!StringUtils.isEmpty(unaccentName)) {</span>
+<span class="nc" id="L472">			return builder.like(</span>
+<span class="nc" id="L473">				builder.function(unaccentName, String.class, getPropertyPath(root, like.getPropertyId(), true)),</span>
+<span class="nc" id="L474">				removeAccents(like.getValue()));</span>
+		}
+
+<span class="fc" id="L477">		return builder.like((Expression) getPropertyPath(root, like.getPropertyId(), true), like.getValue());</span>
+	}
+
+	/**
+	 * Creates a modulo predicate
+	 *
+	 * @param builder the criteria builder
+	 * @param root    the query root
+	 * @param filter  the filter to apply
+	 * @return the constructed predicate
+	 */
+	@SuppressWarnings({&quot;rawtypes&quot;, &quot;unchecked&quot;})
+	private static Predicate createModuloPredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter) {
+<span class="fc" id="L490">		Modulo modulo = (Modulo) filter;</span>
+<span class="fc bfc" id="L491" title="All 2 branches covered.">		if (modulo.getModExpression() != null) {</span>
+			// compare to a literal expression
+<span class="fc" id="L493">			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),</span>
+<span class="fc" id="L494">				(Expression) getPropertyPath(root, modulo.getModExpression(), true)), modulo.getResult());</span>
+		} else {
+			// compare to a property
+<span class="fc" id="L497">			return builder.equal(builder.mod((Expression) getPropertyPath(root, modulo.getPropertyId(), true),</span>
+<span class="fc" id="L498">				modulo.getModValue().intValue()), modulo.getResult());</span>
+		}
+	}
+
+	/**
+	 * Creates a predicate for a logical OR
+	 *
+	 * @param builder    the criteria builder
+	 * @param root       the query root
+	 * @param filter     the filter to apply
+	 * @param parameters the query parameter mapping
+	 * @return the constructed predicate
+	 */
+	private static Predicate createOrPredicate(CriteriaBuilder builder, Root&lt;?&gt; root, Filter filter,
+											   Map&lt;String, Object&gt; parameters) {
+<span class="fc" id="L513">		Or or = (Or) filter;</span>
+<span class="fc" id="L514">		List&lt;Filter&gt; filters = new ArrayList&lt;&gt;(or.getFilters());</span>
+
+<span class="fc" id="L516">		Predicate predicate = null;</span>
+<span class="pc bpc" id="L517" title="1 of 2 branches missed.">		if (!filters.isEmpty()) {</span>
+<span class="fc" id="L518">			predicate = createPredicate(filters.remove(0), builder, root, parameters);</span>
+<span class="fc bfc" id="L519" title="All 2 branches covered.">			while (!filters.isEmpty()) {</span>
+<span class="fc" id="L520">				Predicate next = createPredicate(filters.remove(0), builder, root, parameters);</span>
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">				if (next != null) {</span>
+<span class="fc" id="L522">					predicate = builder.or(predicate, next);</span>
+				}
+<span class="fc" id="L524">			}</span>
+		}
+
+<span class="fc" id="L527">		return predicate;</span>
+	}
+
+	private static Map&lt;String, Object&gt; createParameterMap() {
+<span class="fc" id="L531">		return new HashMap&lt;&gt;();</span>
+	}
+
+	/**
+	 * Creates a predicate based on a Filter
+	 *
+	 * @param filter  the filter
+	 * @param builder the criteria builder
+	 * @param root    the entity root
+	 * @return the constructed predicate
+	 */
+	@SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+	private static Predicate createPredicate(Filter filter, CriteriaBuilder builder, Root&lt;?&gt; root,
+											 Map&lt;String, Object&gt; parameters) {
+<span class="fc bfc" id="L545" title="All 2 branches covered.">		if (filter == null) {</span>
+<span class="fc" id="L546">			return null;</span>
+		}
+
+<span class="fc bfc" id="L549" title="All 2 branches covered.">		if (filter instanceof And) {</span>
+<span class="fc" id="L550">			return createAndPredicate(builder, root, filter, parameters);</span>
+<span class="fc bfc" id="L551" title="All 2 branches covered.">		} else if (filter instanceof Or) {</span>
+<span class="fc" id="L552">			return createOrPredicate(builder, root, filter, parameters);</span>
+<span class="fc bfc" id="L553" title="All 2 branches covered.">		} else if (filter instanceof Not not) {</span>
+<span class="fc" id="L554">			return builder.not(createPredicate(not.getFilter(), builder, root, parameters));</span>
+<span class="fc bfc" id="L555" title="All 2 branches covered.">		} else if (filter instanceof Between between) {</span>
+<span class="fc" id="L556">			Expression property = getPropertyPath(root, between.getPropertyId(), true);</span>
+<span class="fc" id="L557">			return builder.between(property, (Comparable) between.getStartValue(), (Comparable) between.getEndValue());</span>
+<span class="fc bfc" id="L558" title="All 2 branches covered.">		} else if (filter instanceof Compare) {</span>
+<span class="fc" id="L559">			return createComparePredicate(builder, root, filter);</span>
+<span class="fc bfc" id="L560" title="All 2 branches covered.">		} else if (filter instanceof IsNull isNull) {</span>
+<span class="fc" id="L561">			Path path = getPropertyPath(root, isNull.getPropertyId(), true);</span>
+<span class="pc bpc" id="L562" title="1 of 2 branches missed.">			if (isCollection(path)) {</span>
+<span class="nc" id="L563">				return builder.isEmpty(path);</span>
+			}
+<span class="fc" id="L565">			return builder.isNull(path);</span>
+<span class="fc bfc" id="L566" title="All 2 branches covered.">		} else if (filter instanceof Like) {</span>
+<span class="fc" id="L567">			return createLikePredicate(builder, root, filter);</span>
+<span class="pc bpc" id="L568" title="1 of 2 branches missed.">		} else if (filter instanceof Contains contains) {</span>
+<span class="nc" id="L569">			return builder.isMember(contains.getValue(),</span>
+<span class="nc" id="L570">				(Expression) getPropertyPath(root, contains.getPropertyId(), true));</span>
+<span class="fc bfc" id="L571" title="All 2 branches covered.">		} else if (filter instanceof In in) {</span>
+<span class="pc bpc" id="L572" title="1 of 4 branches missed.">			if (in.getValues() != null &amp;&amp; !in.getValues().isEmpty()) {</span>
+<span class="fc" id="L573">				Expression&lt;?&gt; exp = getPropertyPath(root, in.getPropertyId(), true);</span>
+<span class="fc" id="L574">				String parName = in.getPropertyId().replace('.', '_');</span>
+				// Support multiple parameters
+<span class="pc bpc" id="L576" title="1 of 2 branches missed.">				if (parameters.containsKey(parName)) {</span>
+<span class="nc" id="L577">					parName = parName + System.currentTimeMillis();</span>
+				}
+
+<span class="fc" id="L580">				ParameterExpression&lt;Collection&gt; p = builder.parameter(Collection.class, parName);</span>
+<span class="fc" id="L581">				parameters.put(parName, in.getValues());</span>
+<span class="fc" id="L582">				return exp.in(p);</span>
+			} else {
+				// match with an empty list
+<span class="fc" id="L585">				Expression exp = getPropertyPath(root, in.getPropertyId(), true);</span>
+<span class="fc" id="L586">				return exp.in(List.of(-1));</span>
+			}
+<span class="pc bpc" id="L588" title="1 of 2 branches missed.">		} else if (filter instanceof Modulo) {</span>
+<span class="fc" id="L589">			return createModuloPredicate(builder, root, filter);</span>
+		}
+
+<span class="nc" id="L592">		throw new UnsupportedOperationException(&quot;Filter: &quot; + filter.getClass().getName() + &quot; not recognized&quot;);</span>
+	}
+
+	/**
+	 * Creates a query that selects objects based on the specified filter
+	 *
+	 * @param filter        the filter
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param sortOrders    the sorting information
+	 * @return the constructed query
+	 */
+	public static &lt;T&gt; TypedQuery&lt;T&gt; createSelectQuery(Filter filter, EntityManager entityManager, Class&lt;T&gt; entityClass,
+													  FetchJoinInformation[] fetchJoins, SortOrder... sortOrders) {
+<span class="fc" id="L606">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L607">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
+<span class="fc" id="L608">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+<span class="fc" id="L610">		boolean distinct = addFetchJoins(root, fetchJoins);</span>
+<span class="fc" id="L611">		cq.select(root);</span>
+<span class="fc" id="L612">		cq.distinct(distinct);</span>
+
+<span class="fc" id="L614">		Map&lt;String, Object&gt; pars = createParameterMap();</span>
+<span class="fc" id="L615">		Predicate p = createPredicate(filter, builder, root, pars);</span>
+<span class="fc bfc" id="L616" title="All 2 branches covered.">		if (p != null) {</span>
+<span class="fc" id="L617">			cq.where(p);</span>
+		}
+<span class="fc" id="L619">		cq = addOrderBy(builder, cq, root, distinct, sortOrders);</span>
+<span class="fc" id="L620">		TypedQuery&lt;T&gt; query = entityManager.createQuery(cq);</span>
+<span class="fc" id="L621">		setParameters(query, pars);</span>
+<span class="fc" id="L622">		return query;</span>
+	}
+
+	/**
+	 * Creates a query to fetch an object based on a value of a unique property
+	 *
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param fetchJoins    the fetch joins to include
+	 * @param propertyName  name of the property to search on
+	 * @param value         value of the property to search on
+	 * @return the constructed query
+	 */
+	public static &lt;T&gt; CriteriaQuery&lt;T&gt; createUniquePropertyFetchQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
+																	  FetchJoinInformation[] fetchJoins, String propertyName, Object value, boolean caseSensitive) {
+<span class="fc" id="L637">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L638">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
+<span class="fc" id="L639">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+<span class="fc" id="L641">		addFetchJoins(root, fetchJoins);</span>
+
+		Predicate equals;
+<span class="pc bpc" id="L644" title="1 of 4 branches missed.">		if (value instanceof String &amp;&amp; !caseSensitive) {</span>
+<span class="fc" id="L645">			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),</span>
+<span class="fc" id="L646">				((String) value).toUpperCase());</span>
+		} else {
+<span class="fc" id="L648">			equals = builder.equal(root.get(propertyName), value);</span>
+		}
+<span class="fc" id="L650">		cq.where(equals);</span>
+<span class="fc" id="L651">		cq.distinct(true);</span>
+
+<span class="fc" id="L653">		return cq;</span>
+	}
+
+	/**
+	 * Creates a query used to retrieve a single entity based on a unique property
+	 * value
+	 *
+	 * @param entityManager the entity manager
+	 * @param entityClass   the entity class
+	 * @param propertyName  the property name
+	 * @param value         the unique value
+	 * @return the constructed query
+	 */
+	public static &lt;T&gt; CriteriaQuery&lt;T&gt; createUniquePropertyQuery(EntityManager entityManager, Class&lt;T&gt; entityClass,
+																 String propertyName, Object value, boolean caseSensitive) {
+<span class="fc" id="L668">		CriteriaBuilder builder = entityManager.getCriteriaBuilder();</span>
+<span class="fc" id="L669">		CriteriaQuery&lt;T&gt; cq = builder.createQuery(entityClass);</span>
+<span class="fc" id="L670">		Root&lt;T&gt; root = cq.from(entityClass);</span>
+
+		Predicate equals;
+<span class="pc bpc" id="L673" title="2 of 4 branches missed.">		if (value instanceof String &amp;&amp; !caseSensitive) {</span>
+<span class="fc" id="L674">			equals = builder.equal(builder.upper(root.get(propertyName).as(String.class)),</span>
+<span class="fc" id="L675">				((String) value).toUpperCase());</span>
+		} else {
+<span class="nc" id="L677">			equals = builder.equal(root.get(propertyName), value);</span>
+		}
+<span class="fc" id="L679">		cq.where(equals);</span>
+
+<span class="fc" id="L681">		return cq;</span>
+	}
+
+	/**
+	 * Gets property path.
+	 *
+	 * @param root       the root where path starts form
+	 * @param propertyId the property ID
+	 * @param join       set to true if you want implicit joins to be created for
+	 *                   ALL collections
+	 * @return the path to property
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static Path&lt;Object&gt; getPropertyPath(Root&lt;?&gt; root, Object propertyId, boolean join) {
+<span class="fc" id="L695">		String[] propertyIdParts = ((String) propertyId).split(&quot;\\.&quot;);</span>
+
+<span class="fc" id="L697">		Path&lt;?&gt; path = null;</span>
+<span class="fc" id="L698">		Join&lt;?, ?&gt; curJoin = null;</span>
+<span class="fc bfc" id="L699" title="All 2 branches covered.">		for (String part : propertyIdParts) {</span>
+<span class="fc bfc" id="L700" title="All 2 branches covered.">			if (path == null) {</span>
+<span class="fc" id="L701">				path = root.get(part);</span>
+			} else {
+<span class="fc" id="L703">				path = path.get(part);</span>
+			}
+
+<span class="pc bpc" id="L706" title="2 of 4 branches missed.">			if (join &amp;&amp; isCollection(path)) {</span>
+				// Reuse existing join
+<span class="nc" id="L708">				Join&lt;?, ?&gt; detailJoin = null;</span>
+<span class="nc bnc" id="L709" title="All 2 branches missed.">				Collection&lt;Join&lt;?, ?&gt;&gt; joins = (Collection&lt;Join&lt;?, ?&gt;&gt;) (curJoin == null ? root.getJoins()</span>
+<span class="nc" id="L710">					: curJoin.getJoins());</span>
+<span class="nc bnc" id="L711" title="All 2 branches missed.">				if (joins != null) {</span>
+<span class="nc bnc" id="L712" title="All 2 branches missed.">					for (Join&lt;?, ?&gt; j : joins) {</span>
+<span class="nc bnc" id="L713" title="All 2 branches missed.">						if (part.equals(j.getAttribute().getName())) {</span>
+<span class="nc" id="L714">							path = j;</span>
+<span class="nc" id="L715">							detailJoin = j;</span>
+<span class="nc" id="L716">							break;</span>
+						}
+<span class="nc" id="L718">					}</span>
+				}
+				// when no existing join then add new
+<span class="nc bnc" id="L721" title="All 2 branches missed.">				if (detailJoin == null) {</span>
+<span class="nc bnc" id="L722" title="All 2 branches missed.">					if (curJoin == null) {</span>
+<span class="nc" id="L723">						curJoin = root.join(part);</span>
+					} else {
+<span class="nc" id="L725">						curJoin = curJoin.join(part);</span>
+					}
+<span class="nc" id="L727">					path = curJoin;</span>
+				}
+			}
+		}
+<span class="fc" id="L731">		return (Path&lt;Object&gt;) path;</span>
+	}
+
+	/**
+	 * Adds a property path specifically for sorting
+	 *
+	 * @param root       the query root
+	 * @param propertyId the property
+	 * @return the constructed expression
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private static Expression&lt;?&gt; getPropertyPathForSort(Root&lt;?&gt; root, Object propertyId) {
+<span class="fc" id="L743">		String[] propertyIdParts = ((String) propertyId).split(&quot;\\.&quot;);</span>
+
+<span class="fc" id="L745">		Path&lt;?&gt; path = null;</span>
+<span class="fc" id="L746">		Join&lt;?, ?&gt; curJoin = null;</span>
+<span class="fc bfc" id="L747" title="All 2 branches covered.">		for (String part : propertyIdParts) {</span>
+<span class="pc bpc" id="L748" title="1 of 2 branches missed.">			if (path == null) {</span>
+<span class="fc" id="L749">				path = root.get(part);</span>
+			} else {
+<span class="nc" id="L751">				path = path.get(part);</span>
+			}
+
+<span class="pc bpc" id="L754" title="1 of 2 branches missed.">			if (isEntityOrCollection(path)) {</span>
+				// Reuse existing join
+<span class="nc" id="L756">				Join&lt;?, ?&gt; detailJoin = null;</span>
+<span class="nc bnc" id="L757" title="All 2 branches missed.">				Collection&lt;Join&lt;?, ?&gt;&gt; joins = (Collection&lt;Join&lt;?, ?&gt;&gt;) (curJoin == null ? root.getJoins()</span>
+<span class="nc" id="L758">					: curJoin.getJoins());</span>
+<span class="nc bnc" id="L759" title="All 2 branches missed.">				if (joins != null) {</span>
+<span class="nc bnc" id="L760" title="All 2 branches missed.">					for (Join&lt;?, ?&gt; j : joins) {</span>
+<span class="nc bnc" id="L761" title="All 2 branches missed.">						if (part.equals(j.getAttribute().getName())) {</span>
+<span class="nc" id="L762">							path = j;</span>
+<span class="nc" id="L763">							detailJoin = j;</span>
+<span class="nc" id="L764">							break;</span>
+						}
+<span class="nc" id="L766">					}</span>
+				}
+				// when no existing join then add new
+<span class="nc bnc" id="L769" title="All 2 branches missed.">				if (detailJoin == null) {</span>
+<span class="nc bnc" id="L770" title="All 2 branches missed.">					if (curJoin == null) {</span>
+<span class="nc" id="L771">						curJoin = root.join(part, JoinType.LEFT);</span>
+					} else {
+<span class="nc" id="L773">						curJoin = curJoin.join(part, JoinType.LEFT);</span>
+					}
+<span class="nc" id="L775">					path = curJoin;</span>
+				}
+			}
+
+		}
+<span class="fc" id="L780">		return path;</span>
+	}
+
+	/**
+	 * Indicates whether at least one of the specified fetches is a fetch that
+	 * fetches a collection
+	 *
+	 * @param parent the fetch parent
+	 * @return true if this is the case, false otherwise
+	 */
+	private static boolean isCollectionFetch(FetchParent&lt;?, ?&gt; parent) {
+<span class="fc" id="L791">		boolean result = false;</span>
+
+<span class="fc bfc" id="L793" title="All 2 branches covered.">		for (Fetch&lt;?, ?&gt; fetch : parent.getFetches()) {</span>
+<span class="fc" id="L794">			Attribute&lt;?, ?&gt; attribute = fetch.getAttribute();</span>
+
+<span class="fc" id="L796">			boolean nested = isCollectionFetch(fetch);</span>
+<span class="pc bpc" id="L797" title="2 of 6 branches missed.">			result = result || attribute.isCollection() || nested;</span>
+<span class="fc" id="L798">		}</span>
+<span class="fc" id="L799">		return result;</span>
+	}
+
+	private static boolean isCollection(Path&lt;?&gt; path) {
+<span class="fc" id="L803">		boolean collection = false;</span>
+		try {
+<span class="pc bpc" id="L805" title="2 of 4 branches missed.">			collection = path.type() != null &amp;&amp; Collection.class.isAssignableFrom(path.type().getJavaType());</span>
+<span class="fc" id="L806">		} catch (Exception ex) {</span>
+			// do nothing (new JPA is stricter on this than before)
+<span class="fc" id="L808">		}</span>
+<span class="fc" id="L809">		return collection;</span>
+	}
+
+	private static boolean isEntityOrCollection(Path&lt;?&gt; path) {
+<span class="fc" id="L813">		boolean entityOrCollection = false;</span>
+
+		try {
+<span class="pc bpc" id="L816" title="1 of 2 branches missed.">			entityOrCollection = path instanceof SqmEntityValuedSimplePath</span>
+<span class="pc bpc" id="L817" title="1 of 2 branches missed.">				|| Collection.class.isAssignableFrom(path.getJavaType());</span>
+<span class="nc" id="L818">		} catch (Exception ex) {</span>
+			// do nothing (new JPA is stricter on this than before)
+<span class="fc" id="L820">		}</span>
+<span class="fc" id="L821">		return entityOrCollection;</span>
+
+	}
+
+	private static String removeAccents(String input) {
+<span class="nc" id="L826">		return org.dynamoframework.utils.StringUtils.removeAccents(input);</span>
+	}
+
+	/**
+	 * Sets the values of all parameters used in the query
+	 *
+	 * @param query the query
+	 * @param pars  the parameter values
+	 */
+	private static void setParameters(TypedQuery&lt;?&gt; query, Map&lt;String, Object&gt; pars) {
+<span class="fc bfc" id="L836" title="All 2 branches covered.">		for (Entry&lt;String, Object&gt; entry : pars.entrySet()) {</span>
+<span class="fc" id="L837">			query.setParameter(entry.getKey(), entry.getValue());</span>
+<span class="fc" id="L838">		}</span>
+<span class="fc" id="L839">	}</span>
+
+	/**
+	 * Translates a JoinType
+	 *
+	 * @param type the type to translate
+	 * @return the result of the translation
+	 */
+	private static JoinType translateJoinType(org.dynamoframework.dao.JoinType type) {
+<span class="pc bpc" id="L848" title="2 of 3 branches missed.">		return switch (type) {</span>
+<span class="nc" id="L849">			case INNER -&gt; JoinType.INNER;</span>
+<span class="fc" id="L850">			case LEFT -&gt; JoinType.LEFT;</span>
+<span class="nc" id="L851">			default -&gt; JoinType.RIGHT;</span>
+		};
+	}
+
+	private JpaQueryBuilder() {
+		// hidden private constructor
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

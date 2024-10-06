@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Like.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.filter</a> &gt; <span class="el_source">Like.java</span></div><h1>Like.java</h1><pre class="source lang-java linenums">package org.dynamoframework.filter;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.util.Objects;
+
+/**
+ * A filter for checking if a string value contains a certain pattern. Use
+ * percent signs (&quot;%&quot;) to denote wildcards
+ *
+ * @author bas.rutten
+ */
+public class Like extends AbstractFilter implements PropertyFilter {
+
+	private final String propertyId;
+
+	private final String value;
+
+	private final boolean caseSensitive;
+
+	public Like(String propertyId, String value) {
+<span class="fc" id="L40">		this(propertyId, value, true);</span>
+<span class="fc" id="L41">	}</span>
+
+<span class="fc" id="L43">	public Like(String propertyId, String value, boolean caseSensitive) {</span>
+<span class="fc" id="L44">		this.propertyId = propertyId;</span>
+<span class="fc" id="L45">		this.value = value;</span>
+<span class="fc" id="L46">		this.caseSensitive = caseSensitive;</span>
+<span class="fc" id="L47">	}</span>
+
+	@Override
+	public String getPropertyId() {
+<span class="fc" id="L51">		return propertyId;</span>
+	}
+
+	public String getValue() {
+<span class="fc" id="L55">		return value;</span>
+	}
+
+	public boolean isCaseSensitive() {
+<span class="fc" id="L59">		return caseSensitive;</span>
+	}
+
+	@Override
+	public boolean evaluate(Object that) {
+<span class="fc bfc" id="L64" title="All 2 branches covered.">		if (that == null) {</span>
+<span class="fc" id="L65">			return false;</span>
+		}
+<span class="fc" id="L67">		Object val = getProperty(that, getPropertyId());</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">		if (val == null) {</span>
+<span class="fc" id="L69">			return false;</span>
+		}
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		if (!val.getClass().isAssignableFrom(String.class)) {</span>
+<span class="nc" id="L72">			return false;</span>
+		}
+<span class="fc" id="L74">		String pattern = getValue().replace(&quot;%&quot;, &quot;.*&quot;);</span>
+<span class="fc bfc" id="L75" title="All 2 branches covered.">		if (isCaseSensitive()) {</span>
+<span class="fc" id="L76">			return ((String) val).matches(pattern);</span>
+		}
+<span class="fc" id="L78">		return ((String) val).toUpperCase().matches(pattern.toUpperCase());</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="pc bpc" id="L83" title="1 of 2 branches missed.">		return getPropertyId().hashCode() + getValue().hashCode() + (caseSensitive ? 0 : 1);</span>
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// Only objects of the same class can be equal
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (!(obj instanceof Like)) {</span>
+<span class="fc" id="L90">			return false;</span>
+		}
+<span class="fc" id="L92">		Like o = (Like) obj;</span>
+<span class="pc bpc" id="L93" title="1 of 4 branches missed.">		return Objects.equals(propertyId, o.getPropertyId()) &amp;&amp; Objects.equals(value, o.getValue())</span>
+<span class="fc bfc" id="L94" title="All 2 branches covered.">			&amp;&amp; Objects.equals(caseSensitive, o.isCaseSensitive());</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="fc" id="L99">		return getPropertyId() + &quot; &quot; + super.toString() + &quot; &quot; + getValue()</span>
+<span class="pc bpc" id="L100" title="1 of 2 branches missed.">			+ (isCaseSensitive() ? &quot;&quot; : &quot; (ignore case)&quot;);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

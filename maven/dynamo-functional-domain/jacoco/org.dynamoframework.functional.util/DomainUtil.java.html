@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DomainUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Functional extension - Domain</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.functional.util</a> &gt; <span class="el_source">DomainUtil.java</span></div><h1>DomainUtil.java</h1><pre class="source lang-java linenums">package org.dynamoframework.functional.util;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.dynamoframework.functional.domain.Domain;
+import org.dynamoframework.service.BaseService;
+import org.dynamoframework.service.MessageService;
+import org.dynamoframework.utils.ClassUtils;
+
+import java.util.*;
+import java.util.stream.Collectors;
+
+/**
+ * Utility methods for dealing with domains
+ *
+ * @author bas.rutten
+ */
+public final class DomainUtil {
+
+	private static final int MAX_DESCRIPTION_ITEMS = 3;
+
+	private DomainUtil() {
+	}
+
+	/**
+	 * Creates a new entity if it does not exist. Otherwise, returns the existing entity
+	 *
+	 * @param service       the service used to retrieve the item
+	 * @param clazz         the domain class
+	 * @param value         the value of the &quot;name&quot; attribute
+	 * @param caseSensitive whether to check for case-sensitive values
+	 * @return the existing or newly created entity
+	 */
+	public static &lt;T extends Domain&gt; T createIfNotExists(BaseService&lt;?, T&gt; service, Class&lt;T&gt; clazz, String value,
+														 boolean caseSensitive) {
+<span class="fc" id="L54">		T entity = service.findByUniqueProperty(Domain.ATTRIBUTE_NAME, value, caseSensitive);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		if (entity == null) {</span>
+<span class="fc" id="L56">			entity = ClassUtils.instantiateClass(clazz);</span>
+<span class="fc" id="L57">			entity.setName(value);</span>
+<span class="fc" id="L58">			entity = service.save(entity);</span>
+		}
+<span class="fc" id="L60">		return entity;</span>
+	}
+
+	/**
+	 * Returns all domain entities that match the specified type
+	 *
+	 * @param clazz   the type
+	 * @param domains the set of all domain values
+	 * @return the set of matching entities
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static &lt;T extends Domain&gt; Set&lt;T&gt; filterDomains(Class&lt;T&gt; clazz, Collection&lt;Domain&gt; domains) {
+<span class="fc" id="L72">		Set&lt;T&gt; result = new HashSet&lt;&gt;();</span>
+<span class="fc bfc" id="L73" title="All 2 branches covered.">		if (domains != null) {</span>
+<span class="fc bfc" id="L74" title="All 2 branches covered.">			for (Domain d : domains) {</span>
+<span class="pc bpc" id="L75" title="1 of 4 branches missed.">				if (d != null &amp;&amp; d.getClass().isAssignableFrom(clazz)) {</span>
+<span class="fc" id="L76">					result.add((T) d);</span>
+				}
+<span class="fc" id="L78">			}</span>
+		}
+<span class="fc" id="L80">		return result;</span>
+	}
+
+	/**
+	 * Updates a certain category of domain items, removing all current values and
+	 * replacing them by the new ones
+	 *
+	 * @param clazz     the domain type
+	 * @param domains   all current domain values
+	 * @param newValues the set of new values
+	 */
+	public static &lt;T extends Domain&gt; void updateDomains(Class&lt;T&gt; clazz, Collection&lt;Domain&gt; domains,
+														Collection&lt;T&gt; newValues) {
+<span class="pc bpc" id="L93" title="1 of 4 branches missed.">		domains.removeIf(domain -&gt; domain != null &amp;&amp; domain.getClass().isAssignableFrom(clazz));</span>
+<span class="pc bpc" id="L94" title="1 of 2 branches missed.">		if (newValues != null) {</span>
+<span class="fc" id="L95">			newValues.stream().filter(Objects::nonNull).forEach(domains::add);</span>
+		}
+<span class="fc" id="L97">	}</span>
+
+	/**
+	 * Returns a string containing the descriptions of the supplied domain objects
+	 * (truncated after a number of items)
+	 *
+	 * @param domains the domains
+	 * @return the description string
+	 */
+	public static &lt;T extends Domain&gt; String getDomainDescriptions(MessageService messageService, Collection&lt;T&gt; domains,
+																  Locale locale) {
+<span class="fc" id="L108">		String result = domains.stream().map(Domain::getName).sorted().limit(MAX_DESCRIPTION_ITEMS)</span>
+<span class="fc" id="L109">			.collect(Collectors.joining(&quot;, &quot;));</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		if (domains.size() &gt; MAX_DESCRIPTION_ITEMS) {</span>
+<span class="fc" id="L111">			result += messageService.getMessage(&quot;dynamoframework.and.others&quot;, locale, domains.size() - MAX_DESCRIPTION_ITEMS);</span>
+		}
+<span class="fc" id="L113">		return result;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

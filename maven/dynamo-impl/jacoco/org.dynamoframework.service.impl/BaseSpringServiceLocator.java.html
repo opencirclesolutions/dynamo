@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseSpringServiceLocator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.service.impl</a> &gt; <span class="el_source">BaseSpringServiceLocator.java</span></div><h1>BaseSpringServiceLocator.java</h1><pre class="source lang-java linenums">package org.dynamoframework.service.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.domain.model.EntityModelFactory;
+import org.dynamoframework.service.BaseSearchService;
+import org.dynamoframework.service.BaseService;
+import org.dynamoframework.service.MessageService;
+import org.dynamoframework.service.ServiceLocator;
+import org.springframework.context.ApplicationContext;
+
+import java.util.Map;
+import java.util.Map.Entry;
+
+/**
+ * Static class for accessing the Spring container
+ *
+ * @author bas.rutten
+ */
+<span class="fc" id="L39">@Slf4j</span>
+<span class="fc" id="L40">public abstract class BaseSpringServiceLocator implements ServiceLocator {</span>
+
+	protected ApplicationContext ctx;
+
+	protected abstract ApplicationContext loadContext();
+
+	private ApplicationContext getContext() {
+<span class="fc bfc" id="L47" title="All 2 branches covered.">		if (ctx == null) {</span>
+<span class="fc" id="L48">			ctx = loadContext();</span>
+		}
+<span class="fc" id="L50">		return ctx;</span>
+	}
+
+	/**
+	 * Retrieves a service of a certain type
+	 *
+	 * @param clazz the class of the service
+	 * @return the service
+	 */
+	@Override
+	public &lt;T&gt; T getService(Class&lt;T&gt; clazz) {
+<span class="nc" id="L61">		Map&lt;String, T&gt; beansOfType = getContext().getBeansOfType(clazz);</span>
+<span class="nc bnc" id="L62" title="All 2 branches missed.">		if (!beansOfType.isEmpty()) {</span>
+<span class="nc" id="L63">			return beansOfType.values().iterator().next();</span>
+		}
+<span class="nc" id="L65">		return null;</span>
+	}
+
+	@Override
+	public &lt;T&gt; T getServiceByName(String name, Class&lt;T&gt; clazz) {
+<span class="nc" id="L70">		Map&lt;String, T&gt; beansOfType = getContext().getBeansOfType(clazz);</span>
+<span class="nc bnc" id="L71" title="All 2 branches missed.">		if (!beansOfType.isEmpty()) {</span>
+<span class="nc bnc" id="L72" title="All 2 branches missed.">			for (Entry&lt;String, T&gt; entry : beansOfType.entrySet()) {</span>
+<span class="nc bnc" id="L73" title="All 2 branches missed.">				if (entry.getKey().equals(name)) {</span>
+<span class="nc" id="L74">					return entry.getValue();</span>
+				}
+<span class="nc" id="L76">			}</span>
+		}
+<span class="nc" id="L78">		return null;</span>
+	}
+
+	/**
+	 * Retrieves the message service from the context
+	 *
+	 * @return the message service
+	 */
+	@Override
+	public MessageService getMessageService() {
+<span class="nc" id="L88">		return getService(MessageService.class);</span>
+	}
+
+	/**
+	 * Retrieves the entity model factory from the context
+	 *
+	 * @return the entity model factory
+	 */
+	@Override
+	public EntityModelFactory getEntityModelFactory() {
+<span class="nc" id="L98">		return getService(EntityModelFactory.class);</span>
+	}
+
+	/**
+	 * Returns a service that is used to manage a certain type of entity
+	 *
+	 * @param entityClass the entity class
+	 * @return the service
+	 */
+	@Override
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	public BaseService&lt;?, ?&gt; getServiceForEntity(Class&lt;?&gt; entityClass) {
+<span class="fc" id="L110">		return getServiceForEntityInner(BaseService.class, entityClass);</span>
+	}
+
+	@Override
+	@SuppressWarnings(&quot;rawtypes&quot;)
+	public BaseSearchService&lt;?, ?&gt; getSearchServiceForEntity(Class&lt;?&gt; entityClass) {
+<span class="nc" id="L116">		return getServiceForEntityInner(BaseSearchService.class, entityClass);</span>
+	}
+
+	private &lt;S extends BaseSearchService&lt;?, ?&gt;&gt; S getServiceForEntityInner(Class&lt;S&gt; serviceClass, Class&lt;?&gt; entityClass) {
+<span class="fc" id="L120">		Map&lt;String, S&gt; services = getContext().getBeansOfType(serviceClass, false, true);</span>
+<span class="fc bfc" id="L121" title="All 2 branches covered.">		for (Entry&lt;String, S&gt; entry : services.entrySet()) {</span>
+			try {
+<span class="pc bpc" id="L123" title="1 of 4 branches missed.">				if (entry.getValue().getEntityClass() != null &amp;&amp; entry.getValue().getEntityClass().equals(entityClass)) {</span>
+<span class="fc" id="L124">					return entry.getValue();</span>
+				}
+<span class="nc" id="L126">			} catch (Exception ex) {</span>
+<span class="nc" id="L127">				log.error(&quot;Could not find service for {}&quot;, ex.getMessage());</span>
+				// skip
+<span class="fc" id="L129">			}</span>
+<span class="fc" id="L130">		}</span>
+<span class="fc" id="L131">		return null;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

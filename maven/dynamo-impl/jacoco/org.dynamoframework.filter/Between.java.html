@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Between.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.filter</a> &gt; <span class="el_source">Between.java</span></div><h1>Between.java</h1><pre class="source lang-java linenums">package org.dynamoframework.filter;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.util.Objects;
+
+/**
+ * A filter that matches if the property to check for falls within the defined
+ * range. This range is inclusive (i.e. boundary values count)
+ *
+ * @author bas.rutten
+ */
+public class Between extends AbstractFilter implements PropertyFilter {
+
+	private final String propertyId;
+
+	private final Comparable&lt;?&gt; startValue;
+
+	private final Comparable&lt;?&gt; endValue;
+
+<span class="fc" id="L39">	public Between(String propertyId, Comparable&lt;?&gt; startValue, Comparable&lt;?&gt; endValue) {</span>
+<span class="fc" id="L40">		this.propertyId = propertyId;</span>
+<span class="fc" id="L41">		this.startValue = startValue;</span>
+<span class="fc" id="L42">		this.endValue = endValue;</span>
+<span class="fc" id="L43">	}</span>
+
+	@Override
+	public String getPropertyId() {
+<span class="fc" id="L47">		return propertyId;</span>
+	}
+
+	public Comparable&lt;?&gt; getStartValue() {
+<span class="fc" id="L51">		return startValue;</span>
+	}
+
+	public Comparable&lt;?&gt; getEndValue() {
+<span class="fc" id="L55">		return endValue;</span>
+	}
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	@Override
+	public boolean evaluate(Object that) {
+<span class="fc" id="L61">		Object value = getProperty(that, getPropertyId());</span>
+<span class="fc bfc" id="L62" title="All 2 branches covered.">		if (value instanceof Comparable) {</span>
+<span class="fc" id="L63">			Comparable&lt;Object&gt; comp = (Comparable&lt;Object&gt;) value;</span>
+<span class="pc bpc" id="L64" title="1 of 4 branches missed.">			return comp.compareTo(getStartValue()) &gt;= 0 &amp;&amp; comp.compareTo(getEndValue()) &lt;= 0;</span>
+		}
+<span class="fc" id="L66">		return false;</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="nc" id="L71">		return getPropertyId().hashCode() + getStartValue().hashCode() + getEndValue().hashCode();</span>
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		// Only objects of the same class can be equal
+<span class="fc bfc" id="L77" title="All 2 branches covered.">		if (!(obj instanceof Between)) {</span>
+<span class="fc" id="L78">			return false;</span>
+		}
+<span class="fc" id="L80">		final Between o = (Between) obj;</span>
+
+<span class="pc bpc" id="L82" title="2 of 4 branches missed.">		return Objects.equals(propertyId, o.getPropertyId()) &amp;&amp; Objects.equals(startValue, o.getStartValue())</span>
+<span class="fc bfc" id="L83" title="All 2 branches covered.">			&amp;&amp; Objects.equals(endValue, o.getEndValue());</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="nc" id="L88">		return getPropertyId() + &quot; &quot; + super.toString() + &quot; &quot; + getStartValue() + &quot; and &quot; + getEndValue();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
