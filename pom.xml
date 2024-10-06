@@ -538,7 +538,7 @@
                 <artifactId>maven-scm-publish-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <scmBranch>gh-pages-tommy</scmBranch>
+                    <scmBranch>gh-pages</scmBranch>
                     <content>${project.build.directory}/staging</content>
                     <addUniqueDirectory>true</addUniqueDirectory>
                     <excludes>.git</excludes>
