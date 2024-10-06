@@ -101,7 +101,6 @@
         <commons.io.version>2.16.1</commons.io.version>
         <commons.text.version>1.12.0</commons.text.version>
         <dependency.skip>true</dependency.skip>
-        <github-release-plugin.version>1.4.0</github-release-plugin.version>
         <jakarta.version>3.1.0</jakarta.version>
         <junit.version>5.10.3</junit.version>
         <lombok.version>1.18.34</lombok.version>
@@ -391,26 +390,9 @@
                     <version>3.4.0</version>
                 </plugin>
                 <plugin>
-                    <groupId>de.jutzig</groupId>
-                    <artifactId>github-release-plugin</artifactId>
-                    <version>${github-release-plugin.version}</version>
-                    <executions>
-                        <execution>
-                            <id>github-upload</id>
-                            <phase>deploy</phase>
-                            <goals>
-                                <goal>release</goal>
-                            </goals>
-                            <inherited>false</inherited>
-                            <configuration>
-                                <releaseName>v${project.version}</releaseName>
-                                <tag>v${project.version}</tag>
-                                <artifact>
-                                    ${project.build.directory}/${project.groupId}.${project.artifactId}-${project.version}.jar
-                                </artifact>
-                            </configuration>
-                        </execution>
-                    </executions>
+                    <groupId>com.ragedunicorn.tools.maven</groupId>
+                    <artifactId>github-release-maven-plugin</artifactId>
+                    <version>1.0.7</version>
                 </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
@@ -469,9 +451,32 @@
                     <artifactId>dependency-check-maven</artifactId>
                     <version>10.0.4</version>
                 </plugin>
+                <plugin>
+                    <groupId>io.github.git-commit-id</groupId>
+                    <artifactId>git-commit-id-maven-plugin</artifactId>
+                    <version>9.0.1</version>
+                </plugin>
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>io.github.git-commit-id</groupId>
+                <artifactId>git-commit-id-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>get-the-git-infos</id>
+                        <goals>
+                            <goal>revision</goal>
+                        </goals>
+                        <phase>initialize</phase>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generateGitPropertiesFile>true</generateGitPropertiesFile>
+                    <injectAllReactorProjects>true</injectAllReactorProjects>
+                    <generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+                </configuration>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -486,6 +491,7 @@
                         <configuration>
                             <name>current.year</name>
                             <pattern>yyyy</pattern>
+                            <locale>en,US</locale>
                         </configuration>
                     </execution>
                 </executions>
@@ -756,8 +762,22 @@
                         </configuration>
                     </plugin>
                     <plugin>
-                        <groupId>de.jutzig</groupId>
-                        <artifactId>github-release-plugin</artifactId>
+                        <groupId>com.ragedunicorn.tools.maven</groupId>
+                        <artifactId>github-release-maven-plugin</artifactId>
+                        <executions>
+                            <execution>
+                                <id>default-cli</id>
+                                <configuration>
+                                    <owner>opencirclesolutions</owner>
+                                    <repository>dynamo</repository>
+                                    <server>github-oauth</server>
+                                    <tagName>v${project.version}</tagName>
+                                    <name>v${project.version}</name>
+                                    <targetCommitish>${git.commit.id}</targetCommitish>
+                                    <generateReleaseNotes>true</generateReleaseNotes>
+                                </configuration>
+                            </execution>
+                        </executions>
                     </plugin>
                 </plugins>
             </build>

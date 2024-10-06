@@ -97,6 +97,13 @@
 					<stagingDirectory>../target/staging/maven</stagingDirectory>
 				</configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.ragedunicorn.tools.maven</groupId>
+				<artifactId>github-release-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 </project>
