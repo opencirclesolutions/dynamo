@@ -2479,7 +2479,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |`enum-field-mode`|AttributeEnumFieldMode|The default field type to use for enumeration attributes|
 |`false-representation`|String|The representation of the value `false`|`false`
 |`false-representations`|Map&lt;String,String&gt;|Localized representations of the value `false`|
-|`entityClassPathScan`|String
+|`entityClassPathScan`|Boolean|Whether to scan the class path for entities|`true`
 |`false-representation`|String|The representation of the value &lt;code&gt;false&lt;/code&gt;|`false`
 |`false-representations`|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;false&lt;/code&gt;|
 |`group-together-mode`|GroupTogetherMode|The default group together mode|
