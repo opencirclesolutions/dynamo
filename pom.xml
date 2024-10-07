@@ -546,9 +546,7 @@
                 <configuration>
                     <scmBranch>gh-pages</scmBranch>
                     <content>${project.build.directory}/staging</content>
-                    <addUniqueDirectory>true</addUniqueDirectory>
                     <excludes>.git</excludes>
-                    <skipDeletedFiles>true</skipDeletedFiles>
                 </configuration>
             </plugin>
             <plugin>
@@ -771,9 +769,8 @@
                                     <owner>opencirclesolutions</owner>
                                     <repository>dynamo</repository>
                                     <server>github-oauth</server>
-                                    <tagName>v${project.version}</tagName>
+                                    <tagName>dynamoframework-${project.version}</tagName>
                                     <name>v${project.version}</name>
-                                    <targetCommitish>${git.commit.id}</targetCommitish>
                                     <generateReleaseNotes>true</generateReleaseNotes>
                                 </configuration>
                             </execution>
