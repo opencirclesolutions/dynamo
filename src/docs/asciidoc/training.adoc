@@ -66,7 +66,7 @@ application.
 
 == Preparations
 
-=== Prerequisite software 
+=== Prerequisite software
 
 Before you can commence with the training proper, please verify that you
 have the following software installed on your machine:
@@ -465,7 +465,7 @@ that are set to `searchable=ADVANCED`.
 .Search buttons.
 image::media/training/image3.png[image,width=458,height=70]
 
-=== More searching 
+=== More searching
 
 Go ahead at set the `searchable` setting on the `members` attribute to
 `ALWAYS`. After you do this and restart the application, you will see that
@@ -731,7 +731,7 @@ now, the most important things to remember are:
 * Changes made using the message bundle will override changes made using
 the annotations.
 
-=== Relation fetching 
+=== Relation fetching
 
 Now, let’s go back to the `countryOfOrigin` attribute. We want to
 display this attribute in the grid, but it’s not there yet. This is
@@ -873,8 +873,8 @@ as follows:
 
 [source,java]
 --
-@NotNull 
-@JoinColumn(name = "country_of_origin") 
+@NotNull
+@JoinColumn(name = "country_of_origin")
 @ManyToOne(fetch = FetchType.LAZY)
 @Attribute(searchable = SearchMode.ALWAYS, visibleInGrid =
 VisibilityType.SHOW,
