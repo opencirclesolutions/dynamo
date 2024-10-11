@@ -125,7 +125,10 @@
         <asciidoc.organization.name>${project.organization.name}</asciidoc.organization.name>
         <asciidoc.organization.url>${project.organization.url}</asciidoc.organization.url>
         <asciidoc.github.url>${project.scm.url}</asciidoc.github.url>
-        <gpg.keyname>1F134B2687255F8C</gpg.keyname>
+	  <gpg.keyname>1F134B2687255F8C</gpg.keyname>
+
+	  <node.version>v18.20.4</node.version>
+	  <npm.version>10.7.0</npm.version>
     </properties>
     <dependencyManagement>
         <dependencies>

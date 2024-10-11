@@ -15,56 +15,62 @@
 	</properties>
 	<build>
 		<plugins>
+
 			<plugin>
-				<artifactId>maven-jar-plugin</artifactId>
+				<groupId>com.github.eirslett</groupId>
+				<artifactId>frontend-maven-plugin</artifactId>
+				<version>1.15.1</version>
+				<configuration>
+					<workingDirectory>src/main/dynamo/</workingDirectory>
+					<installDirectory>target</installDirectory>
+				</configuration>
 				<executions>
+					<!-- Install npm + ng -->
 					<execution>
-						<id>package-model</id>
-						<phase>package</phase>
+						<id>install-node-and-npm</id>
 						<goals>
-							<goal>jar</goal>
+							<goal>install-node-and-npm</goal>
 						</goals>
 						<configuration>
-							<classifier>model</classifier>
-							<classesDirectory>dynamo/model</classesDirectory>
+							<nodeVersion>${node.version}</nodeVersion>
+							<npmVersion>${npm.version}</npmVersion>
 						</configuration>
+						<phase>initialize</phase>
 					</execution>
 					<execution>
-						<id>package-i18n</id>
-						<phase>package</phase>
+						<id>npm-install</id>
 						<goals>
-							<goal>jar</goal>
+							<goal>npm</goal>
 						</goals>
 						<configuration>
-							<classifier>i18n</classifier>
-							<classesDirectory>i18n</classesDirectory>
+							<arguments>install</arguments>
 						</configuration>
 					</execution>
+					<!-- Set main + library versions to match artifact -->
 					<execution>
-						<id>package-shared</id>
-						<phase>package</phase>
+						<id>npm-version</id>
 						<goals>
-							<goal>jar</goal>
+							<goal>npm</goal>
 						</goals>
 						<configuration>
-							<classifier>shared</classifier>
-							<classesDirectory>shared</classesDirectory>
+							<arguments>version --allow-same-version ${project.version}</arguments>
 						</configuration>
+						<phase>generate-resources</phase>
+					</execution>
+					<!-- Build -->
+					<execution>
+						<id>npm-build</id>
+						<goals>
+							<goal>npm</goal>
+						</goals>
+						<configuration>
+							<arguments>run build</arguments>
+						</configuration>
+						<phase>prepare-package</phase>
 					</execution>
 				</executions>
 			</plugin>
-			<plugin>
-				<artifactId>maven-install-plugin</artifactId>
-				<configuration>
-					<allowIncompleteProjects>true</allowIncompleteProjects>
-				</configuration>
-			</plugin>
-			<plugin>
-				<artifactId>maven-deploy-plugin</artifactId>
-				<configuration>
-					<allowIncompleteProjects>true</allowIncompleteProjects>
-				</configuration>
-			</plugin>
+			
 			<plugin>
 				<groupId>org.codehaus.mojo</groupId>
 				<artifactId>license-maven-plugin</artifactId>
