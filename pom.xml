@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
     <groupId>org.dynamoframework</groupId>
     <artifactId>dynamo-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-SNAPSHOT</version>
+    <version>4.0.0-RC2-SNAPSHOT</version>
     <name>Dynamo Framework</name>
     <description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
     <url>https://www.dynamoframework.org</url>
@@ -107,7 +106,7 @@
         <junit.version>5.10.3</junit.version>
         <lombok.version>1.18.34</lombok.version>
         <opencsv.version>5.9</opencsv.version>
-        <org.apache.maven.plugins.gpg.version>3.1.0</org.apache.maven.plugins.gpg.version>
+        <org.apache.maven.plugins.gpg.version>3.2.7</org.apache.maven.plugins.gpg.version>
         <org.sonatype.plugins.version>1.6.13</org.sonatype.plugins.version>
         <poi.version>5.3.0</poi.version>
         <querydsl.version>5.1.0</querydsl.version>
@@ -126,6 +125,7 @@
         <asciidoc.organization.name>${project.organization.name}</asciidoc.organization.name>
         <asciidoc.organization.url>${project.organization.url}</asciidoc.organization.url>
         <asciidoc.github.url>${project.scm.url}</asciidoc.github.url>
+        <gpg.keyname>1F134B2687255F8C</gpg.keyname>
     </properties>
     <dependencyManagement>
         <dependencies>
@@ -291,6 +291,7 @@
                         <arguments>-Prelease</arguments>
                         <!-- Release to the Central Repository. -->
                         <goals>deploy nexus-staging:release</goals>
+                        <tagNameFormat>dynamoframework-@{project.version}</tagNameFormat>
                     </configuration>
                 </plugin>
                 <plugin>
@@ -537,7 +538,7 @@
                 <artifactId>maven-scm-publish-plugin</artifactId>
                 <inherited>false</inherited>
                 <configuration>
-                    <scmBranch>gh-pages-tommy</scmBranch>
+                    <scmBranch>gh-pages</scmBranch>
                     <content>${project.build.directory}/staging</content>
                     <addUniqueDirectory>true</addUniqueDirectory>
                     <excludes>.git</excludes>
