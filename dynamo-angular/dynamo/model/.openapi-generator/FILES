@@ -30,6 +30,7 @@ model/localDateTimeRangeFilterModel.ts
 model/localTime.ts
 model/models.ts
 model/notFilterModel.ts
+model/nullFilterModel.ts
 model/numberInFilterModel.ts
 model/numberRangeFilterModel.ts
 model/orFilterModel.ts

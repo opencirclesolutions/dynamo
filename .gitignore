@@ -60,3 +60,4 @@ dynamo-spring/target
 dynamo-vaadin/target
 dynamo-frontend-export/frontend/
 *.sh
+dynamo-frontend/frontend/generated
