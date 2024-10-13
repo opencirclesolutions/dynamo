@@ -209,7 +209,6 @@ public class GiftDaoImpl extends BaseDaoImpl<Integer, Gift> implements GiftDao {
 	protected EntityPathBase<Gift> getDslRoot() {
 		return QGift.gift;
 	}
-
 }
 --
 
@@ -817,15 +816,15 @@ following code:
 
 [source,java]
 --
-    @Bean
-    public BaseDao<Integer, Country> countryDao() {
-        return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
-    }
+@Bean
+public BaseDao<Integer, Country> countryDao() {
+    return new DefaultDaoImpl<>(QCountry.country, Country.class, "parent");
+}
 
-    @Bean
-    public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> dao) {
-        return new DefaultServiceImpl<>(dao, "code");
-    }
+@Bean
+public BaseService<Integer, Country> countryService(BaseDao<Integer, Country> dao) {
+    return new DefaultServiceImpl<>(dao, "code");
+}
 --
 
 This defines a bean that is an instance of `DefaultServiceImpl` which
@@ -972,16 +971,16 @@ creating a new one):
 
 [source,typescript]
 --
-  {
-    path: 'organizations',
-    title: 'Organizations',
-    component: OrganizationSearchComponent
-  },
-  {
-    path: 'organization',
-    title: 'Create Organization',
-    component: OrganizationFormComponent
-  },
+{
+  path: 'organizations',
+  title: 'Organizations',
+  component: OrganizationSearchComponent
+},
+{
+  path: 'organization',
+  title: 'Create Organization',
+  component: OrganizationFormComponent
+},
 --
 
 Both routes point to the `OrganizationFormComponent` which looks as
@@ -1422,11 +1421,11 @@ array:
 
 [source,yaml]
 --
-  {
-    path: 'persons',
-    title: 'Persons',
-    component: PersonSearchComponent,
-  },
+{
+  path: 'persons',
+  title: 'Persons',
+  component: PersonSearchComponent,
+},
 --
 
 This defines a new route to the persons component. Finally, in the
@@ -1434,11 +1433,11 @@ _nav.component.ts_ file, add a new menu item:
 
 [source,yaml]
 --
-  {
-    topLevel: true,
-    text: 'Persons',
-    routerLink: "/persons"
-  },
+{
+  topLevel: true,
+  text: 'Persons',
+  routerLink: "/persons"
+},
 --
 
 Which will add a new top-level menu item named “Persons”. If you click
@@ -1557,11 +1556,11 @@ array
 
 [source,commandline]
 --
-  {
-    path: 'gifts',
-    title: 'Gifts',
-    component: GiftSearchComponent
-  },
+{
+  path: 'gifts',
+  title: 'Gifts',
+  component: GiftSearchComponent
+},
 --
 
 This defines a new route to the persons component. Finally, in the
@@ -1569,11 +1568,11 @@ _nav.component.ts_ file, add a new menu item:
 
 [source,yaml]
 --
-  {
-    topLevel: true,
-    text: 'Gifts',
-    routerLink: "/gifts"
-  },
+{
+  topLevel: true,
+  text: 'Gifts',
+  routerLink: "/gifts"
+},
 --
 
 Defining the actual layout is pretty easy as well:
@@ -1775,16 +1774,16 @@ example, we define the following in the _organization-form.component.ts_
 
 [source,typescript]
 --
-  getFieldFilters() {
-    let fieldFilters: Map<string,FilterModel[]> = new Map<string,FilterModel[]>();
+getFieldFilters() {
+  let fieldFilters: Map<string,FilterModel[]> = new Map<string,FilterModel[]>();
 
-    let countryFilter = createEqualsFilter('name', 'au')
-    fieldFilters.set("countryOfOrigin", [
-      countryFilter
-    ]);
+  let countryFilter = createEqualsFilter('name', 'au')
+  fieldFilters.set("countryOfOrigin", [
+    countryFilter
+  ]);
 
-    return fieldFilters;
-  }
+  return fieldFilters;
+}
 --
 
 Also, in the HTML file we bind this method to the [fieldFilters]
@@ -1811,21 +1810,21 @@ _organization-form.component.html_.
 
 [source,html]
 --
-  <ng-template
-    dOverrideField
-    attributeName="name"
-    let-am
-    let-formGroup="mainForm"
-  >
-    <ng-container [formGroup]="formGroup">
-      <label for="name">Custom name</label>
-      <input type="text"
-        pInputText
-        id="name"
-        formControlName="name"
-      >
-    </ng-container>
-  </ng-template>
+<ng-template
+  dOverrideField
+  attributeName="name"
+  let-am
+  let-formGroup="mainForm"
+>
+  <ng-container [formGroup]="formGroup">
+    <label for="name">Custom name</label>
+    <input type="text"
+      pInputText
+      id="name"
+      formControlName="name"
+    >
+  </ng-container>
+</ng-template>
 --
 
 The `dOverrideField` on the template makes sure the mechanism picks up
@@ -1864,14 +1863,14 @@ property of the layout:
 
 [source,html]
 --
-  <ng-template #customValidatorTemplate let-formGroup>
-    <ng-template
-      dAdditionalValidators
-      attributeName="died"
-      [formGroup]="formGroup"
-      [validators]="[CustomValidators.diedAfterBornValidator(formGroup)]"
-    />
-  </ng-template>
+<ng-template #customValidatorTemplate let-formGroup>
+  <ng-template
+    dAdditionalValidators
+    attributeName="died"
+    [formGroup]="formGroup"
+    [validators]="[CustomValidators.diedAfterBornValidator(formGroup)]"
+  />
+</ng-template>
 --
 
 Inside the template we can create any number of templates annotated with
@@ -2013,21 +2012,20 @@ to _organization-search.component.ts_).
 
 [source,typescript]
 --
-  getAdditionalGlobalActions(): AdditionalGlobalAction[] {
-    let action: AdditionalGlobalAction = {
-      action: () => {
-        this.messageService.warn('This is a global action');
-      },
-      messageKey: 'action_one',
-      icon: 'pi-times',
-      buttonClass: 'btn btn-primary m-1',
-      enabled: () => {
-        return true;
-      },
-    };
-
-    return [action];
-  }
+getAdditionalGlobalActions(): AdditionalGlobalAction[] {
+  let action: AdditionalGlobalAction = {
+    action: () => {
+      this.messageService.warn('This is a global action');
+    },
+    messageKey: 'action_one',
+    icon: 'pi-times',
+    buttonClass: 'btn btn-primary m-1',
+    enabled: () => {
+      return true;
+    },
+  };
+  return [action];
+}
 --
 
 A global action consists of:
@@ -2170,13 +2168,13 @@ In the _app.routing.module.ts_, modify the entry for the
 
 [source,yaml]
 --
-  {
-    path: 'persons',
-    title: 'Persons',
-    component: PersonSearchComponent,
-    canActivate: [RoleGuard],
-    data: { roles: ['bogus'] }
-  },
+{
+  path: 'persons',
+  title: 'Persons',
+  component: PersonSearchComponent,
+  canActivate: [RoleGuard],
+  data: { roles: ['bogus'] }
+},
 --
 
 Compared to the old situation, we add a `canActivate` element that
@@ -2199,21 +2197,20 @@ that it is only enabled if the user has the "bogus" role.
 
 [source,typescript]
 --
-  getAdditionalGlobalActions(): AdditionalGlobalAction[] {
-    let action: AdditionalGlobalAction = {
-      action: () => {
-        this.messageService.warn('This is a global action');
-      },
-      messageKey: 'action_one',
-      icon: 'pi-times',
-      buttonClass: 'btn btn-primary m-1',
-      enabled: () => {
-        return this.authenticationService.hasRole('bogus')
-      },
-    };
-
-    return [action];
-  }
+getAdditionalGlobalActions(): AdditionalGlobalAction[] {
+  let action: AdditionalGlobalAction = {
+    action: () => {
+      this.messageService.warn('This is a global action');
+    },
+    messageKey: 'action_one',
+    icon: 'pi-times',
+    buttonClass: 'btn btn-primary m-1',
+    enabled: () => {
+      return this.authenticationService.hasRole('bogus')
+    },
+  };
+  return [action];
+}
 --
 
 == Element collections
@@ -2226,12 +2223,12 @@ example, we could define the following in the `Person` class:
 
 [source,java]
 --
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "person_lucky_numbers")
-    @Column(name = "lucky_number")
-    @Size(max = 3)
-    @Attribute(visibleInForm = VisibilityType.SHOW)
-    private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
+@ElementCollection(fetch = FetchType.LAZY)
+@CollectionTable(name = "person_lucky_numbers")
+@Column(name = "lucky_number")
+@Size(max = 3)
+@Attribute(visibleInForm = VisibilityType.SHOW)
+private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
 --
 
 This will define a collection of integers that can be used to store a
@@ -2257,14 +2254,14 @@ to set minimum and maximum values.
 
 [source,java]
 --
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "person_lucky_numbers")
-    @Column(name = "lucky_number")
-    @Size(max = 3)
-    @Attribute(visibleInForm = VisibilityType._SHOW_, minValue = 0, maxValue
-    = 100)
-    private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new
-    HashSet<>();
+@ElementCollection(fetch = FetchType.LAZY)
+@CollectionTable(name = "person_lucky_numbers")
+@Column(name = "lucky_number")
+@Size(max = 3)
+@Attribute(visibleInForm = VisibilityType._SHOW_, minValue = 0, maxValue
+= 100)
+private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new
+HashSet<>();
 --
 
 In addition, it is possible to change the type of the component by
@@ -2272,13 +2269,13 @@ setting the `elementCollectionMode` (in this case to `DIALOG`).
 
 [source,java]
 --
-    @ElementCollection(fetch = FetchType.LAZY)
-    @CollectionTable(name = "person_lucky_numbers")
-    @Column(name = "lucky_number")
-    @Size(max = 3)
-    @Attribute(visibleInForm = VisibilityType.SHOW, minValue = 0, maxValue = 100,
-        elementCollectionMode = ElementCollectionMode.DIALOG)
-    private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
+@ElementCollection(fetch = FetchType.LAZY)
+@CollectionTable(name = "person_lucky_numbers")
+@Column(name = "lucky_number")
+@Size(max = 3)
+@Attribute(visibleInForm = VisibilityType.SHOW, minValue = 0, maxValue = 100,
+    elementCollectionMode = ElementCollectionMode.DIALOG)
+private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new HashSet<>();
 --
 
 This will result in a different kind of component being used to edit the
