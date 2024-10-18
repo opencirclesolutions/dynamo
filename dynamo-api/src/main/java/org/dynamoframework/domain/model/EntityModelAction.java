@@ -71,4 +71,10 @@ public interface EntityModelAction {
 	 * @return the roles that are allowed to carry out the action
 	 */
 	List<String> getRoles();
+
+	/**
+	 * @return the action form mode (specifies whether action will
+	 * appear in view mode, edit mode, or both)
+	 */
+	ActionFormMode getFormMode();
 }

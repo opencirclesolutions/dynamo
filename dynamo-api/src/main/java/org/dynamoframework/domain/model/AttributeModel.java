@@ -549,4 +549,10 @@ public interface AttributeModel extends Comparable<AttributeModel> {
 	 */
 	QueryType getLookupQueryType();
 
+	/**
+	 *
+	 * @return whether to show paginator for details table
+	 */
+	boolean isShowDetailsPaginator();
+
 }

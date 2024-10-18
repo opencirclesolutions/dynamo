@@ -4,7 +4,7 @@ package org.dynamoframework.domain.model;
  * #%L
  * Dynamo Framework
  * %%
- * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * Copyright (C) 2014 - 2024 Open Circle Solutions BV
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ package org.dynamoframework.domain.model;
  * #L%
  */
 
-public enum GroupTogetherMode {
-
-	PERCENTAGE, PIXEL
+/**
+ * Used to indicate whether a model action is visible in view mode, edit mode, or both
+ */
+public enum ActionFormMode {
+	VIEW, EDIT, BOTH;
 }

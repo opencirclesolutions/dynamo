@@ -365,6 +365,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		model.setBooleanFieldMode(dynamoProperties.getDefaults().getBooleanFieldMode());
 		model.setElementCollectionMode(dynamoProperties.getDefaults().getElementCollectionMode());
 		model.setEnumFieldMode(dynamoProperties.getDefaults().getEnumFieldMode());
+		model.setShowDetailsPaginator(dynamoProperties.getDefaults().isShowDetailsPaginator());
 
 		Email email = ClassUtils.getAnnotation(entityModel.getEntityClass(), fieldName,
 			Email.class);
@@ -599,6 +600,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			actionImpl.setType(action.type());
 			actionImpl.setIcon(action.icon());
 			actionImpl.setRoles(Arrays.asList(action.roles()));
+			actionImpl.setFormMode(action.formMode());
 
 			EntityModel<?> actionModel = constructModel(action.id(), actionClass);
 			actionImpl.setEntityModel(actionModel);
@@ -614,6 +616,8 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 			action::setRoles);
 		setStringSetting(getEntityMessage(action.getReference(), EntityModel.ICON),
 			action::setIcon);
+		setEnumSetting(getEntityMessage(action.getReference(), EntityModel.FORM_MODE),
+			ActionFormMode.class, action::setFormMode);
 	}
 
 	/**
@@ -1113,6 +1117,11 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		if (attribute.visibleInGrid() != null && !VisibilityType.INHERIT.equals(attribute.visibleInGrid()) && !nested) {
 			model.setVisibleInGrid(VisibilityType.SHOW.equals(attribute.visibleInGrid()));
 		}
+
+		// set paginator visibility
+		if (attribute.showDetailsPaginator() != null && !VisibilityType.INHERIT.equals(attribute.showDetailsPaginator())) {
+			model.setShowDetailsPaginator(VisibilityType.SHOW.equals(attribute.showDetailsPaginator()));
+		}
 	}
 
 	/**
@@ -1386,6 +1395,10 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.VISIBLE_IN_GRID);
 		if (!StringUtils.isEmpty(msg)) {
 			attributeModel.setVisibleInGrid(isVisible(msg));
+		}
+		msg = getAttributeMessage(entityModel, attributeModel, EntityModel.SHOW_DETAILS_PAGINATOR);
+		if (!StringUtils.isEmpty(msg)) {
+			attributeModel.setShowDetailsPaginator(isVisible(msg));
 		}
 
 		// "searchable" also supports true/false for legacy reasons

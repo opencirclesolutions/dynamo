@@ -20,6 +20,7 @@ package org.dynamoframework.domain.model.annotation;
  * #L%
  */
 
+import org.dynamoframework.domain.model.ActionFormMode;
 import org.dynamoframework.domain.model.EntityModelActionType;
 
 import java.lang.annotation.ElementType;
@@ -44,4 +45,6 @@ public @interface ModelAction {
 	String icon() default "pi-pencil";
 
 	String[] roles() default {};
+
+	ActionFormMode formMode() default ActionFormMode.VIEW;
 }

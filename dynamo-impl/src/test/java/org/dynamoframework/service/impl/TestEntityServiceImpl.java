@@ -23,6 +23,7 @@ package org.dynamoframework.service.impl;
 import org.dynamoframework.dao.BaseDao;
 import org.dynamoframework.dao.impl.TestEntityDao;
 import org.dynamoframework.domain.TestEntity;
+import org.dynamoframework.domain.model.ActionFormMode;
 import org.dynamoframework.domain.model.annotation.ModelAction;
 import org.dynamoframework.service.TestEntityDTO;
 import org.dynamoframework.service.TestEntityService;
@@ -45,7 +46,8 @@ public class TestEntityServiceImpl extends BaseServiceImpl<Integer, TestEntity>
 	}
 
 	@Override
-	@ModelAction(displayName = "Partial Action", id = "PartialAction", roles = {"role12"})
+	@ModelAction(displayName = "Partial Action", id = "PartialAction", roles = {"role12"},
+		formMode = ActionFormMode.BOTH)
 	public TestEntity partialAction(TestEntityDTO dto) {
 		// do nothing
 		return null;
