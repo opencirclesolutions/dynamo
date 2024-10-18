@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -43,9 +43,7 @@ import { NotificationService } from '../../service/notification-service';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { decapitalize } from '../../functions/functions';
 import { finalize } from 'rxjs';
-import {
-  AdditionalRowAction,
-} from '../../model/additional-action';
+import { AdditionalRowAction } from '../../model/additional-action';
 import { EntityPopupDialogComponent } from '../entity-popup-dialog/entity-popup-dialog.component';
 import { CreateFilterService } from '../../service/create-filter.service';
 import { PopupButtonMode } from '../../model/popup-button-mode';
@@ -96,7 +94,6 @@ export class GenericTableComponent
   @Input() showDetailButton: boolean = false;
   // additional validation function to carry out before submitting the form
   @Input() additionalValidation?: (formGroup: FormGroup) => string | undefined;
-
   // event handler that is called when a user select a row
   @Output() onRowSelect: EventEmitter<any> = new EventEmitter();
   // event handler that is called after a search completes
@@ -187,12 +184,13 @@ export class GenericTableComponent
     componentRef.instance.additionalActions = this.additionalFormActions;
     componentRef.instance.postProcessInputForm = this.postProcessInputForm;
     componentRef.instance.additionalValidation = this.additionalValidation;
-    componentRef.instance.customValidatorTemplate = this.customValidatorTemplate;
-    componentRef.instance.injectedCustomInputs = this.injectedCustomInputs
+    componentRef.instance.customValidatorTemplate =
+      this.customValidatorTemplate;
+    componentRef.instance.injectedCustomInputs = this.injectedCustomInputs;
     componentRef.instance.injectedHiddenFieldService = this.hiddenFieldService;
     componentRef.instance.readOnly =
-      this.popupButtonMode === PopupButtonMode.READ_ONLY
-      || !this.isWriteAllowed();
+      this.popupButtonMode === PopupButtonMode.READ_ONLY ||
+      !this.isWriteAllowed();
 
     var callback = (obj: any): void => {
       this.search();
@@ -432,9 +430,11 @@ export class GenericTableComponent
   }
 
   override filterEntityModelActions() {
-    return this.entityModel?.actions?.filter(
-      (action) => action.type == EntityModelActionResponse.TypeEnum.UPDATE
-    ).filter(action => this.isActionAllowed(action))
+    return this.entityModel?.actions
+      ?.filter(
+        (action) => action.type == EntityModelActionResponse.TypeEnum.UPDATE
+      )
+      .filter((action) => this.isActionAllowed(action));
   }
 
   callAdditionalRowAction(action: AdditionalRowAction, row: any) {
@@ -472,7 +472,9 @@ export class GenericTableComponent
         this.entityName,
         this.exportMode,
         searchModel,
-        this.exportModeReference ? this.exportModeReference : this.entityModelReference,
+        this.exportModeReference
+          ? this.exportModeReference
+          : this.entityModelReference,
         this.locale,
         'response'
       )
@@ -494,7 +496,9 @@ export class GenericTableComponent
         this.entityName,
         this.exportMode,
         searchModel,
-        this.exportModeReference ? this.exportModeReference : this.entityModelReference,
+        this.exportModeReference
+          ? this.exportModeReference
+          : this.entityModelReference,
         this.locale,
         'response'
       )

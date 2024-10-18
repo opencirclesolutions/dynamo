@@ -18,168 +18,172 @@
   #L%
   -->
 <div *ngIf="entityModel">
-    <ng-container
-        *ngIf="getAttributeModelGroups().length > 1 && useGroupPanels()"
+  <ng-container
+    *ngIf="getAttributeModelGroups().length > 1 && useGroupPanels()"
+  >
+    <!-- Grouped attributes (panels)-->
+    <p-panel
+      *ngFor="let group of getAttributeModelGroups()"
+      [header]="getGroupDescription(group)"
+      [toggleable]="true"
+      class="pb-2"
     >
-        <!-- Grouped attributes (panels)-->
-        <p-panel
-            *ngFor="let group of getAttributeModelGroups()"
-            [header]="getGroupDescription(group)"
-            [toggleable]="true"
-            class="pb-2"
+      <div class="row">
+        <div
+          *ngFor="let am of getAttributeModelsForGroup(group)"
+          [class]="getColumnsClass()"
         >
-            <div class="row">
-                <div
-                    *ngFor="let am of getAttributeModelsForGroup(group)"
-                    [class]="getColumnsClass()"
-                >
-                    <ng-container
-                        *ngTemplateOutlet="formTemplate; context: { $implicit: am }"
-                    >
-                    </ng-container>
-                </div>
-            </div>
-        </p-panel>
-    </ng-container>
-    <!-- Grouped attributes (tabs) -->
-    <ng-container *ngIf="getAttributeModelGroups().length > 1 && useGroupTabs()">
-        <p-tabView>
-            <p-tabPanel
-                *ngFor="let group of getAttributeModelGroups()"
-                [header]="getGroupDescription(group)"
-            >
-                <div class="row">
-                    <div
-                        *ngFor="let am of getAttributeModelsForGroup(group)"
-                        [class]="getColumnsClass()"
-                    >
-                        <ng-container
-                            *ngTemplateOutlet="formTemplate; context: { $implicit: am }"
-                        >
-                        </ng-container>
-                    </div>
-                </div>
-            </p-tabPanel>
-        </p-tabView>
-    </ng-container>
-    <!-- No explicitly defined groups -->
-    <ng-container *ngIf="getAttributeModelGroups().length === 1">
-        <div class="row">
-            <div
-                *ngFor="let am of getUngroupedAttributeModels(attributeModels)"
-                [class]="getColumnsClass()"
-            >
-                <ng-container
-                    *ngTemplateOutlet="formTemplate; context: { $implicit: am }"
-                >
-                </ng-container>
-            </div>
+          <ng-container
+            *ngTemplateOutlet="formTemplate; context: { $implicit: am }"
+          >
+          </ng-container>
         </div>
-    </ng-container>
+      </div>
+    </p-panel>
+  </ng-container>
+  <!-- Grouped attributes (tabs) -->
+  <ng-container *ngIf="getAttributeModelGroups().length > 1 && useGroupTabs()">
+    <p-tabView>
+      <p-tabPanel
+        *ngFor="let group of getAttributeModelGroups()"
+        [header]="getGroupDescription(group)"
+      >
+        <div class="row">
+          <div
+            *ngFor="let am of getAttributeModelsForGroup(group)"
+            [class]="getColumnsClass()"
+          >
+            <ng-container
+              *ngTemplateOutlet="formTemplate; context: { $implicit: am }"
+            >
+            </ng-container>
+          </div>
+        </div>
+      </p-tabPanel>
+    </p-tabView>
+  </ng-container>
+  <!-- No explicitly defined groups -->
+  <ng-container *ngIf="getAttributeModelGroups().length === 1">
+    <div class="row">
+      <div
+        *ngFor="let am of getUngroupedAttributeModels(attributeModels)"
+        [class]="getColumnsClass()"
+      >
+        <ng-container
+          *ngTemplateOutlet="formTemplate; context: { $implicit: am }"
+        >
+        </ng-container>
+      </div>
+    </div>
+  </ng-container>
 </div>
 
 <ng-template #formTemplate let-am>
-    <ng-container *ngIf="isAttributeVisible(am)">
-        <ng-container *ngIf="!hasGroupTogetherWith(am)">
-            <div class="row pt-2 pb-2">
-                <ng-container *ngIf="isNestedDetail(am) && getNestedEntityModel(am)">
-                    <div
-                        [pTooltip]="am.descriptions[locale]"
-                        class="col-12 text-truncate"
-                    >
-                        {{ am.displayNames[locale] }}
-                    </div>
-                    <div class="col-12">
-                        <app-field-view
-                            [am]="am"
-                            [entity]="entity"
-                            [entityName]="entityName"
-                            [enumMap]="getEnumMap(am)"
-                            [locale]="locale"
-                            [nestedEntityModel]="getNestedEntityModel(am)"
-                            [showEmptyValueLabel]="true"
-                        ></app-field-view>
-                    </div>
-                </ng-container>
-                <ng-container *ngIf="!(isNestedDetail(am) && getNestedEntityModel(am))">
-                    <div
-                        [pTooltip]="am.descriptions[locale]"
-                        class="col-lg-4 col-md-4 col-sm-6 text-truncate"
-                    >
-                        {{ am.displayNames[locale] }}
-                    </div>
-                    <div class="col-lg-8 col-md-4 col-sm-6">
-                        <app-field-view
-                            [am]="am"
-                            [entity]="entity"
-                            [entityName]="entityName"
-                            [enumMap]="getEnumMap(am)"
-                            [locale]="locale"
-                            [nestedEntityModel]="getNestedEntityModel(am)"
-                            [showEmptyValueLabel]="true"
-                        ></app-field-view>
-                    </div>
-                </ng-container>
-            </div>
+  <ng-container *ngIf="isAttributeVisible(am)">
+    <ng-container *ngIf="!hasGroupTogetherWith(am)">
+      <div class="row pt-2 pb-2">
+        <ng-container *ngIf="isNestedDetail(am) && getNestedEntityModel(am)">
+          <div
+            [pTooltip]="am.descriptions[locale]"
+            class="col-12 text-truncate"
+          >
+            {{ am.displayNames[locale] }}
+          </div>
+          <div class="col-12">
+            <app-field-view
+              [am]="am"
+              [entity]="entity"
+              [entityName]="entityName"
+              [enumMap]="getEnumMap(am)"
+              [locale]="locale"
+              [nestedEntityModel]="getNestedEntityModel(am)"
+              [showEmptyValueLabel]="true"
+            ></app-field-view>
+          </div>
         </ng-container>
-        <ng-container *ngIf="hasGroupTogetherWith(am)">
-            <div class="row pt-2 pb-2">
-                <div [class]="getGroupTogetherColClass(am)">
-                    <div class="row pt-2 pb-2">
-                        <ng-container *ngIf="isNestedDetail(am) && getNestedEntityModel(am)">
-                            <div
-                                [pTooltip]="am.descriptions[locale]"
-                                class="col-12 text-truncate"
-                            >
-                                {{ am.displayNames[locale] }}
-                            </div>
-                            <div class="col-12">
-                                <app-field-view
-                                    [am]="am"
-                                    [entity]="entity"
-                                    [entityName]="entityName"
-                                    [enumMap]="getEnumMap(am)"
-                                    [locale]="locale"
-                                    [nestedEntityModel]="getNestedEntityModel(am)"
-                                    [showEmptyValueLabel]="true"
-                                ></app-field-view>
-                            </div>
-                        </ng-container>
-                        <ng-container *ngIf="!(isNestedDetail(am) && getNestedEntityModel(am))">
-                            <p>hoi</p>
-                            <div
-                                [pTooltip]="am.descriptions[locale]"
-                                class="col-lg-4 col-md-4 col-sm-6 text-truncate"
-                            >
-                                {{ am.displayNames[locale] }}
-                            </div>
-                            <div class="col-lg-8 col-md-4 col-sm-6">
-                                <app-field-view
-                                    [am]="am"
-                                    [entity]="entity"
-                                    [entityName]="entityName"
-                                    [enumMap]="getEnumMap(am)"
-                                    [locale]="locale"
-                                    [nestedEntityModel]="getNestedEntityModel(am)"
-                                    [showEmptyValueLabel]="true"
-                                ></app-field-view>
-                            </div>
-                        </ng-container>
-                    </div>
-                </div>
-                <div
-                    [class]="getGroupTogetherColClass(am)"
-                    *ngFor="let gam of am.groupTogetherWith"
-                >
-                    <ng-container
-                        *ngTemplateOutlet="
+        <ng-container *ngIf="!isNestedDetail(am)">
+          <div
+            [pTooltip]="am.descriptions[locale]"
+            class="col-lg-4 col-md-4 col-sm-6 text-truncate"
+          >
+            {{ am.displayNames[locale] }}
+          </div>
+          <div class="col-lg-8 col-md-4 col-sm-6">
+            <app-field-view
+              [am]="am"
+              [entity]="entity"
+              [entityName]="entityName"
+              [enumMap]="getEnumMap(am)"
+              [locale]="locale"
+              [nestedEntityModel]="getNestedEntityModel(am)"
+              [showEmptyValueLabel]="true"
+            ></app-field-view>
+          </div>
+        </ng-container>
+      </div>
+    </ng-container>
+    <ng-container *ngIf="hasGroupTogetherWith(am)">
+      <div class="row pt-2 pb-2">
+        <div [class]="getGroupTogetherColClass(am)">
+          <div class="row pt-2 pb-2">
+            <ng-container
+              *ngIf="isNestedDetail(am) && getNestedEntityModel(am)"
+            >
+              <div
+                [pTooltip]="am.descriptions[locale]"
+                class="col-12 text-truncate"
+              >
+                {{ am.displayNames[locale] }}
+              </div>
+              <div class="col-12">
+                <app-field-view
+                  [am]="am"
+                  [entity]="entity"
+                  [entityName]="entityName"
+                  [enumMap]="getEnumMap(am)"
+                  [locale]="locale"
+                  [nestedEntityModel]="getNestedEntityModel(am)"
+                  [showEmptyValueLabel]="true"
+                ></app-field-view>
+              </div>
+            </ng-container>
+            <ng-container
+              *ngIf="!(isNestedDetail(am) && getNestedEntityModel(am))"
+            >
+              <p>hoi</p>
+              <div
+                [pTooltip]="am.descriptions[locale]"
+                class="col-lg-4 col-md-4 col-sm-6 text-truncate"
+              >
+                {{ am.displayNames[locale] }}
+              </div>
+              <div class="col-lg-8 col-md-4 col-sm-6">
+                <app-field-view
+                  [am]="am"
+                  [entity]="entity"
+                  [entityName]="entityName"
+                  [enumMap]="getEnumMap(am)"
+                  [locale]="locale"
+                  [nestedEntityModel]="getNestedEntityModel(am)"
+                  [showEmptyValueLabel]="true"
+                ></app-field-view>
+              </div>
+            </ng-container>
+          </div>
+        </div>
+        <div
+          [class]="getGroupTogetherColClass(am)"
+          *ngFor="let gam of am.groupTogetherWith"
+        >
+          <ng-container
+            *ngTemplateOutlet="
               formTemplate;
               context: { $implicit: findAttributeModel(gam) }
             "
-                    >
-                    </ng-container>
-                </div>
-            </div>
-        </ng-container>
+          >
+          </ng-container>
+        </div>
+      </div>
     </ng-container>
+  </ng-container>
 </ng-template>

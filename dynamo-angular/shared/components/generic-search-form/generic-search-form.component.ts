@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component,  Input, OnInit, } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import {
   AttributeModelResponse,
   CascadeModel,
@@ -165,28 +165,30 @@ export class GenericSearchFormComponent
    */
   override bindBeforeSearch() {
     this.searchObject = {};
-    this.attributeModels.filter(am => this.isSearchable(am)).forEach((am) => {
-      let control = this.mainForm!.get(am.name);
-      if (!this.isBoolean(am) && control && control.value) {
-        this.searchObject[am.name] = control.value;
-      }
-
-      if (this.isBoolean(am) && control) {
-        if (control.value === true || control.value === false) {
+    this.attributeModels
+      .filter((am) => this.isSearchable(am))
+      .forEach((am) => {
+        let control = this.mainForm!.get(am.name);
+        if (!this.isBoolean(am) && control && control.value) {
           this.searchObject[am.name] = control.value;
         }
-      }
 
-      let controlFrom = this.mainForm?.get(this.getFromName(am));
-      if (controlFrom && controlFrom.value) {
-        this.searchObject[this.getFromName(am)] = controlFrom.value;
-      }
+        if (this.isBoolean(am) && control) {
+          if (control.value === true || control.value === false) {
+            this.searchObject[am.name] = control.value;
+          }
+        }
 
-      let controlTo = this.mainForm?.get(this.getToName(am));
-      if (controlTo && controlTo.value) {
-        this.searchObject[this.getToName(am)] = controlTo.value;
-      }
-    });
+        let controlFrom = this.mainForm?.get(this.getFromName(am));
+        if (controlFrom && controlFrom.value) {
+          this.searchObject[this.getFromName(am)] = controlFrom.value;
+        }
+
+        let controlTo = this.mainForm?.get(this.getToName(am));
+        if (controlTo && controlTo.value) {
+          this.searchObject[this.getToName(am)] = controlTo.value;
+        }
+      });
   }
 
   /**
@@ -240,9 +242,9 @@ export class GenericSearchFormComponent
     let state = this.stateService.retrieveState(this.getStateKey());
     if (state) {
       this.attributeModels.forEach((am) => {
-        this.restoreStateValue(am.name, state)
-        this.restoreStateValue(this.getFromName(am), state)
-        this.restoreStateValue(this.getToName(am), state)
+        this.restoreStateValue(am.name, state);
+        this.restoreStateValue(this.getFromName(am), state);
+        this.restoreStateValue(this.getToName(am), state);
       });
     }
   }
@@ -277,5 +279,4 @@ export class GenericSearchFormComponent
     this.advancedMode = false;
     this.filterSearchModels(this.entityModel!);
   }
-
 }

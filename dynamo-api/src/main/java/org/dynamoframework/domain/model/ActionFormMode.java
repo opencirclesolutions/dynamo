@@ -4,7 +4,7 @@ package org.dynamoframework.domain.model;
  * #%L
  * Dynamo Framework
  * %%
- * Copyright (C) 2014 - 2024 Open Circle Solutions BV
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
  * %%
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.

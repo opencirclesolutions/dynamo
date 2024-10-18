@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -29,7 +29,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { MenuItem } from 'primeng/api';
 import { Router } from '@angular/router';
-import { adjustTimestamp, prependUrl } from '../../functions/functions';
+import { adjustTimestamp, prependUrl, getNestedValue } from '../../functions/functions';
 import { ConfirmService } from '../../service/confirm.service';
 
 /**
@@ -178,6 +178,10 @@ export class DataTableComponent implements OnInit {
   navigate(row: any, col: TableColumn) {
     let link = `${col.navigateLink}/${row[col.field]['id']} `
     this.router.navigateByUrl(link)
+  }
+
+  getNestedValue(row: any, name: string) {
+    return getNestedValue(row, name);
   }
 }
 

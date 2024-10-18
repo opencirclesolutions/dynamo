@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -65,13 +65,14 @@ export class DetailsGridComponent
   extends BaseCompositeComponent
   implements OnInit, OnChanges
 {
-
   // parent entity name
-  @Input({required:true}) parentEntityName!: string;
+  @Input({ required: true }) parentEntityName!: string;
+  // parent entity name
+  @Input({ required: true }) am!: AttributeModelResponse;
   // parent reference name
   @Input() parentReference?: string;
   // the name of the attribute
-  @Input({required:true}) attributeName!: string;
+  @Input({ required: true }) attributeName!: string;
   // the entity model
   @Input() override entityModel?: EntityModelResponse = undefined;
   // the objects/rows that are being edited
@@ -198,8 +199,11 @@ export class DetailsGridComponent
     am: AttributeModelResponse
   ): Observable<[AttributeModelResponse, EntityModelResponse]> {
     return this.entityModelService
-      .getNestedEntityModel2(this.parentEntityName, this.attributeName, am.name,
-          this.parentReference
+      .getNestedEntityModel2(
+        this.parentEntityName,
+        this.attributeName,
+        am.name,
+        this.parentReference
       )
       .pipe((obs) => zip(of(am), obs));
   }
