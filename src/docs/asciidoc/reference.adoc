@@ -1636,6 +1636,19 @@ based on the `displayProperty` of the entity and the value entered by the user.
 the user can press a button to bring up a search dialog which can be
 used to perform a search.
 
+=== ShowDetailsPaginator
+
+In message bundle:
+[source,properties]
+--
+showDetailsPaginator = SHOW | HIDE | true | false
+--
+
+The *showDetailsPaginator* setting can be used to specify whether a paginator
+must be shown between a nested details table in an edit form. This is only applicable
+for one-to-many DETAIL attributes. The default value is taken from the system property
+*dynamoframework.defaults.show-details-paginator*
+
 === Sortable
 
 In message bundle:
@@ -2477,22 +2490,17 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |`element-collection-mode`|ElementCollectionMode|Indicates the default mode to use for element collection fields|
 |`endpoints`|EndpointProperties|The configuration of the Dynamo endpoints|
 |`enum-field-mode`|AttributeEnumFieldMode|The default field type to use for enumeration attributes|
-|`false-representation`|String|The representation of the value `false`|`false`
-|`false-representations`|Map&lt;String,String&gt;|Localized representations of the value `false`|
-|`entityClassPathScan`|String
-|`false-representation`|String|The representation of the value &lt;code&gt;false&lt;/code&gt;|`false`
-|`false-representations`|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;false&lt;/code&gt;|
-|`group-together-mode`|GroupTogetherMode|The default group together mode|
-|`group-together-width`|Integer|The column width from grouping together|`300`
+|`entityClassPathScan`|String| |
+|`false-representation`|String|The representation of the value false|
 |`locale`|Locale|The default locale|
 |`nesting-depth`|Integer|The default nesting depth|`2`
 |`number-field-mode`|NumberFieldMode|The default number field mode|
 |`search-case-sensitive`|Boolean|The default case sensitiveness for search|`false`
 |`search-prefix-only`|Boolean|Whether search is prefix only|`false`
+|`show-details-paginator`|Boolean|whether to display a paginator below a details table|
 |`time-format`|String|The default time format|`HH:mm:ss`
 |`trim-spaces`|Boolean|Whether to trim white space for text inputs|`false`
 |`true-representation`|String|The representation of the value `true`|`true`
-|`true-representations`|Map&lt;String,String&gt;|Localized representations of the value `true`|
 |`use-prompt-value`|Boolean|Indicates whether to use the display name as the input prompt by default|`true`
 |===
 
@@ -3663,18 +3671,23 @@ like “real” entities, implement the `AbstractEntity` interface.
 * The implementation of the method must be annotated with the
 `@ModelAction` annotation. This annotation accepts the following
 settings:
-** `ID` – the unique ID of the action.
-** `DisplayName` – This is the caption of the button that will be used to
+** `id` – the unique ID of the action.
+** `displayName` – This is the caption of the button that will be used to
 carry out the action
-** `Icon` – the name of the icon that will be used on the button
-** `Type` – the type of the action. Can be either CREATE or UPDATE. CREATE
+** `icon` – the name of the icon that will be used on the button
+** `type` – the type of the action. Can be either CREATE or UPDATE. CREATE
 means that the action can be used to create a new entity. These actions
 will appear on the button bar below the results table in a search layout
 or a split layout. UPDATE means that the actions will appear in each row
 in the results table.
-** `Roles` – an array of the roles that the user must have in order to be
+** `roles` – an array of the roles that the user must have in order to be
 able to execute the action. Actions for which the user is not in the
 appropriate role will be greyed out in the UI.
+** `formMode` - applies only action of type "UPDATE" and specifies under
+which conditions the action will appear in the button bar of an edit form.
+The allowed values are *VIEW* (action appears only when the screen is in view mode),
+*EDIT* (action appears only when the screen is in edit mode), and *BOTH* (action appears
+in both view and edit mode).
 
 As an example, consider the following:
 
@@ -4102,6 +4115,42 @@ afterSearchFormBuilt(info: FormInfo) {
 
 NOTE: when you are setting the value for a `multiselect` component, be
 sure that the value you are passing an array.
+
+==== ModelActionEnabled
+
+The `modelActionEnabled` callback method can be used to modify the conditions
+under which a model based action is available.
+
+This method is called once for each model based action that is visible in the
+button bar. It takes as its arguments
+
+* The entity model action
+* The "editObject" i.e. the current state of the entity being edited
+* The "formGroup" that contains the input form controls
+
+These arguments can be used to determine which action we are dealing with
+and can be used to enable/disable the action based on the action itself
+and the current state of the form.
+
+As an example consider the following:
+
+[source,typescript]
+--
+  modelActionEnabled(
+    action: EntityModelActionResponse,
+    editObject: any,
+    formGroup: FormGroup
+  ) {
+    if (action.id = 'ChangeName') {
+      return (editObject['name'] as string).startsWith('C')
+    }
+
+    return true;
+  }
+--
+
+The above looks at the *ChangeName* action and enables it only if the name of the organization
+starts with a capital "C".
 
 ==== Additional row actions
 
