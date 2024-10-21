@@ -28,12 +28,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AbstractEntity } from './abstractEntity';
-import { StatsModel } from './statsModel';
+import { FilterModel } from './filterModel';
 
 
-export interface SearchResultsModelAbstractEntity { 
-    stats?: StatsModel;
-    results?: Array<AbstractEntity>;
+export interface NullFilterModel extends FilterModel { 
 }
+export namespace NullFilterModel {
+}
+
 
