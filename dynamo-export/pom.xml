@@ -5,10 +5,11 @@
 	<packaging>jar</packaging>
 	<name>Export functionality</name>
 	<description>Dynamo Framework export project.</description>
+	<url>https://www.dynamoframework.org</url>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>4.0.0-RC2-SNAPSHOT</version>
+		<version>4.0.0-RC3-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -34,17 +35,14 @@
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi</artifactId>
-			<version>5.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.poi</groupId>
 			<artifactId>poi-ooxml</artifactId>
-			<version>5.2.5</version>
 		</dependency>
 		<dependency>
 			<groupId>com.opencsv</groupId>
 			<artifactId>opencsv</artifactId>
-			<version>5.9</version>
 		</dependency>
 		<dependency>
 			<groupId>org.slf4j</groupId>
@@ -131,6 +129,13 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<configuration>
 					<stagingDirectory>../target/staging/maven</stagingDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.ragedunicorn.tools.maven</groupId>
+				<artifactId>github-release-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>

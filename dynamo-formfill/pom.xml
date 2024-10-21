@@ -5,10 +5,11 @@
 	<packaging>jar</packaging>
 	<name>Form Fill Functionality</name>
 	<description>Dynamo Framework form fill functionality project.</description>
+	<url>https://www.dynamoframework.org</url>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>4.0.0-RC2-SNAPSHOT</version>
+		<version>4.0.0-RC3-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -55,7 +56,6 @@
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
-			<version>2.17.2</version>
 		</dependency>
 		<dependency>
 			<groupId>org.projectlombok</groupId>
@@ -85,7 +85,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.10.1</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -157,7 +156,6 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>${asciidoctor.maven.plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
@@ -167,6 +165,13 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<configuration>
 					<stagingDirectory>../target/staging/maven</stagingDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.ragedunicorn.tools.maven</groupId>
+				<artifactId>github-release-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>

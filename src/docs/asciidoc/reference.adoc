@@ -14,8 +14,8 @@ endif::[]
 :text-align: justify
 :title-logo-image: image:media/logo-dynamo.png[Dynamo]
 :keywords: Dynamo, {asciidoc-organization-name}, Web Application Accelerator Framework, Reference
-:pdf-fontsdir: ./fonts
-:pdf-themesdir: ./themes
+:pdf-fontsdir: ./src/docs/asciidoc/fonts
+:pdf-themesdir: ./src/docs/asciidoc/themes
 :pdf-theme: ocs
 :stylesheet: ./css/ocs.css
 
@@ -2492,6 +2492,13 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |`enum-field-mode`|AttributeEnumFieldMode|The default field type to use for enumeration attributes|
 |`entityClassPathScan`|String| |
 |`false-representation`|String|The representation of the value false|
+|`false-representation`|String|The representation of the value `false`|`false`
+|`false-representations`|Map&lt;String,String&gt;|Localized representations of the value `false`|
+|`entityClassPathScan`|Boolean|Whether to scan the class path for entities|`true`
+|`false-representation`|String|The representation of the value &lt;code&gt;false&lt;/code&gt;|`false`
+|`false-representations`|Map&lt;String,String&gt;|Localized representations of the value &lt;code&gt;false&lt;/code&gt;|
+|`group-together-mode`|GroupTogetherMode|The default group together mode|
+|`group-together-width`|Integer|The column width from grouping together|`300`
 |`locale`|Locale|The default locale|
 |`nesting-depth`|Integer|The default nesting depth|`2`
 |`number-field-mode`|NumberFieldMode|The default number field mode|
@@ -2501,6 +2508,7 @@ Class: `org.dynamoframework.configuration.DynamoConfigurationProperties$DefaultC
 |`time-format`|String|The default time format|`HH:mm:ss`
 |`trim-spaces`|Boolean|Whether to trim white space for text inputs|`false`
 |`true-representation`|String|The representation of the value `true`|`true`
+|`true-representations`|Map&lt;String,String&gt;|Localized representations of the value `true`|
 |`use-prompt-value`|Boolean|Indicates whether to use the display name as the input prompt by default|`true`
 |===
 

@@ -5,10 +5,11 @@
 	<packaging>jar</packaging>
 	<name>Camel Integration</name>
 	<description>Dynamo Framework Apache Camel integration project.</description>
+	<url>https://www.dynamoframework.org</url>
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>4.0.0-RC2-SNAPSHOT</version>
+		<version>4.0.0-RC3-SNAPSHOT</version>
 	</parent>
 	<properties>
 		<camel.version>4.0.0-M2</camel.version>
@@ -85,7 +86,6 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>${asciidoctor.maven.plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
@@ -95,6 +95,13 @@
 				<artifactId>maven-site-plugin</artifactId>
 				<configuration>
 					<stagingDirectory>../target/staging/maven</stagingDirectory>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>com.ragedunicorn.tools.maven</groupId>
+				<artifactId>github-release-maven-plugin</artifactId>
+				<configuration>
+					<skip>true</skip>
 				</configuration>
 			</plugin>
 		</plugins>

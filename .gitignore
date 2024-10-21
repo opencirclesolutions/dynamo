@@ -61,3 +61,4 @@ dynamo-vaadin/target
 dynamo-frontend-export/frontend/
 *.sh
 dynamo-frontend/frontend/generated
+dynamo-angular/src/main/dynamo/.angular

@@ -27,21 +27,21 @@
         <menu ref="modules"/>
         <menu ref="reports"/>
     </body>
+    <version position="right"/>
     <skin>
         <groupId>org.apache.maven.skins</groupId>
         <artifactId>maven-fluido-skin</artifactId>
         <version>2.0.0-M10</version>
     </skin>
+    <bannerLeft>
+        <name></name>
+        <src>images/logo-dynamo.png</src>
+        <href>https://dynamoframework.org</href>
+    </bannerLeft>
     <custom>
         <fluidoSkin>
-            <topBarEnabled>true</topBarEnabled>
-            <sideBarEnabled>false</sideBarEnabled>
-            <topBarIcon>
-                <name>Dynamo Framework</name>
-                <alt>Dynamo Framework</alt>
-                <src>images/logo-dynamo.png</src>
-                <href>../index.html</href>
-            </topBarIcon>
+            <topBarEnabled>false</topBarEnabled>
+            <sideBarEnabled>true</sideBarEnabled>
         </fluidoSkin>
     </custom>
 </project>
