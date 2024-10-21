@@ -12,7 +12,6 @@ export * from './lib/directives/override-field.directive'
 export * from './lib/guards/backend-available.guard'
 export * from './lib/guards/role.guard'
 
-export * from './lib/pipes/enum.pipe'
 export * from './lib/pipes/lookup-entity.pipe'
 export * from './lib/pipes/translate-boolean.pipe'
 export * from './lib/pipes/translate-entity.pipe'

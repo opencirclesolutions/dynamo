@@ -17,9 +17,10 @@
  * limitations under the License.
  * #L%
  */
-import { Pipe, PipeTransform } from '@angular/core';
+import { Inject, Pipe, PipeTransform } from '@angular/core';
 import { Observable, map, of } from 'rxjs';
-import { CRUDService } from 'dynamo/model';
+import { DynamoConfig } from '../interfaces/dynamo-config';
+import { CRUDServiceInterface } from '../interfaces/service/cRUD.service';
 
 /**
  * Pipe for translating an entity to its display property value
@@ -28,7 +29,13 @@ import { CRUDService } from 'dynamo/model';
   name: 'lookupEntity',
 })
 export class LookupEntityPipe implements PipeTransform {
-  constructor(private service: CRUDService) { }
+  service: CRUDServiceInterface
+
+  constructor(
+    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
+  ) {
+    this.service = configuration.getCRUDService()
+  }
 
   transform(
     obj: any,

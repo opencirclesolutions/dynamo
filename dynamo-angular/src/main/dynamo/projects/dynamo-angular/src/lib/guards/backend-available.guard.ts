@@ -17,26 +17,30 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
   RouterStateSnapshot,
 } from '@angular/router';
-import { StatusService } from 'dynamo/model';
 import { catchError, map } from 'rxjs';
+import { StatusServiceInterface } from '../interfaces/service/status.service';
+import { DynamoConfig } from '../interfaces/dynamo-config';
 
 @Injectable({
   providedIn: 'root',
 })
 export class BackendAvailableGuard {
+  statusService: StatusServiceInterface
+
   constructor(
-    private statusService: StatusService,
+    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
     private router: Router
-  ) { }
+  ) {
+    this.statusService = configuration.getStatusService()
+  }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-
     return this.statusService.getStatus().pipe(
       map((status) => {
         if (status.status !== 'OK') {

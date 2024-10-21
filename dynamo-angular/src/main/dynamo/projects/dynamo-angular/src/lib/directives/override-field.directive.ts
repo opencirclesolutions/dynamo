@@ -19,8 +19,7 @@
  */
 import { Directive, Input, TemplateRef } from '@angular/core';
 import { FormGroup } from '@angular/forms';
-import { AttributeModelResponse } from 'dynamo/model';
-
+import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
 
 interface InputContext {
   $implicit: AttributeModelResponse;

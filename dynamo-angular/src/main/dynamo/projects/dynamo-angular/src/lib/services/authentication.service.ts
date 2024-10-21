@@ -17,24 +17,40 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
 import {
   AuthConfig,
   NullValidationHandler,
   OAuthService,
 } from 'angular-oauth2-oidc';
-import jwtDecode from 'jwt-decode';
-import { AccessToken } from '../model/access-token';
+import { DynamoConfig } from '../interfaces/dynamo-config';
+import { first, map, tap } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
-
   roles?: string[];
 
-  constructor(private oauthService: OAuthService) {
-    this.initConfiguration();
+  constructor(
+    private oauthService: OAuthService,
+    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
+  ) {
+    this.oauthService.tokenValidationHandler = new NullValidationHandler()
+    configuration.getConfiguration().pipe(
+      map(c => ({
+        issuer: c.issuer,
+        redirectUrl: c.redirectUri || window.location.origin + '/home',
+        clientId: c.clientId,
+        scope: c.scope || 'openid profile email offline_access',
+        responseType: 'code',
+        disableAtHashCheck: true,
+      } as AuthConfig)),
+      tap(c => this.oauthService.configure(c)),
+      tap(_ => this.oauthService.loadDiscoveryDocumentAndTryLogin()),
+      tap(_ => this.oauthService.setupAutomaticSilentRefresh()),
+      first(),
+    ).subscribe(_ => { })
   }
 
   login() {
@@ -50,34 +66,20 @@ export class AuthenticationService {
     return this.oauthService.getAccessToken();
   }
 
+  private getRealmRoles(claims: any): string[] | undefined {
+    return claims?.realm_access?.roles;
+  }
+
   public hasRole(role: string | string[]): boolean {
     if (!this.roles) {
-      let decoded = jwtDecode<AccessToken>(this.oauthService.getAccessToken());
-      this.roles = decoded.realm_access.roles;
+      this.roles = this.getRealmRoles(this.oauthService.getIdentityClaims())
     }
 
     return (
-      this.roles.find((r) =>
+      this.roles?.find((r) =>
         Array.isArray(role) ? role.includes(r) : r === role
       ) != undefined
     );
-  }
-
-  public initConfiguration(): void {
-
-    let authConfig: AuthConfig = {
-      issuer: environment.authIssuer,
-      redirectUri: window.location.origin + '/home',
-      clientId: environment.authClientId,
-      scope: 'openid profile email offline_access',
-      responseType: 'code',
-      disableAtHashCheck: true
-    };
-
-    this.oauthService.configure(authConfig);
-    this.oauthService.tokenValidationHandler = new NullValidationHandler();
-    this.oauthService.loadDiscoveryDocumentAndTryLogin();
-    this.oauthService.setupAutomaticSilentRefresh();
   }
 
   public isAuthenticated(): boolean {

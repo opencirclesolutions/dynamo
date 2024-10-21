@@ -42,6 +42,7 @@ import {
   timestampToDate,
   getNestedValue,
 } from '../functions/functions';
+import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
 
 @Injectable({
   providedIn: 'root'

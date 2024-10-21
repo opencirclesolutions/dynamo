@@ -19,24 +19,22 @@
  */
 import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
-import {
-  AttributeModelResponse,
-  DateRangeFilterModel,
-  ElementCollectionFilterModel,
-  EqualsFilterModel,
-  FilterModel,
-  InstantRangeFilterModel,
-  LocalDateTimeRangeFilterModel,
-  NotFilterModel,
-  NumberInFilterModel,
-  NumberRangeFilterModel,
-  OrFilterModel,
-  PagingModel,
-  SearchModel,
-  TimeRangeFilterModel,
-} from 'dynamo/model';
 import { dateToString, dateToTimestamp, stringToTime } from './functions';
-import { DynamoValidators } from '../validators/validators';
+import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
+import { DynamoValidators } from './validators';
+import { EqualsFilterModel } from '../interfaces/model/equalsFilterModel';
+import { SearchModel } from '../interfaces/model/searchModel';
+import { PagingModel } from '../interfaces/model/pagingModel';
+import { OrFilterModel } from '../interfaces/model/orFilterModel';
+import { FilterModel } from '../interfaces/model/filterModel';
+import { NotFilterModel } from '../interfaces/model/notFilterModel';
+import { NumberRangeFilterModel } from '../interfaces/model/numberRangeFilterModel';
+import { DateRangeFilterModel } from '../interfaces/model/dateRangeFilterModel';
+import { InstantRangeFilterModel } from '../interfaces/model/instantRangeFilterModel';
+import { LocalDateTimeRangeFilterModel } from '../interfaces/model/localDateTimeRangeFilterModel';
+import { NumberInFilterModel } from '../interfaces/model/numberInFilterModel';
+import { TimeRangeFilterModel } from '../interfaces/model/timeRangeFilterModel';
+import { ElementCollectionFilterModel } from '../interfaces/model/elementCollectionFilterModel';
 
 // maximum number of items to display in description of collection
 const MAX_ITEMS = 3;

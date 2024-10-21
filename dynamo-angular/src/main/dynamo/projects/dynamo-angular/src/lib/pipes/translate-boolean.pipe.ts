@@ -26,8 +26,6 @@ import { Pipe, PipeTransform } from '@angular/core';
   name: 'translateBoolean',
 })
 export class TranslateBooleanPipe implements PipeTransform {
-  constructor() { }
-
   transform(value: boolean, locale: string, trueRepresentations: { [key: string]: string },
     falseRepresentations: { [key: string]: string }): string | undefined {
 
