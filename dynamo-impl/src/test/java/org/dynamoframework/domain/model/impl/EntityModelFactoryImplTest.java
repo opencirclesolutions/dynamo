@@ -70,7 +70,7 @@ import static org.mockito.Mockito.when;
 public class EntityModelFactoryImplTest extends BaseMockitoTest {
 
 	@Autowired
-	private EntityModelFactoryImpl factory;// = new EntityModelFactoryImpl();
+	private EntityModelFactoryImpl factory;
 
 	private final ResourceBundleMessageSource source = new ResourceBundleMessageSource();
 
@@ -186,6 +186,8 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertTrue(model.getWriteRoles().contains("role2"));
 		assertEquals(1, model.getDeleteRoles().size());
 		assertTrue(model.getDeleteRoles().contains("role3"));
+
+
 	}
 
 	@Test
@@ -339,6 +341,7 @@ public class EntityModelFactoryImplTest extends BaseMockitoTest {
 		assertEquals("ChangedName", partialAction.getEntityModel()
 			.getAttributeModel("name").getDisplayName(locale));
 		assertTrue(partialAction.getRoles().contains("role12"));
+		assertEquals(partialAction.getFormMode(), ActionFormMode.BOTH);
 
 		// icon overridden in message bundle
 		assertEquals("iconOverride", partialAction.getIcon());

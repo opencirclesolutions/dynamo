@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -64,6 +64,11 @@ export abstract class BaseCompositeCollectionComponent extends BaseCompositeComp
   @Input() exportModeReference: string = '';
   // service for managing hidden fields
   @Input() hiddenFieldService?: HiddenFieldService;
+  // callback method to disable/enable model actions based on form state
+  @Input() modelActionEnabled?: (
+    action: EntityModelActionResponse,
+    editObject: any
+  ) => boolean;
 
   // overridden input components
   @ContentChildren(OverrideFieldDirective, { descendants: true })
@@ -119,12 +124,29 @@ export abstract class BaseCompositeCollectionComponent extends BaseCompositeComp
       });
   }
 
+  /**
+   * Filters the entity model actions, returning those that have CREATE mode
+   * @returns the filtered list of actions
+   */
   filterEntityModelActions() {
     return this.entityModel?.actions
       ?.filter(
         (action) => action.type == EntityModelActionResponse.TypeEnum.CREATE
       )
       .filter((action) => this.isActionAllowed(action));
+  }
+
+  /**
+   * Checks whether an entity model action is enabled
+   * @param row the row to check
+   * @param action the action
+   * @returns true when the action is enabled, false otherwise
+   */
+  isModelActionEnabled(row: any, action: EntityModelActionResponse): boolean {
+    if (!this.modelActionEnabled) {
+      return true;
+    }
+    return this.modelActionEnabled(action, row);
   }
 
   afterActionDialogClosed() {}

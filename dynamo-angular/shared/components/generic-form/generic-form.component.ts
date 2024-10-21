@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -42,10 +42,10 @@ import {
   AttributeModelResponse,
   CascadeModel,
   CRUDService,
-  EntityModelActionResponse,
   ModelService,
   EntityModelResponse,
   FileService,
+  EntityModelActionResponse,
 } from 'dynamo/model';
 import { NotificationService } from '../../service/notification-service';
 import { Router } from '@angular/router';
@@ -120,6 +120,9 @@ export class GenericFormComponent
     editObject: any,
     formGroup: FormGroup
   ) => boolean;
+
+  // callback to enable/disable model action
+  @Input() modelActionEnabled?: (action: EntityModelActionResponse, editObject: any, formGroup: FormGroup) => boolean;
 
   // callback that is used to modify the event before save
   @Input() injectedHiddenFieldService?: HiddenFieldService;
@@ -1013,7 +1016,25 @@ export class GenericFormComponent
     );
   }
 
-  isDisabled(action: AdditionalFormAction): boolean {
+  /**
+   * Checks whether an entity model action is enabled
+   * @param action the action
+   * @returns true when the action is enabled, false otherwise
+   */
+  isModelActionEnabled(action: EntityModelActionResponse): boolean {
+    if (!this.modelActionEnabled) {
+      return true;
+    }
+
+    return this.modelActionEnabled(action, this.editObject, this.mainForm)
+  }
+
+  /**
+   * Checks whether an additional form action is enabled
+   * @param action the action
+   * @returns true when the action is disabled, false otherwise
+   */
+  isAdditionalFormActionDisabled(action: AdditionalFormAction): boolean {
     if (!action.enabled) {
       return false;
     }
@@ -1106,6 +1127,10 @@ export class GenericFormComponent
     return this.entityModel?.actions
       ?.filter(
         (action) => action.type == EntityModelActionResponse.TypeEnum.UPDATE
+      )
+      .filter(action => action.formMode == EntityModelActionResponse.FormModeEnum.BOTH
+          || (action.formMode == EntityModelActionResponse.FormModeEnum.EDIT && !this.viewMode)
+          || (action.formMode == EntityModelActionResponse.FormModeEnum.VIEW && this.viewMode)
       )
       .filter((action) => this.isActionAllowed(action));
   }

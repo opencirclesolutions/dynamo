@@ -7,9 +7,9 @@
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
- * 
+ *
  *      http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -49,7 +49,6 @@ import { AuthenticationService } from '../../service/authentication-service';
   styleUrls: ['./generic-search-layout.component.scss'],
 })
 export class GenericSearchLayoutComponent extends BaseCompositeCollectionComponent {
-
   // the key under which to store data in the state store key
   @Input() stateStoreKey?: string = undefined;
   // the IDs of the selected rows
@@ -87,12 +86,11 @@ export class GenericSearchLayoutComponent extends BaseCompositeCollectionCompone
   @Output() afterSearchFormBuilt: EventEmitter<any> =
     new EventEmitter<FormInfo>();
 
-    // nested table component
+  // nested table component
   @ViewChild(GenericTableComponent) table?: GenericTableComponent;
   //container for holding optional popup dialog
   @ViewChild('popupDialogContainerRef', { read: ViewContainerRef })
   vcr!: ViewContainerRef;
-
 
   defaultPageSize = 10;
   searchObject: any = {};
@@ -104,7 +102,7 @@ export class GenericSearchLayoutComponent extends BaseCompositeCollectionCompone
     entityModelService: ModelService,
     messageService: NotificationService,
     router: Router,
-    authService: AuthenticationService,
+    authService: AuthenticationService
   ) {
     super(service, entityModelService, messageService, router, authService);
   }
@@ -118,9 +116,10 @@ export class GenericSearchLayoutComponent extends BaseCompositeCollectionCompone
           this.tableCaptionPlural =
             this.entityModel.displayNamesPlural[this.locale];
         },
-        error: (error) => error?.error ?
-          this.messageService.error(error.error?.message) :
-          this.messageService.error("Unknown error")
+        error: (error) =>
+          error?.error
+            ? this.messageService.error(error.error?.message)
+            : this.messageService.error('Unknown error'),
       });
   }
 
@@ -185,7 +184,6 @@ export class GenericSearchLayoutComponent extends BaseCompositeCollectionCompone
   }
 
   override afterActionDialogClosed(): void {
-      this.search();
+    this.search();
   }
-
 }

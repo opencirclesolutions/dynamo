@@ -294,6 +294,12 @@ public @interface Attribute {
 	boolean sortable() default true;
 
 	/**
+	 *
+	 * @return whether to show the paginator component in a details table
+	 */
+	VisibilityType showDetailsPaginator() default VisibilityType.INHERIT;
+
+	/**
 	 * @return whether to display a text attribute as a text field or a text area
 	 */
 	AttributeTextFieldMode textFieldMode() default AttributeTextFieldMode.INHERIT;

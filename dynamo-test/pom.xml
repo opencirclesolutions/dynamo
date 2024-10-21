@@ -4,7 +4,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>4.0.0-RC2-SNAPSHOT</version>
+		<version>4.0.0-RC3-SNAPSHOT</version>
 	</parent>
 	<artifactId>dynamo-test</artifactId>
 	<packaging>jar</packaging>
@@ -19,7 +19,6 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
-			<version>${spring.boot.version}</version>
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
@@ -50,7 +49,6 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>${asciidoctor.maven.plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>

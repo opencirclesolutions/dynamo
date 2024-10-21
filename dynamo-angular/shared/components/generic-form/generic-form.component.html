@@ -7,9 +7,9 @@
   Licensed under the Apache License, Version 2.0 (the "License");
   you may not use this file except in compliance with the License.
   You may obtain a copy of the License at
-  
+
        http://www.apache.org/licenses/LICENSE-2.0
-  
+
   Unless required by applicable law or agreed to in writing, software
   distributed under the License is distributed on an "AS IS" BASIS,
   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -78,6 +78,7 @@
         *ngFor="let action of filterEntityModelActions()"
         type="button"
         class="btn btn-primary m-1"
+        [disabled]="!isModelActionEnabled(action)"
         (click)="callModelAction(vcr, action)"
       >
         <span class="pi {{ action.icon }}"></span>
@@ -90,7 +91,7 @@
         [disabled]="loading"
         (click)="callAdditionalAction(action)"
         [class]="action.buttonClass"
-        [disabled]="isDisabled(action)"
+        [disabled]="isAdditionalFormActionDisabled(action)"
       >
         <span *ngIf="action.icon" class="pi {{ action.icon }}"></span>
         {{ action.messageKey | translate }}
@@ -212,6 +213,17 @@
           <span class="pi pi-save"></span> {{ "save" | translate }}
         </button>
         <button
+          *ngFor="let action of filterEntityModelActions()"
+          type="button"
+          class="btn btn-primary m-1"
+          [disabled]="!isModelActionEnabled(action)"
+          (click)="callModelAction(vcr, action)"
+        >
+          <span class="pi {{ action.icon }}"></span>
+          {{ action.displayNames[locale] }}
+        </button>
+        <ng-template #popupDialogContainerRef></ng-template>
+        <button
           type="button"
           *ngIf="formFillEnabled && !nested"
           class="btn btn-primary m-1"
@@ -252,7 +264,7 @@
       [disabled]="loading"
       (click)="callAdditionalAction(action)"
       [class]="action.buttonClass"
-      [disabled]="isDisabled(action)"
+      [disabled]="isAdditionalFormActionDisabled(action)"
     >
       <span *ngIf="action.icon" class="pi {{ action.icon }}"></span>
       {{ action.messageKey | translate }}
@@ -294,43 +306,51 @@
   <ng-template #defaultFieldTemplate let-am>
     <ng-container *ngIf="isAttributeVisible(am)" [formGroup]="mainForm">
       <ng-container *ngIf="!hasGroupTogetherWith(am)">
-        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-        <app-generic-field
-          [formGroup]="mainForm"
-          [am]="am"
-          [enumValues]="getEnumValues(am.name)"
-          [entityModel]="getNestedEntityModel(am)"
-          [formControl]="getFormControl(am)"
-          [locale]="locale"
-          [options]="lookupEntities(am.lookupEntityName!)"
-          [fieldFilters]="getCombinedFilters(am)"
-          [showValidationErrors]="true"
-          [fullWidth]="showFullWidth(am)"
-          ngDefaultControl
-          *ngIf="!isNestedDetail(am) && !isLob(am)"
-        >
-        </app-generic-field>
-        <app-details-grid
-          [entityName]="am.lookupEntityName"
-          [attributeName]="am.name"
-          [entityModel]="getNestedEntityModel(am)"
-          [rows]="editObject[am.name]"
-          [formBuilder]="this.formBuilder"
-          [formArray]="getFormArray(am)"
-          [locale]="locale"
-          [parentEntityName]="entityName"
-          *ngIf="isNestedDetail(am) && getNestedEntityModel(am)"
-        ></app-details-grid>
-        <app-file-upload
-          [am]="am"
-          [entityId]="entityId"
-          [entityName]="entityName"
-          [editObject]="editObject"
-          (onFileUpload)="onFileUpload($event)"
-          (onFileClear)="onFileClear($event)"
-          *ngIf="isLob(am)"
-        >
-        </app-file-upload>
+        <ng-container *ngIf="isNestedDetail(am) && getNestedEntityModel(am)">
+          <label class="col-12" for="{{ am.name }}">{{
+            am.displayNames[locale]
+          }}</label>
+          <app-details-grid
+            [am]="am"
+            [entityName]="am.lookupEntityName"
+            [attributeName]="am.name"
+            [entityModel]="getNestedEntityModel(am)"
+            [rows]="editObject[am.name]"
+            [formBuilder]="this.formBuilder"
+            [formArray]="getFormArray(am)"
+            [locale]="locale"
+            [parentEntityName]="entityName"
+            *ngIf="isNestedDetail(am) && getNestedEntityModel(am)"
+          ></app-details-grid>
+        </ng-container>
+        <ng-container *ngIf="!isNestedDetail(am)">
+          <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+          <app-generic-field
+            [formGroup]="mainForm"
+            [am]="am"
+            [enumValues]="getEnumValues(am.name)"
+            [entityModel]="getNestedEntityModel(am)"
+            [formControl]="getFormControl(am)"
+            [locale]="locale"
+            [options]="lookupEntities(am.lookupEntityName!)"
+            [fieldFilters]="getCombinedFilters(am)"
+            [showValidationErrors]="true"
+            [fullWidth]="showFullWidth(am)"
+            ngDefaultControl
+            *ngIf="!isLob(am)"
+          >
+          </app-generic-field>
+          <app-file-upload
+            [am]="am"
+            [entityId]="entityId"
+            [entityName]="entityName"
+            [editObject]="editObject"
+            (onFileUpload)="onFileUpload($event)"
+            (onFileClear)="onFileClear($event)"
+            *ngIf="isLob(am)"
+          >
+          </app-file-upload>
+        </ng-container>
       </ng-container>
       <ng-container *ngIf="hasGroupTogetherWith(am)">
         <!-- Multiple attributes grouped together -->

@@ -8,7 +8,7 @@
 	<parent>
 		<groupId>org.dynamoframework</groupId>
 		<artifactId>dynamo-parent</artifactId>
-		<version>4.0.0-RC2-SNAPSHOT</version>
+		<version>4.0.0-RC3-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
@@ -87,7 +87,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.10.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -157,7 +156,6 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>${asciidoctor.maven.plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
