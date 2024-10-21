@@ -75,7 +75,6 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>${asciidoctor.maven.plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>

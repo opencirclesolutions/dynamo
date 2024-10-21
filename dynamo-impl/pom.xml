@@ -87,7 +87,6 @@
 		<dependency>
 			<groupId>org.junit.jupiter</groupId>
 			<artifactId>junit-jupiter-api</artifactId>
-			<version>5.10.1</version>
 			<scope>test</scope>
 		</dependency>
 	</dependencies>
@@ -157,7 +156,6 @@
 			<plugin>
 				<groupId>org.asciidoctor</groupId>
 				<artifactId>asciidoctor-maven-plugin</artifactId>
-				<version>${asciidoctor.maven.plugin.version}</version>
 				<configuration>
 					<skip>true</skip>
 				</configuration>
