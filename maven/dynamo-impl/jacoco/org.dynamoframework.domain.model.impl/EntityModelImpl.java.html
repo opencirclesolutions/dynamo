@@ -40,82 +40,82 @@ import java.util.stream.Stream;
  * @param &lt;T&gt; the class of the entity
  * @author bas.rutten
  */
-<span class="pc" id="L43">@Data</span>
-<span class="pc bpc" id="L44" title="20 of 22 branches missed.">@EqualsAndHashCode(callSuper = false, of = {&quot;reference&quot;, &quot;entityClass&quot;})</span>
-<span class="pc bpc" id="L45" title="5 of 16 branches missed.">@Builder(toBuilder = true)</span>
-<span class="nc" id="L46">@ToString</span>
+@Data
+@EqualsAndHashCode(callSuper = false, of = {&quot;reference&quot;, &quot;entityClass&quot;})
+@Builder(toBuilder = true)
+@ToString
 public class EntityModelImpl&lt;T&gt; implements EntityModel&lt;T&gt; {
 
-<span class="fc" id="L49">	private String autofillInstructions;</span>
+	private String autofillInstructions;
 
 	@Builder.Default
 	@ToString.Exclude
 	private final Map&lt;String, List&lt;AttributeModel&gt;&gt; attributeModels = new LinkedHashMap&lt;&gt;();
 
-<span class="nc" id="L55">	private String defaultDescription;</span>
+	private String defaultDescription;
 
-<span class="nc" id="L57">	private String defaultDisplayName;</span>
+	private String defaultDisplayName;
 
-<span class="nc" id="L59">	private String defaultDisplayNamePlural;</span>
-
-	@Builder.Default
-<span class="nc" id="L62">	private Map&lt;String, Optional&lt;String&gt;&gt; descriptions = new ConcurrentHashMap&lt;&gt;();</span>
+	private String defaultDisplayNamePlural;
 
 	@Builder.Default
-<span class="nc" id="L65">	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
+	private Map&lt;String, Optional&lt;String&gt;&gt; descriptions = new ConcurrentHashMap&lt;&gt;();
 
 	@Builder.Default
-<span class="nc" id="L68">	private Map&lt;String, Optional&lt;String&gt;&gt; displayNamesPlural = new ConcurrentHashMap&lt;&gt;();</span>
-
-<span class="fc" id="L70">	private String displayProperty;</span>
-
-<span class="fc" id="L72">	private Class&lt;T&gt; entityClass;</span>
-
-<span class="nc" id="L74">	private boolean gridOrderSet;</span>
-
-<span class="fc" id="L76">	private int nestingDepth;</span>
-
-<span class="fc" id="L78">	private String reference;</span>
-
-<span class="nc" id="L80">	private boolean searchOrderSet;</span>
-
-<span class="fc" id="L82">	private boolean listAllowed;</span>
-
-<span class="fc" id="L84">	private boolean exportAllowed;</span>
-
-<span class="fc" id="L86">	private boolean updateAllowed;</span>
-
-<span class="fc" id="L88">	private boolean deleteAllowed;</span>
-
-<span class="fc" id="L90">	private boolean createAllowed;</span>
-
-<span class="nc" id="L92">	private boolean searchAllowed;</span>
-
-<span class="nc" id="L94">	private String fileUploadEntityName;</span>
-
-<span class="nc" id="L96">	private String fileUploadAttributeName;</span>
-
-<span class="nc" id="L98">	private String fileUploadEntityIdPath;</span>
-
-<span class="fc" id="L100">	private List&lt;FetchJoinInformation&gt; fetchJoins;</span>
-
-<span class="fc" id="L102">	private List&lt;FetchJoinInformation&gt; detailJoins;</span>
-
-<span class="fc" id="L104">	private int maxSearchResults;</span>
-
-<span class="fc" id="L106">	private List&lt;EntityModelAction&gt; entityModelActions;</span>
+	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();
 
 	@Builder.Default
-<span class="fc" id="L109">	private Map&lt;AttributeModel, Boolean&gt; sortOrder = new LinkedHashMap&lt;&gt;();</span>
+	private Map&lt;String, Optional&lt;String&gt;&gt; displayNamesPlural = new ConcurrentHashMap&lt;&gt;();
+
+	private String displayProperty;
+
+	private Class&lt;T&gt; entityClass;
+
+	private boolean gridOrderSet;
+
+	private int nestingDepth;
+
+	private String reference;
+
+	private boolean searchOrderSet;
+
+	private boolean listAllowed;
+
+	private boolean exportAllowed;
+
+	private boolean updateAllowed;
+
+	private boolean deleteAllowed;
+
+	private boolean createAllowed;
+
+	private boolean searchAllowed;
+
+	private String fileUploadEntityName;
+
+	private String fileUploadAttributeName;
+
+	private String fileUploadEntityIdPath;
+
+	private List&lt;FetchJoinInformation&gt; fetchJoins;
+
+	private List&lt;FetchJoinInformation&gt; detailJoins;
+
+	private int maxSearchResults;
+
+	private List&lt;EntityModelAction&gt; entityModelActions;
 
 	@Builder.Default
-<span class="fc" id="L112">	private List&lt;String&gt; readRoles = new ArrayList&lt;&gt;();</span>
+	private Map&lt;AttributeModel, Boolean&gt; sortOrder = new LinkedHashMap&lt;&gt;();
 
 	@Builder.Default
-<span class="fc" id="L115">	private List&lt;String&gt; writeRoles = new ArrayList&lt;&gt;();</span>
+	private List&lt;String&gt; readRoles = new ArrayList&lt;&gt;();
 
 	@Builder.Default
-<span class="fc" id="L118">	private List&lt;String&gt; deleteRoles = new ArrayList&lt;&gt;();</span>
+	private List&lt;String&gt; writeRoles = new ArrayList&lt;&gt;();
+
+	@Builder.Default
+	private List&lt;String&gt; deleteRoles = new ArrayList&lt;&gt;();
 
 	@Override
 	public void addAttributeGroup(String attributeGroup) {

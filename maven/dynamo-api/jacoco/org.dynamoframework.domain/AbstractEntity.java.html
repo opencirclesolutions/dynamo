@@ -34,13 +34,13 @@ import java.util.Objects;
  * @author bas.rutten
  */
 @MappedSuperclass
-<span class="nc" id="L37">@Data</span>
+@Data
 public abstract class AbstractEntity&lt;ID&gt; implements Serializable {
 
 	private static final long serialVersionUID = -8442763252267825950L;
 
 	@Version
-<span class="nc" id="L43">	private Integer version;</span>
+	private Integer version;
 
 	public abstract ID getId();
 

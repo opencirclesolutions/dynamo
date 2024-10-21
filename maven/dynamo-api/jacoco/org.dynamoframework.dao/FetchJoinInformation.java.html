@@ -29,14 +29,14 @@ import lombok.Getter;
  * @author bas.rutten
  */
 @Getter
-<span class="nc bnc" id="L32" title="All 22 branches missed.">@EqualsAndHashCode(onlyExplicitlyIncluded = true)</span>
+@EqualsAndHashCode(onlyExplicitlyIncluded = true)
 public class FetchJoinInformation {
 
 	@EqualsAndHashCode.Include
-<span class="nc" id="L36">	private final String property;</span>
+	private final String property;
 
 	@EqualsAndHashCode.Include
-<span class="nc" id="L39">	private final JoinType joinType;</span>
+	private final JoinType joinType;
 
 	/**
 	 * Constructor

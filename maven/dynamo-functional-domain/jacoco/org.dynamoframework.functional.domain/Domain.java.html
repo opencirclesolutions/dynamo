@@ -39,13 +39,13 @@ import java.util.Objects;
  * @author Patrick Deenen (patrick@opencircle.solutions)
  */
 @Getter
-<span class="pc" id="L42">@Setter</span>
+@Setter
 @Inheritance
 @DiscriminatorColumn(name = &quot;type&quot;)
 @Entity(name = &quot;domain&quot;)
-<span class="nc" id="L46">@ToString(onlyExplicitlyIncluded = true)</span>
+@ToString(onlyExplicitlyIncluded = true)
 @Model(displayProperty = &quot;name&quot;, sortOrder = &quot;name asc&quot;)
-<span class="fc" id="L48">@NoArgsConstructor(access = AccessLevel.PROTECTED)</span>
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public abstract class Domain extends AbstractEntity&lt;Integer&gt; {
 
 	public static final String ATTRIBUTE_NAME = &quot;name&quot;;
@@ -56,12 +56,12 @@ public abstract class Domain extends AbstractEntity&lt;Integer&gt; {
 
 	@Id
 	@ToString.Include
-<span class="fc" id="L59">	private Integer id;</span>
+	private Integer id;
 
 	@Attribute(visibleInForm = VisibilityType.HIDE, editable = EditableType.READ_ONLY,
 		visibleInGrid = VisibilityType.HIDE)
 	@Column(name = &quot;type&quot;, insertable = false, updatable = false)
-<span class="nc" id="L64">	private String type;</span>
+	private String type;
 
 	/**
 	 * By default, we only use &quot;name&quot; so the code is hidden
@@ -69,13 +69,13 @@ public abstract class Domain extends AbstractEntity&lt;Integer&gt; {
 	@Attribute(visibleInForm = VisibilityType.HIDE)
 	@Size(max = 5)
 	@ToString.Include
-<span class="nc" id="L72">	private String code;</span>
+	private String code;
 
 	@Size(max = 255)
 	@NotNull
 	@Attribute(maxLength = 255, searchable = SearchMode.ALWAYS)
 	@ToString.Include
-<span class="fc" id="L78">	private String name;</span>
+	private String name;
 
 <span class="fc" id="L80">	protected Domain(String code, String name) {</span>
 <span class="fc" id="L81">		this.code = code;</span>

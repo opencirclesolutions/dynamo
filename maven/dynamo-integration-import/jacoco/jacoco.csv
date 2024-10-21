@@ -5,6 +5,6 @@ Integration Import,org.dynamoframework.importer.impl,BaseTextImporter,11,103,7,1
 Integration Import,org.dynamoframework.importer.impl,BaseXlsImporter,141,419,36,72,33,93,28,44,0,18
 Integration Import,org.dynamoframework.importer.impl,BaseCsvImporter,8,45,0,0,2,8,0,3,0,3
 Integration Import,org.dynamoframework.importer.impl,XlsRowImportTemplate,2,178,4,12,1,39,4,6,0,2
-Integration Import,org.dynamoframework.importer.dto,AbstractDTO,0,10,0,0,0,3,0,3,0,3
+Integration Import,org.dynamoframework.importer.dto,AbstractDTO,0,3,0,0,0,1,0,1,0,1
 Integration Import,org.dynamoframework.importer.template,DefaultTextImportTemplate,25,0,0,0,7,0,4,0,4,0
 Integration Import,org.dynamoframework.importer.template,TextImportTemplate,4,143,3,11,1,28,3,8,0,4

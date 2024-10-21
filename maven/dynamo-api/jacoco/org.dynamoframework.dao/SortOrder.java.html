@@ -33,17 +33,17 @@ import java.io.Serializable;
  * @author bas.rutten
  */
 @Getter
-<span class="pc bpc" id="L36" title="13 of 22 branches missed.">@EqualsAndHashCode</span>
-<span class="nc" id="L37">@ToString</span>
+@EqualsAndHashCode
+@ToString
 public class SortOrder implements Serializable {
 
 	private static final long serialVersionUID = -4702369564151453555L;
 
 <span class="fc" id="L42">	private static final Direction DEFAULT_DIRECTION = Direction.ASC;</span>
 
-<span class="fc" id="L44">	private final Direction direction;</span>
+	private final Direction direction;
 
-<span class="fc" id="L46">	private final String property;</span>
+	private final String property;
 
 <span class="fc" id="L48">	public enum Direction {</span>
 

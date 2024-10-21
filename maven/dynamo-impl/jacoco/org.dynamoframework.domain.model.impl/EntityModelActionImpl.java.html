@@ -23,61 +23,60 @@
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.dynamoframework.domain.model.AttributeModel;
-import org.dynamoframework.domain.model.EntityModel;
-import org.dynamoframework.domain.model.EntityModelAction;
-import org.dynamoframework.domain.model.EntityModelActionType;
+import org.dynamoframework.domain.model.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Getter
-<span class="pc" id="L35">@Setter</span>
-<span class="fc" id="L36">public class EntityModelActionImpl implements EntityModelAction {</span>
+@Setter
+<span class="fc" id="L33">public class EntityModelActionImpl implements EntityModelAction {</span>
 
-<span class="fc" id="L38">	private String id;</span>
+	private String id;
 
-<span class="nc" id="L40">	private String methodName;</span>
+	private String methodName;
 
-<span class="fc" id="L42">	@ToString.Exclude</span>
-<span class="nc" id="L43">	private final List&lt;AttributeModel&gt; attributeModels = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L39">	@ToString.Exclude</span>
+	private final List&lt;AttributeModel&gt; attributeModels = new ArrayList&lt;&gt;();
 
-<span class="nc" id="L45">	private String defaultDisplayName;</span>
+	private String defaultDisplayName;
 
-<span class="nc" id="L47">	private Class&lt;?&gt; entityClass;</span>
+	private Class&lt;?&gt; entityClass;
 
-<span class="fc" id="L49">	private String reference;</span>
+	private String reference;
 
-<span class="fc" id="L51">	private EntityModel&lt;?&gt; entityModel;</span>
+	private EntityModel&lt;?&gt; entityModel;
 
-<span class="fc" id="L53">	private EntityModelActionType type;</span>
+	private EntityModelActionType type;
 
-<span class="fc" id="L55">	private String icon;</span>
+	private String icon;
 
-<span class="fc" id="L57">	private List&lt;String&gt; roles;</span>
+	private List&lt;String&gt; roles;
 
-<span class="pc" id="L59">	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
+<span class="fc" id="L56">	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();</span>
+
+<span class="fc" id="L58">	private ActionFormMode formMode= ActionFormMode.VIEW;</span>
 
 	@Override
 	public String getDisplayName(Locale locale) {
-<span class="nc" id="L63">		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);</span>
+<span class="nc" id="L62">		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);</span>
 	}
 
 	private String lookup(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key, String fallBack) {
 		// look up in message bundle and add to cache
-<span class="nc bnc" id="L68" title="All 2 branches missed.">		if (!source.containsKey(locale.toString())) {</span>
+<span class="nc bnc" id="L67" title="All 2 branches missed.">		if (!source.containsKey(locale.toString())) {</span>
 			try {
-<span class="nc" id="L70">				ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
-<span class="nc" id="L71">				String str = rb.getString(id + &quot;.&quot; + key);</span>
-<span class="nc" id="L72">				source.put(locale.toString(), Optional.of(str));</span>
-<span class="nc" id="L73">			} catch (MissingResourceException ex) {</span>
-<span class="nc" id="L74">				source.put(locale.toString(), Optional.empty());</span>
-<span class="nc" id="L75">			}</span>
+<span class="nc" id="L69">				ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
+<span class="nc" id="L70">				String str = rb.getString(id + &quot;.&quot; + key);</span>
+<span class="nc" id="L71">				source.put(locale.toString(), Optional.of(str));</span>
+<span class="nc" id="L72">			} catch (MissingResourceException ex) {</span>
+<span class="nc" id="L73">				source.put(locale.toString(), Optional.empty());</span>
+<span class="nc" id="L74">			}</span>
 		}
 
 		// look up or return fallback value
-<span class="nc" id="L79">		Optional&lt;String&gt; optional = source.get(locale.toString());</span>
-<span class="nc" id="L80">		return optional.orElse(fallBack);</span>
+<span class="nc" id="L78">		Optional&lt;String&gt; optional = source.get(locale.toString());</span>
+<span class="nc" id="L79">		return optional.orElse(fallBack);</span>
 	}
 }
 
