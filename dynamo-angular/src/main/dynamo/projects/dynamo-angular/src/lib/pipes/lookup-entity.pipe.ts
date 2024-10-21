@@ -18,37 +18,29 @@
  * #L%
  */
 import { Pipe, PipeTransform } from '@angular/core';
+import { Observable, map, of } from 'rxjs';
+import { CRUDService } from 'dynamo/model';
 
 /**
- * Pipe for translation a boolean value to its string representation
+ * Pipe for translating an entity to its display property value
  */
 @Pipe({
-  name: 'translateBoolean',
+  name: 'lookupEntity',
 })
-export class TranslateBooleanPipe implements PipeTransform {
-  constructor() {}
+export class LookupEntityPipe implements PipeTransform {
+  constructor(private service: CRUDService) { }
 
-  transform(value: boolean, locale: string, trueRepresentations: {[key: string]: string},
-      falseRepresentations: {[key: string]: string}): string | undefined {
-
-    if (value === null || value === undefined) {
-      return '';
+  transform(
+    obj: any,
+    entityName: string,
+    displayProperty: string
+  ): Observable<string | undefined> {
+    if (!obj) {
+      return of('');
     }
 
-    if (value === true) {
-      if (trueRepresentations[locale]) {
-        return trueRepresentations[locale]
-      }
-      return 'true'
-    }
-
-    if (value === false) {
-      if (falseRepresentations[locale]) {
-        return falseRepresentations[locale]
-      }
-      return 'false'
-    }
-    return 'fallback';
+    return this.service
+      .get(entityName, obj['id'])
+      .pipe(map((entity) => entity[displayProperty]));
   }
-
 }

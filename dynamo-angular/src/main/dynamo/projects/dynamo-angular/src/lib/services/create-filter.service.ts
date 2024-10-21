@@ -44,8 +44,8 @@ export class CreateFilterService {
       if (
         !am.ignoreInSearchFilter &&
         (searchObject[am.name] ||
-        searchObject[this.getFromName(am)] ||
-        searchObject[this.getToName(am)])
+          searchObject[this.getFromName(am)] ||
+          searchObject[this.getToName(am)])
       ) {
         if (isString(am)) {
           let filter = createEqualsFilter(am.name, searchObject[am.name]);
@@ -119,7 +119,7 @@ export class CreateFilterService {
         } else if (isTime(am)) {
           this.createTimeFilter(searchObject, am, filters);
         } else if (isElementCollection(am)) {
-          let values =  searchObject[am.name];
+          let values = searchObject[am.name];
           filters.push(createElementCollectionFilter(am, values));
         }
       }

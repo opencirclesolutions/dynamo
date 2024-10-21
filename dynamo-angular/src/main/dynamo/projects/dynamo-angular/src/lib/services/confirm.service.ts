@@ -38,7 +38,7 @@ export class ConfirmService {
       acceptButtonStyleClass: 'p-button-success',
       acceptLabel: this.translate.instant('yes'),
       accept: () => func(),
-      reject: () => {},
+      reject: () => { },
     });
   }
 }

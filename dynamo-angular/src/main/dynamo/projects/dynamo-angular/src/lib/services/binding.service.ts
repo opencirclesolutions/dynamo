@@ -18,7 +18,6 @@
  * #L%
  */
 import { Injectable } from '@angular/core';
-import { AttributeModelResponse } from 'dynamo/model';
 import { AbstractControl } from '@angular/forms';
 import {
   isBoolean,
@@ -44,10 +43,9 @@ import {
   getNestedValue,
 } from '../functions/functions';
 
-/**
- *
- */
-@Injectable()
+@Injectable({
+  providedIn: 'root'
+})
 export class BindingService {
   isDate = isDate;
   isBoolean = isBoolean;
@@ -66,7 +64,7 @@ export class BindingService {
   mustFetchListValues = mustFetchListValues;
   isElementCollection = isElementCollection;
 
-  constructor() {}
+  constructor() { }
 
   /**
    * Binds a value from an entity to a field

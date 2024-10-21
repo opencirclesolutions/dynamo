@@ -19,23 +19,24 @@
  */
 import { Injectable } from '@angular/core';
 
-/**
- * A service for passing
- */
-@Injectable(
-)
-export class HiddenFieldService {
+@Injectable({
+  providedIn: 'root'
+})
+export class SearchFormStateService {
 
-  private fieldValues: Map<string,any> = new Map<string,any>();
+  // map for keeping track of uploaded files
+  searchFormStateMap: Map<string, any> = new Map<
+    string,
+    any
+  >();
 
   constructor() { }
 
-  setFieldValue(attribute: string, value?: any) {
-    this.fieldValues.set(attribute, value);
+  public storeState(entityModel: string, searchObject: any): void {
+    this.searchFormStateMap.set(entityModel, searchObject)
   }
 
-  getFieldValues(): Map<string,any> {
-    return this.fieldValues
+  public retrieveState(entityModel: string): any {
+    return this.searchFormStateMap.get(entityModel)
   }
-
 }

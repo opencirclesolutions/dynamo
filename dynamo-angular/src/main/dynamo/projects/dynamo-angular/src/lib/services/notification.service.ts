@@ -31,7 +31,7 @@ export class NotificationService {
   constructor(
     private messageService: MessageService,
     private translate: TranslateService
-  ) {}
+  ) { }
 
   public info(message: string, sticky: boolean = false) {
     this.addMessage('info', sticky, message);

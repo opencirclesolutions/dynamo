@@ -17,27 +17,25 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable } from '@angular/core';
-import { EntityModelResponse } from 'dynamo/model';
+import { Directive, Input, OnInit } from "@angular/core";
+import { HiddenFieldService } from "../services/hidden-field.service";
 
-@Injectable({
-  providedIn: 'root'
+/**
+ * A directive that can be used to provide a hidden field value to a form. Can be used to e.g.
+ * create entities that depend on a master entity
+ */
+@Directive({
+  selector: 'ng-template[dHiddenField]',
+  exportAs: 'dHiddenField',
 })
-export class SearchFormStateService {
+export class HiddenFieldDirective implements OnInit {
+  @Input({ required: true }) attributeName!: string;
+  @Input({ required: true }) value!: any;
 
-  // map for keeping track of uploaded files
-  searchFormStateMap: Map<string, any> = new Map<
-  string,
-    any
-  >();
-
-  constructor() { }
-
-  public storeState(entityModel: string, searchObject: any): void {
-    this.searchFormStateMap.set(entityModel, searchObject)
+  constructor(private hiddenFieldService: HiddenFieldService) {
   }
 
-  public retrieveState(entityModel: string): any {
-    return this.searchFormStateMap.get(entityModel)
+  ngOnInit(): void {
+    this.hiddenFieldService.setFieldValue(this.attributeName, this.value);
   }
 }

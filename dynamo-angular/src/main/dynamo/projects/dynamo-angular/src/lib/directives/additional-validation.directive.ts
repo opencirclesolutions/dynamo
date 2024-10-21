@@ -17,30 +17,20 @@
  * limitations under the License.
  * #L%
  */
-import { Pipe, PipeTransform } from '@angular/core';
-import { Observable, map, of } from 'rxjs';
-import { CRUDService } from 'dynamo/model';
+import { Directive, Input, OnInit } from "@angular/core";
+import { FormGroup, ValidatorFn } from "@angular/forms";
 
-/**
- * Pipe for translating an entity to its display property value
- */
-@Pipe({
-  name: 'lookupEntity',
+@Directive({
+  selector: 'ng-template[dAdditionalValidators]',
+  exportAs: 'dAdditionalValidators',
 })
-export class LookupEntityPipe implements PipeTransform {
-  constructor(private service: CRUDService) {}
+export class AdditionalValidatorsDirective implements OnInit {
+  @Input({ required: true }) attributeName: string = '';
+  @Input({ required: true }) validators: ValidatorFn[] = [];
+  @Input({ required: false }) formGroup?: FormGroup | undefined;
 
-  transform(
-    obj: any,
-    entityName: string,
-    displayProperty: string
-  ): Observable<string | undefined> {
-    if (!obj) {
-      return of('');
-    }
-
-    return this.service
-      .get(entityName, obj['id'])
-      .pipe(map((entity) => entity[displayProperty]));
+  ngOnInit(): void {
+    let control = this.formGroup?.get(this.attributeName);
+    control?.addValidators(this.validators);
   }
 }

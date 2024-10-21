@@ -7,7 +7,7 @@
       "projectType": "library",
       "root": "projects/dynamo-angular",
       "sourceRoot": "projects/dynamo-angular/src",
-      "prefix": "lib",
+      "prefix": "d",
       "architect": {
         "build": {
           "builder": "@angular-devkit/build-angular:ng-packagr",

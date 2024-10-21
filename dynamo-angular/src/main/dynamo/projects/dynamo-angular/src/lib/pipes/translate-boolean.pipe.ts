@@ -18,34 +18,37 @@
  * #L%
  */
 import { Pipe, PipeTransform } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { truncateDescriptions } from '../functions/entitymodel-functions';
-
-const MAX_ITEMS = 3;
 
 /**
- * Pipe for translating an entity to its display property value
+ * Pipe for translation a boolean value to its string representation
  */
 @Pipe({
-  name: 'translateEntity',
+  name: 'translateBoolean',
 })
-export class TranslateEntityPipe implements PipeTransform {
+export class TranslateBooleanPipe implements PipeTransform {
+  constructor() { }
 
-  constructor(private translate: TranslateService) {
+  transform(value: boolean, locale: string, trueRepresentations: { [key: string]: string },
+    falseRepresentations: { [key: string]: string }): string | undefined {
 
-  }
-
-  transform(obj: any, displayProperty: string): string {
-
-    if (!obj) {
+    if (value === null || value === undefined) {
       return '';
     }
 
-    if (Array.isArray(obj)) {
-      return truncateDescriptions(obj,displayProperty, this.translate)
+    if (value === true) {
+      if (trueRepresentations[locale]) {
+        return trueRepresentations[locale]
+      }
+      return 'true'
     }
 
-    return obj[displayProperty] || this.translate.instant('display_unknown')
+    if (value === false) {
+      if (falseRepresentations[locale]) {
+        return falseRepresentations[locale]
+      }
+      return 'false'
+    }
+    return 'fallback';
   }
 
 }

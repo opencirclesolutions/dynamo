@@ -25,7 +25,6 @@ import {
 } from 'angular-oauth2-oidc';
 import jwtDecode from 'jwt-decode';
 import { AccessToken } from '../model/access-token';
-import { environment } from 'src/environments/environment';
 
 @Injectable({
   providedIn: 'root',
