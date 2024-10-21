@@ -7,8 +7,8 @@
 :source-highlighter: rouge
 :!sectnums:
 :text-align: justify
-:pdf-fontsdir: ../../dynamo-documentation/fonts
-:pdf-themesdir: ../../dynamo-documentation/themes
+:pdf-fontsdir: ./fonts
+:pdf-themesdir: ./themes
 :pdf-theme: ocs
 :stylesheet: ./css/ocs.css
 

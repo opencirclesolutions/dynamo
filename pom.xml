@@ -588,10 +588,12 @@
                         <reports>
                             <report>index</report>
                             <report>dependencies</report>
+                            <report>dependency-info</report>
                             <report>summary</report>
                             <report>team</report>
                             <report>issue-management</report>
                             <report>licenses</report>
+                            <report>issue-management </report>
                             <report>scm</report>
                         </reports>
                     </reportSet>
@@ -685,6 +687,7 @@
                         <executions>
                             <execution>
                                 <id>default-cli</id>
+                                <phase>deploy</phase>
                                 <configuration>
                                     <owner>opencirclesolutions</owner>
                                     <repository>dynamo</repository>
@@ -692,6 +695,7 @@
                                     <tagName>dynamoframework-${project.version}</tagName>
                                     <name>v${project.version}</name>
                                     <generateReleaseNotes>true</generateReleaseNotes>
+                                    <body>${project.description}</body>
                                 </configuration>
                             </execution>
                         </executions>

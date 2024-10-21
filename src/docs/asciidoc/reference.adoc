@@ -14,8 +14,8 @@ endif::[]
 :text-align: justify
 :title-logo-image: image:media/logo-dynamo.png[Dynamo]
 :keywords: Dynamo, {asciidoc-organization-name}, Web Application Accelerator Framework, Reference
-:pdf-fontsdir: ./fonts
-:pdf-themesdir: ./themes
+:pdf-fontsdir: ./src/docs/asciidoc/fonts
+:pdf-themesdir: ./src/docs/asciidoc/themes
 :pdf-theme: ocs
 :stylesheet: ./css/ocs.css
 
