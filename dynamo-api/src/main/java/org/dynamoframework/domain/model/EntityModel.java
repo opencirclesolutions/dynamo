@@ -329,6 +329,11 @@ public interface EntityModel<T> {
 	String SEARCH_ALLOWED = "searchAllowed";
 
 	/**
+	 * Whether to display details paginator
+	 */
+	String SHOW_DETAILS_PAGINATOR = "showDetailsPaginator";
+
+	/**
 	 * Indicates that quick add functionality is enabled
 	 */
 	String QUICK_ADD_ALLOWED = "quickAddAllowed";
@@ -481,6 +486,8 @@ public interface EntityModel<T> {
 	String ACTION_ROLES = "actionRoles";
 
 	String ICON = "icon";
+
+	String FORM_MODE = "formMode";
 
 	/**
 	 * Adds an attribute group

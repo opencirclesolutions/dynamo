@@ -25,6 +25,7 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.extern.jackson.Jacksonized;
+import org.dynamoframework.domain.model.ActionFormMode;
 import org.dynamoframework.domain.model.EntityModelActionType;
 
 import java.util.List;
@@ -51,4 +52,7 @@ public class EntityModelActionResponse {
 	private String icon;
 
 	private List<String> roles;
+
+	@NotNull
+	private ActionFormMode formMode;
 }

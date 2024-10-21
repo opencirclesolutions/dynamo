@@ -10,4 +10,4 @@ Developed, maintained and sponsored by:
 
 See the [Dynamo Framework website](https://www.dynamoframework.org) for more information.
 
-_Copyright © 2014 - 2024 Open Circle Solutions BV._
+_Copyright © 2014 - 2024 Open Circle Solutions._

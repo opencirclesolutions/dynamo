@@ -227,6 +227,7 @@ public class EntityModelMapper {
 			.type(action.getType())
 			.icon(action.getIcon())
 			.roles(new ArrayList<>(action.getRoles()))
+			.formMode(action.getFormMode())
 			.build();
 	}
 }

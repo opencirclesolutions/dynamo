@@ -20,7 +20,9 @@ package org.dynamoframework.domain.model;
  * #L%
  */
 
-public enum GroupTogetherMode {
-
-	PERCENTAGE, PIXEL
+/**
+ * Used to indicate whether a model action is visible in view mode, edit mode, or both
+ */
+public enum ActionFormMode {
+	VIEW, EDIT, BOTH;
 }

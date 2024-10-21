@@ -366,4 +366,9 @@ public class AttributeModelResponse {
 	 */
 	private QueryTypeExternal lookupQueryType;
 
+	/**
+	 * Whether to display a paginator in details mode
+	 */
+	private boolean showDetailsPaginator;
+
 }

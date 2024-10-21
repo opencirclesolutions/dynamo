@@ -23,10 +23,7 @@ package org.dynamoframework.domain.model.impl;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.ToString;
-import org.dynamoframework.domain.model.AttributeModel;
-import org.dynamoframework.domain.model.EntityModel;
-import org.dynamoframework.domain.model.EntityModelAction;
-import org.dynamoframework.domain.model.EntityModelActionType;
+import org.dynamoframework.domain.model.*;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -57,6 +54,8 @@ public class EntityModelActionImpl implements EntityModelAction {
 	private List<String> roles;
 
 	private Map<String, Optional<String>> displayNames = new ConcurrentHashMap<>();
+
+	private ActionFormMode formMode= ActionFormMode.VIEW;
 
 	@Override
 	public String getDisplayName(Locale locale) {
