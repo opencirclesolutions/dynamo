@@ -27,6 +27,7 @@ import { CRUDServiceInterface } from '../interfaces/service/cRUD.service';
  */
 @Pipe({
   name: 'lookupEntity',
+  standalone: true,
 })
 export class LookupEntityPipe implements PipeTransform {
   service: CRUDServiceInterface

@@ -32,6 +32,7 @@ interface InputContext {
 @Directive({
   selector: 'ng-template[dOverrideField]',
   exportAs: 'dOverrideField',
+  standalone: true,
 })
 export class OverrideFieldDirective {
   @Input({ required: true }) attributeName: string = '';

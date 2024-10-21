@@ -23,6 +23,7 @@ import { FormGroup, ValidatorFn } from "@angular/forms";
 @Directive({
   selector: 'ng-template[dAdditionalValidators]',
   exportAs: 'dAdditionalValidators',
+  standalone: true,
 })
 export class AdditionalValidatorsDirective implements OnInit {
   @Input({ required: true }) attributeName: string = '';

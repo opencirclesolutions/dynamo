@@ -27,7 +27,7 @@ import { AttributeModelResponse } from '../interfaces/model/attributeModelRespon
 import { TimeRangeFilterModel } from '../interfaces/model/timeRangeFilterModel';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CreateFilterService {
 

@@ -45,7 +45,7 @@ import {
 import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class BindingService {
   isDate = isDate;

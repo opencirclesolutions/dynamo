@@ -26,6 +26,7 @@ import { truncateDescriptions } from '../functions/entitymodel-functions';
  */
 @Pipe({
   name: 'translateEntity',
+  standalone: true,
 })
 export class TranslateEntityPipe implements PipeTransform {
 

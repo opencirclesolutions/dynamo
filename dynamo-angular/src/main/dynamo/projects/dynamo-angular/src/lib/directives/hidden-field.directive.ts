@@ -27,6 +27,7 @@ import { HiddenFieldService } from "../services/hidden-field.service";
 @Directive({
   selector: 'ng-template[dHiddenField]',
   exportAs: 'dHiddenField',
+  standalone: true,
 })
 export class HiddenFieldDirective implements OnInit {
   @Input({ required: true }) attributeName!: string;

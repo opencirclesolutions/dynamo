@@ -21,6 +21,7 @@ import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
   name: 'translateEnum',
+  standalone: true,
 })
 export class TranslateEnumPipe implements PipeTransform {
 
