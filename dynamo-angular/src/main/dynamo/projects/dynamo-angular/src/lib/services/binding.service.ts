@@ -65,8 +65,6 @@ export class BindingService {
   mustFetchListValues = mustFetchListValues;
   isElementCollection = isElementCollection;
 
-  constructor() { }
-
   /**
    * Binds a value from an entity to a field
    * @param am the attribute model

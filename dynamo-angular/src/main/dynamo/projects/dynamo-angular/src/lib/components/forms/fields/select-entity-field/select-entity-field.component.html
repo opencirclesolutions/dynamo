@@ -1,0 +1,118 @@
+<!--
+  #%L
+  Dynamo Framework
+  %%
+  Copyright (C) 2014 - 2024 Open Circle Solutions
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<ng-container [formGroup]="formGroup!">
+<div class="row">
+	<div [class]="fullWidth || !showValidationErrors ? 'col-12' : colClass">
+		<div class="row">
+			<div [class]="getFieldColClass()">
+				<p-dropdown
+					[id]="am.name"
+					[name]="am.name"
+					[options]="options"
+					optionLabel="name"
+					[filter]="true"
+					[filterBy]="am.displayPropertyName"
+					[showClear]="true"
+					[formControlName]="am.name"
+					[placeholder]="am.placeholders[locale]"
+					[pTooltip]="am.descriptions[locale]"
+					*ngIf="useComboField(am)"
+					appendTo="body"></p-dropdown>
+			</div>
+			<div class="col-2">
+				<button
+					class="btn btn-primary"
+					type="button"
+					(click)="showQuickAddDialog()"
+					*ngIf="isQuickAddButtonVisible() && useComboField(am)">
+					<span class="pi pi-plus"></span>
+				</button>
+			</div>
+		</div>
+
+		<!-- Multi-select in case of multiple search mode (note that no quick add button is needed here)-->
+		<p-multiSelect
+			[id]="am.name"
+			[name]="am.name"
+			[options]="options"
+			optionLabel="name"
+			[filter]="true"
+			[filterBy]="am.displayPropertyName"
+			[formControlName]="am.name"
+			[showClear]="true"
+			*ngIf="useMultiSelect(am)"
+			[placeholder]="am.placeholders[locale]"
+			[pTooltip]="am.descriptions[locale]"></p-multiSelect>
+
+		<div class="row">
+			<div [class]="getFieldColClass()">
+				<p-autoComplete
+					[id]="am.name"
+					[name]="am.name"
+					[formControlName]="am.name"
+					[suggestions]="(filteredOptions$ | async) || []"
+					(completeMethod)="filter($event)"
+					field="name"
+					[forceSelection]="true"
+					*ngIf="useAutocompleteField(am)"
+					[showClear]="true"
+					[placeholder]="am.placeholders[locale]"
+					[pTooltip]="am.descriptions[locale]"
+					appendTo="body"></p-autoComplete>
+			</div>
+			<div class="col-1">
+				<button
+					class="btn btn-primary"
+					type="button"
+					(click)="showQuickAddDialog()"
+					*ngIf="isQuickAddButtonVisible() && useAutocompleteField(am)">
+					<span class="pi pi-plus"></span>
+				</button>
+			</div>
+		</div>
+
+		<d-lookup-field
+			[id]="am.name"
+			[entityName]="am.lookupEntityName!"
+			[locale]="locale"
+			[am]="am"
+			[displayPropertyName]="am.displayPropertyName!"
+			[formControlName]="am.name"
+			[multiSelect]="isMultiSelectLookup(am)"
+			*ngIf="useLookupField(am)"
+			[rowClass]="nested ? '' : 'row'"
+			[entityModelReference]="am.lookupEntityReference"
+			[defaultFilters]="defaultFilters"
+			[showQuickAddButton]="showQuickAddButton"
+			[queryType]="mapQueryType(am.lookupQueryType!)"
+			[pTooltip]="am.descriptions[locale]"></d-lookup-field>
+
+		<ng-template #popupDialogContainerRef></ng-template>
+	</div>
+	<div
+		[class]="fullWidth ? 'col-12' : validationColClass"
+		*ngIf="showValidationErrors">
+		<p-message
+			severity="error"
+			*ngIf="getErrorString(am.name)"
+			[text]="getErrorString(am.name)"></p-message>
+	</div>
+</div>
+</ng-container>

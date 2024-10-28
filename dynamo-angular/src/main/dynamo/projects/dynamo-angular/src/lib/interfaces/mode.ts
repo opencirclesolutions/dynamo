@@ -22,7 +22,7 @@ export enum AttributeGroupMode {
 }
 
 export enum PdfViewerMode {
-  MODEL, INTERNAL_URL, EXTERNAL_URL
+  MODEL, EXTERNAL_URL
 }
 
 export enum PopupButtonMode {

@@ -27,10 +27,8 @@ import { TimeRangeFilterModel } from './timeRangeFilterModel';
 import { LocalDateTimeRangeFilterModel } from './localDateTimeRangeFilterModel';
 import { EqualsFilterModel } from './equalsFilterModel';
 import { NotFilterModel } from './notFilterModel';
-import { FilterModel } from './filterModel';
+import { NullFilterModel } from './nullFilterModel';
 
-export interface NullFilterModel extends FilterModel {
-}
 
 /**
  * @type SearchModelFiltersInner

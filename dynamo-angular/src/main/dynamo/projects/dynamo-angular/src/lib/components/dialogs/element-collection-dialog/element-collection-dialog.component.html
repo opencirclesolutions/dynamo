@@ -1,0 +1,102 @@
+<!--
+  #%L
+  Dynamo Framework
+  %%
+  Copyright (C) 2014 - 2024 Open Circle Solutions
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<div class="main">
+	<div [class]="rowClass">
+		<div
+			class="col-lg-9 col-md-9 col-sm-6 pt-2"
+			*ngIf="getSelectedValueString()">{{ getSelectedValueString() }}</div>
+		<div
+			class="col-lg-9 col-md-9 col-sm-6 pt-2"
+			*ngIf="!getSelectedValueString()">
+			<i>{{ "nothing_selected" | translate }}</i>
+		</div>
+		<div class="col-lg-2 col-md-2 col-sm-12 float-right">
+			<div
+				class="btn-group"
+				role="group">
+				<button
+					id="clearButton"
+					(click)="clear()"
+					class="btn btn-danger"
+					[disabled]="
+            (selectedValues && selectedValues.length == 0) || disabled
+          ">
+					<span class="pi pi-times"></span>
+				</button>
+				<button
+					id="addButton"
+					[disabled]="disabled"
+					class="btn btn-primary"
+					(click)="showDialog()">
+					<span class="pi pi-plus"></span>
+				</button>
+			</div>
+		</div>
+	</div>
+</div>
+
+<p-dialog
+	[showHeader]="false"
+	[(visible)]="dialogVisible"
+	[style]="{ width: '30vw' }"
+	[modal]="true">
+<p></p>
+<form
+	*ngIf="dialogForm"
+	[formGroup]="dialogForm">
+	<p-inputNumber
+		*ngIf="elementsNumeric()"
+		[formControlName]="am.name"
+		[useGrouping]="false"
+		[step]="am.numberFieldStep!"
+		[placeholder]="am.placeholders[locale]!"> </p-inputNumber>
+	<d-string-field
+		*ngIf="elementsString()"
+		[am]="am"
+		[formGroup]="dialogForm"
+		[locale]="locale"
+		[allowTextAreas]="false"
+		[showValidationErrors]="false"
+		ngDefaultControl>
+	</d-string-field>
+	<p-message
+		severity="error"
+		*ngIf="getErrorString(am.name)"
+		[text]="getErrorString(am.name)"></p-message>
+</form>
+
+<div
+	class="btn-group"
+	role="group">
+	<button
+		type="button"
+		class="btn btn-danger m-1"
+		(click)="cancel()">
+		<span class="pi pi-times"></span> {{ "cancel" | translate }}
+	</button>
+	<button
+		type="button"
+		class="btn btn-success m-1"
+		(click)="selectAndClose()"
+		[disabled]="!dialogForm?.valid">
+		<span class="pi pi-check"></span> {{ "ok" | translate }}
+	</button>
+</div>
+</p-dialog>

@@ -20,7 +20,7 @@
 import { Inject, Pipe, PipeTransform } from '@angular/core';
 import { Observable, map, of } from 'rxjs';
 import { DynamoConfig } from '../interfaces/dynamo-config';
-import { CRUDServiceInterface } from '../interfaces/service/cRUD.service';
+import { CRUDServiceInterface } from '../interfaces/service/crud.service';
 
 /**
  * Pipe for translating an entity to its display property value

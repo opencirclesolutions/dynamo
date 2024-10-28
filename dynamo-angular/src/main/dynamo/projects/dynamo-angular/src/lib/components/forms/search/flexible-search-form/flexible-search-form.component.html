@@ -1,0 +1,163 @@
+<!--
+  #%L
+  Dynamo Framework
+  %%
+  Copyright (C) 2014 - 2024 Open Circle Solutions
+  %%
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+
+       http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+  #L%
+  -->
+<form
+	*ngIf="entityModel && mainForm"
+	(ng-submit)="search()"
+	[formGroup]="mainForm"
+	ngClass="nested">
+	<p-panel
+		header="{{ 'search' | translate }}"
+		[toggleable]="true">
+	<div
+		class="row"
+		*ngFor="let row of searchRows; index as i">
+		<div class="col-1">
+			<button
+				type="button"
+				class="btn btn-danger m-1"
+				[disabled]="loading || row.required"
+				pTooltip=" {{ 'delete' | translate }}"
+				(click)="deleteRow(i)">
+				<span class="pi pi-trash"></span>
+			</button>
+		</div>
+		<!-- Dropdown for selecting attribute to search on -->
+		<div class="col-4">
+			<p-dropdown
+				[options]="searchableAttributeNames"
+				optionLabel="name"
+				[showClear]="true"
+				appendTo="body"
+				[formGroup]="getFormGroup(i)"
+				[formControl]="getFormControl('attribute', i)"
+				[filter]="true"
+				filterBy="name"
+				*ngIf="getFormGroup(i)"></p-dropdown>
+		</div>
+		<!-- Type-specific fields -->
+		<div
+			class="col-6"
+			*ngIf="row.am">
+			<ng-container
+				[ngTemplateOutlet]="
+            getTemplateForField(row.am!.name) || defaultFieldTemplate
+          "
+				[ngTemplateOutletContext]="{
+            $implicit: row.am!,
+            formGroup: getFormGroup(i)
+          }">
+			</ng-container>
+		</div>
+	</div>
+	</p-panel>
+	<div
+		class="btn-group mt-2"
+		role="group">
+		<button
+			type="button"
+			class="btn btn-primary m-1"
+			[disabled]="loading"
+			(click)="addRow(false)">
+			<span class="pi pi-plus"></span> {{ "add_filter" | translate }}
+		</button>
+		<button
+			type="button"
+			class="btn btn-primary m-1"
+			[disabled]="loading"
+			(click)="search()">
+			<span class="pi pi-search"></span> {{ "search" | translate }}
+		</button>
+		<button
+			type="button"
+			class="btn btn-primary m-1"
+			[disabled]="loading"
+			(click)="clear()">
+			<span class="pi pi-eraser"></span> {{ "clear" | translate }}
+		</button>
+	</div>
+</form>
+
+<ng-template
+	#defaultFieldTemplate
+	let-am
+	let-formGroup="formGroup"> <!-- String --> <ng-container [formGroup]="formGroup"> <ng-container
+	*ngIf="isString(am)"> <d-string-field
+	[am]="am"
+	[formGroup]="formGroup"
+	[locale]="locale"
+	classes="p-inputtext-sm form-control"
+	[allowTextAreas]="false"
+	[showValidationErrors]="false"></d-string-field> </ng-container> <!-- Master --> <ng-container *ngIf="isMaster(am)"> <d-select-entity-field
+	[am]="am"
+	[options]="lookupEntities(am.lookupEntityName!)"
+	[locale]="locale"
+	[formGroup]="formGroup"
+	[searchMode]="true"
+	[entityModelReference]="am.lookupEntityReference"
+	[defaultFilters]="getFieldFilters(am)"> </d-select-entity-field> </ng-container> <!-- Free detail --> <ng-container
+	*ngIf="isFreeDetail(am)"> <d-select-many-field
+	[am]="am"
+	[options]="lookupEntities(am.lookupEntityName!)"
+	[locale]="locale"
+	[formGroup]="formGroup"
+	[searchMode]="true"
+	[entityModelReference]="am.lookupEntityReference"
+	[defaultFilters]="getFieldFilters(am)"> </d-select-many-field> </ng-container> <!-- Enumeration --> <ng-container *ngIf="isEnum(am)">
+<d-enum-field
+	[am]="am"
+	[locale]="locale"
+	[showValidationErrors]="false"
+	[options]="getEnumValues(am.name)"
+	[formGroup]="formGroup"
+	[searchMode]="true"></d-enum-field> </ng-container> <!-- Boolean --> <ng-container
+	*ngIf="isBoolean(am)"
+	[formGroup]="formGroup"> <p-triStateCheckbox
+	[id]="am.name"
+	[name]="am.name"
+	[formControlName]="am.name"
+	[pTooltip]="am.descriptions[locale]"> </p-triStateCheckbox> </ng-container> <!-- Date --> <ng-container *ngIf="isDate(am)">
+<d-date-field
+	[am]="am"
+	[locale]="locale"
+	[searchMode]="true"
+	[formGroup]="formGroup"></d-date-field> </ng-container> <!-- Time --> <ng-container *ngIf="isTime(am)"> <d-time-field
+	[am]="am"
+	[locale]="locale"
+	[searchMode]="true"
+	[formGroup]="formGroup"></d-time-field> </ng-container> <!-- Timestamps --> <ng-container *ngIf="isInstant(am) || isLocalDateTime(am)">
+<d-timestamp-field
+	[am]="am"
+	[locale]="locale"
+	[searchMode]="true"
+	[formGroup]="formGroup"></d-timestamp-field> </ng-container> <!-- Integral numbers --> <ng-container *ngIf="isIntegral(am)">
+<d-number-field
+	[am]="am"
+	[locale]="locale"
+	[searchMode]="true"
+	[formGroup]="formGroup"></d-number-field> </ng-container> <!-- Decimal numbers --> <ng-container *ngIf="isDecimal(am)">
+<d-decimal-field
+	[am]="am"
+	[locale]="locale"
+	[searchMode]="true"
+	[formGroup]="formGroup"></d-decimal-field> </ng-container> <ng-container *ngIf="isElementCollection(am)"> <d-element-collection-field
+	[am]="am"
+	[locale]="locale"
+	[formGroup]="formGroup"
+	[searchMode]="true"> </d-element-collection-field> </ng-container> </ng-container> </ng-template>

@@ -81,6 +81,7 @@ export interface AttributeModelResponse {
   ignoreInSearchFilter?: boolean;
   trimSpaces?: boolean;
   lookupQueryType?: AttributeModelResponse.LookupQueryTypeEnum;
+  showDetailsPaginator?: boolean;
 }
 export namespace AttributeModelResponse {
   export type DateTypeEnum = 'INHERIT' | 'LOCAL_DATE_TIME' | 'INSTANT' | 'DATE' | 'TIME';

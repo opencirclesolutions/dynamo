@@ -20,7 +20,11 @@
 
 import { Observable } from "rxjs";
 import { StatusServiceInterface } from "./service/status.service";
-import { CRUDServiceInterface } from "./service/cRUD.service";
+import { CRUDServiceInterface } from "./service/crud.service";
+import { FileServiceInterface } from "./service/file.service";
+import { ModelServiceInterface } from "./service/model.service";
+import { ExportServiceInterface } from "./service/export.service";
+import { AutoFillServiceInterface } from "./service/autofill.service";
 
 export interface DynamoAuthConfig {
   clientId?: string;
@@ -39,7 +43,12 @@ export interface DynamoAppConfig extends DynamoAuthConfig {
 Access token supplied by Keycloak SSO
 **/
 export interface DynamoConfig {
-  getStatusService: () => StatusServiceInterface
-  getCRUDService: () => CRUDServiceInterface 
   getConfiguration: () => Observable<DynamoAppConfig>
+
+  getAutoFillService: () => AutoFillServiceInterface
+  getCRUDService: () => CRUDServiceInterface
+  getExportService: () => ExportServiceInterface
+  getFileService: () => FileServiceInterface
+  getModelService: () => ModelServiceInterface
+  getStatusService: () => StatusServiceInterface
 }

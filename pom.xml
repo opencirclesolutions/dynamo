@@ -106,7 +106,7 @@
         <poi.version>5.3.0</poi.version>
         <spotbugs.version>4.8.6.3</spotbugs.version>
         <spring.ai.version>0.8.1</spring.ai.version>
-        <spring.boot.version>3.3.4</spring.boot.version>
+        <spring.boot.version>3.3.5</spring.boot.version>
         <asciidoctor.maven.plugin.version>3.0.0</asciidoctor.maven.plugin.version>
         <asciidoctorj.pdf.version>2.3.19</asciidoctorj.pdf.version>
         <asciidoctorj.version>3.0.0</asciidoctorj.version>
@@ -121,8 +121,8 @@
         <asciidoc.github.url>${project.scm.url}</asciidoc.github.url>
 	  <gpg.keyname>1F134B2687255F8C</gpg.keyname>
 
-	  <node.version>v22.9.0</node.version>
-	  <npm.version>10.8.3</npm.version>
+	  <node.version>v22.10.0</node.version>
+	  <npm.version>10.9.0</npm.version>
     </properties>
     <dependencyManagement>
         <dependencies>
