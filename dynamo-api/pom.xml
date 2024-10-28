@@ -91,7 +91,8 @@
             </plugin>
             <plugin>
                 <groupId>com.ragedunicorn.tools.maven</groupId>
-                <artifactId>github-release-maven-plugin</artifactId>
+		    <artifactId>github-release-maven-plugin</artifactId>
+		    <version>1.0.7</version>
                 <configuration>
                     <skip>true</skip>
                 </configuration>
