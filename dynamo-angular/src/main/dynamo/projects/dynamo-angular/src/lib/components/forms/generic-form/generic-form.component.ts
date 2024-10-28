@@ -1125,6 +1125,10 @@ export class GenericFormComponent
    * @returns the entity model actions that are appropriate
    */
   filterEntityModelActions() {
+    if (!this.entityId) {
+      return [];
+    }
+
     return this.entityModel?.actions
       ?.filter(
         (action) => action.type == EntityModelActionResponse.TypeEnum.UPDATE
