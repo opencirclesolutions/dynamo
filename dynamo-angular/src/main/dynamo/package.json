@@ -1,6 +1,6 @@
 {
   "name": "dynamo",
-  "version": "4.0.0-RC2-SNAPSHOT",
+  "version": "4.0.0-RC3-SNAPSHOT",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
