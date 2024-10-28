@@ -17,22 +17,16 @@
  * limitations under the License.
  * #L%
  */
-export enum AttributeGroupMode {
-  TAB, PANEL
-}
+import { Component } from '@angular/core';
+import { TranslateModule } from '@ngx-translate/core';
 
-export enum PdfViewerMode {
-  MODEL, EXTERNAL_URL
-}
+@Component({
+  selector: 'd-backend-not-available',
+  standalone: true,
+  imports: [TranslateModule],
+  templateUrl: './backend-not-available.component.html',
+  styleUrl: './backend-not-available.component.css'
+})
+export class BackendNotAvailableComponent {
 
-export enum PopupButtonMode {
-  NONE, EDIT, READ_ONLY
-}
-
-export enum SearchFormMode {
-  STANDARD, DYNAMIC
-}
-
-export enum SplitLayoutMode {
-  EMPTY, NEW, EXISTING
 }

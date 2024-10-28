@@ -17,22 +17,18 @@
  * limitations under the License.
  * #L%
  */
-export enum AttributeGroupMode {
-  TAB, PANEL
-}
+import { Component, Input } from '@angular/core';
+import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
 
-export enum PdfViewerMode {
-  MODEL, EXTERNAL_URL
-}
+@Component({
+  selector: 'd-label',
+  standalone: true,
+  imports: [],
+  templateUrl: './label.component.html',
+  styleUrl: './label.component.css'
+})
+export class LabelComponent {
 
-export enum PopupButtonMode {
-  NONE, EDIT, READ_ONLY
-}
-
-export enum SearchFormMode {
-  STANDARD, DYNAMIC
-}
-
-export enum SplitLayoutMode {
-  EMPTY, NEW, EXISTING
+  @Input() attributeModel!: AttributeModelResponse
+  @Input() locale!: string
 }

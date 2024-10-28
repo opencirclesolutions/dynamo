@@ -57,9 +57,12 @@ export * from './lib/interfaces/service/status.service'
 export * from './lib/components/base/base.component'
 export * from './lib/components/base-entity/base-entity.component'
 export * from './lib/components/data-table/data-table.component'
+export * from './lib/components/generic-edit-table-layout/generic-edit-table-layout.component'
 export * from './lib/components/generic-table/generic-table.component'
 
+export * from './lib/components/blocks/backend-not-available/backend-not-available.component'
 export * from './lib/components/blocks/file-upload/file-upload.component'
+export * from './lib/components/blocks/label/label.component'
 export * from './lib/components/blocks/pdf-viewer/pdf-viewer.component'
 
 export * from './lib/components/forms/base-composite/base-composite.component'
