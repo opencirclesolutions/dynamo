@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable, Injector } from '@angular/core';
+import { Injectable, Injector, inject } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -35,9 +35,15 @@ import { TranslateService } from '@ngx-translate/core';
   providedIn: 'root',
 })
 export class RoleGuard {
-  constructor(private auth: AuthenticationService, private router: Router,
-    private logMessageService: NotificationService, private translate: TranslateService,
-  ) {
+  private auth = inject(AuthenticationService);
+  private router = inject(Router);
+  private logMessageService = inject(NotificationService);
+  private translate = inject(TranslateService);
+
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {

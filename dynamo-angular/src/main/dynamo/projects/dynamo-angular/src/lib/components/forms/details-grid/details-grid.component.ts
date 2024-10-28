@@ -18,7 +18,7 @@
  * #L%
  */
 import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { Inject, SimpleChanges, TemplateRef } from '@angular/core';
+import { SimpleChanges, TemplateRef, inject } from '@angular/core';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import {
   createValidators,
@@ -73,6 +73,8 @@ import { BaseCompositeComponent } from '../base-composite/base-composite.compone
 export class DetailsGridComponent
   extends BaseCompositeComponent
   implements OnInit, OnChanges {
+  private translate = inject(TranslateService);
+
   // parent entity name
   @Input({ required: true }) parentEntityName!: string;
   // parent entity name
@@ -101,14 +103,16 @@ export class DetailsGridComponent
 
   index: number = 0;
 
-  constructor(
-    formBuilder: FormBuilder,
-    messageService: NotificationService,
-    router: Router,
-    private translate: TranslateService,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const formBuilder = inject(FormBuilder);
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(messageService, router, authService, configuration);
     this.formBuilder = formBuilder;
   }

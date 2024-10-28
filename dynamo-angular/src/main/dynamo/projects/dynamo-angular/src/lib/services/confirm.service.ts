@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { ConfirmationService } from 'primeng/api';
 
@@ -25,8 +25,14 @@ import { ConfirmationService } from 'primeng/api';
   providedIn: 'root',
 })
 export class ConfirmService {
+  private confirmationService = inject(ConfirmationService);
+  private translate = inject(TranslateService);
 
-  constructor(private confirmationService: ConfirmationService, private translate: TranslateService) { }
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+
+  constructor() { }
 
   confirm(messageKey: string, func: Function) {
     this.confirmationService.confirm({

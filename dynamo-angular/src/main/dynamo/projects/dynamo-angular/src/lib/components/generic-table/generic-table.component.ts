@@ -17,17 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  Output,
-  OnInit,
-  ViewChild,
-  ViewContainerRef,
-  QueryList,
-  Inject,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, OnInit, ViewChild, ViewContainerRef, QueryList, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { TableLazyLoadEvent } from 'primeng/table';
 import { decapitalize } from '../../functions/functions';
@@ -64,6 +54,9 @@ import { TooltipModule } from 'primeng/tooltip';
 export class GenericTableComponent
   extends BaseCompositeCollectionComponent
   implements OnInit {
+  private translate = inject(TranslateService);
+  private createFilterService = inject(CreateFilterService);
+
   defaultPageSize = 10;
 
   // the search object
@@ -108,14 +101,15 @@ export class GenericTableComponent
   storedSortOrder: number = 1;
   private exportService: ExportServiceInterface
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    private translate: TranslateService,
-    authService: AuthenticationService,
-    private createFilterService: CreateFilterService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(messageService, router, authService, configuration,);
     this.exportService = configuration.getExportService()
   }

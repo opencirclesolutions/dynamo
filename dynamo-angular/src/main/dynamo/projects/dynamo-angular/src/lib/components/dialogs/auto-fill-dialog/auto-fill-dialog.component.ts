@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { finalize } from 'rxjs';
@@ -38,6 +38,8 @@ import { DialogModule } from 'primeng/dialog';
   styleUrl: './auto-fill-dialog.component.css'
 })
 export class AutoFillDialogComponent extends BaseComponent implements OnInit {
+  private formBuilder = inject(FormBuilder);
+
 
   // the name of the entity to display
   @Input({ required: true }) entityName: string = '';
@@ -53,11 +55,13 @@ export class AutoFillDialogComponent extends BaseComponent implements OnInit {
   mainForm: FormGroup;
   private autofillService: AutoFillServiceInterface
 
-  constructor(
-    private formBuilder: FormBuilder,
-    translate: TranslateService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(translate);
     this.autofillService = configuration.getAutoFillService()
     this.mainForm = this.formBuilder.group([]);

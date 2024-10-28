@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, OnInit, forwardRef } from '@angular/core';
+import { Component, Input, OnInit, forwardRef, inject } from '@angular/core';
 import {
   ControlValueAccessor,
   NG_VALUE_ACCESSOR,
@@ -52,6 +52,8 @@ import { DialogModule } from 'primeng/dialog';
 export class ElementCollectionDialogComponent
   extends BaseComponent
   implements ControlValueAccessor, OnInit {
+  private formBuilder = inject(FormBuilder);
+
 
   @Input() searchMode: boolean = false;
   @Input() rowClass: string = 'row';
@@ -64,10 +66,12 @@ export class ElementCollectionDialogComponent
   onChange: any = () => { };
   onTouched: any = () => { };
 
-  constructor(
-    private formBuilder: FormBuilder,
-    translate: TranslateService
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+
     super(translate);
     this.dialogForm = this.formBuilder.group([]);
   }

@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, Input, OnInit, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, SimpleChanges, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormGroup } from '@angular/forms';
 import { AttributeGroupMode } from '../../../interfaces/mode';
@@ -60,12 +60,15 @@ export class GenericFormViewComponent
     formGroup: FormGroup
   ) => boolean;
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(
       messageService,
       router,

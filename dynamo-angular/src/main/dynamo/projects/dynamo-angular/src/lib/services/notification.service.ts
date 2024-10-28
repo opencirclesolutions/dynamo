@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import { MessageService } from 'primeng/api';
 import { TranslateService } from '@ngx-translate/core';
 
@@ -28,10 +28,13 @@ import { TranslateService } from '@ngx-translate/core';
   providedIn: 'root',
 })
 export class NotificationService {
-  constructor(
-    private messageService: MessageService,
-    private translate: TranslateService
-  ) { }
+  private messageService = inject(MessageService);
+  private translate = inject(TranslateService);
+
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() { }
 
   public info(message: string, sticky: boolean = false) {
     this.addMessage('info', sticky, message);

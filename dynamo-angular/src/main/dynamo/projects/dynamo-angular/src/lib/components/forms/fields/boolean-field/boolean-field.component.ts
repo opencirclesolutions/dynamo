@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseComponent } from '../../../base/base.component';
 import { AttributeModelResponse } from '../../../../interfaces/model/attributeModelResponse';
@@ -35,7 +35,13 @@ import { CheckboxModule } from 'primeng/checkbox';
 })
 export class BooleanFieldComponent extends BaseComponent {
 
-  constructor(translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+
+  constructor() {
+    const translate = inject(TranslateService);
+
     super(translate);
   }
 

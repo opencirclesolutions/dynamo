@@ -17,16 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  EventEmitter,
-  Inject,
-  Input,
-  Output,
-  TemplateRef,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { Router } from '@angular/router';
 import { FormBuilder, FormGroup } from '@angular/forms';
@@ -50,6 +41,8 @@ import { FormInfo } from '../../interfaces/info';
   styleUrl: './generic-split-layout.component.css'
 })
 export class GenericSplitLayoutComponent extends BaseCompositeCollectionComponent {
+  private formBuilder = inject(FormBuilder);
+
 
   // whether to open the component in view
   @Input() openInViewMode: boolean = false;
@@ -88,14 +81,16 @@ export class GenericSplitLayoutComponent extends BaseCompositeCollectionComponen
   selectedEntityId?: any;
   quickSearchForm?: FormGroup;
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    private formBuilder: FormBuilder,
-    authService: AuthenticationService,
-    hiddenFieldService: HiddenFieldService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const authService = inject(AuthenticationService);
+    const hiddenFieldService = inject(HiddenFieldService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(messageService, router, authService, configuration);
     this.hiddenFieldService = hiddenFieldService;
   }

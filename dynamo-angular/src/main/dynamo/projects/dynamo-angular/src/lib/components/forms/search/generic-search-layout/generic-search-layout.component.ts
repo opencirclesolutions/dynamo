@@ -17,15 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  EventEmitter,
-  Inject,
-  Input,
-  Output,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
+import { Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { PopupButtonMode, SearchFormMode } from '../../../../interfaces/mode';
 import { FormInfo } from '../../../../interfaces/info';
@@ -96,12 +88,15 @@ export class GenericSearchLayoutComponent extends BaseCompositeCollectionCompone
   tableCaptionPlural: string = '';
   loading: boolean = !this.searchImmediately;
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(messageService, router, authService, configuration)
   }
 

@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { truncateDescriptions } from '../functions/entitymodel-functions';
 
@@ -29,8 +29,13 @@ import { truncateDescriptions } from '../functions/entitymodel-functions';
   standalone: true,
 })
 export class TranslateEntityPipe implements PipeTransform {
+  private translate = inject(TranslateService);
 
-  constructor(private translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+
+  constructor() {
 
   }
 

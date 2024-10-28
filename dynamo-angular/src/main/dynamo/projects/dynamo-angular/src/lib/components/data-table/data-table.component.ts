@@ -17,14 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  EventEmitter,
-  Input,
-  OnInit,
-  Output,
-  TemplateRef
-} from '@angular/core';
+import { Component, EventEmitter, Input, OnInit, Output, TemplateRef, inject } from '@angular/core';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TableLazyLoadEvent, TableModule } from 'primeng/table';
 import { MenuItem } from 'primeng/api';
@@ -49,6 +42,10 @@ import { FormsModule } from '@angular/forms';
   styleUrl: './data-table.component.css'
 })
 export class DataTableComponent implements OnInit {
+  private confirmService = inject(ConfirmService);
+  private translate = inject(TranslateService);
+  private router = inject(Router);
+
   prependUrl = prependUrl;
   adjustTimestamp = adjustTimestamp;
 
@@ -93,11 +90,10 @@ export class DataTableComponent implements OnInit {
   last: number = this.first + this.pageSize;
   selectedColumns: TableColumn[] = [];
 
-  constructor(
-    private confirmService: ConfirmService,
-    private translate: TranslateService,
-    private router: Router,
-  ) { }
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() { }
 
   /**
    * Respond to a lazy load event, update first and last records

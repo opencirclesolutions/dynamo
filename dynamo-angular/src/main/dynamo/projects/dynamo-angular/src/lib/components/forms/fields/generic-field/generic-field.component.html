@@ -1,166 +1,178 @@
 <!--
-  #%L
-  Dynamo Framework
-  %%
-  Copyright (C) 2014 - 2024 Open Circle Solutions
-  %%
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+#%L
+Dynamo Framework
+%%
+Copyright (C) 2014 - 2024 Open Circle Solutions
+%%
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  #L%
-  -->
-<div *ngIf="isString(am)">
-	<d-string-field
-		[formGroup]="formGroup!"
-		[am]="am"
-		[locale]="locale"
-		classes="p-inputtext-sm form-control"
-		[colClass]="getColClass()"
-		[validationColClass]="getValidationColClass()"
-		[showValidationErrors]="showValidationErrors"
-		[fullWidth]="fullWidth"></d-string-field>
-</div>
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#L%
+-->
+@if (isString(am)) {
+  <div>
+    <d-string-field
+      [formGroup]="formGroup!"
+      [am]="am"
+      [locale]="locale"
+      classes="p-inputtext-sm form-control"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+      [showValidationErrors]="showValidationErrors"
+    [fullWidth]="fullWidth"></d-string-field>
+  </div>
+}
 <!-- Element collection -->
-<div
-	*ngIf="isElementCollection(am)"
-	class="row">
-	<d-element-collection-field
-		[am]="am"
-		[formGroup]="formGroup!"
-		[fullWidth]="fullWidth"
-		[locale]="locale"
-		[colClass]="getColClass()"
-		[validationColClass]="getValidationColClass()"> </d-element-collection-field>
-</div>
+@if (isElementCollection(am)) {
+  <div
+    class="row">
+    <d-element-collection-field
+      [am]="am"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [locale]="locale"
+      [colClass]="getColClass()"
+    [validationColClass]="getValidationColClass()"> </d-element-collection-field>
+  </div>
+}
 <!-- Integral number -->
-<div
-	*ngIf="isIntegral(am)"
-	class="row">
-	<d-number-field
-		[am]="am"
-		[formGroup]="formGroup!"
-		[fullWidth]="fullWidth"
-		[locale]="locale"
-		[validationColClass]="getValidationColClass()"
-		[colClass]="getColClass()"> </d-number-field>
-</div>
-<div
-	*ngIf="isEnum(am)"
-	class="row">
-	<d-enum-field
-		[am]="am"
-		[formGroup]="formGroup!"
-		[fullWidth]="fullWidth"
-		[locale]="locale"
-		[options]="enumValues!"
-		[validationColClass]="getValidationColClass()"
-		[colClass]="getColClass()"> </d-enum-field>
-</div>
+@if (isIntegral(am)) {
+  <div
+    class="row">
+    <d-number-field
+      [am]="am"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [locale]="locale"
+      [validationColClass]="getValidationColClass()"
+    [colClass]="getColClass()"> </d-number-field>
+  </div>
+}
+@if (isEnum(am)) {
+  <div
+    class="row">
+    <d-enum-field
+      [am]="am"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [locale]="locale"
+      [options]="enumValues!"
+      [validationColClass]="getValidationColClass()"
+    [colClass]="getColClass()"> </d-enum-field>
+  </div>
+}
 <!-- Free detail -->
-<div
-	*ngIf="isFreeDetail(am)"
-	class="row">
-	<d-select-many-field
-		[am]="am"
-		[options]="options!"
-		[locale]="locale"
-		[formGroup]="formGroup!"
-		[formControl]="getFormControl(am)"
-		[fullWidth]="fullWidth"
-		[entityModelReference]="am.lookupEntityReference"
-		[entityModel]="entityModel"
-		[colClass]="getColClass()"
-		[validationColClass]="getValidationColClass()"
-		[defaultFilters]="fieldFilters!"
-		ngDefaultControl> </d-select-many-field>
-</div>
+@if (isFreeDetail(am)) {
+  <div
+    class="row">
+    <d-select-many-field
+      [am]="am"
+      [options]="options!"
+      [locale]="locale"
+      [formGroup]="formGroup!"
+      [formControl]="getFormControl(am)"
+      [fullWidth]="fullWidth"
+      [entityModelReference]="am.lookupEntityReference"
+      [entityModel]="entityModel"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+      [defaultFilters]="fieldFilters!"
+    ngDefaultControl> </d-select-many-field>
+  </div>
+}
 <!-- Many-to-one -->
-<div
-	*ngIf="isMaster(am)"
-	class="row">
-	<d-select-entity-field
-		[am]="am"
-		[options]="options!"
-		[locale]="locale"
-		[formGroup]="formGroup!"
-		[formControl]="getFormControl(am)"
-		[fullWidth]="fullWidth"
-		[entityModelReference]="am.lookupEntityReference"
-		[entityModel]="entityModel"
-		[colClass]="getColClass()"
-		[validationColClass]="getValidationColClass()"
-		[defaultFilters]="fieldFilters!"
-		ngDefaultControl> </d-select-entity-field>
-</div>
-<div
-	*ngIf="isTime(am)"
-	class="row">
-	<div class="row">
-		<d-time-field
-			[am]="am"
-			[formGroup]="formGroup!"
-			[fullWidth]="fullWidth"
-			[colClass]="getColClass()"
-			[validationColClass]="getValidationColClass()"></d-time-field>
-	</div>
-</div>
-<div
-	*ngIf="isInstant(am) || isLocalDateTime(am)"
-	class="row">
-	<d-timestamp-field
-		[am]="am"
-		[locale]="locale"
-		[searchMode]="false"
-		[formGroup]="formGroup!"
-		[fullWidth]="fullWidth"
-		[colClass]="getColClass()"
-		[validationColClass]="getValidationColClass()"></d-timestamp-field>
-</div>
+@if (isMaster(am)) {
+  <div
+    class="row">
+    <d-select-entity-field
+      [am]="am"
+      [options]="options!"
+      [locale]="locale"
+      [formGroup]="formGroup!"
+      [formControl]="getFormControl(am)"
+      [fullWidth]="fullWidth"
+      [entityModelReference]="am.lookupEntityReference"
+      [entityModel]="entityModel"
+      [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"
+      [defaultFilters]="fieldFilters!"
+    ngDefaultControl> </d-select-entity-field>
+  </div>
+}
+@if (isTime(am)) {
+  <div
+    class="row">
+    <div class="row">
+      <d-time-field
+        [am]="am"
+        [formGroup]="formGroup!"
+        [fullWidth]="fullWidth"
+        [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"></d-time-field>
+    </div>
+  </div>
+}
+@if (isInstant(am) || isLocalDateTime(am)) {
+  <div
+    class="row">
+    <d-timestamp-field
+      [am]="am"
+      [locale]="locale"
+      [searchMode]="false"
+      [formGroup]="formGroup!"
+      [fullWidth]="fullWidth"
+      [colClass]="getColClass()"
+    [validationColClass]="getValidationColClass()"></d-timestamp-field>
+  </div>
+}
 <!-- Boolean -->
-<div
-	*ngIf="isBoolean(am)"
-	class="row">
-	<div class="row">
-		<div [class]="getColClass()">
-			<d-boolean-field
-				[am]="am"
-				[formGroup]="formGroup!"
-				[fullWidth]="fullWidth"
-				[colClass]="getColClass()"
-				[validationColClass]="getValidationColClass()"></d-boolean-field>
-		</div>
-	</div>
-</div>
+@if (isBoolean(am)) {
+  <div
+    class="row">
+    <div class="row">
+      <div [class]="getColClass()">
+        <d-boolean-field
+          [am]="am"
+          [formGroup]="formGroup!"
+          [fullWidth]="fullWidth"
+          [colClass]="getColClass()"
+        [validationColClass]="getValidationColClass()"></d-boolean-field>
+      </div>
+    </div>
+  </div>
+}
 <!-- Date -->
-<div
-	*ngIf="isDate(am)"
-	class="row">
-	<div class="row">
-		<d-date-field
-			[am]="am"
-			[formGroup]="formGroup!"
-			[fullWidth]="fullWidth"
-			[colClass]="getColClass()"
-			[validationColClass]="getValidationColClass()"> </d-date-field>
-	</div>
-</div>
-<div
-	*ngIf="isDecimal(am)"
-	class="row">
-	<div class="row">
-		<d-decimal-field
-			[am]="am"
-			[formGroup]="formGroup!"
-			[fullWidth]="fullWidth"
-			[colClass]="getColClass()"
-			[validationColClass]="getValidationColClass()"></d-decimal-field>
-	</div>
-</div>
+@if (isDate(am)) {
+  <div
+    class="row">
+    <div class="row">
+      <d-date-field
+        [am]="am"
+        [formGroup]="formGroup!"
+        [fullWidth]="fullWidth"
+        [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"> </d-date-field>
+    </div>
+  </div>
+}
+@if (isDecimal(am)) {
+  <div
+    class="row">
+    <div class="row">
+      <d-decimal-field
+        [am]="am"
+        [formGroup]="formGroup!"
+        [fullWidth]="fullWidth"
+        [colClass]="getColClass()"
+      [validationColClass]="getValidationColClass()"></d-decimal-field>
+    </div>
+  </div>
+}

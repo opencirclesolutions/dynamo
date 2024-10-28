@@ -17,19 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  ContentChildren,
-  EventEmitter,
-  Inject,
-  Input,
-  OnInit,
-  Output,
-  QueryList,
-  TemplateRef,
-  ViewChild,
-  ViewContainerRef,
-} from '@angular/core';
+import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import {
   FormGroup,
   AbstractControl,
@@ -96,6 +84,12 @@ import { BaseCompositeComponent } from '../base-composite/base-composite.compone
 export class GenericFormComponent
   extends BaseCompositeComponent
   implements OnInit {
+  protected formBuilder = inject(FormBuilder);
+  private translate = inject(TranslateService);
+  private confirmService = inject(ConfirmService);
+  private bindingService = inject(BindingService);
+  private hiddenFieldService = inject(HiddenFieldService);
+
   // the ID of the entity that is being edited
   @Input() entityId?: number = undefined;
   // whether navigation is allowed
@@ -195,18 +189,18 @@ export class GenericFormComponent
   initDone: boolean = false;
   private fileController: FileServiceInterface
 
-  constructor(
-    protected formBuilder: FormBuilder,
-    messageService: NotificationService,
-    router: Router,
-    private translate: TranslateService,
-    private confirmService: ConfirmService,
-    private bindingService: BindingService,
-    authService: AuthenticationService,
-    private hiddenFieldService: HiddenFieldService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(messageService, router, authService, configuration);
+    const hiddenFieldService = this.hiddenFieldService;
+
     this.hiddenFieldService = hiddenFieldService;
     this.fileController = configuration.getFileService()
   }

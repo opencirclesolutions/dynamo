@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, ContentChildren, EventEmitter, Inject, Input, Output, QueryList, TemplateRef } from '@angular/core';
+import { Component, ContentChildren, EventEmitter, Input, Output, QueryList, TemplateRef, inject } from '@angular/core';
 import {
   AbstractControl,
   FormBuilder,
@@ -48,6 +48,8 @@ import { timeToDate } from '../../../../functions/functions';
   styleUrl: './base-search-component.component.css'
 })
 export abstract class BaseSearchComponent extends BaseCompositeComponent {
+  private confirmService = inject(ConfirmService);
+
 
   @Input() injectedCustomInputs?: QueryList<OverrideFieldDirective>;
 
@@ -73,16 +75,18 @@ export abstract class BaseSearchComponent extends BaseCompositeComponent {
   @ContentChildren(OverrideFieldDirective, { descendants: true })
   customInputs!: QueryList<OverrideFieldDirective>;
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    formBuilder: FormBuilder,
-    translate: TranslateService,
-    private confirmService: ConfirmService,
-    stateService: SearchFormStateService,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const formBuilder = inject(FormBuilder);
+    const translate = inject(TranslateService);
+    const stateService = inject(SearchFormStateService);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(messageService, router, authService, configuration);
     this.formBuilder = formBuilder;
     this.translate = translate;

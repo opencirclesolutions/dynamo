@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, ViewChild, ViewContainerRef } from '@angular/core';
+import { Component, Input, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { AbstractControl } from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseComponent } from '../base/base.component';
@@ -35,6 +35,8 @@ import { EntityPopupDialogComponent } from '../dialogs/entity-popup-dialog/entit
   styleUrl: './base-entity.component.css'
 })
 export abstract class BaseEntityComponent extends BaseComponent {
+  private authService = inject(AuthenticationService);
+
 
   // entity model
   @Input() entityModel?: EntityModelResponse;
@@ -53,7 +55,12 @@ export abstract class BaseEntityComponent extends BaseComponent {
   @ViewChild('popupDialogContainerRef', { read: ViewContainerRef })
   viewContainerRef!: ViewContainerRef;
 
-  constructor(private authService: AuthenticationService, translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+
     super(translate)
   }
 

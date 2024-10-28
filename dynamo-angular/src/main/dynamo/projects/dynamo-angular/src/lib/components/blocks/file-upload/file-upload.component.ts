@@ -17,14 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  Input,
-  Output,
-  EventEmitter,
-  ViewChild,
-  Inject,
-} from '@angular/core';
+import { Component, Input, Output, EventEmitter, ViewChild, inject } from '@angular/core';
 import { FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { getNestedValue } from '../../../functions/functions';
@@ -56,10 +49,13 @@ export class FileUploadComponent extends BaseComponent {
 
   fileService: FileServiceInterface
 
-  constructor(
-    translate: TranslateService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(translate);
     this.fileService = configuration.getFileService()
   }

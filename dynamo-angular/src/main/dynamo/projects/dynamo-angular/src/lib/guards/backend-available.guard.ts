@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   ActivatedRouteSnapshot,
   Router,
@@ -31,12 +31,16 @@ import { DynamoConfig } from '../interfaces/dynamo-config';
   providedIn: 'root',
 })
 export class BackendAvailableGuard {
+  private router = inject(Router);
+
   statusService: StatusServiceInterface
 
-  constructor(
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-    private router: Router
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     this.statusService = configuration.getStatusService()
   }
 

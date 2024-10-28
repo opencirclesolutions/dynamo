@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, OnInit, inject } from '@angular/core';
 import {
   FormArray,
   FormBuilder,
@@ -75,16 +75,19 @@ export class FlexibleSearchFormComponent
   searchableAttributeNames: any[] = [];
   formArray?: FormArray;
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    formBuilder: FormBuilder,
-    translate: TranslateService,
-    confirmService: ConfirmService,
-    stateService: SearchFormStateService,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const formBuilder = inject(FormBuilder);
+    const translate = inject(TranslateService);
+    const confirmService = inject(ConfirmService);
+    const stateService = inject(SearchFormStateService);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(
       messageService,
       router,

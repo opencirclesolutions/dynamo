@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import {
   decapitalize,
   getNestedValue,
@@ -44,6 +44,8 @@ import { FieldViewTableComponent } from '../field-view-table/field-view-table.co
   styleUrl: './field-view.component.css'
 })
 export class FieldViewComponent extends BaseComponent {
+  private router = inject(Router);
+
   // the entity being edited
   @Input({ required: true }) entity: any = {};
   // the entity to display
@@ -59,11 +61,13 @@ export class FieldViewComponent extends BaseComponent {
 
   private fileService: FileServiceInterface
 
-  constructor(
-    translate: TranslateService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-    private router: Router
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(translate);
     this.fileService = configuration.getFileService()
   }

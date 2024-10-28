@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { PdfViewerMode } from '../../../interfaces/mode';
 import { NotificationService } from '../../../services/notification.service';
 import { TranslateModule } from '@ngx-translate/core';
@@ -32,6 +32,8 @@ import { DialogModule } from 'primeng/dialog';
   styleUrl: './pdf-viewer-dialog.component.css'
 })
 export class PdfViewerDialogComponent {
+  private notificationService = inject(NotificationService);
+
 
   @Input() mode: PdfViewerMode = PdfViewerMode.MODEL;
   @Input() fileName?: string;
@@ -42,7 +44,10 @@ export class PdfViewerDialogComponent {
 
   dialogVisible: boolean = false;
 
-  constructor(private notificationService: NotificationService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
 
   }
 

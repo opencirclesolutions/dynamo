@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Inject, Injectable } from '@angular/core';
+import { Injectable, inject } from '@angular/core';
 import {
   AuthConfig,
   NullValidationHandler,
@@ -30,12 +30,16 @@ import { first, map, tap } from 'rxjs';
   providedIn: 'root',
 })
 export class AuthenticationService {
+  private oauthService = inject(OAuthService);
+
   roles?: string[];
 
-  constructor(
-    private oauthService: OAuthService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     this.oauthService.tokenValidationHandler = new NullValidationHandler()
     configuration.getConfiguration().pipe(
       map(c => ({

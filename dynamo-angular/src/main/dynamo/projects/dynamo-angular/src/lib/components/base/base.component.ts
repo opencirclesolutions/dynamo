@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import {
   isBoolean,
   isDate,
@@ -49,6 +49,8 @@ import { AttributeModelResponse } from '../../interfaces/model/attributeModelRes
   styleUrl: './base.component.css'
 })
 export abstract class BaseComponent {
+  protected translate = inject(TranslateService);
+
   isDate = isDate;
   isBoolean = isBoolean;
   isDecimal = isDecimal;
@@ -76,7 +78,10 @@ export abstract class BaseComponent {
   @Input() validationColClass: string = '';
   @Input() fullWidth: boolean = false;
 
-  constructor(protected translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
   }
 
   getDigitsInfo(am?: AttributeModelResponse) {

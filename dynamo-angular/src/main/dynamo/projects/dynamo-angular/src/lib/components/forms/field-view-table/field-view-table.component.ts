@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { NotificationService } from '../../../services/notification.service';
 import { AuthenticationService } from '../../../services/authentication.service';
@@ -45,12 +45,15 @@ export class FieldViewTableComponent
   pageSize: number = 10;
   initDone: boolean = false;
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(
       messageService,
       router,

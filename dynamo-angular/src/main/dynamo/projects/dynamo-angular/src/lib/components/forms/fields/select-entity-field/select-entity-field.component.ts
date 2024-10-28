@@ -17,11 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  Inject,
-  Input,
-} from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
 import { Observable, catchError, map, of } from 'rxjs';
 import { TranslateService } from '@ngx-translate/core';
@@ -52,6 +48,8 @@ import { DropdownModule } from 'primeng/dropdown';
   styleUrl: './select-entity-field.component.css'
 })
 export class SelectEntityFieldComponent extends BaseEntityComponent {
+  private messageService = inject(NotificationService);
+
 
   @Input() styleClass: string = 'main';
   @Input() nested: boolean = false;
@@ -61,12 +59,14 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
   filteredOptions$: Observable<any[]> = of([]);
   private crudService: CRUDServiceInterface;
 
-  constructor(
-    private messageService: NotificationService,
-    translate: TranslateService,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(authService, translate);
     this.crudService = configuration.getCRUDService()
   }

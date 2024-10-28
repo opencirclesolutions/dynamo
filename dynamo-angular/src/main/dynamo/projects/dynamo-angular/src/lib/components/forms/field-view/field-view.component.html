@@ -1,69 +1,110 @@
 <!--
-  #%L
-  Dynamo Framework
-  %%
-  Copyright (C) 2014 - 2024 Open Circle Solutions
-  %%
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+#%L
+Dynamo Framework
+%%
+Copyright (C) 2014 - 2024 Open Circle Solutions
+%%
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  #L%
-  -->
-<ng-container *ngIf="getNestedValue(entity, am) || isBoolean(am)"> <!-- timestamp --> <span
-	*ngIf="isLocalDateTime(am) || isInstant(am)"> {{ adjustTimestamp(getNestedValue(entity, am), isInstant(am)) |
-	date : getDisplayFormat() }} </span> <!-- date --> <span *ngIf="isDate(am)"> {{ getNestedValue(entity, am) | date :
-	getDisplayFormat() }} </span> <!-- string, time, or element collection --> <span
-	*ngIf="
-      (isString(am) && !isUrl(am)) || isTime(am) || isElementCollection(am)
-    "> {{
-	getNestedValue(entity, am) }} </span> <!-- external URL --> <span *ngIf="isUrl(am)"> <a
-	[href]="prependUrl(getNestedValue(entity, am))"
-	target="_blank">{{ getNestedValue(entity, am) }}</a>
-</span> <!-- LOB (preview image when appropriate)--> <span *ngIf="isLob(am)"> <img
-	*ngIf="getNestedValue(entity, am) && am.image"
-	width="200px"
-	height="200px"
-	src="{{ 'data:image/jpg;base64,' + getNestedValue(entity, am) }}" /> <img
-	*ngIf="!getNestedValue(entity, am) || !am.image"
-	width="200px"
-	height="200px"
-	src="assets/no-preview.png" />
-	<button
-		type="button"
-		class="btn btn-primary m-1"
-		(click)="downloadFile(am)"
-		*ngIf="getNestedValue(entity, am) && am.downloadAllowed">{{ "download" | translate }}</button>
-</span> <!-- Integral number --> <span *ngIf="isIntegral(am)"> <ng-container *ngIf="hasValue(am)"> {{
-	getNestedValue(entity, am) }}{{ am.percentage ? "%" : "" }} </ng-container>
-</span> <!-- Decimal number --> <span *ngIf="isDecimal(am)"> <ng-container *ngIf="hasValue(am)"> <ng-container
-		*ngIf="am.currencyCode && am.currencyCode!.length > 0"> {{ getNestedValue(entity, am) | currency :
-	am.currencyCode }} </ng-container> <ng-container *ngIf="!am.currencyCode || am.currencyCode!.length === 0"> {{
-	getNestedValue(entity, am) | number : getDigitsInfo(am) : locale }} </ng-container> {{ am.percentage ? "%" : "" }} </ng-container>
-</span> <span *ngIf="isEnum(am)"> {{ getNestedValue(entity, am) | translateEnum : enumMap }} </span> <span
-	*ngIf="isBoolean(am)"> {{ getNestedValue(entity, am) | translateBoolean : locale : am.trueRepresentations :
-	am.falseRepresentations }} </span> <span *ngIf="isMaster(am)"> <ng-container *ngIf="am.navigable && entity[am.name]">
-	<button
-		type="button"
-		class="btn btn-link"
-		(click)="navigate(am)">{{ entity[am.name] | translateEntity : am.displayPropertyName! }}</button>
-	</ng-container> <ng-container *ngIf="!am.navigable"> {{ getNestedValue(entity, am) | translateEntity :
-	am.displayPropertyName! }} </ng-container>
-</span> <span *ngIf="isFreeDetail(am)"> {{ getNestedValue(entity, am) | translateEntity : am.displayPropertyName! }} </span> <span
-	*ngIf="isNestedDetail(am)"> <d-field-view-table
-		[am]="am"
-		[entityName]="am.lookupEntityName!"
-		[entityModel]="nestedEntityModel"
-		[rows]="getNestedValue(entity, am)"
-		[locale]="locale">
-	</d-field-view-table>
-</span> </ng-container>
-<ng-container *ngIf="!getNestedValue(entity, am) && !isBoolean(am) && showEmptyValueLabel"> <span><i>{{
-		"no_value" | translate }}</i></span> </ng-container>
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#L%
+-->
+@if (getNestedValue(entity, am) || isBoolean(am)) {
+  <!-- timestamp --> @if (isLocalDateTime(am) || isInstant(am)) {
+  <span
+    > {{ adjustTimestamp(getNestedValue(entity, am), isInstant(am)) |
+  date : getDisplayFormat() }} </span>
+  } <!-- date --> @if (isDate(am)) {
+  <span> {{ getNestedValue(entity, am) | date :
+  getDisplayFormat() }} </span>
+  } <!-- string, time, or element collection --> @if (
+  (isString(am) && !isUrl(am)) || isTime(am) || isElementCollection(am)
+  ) {
+  <span
+    > {{
+  getNestedValue(entity, am) }} </span>
+  } <!-- external URL --> @if (isUrl(am)) {
+  <span> <a
+    [href]="prependUrl(getNestedValue(entity, am))"
+  target="_blank">{{ getNestedValue(entity, am) }}</a>
+</span>
+} <!-- LOB (preview image when appropriate)--> @if (isLob(am)) {
+<span> @if (getNestedValue(entity, am) && am.image) {
+  <img
+    width="200px"
+    height="200px"
+    src="{{ 'data:image/jpg;base64,' + getNestedValue(entity, am) }}" />
+  } @if (!getNestedValue(entity, am) || !am.image) {
+  <img
+    width="200px"
+    height="200px"
+    src="assets/no-preview.png" />
+}
+@if (getNestedValue(entity, am) && am.downloadAllowed) {
+  <button
+    type="button"
+    class="btn btn-primary m-1"
+    (click)="downloadFile(am)"
+  >{{ "download" | translate }}</button>
+}
+</span>
+} <!-- Integral number --> @if (isIntegral(am)) {
+<span> @if (hasValue(am)) {
+  {{
+  getNestedValue(entity, am) }}{{ am.percentage ? "%" : "" }}
+}
+</span>
+} <!-- Decimal number --> @if (isDecimal(am)) {
+<span> @if (hasValue(am)) {
+  @if (am.currencyCode && am.currencyCode!.length > 0) {
+    {{ getNestedValue(entity, am) | currency :
+    am.currencyCode }}
+    } @if (!am.currencyCode || am.currencyCode!.length === 0) {
+    {{
+    getNestedValue(entity, am) | number : getDigitsInfo(am) : locale }}
+    } {{ am.percentage ? "%" : "" }}
+  }
+</span>
+} @if (isEnum(am)) {
+<span> {{ getNestedValue(entity, am) | translateEnum : enumMap }} </span>
+} @if (isBoolean(am)) {
+<span
+  > {{ getNestedValue(entity, am) | translateBoolean : locale : am.trueRepresentations :
+am.falseRepresentations }} </span>
+} @if (isMaster(am)) {
+<span> @if (am.navigable && entity[am.name]) {
+  <button
+    type="button"
+    class="btn btn-link"
+  (click)="navigate(am)">{{ entity[am.name] | translateEntity : am.displayPropertyName! }}</button>
+  } @if (!am.navigable) {
+  {{ getNestedValue(entity, am) | translateEntity :
+  am.displayPropertyName! }}
+}
+</span>
+} @if (isFreeDetail(am)) {
+<span> {{ getNestedValue(entity, am) | translateEntity : am.displayPropertyName! }} </span>
+} @if (isNestedDetail(am)) {
+<span
+  > <d-field-view-table
+  [am]="am"
+  [entityName]="am.lookupEntityName!"
+  [entityModel]="nestedEntityModel"
+  [rows]="getNestedValue(entity, am)"
+  [locale]="locale">
+</d-field-view-table>
+</span>
+}
+}
+@if (!getNestedValue(entity, am) && !isBoolean(am) && showEmptyValueLabel) {
+  <span><i>{{
+  "no_value" | translate }}</i></span>
+}

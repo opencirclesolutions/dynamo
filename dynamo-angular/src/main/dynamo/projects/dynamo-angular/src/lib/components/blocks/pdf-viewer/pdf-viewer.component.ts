@@ -17,22 +17,25 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { PdfViewerMode } from '../../../interfaces/mode';
 import { NotificationService } from '../../../services/notification.service';
 import { DynamoConfig } from '../../../interfaces/dynamo-config';
 import { FileServiceInterface } from '../../../interfaces/service/file.service';
 import { Observable } from 'rxjs';
 import { NgxExtendedPdfViewerModule } from 'ngx-extended-pdf-viewer';
+import { CommonModule } from '@angular/common';
 
 @Component({
   selector: 'd-pdf-viewer',
   standalone: true,
-  imports: [NgxExtendedPdfViewerModule],
+  imports: [NgxExtendedPdfViewerModule, CommonModule],
   templateUrl: './pdf-viewer.component.html',
   styleUrl: './pdf-viewer.component.css'
 })
 export class PdfViewerComponent implements OnInit {
+  private notificationService = inject(NotificationService);
+
   @Input() mode: PdfViewerMode = PdfViewerMode.MODEL;
   @Input() fileName?: string;
   @Input() entityId?: number;
@@ -43,10 +46,12 @@ export class PdfViewerComponent implements OnInit {
   file?: Observable<string>
   fileService: FileServiceInterface;
 
-  constructor(
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-    private notificationService: NotificationService
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     this.fileService = configuration.getFileService()
   }
 

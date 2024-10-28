@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseComponent } from '../../../base/base.component';
 import { NotificationService } from '../../../../services/notification.service';
@@ -36,13 +36,17 @@ import { ChipsModule } from 'primeng/chips';
   styleUrl: './element-collection-field.component.css'
 })
 export class ElementCollectionFieldComponent extends BaseComponent {
+  private messageService = inject(NotificationService);
+
 
   @Input() searchMode: boolean = false;
 
-  constructor(
-    private messageService: NotificationService,
-    translate: TranslateService
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+
     super(translate);
   }
 

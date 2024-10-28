@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, Input, OnInit } from '@angular/core';
+import { Component, Input, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -61,16 +61,19 @@ export class GenericSearchFormComponent
 
   advancedMode: boolean = false;
 
-  constructor(
-    messageService: NotificationService,
-    router: Router,
-    formBuilder: FormBuilder,
-    translate: TranslateService,
-    confirmService: ConfirmService,
-    stateService: SearchFormStateService,
-    authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const messageService = inject(NotificationService);
+    const router = inject(Router);
+    const formBuilder = inject(FormBuilder);
+    const translate = inject(TranslateService);
+    const confirmService = inject(ConfirmService);
+    const stateService = inject(SearchFormStateService);
+    const authService = inject(AuthenticationService);
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     super(
       messageService,
       router,

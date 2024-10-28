@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Inject, Pipe, PipeTransform } from '@angular/core';
+import { Pipe, PipeTransform, inject } from '@angular/core';
 import { Observable, map, of } from 'rxjs';
 import { DynamoConfig } from '../interfaces/dynamo-config';
 import { CRUDServiceInterface } from '../interfaces/service/crud.service';
@@ -32,9 +32,12 @@ import { CRUDServiceInterface } from '../interfaces/service/crud.service';
 export class LookupEntityPipe implements PipeTransform {
   service: CRUDServiceInterface
 
-  constructor(
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     this.service = configuration.getCRUDService()
   }
 

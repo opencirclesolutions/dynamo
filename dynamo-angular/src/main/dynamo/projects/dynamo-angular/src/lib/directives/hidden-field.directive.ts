@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Directive, Input, OnInit } from "@angular/core";
+import { Directive, Input, OnInit, inject } from "@angular/core";
 import { HiddenFieldService } from "../services/hidden-field.service";
 
 /**
@@ -30,10 +30,15 @@ import { HiddenFieldService } from "../services/hidden-field.service";
   standalone: true,
 })
 export class HiddenFieldDirective implements OnInit {
+  private hiddenFieldService = inject(HiddenFieldService);
+
   @Input({ required: true }) attributeName!: string;
   @Input({ required: true }) value!: any;
 
-  constructor(private hiddenFieldService: HiddenFieldService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
   }
 
   ngOnInit(): void {

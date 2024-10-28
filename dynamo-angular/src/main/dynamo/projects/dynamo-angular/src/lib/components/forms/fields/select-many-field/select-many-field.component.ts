@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseEntityComponent } from '../../../base-entity/base-entity.component';
 import { SelectOption } from '../../../../interfaces/select-option';
@@ -42,7 +42,13 @@ export class SelectManyFieldComponent extends BaseEntityComponent {
 
   cache: SelectOption[] = [];
 
-  constructor(authService: AuthenticationService, translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const authService = inject(AuthenticationService);
+    const translate = inject(TranslateService);
+
     super(authService, translate);
   }
 

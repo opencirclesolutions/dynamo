@@ -17,14 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  Input,
-  OnInit,
-  ViewChild,
-  ViewContainerRef,
-  forwardRef,
-} from '@angular/core';
+import { Component, Input, OnInit, ViewChild, ViewContainerRef, forwardRef, inject } from '@angular/core';
 import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { EntityModelResponse } from '../../../../interfaces/model/entityModelResponse';
@@ -55,6 +48,8 @@ import { DialogModule } from 'primeng/dialog';
 export class LookupFieldComponent
   extends BaseComponent
   implements ControlValueAccessor, OnInit {
+  private authService = inject(AuthenticationService);
+
   // the name of the entity to display
   @Input({ required: true }) entityName: string = '';
   // optional reference to more specific entity model
@@ -97,7 +92,12 @@ export class LookupFieldComponent
     | GenericSearchLayoutComponent
     | undefined;
 
-  constructor(private authService: AuthenticationService, translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+
     super(translate);
   }
 

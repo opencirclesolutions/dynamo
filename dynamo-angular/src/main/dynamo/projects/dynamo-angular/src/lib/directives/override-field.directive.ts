@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Directive, Input, TemplateRef } from '@angular/core';
+import { Directive, Input, TemplateRef, inject } from '@angular/core';
 import { FormGroup } from '@angular/forms';
 import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
 
@@ -35,9 +35,14 @@ interface InputContext {
   standalone: true,
 })
 export class OverrideFieldDirective {
+  template = inject<TemplateRef<any>>(TemplateRef);
+
   @Input({ required: true }) attributeName: string = '';
 
-  constructor(public template: TemplateRef<any>) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
   }
 
   static ngTemplateContextGuard(

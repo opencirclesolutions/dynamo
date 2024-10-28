@@ -1,177 +1,201 @@
 <!--
-  #%L
-  Dynamo Framework
-  %%
-  Copyright (C) 2014 - 2024 Open Circle Solutions
-  %%
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+#%L
+Dynamo Framework
+%%
+Copyright (C) 2014 - 2024 Open Circle Solutions
+%%
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  #L%
-  -->
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#L%
+-->
 <!-- Popup dialog for searching -->
-<ng-container *ngIf="entityModel && isReadAllowed()"> <p-dialog
-	[showHeader]="false"
-	[(visible)]="dialogVisible"
-	[style]="{ width: '70vw' }"
-	[modal]="true"> <d-generic-search-layout
-	*ngIf="dialogVisible"
-	[entityName]="entityName"
-	[entityModelReference]="entityModelReference"
-	[locale]="locale"
-	[multiSelect]="false"
-	[locale]="locale"
-	[nested]="true"
-	[searchImmediately]="true"
-	[defaultFilters]="defaultFilters"
-	[queryType]="queryType"
-	(afterSearchPerformed)="afterSearchDialogSearch($event)"></d-generic-search-layout>
-
-<div
-	class="btn-group"
-	role="group">
-	<button
-		type="button"
-		class="btn btn-danger m-1"
-		(click)="cancelDialog()">
-		<span class="pi pi-times"></span> {{ "cancel" | translate }}
-	</button>
-	<button
-		type="button"
-		class="btn btn-success m-1"
-		(click)="selectAndClose()">
-		<span class="pi pi-check"></span> {{ "ok" | translate }}
-	</button>
-</div>
+@if (entityModel && isReadAllowed()) {
+  <p-dialog
+    [showHeader]="false"
+    [(visible)]="dialogVisible"
+    [style]="{ width: '70vw' }"
+    [modal]="true"> @if (dialogVisible) {
+    <d-generic-search-layout
+      [entityName]="entityName"
+      [entityModelReference]="entityModelReference"
+      [locale]="locale"
+      [multiSelect]="false"
+      [locale]="locale"
+      [nested]="true"
+      [searchImmediately]="true"
+      [defaultFilters]="defaultFilters"
+      [queryType]="queryType"
+    (afterSearchPerformed)="afterSearchDialogSearch($event)"></d-generic-search-layout>
+  }
+  <div
+    class="btn-group"
+    role="group">
+    <button
+      type="button"
+      class="btn btn-danger m-1"
+      (click)="cancelDialog()">
+      <span class="pi pi-times"></span> {{ "cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-success m-1"
+      (click)="selectAndClose()">
+      <span class="pi pi-check"></span> {{ "ok" | translate }}
+    </button>
+  </div>
 </p-dialog> <p-splitter> <ng-template pTemplate>
 <div class="col-lg-12 col-md-12 p-3">
-	<h4>{{ tableCaptionPlural }}</h4>
-	<div
-		class="row mb-2"
-		*ngIf="searchDialogEnabled || quickSearchProperty">
-		<div class="col">
-			<form
-				[formGroup]="quickSearchForm!"
-				*ngIf="quickSearchProperty">
-				<input
-					id="quickSearchField"
-					type="text"
-					pInputText
-					formControlName="quickSearch"
-					placeholder="{{ 'quick_search' | translate }}" />
-			</form>
-		</div>
-		<div class="col">
-			<div
-				class="btn-group"
-				role="group"
-				class="mb-2"
-				*ngIf="searchDialogEnabled">
-				<button
-					id="openSearchDialogButton"
-					type="button"
-					class="btn btn-primary m-1"
-					(click)="openSearchDialog()"
-					*ngIf="searchDialogEnabled">
-					<span class="pi pi-search"></span> {{ "search" | translate }}
-				</button>
-				<button
-					id="clearSearchFilterButton"
-					type="button"
-					class="btn btn-primary m-1"
-					(click)="clearSearchFilter()"
-					*ngIf="searchDialogEnabled">
-					<span class="pi pi-eraser"></span> {{ "clear" | translate }}
-				</button>
-			</div>
-		</div>
-	</div>
-	<d-generic-table
-		*ngIf="entityModel"
-		[entityModel]="entityModel"
-		[entityModelReference]="entityModelReference"
-		[entityName]="entityName"
-		[locale]="locale"
-		[searchObject]="searchObject"
-		[queryType]="queryType"
-		[defaultFilters]="defaultFilters"
-		[showDetailButton]="false"
-		[additionalRowActions]="additionalRowActions"
-		[exportMode]="exportMode"
-		[exportModeReference]="exportModeReference"
-		(onRowSelect)="rowClick($event)"></d-generic-table>
-	<div
-		class="btn-group"
-		role="group">
-		<button
-			type="button"
-			class="btn btn-primary m-1"
-			(click)="add()"
-			*ngIf="entityModel?.createAllowed! && isWriteAllowed()">
-			<span class="pi pi-plus"></span> {{ "add" | translate }}
-		</button>
-		<!-- Server defined actions-->
-		<button
-			*ngFor="let action of filterEntityModelActions()"
-			type="button"
-			class="btn btn-primary m-1"
-			(click)="callModelAction(vcr, action, undefined)">
-			<span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-		</button>
-		<!-- UI defined global actions -->
-		<button
-			*ngFor="let action of additionalGlobalActions"
-			type="button"
-			[class]="action.buttonClass"
-			(click)="callAdditionalGlobalAction(action)"
-			[disabled]="isGlobalActionDisabled(action)">
-			<span
-				*ngIf="action.icon"
-				class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
-		</button>
-		<ng-template #popupDialogContainerRef></ng-template>
-	</div>
-</div>
-</ng-template> <ng-template
-	pTemplate
-	*ngIf="entityModel">
-<div class="col-lg-12 col-md-12 p-3">
-	<ng-container *ngIf="isEmptyMode()">
-	<p>{{ "select_item" | translate }}</p>
-	</ng-container>
-	<ng-container *ngIf="isNewMode() || isExistingMode()"> <d-generic-form
-		ngClass="nested"
-		[entityId]="selectedEntityId"
-		[entityName]="entityName"
-		[entityModel]="entityModel"
-		[entityModelReference]="entityModelReference"
-		[locale]="locale"
-		[navigationAllowed]="false"
-		[fieldFilters]="fieldFilters"
-		[additionalActions]="additionalFormActions"
-		[postProcessInputForm]="postProcessInputForm"
-		[customValidatorTemplate]="customValidatorTemplate"
-		[confirmSave]="confirmSave"
-		[openInViewMode]="openInViewMode"
-		[freeFormMode]="freeFormMode"
-		[freeFormTemplate]="freeFormTemplate"
-		[injectedCustomInputs]="customInputs"
-		[readOnly]="!isWriteAllowed()"
-		[formFillEnabled]="formFillEnabled"
-		[attributeGroupMode]="attributeGroupMode"
-		formWidthClass="row col-lg-12 col-md-12 col-sm-12"
-		[attributeVisible]="attributeVisible"
-		[injectedHiddenFieldService]="hiddenFieldService"
-		(afterSave)="afterSave($event)"
-		(afterEntityCreated)="onEntityCreated($event)"></d-generic-form> </ng-container>
-</div>
-</ng-template> </p-splitter> </ng-container>
-<ng-container *ngIf="entityModel && !isReadAllowed()"> {{ "component_view_not_allowed" | translate }} </ng-container>
+  <h4>{{ tableCaptionPlural }}</h4>
+  @if (searchDialogEnabled || quickSearchProperty) {
+    <div
+      class="row mb-2"
+      >
+      <div class="col">
+        @if (quickSearchProperty) {
+          <form
+            [formGroup]="quickSearchForm!"
+            >
+            <input
+              id="quickSearchField"
+              type="text"
+              pInputText
+              formControlName="quickSearch"
+              placeholder="{{ 'quick_search' | translate }}" />
+          </form>
+        }
+      </div>
+      <div class="col">
+        @if (searchDialogEnabled) {
+          <div
+            class="btn-group"
+            role="group"
+            class="mb-2"
+            >
+            @if (searchDialogEnabled) {
+              <button
+                id="openSearchDialogButton"
+                type="button"
+                class="btn btn-primary m-1"
+                (click)="openSearchDialog()"
+                >
+                <span class="pi pi-search"></span> {{ "search" | translate }}
+              </button>
+            }
+            @if (searchDialogEnabled) {
+              <button
+                id="clearSearchFilterButton"
+                type="button"
+                class="btn btn-primary m-1"
+                (click)="clearSearchFilter()"
+                >
+                <span class="pi pi-eraser"></span> {{ "clear" | translate }}
+              </button>
+            }
+          </div>
+        }
+      </div>
+    </div>
+  }
+  @if (entityModel) {
+    <d-generic-table
+      [entityModel]="entityModel"
+      [entityModelReference]="entityModelReference"
+      [entityName]="entityName"
+      [locale]="locale"
+      [searchObject]="searchObject"
+      [queryType]="queryType"
+      [defaultFilters]="defaultFilters"
+      [showDetailButton]="false"
+      [additionalRowActions]="additionalRowActions"
+      [exportMode]="exportMode"
+      [exportModeReference]="exportModeReference"
+    (onRowSelect)="rowClick($event)"></d-generic-table>
+  }
+  <div
+    class="btn-group"
+    role="group">
+    @if (entityModel?.createAllowed! && isWriteAllowed()) {
+      <button
+        type="button"
+        class="btn btn-primary m-1"
+        (click)="add()"
+        >
+        <span class="pi pi-plus"></span> {{ "add" | translate }}
+      </button>
+    }
+    <!-- Server defined actions-->
+    @for (action of filterEntityModelActions(); track action) {
+      <button
+        type="button"
+        class="btn btn-primary m-1"
+        (click)="callModelAction(vcr, action, undefined)">
+        <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
+      </button>
+    }
+    <!-- UI defined global actions -->
+    @for (action of additionalGlobalActions; track action) {
+      <button
+        type="button"
+        [class]="action.buttonClass"
+        (click)="callAdditionalGlobalAction(action)"
+        [disabled]="isGlobalActionDisabled(action)">
+        @if (action.icon) {
+          <span
+          class="pi {{ action.icon }}"></span>
+          } {{ action.messageKey | translate }}
+        </button>
+      }
+      <ng-template #popupDialogContainerRef></ng-template>
+    </div>
+  </div>
+</ng-template> @if (entityModel) {
+<ng-template
+  pTemplate
+  >
+  <div class="col-lg-12 col-md-12 p-3">
+    @if (isEmptyMode()) {
+      <p>{{ "select_item" | translate }}</p>
+    }
+    @if (isNewMode() || isExistingMode()) {
+      <d-generic-form
+        ngClass="nested"
+        [entityId]="selectedEntityId"
+        [entityName]="entityName"
+        [entityModel]="entityModel"
+        [entityModelReference]="entityModelReference"
+        [locale]="locale"
+        [navigationAllowed]="false"
+        [fieldFilters]="fieldFilters"
+        [additionalActions]="additionalFormActions"
+        [postProcessInputForm]="postProcessInputForm"
+        [customValidatorTemplate]="customValidatorTemplate"
+        [confirmSave]="confirmSave"
+        [openInViewMode]="openInViewMode"
+        [freeFormMode]="freeFormMode"
+        [freeFormTemplate]="freeFormTemplate"
+        [injectedCustomInputs]="customInputs"
+        [readOnly]="!isWriteAllowed()"
+        [formFillEnabled]="formFillEnabled"
+        [attributeGroupMode]="attributeGroupMode"
+        formWidthClass="row col-lg-12 col-md-12 col-sm-12"
+        [attributeVisible]="attributeVisible"
+        [injectedHiddenFieldService]="hiddenFieldService"
+        (afterSave)="afterSave($event)"
+      (afterEntityCreated)="onEntityCreated($event)"></d-generic-form>
+    }
+  </div>
+</ng-template>
+} </p-splitter>
+}
+@if (entityModel && !isReadAllowed()) {
+  {{ "component_view_not_allowed" | translate }}
+}

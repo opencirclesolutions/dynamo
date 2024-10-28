@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseComponent } from '../../../base/base.component';
 import { TooltipModule } from 'primeng/tooltip';
@@ -36,7 +36,12 @@ export class TimestampFieldComponent extends BaseComponent {
 
   @Input() searchMode: boolean = false;
 
-  constructor(translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+
     super(translate)
   }
 

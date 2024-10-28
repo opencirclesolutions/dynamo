@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Inject, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import {
   isBoolean,
   isDate,
@@ -61,6 +61,10 @@ import { EntityModelActionResponse } from '../../../interfaces/model/entityModel
 })
 
 export abstract class BaseCompositeComponent {
+  protected messageService = inject(NotificationService);
+  protected router = inject(Router);
+  protected authService = inject(AuthenticationService);
+
   isDate = isDate;
   isBoolean = isBoolean;
   isDecimal = isDecimal;
@@ -117,12 +121,12 @@ export abstract class BaseCompositeComponent {
   protected service: CRUDServiceInterface
   protected entityModelService: ModelServiceInterface
 
-  constructor(
-    protected messageService: NotificationService,
-    protected router: Router,
-    protected authService: AuthenticationService,
-    @Inject("DYNAMO_CONFIG") configuration: DynamoConfig,
-  ) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
     this.service = configuration.getCRUDService()
     this.entityModelService = configuration.getModelService()
   }

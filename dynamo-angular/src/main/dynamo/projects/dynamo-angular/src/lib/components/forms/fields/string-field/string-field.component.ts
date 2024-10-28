@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input } from '@angular/core';
+import { Component, Input, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { BaseComponent } from '../../../base/base.component';
 import { AttributeModelResponse } from '../../../../interfaces/model/attributeModelResponse';
@@ -38,7 +38,12 @@ export class StringFieldComponent extends BaseComponent {
   @Input() allowTextAreas: boolean = true;
   @Input() classes: string = '';
 
-  constructor(translate: TranslateService) {
+  /** Inserted by Angular inject() migration for backwards compatibility */
+  constructor(...args: unknown[]);
+
+  constructor() {
+    const translate = inject(TranslateService);
+
     super(translate)
   }
 

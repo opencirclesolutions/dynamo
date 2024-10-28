@@ -1,100 +1,104 @@
 <!--
-  #%L
-  Dynamo Framework
-  %%
-  Copyright (C) 2014 - 2024 Open Circle Solutions
-  %%
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+#%L
+Dynamo Framework
+%%
+Copyright (C) 2014 - 2024 Open Circle Solutions
+%%
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  #L%
-  -->
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#L%
+-->
 <p-dialog
-	header="{{ 'ai_fill' | translate }}"
-	[showHeader]="true"
-	[(visible)]="dialogVisible"
-	[style]="{ width: '70vw' }"
-	[modal]="true">
-<form
-	*ngIf="mainForm"
-	[formGroup]="mainForm">
-	<div class="row">
-		<!-- AI service selection box -->
-		<label for="type">{{ "ai_type" | translate }}</label>
-		<div class="row">
-			<p-dropdown
-				id="type"
-				[options]="options"
-				optionLabel="name"
-				[showClear]="true"
-				formControlName="type"></p-dropdown>
-			<p-message
-				severity="error"
-				*ngIf="getErrorString('ai_type')"
-				[text]="getErrorString('ai_type')"></p-message>
-		</div>
-	</div>
-	<!-- Textual input -->
-	<div class="row">
-		<label for="input">{{ "ai_input" | translate }}</label>
-		<div class="row">
-			<textarea
-				pInputTextarea
-				id="input"
-				type="text"
-				pInputText
-				formControlName="input"
-				[style]="{height: '20vh'}">
+  header="{{ 'ai_fill' | translate }}"
+  [showHeader]="true"
+  [(visible)]="dialogVisible"
+  [style]="{ width: '70vw' }"
+  [modal]="true">
+  @if (mainForm) {
+    <form
+      [formGroup]="mainForm">
+      <div class="row">
+        <!-- AI service selection box -->
+        <label for="type">{{ "ai_type" | translate }}</label>
+        <div class="row">
+          <p-dropdown
+            id="type"
+            [options]="options"
+            optionLabel="name"
+            [showClear]="true"
+          formControlName="type"></p-dropdown>
+          @if (getErrorString('ai_type')) {
+            <p-message
+              severity="error"
+            [text]="getErrorString('ai_type')"></p-message>
+          }
+        </div>
+      </div>
+      <!-- Textual input -->
+      <div class="row">
+        <label for="input">{{ "ai_input" | translate }}</label>
+        <div class="row">
+          <textarea
+            pInputTextarea
+            id="input"
+            type="text"
+            pInputText
+            formControlName="input"
+            [style]="{height: '20vh'}">
           </textarea>
-			<p-message
-				severity="error"
-				*ngIf="getErrorString('input')"
-				[text]="getErrorString('input')"></p-message>
-		</div>
-	</div>
-	<!-- Additional instructions -->
-	<div class="row">
-		<label for="additionalInstructions"> {{ "ai_instructions" | translate }}</label>
-		<div class="row">
-			<textarea
-				pInputTextarea
-				id="additionalInstructions"
-				type="text"
-				pInputText
-				formControlName="additionalInstructions">
+          @if (getErrorString('input')) {
+            <p-message
+              severity="error"
+            [text]="getErrorString('input')"></p-message>
+          }
+        </div>
+      </div>
+      <!-- Additional instructions -->
+      <div class="row">
+        <label for="additionalInstructions"> {{ "ai_instructions" | translate }}</label>
+        <div class="row">
+          <textarea
+            pInputTextarea
+            id="additionalInstructions"
+            type="text"
+            pInputText
+            formControlName="additionalInstructions">
           </textarea>
-			<p-message
-				severity="error"
-				*ngIf="getErrorString('additionalInstructions')"
-				[text]="getErrorString('additionalInstructions')"></p-message>
-		</div>
-	</div>
-</form>
+          @if (getErrorString('additionalInstructions')) {
+            <p-message
+              severity="error"
+            [text]="getErrorString('additionalInstructions')"></p-message>
+          }
+        </div>
+      </div>
+    </form>
+  }
 
-<div
-	class="btn-group"
-	role="group">
-	<button
-		type="button"
-		class="btn btn-danger m-1"
-		(click)="cancel()"
-		[disabled]="loading">
-		<span class="pi pi-times"></span> {{ "cancel" | translate }}
-	</button>
-	<button
-		type="button"
-		class="btn btn-success m-1"
-		(click)="execute()"
-		[disabled]="!mainForm?.valid || loading">
-		<span class="pi pi-check"></span> {{ "ok" | translate }}
-	</button>
-</div>
+  <div
+    class="btn-group"
+    role="group">
+    <button
+      type="button"
+      class="btn btn-danger m-1"
+      (click)="cancel()"
+      [disabled]="loading">
+      <span class="pi pi-times"></span> {{ "cancel" | translate }}
+    </button>
+    <button
+      type="button"
+      class="btn btn-success m-1"
+      (click)="execute()"
+      [disabled]="!mainForm?.valid || loading">
+      <span class="pi pi-check"></span> {{ "ok" | translate }}
+    </button>
+  </div>
 </p-dialog>

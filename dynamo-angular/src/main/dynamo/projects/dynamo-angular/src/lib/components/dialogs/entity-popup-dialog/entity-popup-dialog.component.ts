@@ -25,13 +25,13 @@ import { HiddenFieldService } from '../../../services/hidden-field.service';
 import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
 import { GenericFormComponent } from '../../forms/generic-form/generic-form.component';
 import { DialogModule } from 'primeng/dialog';
-import { CommonModule } from '@angular/common';
+
 import { BaseCompositeComponent } from '../../forms/base-composite/base-composite.component';
 
 @Component({
   selector: 'd-entity-popup-dialog',
   standalone: true,
-  imports: [GenericFormComponent, DialogModule, CommonModule],
+  imports: [GenericFormComponent, DialogModule],
   templateUrl: './entity-popup-dialog.component.html',
   styleUrl: './entity-popup-dialog.component.css'
 })

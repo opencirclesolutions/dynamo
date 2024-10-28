@@ -1,210 +1,237 @@
 <!--
-  #%L
-  Dynamo Framework
-  %%
-  Copyright (C) 2014 - 2024 Open Circle Solutions
-  %%
-  Licensed under the Apache License, Version 2.0 (the "License");
-  you may not use this file except in compliance with the License.
-  You may obtain a copy of the License at
+#%L
+Dynamo Framework
+%%
+Copyright (C) 2014 - 2024 Open Circle Solutions
+%%
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
 
-       http://www.apache.org/licenses/LICENSE-2.0
+http://www.apache.org/licenses/LICENSE-2.0
 
-  Unless required by applicable law or agreed to in writing, software
-  distributed under the License is distributed on an "AS IS" BASIS,
-  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-  See the License for the specific language governing permissions and
-  limitations under the License.
-  #L%
-  -->
-<form
-	*ngIf="entityModel && mainForm"
-	(ng-submit)="search()"
-	[formGroup]="mainForm"
-	ngClass="nested">
-	<p-panel
-		header="{{ 'search' | translate }}"
-		[toggleable]="true">
-	<div class="row">
-		<div
-			*ngFor="let am of searchAttributeModels"
-			class="form-group col-lg-4 col-md-6 col-sm-12">
-			<ng-container
-				[formGroup]="mainForm"
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+#L%
+-->
+@if (entityModel && mainForm) {
+  <form
+    (ng-submit)="search()"
+    [formGroup]="mainForm"
+    ngClass="nested">
+    <p-panel
+      header="{{ 'search' | translate }}"
+      [toggleable]="true">
+      <div class="row">
+        @for (am of searchAttributeModels; track am) {
+          <div
+            class="form-group col-lg-4 col-md-6 col-sm-12">
+            <ng-container
+              [formGroup]="mainForm"
 				[ngTemplateOutlet]="
             getTemplateForField(am.name) || defaultFieldTemplate
           "
-				[ngTemplateOutletContext]="{ $implicit: am, mainForm: mainForm }"> </ng-container>
-		</div>
-	</div>
-	</p-panel>
-	<div
-		class="btn-group mt-2"
-		role="group">
-		<button
-			type="button"
-			class="btn btn-primary m-1"
-			[disabled]="loading"
-			(click)="search()">
-			<span class="pi pi-search"></span> {{ "search" | translate }}
-		</button>
-		<button
-			type="button"
-			class="btn btn-primary m-1"
-			[disabled]="loading"
-			(click)="clear()">
-			<span class="pi pi-eraser"></span> {{ "clear" | translate }}
-		</button>
-		<button
-			type="button"
-			class="btn btn-primary m-1"
-			(click)="toAdvancedMode()"
-			*ngIf="!advancedMode && advancedModeEnabled"
-			[disabled]="loading">
-			<span class="pi pi-search-plus"></span> {{ "advanced_mode" | translate }}
-		</button>
-		<button
-			type="button"
-			class="btn btn-primary m-1"
-			(click)="toSimpleMode()"
-			*ngIf="advancedMode && advancedModeEnabled">
-			<span class="pi pi-search-minus"></span> {{ "simple_mode" | translate }}
-		</button>
-	</div>
-	<ng-template
-		#defaultFieldTemplate
-		let-am>
-	<div *ngIf="isString(am)">
-		<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-		<d-string-field
-			[am]="am"
-			[formGroup]="mainForm"
-			[locale]="locale"
-			classes="p-inputtext-sm form-control"
-			[allowTextAreas]="false"
-			[showValidationErrors]="false"></d-string-field>
-	</div>
-	<!-- Integral -->
-	<div *ngIf="isIntegral(am)">
-		<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-		<d-number-field
-			[am]="am"
-			[formGroup]="mainForm"
-			[locale]="locale"
-			[searchMode]="true"></d-number-field>
-	</div>
-	<!-- Decimal -->
-	<div *ngIf="isDecimal(am)">
-		<div class="row">
-			<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-			<d-decimal-field
-				[am]="am"
-				[formGroup]="mainForm"
-				[locale]="locale"
-				[searchMode]="true"></d-decimal-field>
-		</div>
-	</div>
-	<!-- Boolean -->
-	<div *ngIf="isBoolean(am)">
-		<div>
-			<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-			<div class="col-12">
-				<p-triStateCheckbox
-					[id]="am.name"
-					[name]="am.name"
-					[formControlName]="am.name"
-					[pTooltip]="am.descriptions[locale]"> </p-triStateCheckbox>
-			</div>
-		</div>
-	</div>
-	<!-- Enumeration -->
-	<div *ngIf="isEnum(am)">
-		<div class="row">
-			<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-			<d-enum-field
-				[am]="am"
-				[formGroup]="mainForm"
-				[locale]="locale"
-				[showValidationErrors]="false"
-				[options]="getEnumValues(am.name)"
-				[searchMode]="true"></d-enum-field>
-		</div>
-	</div>
-	<!-- Date -->
-	<div *ngIf="isDate(am)">
-		<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-		<d-date-field
-			[am]="am"
-			[locale]="locale"
-			[searchMode]="true"
-			[formGroup]="mainForm"></d-date-field>
-	</div>
-	<!-- Time -->
-	<div *ngIf="isTime(am)">
-		<div class="row">
-			<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-			<d-time-field
-				[am]="am"
-				[locale]="locale"
-				[searchMode]="true"
-				[formGroup]="mainForm"></d-time-field>
-		</div>
-	</div>
-	<!-- Timestamps -->
-	<div *ngIf="isInstant(am) || isLocalDateTime(am)">
-		<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-		<d-timestamp-field
-			[am]="am"
-			[locale]="locale"
-			[searchMode]="true"
-			[formGroup]="mainForm"></d-timestamp-field>
-	</div>
-	<!-- Master -->
-	<div *ngIf="isMaster(am)">
-		<div class="row">
-			<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-			<div class="col-12">
-				<d-select-entity-field
-					[am]="am"
-					[options]="lookupEntities(am.lookupEntityName!)"
-					[locale]="locale"
-					[formGroup]="mainForm"
-					[searchMode]="true"
-					[entityModelReference]="am.lookupEntityReference"
-					[defaultFilters]="getCombinedFilters(am)"
-					[showQuickAddButton]="false"> </d-select-entity-field>
-			</div>
-		</div>
-	</div>
-	<!-- Detail (free)-->
-	<div *ngIf="isFreeDetail(am)">
-		<div class="row">
-			<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-			<div class="col-12">
-				<d-select-many-field
-					[am]="am"
-					[options]="lookupEntities(am.lookupEntityName!)"
-					[locale]="locale"
-					[formGroup]="mainForm"
-					[searchMode]="true"
-					[entityModelReference]="am.lookupEntityReference"
-					[defaultFilters]="getCombinedFilters(am)"
-					[showQuickAddButton]="false"> </d-select-many-field>
-			</div>
-		</div>
-	</div>
-	<!-- Element collection -->
-	<div *ngIf="isElementCollection(am)">
-		<div class="row">
-			<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-			<div class="col-12">
-				<d-element-collection-field
-					[am]="am"
-					[locale]="locale"
-					[formGroup]="mainForm"
-					[searchMode]="true"> </d-element-collection-field>
-			</div>
-		</div>
-	</div>
-	</ng-template>
-</form>
+            [ngTemplateOutletContext]="{ $implicit: am, mainForm: mainForm }"> </ng-container>
+          </div>
+        }
+      </div>
+    </p-panel>
+    <div
+      class="btn-group mt-2"
+      role="group">
+      <button
+        type="button"
+        class="btn btn-primary m-1"
+        [disabled]="loading"
+        (click)="search()">
+        <span class="pi pi-search"></span> {{ "search" | translate }}
+      </button>
+      <button
+        type="button"
+        class="btn btn-primary m-1"
+        [disabled]="loading"
+        (click)="clear()">
+        <span class="pi pi-eraser"></span> {{ "clear" | translate }}
+      </button>
+      @if (!advancedMode && advancedModeEnabled) {
+        <button
+          type="button"
+          class="btn btn-primary m-1"
+          (click)="toAdvancedMode()"
+          [disabled]="loading">
+          <span class="pi pi-search-plus"></span> {{ "advanced_mode" | translate }}
+        </button>
+      }
+      @if (advancedMode && advancedModeEnabled) {
+        <button
+          type="button"
+          class="btn btn-primary m-1"
+          (click)="toSimpleMode()"
+          >
+          <span class="pi pi-search-minus"></span> {{ "simple_mode" | translate }}
+        </button>
+      }
+    </div>
+    <ng-template
+      #defaultFieldTemplate
+      let-am>
+      @if (isString(am)) {
+        <div>
+          <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+          <d-string-field
+            [am]="am"
+            [formGroup]="mainForm"
+            [locale]="locale"
+            classes="p-inputtext-sm form-control"
+            [allowTextAreas]="false"
+          [showValidationErrors]="false"></d-string-field>
+        </div>
+      }
+      <!-- Integral -->
+      @if (isIntegral(am)) {
+        <div>
+          <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+          <d-number-field
+            [am]="am"
+            [formGroup]="mainForm"
+            [locale]="locale"
+          [searchMode]="true"></d-number-field>
+        </div>
+      }
+      <!-- Decimal -->
+      @if (isDecimal(am)) {
+        <div>
+          <div class="row">
+            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+            <d-decimal-field
+              [am]="am"
+              [formGroup]="mainForm"
+              [locale]="locale"
+            [searchMode]="true"></d-decimal-field>
+          </div>
+        </div>
+      }
+      <!-- Boolean -->
+      @if (isBoolean(am)) {
+        <div>
+          <div>
+            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+            <div class="col-12">
+              <p-triStateCheckbox
+                [id]="am.name"
+                [name]="am.name"
+                [formControlName]="am.name"
+              [pTooltip]="am.descriptions[locale]"> </p-triStateCheckbox>
+            </div>
+          </div>
+        </div>
+      }
+      <!-- Enumeration -->
+      @if (isEnum(am)) {
+        <div>
+          <div class="row">
+            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+            <d-enum-field
+              [am]="am"
+              [formGroup]="mainForm"
+              [locale]="locale"
+              [showValidationErrors]="false"
+              [options]="getEnumValues(am.name)"
+            [searchMode]="true"></d-enum-field>
+          </div>
+        </div>
+      }
+      <!-- Date -->
+      @if (isDate(am)) {
+        <div>
+          <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+          <d-date-field
+            [am]="am"
+            [locale]="locale"
+            [searchMode]="true"
+          [formGroup]="mainForm"></d-date-field>
+        </div>
+      }
+      <!-- Time -->
+      @if (isTime(am)) {
+        <div>
+          <div class="row">
+            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+            <d-time-field
+              [am]="am"
+              [locale]="locale"
+              [searchMode]="true"
+            [formGroup]="mainForm"></d-time-field>
+          </div>
+        </div>
+      }
+      <!-- Timestamps -->
+      @if (isInstant(am) || isLocalDateTime(am)) {
+        <div>
+          <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+          <d-timestamp-field
+            [am]="am"
+            [locale]="locale"
+            [searchMode]="true"
+          [formGroup]="mainForm"></d-timestamp-field>
+        </div>
+      }
+      <!-- Master -->
+      @if (isMaster(am)) {
+        <div>
+          <div class="row">
+            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+            <div class="col-12">
+              <d-select-entity-field
+                [am]="am"
+                [options]="lookupEntities(am.lookupEntityName!)"
+                [locale]="locale"
+                [formGroup]="mainForm"
+                [searchMode]="true"
+                [entityModelReference]="am.lookupEntityReference"
+                [defaultFilters]="getCombinedFilters(am)"
+              [showQuickAddButton]="false"> </d-select-entity-field>
+            </div>
+          </div>
+        </div>
+      }
+      <!-- Detail (free)-->
+      @if (isFreeDetail(am)) {
+        <div>
+          <div class="row">
+            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+            <div class="col-12">
+              <d-select-many-field
+                [am]="am"
+                [options]="lookupEntities(am.lookupEntityName!)"
+                [locale]="locale"
+                [formGroup]="mainForm"
+                [searchMode]="true"
+                [entityModelReference]="am.lookupEntityReference"
+                [defaultFilters]="getCombinedFilters(am)"
+              [showQuickAddButton]="false"> </d-select-many-field>
+            </div>
+          </div>
+        </div>
+      }
+      <!-- Element collection -->
+      @if (isElementCollection(am)) {
+        <div>
+          <div class="row">
+            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+            <div class="col-12">
+              <d-element-collection-field
+                [am]="am"
+                [locale]="locale"
+                [formGroup]="mainForm"
+              [searchMode]="true"> </d-element-collection-field>
+            </div>
+          </div>
+        </div>
+      }
+    </ng-template>
+  </form>
+}
