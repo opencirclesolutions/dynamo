@@ -858,7 +858,7 @@ this a little bit and change it to a lookup component:
 --
 @NotNull
 @JoinColumn(name = "country_of_origin")
-@ManyToOne(fetch = FetchType._LAZY_)
+@ManyToOne(fetch = FetchType.LAZY)
 @Attribute(searchable = SearchMode.ALWAYS, visibleInGrid =
 VisibilityType.SHOW, selectMode = AttributeSelectMode.LOOKUP)
 private Country countryOfOrigin;
@@ -1115,7 +1115,7 @@ earlier.
 or a set of radio buttons for editing an enumeration.
 * Use the `numberFieldMode` to switch between using a text field or a
 numeric input field for a numeric property (this only works for integer
-or long properties). When you set this to `NUMBERFIEL`, e.g. for the
+or long properties). When you set this to `NUMBERFIELD`, e.g. for the
 `memberCount` property, you will see the following:
 
 .Numeric input field.
@@ -1248,7 +1248,7 @@ property in your Typescript file:
 attributeGroupMode: AttributeGroupMode = AttributeGroupMode.TAB;
 --
 
-And refer to that property in the HTML file (_organization.form.html_).
+And refer to that property in the HTML file (_organization-form.html_).
 
 After you restart the application you should now see three tab sheets
 (each containing a number of attributes) in the detail screen.
@@ -1472,9 +1472,8 @@ Now, using everything you have learned so far, modify this screen in the followi
 edit form
 
 IMPORTANT: Don’t forget to modify the relation fetching using the `@FetchJoin` annotation
-and to set a `displayProperty` for the Organization if
+and to set a `displayProperty` for the Organization if that has not been done already).
 
-that has not been done already).
 * The attribute order reads `firstName`, `nickName`, `lastName`,
 `organization`, `born`, `died`.
 * The caption for the `nickName` property must be changed to “Nickname”
@@ -1722,7 +1721,7 @@ The component itself is again deceptively simple
 
 [source,html]
 --
-<app-generic-edit-table-layout entityName="Delivery">
+<app-generic-edit-table-layout entityName="Delivery"></app-generic-edit-table-layout>
 --
 
 However, if you open the Deliveries screen it its current form, it will
@@ -1777,7 +1776,7 @@ example, we define the following in the _organization-form.component.ts_
 getFieldFilters() {
   let fieldFilters: Map<string,FilterModel[]> = new Map<string,FilterModel[]>();
 
-  let countryFilter = createEqualsFilter('name', 'au')
+  const countryFilter = createEqualsFilter('name', 'au');
   fieldFilters.set("countryOfOrigin", [
     countryFilter
   ]);
@@ -1847,7 +1846,7 @@ In addition to adding custom components, it is also possible to add
 custom validators to the default Dynamo components.
 
 As stated before, the framework will take care of adding validators to
-the front-end based on the Java Validation API annotations like @Min,
+the front-end based on the Java Validation API annotations like `@Min`,
 `@NotNull`, `@Size` etc. In case this is not enough, it is of course
 possible to provide your own validation logic in the back-end, but this
 functionality cannot be automatically duplicated on the front-end. This
@@ -1968,6 +1967,7 @@ public Organization updateName(OrganizationNameDTO dto) {
 --
 
 And in the `OrganizationService` we add the method definition
+[source,java]
 --
 Organization updateName(OrganizationNameDTO dto);
 --
@@ -2258,7 +2258,7 @@ to set minimum and maximum values.
 @CollectionTable(name = "person_lucky_numbers")
 @Column(name = "lucky_number")
 @Size(max = 3)
-@Attribute(visibleInForm = VisibilityType._SHOW_, minValue = 0, maxValue
+@Attribute(visibleInForm = VisibilityType.SHOW, minValue = 0, maxValue
 = 100)
 private Set<@Min(10) @Max(value = 100) Integer> luckyNumbers = new
 HashSet<>();
