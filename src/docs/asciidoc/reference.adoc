@@ -209,7 +209,8 @@ also start with “is”, e.g., `isValid()`).
 corresponding to the property. This allows you to create attribute
 models for read-only or composite properties (e.g., a `getNameAndAge()`
 method which concatenates the name and age as a String). Note that such
-an attribute will have to be defined as read-only.
+an attribute will have to be defined as read-only using the "editable"
+setting on the attribute model.
 * Certain attributes are ignored. Currently, this includes only `version`
 (used for JPA optimistic locking) and `class` (as every object has a
 `getClass()` method).
@@ -372,6 +373,10 @@ values:
 * For the `visibleInForm` and `visibleInGrid` settings, both the
 enumeration values (`SHOW`/`HIDE`) and the Boolean values `true` and `false`
 are supported.
+
+=== Overrides for nested entities
+
+
 
 == Attribute model settings
 

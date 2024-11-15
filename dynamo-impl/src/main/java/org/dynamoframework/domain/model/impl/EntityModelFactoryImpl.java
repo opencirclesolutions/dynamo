@@ -1109,7 +1109,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	private void setAnnotationVisibilityOverrides(Attribute attribute, AttributeModelImpl model, boolean nested) {
 		// set visibility (hide nested attribute by default; they must be shown using
 		// the message bundle)
-		if (attribute.visibleInForm() != null && !VisibilityType.INHERIT.equals(attribute.visibleInForm()) && !nested) {
+		if (attribute.visibleInForm() != null && !VisibilityType.INHERIT.equals(attribute.visibleInForm())) {
 			model.setVisibleInForm(VisibilityType.SHOW.equals(attribute.visibleInForm()));
 		}
 
