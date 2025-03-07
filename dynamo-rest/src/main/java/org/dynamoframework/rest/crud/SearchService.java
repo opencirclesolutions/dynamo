@@ -46,6 +46,9 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
+/**
+ * Service for constructing dynamic search queries
+ */
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -55,6 +58,15 @@ public class SearchService {
 
 	private final EntityCopier entityCopier;
 
+	/**
+	 * Performs a search
+	 *
+	 * @param searchModel the search request
+	 * @param entityModel the entity model of the entity to search on
+	 * @param <ID>        type parameter, ID of the entity
+	 * @param <T>         type parameter, type of the entity
+	 * @return a SearchResultsModel containing the results of the search
+	 */
 	public <ID, T extends AbstractEntity<ID>> SearchResultsModel<T> search(SearchModel searchModel,
 																		   EntityModel<T> entityModel) {
 		BaseSearchService<ID, T> service = findService(entityModel.getEntityClass());
@@ -63,6 +75,25 @@ public class SearchService {
 		} else {
 			return searchIdBased(searchModel, service, entityModel);
 		}
+	}
+
+	/**
+	 * Creates a search filter
+	 *
+	 * @param searchModel the search request
+	 * @param model       the entity model of the entity to
+	 * @param <ID>        type parameter, ID of the entity
+	 * @param <T>         type parameter, type of the entity
+	 * @return the constructed filter
+	 */
+	public <ID, T extends AbstractEntity<ID>> And createFilter(SearchModel searchModel, EntityModel<T> model) {
+		if (searchModel.getFilters() == null) {
+			return null;
+		}
+
+		List<? extends Filter> filters = searchModel.getFilters().stream()
+			.map(filterModel -> mapFilter(model, filterModel)).filter(Objects::nonNull).toList();
+		return new And(filters.toArray(new Filter[0]));
 	}
 
 	private <ID, T extends AbstractEntity<ID>> SearchResultsModel<T> searchPaging(SearchModel searchModel, BaseSearchService<ID, T> service, EntityModel<T> entityModel) {
@@ -131,16 +162,6 @@ public class SearchService {
 			.stats(createStatsModel(searchModel, ids.size(), tooManyResults))
 			.results(results)
 			.build();
-	}
-
-	public <ID, T extends AbstractEntity<ID>> And createFilter(SearchModel searchModel, EntityModel<T> model) {
-		if (searchModel.getFilters() == null) {
-			return null;
-		}
-
-		List<? extends Filter> filters = searchModel.getFilters().stream()
-			.map(filterModel -> mapFilter(model, filterModel)).filter(Objects::nonNull).toList();
-		return new And(filters.toArray(new Filter[0]));
 	}
 
 	private Object convertValue(Object value, AttributeModel am) {
@@ -225,7 +246,6 @@ public class SearchService {
 				.map(val -> new Contains(am.getName(), val))
 				.toList();
 			return new Or(list.toArray(new Contains[0]));
-
 		} else if (filterModel instanceof NullFilterModel) {
 			String prop = mapSearchProperty(am);
 			return new IsNull(prop);

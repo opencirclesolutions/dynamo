@@ -95,6 +95,7 @@ export * from './lib/components/forms/search/generic-search-layout/generic-searc
 export * from './lib/components/dialogs/auto-fill-dialog/auto-fill-dialog.component'
 export * from './lib/components/dialogs/element-collection-dialog/element-collection-dialog.component'
 export * from './lib/components/dialogs/entity-popup-dialog/entity-popup-dialog.component'
+export * from './lib/components/dialogs/entity-search-dialog/entity-search-dialog.component'
 export * from './lib/components/dialogs/pdf-viewer-dialog/pdf-viewer-dialog.component'
 
 export * from './lib/directives/additional-validation.directive'

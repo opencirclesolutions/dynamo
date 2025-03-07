@@ -17,20 +17,20 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable, inject } from '@angular/core';
+import {Injectable, inject} from '@angular/core';
 import {
   AuthConfig,
   NullValidationHandler,
   OAuthService,
 } from 'angular-oauth2-oidc';
-import { DynamoConfig } from '../interfaces/dynamo-config';
-import { first, map, tap } from 'rxjs';
+import {DynamoConfig} from '../interfaces/dynamo-config';
+import {first, map, tap} from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
 export class AuthenticationService {
-  private oauthService = inject(OAuthService);
+  private oauthService?;
 
   roles?: string[];
 
@@ -39,9 +39,11 @@ export class AuthenticationService {
 
   constructor() {
     const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+    this.oauthService = inject(OAuthService);
 
     this.oauthService.tokenValidationHandler = new NullValidationHandler()
     configuration.getConfiguration().pipe(
+      tap(c => console.log("Test1 " + JSON.stringify(c))),
       map(c => ({
         issuer: c.issuer,
         redirectUrl: c.redirectUri || window.location.origin + '/home',
@@ -50,24 +52,25 @@ export class AuthenticationService {
         responseType: 'code',
         disableAtHashCheck: true,
       } as AuthConfig)),
-      tap(c => this.oauthService.configure(c)),
-      tap(_ => this.oauthService.loadDiscoveryDocumentAndTryLogin()),
-      tap(_ => this.oauthService.setupAutomaticSilentRefresh()),
+      tap(c => this.oauthService!.configure(c)),
+      tap(_ => this.oauthService!.loadDiscoveryDocumentAndTryLogin()),
+      tap(_ => this.oauthService!.setupAutomaticSilentRefresh()),
       first(),
-    ).subscribe(_ => { })
+    ).subscribe(_ => {
+    })
   }
 
   login() {
-    this.oauthService.initLoginFlow();
+    this.oauthService!.initLoginFlow();
   }
 
   logout() {
-    this.oauthService.revokeTokenAndLogout();
-    this.oauthService.logOut();
+    this.oauthService!.revokeTokenAndLogout();
+    this.oauthService!.logOut();
   }
 
   getAccessToken() {
-    return this.oauthService.getAccessToken();
+    return this.oauthService!.getAccessToken();
   }
 
   private getRealmRoles(claims: any): string[] | undefined {
@@ -76,7 +79,7 @@ export class AuthenticationService {
 
   public hasRole(role: string | string[]): boolean {
     if (!this.roles) {
-      this.roles = this.getRealmRoles(this.oauthService.getIdentityClaims())
+      this.roles = this.getRealmRoles(this.oauthService!.getIdentityClaims())
     }
 
     return (
@@ -88,8 +91,8 @@ export class AuthenticationService {
 
   public isAuthenticated(): boolean {
     return (
-      !!this.oauthService.getIdentityClaims() &&
-      this.oauthService.hasValidAccessToken()
+      !!this.oauthService!.getIdentityClaims() &&
+      this.oauthService!.hasValidAccessToken()
     );
   }
 }

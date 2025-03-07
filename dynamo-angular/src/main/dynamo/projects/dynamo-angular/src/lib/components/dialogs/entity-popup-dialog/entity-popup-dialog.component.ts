@@ -17,23 +17,30 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, OnInit, QueryList, TemplateRef, ViewChild } from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { AdditionalFormAction } from '../../../interfaces/action';
-import { OverrideFieldDirective } from '../../../directives/override-field.directive';
-import { HiddenFieldService } from '../../../services/hidden-field.service';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { GenericFormComponent } from '../../forms/generic-form/generic-form.component';
-import { DialogModule } from 'primeng/dialog';
+import {Component, forwardRef, Input, OnInit, QueryList, TemplateRef, ViewChild} from '@angular/core';
+import {FormGroup, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {AdditionalFormAction} from '../../../interfaces/action';
+import {OverrideFieldDirective} from '../../../directives/override-field.directive';
+import {HiddenFieldService} from '../../../services/hidden-field.service';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {DialogModule} from 'primeng/dialog';
 
-import { BaseCompositeComponent } from '../../forms/base-composite/base-composite.component';
+import {BaseCompositeComponent} from '../../forms/base-composite/base-composite.component';
+import {GenericFormComponent} from "../../forms/generic-form/generic-form.component";
 
 @Component({
   selector: 'd-entity-popup-dialog',
   standalone: true,
-  imports: [GenericFormComponent, DialogModule],
+  imports: [DialogModule, forwardRef(() => GenericFormComponent)],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => EntityPopupDialogComponent),
+      multi: true,
+    },
+  ],
   templateUrl: './entity-popup-dialog.component.html',
-  styleUrl: './entity-popup-dialog.component.css'
+  styleUrl: './entity-popup-dialog.component.css',
 })
 export class EntityPopupDialogComponent
   extends BaseCompositeComponent
@@ -47,7 +54,8 @@ export class EntityPopupDialogComponent
   // post process input form (e.g. to add dependencies between components)
   @Input() postProcessInputForm?: (formGroup: FormGroup) => void;
   // method to call when the user closes the dialog
-  @Input() onDialogClosed?: (event: any) => void = (event) => { };
+  @Input() onDialogClosed?: (event: any) => void = (event) => {
+  };
   // additional actions to be placed in the button bar
   @Input() additionalActions: AdditionalFormAction[] = [];
   // additional validation function to carry out before submitting the form
@@ -70,7 +78,8 @@ export class EntityPopupDialogComponent
 
   dialogVisible: boolean = false;
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+  }
 
   showDialog(): void {
     this.dialogVisible = true;
@@ -81,9 +90,9 @@ export class EntityPopupDialogComponent
   }
 
   saveAndCloseDialog(): void {
-    if (this.form) {
-      this.form.save();
-    }
+    // if (this.form) {
+    //   this.form.save();
+    // }
   }
 
   /**
@@ -92,16 +101,15 @@ export class EntityPopupDialogComponent
    */
   afterSave(event: any) {
     this.dialogVisible = false;
-    if (this.readOnly === false && this.onDialogClosed) {
+    if (!this.readOnly && this.onDialogClosed) {
       this.onDialogClosed(event);
     }
   }
 
-  protected override onLookupFilled(am: AttributeModelResponse): void { }
+  protected override onLookupFilled(am: AttributeModelResponse): void {
+  }
 
   getDialogWidth() {
-    //return `{width: '80vw'}`
-
     return "{width : '90vw'}"
   }
 }

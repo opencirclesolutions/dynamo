@@ -20,6 +20,8 @@ package org.dynamoframework.filter;
  * #L%
  */
 
+import lombok.Getter;
+
 /**
  * A filter for determining if an expression matches a certain modulo
  * calculation
@@ -30,6 +32,7 @@ public class Modulo extends AbstractFilter implements PropertyFilter {
 
 	private final String propertyId;
 
+	@Getter
 	private final String modExpression;
 
 	private final Integer modValue;
@@ -47,9 +50,10 @@ public class Modulo extends AbstractFilter implements PropertyFilter {
 	/**
 	 * Constructor
 	 *
-	 * @param propertyId
-	 * @param modExpression
-	 * @param result
+	 * @param propertyId    the ID of the property
+	 * @param modExpression the expression to take the value from
+	 * @param modValue      the modulo value
+	 * @param result        the result
 	 */
 	private Modulo(String propertyId, String modExpression, Integer modValue, Number result) {
 		this.propertyId = propertyId;
@@ -61,10 +65,6 @@ public class Modulo extends AbstractFilter implements PropertyFilter {
 	@Override
 	public String getPropertyId() {
 		return propertyId;
-	}
-
-	public String getModExpression() {
-		return modExpression;
 	}
 
 	@Override
@@ -82,7 +82,7 @@ public class Modulo extends AbstractFilter implements PropertyFilter {
 
 		long temp = ((Number) value).longValue();
 
-		long modVal = 0;
+		long modVal;
 		if (getModExpression() != null) {
 			modVal = ((Number) getProperty(that, getModExpression())).longValue();
 		} else {

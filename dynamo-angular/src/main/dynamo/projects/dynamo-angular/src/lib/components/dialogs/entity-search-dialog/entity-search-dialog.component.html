@@ -1,0 +1,33 @@
+<p-dialog
+    [showHeader]="false"
+    [(visible)]="dialogVisible"
+    [style]="{ width: '70vw' }"
+    [modal]="true">
+    <p>Dialog!</p>
+    <d-generic-search-layout
+        [entityName]="entityName"
+        [entityModelReference]="entityModelReference"
+        [locale]="locale"
+        [selectedIds]="selectedIds"
+        [multiSelect]="multiSelect"
+        [nested]="true"
+        [searchImmediately]="true"
+        [defaultFilters]="defaultFilters"
+        [queryType]="queryType"></d-generic-search-layout>
+    <div
+        class="btn-group"
+        role="group">
+        <button
+            type="button"
+            class="btn btn-danger m-1"
+            (click)="cancel()">
+            <span class="pi pi-times"></span> {{ "cancel" | translate }}
+        </button>
+        <button
+            type="button"
+            class="btn btn-success m-1"
+            (click)="selectAndClose()">
+            <span class="pi pi-check"></span> {{ "ok" | translate }}
+        </button>
+    </div>
+</p-dialog>

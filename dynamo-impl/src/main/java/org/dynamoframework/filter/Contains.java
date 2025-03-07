@@ -20,6 +20,8 @@ package org.dynamoframework.filter;
  * #L%
  */
 
+import lombok.Getter;
+
 import java.util.Collection;
 import java.util.Objects;
 
@@ -30,6 +32,7 @@ import java.util.Objects;
  */
 public class Contains extends AbstractFilter implements PropertyFilter {
 
+	@Getter
 	private final Object value;
 
 	private final String propertyId;
@@ -46,10 +49,6 @@ public class Contains extends AbstractFilter implements PropertyFilter {
 	@Override
 	public String getPropertyId() {
 		return propertyId;
-	}
-
-	public Object getValue() {
-		return value;
 	}
 
 	@Override
@@ -73,12 +72,10 @@ public class Contains extends AbstractFilter implements PropertyFilter {
 	@Override
 	public boolean equals(Object obj) {
 		// Only objects of the same class can be equal
-		if (!(obj instanceof Contains)) {
+		if (!(obj instanceof Contains con)) {
 			return false;
 		}
-		Contains c = (Contains) obj;
-
-		return Objects.equals(propertyId, c.getPropertyId()) && Objects.equals(value, c.getValue());
+		return Objects.equals(propertyId, con.getPropertyId()) && Objects.equals(value, con.getValue());
 	}
 
 	@Override

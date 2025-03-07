@@ -17,38 +17,43 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, inject } from '@angular/core';
-import { TranslateService } from '@ngx-translate/core';
-import { BaseEntityComponent } from '../../../base-entity/base-entity.component';
-import { SelectOption } from '../../../../interfaces/select-option';
-import { AuthenticationService } from '../../../../services/authentication.service';
-import { AttributeModelResponse } from '../../../../interfaces/model/attributeModelResponse';
-import { PagingModel } from '../../../../interfaces/model/pagingModel';
-import { MessageModule } from 'primeng/message';
-import { TooltipModule } from 'primeng/tooltip';
-import { LookupFieldComponent } from '../lookup-field/lookup-field.component';
-import { ReactiveFormsModule } from '@angular/forms';
-import { MultiSelectModule } from 'primeng/multiselect';
+import {Component, Input, inject} from '@angular/core';
+import {TranslateService} from '@ngx-translate/core';
+import {BaseEntityComponent} from '../../../base-entity/base-entity.component';
+import {SelectOption} from '../../../../interfaces/select-option';
+import {AuthenticationService} from '../../../../services/authentication.service';
+import {AttributeModelResponse} from '../../../../interfaces/model/attributeModelResponse';
+import {PagingModel} from '../../../../interfaces/model/pagingModel';
+import {MessageModule} from 'primeng/message';
+import {TooltipModule} from 'primeng/tooltip';
+import {LookupFieldComponent} from '../lookup-field/lookup-field.component';
+import {ReactiveFormsModule} from '@angular/forms';
+import {MultiSelectModule} from 'primeng/multiselect';
+import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/entity-popup-dialog.component";
 
 @Component({
   selector: 'd-select-many-field',
   standalone: true,
-  imports: [MessageModule, TooltipModule, LookupFieldComponent, ReactiveFormsModule, MultiSelectModule],
+  imports: [MessageModule, TooltipModule, LookupFieldComponent, ReactiveFormsModule, MultiSelectModule, LookupFieldComponent, ReactiveFormsModule],
   templateUrl: './select-many-field.component.html',
   styleUrl: './select-many-field.component.css'
 })
 export class SelectManyFieldComponent extends BaseEntityComponent {
+
+  /**
+   * Just some random stuff
+   */
+
   @Input() searchMode: boolean = false;
+  @Input() random: string = '';
 
   cache: SelectOption[] = [];
 
-  /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
   constructor() {
     const authService = inject(AuthenticationService);
     const translate = inject(TranslateService);
-
     super(authService, translate);
   }
 
@@ -75,5 +80,18 @@ export class SelectManyFieldComponent extends BaseEntityComponent {
       return PagingModel.TypeEnum.PAGING;
     }
     return PagingModel.TypeEnum.ID_BASED;
+  }
+
+  override showQuickAddDialog() {
+    this.storeValue();
+
+    let componentRef = this.viewContainerRef.createComponent(EntityPopupDialogComponent);
+    componentRef.instance.entityModelReference = this.entityModelReference;
+    componentRef.instance.entityName = this.am.lookupEntityName!;
+    componentRef.instance.readOnly = false;
+    componentRef.instance.onDialogClosed = (obj: any): void => {
+      this.afterQuickAddDialogClosed(obj);
+    };
+    componentRef.instance.showDialog();
   }
 }

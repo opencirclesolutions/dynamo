@@ -48,7 +48,7 @@ export class StringFieldComponent extends BaseComponent {
   }
 
   isTextArea(am: AttributeModelResponse): boolean {
-    return this.allowTextAreas === true && am.textFieldMode == AttributeModelResponse.TextFieldModeEnum.TEXTAREA;
+    return this.allowTextAreas && am.textFieldMode == AttributeModelResponse.TextFieldModeEnum.TEXTAREA;
   }
 
   isPassword(am: AttributeModelResponse): boolean {

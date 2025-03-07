@@ -21,6 +21,7 @@ package org.dynamoframework.service.impl;
  */
 
 import com.querydsl.core.types.dsl.EntityPathBase;
+import lombok.Getter;
 import org.dynamoframework.dao.BaseDao;
 import org.dynamoframework.dao.impl.DefaultDaoImpl;
 import org.dynamoframework.domain.AbstractEntity;
@@ -38,17 +39,19 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	/**
 	 * The DAO
 	 */
-	private BaseDao<ID, T> dao;
+	private final BaseDao<ID, T> dao;
 
 	/**
 	 * The name of the property that is used to check if a value is unique
 	 */
-	private String[] uniquePropertyIds;
+	@Getter
+	private final String[] uniquePropertyIds;
 
 	/**
 	 * Whether the unique value is case sensitive
 	 */
-	private boolean uniqueCaseSensitive;
+	@Getter
+	private final boolean uniqueCaseSensitive;
 
 	/**
 	 * Constructor - no unique property
@@ -61,7 +64,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	}
 
 	/**
-	 * Constructor - with unique property, not case sensitive
+	 * Constructor - with unique property, not case-sensitive
 	 *
 	 * @param dslRoot           the DSL root
 	 * @param entityClass       the entity class
@@ -76,8 +79,8 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	 *
 	 * @param dslRoot             the QueryDSL root
 	 * @param entityClass         the entity class
-	 * @param uniquePropertyIds
-	 * @param uniqueCaseSensitive
+	 * @param uniquePropertyIds   the IDs of the properties that together make the entity unique
+	 * @param uniqueCaseSensitive whether the property values are case-sensitive
 	 */
 	public DefaultServiceImpl(EntityPathBase<T> dslRoot, Class<T> entityClass, String[] uniquePropertyIds,
 							  boolean uniqueCaseSensitive) {
@@ -87,7 +90,7 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 	}
 
 	/**
-	 * @param dao
+	 * @param dao the DAO
 	 */
 	public DefaultServiceImpl(BaseDao<ID, T> dao) {
 		this(dao, (String[]) null);
@@ -138,14 +141,6 @@ public class DefaultServiceImpl<ID, T extends AbstractEntity<ID>> extends BaseSe
 			}
 		}
 		return null;
-	}
-
-	public String[] getUniquePropertyIds() {
-		return uniquePropertyIds;
-	}
-
-	public boolean isUniqueCaseSensitive() {
-		return uniqueCaseSensitive;
 	}
 
 }

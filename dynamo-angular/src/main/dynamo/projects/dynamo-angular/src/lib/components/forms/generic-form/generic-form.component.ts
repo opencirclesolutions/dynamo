@@ -206,13 +206,9 @@ export class GenericFormComponent
   }
 
   ngOnInit(): void {
-    // FIXME: very unlikely to be what's meant; I've rewritten to what I think it's supposed to be
-    //    this.hiddenFieldService = this.hiddenFieldService
-    //      ? this.injectedHiddenFieldService
-    //      : this.hiddenFieldService;AbstractControl
     this.hiddenFieldService = this.injectedHiddenFieldService || this.hiddenFieldService
 
-    this.viewMode = this.openInViewMode || this.readOnly ? true : false;
+    this.viewMode = this.openInViewMode || this.readOnly;
     if (!this.entityModel) {
       this.entityModelService
         .getEntityModel(this.entityName, this.entityModelReference)

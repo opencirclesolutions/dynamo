@@ -17,15 +17,14 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, ViewChild, ViewContainerRef, inject } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
-import { BaseComponent } from '../base/base.component';
-import { EntityModelResponse } from '../../interfaces/model/entityModelResponse';
-import { SelectOption } from '../../interfaces/select-option';
-import { FilterModel } from '../../interfaces/model/filterModel';
-import { AuthenticationService } from '../../services/authentication.service';
-import { EntityPopupDialogComponent } from '../dialogs/entity-popup-dialog/entity-popup-dialog.component';
+import {Component, inject, Input, ViewChild, ViewContainerRef} from '@angular/core';
+import {AbstractControl} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
+import {BaseComponent} from '../base/base.component';
+import {EntityModelResponse} from '../../interfaces/model/entityModelResponse';
+import {SelectOption} from '../../interfaces/select-option';
+import {FilterModel} from '../../interfaces/model/filterModel';
+import {AuthenticationService} from '../../services/authentication.service';
 
 @Component({
   selector: 'd-base-entity',
@@ -36,7 +35,6 @@ import { EntityPopupDialogComponent } from '../dialogs/entity-popup-dialog/entit
 })
 export abstract class BaseEntityComponent extends BaseComponent {
   private authService = inject(AuthenticationService);
-
 
   // entity model
   @Input() entityModel?: EntityModelResponse;
@@ -56,30 +54,17 @@ export abstract class BaseEntityComponent extends BaseComponent {
   viewContainerRef!: ViewContainerRef;
 
   /** Inserted by Angular inject() migration for backwards compatibility */
-  constructor(...args: unknown[]);
+  protected constructor(...args: unknown[]);
 
-  constructor() {
+  protected constructor() {
     const translate = inject(TranslateService);
-
     super(translate)
   }
 
   /**
    * Displays the dialog that can be used to quickly add a new entity
    */
-  showQuickAddDialog() {
-    this.storeValue();
-    let componentRef = this.viewContainerRef.createComponent(EntityPopupDialogComponent);
-    componentRef.instance.entityModelReference = this.entityModelReference;
-    componentRef.instance.entityName = this.am.lookupEntityName!;
-    componentRef.instance.readOnly = false;
-
-    let callback = (obj: any): void => {
-      this.afterQuickAddDialogClosed(obj);
-    };
-    componentRef.instance.onDialogClosed = callback;
-    componentRef.instance.showDialog();
-  }
+  abstract showQuickAddDialog(): void;
 
   afterQuickAddDialogClosed(obj: any): void {
     let newObject: SelectOption = {
@@ -118,7 +103,7 @@ export abstract class BaseEntityComponent extends BaseComponent {
 
     if (!this.entityModel.writeRoles || this.entityModel.writeRoles.length == 0) {
       return true;
-    };
+    }
     return this.authService.hasRole(this.entityModel.writeRoles)
   }
 

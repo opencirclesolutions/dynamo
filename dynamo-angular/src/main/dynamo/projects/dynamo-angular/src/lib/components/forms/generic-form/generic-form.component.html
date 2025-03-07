@@ -21,309 +21,331 @@
 <h5 *ngIf="!entityId && entityModel">{{ getNewObjectCaption() }}</h5>
 <h5 *ngIf="entityId && entityModel">{{ getUpdateObjectCaption() }}</h5>
 <p-divider></p-divider>
-<ng-container *ngIf="freeFormMode"> <!-- Free form mode, only provide a template that offers access to the form group -->
-<ng-container
-	[ngTemplateOutlet]="freeFormTemplate || defaultFreeFormTemplate"
-	[ngTemplateOutletContext]="{ $implicit: mainForm }"> </ng-container> <ng-template
-	#defaultFreeFormTemplate
-	let-mainForm> </ng-template> </ng-container>
+<ng-container *ngIf="freeFormMode">
+    <!-- Free form mode, only provide a template that offers access to the form group -->
+    <ng-container
+        [ngTemplateOutlet]="freeFormTemplate || defaultFreeFormTemplate"
+        [ngTemplateOutletContext]="{ $implicit: mainForm }"></ng-container>
+    <ng-template
+        #defaultFreeFormTemplate
+        let-mainForm></ng-template>
+</ng-container>
 <ng-container *ngIf="!freeFormMode"> <!-- View mode only -->
-<div *ngIf="viewMode || !isWriteAllowed()">
-	<div [class]="getFormWidthClass()">
-		<d-generic-form-view
-			[entity]="editObject"
-			[locale]="locale"
-			[entityModel]="entityModel"
-			[entityName]="entityName"
-			[nestedEntityModelMap]="nestedEntityModelMap"
-			[attributeGroupMode]="attributeGroupMode"
-			[numberOfColumns]="numberOfColumns"
-			*ngIf="editObject.id"
-			[attributeVisible]="attributeVisible"
-			[formGroup]="mainForm"></d-generic-form-view>
-	</div>
-	<div
-		class="btn-group"
-		role="group"
-		*ngIf="entityModel">
-		<button
-			type="button"
-			class="btn btn-primary m-1"
-			(click)="back()"
-			*ngIf="backEnabled()">
-			<span class="pi pi-arrow-left"></span> {{ "back" | translate }}
-		</button>
-		<button
-			type="button"
-			*ngIf="nested"
-			class="btn btn-danger m-1"
-			(click)="closeDialog()">
-			<span class="pi pi-times"></span> {{ "close" | translate }}
-		</button>
-		<button
-			type="button"
-			class="btn btn-primary m-1"
-			(click)="editMode()"
-			*ngIf="
-          entityModel.updateAllowed && this.isWriteAllowed() && !this.readOnly
-        ">
-			<span class="pi pi-pencil"></span> {{ "edit" | translate }}
-		</button>
-		<button
-			*ngFor="let action of filterEntityModelActions()"
-			type="button"
-			class="btn btn-primary m-1"
-			[disabled]="!isModelActionEnabled(action)"
-			(click)="callModelAction(vcr, action)">
-			<span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-		</button>
-		<button
-			*ngFor="let action of filterAdditionalActions()"
-			type="submit"
-			class="btn btn-primary m-1"
-			[disabled]="loading"
-			(click)="callAdditionalAction(action)"
-			[class]="action.buttonClass"
-			[disabled]="isAdditionalFormActionDisabled(action)">
+    <div *ngIf="viewMode || !isWriteAllowed()">
+        <div [class]="getFormWidthClass()">
+            <d-generic-form-view
+                [entity]="editObject"
+                [locale]="locale"
+                [entityModel]="entityModel"
+                [entityName]="entityName"
+                [nestedEntityModelMap]="nestedEntityModelMap"
+                [attributeGroupMode]="attributeGroupMode"
+                [numberOfColumns]="numberOfColumns"
+                *ngIf="editObject.id"
+                [attributeVisible]="attributeVisible"
+                [formGroup]="mainForm"></d-generic-form-view>
+        </div>
+        <div
+            class="btn-group"
+            role="group"
+            *ngIf="entityModel">
+            <button
+                type="button"
+                class="btn btn-primary m-1"
+                (click)="back()"
+                *ngIf="backEnabled()">
+                <span class="pi pi-arrow-left"></span> {{ "back" | translate }}
+            </button>
+            <button
+                type="button"
+                *ngIf="nested"
+                class="btn btn-danger m-1"
+                (click)="closeDialog()">
+                <span class="pi pi-times"></span> {{ "close" | translate }}
+            </button>
+            <button
+                type="button"
+                class="btn btn-primary m-1"
+                (click)="editMode()"
+                *ngIf="
+          entityModel.updateAllowed && this.isWriteAllowed() && !this.readOnly">
+                <span class="pi pi-pencil"></span> {{ "edit" | translate }}
+            </button>
+            <button
+                *ngFor="let action of filterEntityModelActions()"
+                type="button"
+                class="btn btn-primary m-1"
+                [disabled]="!isModelActionEnabled(action)"
+                (click)="callModelAction(vcr, action)">
+                <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
+            </button>
+            <button
+                *ngFor="let action of filterAdditionalActions()"
+                type="submit"
+                class="btn btn-primary m-1"
+                [disabled]="loading"
+                (click)="callAdditionalAction(action)"
+                [class]="action.buttonClass"
+                [disabled]="isAdditionalFormActionDisabled(action)">
 			<span
-				*ngIf="action.icon"
-				class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
-		</button>
+                *ngIf="action.icon"
+                class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
+            </button>
 
-		<ng-template #popupDialogContainerRef></ng-template>
-	</div>
-</div>
+            <ng-template #popupDialogContainerRef></ng-template>
+        </div>
+    </div>
 
-<div
-	*ngIf="!viewMode && isWriteAllowed()"
-	class="row">
-	<form
-		id="edit-form"
-		*ngIf="mainForm">
-		<div [class]="getFormWidthClass()">
-			<!-- Grouped attributes (panels) -->
-			<ng-container *ngIf="getAttributeModelGroups().length > 1 && useGroupPanels()"> <p-panel
-				*ngFor="let group of getAttributeModelGroups()"
-				[header]="getGroupDescription(group)"
-				[toggleable]="true"
-				class="pb-2">
-			<div class="row">
-				<div
-					*ngFor="let am of getAttributeModelsForGroup(group)"
-					[formGroup]="mainForm"
-					[class]="getColumnsClass()">
-					<ng-container *ngTemplateOutlet="formTemplate; context: { $implicit: am }"> </ng-container>
-				</div>
-			</div>
-			</p-panel> </ng-container>
-			<!-- Grouped attributes (tabs) -->
-			<ng-container *ngIf="getAttributeModelGroups().length > 1 && useGroupTabs()"> <p-tabView>
-			<p-tabPanel
-				*ngFor="let group of getAttributeModelGroups()"
-				[header]="getGroupDescription(group)">
-			<div class="row">
-				<div
-					*ngFor="let am of getAttributeModelsForGroup(group)"
-					[formGroup]="mainForm"
-					[class]="getColumnsClass()">
-					<ng-container *ngTemplateOutlet="formTemplate; context: { $implicit: am }"> </ng-container>
-				</div>
-			</div>
-			</p-tabPanel> </p-tabView> </ng-container>
-			<!-- No explicitly defined groups -->
-			<ng-container *ngIf="getAttributeModelGroups().length == 1">
-			<div class="row">
-				<div
-					*ngFor="
+    <div
+        *ngIf="!viewMode && isWriteAllowed()"
+        class="row">
+        <form
+            id="edit-form"
+            *ngIf="mainForm">
+            <div [class]="getFormWidthClass()">
+                <!-- Grouped attributes (panels) -->
+                <ng-container *ngIf="getAttributeModelGroups().length > 1 && useGroupPanels()">
+                    <p-panel
+                        *ngFor="let group of getAttributeModelGroups()"
+                        [header]="getGroupDescription(group)"
+                        [toggleable]="true"
+                        class="pb-2">
+                        <div class="row">
+                            <div
+                                *ngFor="let am of getAttributeModelsForGroup(group)"
+                                [formGroup]="mainForm"
+                                [class]="getColumnsClass()">
+                                <ng-container [ngTemplateOutlet]="formTemplate"
+                                              [ngTemplateOutletContext]="{ $implicit: am }"></ng-container>
+                            </div>
+                        </div>
+                    </p-panel>
+                </ng-container>
+                <!-- Grouped attributes (tabs) -->
+                <ng-container *ngIf="getAttributeModelGroups().length > 1 && useGroupTabs()">
+                    <p-tabView>
+                        <p-tabPanel
+                            *ngFor="let group of getAttributeModelGroups()"
+                            [header]="getGroupDescription(group)">
+                            <div class="row">
+                                <div
+                                    *ngFor="let am of getAttributeModelsForGroup(group)"
+                                    [formGroup]="mainForm"
+                                    [class]="getColumnsClass()">
+                                    <ng-container [ngTemplateOutlet]="formTemplate"
+                                                  [ngTemplateOutletContext]="{ $implicit: am }"></ng-container>
+                                </div>
+                            </div>
+                        </p-tabPanel>
+                    </p-tabView>
+                </ng-container>
+                <!-- No explicitly defined groups -->
+                <ng-container *ngIf="getAttributeModelGroups().length == 1">
+                    <div class="row">
+                        <div
+                            *ngFor="
                 let am of getUngroupedAttributeModels(
                   this.visibleAttributeModels
                 )
               "
-					[formGroup]="mainForm"
-					[class]="getColumnsClass()">
-					<ng-container *ngTemplateOutlet="formTemplate; context: { $implicit: am }"> </ng-container>
-				</div>
-			</div>
-			</ng-container>
-		</div>
-		<ng-container
-			[ngTemplateOutlet]="
-          customValidatorTemplate || defaultCustomValidatorTemplate
-        "
-			[ngTemplateOutletContext]="{ $implicit: mainForm }"> </ng-container>
-	</form>
-	<div
-		*ngIf="mainForm"
-		class="pt-2">
-		<div
-			class="btn-group"
-			role="group">
-			<!-- Navigate back button -->
-			<button
-				type="button"
-				class="btn btn-primary m-1"
-				(click)="back()"
-				*ngIf="backEnabled()"
-				[disabled]="loading">
-				<span class="pi pi-arrow-left"></span> {{ "back" | translate }}
-			</button>
-			<!-- Cancel -->
-			<button
-				type="submit"
-				class="btn btn-primary m-1"
-				[disabled]="loading"
-				(click)="cancelEdit()"
-				*ngIf="!nested && openInViewMode && entityId">
-				<span class="pi pi-ban"></span> {{ "cancel" | translate }}
-			</button>
-			<!-- Save button -->
-			<button
-				type="submit"
-				class="btn btn-primary m-1"
-				[disabled]="loading"
-				(click)="save()">
-				<span class="pi pi-save"></span> {{ "save" | translate }}
-			</button>
-			<button
-				*ngFor="let action of filterEntityModelActions()"
-				type="button"
-				class="btn btn-primary m-1"
-				[disabled]="!isModelActionEnabled(action)"
-				(click)="callModelAction(vcr, action)">
-				<span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-			</button>
-			<ng-template #popupDialogContainerRef></ng-template>
-			<button
-				type="button"
-				*ngIf="formFillEnabled && !nested"
-				class="btn btn-primary m-1"
-				(click)="showFormFillDialog()">
-				<span class="pi pi-filter-fill"></span> {{ "ai_fill" | translate }}
-			</button>
-			<ng-template #formFillContainerRef></ng-template>
-			<!-- Close button (only visible when nested inside popup)-->
-			<button
-				type="button"
-				*ngIf="nested"
-				class="btn btn-danger m-1"
-				(click)="closeDialog()">
-				<span class="pi pi-times"></span> {{ "close" | translate }}
-			</button>
-			<!-- Extra UI actions-->
-			<ng-container *ngFor="let action of filterAdditionalActions()"> <ng-container
-				*ngTemplateOutlet="
-              customActionTemplate;
-              context: { $implicit: action }
-            ">
-			</ng-container> </ng-container>
-		</div>
-	</div>
-</div>
+                            [formGroup]="mainForm"
+                            [class]="getColumnsClass()">
+                            <ng-container [ngTemplateOutlet]="formTemplate"
+                                          [ngTemplateOutletContext]="{ $implicit: am }"></ng-container>
+                        </div>
+                    </div>
+                </ng-container>
+            </div>
+            <ng-container
+                [ngTemplateOutlet]="customValidatorTemplate || defaultCustomValidatorTemplate"
+                [ngTemplateOutletContext]="{ $implicit: mainForm }"></ng-container>
+        </form>
+        <div
+            *ngIf="mainForm"
+            class="pt-2">
+            <div
+                class="btn-group"
+                role="group">
+                <!-- Navigate back button -->
+                <button
+                    type="button"
+                    class="btn btn-primary m-1"
+                    (click)="back()"
+                    *ngIf="backEnabled()"
+                    [disabled]="loading">
+                    <span class="pi pi-arrow-left"></span> {{ "back" | translate }}
+                </button>
+                <!-- Cancel -->
+                <button
+                    type="submit"
+                    class="btn btn-primary m-1"
+                    [disabled]="loading"
+                    (click)="cancelEdit()"
+                    *ngIf="!nested && openInViewMode && entityId">
+                    <span class="pi pi-ban"></span> {{ "cancel" | translate }}
+                </button>
+                <!-- Save button -->
+                <button
+                    type="submit"
+                    class="btn btn-primary m-1"
+                    [disabled]="loading"
+                    (click)="save()">
+                    <span class="pi pi-save"></span> {{ "save" | translate }}
+                </button>
+                <button
+                    *ngFor="let action of filterEntityModelActions()"
+                    type="button"
+                    class="btn btn-primary m-1"
+                    [disabled]="!isModelActionEnabled(action)"
+                    (click)="callModelAction(vcr, action)">
+                    <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
+                </button>
+                <ng-template #popupDialogContainerRef></ng-template>
+                <button
+                    type="button"
+                    *ngIf="formFillEnabled && !nested"
+                    class="btn btn-primary m-1"
+                    (click)="showFormFillDialog()">
+                    <span class="pi pi-filter-fill"></span> {{ "ai_fill" | translate }}
+                </button>
+                <ng-template #formFillContainerRef></ng-template>
+                <!-- Close button (only visible when nested inside popup)-->
+                <button
+                    type="button"
+                    *ngIf="nested"
+                    class="btn btn-danger m-1"
+                    (click)="closeDialog()">
+                    <span class="pi pi-times"></span> {{ "close" | translate }}
+                </button>
+                <!-- Extra UI actions-->
+                @for (action of filterAdditionalActions(); track action) {
+                    <ng-container [ngTemplateOutlet]="customActionTemplate"
+                                  [ngTemplateOutletContext]="{ $implicit: action }">
+                    </ng-container>
+                }
+            </div>
+        </div>
+    </div>
 
-<ng-template #defaultCustomValidatorTemplate> </ng-template> <ng-template
-	#customActionTemplate
-	let-action>
-<button
-	type="submit"
-	class="btn btn-primary m-1"
-	[disabled]="loading"
-	(click)="callAdditionalAction(action)"
-	[class]="action.buttonClass"
-	[disabled]="isAdditionalFormActionDisabled(action)">
+    <ng-template #defaultCustomValidatorTemplate></ng-template>
+    <ng-template
+        #customActionTemplate
+        let-action>
+        <button
+            type="submit"
+            class="btn btn-primary m-1"
+            (click)="callAdditionalAction(action)"
+            [class]="action.buttonClass"
+            [disabled]="loading || isAdditionalFormActionDisabled(action)">
 	<span
-		*ngIf="action.icon"
-		class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
-</button>
-</ng-template> <!-- template for showing a single form field --> <ng-template
-	#formTemplate
-	let-am> <ng-container *ngIf="isEditable(am)"> <!-- include default--> <ng-container
-	[ngTemplateOutlet]="
-          getTemplateForField(am.name) || defaultFieldTemplate
-        "
-	[ngTemplateOutletContext]="{ $implicit: am, mainForm: mainForm }"> </ng-container> </ng-container> <!-- Read only view -->
-<div
-	*ngIf="!isEditable(am) && isAttributeVisible(am)"
-	class="row">
-	<b><label for="{{ am.name }}">{{ am.displayNames[locale] }}</label></b>
-	<div class="row">
-		<div [class]="getColClass()">
-			<d-field-view
-				[am]="am"
-				[entity]="editObject"
-				[locale]="locale"
-				[enumMap]="getEnumMap(am)"
-				[showEmptyValueLabel]="true"
-				*ngIf="isNestedEntityModelReady(am)"> </d-field-view>
-		</div>
-	</div>
-</div>
-</ng-template> <ng-template
-	#defaultFieldTemplate
-	let-am> <ng-container
-	*ngIf="isAttributeVisible(am)"
-	[formGroup]="mainForm"> <ng-container *ngIf="!hasGroupTogetherWith(am)"> <ng-container
-	*ngIf="isNestedDetail(am) && getNestedEntityModel(am)"> <label
-	class="col-12"
-	for="{{ am.name }}">{{ am.displayNames[locale] }}</label> <d-details-grid
-	[am]="am"
-	[entityName]="am.lookupEntityName"
-	[attributeName]="am.name"
-	[entityModel]="getNestedEntityModel(am)"
-	[rows]="editObject[am.name]"
-	[formBuilder]="this.formBuilder"
-	[formArray]="getFormArray(am)"
-	[locale]="locale"
-	[parentEntityName]="entityName"
-	*ngIf="isNestedDetail(am)&& getNestedEntityModel(am)"></d-details-grid> </ng-container> <ng-container *ngIf="!isNestedDetail(am)">
-<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label> <d-generic-field
-	[formGroup]="mainForm"
-	[am]="am"
-	[enumValues]="getEnumValues(am.name)"
-	[entityModel]="getNestedEntityModel(am)"
-	[formControl]="getFormControl(am)"
-	[locale]="locale"
-	[options]="lookupEntities(am.lookupEntityName!)"
-	[fieldFilters]="getCombinedFilters(am)"
-	[showValidationErrors]="true"
-	[fullWidth]="showFullWidth(am)"
-	ngDefaultControl
-	*ngIf="!isLob(am)"> </d-generic-field> <d-file-upload
-	[am]="am"
-	[entityId]="entityId"
-	[entityName]="entityName"
-	[editObject]="editObject"
-	(onFileUpload)="onFileUpload($event)"
-	(onFileClear)="onFileClear($event)"
-	*ngIf="isLob(am)"> </d-file-upload> </ng-container> </ng-container> <ng-container *ngIf="hasGroupTogetherWith(am)"> <!-- Multiple attributes grouped together -->
-<div class="row">
-	<div [class]="getGroupTogetherColClass(am)">
-		<label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
-		<d-generic-field
-			[formGroup]="mainForm"
-			[am]="am"
-			[enumValues]="getEnumValues(am.name)"
-			[entityModel]="getNestedEntityModel(am)"
-			[formControl]="getFormControl(am)"
-			[locale]="locale"
-			[options]="lookupEntities(am.lookupEntityName!)"
-			[fieldFilters]="getCombinedFilters(am)"
-			ngDefaultControl
-			[showValidationErrors]="true"
-			[fullWidth]="true"
-			*ngIf="!isNestedDetail(am)&& !isLob(am)"> </d-generic-field>
-	</div>
-	<div
-		[class]="getGroupTogetherColClass(am)"
-		*ngFor="let gam of am.groupTogetherWith">
-		<ng-container
-			[ngTemplateOutlet]="
-                getTemplateForField(am.name) || defaultFieldTemplate
-              "
-			[ngTemplateOutletContext]="{
+        *ngIf="action.icon"
+        class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
+        </button>
+    </ng-template> <!-- template for showing a single form field -->
+    <ng-template
+        #formTemplate
+        let-am>
+        <ng-container *ngIf="isEditable(am)"> <!-- include default-->
+            <ng-container
+                [ngTemplateOutlet]="getTemplateForField(am.name) || defaultFieldTemplate"
+                [ngTemplateOutletContext]="{ $implicit: am, mainForm: mainForm }"></ng-container>
+        </ng-container> <!-- Read only view -->
+        <div
+            *ngIf="!isEditable(am) && isAttributeVisible(am)"
+            class="row">
+            <b><label for="{{ am.name }}">{{ am.displayNames[locale] }}</label></b>
+            <div class="row">
+                <div [class]="getColClass()">
+                    <d-field-view
+                        [am]="am"
+                        [entity]="editObject"
+                        [locale]="locale"
+                        [enumMap]="getEnumMap(am)"
+                        [showEmptyValueLabel]="true"
+                        *ngIf="isNestedEntityModelReady(am)"></d-field-view>
+                </div>
+            </div>
+        </div>
+    </ng-template>
+    <ng-template
+        #defaultFieldTemplate
+        let-am>
+        <ng-container
+            *ngIf="isAttributeVisible(am)"
+            [formGroup]="mainForm">
+            <ng-container *ngIf="!hasGroupTogetherWith(am)">
+                <ng-container
+                    *ngIf="isNestedDetail(am) && getNestedEntityModel(am)"><label
+                    class="col-12"
+                    for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+                    <d-details-grid
+                        [am]="am"
+                        [entityName]="am.lookupEntityName"
+                        [attributeName]="am.name"
+                        [entityModel]="getNestedEntityModel(am)"
+                        [rows]="editObject[am.name]"
+                        [formBuilder]="this.formBuilder"
+                        [formArray]="getFormArray(am)"
+                        [locale]="locale"
+                        [parentEntityName]="entityName"
+                        *ngIf="isNestedDetail(am)&& getNestedEntityModel(am)"></d-details-grid>
+                </ng-container>
+                <ng-container *ngIf="!isNestedDetail(am)">
+                    <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+                    <d-generic-field
+                        [formGroup]="mainForm"
+                        [am]="am"
+                        [enumValues]="getEnumValues(am.name)"
+                        [entityModel]="getNestedEntityModel(am)"
+                        [formControl]="getFormControl(am)"
+                        [locale]="locale"
+                        [options]="lookupEntities(am.lookupEntityName!)"
+                        [fieldFilters]="getCombinedFilters(am)"
+                        [showValidationErrors]="true"
+                        [fullWidth]="showFullWidth(am)"
+                        ngDefaultControl
+                        *ngIf="!isLob(am)"></d-generic-field>
+                    <d-file-upload
+                        [am]="am"
+                        [entityId]="entityId"
+                        [entityName]="entityName"
+                        [editObject]="editObject"
+                        (onFileUpload)="onFileUpload($event)"
+                        (onFileClear)="onFileClear($event)"
+                        *ngIf="isLob(am)"></d-file-upload>
+                </ng-container>
+            </ng-container>
+            <ng-container *ngIf="hasGroupTogetherWith(am)"> <!-- Multiple attributes grouped together -->
+                <div class="row">
+                    <div [class]="getGroupTogetherColClass(am)">
+                        <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+                        <d-generic-field
+                            [formGroup]="mainForm"
+                            [am]="am"
+                            [enumValues]="getEnumValues(am.name)"
+                            [entityModel]="getNestedEntityModel(am)"
+                            [formControl]="getFormControl(am)"
+                            [locale]="locale"
+                            [options]="lookupEntities(am.lookupEntityName!)"
+                            [fieldFilters]="getCombinedFilters(am)"
+                            ngDefaultControl
+                            [showValidationErrors]="true"
+                            [fullWidth]="true"
+                            *ngIf="!isNestedDetail(am)&& !isLob(am)"></d-generic-field>
+                    </div>
+                    <div
+                        [class]="getGroupTogetherColClass(am)"
+                        *@fo="let gam of am.groupTogetherWith">
+                        <ng-container
+                            [ngTemplateOutlet]="getTemplateForField(am.name) || defaultFieldTemplate"
+                            [ngTemplateOutletContext]="{
                 $implicit: findAttributeModel(gam),
                 mainForm: mainForm
               }">
-		</ng-container>
-	</div>
-</div>
-</ng-container> </ng-container> </ng-template> </ng-container>
+                        </ng-container>
+                    </div>
+                </div>
+            </ng-container>
+        </ng-container>
+    </ng-template>
+</ng-container>

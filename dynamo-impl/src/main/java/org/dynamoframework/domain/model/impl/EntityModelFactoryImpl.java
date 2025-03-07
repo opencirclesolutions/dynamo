@@ -22,6 +22,7 @@ package org.dynamoframework.domain.model.impl;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -81,6 +82,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 
 	private EntityModelFactory[] delegatedModelFactories;
 
+	@Getter
 	@Autowired(required = false)
 	private MessageService messageService;
 
@@ -981,10 +983,6 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 		return dynamoProperties.getDefaults().getLocale();
 	}
 
-	public MessageService getMessageService() {
-		return messageService;
-	}
-
 	@Override
 	public synchronized <T> EntityModel<T> getModel(Class<T> entityClass) {
 		return getModel(entityClass.getSimpleName(), entityClass);
@@ -1546,7 +1544,7 @@ public class EntityModelFactoryImpl implements EntityModelFactory {
 	 * @param model        the attribute model
 	 * @param defaultValue the default value to set
 	 * @param search       whether we are dealing with search mode
-	 * @param
+	 * @param consumer     the consumer that is called to set the value
 	 */
 	@SuppressWarnings({"unchecked", "rawtypes"})
 	private void setDefaultValue(AttributeModelImpl model, String defaultValue, boolean search, Consumer<Object> consumer) {

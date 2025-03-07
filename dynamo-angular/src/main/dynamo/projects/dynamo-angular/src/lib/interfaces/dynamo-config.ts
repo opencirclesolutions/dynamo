@@ -44,7 +44,6 @@ Access token supplied by Keycloak SSO
 **/
 export interface DynamoConfig {
   getConfiguration: () => Observable<DynamoAppConfig>
-
   getAutoFillService: () => AutoFillServiceInterface
   getCRUDService: () => CRUDServiceInterface
   getExportService: () => ExportServiceInterface

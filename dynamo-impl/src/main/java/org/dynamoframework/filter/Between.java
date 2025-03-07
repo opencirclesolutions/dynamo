@@ -20,6 +20,8 @@ package org.dynamoframework.filter;
  * #L%
  */
 
+import lombok.Getter;
+
 import java.util.Objects;
 
 /**
@@ -32,8 +34,10 @@ public class Between extends AbstractFilter implements PropertyFilter {
 
 	private final String propertyId;
 
+	@Getter
 	private final Comparable<?> startValue;
 
+	@Getter
 	private final Comparable<?> endValue;
 
 	public Between(String propertyId, Comparable<?> startValue, Comparable<?> endValue) {
@@ -45,14 +49,6 @@ public class Between extends AbstractFilter implements PropertyFilter {
 	@Override
 	public String getPropertyId() {
 		return propertyId;
-	}
-
-	public Comparable<?> getStartValue() {
-		return startValue;
-	}
-
-	public Comparable<?> getEndValue() {
-		return endValue;
 	}
 
 	@SuppressWarnings("unchecked")

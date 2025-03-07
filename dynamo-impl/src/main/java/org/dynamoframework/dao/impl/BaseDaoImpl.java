@@ -323,7 +323,7 @@ public abstract class BaseDaoImpl<ID, T extends AbstractEntity<ID>> implements B
 	 * exist
 	 */
 	protected T getFirstValue(List<T> list) {
-		return list != null && !list.isEmpty() ? list.get(0) : null;
+		return list != null && !list.isEmpty() ? list.getFirst() : null;
 	}
 
 	/**

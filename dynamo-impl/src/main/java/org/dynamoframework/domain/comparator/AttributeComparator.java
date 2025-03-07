@@ -39,7 +39,7 @@ public class AttributeComparator<T extends AbstractEntity<?>> implements Compara
 	private final String attribute;
 
 	@Override
-	@SuppressWarnings({"unchecked"})
+	@SuppressWarnings({"unchecked", "rawtypes"})
 	public int compare(T o1, T o2) {
 		Object v1 = ClassUtils.getFieldValue(o1, attribute);
 		Object v2 = ClassUtils.getFieldValue(o2, attribute);

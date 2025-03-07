@@ -73,21 +73,21 @@ public final class JpaQueryBuilder {
 			for (FetchJoinInformation s : fetchJoins) {
 
 				// Support nested properties
-				FetchParent<T, ?> fetch = root;
+				FetchParent<T, ?> fetchParent = root;
 				String[] propertyPath = s.getProperty().split("\\.");
 				String prefix = "";
 
 				for (String property : propertyPath) {
-					if (prefix.length() > 0) {
+					if (!prefix.isEmpty()) {
 						prefix = prefix + ".";
 					}
 					prefix += property;
 
 					if (fetchMap.containsKey(prefix)) {
-						fetch = fetchMap.get(prefix);
+						fetchParent = fetchMap.get(prefix);
 					} else {
-						fetch = fetch.fetch(property, translateJoinType(s.getJoinType()));
-						fetchMap.put(prefix, fetch);
+						fetchParent = fetchParent.fetch(property, translateJoinType(s.getJoinType()));
+						fetchMap.put(prefix, fetchParent);
 					}
 				}
 			}
@@ -164,9 +164,9 @@ public final class JpaQueryBuilder {
 
 		Predicate predicate = null;
 		if (!filters.isEmpty()) {
-			predicate = createPredicate(filters.remove(0), builder, root, parameters);
+			predicate = createPredicate(filters.removeFirst(), builder, root, parameters);
 			while (!filters.isEmpty()) {
-				Predicate next = createPredicate(filters.remove(0), builder, root, parameters);
+				Predicate next = createPredicate(filters.removeFirst(), builder, root, parameters);
 				if (next != null) {
 					predicate = builder.and(predicate, next);
 				}
@@ -226,24 +226,20 @@ public final class JpaQueryBuilder {
 			}
 		}
 
-		switch (compare.getOperation()) {
-			case EQUAL:
+		return switch (compare.getOperation()) {
+			case EQUAL -> {
 				if (value instanceof Class<?>) {
 					// When instance of class the use type expression
-					return builder.equal(path.type(), builder.literal(value));
+					yield builder.equal(path.type(), builder.literal(value));
 				}
-				return builder.equal(path, value);
-			case GREATER:
-				return builder.greaterThan(path, (Comparable) value);
-			case GREATER_OR_EQUAL:
-				return builder.greaterThanOrEqualTo(path, (Comparable) value);
-			case LESS:
-				return builder.lessThan(path, (Comparable) value);
-			case LESS_OR_EQUAL:
-				return builder.lessThanOrEqualTo(path, (Comparable) value);
-			default:
-				return null;
-		}
+				yield builder.equal(path, value);
+				// When instance of class the use type expression
+			}
+			case GREATER -> builder.greaterThan(path, (Comparable) value);
+			case GREATER_OR_EQUAL -> builder.greaterThanOrEqualTo(path, (Comparable) value);
+			case LESS -> builder.lessThan(path, (Comparable) value);
+			case LESS_OR_EQUAL -> builder.lessThanOrEqualTo(path, (Comparable) value);
+		};
 	}
 
 	/**
@@ -515,9 +511,9 @@ public final class JpaQueryBuilder {
 
 		Predicate predicate = null;
 		if (!filters.isEmpty()) {
-			predicate = createPredicate(filters.remove(0), builder, root, parameters);
+			predicate = createPredicate(filters.removeFirst(), builder, root, parameters);
 			while (!filters.isEmpty()) {
-				Predicate next = createPredicate(filters.remove(0), builder, root, parameters);
+				Predicate next = createPredicate(filters.removeFirst(), builder, root, parameters);
 				if (next != null) {
 					predicate = builder.or(predicate, next);
 				}
@@ -719,11 +715,7 @@ public final class JpaQueryBuilder {
 				}
 				// when no existing join then add new
 				if (detailJoin == null) {
-					if (curJoin == null) {
-						curJoin = root.join(part);
-					} else {
-						curJoin = curJoin.join(part);
-					}
+					curJoin = Objects.requireNonNullElse(curJoin, root).join(part);
 					path = curJoin;
 				}
 			}
@@ -767,11 +759,7 @@ public final class JpaQueryBuilder {
 				}
 				// when no existing join then add new
 				if (detailJoin == null) {
-					if (curJoin == null) {
-						curJoin = root.join(part, JoinType.LEFT);
-					} else {
-						curJoin = curJoin.join(part, JoinType.LEFT);
-					}
+					curJoin = Objects.requireNonNullElse(curJoin, root).join(part, JoinType.LEFT);
 					path = curJoin;
 				}
 			}

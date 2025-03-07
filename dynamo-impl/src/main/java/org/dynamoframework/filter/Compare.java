@@ -20,6 +20,8 @@ package org.dynamoframework.filter;
  * #L%
  */
 
+import lombok.Getter;
+
 import java.util.Objects;
 
 /**
@@ -35,8 +37,10 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 
 	private final String propertyId;
 
+	@Getter
 	private final Operation operation;
 
+	@Getter
 	private final Object value;
 
 	/**
@@ -49,8 +53,8 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 		/**
 		 * Constructor
 		 *
-		 * @param propertyId
-		 * @param value
+		 * @param propertyId the ID of the property
+		 * @param value      the value of the property
 		 */
 		public Equal(String propertyId, Object value) {
 			super(propertyId, value, Operation.EQUAL);
@@ -67,8 +71,8 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 		/**
 		 * Constructor
 		 *
-		 * @param propertyId
-		 * @param value
+		 * @param propertyId the ID of the property
+		 * @param value      the value of the property
 		 */
 		public Greater(String propertyId, Object value) {
 			super(propertyId, value, Operation.GREATER);
@@ -85,8 +89,8 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 		/**
 		 * Constructor
 		 *
-		 * @param propertyId
-		 * @param value
+		 * @param propertyId the ID of the property
+		 * @param value      the value of the property
 		 */
 		public Less(String propertyId, Object value) {
 			super(propertyId, value, Operation.LESS);
@@ -102,8 +106,10 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	public static final class GreaterOrEqual extends Compare {
 
 		/**
-		 * @param propertyId
-		 * @param value
+		 * Constructor
+		 *
+		 * @param propertyId the ID of the property
+		 * @param value      the value of the property
 		 */
 		public GreaterOrEqual(String propertyId, Object value) {
 			super(propertyId, value, Operation.GREATER_OR_EQUAL);
@@ -121,8 +127,8 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 		/**
 		 * Constructor
 		 *
-		 * @param propertyId
-		 * @param value
+		 * @param propertyId the ID of the property
+		 * @param value      the value of the property
 		 */
 		public LessOrEqual(String propertyId, Object value) {
 			super(propertyId, value, Operation.LESS_OR_EQUAL);
@@ -130,11 +136,11 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 	}
 
 	/**
-	 * Base constructor
+	 * Constructor
 	 *
-	 * @param propertyId
-	 * @param value
-	 * @param operation
+	 * @param propertyId the ID of the property
+	 * @param value      the value of the property
+	 * @param operation  the operation to use
 	 */
 	Compare(String propertyId, Object value, Operation operation) {
 		this.propertyId = propertyId;
@@ -151,20 +157,13 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 		if (val == null) {
 			return false;
 		}
-		switch (getOperation()) {
-			case EQUAL:
-				return compareEquals(val);
-			case GREATER:
-				return compareValue(val) > 0;
-			case LESS:
-				return compareValue(val) < 0;
-			case GREATER_OR_EQUAL:
-				return compareValue(val) >= 0;
-			case LESS_OR_EQUAL:
-				return compareValue(val) <= 0;
-			default:
-				return false;
-		}
+		return switch (getOperation()) {
+			case EQUAL -> compareEquals(val);
+			case GREATER -> compareValue(val) > 0;
+			case LESS -> compareValue(val) < 0;
+			case GREATER_OR_EQUAL -> compareValue(val) >= 0;
+			case LESS_OR_EQUAL -> compareValue(val) <= 0;
+		};
 	}
 
 	/**
@@ -180,8 +179,7 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 			return otherValue == value;
 		} else if (value == otherValue) {
 			return true;
-		} else if (value instanceof Comparable
-			&& otherValue.getClass().isAssignableFrom(getValue().getClass())) {
+		} else if (value instanceof Comparable && otherValue.getClass().isAssignableFrom(getValue().getClass())) {
 			return ((Comparable<Object>) value).compareTo(otherValue) == 0;
 		} else {
 			return value.equals(otherValue);
@@ -194,12 +192,10 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 			return null == value1 ? 0 : -1;
 		} else if (null == value1) {
 			return 1;
-		} else if (getValue() instanceof Comparable
-			&& value1.getClass().isAssignableFrom(getValue().getClass())) {
+		} else if (getValue() instanceof Comparable && value1.getClass().isAssignableFrom(getValue().getClass())) {
 			return -((Comparable) getValue()).compareTo(value1);
 		}
-		throw new IllegalArgumentException(
-			"Could not compare the arguments: " + value1 + ", " + getValue());
+		throw new IllegalArgumentException("Could not compare the arguments: " + value1 + ", " + getValue());
 	}
 
 	@Override
@@ -220,21 +216,12 @@ public abstract class Compare extends AbstractFilter implements PropertyFilter {
 
 	@Override
 	public int hashCode() {
-		return (null != getPropertyId() ? getPropertyId().hashCode() : 0)
-			^ (null != getValue() ? getValue().hashCode() : 0);
+		return (null != getPropertyId() ? getPropertyId().hashCode() : 0) ^ (null != getValue() ? getValue().hashCode() : 0);
 	}
 
 	@Override
 	public String getPropertyId() {
 		return propertyId;
-	}
-
-	public Operation getOperation() {
-		return operation;
-	}
-
-	public Object getValue() {
-		return value;
 	}
 
 	@Override

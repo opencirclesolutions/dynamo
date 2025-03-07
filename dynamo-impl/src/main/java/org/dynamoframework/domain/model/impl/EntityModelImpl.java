@@ -91,12 +91,6 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	private boolean searchAllowed;
 
-	private String fileUploadEntityName;
-
-	private String fileUploadAttributeName;
-
-	private String fileUploadEntityIdPath;
-
 	private List<FetchJoinInformation> fetchJoins;
 
 	private List<FetchJoinInformation> detailJoins;
@@ -143,9 +137,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 	}
 
 	private List<AttributeModel> filterAttributeModels(Predicate<AttributeModel> p) {
-		return Collections
-			.unmodifiableList(constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
-				.filter(p).toList());
+		return constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
+			.filter(p).toList();
 	}
 
 	private AttributeModel findAttributeModel(Predicate<AttributeModel> p) {
@@ -191,9 +184,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Override
 	public List<AttributeModel> getAttributeModels() {
-		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
+		return constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
 			.toList();
-		return Collections.unmodifiableList(list);
 	}
 
 	@Override
@@ -215,9 +207,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		if (!gridOrderSet) {
 			return getAttributeModels();
 		}
-		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getGridOrder))
+		return constructAttributeModelStream(Comparator.comparing(AttributeModel::getGridOrder))
 			.toList();
-		return Collections.unmodifiableList(list);
 	}
 
 	@Override
@@ -225,9 +216,8 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 		if (!searchOrderSet) {
 			return getAttributeModels();
 		}
-		List<AttributeModel> list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getSearchOrder))
+		return constructAttributeModelStream(Comparator.comparing(AttributeModel::getSearchOrder))
 			.toList();
-		return Collections.unmodifiableList(list);
 	}
 
 	@Override
@@ -264,20 +254,19 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Override
 	public List<AttributeModel> getRequiredForSearchingAttributeModels() {
-		List<AttributeModel> result = constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
-			.map(m -> {
+		return constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))
+			.map(am -> {
 				List<AttributeModel> list = new ArrayList<>();
-				if (m.isSearchable() && m.isRequiredForSearching()) {
-					list.add(m);
+				if (am.isSearchable() && am.isRequiredForSearching()) {
+					list.add(am);
 				}
 				// add nested models
-				if (m.getNestedEntityModel() != null) {
-					List<AttributeModel> nested = m.getNestedEntityModel().getRequiredForSearchingAttributeModels();
+				if (am.getNestedEntityModel() != null) {
+					List<AttributeModel> nested = am.getNestedEntityModel().getRequiredForSearchingAttributeModels();
 					list.addAll(nested);
 				}
 				return list;
 			}).flatMap(List::stream).toList();
-		return Collections.unmodifiableList(result);
 	}
 
 	@Override
@@ -320,7 +309,7 @@ public class EntityModelImpl<T> implements EntityModel<T> {
 
 	@Override
 	public Stream<AttributeModel> getAttributeModels(Predicate<AttributeModel> predicate) {
-		return getAttributeModels().stream().filter(predicate::test);
+		return getAttributeModels().stream().filter(predicate);
 	}
 
 	@Override

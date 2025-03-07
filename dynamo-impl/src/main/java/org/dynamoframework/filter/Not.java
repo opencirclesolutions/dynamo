@@ -20,11 +20,16 @@ package org.dynamoframework.filter;
  * #L%
  */
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * A filter that negates the value of another filter
  *
  * @author bas.rutten
  */
+@Setter
+@Getter
 public final class Not extends AbstractFilter {
 
 	private Filter filter;
@@ -33,16 +38,12 @@ public final class Not extends AbstractFilter {
 		this.filter = filter;
 	}
 
-	public Filter getFilter() {
-		return filter;
-	}
-
 	@Override
 	public boolean equals(Object obj) {
-		if (!(obj instanceof Not)) {
+		if (!(obj instanceof Not not)) {
 			return false;
 		}
-		return filter.equals(((Not) obj).getFilter());
+		return filter.equals(not.getFilter());
 	}
 
 	@Override
@@ -58,10 +59,6 @@ public final class Not extends AbstractFilter {
 	@Override
 	public String toString() {
 		return super.toString() + " " + getFilter();
-	}
-
-	public void setFilter(Filter filter) {
-		this.filter = filter;
 	}
 
 }

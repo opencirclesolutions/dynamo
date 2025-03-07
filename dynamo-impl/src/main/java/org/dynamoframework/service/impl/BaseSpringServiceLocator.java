@@ -105,13 +105,11 @@ public abstract class BaseSpringServiceLocator implements ServiceLocator {
 	 * @return the service
 	 */
 	@Override
-	@SuppressWarnings("rawtypes")
 	public BaseService<?, ?> getServiceForEntity(Class<?> entityClass) {
 		return getServiceForEntityInner(BaseService.class, entityClass);
 	}
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public BaseSearchService<?, ?> getSearchServiceForEntity(Class<?> entityClass) {
 		return getServiceForEntityInner(BaseSearchService.class, entityClass);
 	}

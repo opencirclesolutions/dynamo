@@ -49,19 +49,19 @@ limitations under the License.
         </div>
       </div>
       @if (useLookupField(am)) {
-        <d-lookup-field
-          [id]="am.name"
-          [entityName]="am.lookupEntityName!"
-          [locale]="locale"
-          [am]="am"
-          [displayPropertyName]="am.displayPropertyName!"
-          [formControlName]="am.name"
-          [multiSelect]="true"
-          [entityModelReference]="entityModelReference"
-          [entityModel]="entityModel"
-          [defaultFilters]="defaultFilters"
-          [queryType]="mapQueryType(am.lookupQueryType!)"
-        [pTooltip]="am.descriptions[locale]"></d-lookup-field>
+            <d-lookup-field
+              [id]="am.name"
+              [entityName]="am.lookupEntityName!"
+              [locale]="locale"
+              [am]="am"
+              [displayPropertyName]="am.displayPropertyName!"
+              [formControlName]="am.name"
+              [multiSelect]="true"
+              [entityModelReference]="entityModelReference"
+              [entityModel]="entityModel"
+              [defaultFilters]="defaultFilters"
+              [queryType]="mapQueryType(am.lookupQueryType!)"
+            [pTooltip]="am.descriptions[locale]"></d-lookup-field>
       }
       <ng-template #popupDialogContainerRef></ng-template>
     </div>

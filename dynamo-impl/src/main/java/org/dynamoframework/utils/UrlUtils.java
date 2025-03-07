@@ -40,7 +40,7 @@ public final class UrlUtils {
 	 * @param hostAndPath the base url
 	 * @param keyValues   Provide key1, value1, key2, value2, etc.
 	 * @return The URI
-	 * @throws URISyntaxException
+	 * @throws URISyntaxException when an invalid URI is passed
 	 */
 	public static URI createUrl(String hostAndPath, String... keyValues) throws URISyntaxException {
 		URI result = null;

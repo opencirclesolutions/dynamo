@@ -71,6 +71,14 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 
 	private final ServiceLocator serviceLocator = ServiceLocatorFactory.getServiceLocator();
 
+	/**
+	 * Creates a new entity
+	 *
+	 * @param entityName the name of the entity
+	 * @param request    the creation request
+	 * @param reference  the entity model reference
+	 * @return the created entity
+	 */
 	@PostMapping(value = "/{entityName}", produces = MediaType.APPLICATION_JSON_VALUE,
 		consumes = MediaType.APPLICATION_JSON_VALUE)
 	@SneakyThrows
@@ -336,6 +344,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 	 * @param target   the target entity
 	 * @param model    the entity model
 	 * @param updating whether we are dealing with an update of an existing entity
+	 * @param <U>      type parameter, type of the source and target entity
 	 */
 	private <U> void mergeComplexValues(U source, U target, EntityModel<U> model, boolean updating,
 										boolean nested) {
@@ -377,22 +386,23 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 	 * @param source the source entity
 	 * @param target the target entity
 	 * @param am     the attribute model
+	 * @param <U>    type parameter, type of the source/target entity
 	 * @param <ID2>  type parameter, type of the ID
-	 * @param <U>    type parameter, type of the entity
+	 * @param <V>    type parameter, type of the nested entity
 	 */
 	@SuppressWarnings("unchecked")
-	private <T, ID2, U extends AbstractEntity<ID2>> void mergeNestedEntity(T source,
-																		   T target, AttributeModel am) {
-		U nestedEntity = (U) ClassUtils.getFieldValue(source, am.getName());
+	private <U, ID2, V extends AbstractEntity<ID2>> void mergeNestedEntity(U source,
+																		   U target, AttributeModel am) {
+		V nestedEntity = (V) ClassUtils.getFieldValue(source, am.getName());
 		if (nestedEntity == null) {
 			ClassUtils.setFieldValue(target, am.getName(), null);
 			return;
 		}
 
 		EntityModel<?> nestedEntityModel = am.getNestedEntityModel();
-		BaseService<ID2, U> nestedService = (BaseService<ID2, U>) serviceLocator.getServiceForEntity(nestedEntityModel.getEntityClass());
+		BaseService<ID2, V> nestedService = (BaseService<ID2, V>) serviceLocator.getServiceForEntity(nestedEntityModel.getEntityClass());
 		if (nestedService != null) {
-			U found = nestedService.fetchById(nestedEntity.getId());
+			V found = nestedService.fetchById(nestedEntity.getId());
 			if (found != null) {
 				ClassUtils.setFieldValue(target, am.getName(), found);
 			} else {
@@ -408,17 +418,18 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 	 * @param source the source entity
 	 * @param target the target entity
 	 * @param am     the attribute model
+	 * @param <U>    type parameter, type of the source/target entity
 	 * @param <ID2>  type parameter, type of the ID
-	 * @param <U>    type parameter, type of the entity
+	 * @param <V>    type parameter, type of the nested entity
 	 */
 	@SuppressWarnings("unchecked")
-	private <T, ID2, U extends AbstractEntity<ID2>> void mergeNestedEntities(T source, T target, AttributeModel am) {
-		Collection<U> nestedEntities = (Collection<U>) ClassUtils.getFieldValue(source, am.getName());
+	private <U, ID2, V extends AbstractEntity<ID2>> void mergeNestedEntities(U source, U target, AttributeModel am) {
+		Collection<V> nestedEntities = (Collection<V>) ClassUtils.getFieldValue(source, am.getName());
 		if (nestedEntities == null) {
 			return;
 		}
 
-		Collection<U> copyCollection;
+		Collection<V> copyCollection;
 		if (am.getType().isAssignableFrom(Set.class)) {
 			copyCollection = new HashSet<>();
 		} else {
@@ -426,8 +437,8 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 		}
 
 		nestedEntities.forEach(nestedEntity -> {
-			BaseService<ID2, U> nestedService = (BaseService<ID2, U>) serviceLocator.getServiceForEntity(am.getNestedEntityModel().getEntityClass());
-			U found = nestedService.fetchById(nestedEntity.getId());
+			BaseService<ID2, V> nestedService = (BaseService<ID2, V>) serviceLocator.getServiceForEntity(am.getNestedEntityModel().getEntityClass());
+			V found = nestedService.fetchById(nestedEntity.getId());
 			if (found != null) {
 				copyCollection.add(found);
 			} else {

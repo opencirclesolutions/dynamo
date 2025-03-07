@@ -17,47 +17,48 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, inject } from '@angular/core';
-import { AutoCompleteCompleteEvent, AutoCompleteModule } from 'primeng/autocomplete';
-import { Observable, catchError, map, of } from 'rxjs';
-import { TranslateService } from '@ngx-translate/core';
-import { BaseEntityComponent } from '../../../base-entity/base-entity.component';
-import { AuthenticationService } from '../../../../services/authentication.service';
-import { NotificationService } from '../../../../services/notification.service';
-import { AttributeModelResponse } from '../../../../interfaces/model/attributeModelResponse';
-import { DynamoConfig } from '../../../../interfaces/dynamo-config';
-import { CRUDServiceInterface } from '../../../../interfaces/service/crud.service';
-import { FilterModel } from '../../../../interfaces/model/filterModel';
-import { EqualsFilterModel } from '../../../../interfaces/model/equalsFilterModel';
-import { SearchModel } from '../../../../interfaces/model/searchModel';
-import { PagingModel } from '../../../../interfaces/model/pagingModel';
-import { SortModel } from '../../../../interfaces/model/sortModel';
-import { ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
-import { MessageModule } from 'primeng/message';
-import { TooltipModule } from 'primeng/tooltip';
-import { LookupFieldComponent } from '../lookup-field/lookup-field.component';
-import { MultiSelectModule } from 'primeng/multiselect';
-import { DropdownModule } from 'primeng/dropdown';
+import {Component, inject, Input} from '@angular/core';
+import {AutoCompleteCompleteEvent, AutoCompleteModule} from 'primeng/autocomplete';
+import {catchError, map, Observable, of} from 'rxjs';
+import {TranslateService} from '@ngx-translate/core';
+import {BaseEntityComponent} from '../../../base-entity/base-entity.component';
+import {AuthenticationService} from '../../../../services/authentication.service';
+import {NotificationService} from '../../../../services/notification.service';
+import {AttributeModelResponse} from '../../../../interfaces/model/attributeModelResponse';
+import {DynamoConfig} from '../../../../interfaces/dynamo-config';
+import {FilterModel} from '../../../../interfaces/model/filterModel';
+import {EqualsFilterModel} from '../../../../interfaces/model/equalsFilterModel';
+import {SearchModel} from '../../../../interfaces/model/searchModel';
+import {PagingModel} from '../../../../interfaces/model/pagingModel';
+import {SortModel} from '../../../../interfaces/model/sortModel';
+import {ReactiveFormsModule} from '@angular/forms';
+import {CommonModule} from '@angular/common';
+import {MessageModule} from 'primeng/message';
+import {TooltipModule} from 'primeng/tooltip';
+import {LookupFieldComponent} from '../lookup-field/lookup-field.component';
+import {MultiSelectModule} from 'primeng/multiselect';
+import {DropdownModule} from 'primeng/dropdown';
 
 @Component({
   selector: 'd-select-entity-field',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, MessageModule, DropdownModule, MultiSelectModule, AutoCompleteModule, TooltipModule, LookupFieldComponent],
+  imports: [ReactiveFormsModule, CommonModule, MessageModule, DropdownModule, MultiSelectModule, AutoCompleteModule, TooltipModule, LookupFieldComponent, ReactiveFormsModule],
   templateUrl: './select-entity-field.component.html',
   styleUrl: './select-entity-field.component.css'
 })
 export class SelectEntityFieldComponent extends BaseEntityComponent {
   private messageService = inject(NotificationService);
 
-
   @Input() styleClass: string = 'main';
   @Input() nested: boolean = false;
   @Input() searchMode: boolean = false;
 
+  private configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
+
   // the options that are applicable in case of a lookup field
   filteredOptions$: Observable<any[]> = of([]);
-  private crudService: CRUDServiceInterface;
+
+  //private crudService: CRUDServiceInterface;
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
@@ -65,10 +66,9 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
   constructor() {
     const translate = inject(TranslateService);
     const authService = inject(AuthenticationService);
-    const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
 
     super(authService, translate);
-    this.crudService = configuration.getCRUDService()
+    //this.crudService = configuration.getCRUDService()
   }
 
   useLookupField(am: AttributeModelResponse) {
@@ -115,7 +115,7 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
     return false;
   }
 
-  isMultiSelectLookup(am: AttributeModelResponse) {
+  isMultiSelectLookup(am: AttributeModelResponse): boolean {
     if (this.searchMode) {
       return am.multipleSearch === true;
     }
@@ -126,7 +126,7 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
    * Carry out a filter in response to user input (for auto-suggest field)
    * @param event the event
    */
-  filter(event: AutoCompleteCompleteEvent) {
+  filter(event: AutoCompleteCompleteEvent): void {
     let query = event.query;
 
     let filters: FilterModel[] = [];
@@ -152,7 +152,7 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
       filters: filters,
     };
 
-    this.filteredOptions$ = this.crudService
+    this.filteredOptions$ = this.configuration.getCRUDService()
       .search(this.am!.lookupEntityName!, model, this.am!.lookupEntityReference)
       .pipe(
         map((val) => val.results as any[]),
@@ -189,5 +189,20 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
     }
     return PagingModel.TypeEnum.ID_BASED;
   }
+
+  override showQuickAddDialog() {
+    // this.storeValue();
+    //
+    // let componentRef = this.viewContainerRef.createComponent(EntityPopupDialogComponent);
+    // componentRef.instance.entityModelReference = this.entityModelReference;
+    // componentRef.instance.entityName = this.am.lookupEntityName!;
+    // componentRef.instance.readOnly = false;
+    // componentRef.instance.onDialogClosed = (obj: any): void => {
+    //   this.afterQuickAddDialogClosed(obj);
+    // };
+    // componentRef.instance.showDialog();
+  }
+
+
 
 }

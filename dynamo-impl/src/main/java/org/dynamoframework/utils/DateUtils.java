@@ -283,7 +283,7 @@ public final class DateUtils {
 	 * in case the argument passed to this function is null
 	 *
 	 * @param date the date
-	 * @return
+	 * @return the quarter (as a value from 1 to 4)
 	 */
 	public static int getQuarter(LocalDate date) {
 		if (date == null) {
@@ -381,7 +381,7 @@ public final class DateUtils {
 				year++;
 			}
 
-			// if the week number is 53 but we are in January, then reduce the
+			// if the week number is 53, but we are in January, then reduce the
 			// year by one
 			if ((week == LAST_WEEK_NUMBER || week == LAST_WEEK_NUMBER - 1) && month == Month.JANUARY) {
 				year--;

@@ -18,27 +18,29 @@
   #L%
   -->
 <p-dialog
-	[showHeader]="false"
-	[(visible)]="dialogVisible"
-	[style]="{width: '75vw'}"
-	[modal]="true"> <d-generic-form
-	[entityId]="entityId"
-	[entityModel]="entityModel"
-	[entityModelReference]="entityModelReference"
-	[entityName]="entityName"
-	[navigationAllowed]="false"
-	[fieldFilters]="fieldFilters"
-	[openInViewMode]="openInViewMode"
-	[readOnly]="readOnly"
-	[nested]="true"
-	formWidthClass="col-lg-12 col-md-12 col-sm-12"
-	[additionalActions]="additionalActions"
-	[postProcessInputForm]="postProcessInputForm"
-	[additionalValidation]="additionalValidation"
-	[customValidatorTemplate]="customValidatorTemplate"
-	[actionId]="actionId"
-	[actionDisplayName]="actionDisplayName"
-	[injectedCustomInputs]="injectedCustomInputs"
-	[injectedHiddenFieldService]="injectedHiddenFieldService"
-	(afterSave)="afterSave($event)"
-	(onClose)="closeDialog()"> </d-generic-form> </p-dialog>
+    [showHeader]="false"
+    [(visible)]="dialogVisible"
+    [style]="{width: '75vw'}"
+    [modal]="true">
+    <d-generic-form
+        [entityId]="entityId"
+        [entityModel]="entityModel"
+        [entityModelReference]="entityModelReference"
+        [entityName]="entityName"
+        [navigationAllowed]="false"
+        [fieldFilters]="fieldFilters"
+        [openInViewMode]="openInViewMode"
+        [readOnly]="readOnly"
+        [nested]="true"
+        formWidthClass="col-lg-12 col-md-12 col-sm-12"
+        [additionalActions]="additionalActions"
+        [postProcessInputForm]="postProcessInputForm"
+        [additionalValidation]="additionalValidation"
+        [customValidatorTemplate]="customValidatorTemplate"
+        [actionId]="actionId"
+        [actionDisplayName]="actionDisplayName"
+        [injectedCustomInputs]="injectedCustomInputs"
+        [injectedHiddenFieldService]="injectedHiddenFieldService"
+        (afterSave)="afterSave($event)"
+        (onClose)="closeDialog()"></d-generic-form>
+</p-dialog>

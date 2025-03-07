@@ -17,24 +17,24 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, OnInit, ViewChild, ViewContainerRef, forwardRef, inject } from '@angular/core';
-import { ControlValueAccessor, NG_VALUE_ACCESSOR } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { EntityModelResponse } from '../../../../interfaces/model/entityModelResponse';
-import { BaseComponent } from '../../../base/base.component';
-import { PagingModel } from '../../../../interfaces/model/pagingModel';
-import { FilterModel } from '../../../../interfaces/model/filterModel';
-import { SelectOption } from '../../../../interfaces/select-option';
-import { AuthenticationService } from '../../../../services/authentication.service';
-import { EntityPopupDialogComponent } from '../../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
-import { truncateDescriptions } from '../../../../functions/entitymodel-functions';
-import { GenericSearchLayoutComponent } from '../../search/generic-search-layout/generic-search-layout.component';
-import { DialogModule } from 'primeng/dialog';
+import {Component, forwardRef, inject, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {EntityModelResponse} from '../../../../interfaces/model/entityModelResponse';
+import {BaseComponent} from '../../../base/base.component';
+import {PagingModel} from '../../../../interfaces/model/pagingModel';
+import {FilterModel} from '../../../../interfaces/model/filterModel';
+import {SelectOption} from '../../../../interfaces/select-option';
+import {AuthenticationService} from '../../../../services/authentication.service';
+import {EntityPopupDialogComponent} from '../../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
+import {truncateDescriptions} from '../../../../functions/entitymodel-functions';
+import {DialogModule} from 'primeng/dialog';
+import {EntitySearchDialogComponent} from "../../../dialogs/entity-search-dialog/entity-search-dialog.component";
 
 @Component({
   selector: 'd-lookup-field',
   standalone: true,
-  imports: [TranslateModule, DialogModule, GenericSearchLayoutComponent],
+  imports: [TranslateModule, DialogModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -51,16 +51,16 @@ export class LookupFieldComponent
   private authService = inject(AuthenticationService);
 
   // the name of the entity to display
-  @Input({ required: true }) entityName: string = '';
+  @Input({required: true}) entityName: string = '';
   // optional reference to more specific entity model
   @Input() entityModelReference?: string;
   // entity model
   @Input() entityModel?: EntityModelResponse;
 
   // the name of the property that is used as the display value
-  @Input({ required: true }) displayPropertyName: string = '';
+  @Input({required: true}) displayPropertyName: string = '';
   // whether selecting multiple options is allowed
-  @Input({ required: true }) multiSelect: boolean = false;
+  @Input({required: true}) multiSelect: boolean = false;
   // the class to apply to the div that holds the components. set to "row" for responsive behavior by default
   @Input() rowClass: string = 'row';
   // the default filters to apply to every search
@@ -72,38 +72,41 @@ export class LookupFieldComponent
   // whether to display a quick add button
   @Input() queryType: PagingModel.TypeEnum = PagingModel.TypeEnum.ID_BASED;
 
-  onChange: any = () => { };
-  onTouched: any = () => { };
+  onChange: any = () => {
+  };
+  onTouched: any = () => {
+  };
 
   // the actually selected values
   selectedValues: SelectOption[] = [];
   // value cache, for holding the items selected in the popup
   valueCache: SelectOption[] = [];
-  dialogVisible: boolean = false;
+  //dialogVisible: boolean = false;
   disabled: boolean = false;
   selectedIds: any[] = [];
   header: string = '';
 
   // container for holding optional popup dialog
-  @ViewChild('popupDialogContainerRef', { read: ViewContainerRef })
-  vcr!: ViewContainerRef;
+  @ViewChild('popupDialogContainerRef', {read: ViewContainerRef})
+  popuDialogRef!: ViewContainerRef;
 
-  @ViewChild(GenericSearchLayoutComponent) searchLayout:
-    | GenericSearchLayoutComponent
-    | undefined;
+  @ViewChild('searchDialogContainerRef', {read: ViewContainerRef})
+  searchDialogRef!: ViewContainerRef;
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
   constructor() {
     const translate = inject(TranslateService);
-
     super(translate);
   }
 
-  ngOnInit(): void { }
+  ngOnInit(): void {
+  }
 
-  showDialog() {
+  showDialog(): void {
+    console.log("Trying to open dialog2!");
+
     this.valueCache = [];
     this.selectedValues.forEach((element) => this.valueCache.push(element));
 
@@ -112,24 +115,44 @@ export class LookupFieldComponent
       this.selectedIds.push(element.value)
     );
 
-    this.dialogVisible = true;
-    this.header = this.translate.instant('search_header', { title: '' });
-  }
+    this.header = this.translate.instant('search_header', {title: ''});
 
-  showQuickAddDialog() {
-    let componentRef = this.vcr.createComponent(EntityPopupDialogComponent);
+    let componentRef = this.searchDialogRef.createComponent(EntitySearchDialogComponent);
     componentRef.instance.entityModelReference = this.entityModelReference;
     componentRef.instance.entityName = this.entityName;
-    componentRef.instance.readOnly = false;
-    var callback = (obj: any): void => {
-      this.afterQuickAddDialogClosed(obj);
-    };
-    componentRef.instance.onDialogClosed = callback;
+    componentRef.instance.selectedIds = this.selectedIds;
+    componentRef.instance.multiSelect = this.multiSelect;
+    componentRef.instance.defaultFilters = this.defaultFilters;
+    // // TODO: query type
+    componentRef.instance.dialogVisible = true;
     componentRef.instance.showDialog();
   }
 
+  showQuickAddDialog() {
+    console.log('Showing quick add dialog');
+    let componentRef = this.popuDialogRef.createComponent(EntityPopupDialogComponent);
+    componentRef.instance.entityModelReference = this.entityModelReference;
+    componentRef.instance.entityName = this.entityName;
+    componentRef.instance.readOnly = false;
+    componentRef.instance.onDialogClosed = (obj: any): void => {
+      this.afterQuickAddDialogClosed(obj);
+    };
+    componentRef.instance.showDialog();
+  }
+
+  // showSearchDialog(): void {
+  //   let componentRef = this.searchDialogRef.createComponent(EntitySearchDialogComponent);
+  //   componentRef.instance.entityModelReference = this.entityModelReference;
+  //   componentRef.instance.entityName = this.entityName;
+  //   //componentRef.instance.readOnly = false;
+  //   // componentRef.instance.onDialogClosed = (obj: any): void => {
+  //   //   this.afterQuickAddDialogClosed(obj);
+  //   // };
+  //   componentRef.instance.showDialog();
+  // }
+
   afterQuickAddDialogClosed(obj: any) {
-    if (this.multiSelect === false) {
+    if (!this.multiSelect) {
       this.selectedValues = [];
       this.selectedIds = [];
     }
@@ -143,24 +166,20 @@ export class LookupFieldComponent
     return this.header;
   }
 
-  cancel(): void {
-    this.dialogVisible = false;
-  }
-
   /**
    * Closes the dialog and applies the selection
    */
-  selectAndClose(): void {
-    this.selectedValues = [];
-    this.valueCache.forEach((element) => this.selectedValues.push(element));
-    if (this.multiSelect) {
-      this.onChange(this.selectedValues);
-    } else {
-      this.onChange(this.selectedValues[0]);
-    }
-
-    this.dialogVisible = false;
-  }
+  // selectAndClose(): void {
+  //   this.selectedValues = [];
+  //   this.valueCache.forEach((element) => this.selectedValues.push(element));
+  //   if (this.multiSelect) {
+  //     this.onChange(this.selectedValues);
+  //   } else {
+  //     this.onChange(this.selectedValues[0]);
+  //   }
+  //
+  //   //this.dialogVisible = false;
+  // }
 
   /**
    * Respond to selection of a row in the popup dialog
@@ -232,7 +251,7 @@ export class LookupFieldComponent
 
     if (!this.entityModel.writeRoles || this.entityModel.writeRoles.length == 0) {
       return true;
-    };
+    }
     return this.authService.hasRole(this.entityModel.writeRoles)
   }
 }
