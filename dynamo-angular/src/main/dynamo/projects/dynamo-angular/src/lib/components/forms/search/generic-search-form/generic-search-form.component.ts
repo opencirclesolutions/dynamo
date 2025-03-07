@@ -17,9 +17,9 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, OnInit, inject } from '@angular/core';
+import {Component, Input, OnInit, inject, forwardRef} from '@angular/core';
 import { Router } from '@angular/router';
-import { FormBuilder, ReactiveFormsModule, ValidatorFn, Validators } from '@angular/forms';
+import {FormBuilder, NG_VALUE_ACCESSOR, ReactiveFormsModule, ValidatorFn, Validators} from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BaseSearchComponent } from '../base-search-component/base-search-component.component';
 import { NotificationService } from '../../../../services/notification.service';
@@ -49,7 +49,15 @@ import { PanelModule } from 'primeng/panel';
 @Component({
   selector: 'd-generic-search-form',
   standalone: true,
-  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, TriStateCheckboxModule, TooltipModule, ElementCollectionFieldComponent, SelectManyFieldComponent, SelectEntityFieldComponent, TimeFieldComponent, TimestampFieldComponent, DateFieldComponent, EnumFieldComponent, DecimalFieldComponent, NumberFieldComponent, StringFieldComponent],
+  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, TriStateCheckboxModule, TooltipModule, ElementCollectionFieldComponent, SelectManyFieldComponent,
+     SelectEntityFieldComponent, TimeFieldComponent, TimestampFieldComponent, DateFieldComponent, EnumFieldComponent, DecimalFieldComponent, NumberFieldComponent, StringFieldComponent],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => GenericSearchFormComponent),
+      multi: true,
+    },
+  ],
   templateUrl: './generic-search-form.component.html',
   styleUrl: './generic-search-form.component.css'
 })

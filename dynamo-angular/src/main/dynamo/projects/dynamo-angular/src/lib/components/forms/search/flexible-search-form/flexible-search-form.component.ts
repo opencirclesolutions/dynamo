@@ -17,12 +17,12 @@
  * limitations under the License.
  * #L%
  */
-import { Component, OnInit, inject } from '@angular/core';
+import {Component, OnInit, inject, forwardRef} from '@angular/core';
 import {
   FormArray,
   FormBuilder,
   FormControl,
-  FormGroup,
+  FormGroup, NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
   Validators,
 } from '@angular/forms';
@@ -63,7 +63,15 @@ export interface SearchRow {
 @Component({
   selector: 'd-flexible-search-form',
   standalone: true,
-  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, DropdownModule, TooltipModule, TriStateCheckboxModule, StringFieldComponent, SelectManyFieldComponent, SelectEntityFieldComponent, EnumFieldComponent, TimeFieldComponent, DecimalFieldComponent, DateFieldComponent, TimestampFieldComponent, NumberFieldComponent, ElementCollectionFieldComponent],
+  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, DropdownModule, TooltipModule, TriStateCheckboxModule, StringFieldComponent, SelectManyFieldComponent,
+    SelectEntityFieldComponent, EnumFieldComponent, TimeFieldComponent, DecimalFieldComponent, DateFieldComponent, TimestampFieldComponent, NumberFieldComponent, ElementCollectionFieldComponent],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => FlexibleSearchFormComponent),
+      multi: true,
+    },
+  ],
   templateUrl: './flexible-search-form.component.html',
   styleUrl: './flexible-search-form.component.css'
 })

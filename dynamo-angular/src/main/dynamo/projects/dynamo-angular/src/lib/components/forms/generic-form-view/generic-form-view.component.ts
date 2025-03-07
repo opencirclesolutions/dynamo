@@ -34,11 +34,12 @@ import { PanelModule } from 'primeng/panel';
 import { TranslateModule } from '@ngx-translate/core';
 import { TranslateEntityPipe } from '../../../pipes/translate-entity.pipe';
 import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {NgTemplateOutlet} from "@angular/common";
 
 @Component({
   selector: 'd-generic-form-view',
   standalone: true,
-  imports: [PanelModule, TabViewModule, TooltipModule, FieldViewComponent, TranslateModule, TranslateEntityPipe],
+  imports: [PanelModule, TabViewModule, TooltipModule, FieldViewComponent, TranslateModule, TranslateEntityPipe, NgTemplateOutlet],
   templateUrl: './generic-form-view.component.html',
   styleUrl: './generic-form-view.component.css'
 })

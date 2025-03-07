@@ -88,7 +88,7 @@ export class LookupFieldComponent
 
   // container for holding optional popup dialog
   @ViewChild('popupDialogContainerRef', {read: ViewContainerRef})
-  popuDialogRef!: ViewContainerRef;
+  popupDialogRef!: ViewContainerRef;
 
   @ViewChild('searchDialogContainerRef', {read: ViewContainerRef})
   searchDialogRef!: ViewContainerRef;
@@ -109,7 +109,6 @@ export class LookupFieldComponent
 
     this.valueCache = [];
     this.selectedValues.forEach((element) => this.valueCache.push(element));
-
     this.selectedIds = [];
     this.selectedValues.forEach((element) =>
       this.selectedIds.push(element.value)
@@ -117,20 +116,19 @@ export class LookupFieldComponent
 
     this.header = this.translate.instant('search_header', {title: ''});
 
-    let componentRef = this.searchDialogRef.createComponent(EntitySearchDialogComponent);
-    componentRef.instance.entityModelReference = this.entityModelReference;
-    componentRef.instance.entityName = this.entityName;
-    componentRef.instance.selectedIds = this.selectedIds;
-    componentRef.instance.multiSelect = this.multiSelect;
-    componentRef.instance.defaultFilters = this.defaultFilters;
-    // // TODO: query type
-    componentRef.instance.dialogVisible = true;
-    componentRef.instance.showDialog();
+    // let componentRef = this.searchDialogRef.createComponent(EntitySearchDialogComponent);
+    // componentRef.instance.entityModelReference = this.entityModelReference;
+    // componentRef.instance.entityName = this.entityName;
+    // componentRef.instance.selectedIds = this.selectedIds;
+    // componentRef.instance.multiSelect = this.multiSelect;
+    // componentRef.instance.defaultFilters = this.defaultFilters;
+    // // // TODO: query type
+    // componentRef.instance.showDialog();
   }
 
   showQuickAddDialog() {
     console.log('Showing quick add dialog');
-    let componentRef = this.popuDialogRef.createComponent(EntityPopupDialogComponent);
+    let componentRef = this.popupDialogRef.createComponent(EntityPopupDialogComponent);
     componentRef.instance.entityModelReference = this.entityModelReference;
     componentRef.instance.entityName = this.entityName;
     componentRef.instance.readOnly = false;

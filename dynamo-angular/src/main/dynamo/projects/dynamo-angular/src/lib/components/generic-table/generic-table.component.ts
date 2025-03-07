@@ -96,7 +96,7 @@ export class GenericTableComponent
   tableCaptionPlural: string = '';
   searchAttributeModels: AttributeModelResponse[] = [];
   loading: boolean = true;
-  items!: MenuItem[];
+  popupMenuItems!: MenuItem[];
   storedSortField: string = 'id';
   storedSortOrder: number = 1;
   private exportService: ExportServiceInterface
@@ -135,7 +135,7 @@ export class GenericTableComponent
         });
     }
 
-    this.items = [
+    this.popupMenuItems = [
       {
         label: this.translate.instant('export_excel'),
         icon: 'pi pi-download',
@@ -513,7 +513,7 @@ export class GenericTableComponent
   }
 
   getContextMenuItems() {
-    return this.entityModel?.exportAllowed ? this.items : [];
+    return this.entityModel?.exportAllowed ? this.popupMenuItems : [];
   }
 
   override afterActionDialogClosed(): void {

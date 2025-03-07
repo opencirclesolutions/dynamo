@@ -43,10 +43,10 @@ export class AuthenticationService {
 
     this.oauthService.tokenValidationHandler = new NullValidationHandler()
     configuration.getConfiguration().pipe(
-      tap(c => console.log("Test1 " + JSON.stringify(c))),
+      tap(c => console.log("Test25 " + JSON.stringify(c))),
       map(c => ({
         issuer: c.issuer,
-        redirectUrl: c.redirectUri || window.location.origin + '/home',
+        redirectUri: c.redirectUri || window.location.origin + '/home',
         clientId: c.clientId,
         scope: c.scope || 'openid profile email offline_access',
         responseType: 'code',

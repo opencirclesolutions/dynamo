@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {Component, inject, Input} from '@angular/core';
+import {Component, forwardRef, inject, Input} from '@angular/core';
 import {AutoCompleteCompleteEvent, AutoCompleteModule} from 'primeng/autocomplete';
 import {catchError, map, Observable, of} from 'rxjs';
 import {TranslateService} from '@ngx-translate/core';
@@ -31,18 +31,26 @@ import {EqualsFilterModel} from '../../../../interfaces/model/equalsFilterModel'
 import {SearchModel} from '../../../../interfaces/model/searchModel';
 import {PagingModel} from '../../../../interfaces/model/pagingModel';
 import {SortModel} from '../../../../interfaces/model/sortModel';
-import {ReactiveFormsModule} from '@angular/forms';
+import {NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {MessageModule} from 'primeng/message';
 import {TooltipModule} from 'primeng/tooltip';
 import {LookupFieldComponent} from '../lookup-field/lookup-field.component';
 import {MultiSelectModule} from 'primeng/multiselect';
 import {DropdownModule} from 'primeng/dropdown';
+import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/entity-popup-dialog.component";
 
 @Component({
   selector: 'd-select-entity-field',
   standalone: true,
   imports: [ReactiveFormsModule, CommonModule, MessageModule, DropdownModule, MultiSelectModule, AutoCompleteModule, TooltipModule, LookupFieldComponent, ReactiveFormsModule],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => SelectEntityFieldComponent),
+      multi: true,
+    },
+  ],
   templateUrl: './select-entity-field.component.html',
   styleUrl: './select-entity-field.component.css'
 })
@@ -191,18 +199,17 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
   }
 
   override showQuickAddDialog() {
-    // this.storeValue();
-    //
-    // let componentRef = this.viewContainerRef.createComponent(EntityPopupDialogComponent);
-    // componentRef.instance.entityModelReference = this.entityModelReference;
-    // componentRef.instance.entityName = this.am.lookupEntityName!;
-    // componentRef.instance.readOnly = false;
-    // componentRef.instance.onDialogClosed = (obj: any): void => {
-    //   this.afterQuickAddDialogClosed(obj);
-    // };
-    // componentRef.instance.showDialog();
-  }
+    this.storeValue();
 
+    let componentRef = this.viewContainerRef.createComponent(EntityPopupDialogComponent);
+    componentRef.instance.entityModelReference = this.entityModelReference;
+    componentRef.instance.entityName = this.am.lookupEntityName!;
+    componentRef.instance.readOnly = false;
+    componentRef.instance.onDialogClosed = (obj: any): void => {
+      this.afterQuickAddDialogClosed(obj);
+    };
+    componentRef.instance.showDialog();
+  }
 
 
 }

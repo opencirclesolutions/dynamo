@@ -17,22 +17,15 @@
  * limitations under the License.
  * #L%
  */
-import {
-  Component,
-  ContentChildren,
-  Input,
-  QueryList,
-  TemplateRef,
-  ViewContainerRef,
-} from '@angular/core';
-import { FormGroup } from '@angular/forms';
-import { BaseCompositeComponent } from '../base-composite/base-composite.component';
-import { PagingModel } from '../../../interfaces/model/pagingModel';
-import { AdditionalFormAction, AdditionalGlobalAction, AdditionalRowAction } from '../../../interfaces/action';
-import { HiddenFieldService } from '../../../services/hidden-field.service';
-import { EntityModelActionResponse } from '../../../interfaces/model/entityModelActionResponse';
-import { OverrideFieldDirective } from '../../../directives/override-field.directive';
-import { EntityPopupDialogComponent } from '../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
+import {Component, ContentChildren, Input, QueryList, TemplateRef, ViewContainerRef,} from '@angular/core';
+import {FormGroup} from '@angular/forms';
+import {BaseCompositeComponent} from '../base-composite/base-composite.component';
+import {PagingModel} from '../../../interfaces/model/pagingModel';
+import {AdditionalFormAction, AdditionalGlobalAction, AdditionalRowAction} from '../../../interfaces/action';
+import {HiddenFieldService} from '../../../services/hidden-field.service';
+import {EntityModelActionResponse} from '../../../interfaces/model/entityModelActionResponse';
+import {OverrideFieldDirective} from '../../../directives/override-field.directive';
+import {EntityPopupDialogComponent} from '../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
 
 @Component({
   selector: 'd-base-composite-collection',
@@ -67,7 +60,7 @@ export abstract class BaseCompositeCollectionComponent extends BaseCompositeComp
   ) => boolean;
 
   // overridden input components
-  @ContentChildren(OverrideFieldDirective, { descendants: true })
+  @ContentChildren(OverrideFieldDirective, {descendants: true})
   customInputs!: QueryList<OverrideFieldDirective>;
 
   /**
@@ -98,6 +91,7 @@ export abstract class BaseCompositeCollectionComponent extends BaseCompositeComp
       .subscribe((model) => {
         if (componentRef) {
           componentRef.instance.actionId = action.id;
+          componentRef.instance.locale = this.locale;
           componentRef.instance.actionDisplayName =
             action.displayNames[this.locale];
           componentRef.instance.entityModel = model;
@@ -110,11 +104,9 @@ export abstract class BaseCompositeCollectionComponent extends BaseCompositeComp
             componentRef.instance.entityId = row.id;
           }
           componentRef.instance.readOnly = false;
-
-          var callback = (event: any): void => {
+          componentRef.instance.onDialogClosed = (event: any): void => {
             this.afterActionDialogClosed();
           };
-          componentRef.instance.onDialogClosed = callback;
           componentRef.instance.showDialog();
         }
       });
@@ -145,5 +137,6 @@ export abstract class BaseCompositeCollectionComponent extends BaseCompositeComp
     return this.modelActionEnabled(action, row);
   }
 
-  afterActionDialogClosed() { }
+  afterActionDialogClosed() {
+  }
 }

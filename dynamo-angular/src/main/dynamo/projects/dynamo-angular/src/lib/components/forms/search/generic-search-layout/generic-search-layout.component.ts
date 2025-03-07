@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import { Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import {Component, EventEmitter, Input, Output, ViewChild, ViewContainerRef, inject, forwardRef} from '@angular/core';
 import { Router } from '@angular/router';
 import { PopupButtonMode, SearchFormMode } from '../../../../interfaces/mode';
 import { FormInfo } from '../../../../interfaces/info';
@@ -31,11 +31,20 @@ import { DividerModule } from 'primeng/divider';
 import { FlexibleSearchFormComponent } from '../flexible-search-form/flexible-search-form.component';
 import { BaseCompositeCollectionComponent } from '../../base-composite-collection/base-composite-collection.component';
 import { GenericSearchFormComponent } from '../generic-search-form/generic-search-form.component';
+import {NG_VALUE_ACCESSOR} from "@angular/forms";
+import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/entity-popup-dialog.component";
 
 @Component({
   selector: 'd-generic-search-layout',
   standalone: true,
   imports: [TranslateModule, DividerModule, GenericTableComponent, FlexibleSearchFormComponent, GenericSearchFormComponent],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => GenericSearchLayoutComponent),
+      multi: true,
+    },
+  ],
   templateUrl: './generic-search-layout.component.html',
   styleUrl: './generic-search-layout.component.css'
 })

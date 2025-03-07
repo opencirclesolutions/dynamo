@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {Component, Input, inject} from '@angular/core';
+import {Component, Input, inject, forwardRef} from '@angular/core';
 import {TranslateService} from '@ngx-translate/core';
 import {BaseEntityComponent} from '../../../base-entity/base-entity.component';
 import {SelectOption} from '../../../../interfaces/select-option';
@@ -27,14 +27,21 @@ import {PagingModel} from '../../../../interfaces/model/pagingModel';
 import {MessageModule} from 'primeng/message';
 import {TooltipModule} from 'primeng/tooltip';
 import {LookupFieldComponent} from '../lookup-field/lookup-field.component';
-import {ReactiveFormsModule} from '@angular/forms';
+import {NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {MultiSelectModule} from 'primeng/multiselect';
 import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/entity-popup-dialog.component";
 
 @Component({
   selector: 'd-select-many-field',
   standalone: true,
-  imports: [MessageModule, TooltipModule, LookupFieldComponent, ReactiveFormsModule, MultiSelectModule, LookupFieldComponent, ReactiveFormsModule],
+  providers: [
+    {
+      provide: NG_VALUE_ACCESSOR,
+      useExisting: forwardRef(() => SelectManyFieldComponent),
+      multi: true,
+    },
+  ],
+  imports: [MessageModule, TooltipModule, ReactiveFormsModule, MultiSelectModule, LookupFieldComponent, ReactiveFormsModule],
   templateUrl: './select-many-field.component.html',
   styleUrl: './select-many-field.component.css'
 })

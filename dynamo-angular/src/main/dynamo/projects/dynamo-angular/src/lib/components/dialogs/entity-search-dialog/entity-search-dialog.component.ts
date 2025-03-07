@@ -22,15 +22,16 @@ import {AttributeModelResponse} from '../../../interfaces/model/attributeModelRe
 import {DialogModule} from 'primeng/dialog';
 
 import {BaseCompositeComponent} from '../../forms/base-composite/base-composite.component';
-import {GenericSearchLayoutComponent} from "../../forms/search/generic-search-layout/generic-search-layout.component";
 import {TranslateModule} from "@ngx-translate/core";
 import {SelectOption} from "../../../interfaces/select-option";
-import LookupQueryTypeEnum = AttributeModelResponse.LookupQueryTypeEnum;
 import {NG_VALUE_ACCESSOR} from "@angular/forms";
+import LookupQueryTypeEnum = AttributeModelResponse.LookupQueryTypeEnum;
+import {GenericSearchLayoutComponent} from "../../forms/search/generic-search-layout/generic-search-layout.component";
 
 @Component({
   selector: 'd-entity-search-dialog',
   standalone: true,
+  imports: [DialogModule, TranslateModule, GenericSearchLayoutComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -38,7 +39,6 @@ import {NG_VALUE_ACCESSOR} from "@angular/forms";
       multi: true,
     },
   ],
-  imports: [ DialogModule, TranslateModule, forwardRef(() => GenericSearchLayoutComponent)],
   templateUrl: './entity-search-dialog.component.html',
   styleUrl: './entity-search-dialog.component.css'
 })

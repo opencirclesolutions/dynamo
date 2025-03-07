@@ -732,7 +732,7 @@ export class GenericFormComponent
 
     // create observables for clearing existing uploads
     this.fileClearMap.forEach((val, am) => {
-      if (val === true) {
+      if (val) {
         observables.push(
           this.fileController
             .clear(v.id!.toString(), this.entityName, am!.name)

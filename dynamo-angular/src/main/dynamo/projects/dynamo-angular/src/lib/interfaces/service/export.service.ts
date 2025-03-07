@@ -23,10 +23,8 @@ import { SearchModel } from "../model/searchModel";
 import { HttpResponse } from "@angular/common/http";
 
 export interface ExportServiceInterface {
-  exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'body',): Observable<Blob>
-  exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'response'): Observable<HttpResponse<Blob>>;
 
-  exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'body',): Observable<Blob>
+  exportCsv(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'response'): Observable<HttpResponse<Blob>>;
   exportExcel(entityName: string, exportMode: 'FULL' | 'ONLY_VISIBLE_IN_GRID', searchModel: SearchModel, reference?: string, locale?: string, observe?: 'response',): Observable<HttpResponse<Blob>>;
 
 }

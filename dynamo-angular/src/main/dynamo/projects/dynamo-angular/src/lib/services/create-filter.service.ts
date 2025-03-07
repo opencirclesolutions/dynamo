@@ -97,7 +97,7 @@ export class CreateFilterService {
           if (am.multipleSearch) {
             let selectedOptions: SelectOption[] = searchObject[am.name];
             if (selectedOptions && selectedOptions.length > 0) {
-              let mapped = selectedOptions.map((option) => option.value);
+              let mapped = selectedOptions.map((option) => option.value || option);
               let filter = createNumberInFilter(am.name, mapped);
               filters.push(filter);
             }
@@ -112,7 +112,7 @@ export class CreateFilterService {
           // multiple select
           let selectedOptions: SelectOption[] = searchObject[am.name];
           if (selectedOptions && selectedOptions.length > 0) {
-            let mapped = selectedOptions.map((option) => option.value);
+            let mapped = selectedOptions.map((option) => option.value || option);
             let filter = createNumberInFilter(am.name, mapped);
             filters.push(filter);
           }
