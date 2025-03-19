@@ -253,7 +253,7 @@
                             </goals>
                             <configuration>
                                 <outputDirectory>target/generated-sources/annotations</outputDirectory>
-                                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor,lombok.launch.AnnotationProcessorHider$AnnotationProcessor</processor>
                             </configuration>
                         </execution>
                         <execution>
