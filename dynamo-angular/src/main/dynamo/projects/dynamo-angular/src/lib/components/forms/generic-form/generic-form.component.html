@@ -298,7 +298,9 @@
                                     *ngIf="isNestedDetail(am)&& getNestedEntityModel(am)"></d-details-grid>
                         </ng-container>
                         <ng-container *ngIf="!isNestedDetail(am)">
-                            <label for="{{ am.name }}">{{ am.displayNames[locale] }}</label>
+                            <label for="{{ am.name }}">
+                                {{ am.displayNames[locale] }}  {{ am.required ? '*' : '' }}
+                            </label>
                             @if (!isLob(am)) {
                                 <d-generic-field
                                         [formGroup]="mainForm"
