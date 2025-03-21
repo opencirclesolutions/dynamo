@@ -17,7 +17,20 @@
  * limitations under the License.
  * #L%
  */
-import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
+import {
+  Component,
+  ContentChildren,
+  EventEmitter,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef,
+  inject,
+  OnChanges, SimpleChanges
+} from '@angular/core';
 import {
   FormGroup,
   AbstractControl,
@@ -83,7 +96,7 @@ import { BaseCompositeComponent } from '../base-composite/base-composite.compone
 })
 export class GenericFormComponent
   extends BaseCompositeComponent
-  implements OnInit {
+  implements OnInit, OnChanges {
   protected formBuilder = inject(FormBuilder);
   private translate = inject(TranslateService);
   private confirmService = inject(ConfirmService);
@@ -224,6 +237,13 @@ export class GenericFormComponent
         });
     } else {
       this.init(this.entityModel);
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges) {
+    if (changes['openInViewMode'] || changes['readOnly']) {
+      // pick up any changes in the @Input(readOnly) or @Input(openInViewMode) to propagate to the internal state
+      this.viewMode = this.openInViewMode || this.readOnly;
     }
   }
 
