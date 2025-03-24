@@ -197,7 +197,7 @@
                         <button
                                 type="submit"
                                 class="btn btn-primary m-1"
-                                [disabled]="loading"
+                                [disabled]="loading || isFormDisabled()"
                                 (click)="save()">
                             <span class="pi pi-save"></span> {{ "save" | translate }}
                         </button>

@@ -489,6 +489,11 @@ export class GenericFormComponent
     return getErrorString(attribute, this.mainForm!, this.translate);
   }
 
+  isFormDisabled(): boolean {
+    // Edge case when there are no editable fields on the entity
+    return this.mainForm!.disabled;
+  }
+
   save(): void {
     if (this.confirmSave === true) {
       var callback = (event: any): void => {
