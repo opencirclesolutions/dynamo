@@ -60,14 +60,14 @@ export class EntitySearchDialogComponent
   @Output() onChange = new EventEmitter<any>();
 
   entitySelected(event: any) {
-    const inCache = this.valueCache.find(element => element.value.id === event.id);
+    const inCache = this.valueCache.find(element => element.value === event.id);
     if (!inCache) {
       this.valueCache.push({
         name: this.displayPropertyName ? event[this.displayPropertyName] : '',
         value: event.id
       });
     } else {
-      this.valueCache = this.valueCache.filter(element => element.value.id !== event.id);
+      this.valueCache = this.valueCache.filter(element => element.value !== event.id);
     }
   }
 
