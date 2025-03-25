@@ -41,7 +41,7 @@ import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/e
       multi: true,
     },
   ],
-  imports: [MessageModule, TooltipModule, ReactiveFormsModule, MultiSelectModule, LookupFieldComponent, ReactiveFormsModule],
+  imports: [MessageModule, TooltipModule, ReactiveFormsModule, MultiSelectModule, forwardRef(() => LookupFieldComponent), ReactiveFormsModule],
   templateUrl: './select-many-field.component.html',
   styleUrl: './select-many-field.component.css'
 })

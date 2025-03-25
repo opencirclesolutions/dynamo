@@ -43,7 +43,7 @@ import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/e
 @Component({
   selector: 'd-select-entity-field',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, MessageModule, DropdownModule, MultiSelectModule, AutoCompleteModule, TooltipModule, LookupFieldComponent, ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule, MessageModule, DropdownModule, MultiSelectModule, AutoCompleteModule, TooltipModule, forwardRef(() => LookupFieldComponent), ReactiveFormsModule],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
