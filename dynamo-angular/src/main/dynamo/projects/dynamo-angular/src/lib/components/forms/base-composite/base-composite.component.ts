@@ -51,6 +51,7 @@ import { PagingModel } from '../../../interfaces/model/pagingModel';
 import { SortModel } from '../../../interfaces/model/sortModel';
 import { AdditionalGlobalAction } from '../../../interfaces/action';
 import { EntityModelActionResponse } from '../../../interfaces/model/entityModelActionResponse';
+import {TranslateService} from "@ngx-translate/core";
 
 @Component({
   selector: 'd-base-composite',
@@ -87,7 +88,7 @@ export abstract class BaseCompositeComponent {
   // optional reference to further specify which entity model to use
   @Input() entityModelReference?: string = undefined;
   // the locale to use
-  @Input() public locale: string = getLocale();
+  @Input() public locale: string;
   // default filters to apply when searching
   @Input() defaultFilters: FilterModel[] = [];
   // filters to apply to individual fields
@@ -129,6 +130,10 @@ export abstract class BaseCompositeComponent {
 
     this.service = configuration.getCRUDService()
     this.entityModelService = configuration.getModelService()
+
+    // use the translation service to determine the active locale, only fallback to the getLocale when unknown
+    const translationService = inject(TranslateService)
+    this.locale = translationService.currentLang || translationService.defaultLang || getLocale()
   }
 
   lookupEntities(key: string): any[] {
