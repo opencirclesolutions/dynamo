@@ -157,7 +157,7 @@ export class LookupFieldComponent
 
   clear() {
     this.selectedValues = [];
-    this.onChange(this.selectedValues);
+    this.onChange(this.multiSelect ? this.selectedValues : this.selectedValues[0]);
   }
 
   getSelectedValueString() {
