@@ -60,6 +60,11 @@ export class EntitySearchDialogComponent
   @Output() onChange = new EventEmitter<any>();
 
   entitySelected(event: any) {
+    if (!this.multiSelect) {
+      // prevent multiple selected when that is not available
+      this.valueCache = [];
+    }
+
     const inCache = this.valueCache.find(element => element.value === event.id);
     if (!inCache) {
       this.valueCache.push({
