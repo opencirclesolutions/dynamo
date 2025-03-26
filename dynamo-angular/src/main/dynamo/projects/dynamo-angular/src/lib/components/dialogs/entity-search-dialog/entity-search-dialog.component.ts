@@ -54,9 +54,27 @@ export class EntitySearchDialogComponent
   selectedValues: SelectOption[] = [];
   // value cache, for holding the items selected in the popup
   valueCache: SelectOption[] = [];
+  displayPropertyName?: string;
 
   @Output() onRowSelect = new EventEmitter<any>();
   @Output() onChange = new EventEmitter<any>();
+
+  entitySelected(event: any) {
+    if (!this.multiSelect) {
+      // prevent multiple selected when that is not available
+      this.valueCache = [];
+    }
+
+    const inCache = this.valueCache.find(element => element.value === event.id);
+    if (!inCache) {
+      this.valueCache.push({
+        name: this.displayPropertyName ? event[this.displayPropertyName] : '',
+        value: event.id
+      });
+    } else {
+      this.valueCache = this.valueCache.filter(element => element.value !== event.id);
+    }
+  }
 
   protected onLookupFilled(am: AttributeModelResponse): void {
   }

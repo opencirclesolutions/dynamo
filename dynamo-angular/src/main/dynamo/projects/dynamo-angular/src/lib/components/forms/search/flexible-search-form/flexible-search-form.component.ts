@@ -63,8 +63,8 @@ export interface SearchRow {
 @Component({
   selector: 'd-flexible-search-form',
   standalone: true,
-  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, DropdownModule, TooltipModule, TriStateCheckboxModule, StringFieldComponent, SelectManyFieldComponent,
-    SelectEntityFieldComponent, EnumFieldComponent, TimeFieldComponent, DecimalFieldComponent, DateFieldComponent, TimestampFieldComponent, NumberFieldComponent, ElementCollectionFieldComponent],
+  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, DropdownModule, TooltipModule, TriStateCheckboxModule, StringFieldComponent, forwardRef(() => SelectManyFieldComponent),
+    forwardRef(() => SelectEntityFieldComponent), EnumFieldComponent, TimeFieldComponent, DecimalFieldComponent, DateFieldComponent, TimestampFieldComponent, NumberFieldComponent, ElementCollectionFieldComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

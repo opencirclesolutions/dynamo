@@ -49,8 +49,8 @@ import { PanelModule } from 'primeng/panel';
 @Component({
   selector: 'd-generic-search-form',
   standalone: true,
-  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, TriStateCheckboxModule, TooltipModule, ElementCollectionFieldComponent, SelectManyFieldComponent,
-     SelectEntityFieldComponent, TimeFieldComponent, TimestampFieldComponent, DateFieldComponent, EnumFieldComponent, DecimalFieldComponent, NumberFieldComponent, StringFieldComponent],
+  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, TriStateCheckboxModule, TooltipModule, ElementCollectionFieldComponent, forwardRef(() => SelectManyFieldComponent),
+    forwardRef(() => SelectEntityFieldComponent), TimeFieldComponent, TimestampFieldComponent, DateFieldComponent, EnumFieldComponent, DecimalFieldComponent, NumberFieldComponent, StringFieldComponent],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

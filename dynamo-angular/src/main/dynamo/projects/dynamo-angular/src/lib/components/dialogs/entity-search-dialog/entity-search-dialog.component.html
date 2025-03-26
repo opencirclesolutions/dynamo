@@ -3,7 +3,6 @@
     [(visible)]="dialogVisible"
     [style]="{ width: '70vw' }"
     [modal]="true">
-    <p>Dialog!</p>
     <d-generic-search-layout
         [entityName]="entityName"
         [entityModelReference]="entityModelReference"
@@ -11,6 +10,7 @@
         [selectedIds]="selectedIds"
         [multiSelect]="multiSelect"
         [nested]="true"
+        (onRowSelect)="entitySelected($event)"
         [searchImmediately]="true"
         [defaultFilters]="defaultFilters"
         [queryType]="queryType"></d-generic-search-layout>

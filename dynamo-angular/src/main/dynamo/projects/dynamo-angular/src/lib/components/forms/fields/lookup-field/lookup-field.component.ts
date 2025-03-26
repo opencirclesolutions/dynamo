@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {Component, forwardRef, inject, Input, OnInit, ViewChild, ViewContainerRef} from '@angular/core';
+import {Component, forwardRef, inject, Input, ViewChild, ViewContainerRef} from '@angular/core';
 import {ControlValueAccessor, NG_VALUE_ACCESSOR} from '@angular/forms';
 import {TranslateModule, TranslateService} from '@ngx-translate/core';
 import {EntityModelResponse} from '../../../../interfaces/model/entityModelResponse';
@@ -47,7 +47,7 @@ import {EntitySearchDialogComponent} from "../../../dialogs/entity-search-dialog
 })
 export class LookupFieldComponent
   extends BaseComponent
-  implements ControlValueAccessor, OnInit {
+  implements ControlValueAccessor {
   private authService = inject(AuthenticationService);
 
   // the name of the entity to display
@@ -101,12 +101,7 @@ export class LookupFieldComponent
     super(translate);
   }
 
-  ngOnInit(): void {
-  }
-
   showDialog(): void {
-    console.log("Trying to open dialog2!");
-
     this.valueCache = [];
     this.selectedValues.forEach((element) => this.valueCache.push(element));
     this.selectedIds = [];
@@ -116,14 +111,19 @@ export class LookupFieldComponent
 
     this.header = this.translate.instant('search_header', {title: ''});
 
-    // let componentRef = this.searchDialogRef.createComponent(EntitySearchDialogComponent);
-    // componentRef.instance.entityModelReference = this.entityModelReference;
-    // componentRef.instance.entityName = this.entityName;
-    // componentRef.instance.selectedIds = this.selectedIds;
-    // componentRef.instance.multiSelect = this.multiSelect;
-    // componentRef.instance.defaultFilters = this.defaultFilters;
-    // // // TODO: query type
-    // componentRef.instance.showDialog();
+    let componentRef = this.searchDialogRef.createComponent(EntitySearchDialogComponent);
+    componentRef.instance.entityName = this.entityName;
+    componentRef.instance.displayPropertyName = this.displayPropertyName;
+    componentRef.instance.selectedIds = this.selectedIds;
+    componentRef.instance.valueCache = this.valueCache;
+    componentRef.instance.selectedValues = this.selectedValues;
+    componentRef.instance.multiSelect = this.multiSelect;
+    componentRef.instance.defaultFilters = this.defaultFilters;
+    const subscription = componentRef.instance.onChange.subscribe(event => {
+      this.writeValue(event)
+      subscription.unsubscribe();
+    });
+    componentRef.instance.showDialog();
   }
 
   showQuickAddDialog() {
@@ -138,17 +138,6 @@ export class LookupFieldComponent
     componentRef.instance.showDialog();
   }
 
-  // showSearchDialog(): void {
-  //   let componentRef = this.searchDialogRef.createComponent(EntitySearchDialogComponent);
-  //   componentRef.instance.entityModelReference = this.entityModelReference;
-  //   componentRef.instance.entityName = this.entityName;
-  //   //componentRef.instance.readOnly = false;
-  //   // componentRef.instance.onDialogClosed = (obj: any): void => {
-  //   //   this.afterQuickAddDialogClosed(obj);
-  //   // };
-  //   componentRef.instance.showDialog();
-  // }
-
   afterQuickAddDialogClosed(obj: any) {
     if (!this.multiSelect) {
       this.selectedValues = [];
@@ -158,52 +147,16 @@ export class LookupFieldComponent
       value: obj.id,
       name: obj[this.displayPropertyName],
     });
+    this.selectedIds.push(obj.id);
+    this.onChange(this.selectedIds);
   }
 
   getHeader(): string {
     return this.header;
   }
 
-  /**
-   * Closes the dialog and applies the selection
-   */
-  // selectAndClose(): void {
-  //   this.selectedValues = [];
-  //   this.valueCache.forEach((element) => this.selectedValues.push(element));
-  //   if (this.multiSelect) {
-  //     this.onChange(this.selectedValues);
-  //   } else {
-  //     this.onChange(this.selectedValues[0]);
-  //   }
-  //
-  //   //this.dialogVisible = false;
-  // }
-
-  /**
-   * Respond to selection of a row in the popup dialog
-   * @param event the row select event (contains the entire row object)
-   */
-  onRowSelect(event: any) {
-    if (this.multiSelect) {
-      let match = this.valueCache.find((val) => val.value === event.id);
-      if (!match) {
-        this.valueCache.push({
-          value: event.id,
-          name: event[this.displayPropertyName],
-        });
-      }
-    } else {
-      this.valueCache = [];
-      this.valueCache.push({
-        value: event.id,
-        name: event[this.displayPropertyName],
-      });
-    }
-  }
-
   clear() {
-    this.selectedValues = [];
-    this.onChange(this.selectedValues);
+    this.writeValue(undefined);
   }
 
   getSelectedValueString() {
@@ -224,6 +177,7 @@ export class LookupFieldComponent
     } else {
       this.selectedValues = [];
     }
+    this.onChange(this.multiSelect ? this.selectedValues : this.selectedValues[0]);
   }
 
   registerOnChange(onChange: any) {

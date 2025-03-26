@@ -127,7 +127,7 @@ export class DataTableComponent implements OnInit {
       }
       this.selectedIds.push(event.id);
     } else {
-      this.selectedIds = this.selectedIds.slice(index + 1, index + 2);
+      this.selectedIds = this.selectedIds.filter((id) => id !== event.id);
     }
     if (this.detailsModeEnabled && !this.showDetailButton) {
       this.rowClick.emit(event);
