@@ -684,26 +684,27 @@
                             <autoReleaseAfterClose>false</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <groupId>com.ragedunicorn.tools.maven</groupId>
-				<artifactId>github-release-maven-plugin</artifactId>
-				<version>1.0.7</version>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <phase>deploy</phase>
-                                <configuration>
-                                    <owner>opencirclesolutions</owner>
-                                    <repository>dynamo</repository>
-                                    <server>github-oauth</server>
-                                    <tagName>dynamoframework-${project.version}</tagName>
-                                    <name>v${project.version}</name>
-                                    <generateReleaseNotes>true</generateReleaseNotes>
-                                    <body>${project.description}</body>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
+<!--					This is done in a workflow before publishing the release-->
+<!--                    <plugin>-->
+<!--                        <groupId>com.ragedunicorn.tools.maven</groupId>-->
+<!--				<artifactId>github-release-maven-plugin</artifactId>-->
+<!--				<version>1.0.7</version>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <id>default-cli</id>-->
+<!--                                <phase>deploy</phase>-->
+<!--                                <configuration>-->
+<!--                                    <owner>opencirclesolutions</owner>-->
+<!--                                    <repository>dynamo</repository>-->
+<!--                                    <server>github-oauth</server>-->
+<!--                                    <tagName>dynamoframework-${project.version}</tagName>-->
+<!--                                    <name>v${project.version}</name>-->
+<!--                                    <generateReleaseNotes>true</generateReleaseNotes>-->
+<!--                                    <body>${project.description}</body>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
                 </plugins>
             </build>
         </profile>
