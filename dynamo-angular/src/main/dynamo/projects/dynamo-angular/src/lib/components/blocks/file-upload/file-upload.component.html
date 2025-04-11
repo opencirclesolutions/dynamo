@@ -48,22 +48,21 @@ limitations under the License.
       (uploadHandler)="uploadHandler($event)"
     [auto]="true"></p-fileUpload>
     <!-- Clear button -->
-    <button
+    <p-button
       type="button"
-      class="btn btn-primary mt-1 mr-1"
+      class="mt-1 mr-1"
+      icon="pi pi-ban"
+      label="{{ 'clear' | translate }}"
       (click)="clearUpload()"
-      [disabled]="!getImageContent()">
-      <span class="pi pi-ban"></span> {{ "clear" | translate }}
-    </button>
+      [disabled]="!getImageContent()"/>
     <!-- Download button -->
     @if (getImageContent() && am.downloadAllowed) {
-      <button
+      <p-button
         type="button"
-        class="btn btn-primary mt-1 mr-1"
-        (click)="downloadFile()"
-        >
-        <span class="pi pi-download"></span> {{ "download" | translate }}
-      </button>
+        icon="pi pi-download"
+        label="{{ 'download' | translate }}"
+        class="mt-1 mr-1"
+        (click)="downloadFile()"/>
     }
   </div>
 </div>

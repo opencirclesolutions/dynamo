@@ -30,6 +30,7 @@ import {LookupFieldComponent} from '../lookup-field/lookup-field.component';
 import {NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {MultiSelectModule} from 'primeng/multiselect';
 import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/entity-popup-dialog.component";
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-select-many-field',
@@ -41,7 +42,7 @@ import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/e
       multi: true,
     },
   ],
-  imports: [MessageModule, TooltipModule, ReactiveFormsModule, MultiSelectModule, forwardRef(() => LookupFieldComponent), ReactiveFormsModule],
+  imports: [MessageModule, TooltipModule, ReactiveFormsModule, MultiSelectModule, forwardRef(() => LookupFieldComponent), ReactiveFormsModule, Button],
   templateUrl: './select-many-field.component.html',
   styleUrl: './select-many-field.component.css'
 })

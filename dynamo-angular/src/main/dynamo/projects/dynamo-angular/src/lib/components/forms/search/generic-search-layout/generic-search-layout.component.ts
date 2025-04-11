@@ -32,11 +32,12 @@ import { FlexibleSearchFormComponent } from '../flexible-search-form/flexible-se
 import { BaseCompositeCollectionComponent } from '../../base-composite-collection/base-composite-collection.component';
 import { GenericSearchFormComponent } from '../generic-search-form/generic-search-form.component';
 import {NG_VALUE_ACCESSOR} from "@angular/forms";
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-generic-search-layout',
   standalone: true,
-  imports: [TranslateModule, DividerModule, GenericTableComponent, forwardRef(() => FlexibleSearchFormComponent), forwardRef(() => GenericSearchFormComponent)],
+  imports: [TranslateModule, DividerModule, GenericTableComponent, forwardRef(() => FlexibleSearchFormComponent), forwardRef(() => GenericSearchFormComponent), Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

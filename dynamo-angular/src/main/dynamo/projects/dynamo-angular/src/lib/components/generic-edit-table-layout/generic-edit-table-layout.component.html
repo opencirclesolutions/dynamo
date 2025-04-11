@@ -44,38 +44,32 @@ limitations under the License.
     [modelActionEnabled]="modelActionEnabled"
     (onSearchComplete)="searchComplete()"></d-generic-table> <ng-template #popupDialogContainerRef></ng-template> <!-- Dialog to add new entity-->
     <div
-      class="btn-group"
+      class="btn-group m-1"
       role="group">
       @if (entityModel?.createAllowed! && isWriteAllowed()) {
-        <button
-          type="button"
-          class="btn btn-primary m-1"
+        <p-button
+          icon="pi pi-plus"
+          label="{{ 'add' | translate }}"
           (click)="openNewEntityDialog()"
-          [disabled]="loading">
-          <span class="pi pi-plus"></span> {{ "add" | translate }}
-        </button>
+          [disabled]="loading" />
       }
       <!-- Server defined actions-->
       @for (action of filterEntityModelActions(); track action) {
-        <button
+        <p-button
           type="button"
-          class="btn btn-primary m-1"
-          (click)="callModelAction(vcr, action, undefined)">
-          <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-        </button>
+          icon="pi {{ action.icon }}"
+          label="{{ action.displayNames[locale] }}"
+          (click)="callModelAction(vcr, action, undefined)" />
       }
       <!-- UI defined global actions -->
       @for (action of additionalGlobalActions; track action) {
-        <button
+        <p-button
           type="button"
+          icon="{{ action.icon ? 'pi ' + action.icon : '' }}"
+          label="{{ action.messageKey | translate }}"
           [class]="action.buttonClass"
           (click)="callAdditionalGlobalAction(action)"
-          [disabled]="loading || isGlobalActionDisabled(action)">
-          @if (action.icon) {
-            <span
-            class="pi {{ action.icon }}"></span>
-            } {{ action.messageKey | translate }}
-          </button>
+          [disabled]="loading || isGlobalActionDisabled(action)"/>
         }
       </div>
     }

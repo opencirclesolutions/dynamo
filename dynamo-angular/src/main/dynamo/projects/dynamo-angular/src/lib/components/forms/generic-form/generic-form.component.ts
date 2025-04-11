@@ -86,11 +86,12 @@ import { GenericFormViewComponent } from '../generic-form-view/generic-form-view
 import { DividerModule } from 'primeng/divider';
 import { GenericFieldComponent } from '../fields/generic-field/generic-field.component';
 import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-generic-form',
   standalone: true,
-  imports: [TranslateModule, CommonModule, TabViewModule, PanelModule, DividerModule, ReactiveFormsModule, GenericFieldComponent, FileUploadComponent, DetailsGridComponent, FieldViewComponent, GenericFormViewComponent],
+  imports: [TranslateModule, CommonModule, TabViewModule, PanelModule, DividerModule, ReactiveFormsModule, GenericFieldComponent, FileUploadComponent, DetailsGridComponent, FieldViewComponent, GenericFormViewComponent, Button],
   templateUrl: './generic-form.component.html',
   styleUrl: './generic-form.component.css'
 })

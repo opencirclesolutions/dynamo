@@ -27,11 +27,12 @@ import {SelectOption} from "../../../interfaces/select-option";
 import {NG_VALUE_ACCESSOR} from "@angular/forms";
 import LookupQueryTypeEnum = AttributeModelResponse.LookupQueryTypeEnum;
 import {GenericSearchLayoutComponent} from "../../forms/search/generic-search-layout/generic-search-layout.component";
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-entity-search-dialog',
   standalone: true,
-  imports: [DialogModule, TranslateModule, GenericSearchLayoutComponent],
+  imports: [DialogModule, TranslateModule, GenericSearchLayoutComponent, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

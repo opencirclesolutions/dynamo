@@ -35,22 +35,17 @@ limitations under the License.
       <div
         class="btn-group"
         role="group">
-        <button
+        <p-button
           id="clearButton"
+          icon="pi pi-times"
           (click)="clear()"
           class="btn btn-danger"
-					[disabled]="
-            (selectedValues && selectedValues.length == 0) || disabled
-          ">
-          <span class="pi pi-times"></span>
-        </button>
-        <button
+            [disabled]="(selectedValues && selectedValues.length == 0) || disabled"/>
+        <p-button
           id="addButton"
+          icon="pi pi-plus"
           [disabled]="disabled"
-          class="btn btn-primary"
-          (click)="showDialog()">
-          <span class="pi pi-plus"></span>
-        </button>
+          (click)="showDialog()"/>
       </div>
     </div>
   </div>
@@ -93,18 +88,20 @@ limitations under the License.
   <div
     class="btn-group"
     role="group">
-    <button
+    <p-button
       type="button"
-      class="btn btn-danger m-1"
-      (click)="cancel()">
-      <span class="pi pi-times"></span> {{ "cancel" | translate }}
-    </button>
-    <button
+      severity="danger"
+      class="m-1"
+      icon="pi pi-times"
+      label="{{ 'cancel' | translate }}"
+      (click)="cancel()"/>
+    <p-button
       type="button"
-      class="btn btn-success m-1"
+      severity="success"
+      class="m-1"
+      icon="pi pi-check"
+      label="{{ 'ok' | translate }}"
       (click)="selectAndClose()"
-      [disabled]="!dialogForm?.valid">
-      <span class="pi pi-check"></span> {{ "ok" | translate }}
-    </button>
+      [disabled]="!dialogForm?.valid"/>
   </div>
 </p-dialog>

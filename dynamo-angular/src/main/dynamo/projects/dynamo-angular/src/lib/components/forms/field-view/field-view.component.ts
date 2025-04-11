@@ -35,11 +35,12 @@ import { TranslateBooleanPipe } from '../../../pipes/translate-boolean.pipe';
 import { TranslateEnumPipe } from '../../../pipes/translate-enum.pipe';
 import { CommonModule } from '@angular/common';
 import { FieldViewTableComponent } from '../field-view-table/field-view-table.component';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-field-view',
   standalone: true,
-  imports: [CommonModule, TranslateModule, TranslateEntityPipe, TranslateBooleanPipe, TranslateEnumPipe, FieldViewTableComponent],
+  imports: [CommonModule, TranslateModule, TranslateEntityPipe, TranslateBooleanPipe, TranslateEnumPipe, FieldViewTableComponent, Button],
   templateUrl: './field-view.component.html',
   styleUrl: './field-view.component.css'
 })

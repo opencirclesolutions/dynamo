@@ -43,38 +43,27 @@ limitations under the License.
       class="btn-group"
       role="group">
       @if (showPopupButton()) {
-        <button
-          type="button"
-          pTooltip=" {{ 'details' | translate}}"
-          class="btn btn-primary m-1"
-          (click)="openEntityDialog(row)">
-          <span class="pi pi-eye"></span>
-        </button>
+          <p-button type="button"
+                    pTooltip=" {{ 'details' | translate}}"
+                    icon="pi pi-eye"
+                    (click)="openEntityDialog(row)" />
       }
       <!-- Additional entity model actions -->
       @for (action of filterEntityModelActions(); track action) {
-        <button
-          type="button"
-          class="btn btn-primary m-1"
-          [disabled]="!isModelActionEnabled(row, action) || loading"
-          (click)="callModelAction(vcr, action, row)"
-          pTooltip="{{ action.displayNames[locale] }}">
-          <span class="pi {{ action.icon }}"></span>
-        </button>
+          <p-button type="button"
+                    severity="primary"
+                    [disabled]="!isModelActionEnabled(row, action) || loading"
+                    (click)="callModelAction(vcr, action, row)"
+                    icon="pi {{ action.icon }}"
+                    pTooltip="{{ action.displayNames[locale] }}" />
       }
       <!-- Additional UI defined actions -->
       @for (action of additionalRowActions; track action) {
-        <button
-          type="button"
-          [class]="action.buttonClass"
-          (click)="callAdditionalRowAction(action, row)"
-          pTooltip="{{ action.messageKey | translate }}"
-          [disabled]="isRowActionDisabled(action, row) || loading">
-          @if (action.icon) {
-            <span
-            class="pi {{ action.icon }}"></span>
-          }
-        </button>
+          <p-button [class]="action.buttonClass"
+                    icon="{{ action.icon ? 'pi ' + action.icon : '' }}"
+                    (click)="callAdditionalRowAction(action, row)"
+                    pTooltip="{{ action.messageKey | translate }}"
+                    [disabled]="isRowActionDisabled(action, row) || loading"/>
       }
       <ng-template #popupDialogContainerRef></ng-template>
     </div>

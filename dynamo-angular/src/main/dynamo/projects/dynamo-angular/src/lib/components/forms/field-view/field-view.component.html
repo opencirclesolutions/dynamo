@@ -49,11 +49,11 @@ limitations under the License.
     src="assets/no-preview.png" />
 }
 @if (getNestedValue(entity, am) && am.downloadAllowed) {
-  <button
+  <p-button
     type="button"
-    class="btn btn-primary m-1"
-    (click)="downloadFile(am)"
-  >{{ "download" | translate }}</button>
+    class="m-1"
+    label="{{ 'download' | translate }}"
+    (click)="downloadFile(am)"/>
 }
 </span>
 } <!-- Integral number --> @if (isIntegral(am)) {
@@ -81,10 +81,11 @@ limitations under the License.
 am.falseRepresentations }} </span>
 } @if (isMaster(am)) {
 <span> @if (am.navigable && entity[am.name]) {
-  <button
+  <p-button
     type="button"
-    class="btn btn-link"
-  (click)="navigate(am)">{{ entity[am.name] | translateEntity : am.displayPropertyName! }}</button>
+    link
+    [label]="entity[am.name] | translateEntity : am.displayPropertyName!"
+  (click)="navigate(am)"/>
   } @if (!am.navigable) {
   {{ getNestedValue(entity, am) | translateEntity :
   am.displayPropertyName! }}

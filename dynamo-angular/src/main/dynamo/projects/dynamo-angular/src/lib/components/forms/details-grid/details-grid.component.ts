@@ -62,11 +62,12 @@ import { StringFieldComponent } from '../fields/string-field/string-field.compon
 import { FieldViewComponent } from '../field-view/field-view.component';
 import { TableModule } from 'primeng/table';
 import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-details-grid',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TranslateModule, TableModule, TooltipModule, CheckboxModule, DecimalFieldComponent, NumberFieldComponent, SelectEntityFieldComponent, TimestampFieldComponent, TimeFieldComponent, DateFieldComponent, EnumFieldComponent, StringFieldComponent, FieldViewComponent],
+  imports: [CommonModule, ReactiveFormsModule, TranslateModule, TableModule, TooltipModule, CheckboxModule, DecimalFieldComponent, NumberFieldComponent, SelectEntityFieldComponent, TimestampFieldComponent, TimeFieldComponent, DateFieldComponent, EnumFieldComponent, StringFieldComponent, FieldViewComponent, Button],
   templateUrl: './details-grid.component.html',
   styleUrl: './details-grid.component.css'
 })
