@@ -21,7 +21,7 @@ jobs:
   validate:
     # restrict access to this job to prevent accidental release triggers from non OCS authors
     if: contains('["gjong","klafbang", "pdeenen", "tommy-ocs", "wittekip"]', github.actor)
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       version: ${{ steps.determine_version.outputs.version }}
     steps:
@@ -30,7 +30,7 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'corretto'
+          distribution: 'temurin'
           java-version: '21'
           architecture: x64
           cache: 'maven'
@@ -58,7 +58,7 @@ jobs:
   #  - `tagged`: the full version number that was used, including any postfix set like 'RC1'
   set-version:
     needs: validate
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       tagged: ${{ steps.set_version.outputs.tag_version }}
     steps:
@@ -67,8 +67,8 @@ jobs:
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'corretto'
-          java-version: '24'
+          distribution: 'temurin'
+          java-version: '21'
           architecture: x64
           cache: 'maven'
       - name: Configure Git
@@ -101,7 +101,7 @@ jobs:
   # The release will be created as 'Draft' to allow custom release notes to be added.
   github-release:
     needs: set-version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     if: ${{ needs.set-version.outputs.tagged }}
     steps:
       - name: Create github release
@@ -122,15 +122,15 @@ jobs:
     needs:
       - validate
       - set-version
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'corretto'
-          java-version: '24'
+          distribution: 'temurin'
+          java-version: '21'
           architecture: x64
           cache: 'maven'
       - name: Configure Git

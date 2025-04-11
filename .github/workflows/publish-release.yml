@@ -10,15 +10,15 @@ permissions:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
       - name: Set up JDK
         uses: actions/setup-java@v4
         with:
-          distribution: 'corretto'
-          java-version: '24'
+          distribution: 'temurin'
+          java-version: '21'
           architecture: x64
           cache: 'maven'
           server-id: central
