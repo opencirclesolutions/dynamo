@@ -33,11 +33,12 @@ import { TooltipModule } from 'primeng/tooltip';
 import { ContextMenuModule } from 'primeng/contextmenu';
 import { MultiSelectModule } from 'primeng/multiselect';
 import { FormsModule } from '@angular/forms';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-data-table',
   standalone: true,
-  imports: [TranslateModule, FormsModule, CommonModule, TooltipModule, ContextMenuModule, MultiSelectModule, TableModule, TranslateEntityPipe, TruncatePipe, TranslateEnumPipe, TranslateBooleanPipe],
+  imports: [TranslateModule, FormsModule, CommonModule, TooltipModule, ContextMenuModule, MultiSelectModule, TableModule, TranslateEntityPipe, TruncatePipe, TranslateEnumPipe, TranslateBooleanPipe, Button],
   templateUrl: './data-table.component.html',
   styleUrl: './data-table.component.css'
 })

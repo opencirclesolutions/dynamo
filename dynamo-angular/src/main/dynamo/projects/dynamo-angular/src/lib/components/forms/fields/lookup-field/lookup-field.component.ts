@@ -30,11 +30,12 @@ import {EntityPopupDialogComponent} from '../../../dialogs/entity-popup-dialog/e
 import {truncateDescriptions} from '../../../../functions/entitymodel-functions';
 import {DialogModule} from 'primeng/dialog';
 import {EntitySearchDialogComponent} from "../../../dialogs/entity-search-dialog/entity-search-dialog.component";
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-lookup-field',
   standalone: true,
-  imports: [TranslateModule, DialogModule],
+  imports: [TranslateModule, DialogModule, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

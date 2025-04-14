@@ -39,11 +39,12 @@ import {LookupFieldComponent} from '../lookup-field/lookup-field.component';
 import {MultiSelectModule} from 'primeng/multiselect';
 import {DropdownModule} from 'primeng/dropdown';
 import {EntityPopupDialogComponent} from "../../../dialogs/entity-popup-dialog/entity-popup-dialog.component";
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-select-entity-field',
   standalone: true,
-  imports: [ReactiveFormsModule, CommonModule, MessageModule, DropdownModule, MultiSelectModule, AutoCompleteModule, TooltipModule, forwardRef(() => LookupFieldComponent), ReactiveFormsModule],
+  imports: [ReactiveFormsModule, CommonModule, MessageModule, DropdownModule, MultiSelectModule, AutoCompleteModule, TooltipModule, forwardRef(() => LookupFieldComponent), ReactiveFormsModule, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

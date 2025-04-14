@@ -39,18 +39,20 @@ limitations under the License.
   <div
     class="btn-group"
     role="group">
-    <button
+    <p-button
       type="button"
-      class="btn btn-danger m-1"
-      (click)="cancelDialog()">
-      <span class="pi pi-times"></span> {{ "cancel" | translate }}
-    </button>
-    <button
+      severity="danger"
+      class="m-1"
+      icon="pi pi-times"
+      label="{{ 'cancel' | translate }}"
+      (click)="cancelDialog()"/>
+    <p-button
       type="button"
-      class="btn btn-success m-1"
-      (click)="selectAndClose()">
-      <span class="pi pi-check"></span> {{ "ok" | translate }}
-    </button>
+      severity="success"
+      icon="pi pi-check"
+      label="{{ 'ok' | translate }}"
+      class="m-1"
+      (click)="selectAndClose()"/>
   </div>
 </p-dialog> <p-splitter> <ng-template pTemplate>
 <div class="col-lg-12 col-md-12 p-3">
@@ -76,29 +78,27 @@ limitations under the License.
       <div class="col">
         @if (searchDialogEnabled) {
           <div
-            class="btn-group"
-            role="group"
-            class="mb-2"
-            >
+            class="btn-group mb-2"
+            role="group">
             @if (searchDialogEnabled) {
-              <button
+              <p-button
                 id="openSearchDialogButton"
                 type="button"
-                class="btn btn-primary m-1"
-                (click)="openSearchDialog()"
-                >
-                <span class="pi pi-search"></span> {{ "search" | translate }}
-              </button>
+                severity="primary"
+                icon="pi pi-search"
+                label="{{ 'search' | translate }}"
+                class="m-1"
+                (click)="openSearchDialog()"/>
             }
             @if (searchDialogEnabled) {
-              <button
+              <p-button
                 id="clearSearchFilterButton"
                 type="button"
-                class="btn btn-primary m-1"
-                (click)="clearSearchFilter()"
-                >
-                <span class="pi pi-eraser"></span> {{ "clear" | translate }}
-              </button>
+                severity="primary"
+                class="m-1"
+                icon="pi pi-times"
+                label="{{ 'clear' | translate }}"
+                (click)="clearSearchFilter()"/>
             }
           </div>
         }
@@ -124,35 +124,33 @@ limitations under the License.
     class="btn-group"
     role="group">
     @if (entityModel?.createAllowed! && isWriteAllowed()) {
-      <button
+      <p-button
         type="button"
-        class="btn btn-primary m-1"
+        severity="primary"
+        class="m-1"
         (click)="add()"
-        >
-        <span class="pi pi-plus"></span> {{ "add" | translate }}
-      </button>
+        icon="pi pi-plus"
+        label="{{ 'add' | translate }}"/>
     }
     <!-- Server defined actions-->
     @for (action of filterEntityModelActions(); track action) {
-      <button
+      <p-button
         type="button"
-        class="btn btn-primary m-1"
-        (click)="callModelAction(vcr, action, undefined)">
-        <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-      </button>
+        severity="primary"
+        class="m-1"
+        icon="pi {{ action.icon }}"
+        label="{{ action.displayNames[locale] }}"
+        (click)="callModelAction(vcr, action, undefined)"/>
     }
     <!-- UI defined global actions -->
     @for (action of additionalGlobalActions; track action) {
-      <button
+      <p-button
         type="button"
-        [class]="action.buttonClass"
+        [severity]="action.buttonClass"
+        icon="{{ action.icon ? 'pi ' + action.icon : '' }}"
+        label="{{ action.messageKey | translate }}"
         (click)="callAdditionalGlobalAction(action)"
-        [disabled]="isGlobalActionDisabled(action)">
-        @if (action.icon) {
-          <span
-          class="pi {{ action.icon }}"></span>
-          } {{ action.messageKey | translate }}
-        </button>
+        [disabled]="isGlobalActionDisabled(action)" />
       }
       <ng-template #popupDialogContainerRef></ng-template>
     </div>

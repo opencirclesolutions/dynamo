@@ -86,19 +86,21 @@ limitations under the License.
   <div
     class="btn-group"
     role="group">
-    <button
+    <p-button
       type="button"
-      class="btn btn-danger m-1"
+      severity="danger"
+      class="m-1"
+      icon="pi pi-times"
+      label="{{ 'cancel' | translate }}"
       (click)="cancel()"
-      [disabled]="loading">
-      <span class="pi pi-times"></span> {{ "cancel" | translate }}
-    </button>
-    <button
+      [disabled]="loading"/>
+    <p-button
       type="button"
-      class="btn btn-success m-1"
+      severity="success"
+      class="m-1"
+      icon="pi pi-check"
+      label="{{ 'ok' | translate }}"
       (click)="execute()"
-      [disabled]="!mainForm?.valid || loading">
-      <span class="pi pi-check"></span> {{ "ok" | translate }}
-    </button>
+      [disabled]="!mainForm?.valid || loading"/>
   </div>
 </p-dialog>

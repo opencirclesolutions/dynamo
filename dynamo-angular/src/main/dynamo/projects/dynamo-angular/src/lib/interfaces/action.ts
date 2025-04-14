@@ -25,7 +25,7 @@ export enum AdditionalActionMode {
 export interface AdditionalActionBase {
   icon?: string;
   messageKey: string;
-  buttonClass?: string;
+  buttonClass?: "info" | "success" | "warning" | "danger" | "secondary" | "contrast" | "help" | "primary";
 }
 
 /**

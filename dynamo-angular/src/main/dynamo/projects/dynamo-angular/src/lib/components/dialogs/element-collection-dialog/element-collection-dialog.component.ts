@@ -34,11 +34,12 @@ import { MessageModule } from 'primeng/message';
 import { StringFieldComponent } from '../../forms/fields/string-field/string-field.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-element-collection-dialog',
   standalone: true,
-  imports: [TranslateModule, ReactiveFormsModule, InputNumberModule, DialogModule, MessageModule, StringFieldComponent],
+  imports: [TranslateModule, ReactiveFormsModule, InputNumberModule, DialogModule, MessageModule, StringFieldComponent, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

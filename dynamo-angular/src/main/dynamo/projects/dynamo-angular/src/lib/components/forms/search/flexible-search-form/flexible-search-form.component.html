@@ -30,14 +30,14 @@ limitations under the License.
           class="row"
           >
           <div class="col-1">
-            <button
+            <p-button
               type="button"
-              class="btn btn-danger m-1"
+              severity="danger"
+              class="m-1"
+              icon="pi pi-trash"
               [disabled]="loading || row.required"
               pTooltip=" {{ 'delete' | translate }}"
-              (click)="deleteRow(i)">
-              <span class="pi pi-trash"></span>
-            </button>
+              (click)="deleteRow(i)"/>
           </div>
           <!-- Dropdown for selecting attribute to search on -->
           <div class="col-4">
@@ -76,27 +76,27 @@ limitations under the License.
     <div
       class="btn-group mt-2"
       role="group">
-      <button
+      <p-button
         type="button"
-        class="btn btn-primary m-1"
+        class="m-1"
+        icon="pi pi-plus"
+        label="{{ 'add_filter' | translate }}"
         [disabled]="loading"
-        (click)="addRow(false)">
-        <span class="pi pi-plus"></span> {{ "add_filter" | translate }}
-      </button>
-      <button
+        (click)="addRow(false)"/>
+      <p-button
         type="button"
-        class="btn btn-primary m-1"
+        class="m-1"
+        icon="pi pi-plus"
+        label="{{ 'search' | translate }}"
         [disabled]="loading"
-        (click)="search()">
-        <span class="pi pi-search"></span> {{ "search" | translate }}
-      </button>
-      <button
+        (click)="search()"/>
+      <p-button
         type="button"
-        class="btn btn-primary m-1"
+        class="m-1"
+        icon="pi pi-eraser"
+        label="{{ 'clear' | translate }}"
         [disabled]="loading"
-        (click)="clear()">
-        <span class="pi pi-eraser"></span> {{ "clear" | translate }}
-      </button>
+        (click)="clear()"/>
     </div>
   </form>
 }

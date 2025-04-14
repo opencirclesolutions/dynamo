@@ -43,11 +43,13 @@ import { AdditionalRowAction } from '../../interfaces/action';
 import { DataTableComponent, TableColumn } from '../data-table/data-table.component';
 import { BaseCompositeCollectionComponent } from '../forms/base-composite-collection/base-composite-collection.component';
 import { TooltipModule } from 'primeng/tooltip';
+import {Button} from "primeng/button";
+import {ButtonGroup, ButtonGroupModule} from "primeng/buttongroup";
 
 @Component({
   selector: 'd-generic-table',
   standalone: true,
-  imports: [TranslateModule, TooltipModule, DataTableComponent],
+  imports: [TranslateModule, TooltipModule, DataTableComponent, Button],
   templateUrl: './generic-table.component.html',
   styleUrl: './generic-table.component.css'
 })

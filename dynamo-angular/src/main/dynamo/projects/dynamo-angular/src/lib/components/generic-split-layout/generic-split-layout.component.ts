@@ -32,11 +32,12 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { HiddenFieldService } from '../../services/hidden-field.service';
 import { DynamoConfig } from '../../interfaces/dynamo-config';
 import { FormInfo } from '../../interfaces/info';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-generic-split-layout',
   standalone: true,
-  imports: [TranslateModule, GenericTableComponent],
+  imports: [TranslateModule, GenericTableComponent, Button],
   templateUrl: './generic-split-layout.component.html',
   styleUrl: './generic-split-layout.component.css'
 })

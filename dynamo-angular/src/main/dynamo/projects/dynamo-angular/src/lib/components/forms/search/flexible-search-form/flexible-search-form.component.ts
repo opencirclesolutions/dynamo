@@ -51,6 +51,7 @@ import { StringFieldComponent } from '../../fields/string-field/string-field.com
 import { CommonModule } from '@angular/common';
 import { DropdownModule } from 'primeng/dropdown';
 import { PanelModule } from 'primeng/panel';
+import {Button} from "primeng/button";
 
 export interface SearchRow {
   index: number
@@ -64,7 +65,7 @@ export interface SearchRow {
   selector: 'd-flexible-search-form',
   standalone: true,
   imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, DropdownModule, TooltipModule, TriStateCheckboxModule, StringFieldComponent, forwardRef(() => SelectManyFieldComponent),
-    forwardRef(() => SelectEntityFieldComponent), EnumFieldComponent, TimeFieldComponent, DecimalFieldComponent, DateFieldComponent, TimestampFieldComponent, NumberFieldComponent, ElementCollectionFieldComponent],
+    forwardRef(() => SelectEntityFieldComponent), EnumFieldComponent, TimeFieldComponent, DecimalFieldComponent, DateFieldComponent, TimestampFieldComponent, NumberFieldComponent, ElementCollectionFieldComponent, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,

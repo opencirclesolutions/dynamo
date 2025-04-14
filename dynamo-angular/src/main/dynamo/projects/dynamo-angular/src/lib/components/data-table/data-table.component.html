@@ -122,11 +122,11 @@ let-row>
         target="_blank">{{ getNestedValue(row, col.field) }}</a>
         } <!-- Translate entity --> @if (col.translateEntity) {
         @if (col.navigable && getNestedValue(row,col.field)) {
-          <button
+          <p-button
             type="button"
-            class="btn btn-link"
-            (click)="navigate(row, col)">{{ getNestedValue(row, col.field) | translateEntity :
-          col.translateEntity.property }}</button>
+            link
+            label="{{ getNestedValue(row, col.field) | translateEntity : col.translateEntity.property }}"
+            (click)="navigate(row, col)"/>
           } @if (!col.navigable) {
           {{ getNestedValue(row,col.field) | translateEntity :
           col.translateEntity.property }}
@@ -136,24 +136,22 @@ let-row>
   }
   @if (showDetailButton && detailsModeEnabled) {
     <td>
-      <button
-        type="submit"
-        class="btn btn-primary"
-        pTooltip=" {{ 'to_details_screen' | translate }}"
-        (click)="onDetailButtonClick(row)">
-        <span class="pi pi-pencil"></span>
-      </button>
+        <p-button
+            type="submit"
+            icon="pi pi-pencil"
+            severity="primary"
+            pTooltip="{{ 'to_details_screen' | translate }}"
+            (onClick)="onDetailButtonClick(row)"/>
     </td>
   }
   @if (deleteEnabled) {
     <td>
-      <button
-        type="submit"
-        class="btn btn-danger"
-        pTooltip=" {{ 'delete' | translate }}"
-        (click)="onDeleteClick(row)">
-        <span class="pi pi-trash"></span>
-      </button>
+        <p-button
+          type="button"
+          icon="pi pi-trash"
+          severity="danger"
+          pTooltip="{{ 'delete' | translate }}"
+          (onClick)="onDeleteClick(row)" />
     </td>
   }
   <td><ng-container

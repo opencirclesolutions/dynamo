@@ -57,49 +57,46 @@
                         class="btn-group"
                         role="group"
                         *ngIf="entityModel">
-                    <button
+                    <p-button
                             type="button"
-                            class="btn btn-primary m-1"
+                            class="m-1"
+                            icon="pi pi-arrow-left"
+                            label="{{ 'back' | translate }}"
                             (click)="back()"
-                            *ngIf="backEnabled()">
-                        <span class="pi pi-arrow-left"></span> {{ "back" | translate }}
-                    </button>
-                    <button
+                            *ngIf="backEnabled()" />
+                    <p-button
                             type="button"
                             *ngIf="nested"
-                            class="btn btn-danger m-1"
-                            (click)="closeDialog()">
-                        <span class="pi pi-times"></span> {{ "close" | translate }}
-                    </button>
-                    <button
+                            class="m-1"
+                            severity="danger"
+                            icon="pi pi-times"
+                            label="{{ 'close' | translate }}"
+                            (click)="closeDialog()"/>
+                    <p-button
                             type="button"
-                            class="btn btn-primary m-1"
+                            class="m-1"
+                            icon="pi pi-pencil"
+                            label="{{ 'edit' | translate }}"
                             (click)="editMode()"
-                            *ngIf="
-          entityModel.updateAllowed && this.isWriteAllowed() && !this.readOnly">
-                        <span class="pi pi-pencil"></span> {{ "edit" | translate }}
-                    </button>
+                            *ngIf="entityModel.updateAllowed && this.isWriteAllowed() && !this.readOnly"/>
                     @for (action of filterEntityModelActions(); track action) {
-                        <button
+                        <p-button
                                 type="button"
-                                class="btn btn-primary m-1"
+                                class="m-1"
+                                icon="pi {{ action.icon }}"
+                                label="{{ action.displayNames[locale] }}"
                                 [disabled]="loading || !isModelActionEnabled(action)"
-                                (click)="callModelAction(vcr, action)">
-                            <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-                        </button>
+                                (click)="callModelAction(vcr, action)"/>
                     }
                     @for (action of filterAdditionalActions(); track action) {
-                        <button
+                        <p-button
                                 type="submit"
-                                class="btn btn-primary m-1"
+                                class="m-1"
+                                icon="{{ action.icon ? 'pi ' + action.icon : ''}}"
+                                label="{{ action.messageKey | translate }}"
                                 (click)="callAdditionalAction(action)"
                                 [class]="action.buttonClass"
-                                [disabled]="loading || isAdditionalFormActionDisabled(action)">
-                            @if (action.icon) {
-                                <span class="pi {{ action.icon }}"></span>
-                            }
-                            {{ action.messageKey | translate }}
-                        </button>
+                                [disabled]="loading || isAdditionalFormActionDisabled(action)"/>
                     }
                     <ng-template #popupDialogContainerRef></ng-template>
                 </div>
@@ -176,56 +173,58 @@
                             class="btn-group"
                             role="group">
                         <!-- Navigate back button -->
-                        <button
+                        <p-button
                                 type="button"
-                                class="btn btn-primary m-1"
+                                class="m-1"
+                                icon="pi pi-arrow-left"
+                                label="{{ 'back' | translate }}"
                                 (click)="back()"
                                 *ngIf="backEnabled()"
-                                [disabled]="loading">
-                            <span class="pi pi-arrow-left"></span> {{ "back" | translate }}
-                        </button>
+                                [disabled]="loading"/>
                         <!-- Cancel -->
-                        <button
+                        <p-button
                                 type="submit"
-                                class="btn btn-primary m-1"
+                                class="m-1"
+                                icon="pi pi-ban"
+                                label="{{ 'cancel' | translate }}"
                                 [disabled]="loading"
                                 (click)="cancelEdit()"
-                                *ngIf="!nested && openInViewMode && entityId">
-                            <span class="pi pi-ban"></span> {{ "cancel" | translate }}
-                        </button>
+                                *ngIf="!nested && openInViewMode && entityId"/>
                         <!-- Save button -->
-                        <button
+                        <p-button
                                 type="submit"
-                                class="btn btn-primary m-1"
+                                class="m-1"
+                                icon="pi pi-save"
+                                label="{{ 'save' | translate }}"
                                 [disabled]="loading || isFormDisabled()"
-                                (click)="save()">
-                            <span class="pi pi-save"></span> {{ "save" | translate }}
-                        </button>
-                        <button
+                                (click)="save()"/>
+                        <p-button
                                 *ngFor="let action of filterEntityModelActions()"
                                 type="button"
-                                class="btn btn-primary m-1"
+                                class="m-1"
+                                icon="pi {{ action.icon }}"
+                                label="{{ action.displayNames[locale] }}"
                                 [disabled]="!isModelActionEnabled(action)"
-                                (click)="callModelAction(vcr, action)">
-                            <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-                        </button>
+                                (click)="callModelAction(vcr, action)"/>
                         <ng-template #popupDialogContainerRef></ng-template>
-                        <button
+                        <p-button
                                 type="button"
                                 *ngIf="formFillEnabled && !nested"
-                                class="btn btn-primary m-1"
-                                (click)="showFormFillDialog()">
-                            <span class="pi pi-filter-fill"></span> {{ "ai_fill" | translate }}
-                        </button>
+                                class="m-1"
+                                icon="pi pi-filter-fill"
+                                label="{{ 'ai_fill' | translate }}"
+                                (click)="showFormFillDialog()"/>
                         <ng-template #formFillContainerRef></ng-template>
                         <!-- Close button (only visible when nested inside popup)-->
-                        <button
+                        <p-button
                                 type="button"
                                 *ngIf="nested"
-                                class="btn btn-danger m-1"
-                                (click)="closeDialog()">
-                            <span class="pi pi-times"></span> {{ "close" | translate }}
-                        </button>
+                                severity="danger"
+                                icon="pi pi-times"
+                                label="{{ 'close' | translate }}"
+                                [disabled]="loading"
+                                class="m-1"
+                                (click)="closeDialog()"/>
                         <!-- Extra UI actions-->
                         @for (action of filterAdditionalActions(); track action) {
                             <ng-container [ngTemplateOutlet]="customActionTemplate"
@@ -241,16 +240,14 @@
         <ng-template
             #customActionTemplate
             let-action>
-            <button
+            <p-button
                     type="submit"
-                    class="btn btn-primary m-1"
+                    class="m-1"
+                    icon="{{ action.icon ? 'pi ' + action.icon : ''}}"
+                    label="{{ action.messageKey | translate }}"
                     (click)="callAdditionalAction(action)"
                     [class]="action.buttonClass"
-                    [disabled]="loading || isAdditionalFormActionDisabled(action)">
-	<span
-            *ngIf="action.icon"
-            class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
-            </button>
+                    [disabled]="loading || isAdditionalFormActionDisabled(action)"/>
         </ng-template> <!-- template for showing a single form field -->
         <ng-template
             #formTemplate
