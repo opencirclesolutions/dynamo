@@ -1,0 +1,155 @@
+name: Create Dynamo Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      desired_version:
+        description: 'The version to set when creating the release, e.g.: 1.1.0'
+        required: true
+      postfix:
+        description: 'Any postfix to be appended to the release, e.g.: RC1'
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+
+  # Validate job will check if the current version is actually a *-SNAPSHOT, if not, this flow cannot be used.
+  # Outputs:
+  #   `version`: the current version of the Dynamo
+  validate:
+    # restrict access to this job to prevent accidental release triggers from non OCS authors
+    if: contains('["gjong","klafbang", "pdeenen", "tommy-ocs", "wittekip"]', github.actor)
+    runs-on: ubuntu-24.04
+    outputs:
+      version: ${{ steps.determine_version.outputs.version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: x64
+          cache: 'maven'
+      - name: Build software
+        run: mvn -B install --no-transfer-progress --file pom.xml
+      - name: Determine version
+        id: determine_version
+        run: |
+          current_version=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "Current version: ${current_version}"
+          echo "version=${current_version}" >> $GITHUB_OUTPUT
+          echo "CURRENT_VERSION=${current_version}" >> $GITHUB_ENV
+      - name: Check if snapshot
+        run: |
+          echo "Project version is: ${{ env.CURRENT_VERSION }}"
+          if [[ "${{ env.CURRENT_VERSION }}" != *"-SNAPSHOT"* ]]; then
+            echo "::error::Release version should contain -SNAPSHOT"
+            exit 1
+          else
+            echo "Release version is correct (contains -SNAPSHOT)"
+          fi
+
+  # Set version will set the stable version number the same as the input variable `desired_version` of the workflow.
+  # Outputs:
+  #  - `tagged`: the full version number that was used, including any postfix set like 'RC1'
+  set-version:
+    needs: validate
+    runs-on: ubuntu-24.04
+    outputs:
+      tagged: ${{ steps.set_version.outputs.tag_version }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: x64
+          cache: 'maven'
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "gjong@users.noreply.github.com"
+      - name: Set release version
+        id: set_version
+        run: |
+          RELEASE_VERSION="${{ github.event.inputs.desired_version }}"
+          if [ -n "${{ github.event.inputs.postfix }}" ]; then
+            echo "Appending postfix: ${{ github.event.inputs.postfix }}"
+            RELEASE_VERSION="${RELEASE_VERSION}-${{ github.event.inputs.postfix }}"
+          fi;
+          echo "Setting project version: ${RELEASE_VERSION}"
+          mvn versions:set versions:commit -DnewVersion="${RELEASE_VERSION}"
+          echo "RELEASE_VERSION=${RELEASE_VERSION}" >> $GITHUB_ENV
+          echo "tag_version=${RELEASE_VERSION}" >> $GITHUB_OUTPUT
+      - name: Commit release
+        run: |
+          git add .
+          git commit -m "chore: prepare release ${{ env.RELEASE_VERSION }}"
+          git push
+      - name: Tagging stable release
+        run: |
+          git tag ${{ env.RELEASE_VERSION }}
+          git push origin ${{ env.RELEASE_VERSION }}
+
+  # Create a release in Github with the same version as the Dynamo release.
+  # The release will be created as 'Draft' to allow custom release notes to be added.
+  github-release:
+    needs: set-version
+    runs-on: ubuntu-24.04
+    if: ${{ needs.set-version.outputs.tagged }}
+    steps:
+      - name: Create github release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ needs.set-version.outputs.tagged }}
+          name: Release ${{ needs.set-version.outputs.tagged }}
+          draft: true
+          prerelease: false
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Changes the version of Dynamo to the next desired *-SNAPSHOT version.
+  # If the postfix was set, then the version will be reverted to the one discovered in the `validate`-job,
+  # otherwise the Maven versions plugin is used to set the next snapshot version.
+  prepare-next:
+    needs:
+      - validate
+      - set-version
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+      - name: Set up JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '21'
+          architecture: x64
+          cache: 'maven'
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Actions"
+          git config user.email "gjong@users.noreply.github.com"
+          git pull
+      - name: Prepare next build phase
+        run: |
+          if [ -n "${{ github.event.inputs.postfix }}" ]; then
+            mvn versions:set versions:commit -DnewVersion="${{ needs.validate.outputs.version }}" -q
+          else
+            mvn versions:set versions:commit -DnextSnapshot -q
+          fi;
+          NEXT_VERSION=$(mvn help:evaluate -Dexpression=project.version -q -DforceStdout)
+          echo "NEXT_VERSION=${NEXT_VERSION}" >> $GITHUB_ENV
+      - name: Pushing committed snapshot
+        run: |
+          git add .
+          git commit -m "chore: prepare snapshot version ${{ env.NEXT_VERSION }}"
+          git push
+
