@@ -4,7 +4,7 @@
     <groupId>org.dynamoframework</groupId>
     <artifactId>dynamo-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-RC3-SNAPSHOT</version>
+    <version>4.0.0-RC4</version>
     <name>Dynamo Framework</name>
     <description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
     <url>https://www.dynamoframework.org</url>
