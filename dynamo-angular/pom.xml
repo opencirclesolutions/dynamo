@@ -121,14 +121,67 @@
 					<stagingDirectory>../target/staging/maven</stagingDirectory>
 				</configuration>
 			</plugin>
-			<plugin>
-				<groupId>com.ragedunicorn.tools.maven</groupId>
-				<artifactId>github-release-maven-plugin</artifactId>
-				<version>1.0.7</version>
-				<configuration>
-					<skip>true</skip>
-				</configuration>
-			</plugin>
 		</plugins>
 	</build>
+
+	<profiles>
+		<profile>
+			<id>release</id>
+			<properties>
+				<node.auth_token/>
+			</properties>
+			<build>
+				<plugins>
+					<plugin>
+						<artifactId>maven-gpg-plugin</artifactId>
+						<configuration>
+							<skip>true</skip>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>org.sonatype.plugins</groupId>
+						<artifactId>nexus-staging-maven-plugin</artifactId>
+						<version>1.7.0</version>
+						<extensions>true</extensions>
+						<configuration>
+							<skipPublishing>true</skipPublishing>
+						</configuration>
+					</plugin>
+					<plugin>
+						<groupId>com.github.eirslett</groupId>
+						<artifactId>frontend-maven-plugin</artifactId>
+						<version>1.15.1</version>
+						<configuration>
+							<workingDirectory>src/main/dynamo/</workingDirectory>
+							<installDirectory>target</installDirectory>
+						</configuration>
+						<executions>
+							<execution>
+								<id>fixate-version</id>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>version --allow-same-version ${project.version}</arguments>
+									<workingDirectory>src/main/dynamo/dist/dynamo-angular</workingDirectory>
+								</configuration>
+								<phase>package</phase>
+							</execution>
+							<execution>
+								<id>publish</id>
+								<goals>
+									<goal>npm</goal>
+								</goals>
+								<configuration>
+									<arguments>publish --access public</arguments>
+									<workingDirectory>src/main/dynamo/dist/dynamo-angular</workingDirectory>
+								</configuration>
+								<phase>deploy</phase>
+							</execution>
+						</executions>
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
+	</profiles>
 </project>
