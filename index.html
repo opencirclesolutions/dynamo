@@ -1,0 +1,589 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<title>Dynamo</title>
+<style>
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+@import "https://cdn.jsdelivr.net/gh/asciidoctor/asciidoctor@2.0/data/stylesheets/asciidoctor-default.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+body {
+    color: #515147;
+    font-family: Raleway;
+}
+
+body.toc2.toc-right #toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+#toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+
+h1, h2, h3, h4, h5, h6, #toctitle {
+    color: #39A248;
+    font-family: Raleway;
+}
+
+code {
+    font-family: "Roboto Mono";
+    background: inherit;
+}
+
+:not(pre):not([class^=L]) > code {
+    background: inherit;
+    color: #39A248;
+}
+
+
+#toc {
+    font-family: Raleway;
+    background: white;
+}
+
+a {
+    color: #39A248;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #39A248;
+    text-decoration: underline;
+}
+
+#toc a {
+    color: #515147;
+}
+
+#toc a:hover {
+    color: #39A248;
+    text-decoration: none;
+}
+
+#toc.toc2 {
+    background: white;
+}
+
+#toc ul {
+    font-family: Raleway;
+}
+
+#footer {
+    background: white;
+    text-align: right;
+}
+
+#footer-text {
+    color: #515147;
+    font-style: italic;
+}
+
+table.grid-all > * > tr > * {
+    border-width: 2px;
+}
+
+table.tableblock, th.tableblock, td.tableblock {
+    border: 2px solid #ffffff;
+}
+
+table tbody tr {
+    background-color: #e9f0e8;
+}
+
+table thead tr,
+table tfoot tr {
+    background-color: #39a248;
+}
+
+table.stripes-all > * > tr,
+table.stripes-odd > * > tr:nth-of-type(odd),
+table.stripes-even > * > tr:nth-of-type(even),
+table.stripes-hover > * > tr:hover {
+    background-color: #cee0cf;
+}
+
+table thead tr th, table tfoot tr th {
+    color: white;
+    font-weight: bold;
+}
+
+table thead, table tfoot {
+    background-color: #39a248;
+}
+
+.admonitionblock td.content > .title,
+.audioblock > .title,
+.exampleblock > .title,
+.imageblock > .title,
+.listingblock > .title,
+.literalblock > .title,
+.stemblock > .title,
+.openblock > .title,
+.paragraph > .title,
+.quoteblock > .title,
+table.tableblock > .title,
+.verseblock > .title,
+.videoblock > .title,
+.dlist > .title,
+.olist > .title,
+.ulist > .title,
+.qlist > .title,
+.hdlist > .title {
+    font-family: Raleway;
+    color: #515147;
+}
+
+.admonitionblock > table tbody tr {
+    background-color: white;
+}
+
+pre.rouge {
+    background-color: #e9f0e8 !important;
+}
+
+p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+</head>
+<body class="article toc2 toc-right">
+<div id="header">
+<h1>Dynamo</h1>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of contents</div>
+<ul class="sectlevel1">
+<li><a href="#_introduction">Introduction</a></li>
+<li><a href="#_dynamo_versions_and_innovation">Dynamo versions and innovation</a>
+<ul class="sectlevel2">
+<li><a href="#_features_and_benefits_of_the_different_dynamo_versions">Features and benefits of the different Dynamo versions</a></li>
+<li><a href="#_features_in_both_dynamo_versions">Features in both Dynamo versions</a></li>
+<li><a href="#_differences_between_the_dynamo_versions">Differences between the Dynamo versions</a></li>
+</ul>
+</li>
+<li><a href="#_documentation_and_further_reading">Documentation and further reading</a>
+<ul class="sectlevel2">
+<li><a href="#_documentation">Documentation</a></li>
+<li><a href="#_maven_generated_site">Maven generated site</a></li>
+<li><a href="#_contributing">Contributing</a></li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph text-center">
+<p><span class="image"><img src="media/logo-dynamo.png" alt="image"></span></p>
+</div>
+<div class="paragraph text-center">
+<p>Dynamo: Web Application Accelerator Framework, version {asciidoc-dynamo-version}.</p>
+</div>
+<div class="paragraph text-center">
+<p>Developed, maintained and sponsored by:</p>
+</div>
+<div class="paragraph text-center">
+<p><span class="image"><img src="media/logo-ocs.png" alt="{asciidoc-organization-name}" width="256" height="53"></span></p>
+</div>
+<hr>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <em>Dynamo Web Application Accelerator Framework</em> is a software
+development framework developed by {asciidoc-organization-url}[{asciidoc-organization-name}]
+that aims to  increase productivity by using design principles such as
+convention over configuration, model-driven development and DRY (don’t
+repeat yourself).</p>
+</div>
+<div class="paragraph">
+<p>At the core of Dynamo is the concept of the <em>Entity Model</em>. The Entity
+Model describes the attributes and behaviour of an entity (or domain
+object) in your application. This Entity Model can then be used as the
+basis for creating forms, tables, search screens etc.</p>
+</div>
+<div class="paragraph">
+<p>The <em>Entity Model</em> of an entity is automatically constructed based on
+the properties of the attributes of the entity (using sensible defaults
+as described by the convention over configuration principle) and can
+further be modified by using annotations and message bundle entries. The
+main goal is to reduce the amount of (boilerplate) code required to
+perform common actions like creating search screens and edit forms.</p>
+</div>
+<div class="paragraph">
+<p>Complementing the <em>Entity Model</em> is a set of user interface components
+(widgets) that can be used to quickly construct screens for common use
+cases, and several base classes for the Data Access and Service layers.</p>
+</div>
+<div class="paragraph">
+<p>The Dynamo framework is built around a number of proven and highly
+productive technologies:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://jakarta.ee/specifications/persistence/">JPA3.1</a> for ORM</p>
+</li>
+<li>
+<p><a href="https://querydsl.com">QueryDSL</a> for type-safe query generation</p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot</a> as the
+application framework</p>
+</li>
+<li>
+<p><a href="https://angular.dev">Angular (v16)</a> as the front-end framework of choice</p>
+</li>
+<li>
+<p><a href="https://primeng.org">PrimeNG</a> for a rich suite of components</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Dynamo Framework is distributed under the terms of the
+<a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License</a>, a
+permissive open-source license for free and open-source software (FOSS).</p>
+</div>
+<div class="paragraph">
+<p>The sources of Dynamo can be found at {asciidoc-github-url}[GitHub].</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_dynamo_versions_and_innovation">Dynamo versions and innovation</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Please note that there currently two different Dynamo versions:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>Version 4.x and beyond that implements the generated UI with Angular and PrimeNG</p>
+</li>
+<li>
+<p>The older version 3.x that implements the generated UI with Vaadin</p>
+</li>
+</ol>
+</div>
+<div class="paragraph">
+<p>The master branch will focus on innovation for Dynamo v4 and beyond. Dynamo V3.x
+will be maintained with updates of dependencies when needed, but new functions of
+Dynamo V4 will only be backported when demand and business requirements are sufficient.</p>
+</div>
+<div class="sect2">
+<h3 id="_features_and_benefits_of_the_different_dynamo_versions">Features and benefits of the different Dynamo versions</h3>
+<div class="paragraph">
+<p>Dynamo has many features and functionality, which are not covered fully in this summary.
+But this overview is intended to summarize the most notable features and benefits.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_features_in_both_dynamo_versions">Features in both Dynamo versions</h3>
+<div class="sect3">
+<h4 id="_ui_features">UI features</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Runtime generation of complete UI in several different layouts to support various use cases</p>
+</li>
+<li>
+<p>Choice of layouts:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A <em>simple search</em> layout consisting of a search form based on the Dynamo Entity Model and a results table</p>
+</li>
+<li>
+<p>An <em>edit form</em> that can be used to create new entities or modify existing ones</p>
+</li>
+<li>
+<p>A <em>split layout</em> that can be used to display a results table and an input form next to each other. The results table can optionally be filtered with a simple quick search or a search popup dialog</p>
+</li>
+<li>
+<p>A <em>search dialog</em> to filter and select one or more entities from a potential large result set</p>
+</li>
+<li>
+<p>The <em>FlexibleSearchLayout</em> is a search layout that allows the user to create complex search query’s by adding/removing search criteria</p>
+</li>
+<li>
+<p>The <em>EntityPopupDialog</em> is a popup dialog that allows the user to create or modify a single entity.</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>Automatic form filler using AI (LLM), copy your unstructured data to the form filler dialog and the AI will interpret the data and automatically translate, transform, convert and fill in the form fields</p>
+</li>
+<li>
+<p>Automatic generation of applicable components for fields based on datatype and/or declaration:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>Nested detail table (children)</p>
+</li>
+<li>
+<p>Dropdown (n-1 relationship to other entity)</p>
+</li>
+<li>
+<p>Multi-select (n-m relationship to other entity)</p>
+</li>
+<li>
+<p>Auto-complete (n-1 relationship to other entity)</p>
+</li>
+<li>
+<p>Lookup field (n-1 relationship to other entity)</p>
+</li>
+<li>
+<p>Option to edit element collections (children)</p>
+</li>
+<li>
+<p>Radio buttons</p>
+</li>
+<li>
+<p>Check boxes</p>
+</li>
+<li>
+<p>Date picker</p>
+</li>
+</ul>
+</div>
+</li>
+<li>
+<p>The functionality to dynamically replace the standard Dynamo input components by custom components</p>
+</li>
+<li>
+<p>Functionality to search, filter, add, update and remove entities</p>
+</li>
+<li>
+<p>File upload component</p>
+</li>
+<li>
+<p>Fields can be grouped together in panels or tabs</p>
+</li>
+<li>
+<p>Field ordering can be declared</p>
+</li>
+<li>
+<p>Integrated bean validation with fields in UI</p>
+</li>
+<li>
+<p>Custom validation support in UI</p>
+</li>
+<li>
+<p>Paging and Lazy loading of large result sets</p>
+</li>
+<li>
+<p>Default transformation of Enum values to select component</p>
+</li>
+<li>
+<p>Automatic link generation to navigate from a child relationship to the applicable detail form</p>
+</li>
+<li>
+<p>The option to post-process the edit form after the components have been created (e.g. to add dependencies between fields)</p>
+</li>
+<li>
+<p>The option to export data from a table to CSV or Excel</p>
+</li>
+<li>
+<p>Nested entities and entity collections are supported</p>
+</li>
+<li>
+<p>Can be styled by using themes or custom</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_backend_features">Backend features</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>Default services API for business logic (extensible)</p>
+</li>
+<li>
+<p>Default data access layer (extensible)</p>
+</li>
+<li>
+<p>No need to write query or persistence logic (extensible)</p>
+</li>
+<li>
+<p>Simple but powerful fluent filter logic</p>
+</li>
+<li>
+<p>Paging and Lazy loading of large result sets</p>
+</li>
+<li>
+<p>Entity query optimization by the use of declarative (fetch)joins which promotes the JPA advise of lazy loading of relationships</p>
+</li>
+<li>
+<p>Search results can furthermore be limited to prevent large results and timeouts</p>
+</li>
+<li>
+<p>Services are transactional by default</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect3">
+<h4 id="_additional_optional_features">Additional (optional) features</h4>
+<div class="ulist">
+<ul>
+<li>
+<p>The <em>MultiDomainEditLayout</em> is a layout that can be used to easily edit multiple types of simple domain (code table) entities</p>
+</li>
+<li>
+<p>The <em>MultiDomainEditLayout</em> provides a default backend implementation with JPA entities and entity model</p>
+</li>
+<li>
+<p>The Hibernate envers module adds supports history on entities</p>
+</li>
+<li>
+<p>The parameters module adds form to manage parameter lists</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_differences_between_the_dynamo_versions">Differences between the Dynamo versions</h3>
+<table class="tableblock frame-all grid-all stripes-even stretch">
+<colgroup>
+<col style="width: 50%;">
+<col style="width: 25%;">
+<col style="width: 25%;">
+</colgroup>
+<thead>
+<tr>
+<th class="tableblock halign-left valign-top">Feature</th>
+<th class="tableblock halign-left valign-top">Dynamo V3.x</th>
+<th class="tableblock halign-left valign-top">Dynamo V4.x</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UI Framework</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vaadin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Angular</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">UI Widgets</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Vaadin</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">PrimeNG</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Out of the box <a href="https://www.w3.org/WAI/standards-guidelines/wcag/">WCAG</a> compliance</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://vaadin.com/accessibility">Yes</a></p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock"><a href="https://primeng.org/guides/accessibility">Yes</a></p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default REST API for entity CRUDS</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Default REST API for entity model</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Declarative security for pages</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Declarative security for REST</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Declarative security for Menus</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Yes</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">No</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Replacing generated UI components</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass layout component</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Declarative</p></td>
+</tr>
+<tr>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Custom actions as buttons with dialog</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Subclass layout component, but not intuitive</p></td>
+<td class="tableblock halign-left valign-top"><p class="tableblock">Easy and concise with code and declaration</p></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_documentation_and_further_reading">Documentation and further reading</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_documentation">Documentation</h3>
+<div class="paragraph">
+<p>Documentation of Dynamo can be found <a href="reference.html">here as html</a> (or <a href="Dynamo reference.pdf">here as pdf</a>).
+Training documentation can be found <a href="training.html">here as html</a> (or <a href="Dynamo training.pdf">here as pdf</a>).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_maven_generated_site">Maven generated site</h3>
+<div class="paragraph">
+<p>The Maven generated site with reports can be found <a href="maven/index.html">here</a>.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_contributing">Contributing</h3>
+<div class="paragraph">
+<p>Interested in contributing? Check our {asciidoc-github-url}/wiki[wiki]!</p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Copyright © {asciidoc-inception-year} - {asciidoc-current-year} {asciidoc-organization-name}.</p>
+</div>
+<div class="paragraph">
+<p><em>Nothing from this document may be copied and/or made public by use of
+print, photocopy, microfilm or by any other means, without prior
+permission of {asciidoc-organization-name}.</em></p>
+</div>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2025-04-18 14:10:57 UTC
+</div>
+</div>
+</body>
+</html>

@@ -1,0 +1,3581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta http-equiv="X-UA-Compatible" content="IE=edge">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="generator" content="Asciidoctor 2.0.23">
+<meta name="keywords" content="Dynamo, {asciidoc-organization-name}, Web Application Accelerator Framework, Training">
+<meta name="author" content="{asciidoc-organization-name}">
+<title>Dynamo: Training</title>
+<style>
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+@import "https://fonts.googleapis.com/css?family=Open+Sans:300,300italic,400,400italic,600,600italic%7CNoto+Serif:400,400italic,700,700italic%7CDroid+Sans+Mono:400,700";
+@import "https://cdn.jsdelivr.net/gh/asciidoctor/asciidoctor@2.0/data/stylesheets/asciidoctor-default.css";
+
+@import url('https://fonts.googleapis.com/css2?family=Raleway:ital,wght@0,100..900;1,100..900&family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto+Mono:ital,wght@0,100..700;1,100..700&display=swap');
+
+body {
+    color: #515147;
+    font-family: Raleway;
+}
+
+body.toc2.toc-right #toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+#toc.toc2 {
+    border-left: 1px solid #39A248;
+}
+
+
+h1, h2, h3, h4, h5, h6, #toctitle {
+    color: #39A248;
+    font-family: Raleway;
+}
+
+code {
+    font-family: "Roboto Mono";
+    background: inherit;
+}
+
+:not(pre):not([class^=L]) > code {
+    background: inherit;
+    color: #39A248;
+}
+
+
+#toc {
+    font-family: Raleway;
+    background: white;
+}
+
+a {
+    color: #39A248;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #39A248;
+    text-decoration: underline;
+}
+
+#toc a {
+    color: #515147;
+}
+
+#toc a:hover {
+    color: #39A248;
+    text-decoration: none;
+}
+
+#toc.toc2 {
+    background: white;
+}
+
+#toc ul {
+    font-family: Raleway;
+}
+
+#footer {
+    background: white;
+    text-align: right;
+}
+
+#footer-text {
+    color: #515147;
+    font-style: italic;
+}
+
+table.grid-all > * > tr > * {
+    border-width: 2px;
+}
+
+table.tableblock, th.tableblock, td.tableblock {
+    border: 2px solid #ffffff;
+}
+
+table tbody tr {
+    background-color: #e9f0e8;
+}
+
+table thead tr,
+table tfoot tr {
+    background-color: #39a248;
+}
+
+table.stripes-all > * > tr,
+table.stripes-odd > * > tr:nth-of-type(odd),
+table.stripes-even > * > tr:nth-of-type(even),
+table.stripes-hover > * > tr:hover {
+    background-color: #cee0cf;
+}
+
+table thead tr th, table tfoot tr th {
+    color: white;
+    font-weight: bold;
+}
+
+table thead, table tfoot {
+    background-color: #39a248;
+}
+
+.admonitionblock td.content > .title,
+.audioblock > .title,
+.exampleblock > .title,
+.imageblock > .title,
+.listingblock > .title,
+.literalblock > .title,
+.stemblock > .title,
+.openblock > .title,
+.paragraph > .title,
+.quoteblock > .title,
+table.tableblock > .title,
+.verseblock > .title,
+.videoblock > .title,
+.dlist > .title,
+.olist > .title,
+.ulist > .title,
+.qlist > .title,
+.hdlist > .title {
+    font-family: Raleway;
+    color: #515147;
+}
+
+.admonitionblock > table tbody tr {
+    background-color: white;
+}
+
+pre.rouge {
+    background-color: #e9f0e8 !important;
+}
+
+p {
+  text-align: justify;
+  text-justify: inter-word;
+}
+
+</style>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<style>
+pre.rouge table td { padding: 5px; }
+pre.rouge table pre { margin: 0; }
+pre.rouge, pre.rouge .w {
+  color: #24292f;
+  background-color: #f6f8fa;
+}
+pre.rouge .k, pre.rouge .kd, pre.rouge .kn, pre.rouge .kp, pre.rouge .kr, pre.rouge .kt, pre.rouge .kv {
+  color: #cf222e;
+}
+pre.rouge .gr {
+  color: #f6f8fa;
+}
+pre.rouge .gd {
+  color: #82071e;
+  background-color: #ffebe9;
+}
+pre.rouge .nb {
+  color: #953800;
+}
+pre.rouge .nc {
+  color: #953800;
+}
+pre.rouge .no {
+  color: #953800;
+}
+pre.rouge .nn {
+  color: #953800;
+}
+pre.rouge .sr {
+  color: #116329;
+}
+pre.rouge .na {
+  color: #116329;
+}
+pre.rouge .nt {
+  color: #116329;
+}
+pre.rouge .gi {
+  color: #116329;
+  background-color: #dafbe1;
+}
+pre.rouge .ges {
+  font-weight: bold;
+  font-style: italic;
+}
+pre.rouge .kc {
+  color: #0550ae;
+}
+pre.rouge .l, pre.rouge .ld, pre.rouge .m, pre.rouge .mb, pre.rouge .mf, pre.rouge .mh, pre.rouge .mi, pre.rouge .il, pre.rouge .mo, pre.rouge .mx {
+  color: #0550ae;
+}
+pre.rouge .sb {
+  color: #0550ae;
+}
+pre.rouge .bp {
+  color: #0550ae;
+}
+pre.rouge .ne {
+  color: #0550ae;
+}
+pre.rouge .nl {
+  color: #0550ae;
+}
+pre.rouge .py {
+  color: #0550ae;
+}
+pre.rouge .nv, pre.rouge .vc, pre.rouge .vg, pre.rouge .vi, pre.rouge .vm {
+  color: #0550ae;
+}
+pre.rouge .o, pre.rouge .ow {
+  color: #0550ae;
+}
+pre.rouge .gh {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .gu {
+  color: #0550ae;
+  font-weight: bold;
+}
+pre.rouge .s, pre.rouge .sa, pre.rouge .sc, pre.rouge .dl, pre.rouge .sd, pre.rouge .s2, pre.rouge .se, pre.rouge .sh, pre.rouge .sx, pre.rouge .s1, pre.rouge .ss {
+  color: #0a3069;
+}
+pre.rouge .nd {
+  color: #8250df;
+}
+pre.rouge .nf, pre.rouge .fm {
+  color: #8250df;
+}
+pre.rouge .err {
+  color: #f6f8fa;
+  background-color: #82071e;
+}
+pre.rouge .c, pre.rouge .ch, pre.rouge .cd, pre.rouge .cm, pre.rouge .cp, pre.rouge .cpf, pre.rouge .c1, pre.rouge .cs {
+  color: #6e7781;
+}
+pre.rouge .gl {
+  color: #6e7781;
+}
+pre.rouge .gt {
+  color: #6e7781;
+}
+pre.rouge .ni {
+  color: #24292f;
+}
+pre.rouge .si {
+  color: #24292f;
+}
+pre.rouge .ge {
+  color: #24292f;
+  font-style: italic;
+}
+pre.rouge .gs {
+  color: #24292f;
+  font-weight: bold;
+}
+</style>
+</head>
+<body class="book toc2 toc-right">
+<div id="header">
+<h1>Dynamo: Training</h1>
+<div class="details">
+<span id="author" class="author">{asciidoc-organization-name}</span><br>
+</div>
+<div id="toc" class="toc2">
+<div id="toctitle">Table of Contents</div>
+<ul class="sectlevel1">
+<li><a href="#_introduction">1. Introduction</a></li>
+<li><a href="#_the_use_case_gts">2. The use case: GTS</a></li>
+<li><a href="#_preparations">3. Preparations</a>
+<ul class="sectlevel2">
+<li><a href="#_prerequisite_software">3.1. Prerequisite software</a></li>
+<li><a href="#_postgresql_setup">3.2. Postgresql setup</a></li>
+<li><a href="#_obtaining_the_sources_for_the_example_project">3.3. Obtaining the sources for the example project</a></li>
+</ul>
+</li>
+<li><a href="#_first_steps">4. First steps</a>
+<ul class="sectlevel2">
+<li><a href="#_project_set_up">4.1. Project set-up</a></li>
+<li><a href="#_domain_model">4.2. Domain model</a></li>
+<li><a href="#_data_access_objects">4.3. Data access objects</a></li>
+<li><a href="#_services">4.4. Services</a></li>
+<li><a href="#_your_first_dynamo_screen">4.5. Your first Dynamo screen</a></li>
+</ul>
+</li>
+<li><a href="#_tweaking_the_organization_screen">5. Tweaking the organization screen</a>
+<ul class="sectlevel2">
+<li><a href="#_adding_fields_to_search_on">5.1. Adding fields to search on</a></li>
+<li><a href="#_more_searching">5.2. More searching</a></li>
+<li><a href="#_visual_and_textual_tweaking">5.3. Visual and textual tweaking</a></li>
+<li><a href="#_relation_fetching">5.4. Relation fetching</a></li>
+<li><a href="#_domain_values">5.5. Domain values</a></li>
+<li><a href="#_dynamic_search_layout">5.6. Dynamic search layout</a></li>
+</ul>
+</li>
+<li><a href="#_adding_editing_and_removing_entities">6. Adding, editing, and removing entities</a>
+<ul class="sectlevel2">
+<li><a href="#_adding_new_entities">6.1. Adding new entities</a></li>
+<li><a href="#_editing_existing_entities">6.2. Editing existing entities</a></li>
+<li><a href="#_url_fields">6.3. URL fields</a></li>
+<li><a href="#_column_and_form_width">6.4. Column and form width</a></li>
+<li><a href="#_attribute_grouping">6.5. Attribute grouping</a></li>
+<li><a href="#_removing_existing_entities">6.6. Removing existing entities</a></li>
+<li><a href="#_popup_edit_dialog">6.7. Popup edit dialog</a></li>
+<li><a href="#_additional_genericeditform_properties">6.8. Additional GenericEditForm properties</a></li>
+<li><a href="#_additional_genericsearchlayout_properties">6.9. Additional GenericSearchLayout properties</a></li>
+<li><a href="#_adding_your_own_lookup_tables">6.10. Adding your own lookup tables</a></li>
+<li><a href="#_additional_attribute_model_settings">6.11. Additional attribute model settings</a></li>
+</ul>
+</li>
+<li><a href="#_adding_a_splitlayout">7. Adding a SplitLayout</a>
+<ul class="sectlevel2">
+<li><a href="#_adding_the_personsearchcomponent">7.1. Adding the PersonSearchComponent</a></li>
+</ul>
+</li>
+<li><a href="#_split_layouts">8. Split layouts</a></li>
+<li><a href="#_editable_tables">9. Editable tables</a></li>
+<li><a href="#_filters_custom_components_and_callback_methods">10. Filters, custom components, and callback methods</a>
+<ul class="sectlevel2">
+<li><a href="#_field_filters">10.1. Field filters</a></li>
+<li><a href="#_custom_components">10.2. Custom components</a></li>
+<li><a href="#_custom_validators">10.3. Custom validators</a></li>
+<li><a href="#_additional_actions_and_buttons">10.4. Additional actions and buttons</a></li>
+<li><a href="#_excel_and_csv_exports">10.5. Excel and CSV exports</a></li>
+<li><a href="#_clickable_links">10.6. Clickable links</a></li>
+</ul>
+</li>
+<li><a href="#_authorization">11. Authorization</a></li>
+<li><a href="#_element_collections">12. Element collections</a></li>
+</ul>
+</div>
+</div>
+<div id="content">
+<div id="preamble">
+<div class="sectionbody">
+<div class="paragraph text-center">
+<p><span class="image"><img src="media/logo-dynamo.png" alt="image"></span></p>
+</div>
+<div class="paragraph text-center">
+<p>Dynamo: Web Application Accelerator Framework, version {asciidoc-dynamo-version}.</p>
+</div>
+<div class="paragraph text-center">
+<p>Developed, maintained and sponsored by:</p>
+</div>
+<div class="paragraph text-center">
+<p><span class="image"><img src="media/logo-ocs.png" alt="{asciidoc-organization-name}" width="256" height="53"></span></p>
+</div>
+<hr>
+<div class="paragraph">
+<p>Copyright © {asciidoc-inception-year} - {asciidoc-current-year} {asciidoc-organization-name}.</p>
+</div>
+<div class="paragraph">
+<p><em>Nothing from this document may be copied and/or made public by use of
+print, photocopy, microfilm or by any other means, without prior
+permission of {asciidoc-organization-name}.</em></p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_introduction">1. Introduction</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The <em>Dynamo Web Application Accelerator Framework</em> is a software
+development framework developed by {asciidoc-organization-url}[{asciidoc-organization-name}]
+that aims to  increase productivity by using design principles such as
+convention over configuration, model-driven development and DRY (don’t
+repeat yourself).</p>
+</div>
+<div class="paragraph">
+<p>At the core of Dynamo is the concept of the <em>Entity Model</em>. The Entity
+Model describes the attributes and behaviour of an entity (or domain
+object) in your application. This Entity Model can then be used as the
+basis for creating forms, tables, search screens etc.</p>
+</div>
+<div class="paragraph">
+<p>The <em>Entity Model</em> of an entity is automatically constructed based on
+the properties of the attributes of the entity (using sensible defaults
+as described by the convention over configuration principle) and can
+further be modified by using annotations and message bundle entries. The
+main goal is to reduce the amount of (boilerplate) code required to
+perform common actions like creating search screens and edit forms.</p>
+</div>
+<div class="paragraph">
+<p>Complementing the <em>Entity Model</em> is a set of user interface components
+(widgets) that can be used to quickly construct screens for common use
+cases, and several base classes for the Data Access and Service layers.</p>
+</div>
+<div class="paragraph">
+<p>The Dynamo framework is built around a number of proven and highly
+productive technologies:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://jakarta.ee/specifications/persistence/">JPA3.1</a> for ORM</p>
+</li>
+<li>
+<p><a href="https://querydsl.com">QueryDSL</a> for type-safe query generation</p>
+</li>
+<li>
+<p><a href="https://docs.spring.io/spring-boot/index.html">Spring Boot</a> as the
+application framework</p>
+</li>
+<li>
+<p><a href="https://angular.dev">Angular (v16)</a> as the front-end framework of choice</p>
+</li>
+<li>
+<p><a href="https://primeng.org">PrimeNG</a> for a rich suite of components</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Dynamo Framework is distributed under the terms of the
+<a href="https://www.apache.org/licenses/LICENSE-2.0.txt">Apache License</a>, a
+permissive open-source license for free and open-source software (FOSS).</p>
+</div>
+<div class="paragraph">
+<p>The sources of Dynamo can be found at {asciidoc-github-url}[GitHub].</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_the_use_case_gts">2. The use case: GTS</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>For months now, the crime families of infamously crime-infested
+Javapolis have been moving away from their traditional activities (like,
+you know, murder, armed robbery, and extortion) in favour of sending
+each other increasingly elaborate and expensive gifts.</p>
+</div>
+<div class="paragraph">
+<p>The police, baffled by this development, has ordered the construction of
+the Gift Tracking System (GTS) to gain a better understanding of who has
+been sending gifts to whom and for what purpose (tax evasion? Mail
+fraud? An elaborate delivery van “protection” scheme?).</p>
+</div>
+<div class="paragraph">
+<p>Since time is of the essence, the Javapolis police have chosen to use
+the Dynamo Framework for quickly constructing a first version of the GTS
+application.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_preparations">3. Preparations</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_prerequisite_software">3.1. Prerequisite software</h3>
+<div class="paragraph">
+<p>Before you can commence with the training proper, please verify that you
+have the following software installed on your machine:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Java JDK 21 (recent version)</p>
+</li>
+<li>
+<p>Apache Maven version 3.8+</p>
+</li>
+<li>
+<p>A recent version of Eclipse or Intellij</p>
+</li>
+<li>
+<p>Git version 1.9+</p>
+</li>
+<li>
+<p>A recent version of npm.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_postgresql_setup">3.2. Postgresql setup</h3>
+<div class="paragraph">
+<p>The application uses a PostgreSQL database. For this to work, you will
+need to install PostgreSQL on your local machine or run it in Docker.</p>
+</div>
+<div class="paragraph">
+<p>To use Postgresql as the database system on your local machine, first
+download the latest <em>version 15</em> Postgresql distribution from
+<a href="http://www.postgresql.org/download/" class="bare">http://www.postgresql.org/download/</a>. The installer is straightforward,
+but make sure that you write down the administrator password that you
+enter during the installation process.</p>
+</div>
+<div class="paragraph">
+<p>The Postgresql distribution comes with a simple database client named
+<code>pgAdmin</code>. After the installation is complete, open <code>pgAdmin</code>. You
+should see a database server configured at port 5432. Connect to this
+server (using the password you entered earlier) and create a database
+named “gts”.</p>
+</div>
+<div class="paragraph">
+<p>You do not have to manually add any tables to this database for now –
+these will be created as part of the application start up process if they
+are not there yet.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+This training assumes that you run Postgresql on the default port
+5432 and use the user <em>postgres</em> and password <em>admin</em>. If these settings
+are different for your application, you can modify them in the
+<em>application.properties</em> file.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_obtaining_the_sources_for_the_example_project">3.3. Obtaining the sources for the example project</h3>
+<div class="paragraph">
+<p>You will need to clone to Git repositories containing the project source code</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><a href="https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-web" class="bare">https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-web</a> contains the code for the back-end
+application</p>
+</li>
+<li>
+<p><a href="https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-angular" class="bare">https://gitlab.opencirclesolutions.nl/ocs/j/dynamo/gts-angular</a> contains the code for the
+Angular front-end</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p><strong>IN BOTH CASES YOU WILL NEED TO CHECK OUT THE DYNAMO-TRAINING BRANCH</strong></p>
+</div>
+<div class="paragraph">
+<p>If your Postgresql settings are different from the default, open the
+“application.properties” file from the gts-web project and modify the
+<em>application.properties</em> file from the gts-ui project and modify the
+following properties so that they match your values:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">spring.datasource.url</span><span class="p">=</span><span class="s">jdbc:postgresql://[HOST]:[PORT]/gts</span>
+<span class="py">spring.datasource.username</span><span class="p">=</span><span class="s">[USERNAME]</span>
+<span class="py">spring.datasource.password</span><span class="p">=</span><span class="s">[PASSWORD]</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>If your application does not build, and you get compilation errors like
+“QOrganization cannot be found”, you might need to add the folder that
+contains the generated sources to your class path.</p>
+</div>
+<div class="paragraph">
+<p>To do so, right-click on the “gts-web” project, then select “New &#8594;
+Source Folder” and specify the <em>target/generated-sources/annotations</em>
+folder as a source folder.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_first_steps">4. First steps</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_project_set_up">4.1. Project set-up</h3>
+<div class="paragraph">
+<p>Once you have imported the backend project in your IDE, you will see a
+fairly typical Spring Boot application.</p>
+</div>
+<div class="paragraph">
+<p>We have already created the domain objects, DAOs, and service classes
+for you.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_domain_model">4.2. Domain model</h3>
+<div class="paragraph">
+<p>When you look inside the <code>com.opencircle.gts.domain</code> package you will
+see a number of classes that together make up the domain model of our
+example application. These include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>Organization</code> which represents a criminal organization we are
+interested in tracking.</p>
+</li>
+<li>
+<p><code>Person</code> which represents a member of a criminal organization. Persons
+sends gifts to one another.</p>
+</li>
+<li>
+<p><code>Gift</code> which represents the various types of gifts that can be sent.</p>
+</li>
+<li>
+<p><code>GiftLogo</code> which is used to store the logo for a gift.</p>
+</li>
+<li>
+<p><code>GiftTranslation</code> which represents the translation of the name of the
+gift in various languages.</p>
+</li>
+<li>
+<p><code>Delivery</code> which represents one person sending a gift to another
+person.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The domain model also uses a class named <code>Country</code> which is taken from
+the Dynamo framework, more specifically from the
+<em>dynamo-functional-domain</em> module. This module is covered in more detail
+later.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_data_access_objects">4.3. Data access objects</h3>
+<div class="paragraph">
+<p>When you look inside the <code>com.opencircle.gts.dao</code> package and its
+subpackages, you will see several Data Access Objects (DAOs) used
+for communication with the database. Typically, there is a DAO interface
+and an associated implementation for every entity class, although for
+some dependent entities that are never retrieved/stored directly a DAO
+is not necessary.</p>
+</div>
+<div class="paragraph">
+<p>In the example application used for this training, we use almost no
+custom logic, so the DAO interfaces are typically simple:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">GiftDao</span> <span class="kd">extends</span> <span class="nc">BaseDao</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span><span class="nc">Gift</span><span class="o">&gt;</span> <span class="o">{</span>
+
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the easiest scenario, all you have to do is extend the <code>BaseDao</code>
+interface provided by the framework. This <code>BaseDao</code> contains several
+dozen utility methods for saving, removing and retrieving entities.</p>
+</div>
+<div class="paragraph">
+<p>When you look inside a DAO implementation class, you will see that it is
+also quite simple:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Repository</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GiftDaoImpl</span> <span class="kd">extends</span> <span class="nc">BaseDaoImpl</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Gift</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="nc">GiftDao</span> <span class="o">{</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">public</span> <span class="nc">Class</span><span class="o">&lt;</span><span class="nc">Gift</span><span class="o">&gt;</span> <span class="nf">getEntityClass</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nc">Gift</span><span class="o">.</span><span class="na">class</span><span class="o">;</span>
+	<span class="o">}</span>
+
+	<span class="nd">@Override</span>
+	<span class="kd">protected</span> <span class="nc">EntityPathBase</span><span class="o">&lt;</span><span class="nc">Gift</span><span class="o">&gt;</span> <span class="nf">getDslRoot</span><span class="o">()</span> <span class="o">{</span>
+		<span class="k">return</span> <span class="nc">QGift</span><span class="o">.</span><span class="na">gift</span><span class="o">;</span>
+	<span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, the DAO implementation extends the <code>BaseDaoImpl</code> class
+(which, unsurprisingly, implements <code>BaseDao</code>) and must implement the DAO
+interface. In its most basic form, you only have to implement the
+(trivial) <code>getEntityClass()</code> and <code>getDslRoot()</code> methods – the
+latter returns the root path used when creating QueryDSL queries.</p>
+</div>
+<div class="paragraph">
+<p>QueryDSL is a library that we use for type-safe custom queries. It is a
+very useful technology which we encourage you to learn about online, but
+it is outside the scope of the training.</p>
+</div>
+<div class="paragraph">
+<p>For now, this is all you need to know about DAOs in Dynamo applications –
+the basic functionality is both quite simple and quite nicely hidden
+behind several layers of abstraction, so you don’t normally have to
+bother with it all that much.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_services">4.4. Services</h3>
+<div class="paragraph">
+<p>Inside the <code>com.opencircle.gts.service</code> package you will find the
+<em>service layer</em> for the GTS application. Like the DAO layer, this is a
+simple layer as since at the moment it contains almost no business logic. As
+with the DAOs, there is one service interface and one corresponding
+implementation per entity class (and again, for dependent entities you
+don’t have to create a service).</p>
+</div>
+<div class="paragraph">
+<p>If you look inside the <code>GiftService</code> class, you will see the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kd">interface</span> <span class="nc">GiftService</span> <span class="kd">extends</span> <span class="nc">BaseService</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Gift</span><span class="o">&gt;</span> <span class="o">{</span>
+
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>As you can see, all a service interface must do is extend the
+<code>BaseService</code> class – this gives the service access to the common
+methods for retrieving, storing, and deleting entities.</p>
+</div>
+<div class="paragraph">
+<p>The <code>GiftServiceImpl</code> service implementation class is also quite simple:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Service</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">GiftServiceImpl</span> <span class="kd">extends</span> <span class="nc">BaseServiceImpl</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Gift</span><span class="o">&gt;</span> <span class="kd">implements</span> <span class="nc">GiftService</span> <span class="o">{</span>
+
+    <span class="nd">@Autowired</span>
+    <span class="kd">private</span> <span class="nc">GiftDao</span> <span class="n">dao</span><span class="o">;</span>
+
+    <span class="nd">@Override</span>
+    <span class="kd">protected</span> <span class="nc">BaseDao</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Gift</span><span class="o">&gt;</span> <span class="nf">getDao</span><span class="o">()</span> <span class="o">{</span>
+        <span class="k">return</span> <span class="n">dao</span><span class="o">;</span>
+    <span class="o">}</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>All it needs to do is extend the <code>BaseServiceImpl</code> class (that, of
+course, contains the implementation of the common methods) and implement
+the corresponding service interface.</p>
+</div>
+<div class="paragraph">
+<p>It then needs a reference to the data access object (<code>GiftDao</code>) which
+can simply be injected as a Spring dependency, and an implementation of
+the <code>getDao()</code> method which will simply return the DAO.</p>
+</div>
+<div class="paragraph">
+<p>Most of the methods from the <code>BaseServiceImpl</code> are delegate methods
+which directly forward the call to the <code>BaseDao</code> method, but the service
+layer does add some functionality:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Checking for duplicate entities – if you have a logical key that makes
+an entity unique (e.g. a code or an EAN number) but is not the primary
+key, you can overwrite the <code>findIdenticalEntity</code> method in your service
+implementation and have it perform the check for a duplicate. If this
+method return a non-null value, then an error message will automatically
+be displayed to the user when he tries to save the entity.</p>
+</li>
+<li>
+<p>Validation – when you try to persist an entity or collection of
+entities, they are automatically validated using the Java Validation
+framework, and an <code>OCSValidationException</code> is thrown if there is a
+validation error. You can add extra validations by overwriting the
+<code>validate()</code> method (don’t forget to call <code>super()</code> if you do so).</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_your_first_dynamo_screen">4.5. Your first Dynamo screen</h3>
+<div class="paragraph">
+<p>After you have imported the projects into your IDE, make sure they all
+build properly. Then, open the <code>GtsApplication</code> class and run it.</p>
+</div>
+<div class="paragraph">
+<p>In order to run the front-end, open a command prompt and navigate to the
+root folder of the front-end project. Execute the following to
+start the application.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="console"><span class="go">ng serve</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then open a web browser and navigate to <em><a href="http://localhost:4200" class="bare">http://localhost:4200</a></em>.</p>
+</div>
+<div class="paragraph">
+<p>You will see a mostly empty screen, and be given the option to log into
+the application (either via the button in the top right, or by pressing
+the button on the login screen).</p>
+</div>
+<div class="paragraph">
+<p><strong>TODO: Authentication using something other than SSO for the training?</strong></p>
+</div>
+<div class="paragraph">
+<p>After logging in, you will be able to view your first screen, which is a
+search screen that allows you to view the organizations that are stored
+in the system (we already created some by means of the creation script).</p>
+</div>
+<div class="paragraph">
+<p>This screen is an example of the <code>GenericSearchLayoutComponent</code>. This
+component consists of a search form with a results grid, from which you
+can select an entity and navigate to a detail screen (which is a
+separate page/component in this version of Dynamo).</p>
+</div>
+<div class="paragraph">
+<p>The code for this search screen is included in the <em>organization-search</em>
+folder. This folder contains both an HTML file and a Typescript file.
+The HTML file is very small and looks as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
+  <span class="na">detailNavigationPath=</span><span class="s">"organization"</span><span class="nt">&gt;&lt;/app-generic-search-layout&gt;</span></code></pre>
+</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>As you can see, we define an <code>&lt;app-generic-search-layout&gt;</code> component
+which is the generic component from the Dynamo framework that consists
+of a search form and a results table.</p>
+</li>
+<li>
+<p>It is instantiated here with only a couple of properties:</p>
+<div class="ulist">
+<ul>
+<li>
+<p><code>entityName</code> is the name of the entity that is being managed by the
+component. This is basically the simple class name of the entity.</p>
+</li>
+<li>
+<p><code>detailNavigationPath</code> is the Angular route that is used to navigate
+to the detail screen (this will be covered a bit later).</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The Typescript file possibly even simpler, at least for now (although we
+will be adding to that later).</p>
+</div>
+<div class="paragraph">
+<p>While there is a lot you can (and will) tweak, this is basically all that is needed to create a simple
+search screen. In the next section, we will tweak this screen and make
+sure it performs as desired.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_tweaking_the_organization_screen">5. Tweaking the organization screen</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_adding_fields_to_search_on">5.1. Adding fields to search on</h3>
+<div class="paragraph">
+<p>The first thing you may notice about the screen is that, although it is
+a search screen, there currently aren’t any search fields. This is
+because none of the attributes are currently marked as searchable.</p>
+</div>
+<div class="paragraph">
+<p>To change this, we need to modify the entity model generation process,
+by means of the <code>@Attribute</code> annotation. This is an annotation that can
+be placed on a property or on a getter method and can be used to tweak
+how the entity model is built.</p>
+</div>
+<div class="paragraph">
+<p>Open the <code>Organization</code> class and place the <code>@Attribute</code> annotation on
+the <code>name</code> property. Then set the <code>searchable</code> setting to ALWAYS:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">255</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the back-end application refresh the browser screen. You will
+now see a search form that contains a "Name" field to search on. Experiment
+with the searching to find out that by default, the searching is not
+case-sensitive and will look for matches anywhere in the attribute
+value.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+Changes you make to the entity model always require you to
+restart the back-end application. However, the (Angular) front-end has
+hot deployment and generally does not need to be restarted (simply
+refreshing your browser should be enough).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>You can change the default search behaviour by modifying the following
+settings on the <code>@Attribute</code> annotation:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>searchCaseSensitive</code> determines if the searching is case-sensitive.
+The default value is <code>BooleanType.FALSE</code>.</p>
+</li>
+<li>
+<p><code>searchPrefixOnly</code> determines if the search query searches only for
+matches at the start of the property value. The default is
+<code>BooleanType.FALSE</code>. E.g. if you set this property to “true” then the
+search term “or” will match “order” but not “boredom”.</p>
+</li>
+<li>
+<p><code>searchForExactValue</code> determines whether the application will search
+for an exact value rather than a range of values. This is only
+applicable to properties that contain a numerical value or a date – by
+default, <code>searchForExactValue</code> will be false and the application will
+allow you to search for a range of values, but if you set
+<code>searchForExactValue</code> to true then only a single search field will be
+rendered.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>This is what it looks like in the code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">255</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">,</span>
+<span class="n">searchCaseSensitive</span> <span class="o">=</span> <span class="nc">BooleanType</span><span class="o">.</span><span class="na">TRUE</span><span class="o">,</span> <span class="n">searchPrefixOnly</span> <span class="o">=</span>
+<span class="nc">BooleanType</span><span class="o">.</span><span class="na">TRUE</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, set the <code>searchable</code> setting to ALWAYS on some of the other
+attributes.</p>
+</div>
+<div class="paragraph">
+<p>You will see that depending on the type of the attribute, a different
+search field (or combination of fields) will be generated:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>For a String attribute, a text field will be generated.</p>
+</li>
+<li>
+<p>For a Boolean attribute, a three-state checkbox will be generated,
+which contains the values “Yes”, “No”, and "No value". This allows you
+to either NOT search for the field, or for one of its two possible
+values.</p>
+</li>
+<li>
+<p>For a numeric or date/time attribute, two text fields will be
+generated: one field for entering the lower boundary and one for
+entering the upper boundary (the boundaries are inclusive).</p>
+</li>
+<li>
+<p>You can use the <code>searchForExactValue</code> setting for a numerical field
+if you want to search on an exact value instead.</p>
+</li>
+<li>
+<p>For a timestamp field, you can set the <code>searchDateOnly</code> setting to
+true. In this case the search form will only allow you to select a date,
+and the application will translate this to all time stamps that fall on
+that date.</p>
+</li>
+<li>
+<p>For an enumeration, a combo box that contains the available values
+will be generated. At this moment, the application will still produce
+some warnings about missing messages but these will be fixed shortly.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Now, play around with the search form functionality for a bit if you
+want, and when you feel comfortable with how it all works, move on to
+the next section.</p>
+</div>
+<div class="paragraph">
+<p>Finally, you might be wondering why we are setting searchable to
+ALWAYS rather than just “true”. This is because it’s also possible to
+specify the value ADVANCED. In this case, the property will only show
+in the search form when the “advanced search mode” is enabled. To try
+this, change the searchable attribute for “headquarters” to ADVANCED.
+Now, when you restart the application, the headquarters search field
+should no longer appear.</p>
+</div>
+<div class="paragraph">
+<p>Next, in <em>organization-search.component.html</em> file, change the code so
+that the line referring to FormOptions looks as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
+  <span class="na">detailNavigationPath=</span><span class="s">"organization"</span> <span class="na">[advancedModeEnabled]=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/app-generic-search-layout&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You will now see an additional button show up in the button bar.
+Clicking it will toggle between showing and hiding the search fields
+that are set to <code>searchable=ADVANCED</code>.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image3.png" alt="image" width="458" height="70">
+</div>
+<div class="title">Figure 1. Search buttons.</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_more_searching">5.2. More searching</h3>
+<div class="paragraph">
+<p>Go ahead at set the <code>searchable</code> setting on the <code>members</code> attribute to
+<code>ALWAYS</code>. After you do this and restart the application, you will see that
+there now is a component that allows you to search for the members (to
+be interpreted as: search for all organizations of which the selected
+person is a member).</p>
+</div>
+<div class="paragraph">
+<p>You will now see a search component for the <code>members</code> attribute that
+looks as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image4.png" alt="image" width="424" height="328">
+</div>
+<div class="title">Figure 2. Search component example.</div>
+</div>
+<div class="paragraph">
+<p>By default, the application will render a multiple-select field from
+which you can select the members to search on. However, as you can see,
+the description of the members is currently empty.</p>
+</div>
+<div class="paragraph">
+<p>To fix this, open the <code>Person</code> class and, at the top of the class, add
+the <code>@Model</code> annotation like this:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"person"</span><span class="o">)</span>
+<span class="nd">@Model</span><span class="o">(</span><span class="n">displayProperty</span> <span class="o">=</span> <span class="s">"nickName"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="kd">extends</span> <span class="nc">AbstractEntity</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="o">{</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p><code>@Model</code> is like <code>@Attribute</code> except that it has to placed on the entity,
+rather than one of its attributes. <code>@Model</code> supports several settings:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>displayProperty</code> (which you saw above) determines which property to
+use when displaying the entity inside a lookup component like a combo
+box or a listbox. In the above example, we use the <code>nickName</code> property
+of the Person as the display property.</p>
+</li>
+<li>
+<p><code>displayName</code> determines how the class will be called in the screen.
+It defaults to the class name, with camel case replaced by spaces. E.g.
+the display name of “Organization” is “Organization”.</p>
+</li>
+<li>
+<p><code>displayNamePlural</code> is the plural name of the class. It defaults to
+the <code>displayName</code> with an “s” added at the end.</p>
+</li>
+<li>
+<p><code>description</code> is a textual description of the entity. It will appear
+as a tooltip in e.g. a search results grid.</p>
+</li>
+<li>
+<p><code>sortOrder</code> takes a comma-separated list of fields and directions to
+sort on. This sort order will be used if no specific sort order is
+defined for a layout. It is also the sort order that will by default be
+used inside e.g. combo boxes. The format of this property is similar to
+a SQL sort order, e.g. “name” or “name asc” will sort by name in
+ascending order, “name desc” will sort by name in descending order,
+“name asc, age desc” will sort first by name and then by age.</p>
+</li>
+<li>
+<p>In addition, there are several settings like <code>listAllowed</code>,
+<code>searchAllowed</code>, <code>createAllowed</code> that govern which actions are allowed
+on this entity. These will be covered in more detail later on.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+You should set the <code>displayProperty</code> on the <code>Person</code> entity, not on the
+<code>Organization</code> – this annotation will affect all references to the
+Person entity, so it will show up like this in any search or edit form.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As you can see, by default the application will use a multi-select field
+for searching inside a many-to-many or one-to-many relationship.
+You can modify this behaviour by changing the value of the <code>selectMode</code>
+and <code>searchSelectMode</code> settings on <code>@Attribute</code>:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>selectMode</code> determines the type of UI component to render for this
+property inside an edit form.</p>
+</li>
+<li>
+<p><code>searchSelectMode</code> determines the type of UI component to render for
+this property inside a search form (like the one we were working on). By
+default, the framework will use the value of the <code>selectMode</code> setting
+here, but you can override it by explicitly setting a value for the
+<code>SearchSelectMode</code> attribute.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Go ahead and set the <code>searchSelectMode</code> setting of the <code>members</code> field
+to <code>LOOKUP</code>. Restart the application and verify that
+you now see the following:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image5.png" alt="image" width="429" height="68">
+</div>
+<div class="title">Figure 3. Lookup field.</div>
+</div>
+<div class="paragraph">
+<p>You will now see a “lookup field” which consists of a label that
+displays the currently selected value(s), a button for clearing the
+currently selected value(s) and a button that brings up a search dialog
+when clicked,</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You don’t normally have to specify a <code>searchSelectMode</code>: the
+application will by default use the value of the <code>selectMode</code> if no
+explicit <code>SearchSelectMode</code> is set.</p>
+</li>
+<li>
+<p>There are several other supported <code>AttributeSelectModes</code>, e.g.
+<code>COMBO</code>, <code>AUTO_SELECT</code> and <code>LOOKUP</code>. Not all select modes make sense for every attribute. E.g.
+for editing a one-to-one relation you cannot use the <code>MULTI_SELECT</code> setting
+since this would allow you to select multiple values. The Dynamo
+framework will produce an exception when you try to use an illegal
+select mode.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>We will end this section with some additional remarks about searching:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>It is possible to set the <code>requiredForSearching</code> setting on the
+<code>@Attribute</code> annotation to <code>true</code> – this means that you must enter a
+value for the associated property before you can carry out a search.
+Concretely, this means that the "Search" button will be disabled unless
+you have filled in a value for all fields that are marked as
+<code>requiredForSearching</code>.* (In case the application renders both
+an upper and a lower bound field, it is enough to fill in at least one value)</p>
+</li>
+<li>
+<p>For fields that contain a time stamp (java.time.LocalDateTime or
+java.time.Instant), normally two search fields are rendered – these can
+be used to define the upper and lower bound of the interval to search on.
+However, if you set the <code>searchDateOnly</code> setting to <code>true</code> then instead
+a single search field will be rendered. This field allows you to select
+a date (rather than a time stamp) and when you perform a search, only
+the records for which the date part of the value matches will be
+returned.</p>
+</li>
+<li>
+<p>The <code>@Attribute</code> annotation also comes with the <code>defaultSearchValue</code> ,
+<code>defaultSearchValueFrom</code> and <code>defaultSearchValueTo</code> settings. These can be
+used to respectively set:</p>
+<div class="ulist">
+<ul>
+<li>
+<p>A default value for a simple attribute</p>
+</li>
+<li>
+<p>A default value for the lower bound when searching on an interval</p>
+</li>
+<li>
+<p>A default value for the upper bound when searching on an interval</p>
+</li>
+</ul>
+</div>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_visual_and_textual_tweaking">5.3. Visual and textual tweaking</h3>
+<div class="paragraph">
+<p>We now have a search screen that allows us to search on most fields, but
+if we look at the screen there are still several things not in order:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Instead of a textual representation of the various enumeration values
+for the “Reputation” field, we get ugly warnings.</p>
+</li>
+<li>
+<p>The order of the fields in the grid is not as desired.</p>
+</li>
+<li>
+<p>The caption of the “headquarters” field incorrectly reads “Head
+Quarters” (it must not contain a space).</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Luckily, the framework contains several ways of tweaking the visual and
+textual representation of the generated screens.</p>
+</div>
+<div class="paragraph">
+<p>First, let’s go back to the <code>@Attribute</code> annotation. Like <code>@Model</code>, it
+has the <code>displayName</code>, and <code>description</code> values that
+can be used to modify the captions and labels that are displayed on the
+screen. Go ahead and use these to fix the caption of the “Headquarters”
+search field.</p>
+</div>
+<div class="paragraph">
+<p>Next, let’s change the attribute order – go to the <code>Organization</code> class
+and add the <code>@AttributeOrder</code> annotation to the class as seen below</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Entity</span>
+<span class="nd">@Table</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"organization"</span><span class="o">)</span>
+<span class="nd">@AttributeOrder</span><span class="o">(</span><span class="n">attributeNames</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"id"</span><span class="o">,</span> <span class="s">"name"</span><span class="o">,</span> <span class="s">"headQuarters"</span><span class="o">,</span> <span class="s">"address"</span><span class="o">,</span>
+<span class="s">"countryOfOrigin"</span><span class="o">,</span> <span class="s">"reputation"</span> <span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Organization</span> <span class="kd">extends</span> <span class="nc">AbstractEntity</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="o">{</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the back-end to verify that the attributes are now displayed in
+the order specified above – note that this goes for both the search
+form, the results grid, and the edit screen (which you will see later).
+Also, note that some fields like “country of origin” do not show up yet
+in the grid, but we will cover this later.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+If the attribute order is not complete, any attributes that
+are not explicitly mentioned will be included behind the ones that you did
+mention, in the default (alphabetical) order.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By default, the attribute order is used to determine the ordering in
+both the edit form (more on this later), the results grid, and the
+search form. If you would rather use a different attribute order for
+your search form or the result grid, you can use the
+<code>@SearchAttributeOrder</code> or <code>@GridAttributeOrder</code> to specify this.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@AttributeOrder</span><span class="o">(</span><span class="n">attributeNames</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"id"</span><span class="o">,</span> <span class="s">"name"</span><span class="o">,</span> <span class="s">"headQuarters"</span><span class="o">,</span> <span class="s">"address"</span><span class="o">,</span>
+<span class="s">"countryOfOrigin"</span><span class="o">,</span> <span class="s">"reputation"</span> <span class="o">})</span>
+<span class="nd">@GridAttributeOrder</span><span class="o">(</span><span class="n">attributeNames</span> <span class="o">=</span> <span class="o">{</span> <span class="s">"memberCount"</span><span class="o">,</span>
+<span class="s">"yearlyMortalityRate"</span> <span class="o">})</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Organization</span> <span class="kd">extends</span> <span class="nc">AbstractEntity</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="o">{</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the above example, we have added an <code>@GridAttributeOrder</code>. When
+you restart the application after this, you will see that the grid
+starts with the "memberCount" and "yearlyMortalityRate" fields.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The other attributes are shown in alphabetical order.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>OK, now it’s time to fix the enumeration. Open the
+<em>messages.properties</em> file and add the following:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">Reputation.REALLY_NOT_FEARSOME</span><span class="p">=</span><span class="s">Really not fearsome</span>
+<span class="py">Reputation.MILDLY_FEARSOME</span><span class="p">=</span><span class="s">Mildly fearsome</span>
+<span class="py">Reputation.FEARSOME</span><span class="p">=</span><span class="s">Fearsome</span>
+<span class="py">Reputation.EXTREMELY_FEARSOME</span><span class="p">=</span><span class="s">Extremely fearsome</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the application and see how the enumeration values have now been
+replaced by the values from the message bundle.</p>
+</div>
+<div class="paragraph">
+<p>It can happen that you run out of room in a grid, i.e., you don’t have
+enough horizontal room to display the full descriptions of all
+attributes in the grid. In this case, you can limit the maximum length
+of the value of an attribute inside the grid by setting the
+<code>maxLengthInGrid</code> setting. Try this for the <code>name</code> attribute:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">255</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">,</span> <span class="n">maxLengthInGrid</span> <span class="o">=</span> <span class="mi">10</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the application and verify that the values inside the name
+column are now truncated after 10 characters.</p>
+</div>
+<div class="paragraph">
+<p>Now that we are talking about message bundles, it is a good moment to
+point out that (almost) anything you can do by means of the entity model
+annotations like <code>@Attribute</code> and <code>@Model</code> can also be achieved by means
+a message bundle. For this, we use the <em>entitymodel.properties</em> message
+bundle.</p>
+</div>
+<div class="paragraph">
+<p>Open this file and add the following line:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">Organization.yearlyMortalityRate.percentage</span><span class="p">=</span><span class="s">true</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the application and verify that we now see a percentage sign
+(“%”) near the values of the “yearly mortality rate”. This teaches us
+the following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The “<code>percentage</code>” setting can be used to specify that a (numeric) value
+should be rendered as a percentage. This is purely visual (it will not
+divide or multiply the value by anything).</p>
+</li>
+<li>
+<p>You can tweak the entity model using the message bundle. The syntax
+for this is</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="err">[entityName].[propertyName].[setting]</span> <span class="err">=</span> <span class="err">[value]</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>You can also directly change the settings on the entity by not including
+a property name, e.g. <code>Organization.displayName=Organisatie</code></p>
+</div>
+<div class="paragraph">
+<p>You can also change the value of the percentage setting using the
+<code>@Attribute</code> annotation – this is just an example to show you that you
+can also change it by using the message bundle.</p>
+</div>
+<div class="paragraph">
+<p>To practice a bit more, add the following lines to <em>entitymodel.properties</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">Organization.governmentSponsored.trueRepresentation</span><span class="p">=</span><span class="s">You bet!</span>
+<span class="py">Organization.governmentSponsored.falseRepresentation</span><span class="p">=</span><span class="s">No Way!</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, restart the application and verify that instead of the standard
+"true" and "false" values for the Boolean <code>governmentSponsored</code>
+attribute, you will now see the custom descriptions shown above.</p>
+</div>
+<div class="paragraph">
+<p>The exact syntax and all the names of the settings you can tweak is an
+advanced topic and is covered in more detail in the Dynamo manual. For
+now, the most important things to remember are:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can change attribute settings using the message bundle.</p>
+</li>
+<li>
+<p>Changes made using the message bundle will override changes made using
+the annotations.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_relation_fetching">5.4. Relation fetching</h3>
+<div class="paragraph">
+<p>Now, let’s go back to the <code>countryOfOrigin</code> attribute. We want to
+display this attribute in the grid, but it’s not there yet. This is
+because it is a <em>complex attribute</em> that refers to another entity or
+collection of entities. By default, this type of attribute is not shown
+inside a table. To fix this, add the <code>@Attribute</code> annotation to the
+<code>countryOfOrigin</code> property and set the <code>visibleInGrid</code> setting to SHOW.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"country_of_origin"</span><span class="o">)</span>
+<span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInGrid</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Country</span> <span class="n">countryOfOrigin</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, after you restart the backend application, the country of origin
+column should appear in the table. Note that the <code>displayProperty</code> of the
+country is already set to the <code>name</code> property.</p>
+</div>
+<div class="paragraph">
+<p>The way the data is fetched is not very efficient right now. For every organization, that application performs
+an extra query in order to retrieve the country.</p>
+</div>
+<div class="paragraph">
+<p>In order to fix this, we can add a fetch join to the data retrieval. To
+do so, add the following annotation to the <code>Organization</code> entity:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@FetchJoins</span><span class="o">(</span><span class="n">joins</span> <span class="o">=</span> <span class="o">{</span><span class="nd">@FetchJoin</span><span class="o">(</span><span class="n">attribute</span> <span class="o">=</span> <span class="s">"countryOfOrigin"</span><span class="o">)},</span>
+<span class="n">detailJoins</span> <span class="o">=</span> <span class="o">{</span><span class="nd">@FetchJoin</span><span class="o">(</span><span class="n">attribute</span> <span class="o">=</span> <span class="s">"countryOfOrigin"</span><span class="o">)})</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will make sure that whenever any Organizations are fetched by the
+framework, the <code>countryOfOrigin</code> relation of those organizations will be
+fetched as well.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>You can specify both <code>joins</code> and <code>detailJoins</code>. The <code>joins</code>
+are the relations that are fetched whenever a collection of entities is
+retrieved (basically, to display the in a search results table).</p>
+</div>
+<div class="paragraph">
+<p>The <code>detailJoins</code> are the relations that are fetched when retrieving a
+single entity from the back-end, this is mostly used when displaying the
+entity in a detail screen or pop-up window.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Fetching is an important concept in the Dynamo framework since it is a
+powerful way to limit the number of queries that is carried out and can
+thus be crucial for achieving good performance. Keep in mind though,
+that if used poorly it can also lead to a lot of useless data being
+retrieved with every request – imagine e.g. that the Country keeps track
+of all its inhabitants: automatically fetching (millions or even billions) of
+inhabitants every time a country is fetched is clearly a bad thing and
+must be avoided.</p>
+</div>
+<div class="paragraph">
+<p>So, figuring out which relations to fetch and which not to fetch (or
+whether to model those relations in the first place) can be an important
+design decision.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_domain_values">5.5. Domain values</h3>
+<div class="paragraph">
+<p>As you may have noticed, the <code>Country</code> class we have seen before isn’t
+defined inside the GTS application – instead it comes from a Dynamo
+module named <em>dynamo-functional-domain</em>. This contains some useful
+classes for dealing with “domains”, also known as “code tables” or
+“lookup tables”- they are basically simple entities that only consist of
+a name, or of a name and a (unique) code.</p>
+</div>
+<div class="paragraph">
+<p>The module contains several pre-defined domain classes like <code>Country</code>
+which you can use if you include a database table named “domain” in your
+application and fill it with the proper values (this is straightforward,
+so we won’t go into it here).</p>
+</div>
+<div class="paragraph">
+<p>To properly use the values from the <code>Country</code> table, though, one more
+thing is needed and that is a service for retrieving them from the
+repository. Now, we could of course create the proper Java classes for
+this, but this is slightly tedious, and we can also use the Dynamo
+functionality for <em>Default Services</em> and define the required service in
+Spring. Open the <em>ApplicationConfig.java</em> class and take note of the
+following code:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="nc">BaseDao</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Country</span><span class="o">&gt;</span> <span class="nf">countryDao</span><span class="o">()</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nc">DefaultDaoImpl</span><span class="o">&lt;&gt;(</span><span class="nc">QCountry</span><span class="o">.</span><span class="na">country</span><span class="o">,</span> <span class="nc">Country</span><span class="o">.</span><span class="na">class</span><span class="o">,</span> <span class="s">"parent"</span><span class="o">);</span>
+<span class="o">}</span>
+
+<span class="nd">@Bean</span>
+<span class="kd">public</span> <span class="nc">BaseService</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Country</span><span class="o">&gt;</span> <span class="nf">countryService</span><span class="o">(</span><span class="nc">BaseDao</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">,</span> <span class="nc">Country</span><span class="o">&gt;</span> <span class="n">dao</span><span class="o">)</span> <span class="o">{</span>
+    <span class="k">return</span> <span class="k">new</span> <span class="nc">DefaultServiceImpl</span><span class="o">&lt;&gt;(</span><span class="n">dao</span><span class="o">,</span> <span class="s">"code"</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This defines a bean that is an instance of <code>DefaultServiceImpl</code> which
+has an inner bean of type <code>DefaultDaoImpl</code>.* These are convenience
+classes that in turn inherit from the <code>BaseServiceImpl</code> and
+<code>BaseDaoImpl</code> classes and provide all the basic functionality for
+retrieving, saving, and deleting entities. The only catch is of course
+that you cannot define any custom methods (e.g.
+<code>findCountriesInEurope()</code>) but for such simple entities, this is usually
+not an issue.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p><code>ApplicationConfig</code> is an example of a Spring Boot configuration
+class and inherits from the <code>ApplicationConfigSupport</code> class from the
+Dynamo Framework. This class already takes care of some generic
+configuration which cannot be taken care of by Spring Boot
+automatically.</p>
+</div>
+<div class="paragraph">
+<p>When you build a Dynamo application it is advised that
+you create a configuration class which inherits from
+<code>ApplicationConfigSupport</code>.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, let’s return to the <code>countryOfOrigin</code> field in <code>Organization</code> for a
+bit. By default, the application will render a dropdown component that
+can be used to select a country to search on. Let’s play around with
+this a little bit and change it to a lookup component:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"country_of_origin"</span><span class="o">)</span>
+<span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">_LAZY_</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span>
+<span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span> <span class="n">selectMode</span> <span class="o">=</span> <span class="nc">AttributeSelectMode</span><span class="o">.</span><span class="na">LOOKUP</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Country</span> <span class="n">countryOfOrigin</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the backend and observe how you can now use a popup dialog to
+search for the country you want to filter on.</p>
+</div>
+<div class="paragraph">
+<p>Dynamo now also comes with an auto-complete field which you can use
+as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"country_of_origin"</span><span class="o">)</span>
+<span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span>
+<span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span>
+<span class="n">searchSelectMode</span> <span class="o">=</span> <span class="nc">AttributeSelectMode</span><span class="o">.</span><span class="na">AUTO_COMPLETE</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Country</span> <span class="n">countryOfOrigin</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this in place, the application will render a field that allows the
+user to start typing – the available options will be filtered so that
+only those that match the entered search term will be returned.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The matching is done on the basis of the <code>displayProperty</code> setting.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>As an extra exercise, set the <code>multipleSearch</code> setting to <code>true</code>. This
+allows you to search for multiple values for a normally single-valued
+relation – the search query will return all entities that match one of
+the provided search values.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+When you set <code>multipleSearch</code> to <code>true</code>, the application will
+switch to displaying a multi-select field instead of a drop-down. You
+can also use a lookup field.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_dynamic_search_layout">5.6. Dynamic search layout</h3>
+<div class="paragraph">
+<p>In addition to the search form functionality explained above, Dynamo
+offers an additional way of handling search requests. This is called the
+<em>Dynamic Search Layout</em> and basically consists of a search form to which
+search terms can be added dynamically. To enable this functionality add
+the following in <em>organization-search.component.ts</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="nx">searchFormMode</span><span class="p">:</span> <span class="nx">SearchFormMode</span> <span class="o">=</span> <span class="nx">SearchFormMode</span><span class="p">.</span><span class="nx">DYNAMIC</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And bind it in the <strong>organization-search.component.html</strong>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span>
+  <span class="na">entityName=</span><span class="s">"Organization"</span>
+  <span class="na">detailNavigationPath=</span><span class="s">"organization"</span>
+  <span class="na">[searchFormMode]=</span><span class="s">"searchFormMode"</span>
+<span class="nt">&gt;</span>
+<span class="nt">&lt;/app-generic-search-layout&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, you will see that the search screen you saw before has been
+replaced by a (normally) initially empty search form, with an Add
+filter” button below it. Pressing this button will add a row to the
+search form. This row can be used to add a search criterion.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image6.png" alt="image" width="560" height="361">
+</div>
+<div class="title">Figure 4. “Add filter” button in search.</div>
+</div>
+<div class="paragraph">
+<p>Each search row starts with a combo box that allows you to select the
+attribute you want to filter on. It includes all attributes with
+searchable set to either <code>ADVANCED</code> or <code>ALWAYS</code>, sorted in alphabetical
+order.</p>
+</div>
+<div class="paragraph">
+<p>Selecting an attribute from the combo box will cause one or more input
+components to appear based on the selected attribute (e.g. a text field
+for a string attribute, two number fields for an integer component
+etc.). This follows the exact same logic as the regular search form.</p>
+</div>
+<div class="paragraph">
+<p>When you mark an attribute as <code>requiredForSearching</code>, a row for
+that attribute will always be rendered; it cannot be removed and the
+selected attribute cannot change. If you define or more default values
+for an attribute, then a search row for that attribute will also be
+displayed, with the default values filled in, but in this case the rows
+can be removed and values can be added.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_editing_and_removing_entities">6. Adding, editing, and removing entities</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_adding_new_entities">6.1. Adding new entities</h3>
+<div class="paragraph">
+<p>We’ve now done about all we can do to make our search screen behave in
+the desired way, so let’s move on to adding new entities.</p>
+</div>
+<div class="paragraph">
+<p>As you can see, there is already an “Add” button below the search
+results grid. If you click this button, the application will navigate to
+an edit form that allows you to add a new entity (in this case an
+Organization) to the application. Whether this button appears is in fact
+dependent on the <code>createAllowed</code> setting on the entity model (but this
+is <code>true</code> by default).</p>
+</div>
+<div class="paragraph">
+<p>When you click the “Add” button the application will try to navigate to
+a separate page. Which page this is, is specified by the
+<code>detailNavigationPath</code> setting that was mentioned earlier (and which is
+set to “organization”).</p>
+</div>
+<div class="paragraph">
+<p>When you look in <em>app-routing.module.ts</em> you will see that the following
+routes are defined (one for editing an existing entity and one for
+creating a new one):</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="p">{</span>
+  <span class="nl">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">organizations</span><span class="dl">'</span><span class="p">,</span>
+  <span class="nx">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Organizations</span><span class="dl">'</span><span class="p">,</span>
+  <span class="nx">component</span><span class="p">:</span> <span class="nx">OrganizationSearchComponent</span>
+<span class="p">},</span>
+<span class="p">{</span>
+  <span class="na">path</span><span class="p">:</span> <span class="dl">'</span><span class="s1">organization</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">title</span><span class="p">:</span> <span class="dl">'</span><span class="s1">Create Organization</span><span class="dl">'</span><span class="p">,</span>
+  <span class="na">component</span><span class="p">:</span> <span class="nx">OrganizationFormComponent</span>
+<span class="p">},</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Both routes point to the <code>OrganizationFormComponent</code> which looks as
+follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-form</span>
+<span class="na">entityName=</span><span class="s">"Organization"</span>
+<span class="na">[entityId]=</span><span class="s">"entityId"</span>
+<span class="na">navigateBackRoute=</span><span class="s">"organizations"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/app-generic-form&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This is a minimal set-up that includes:</p>
+</div>
+<div class="olist arabic">
+<ol class="arabic">
+<li>
+<p>the name of the entity</p>
+</li>
+<li>
+<p>the ID of the entity being edited (undefined when defining a new entity)</p>
+</li>
+<li>
+<p>the route to use when navigating back to the search screen.</p>
+</li>
+</ol>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+In the (probably pretty rare) cases where you want to
+completely disable navigation from the screen, you can do so by setting
+the <code>navigationAllowed</code> property to false.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>By default, the form will already contain some input fields – as with
+the search fields, the entity model determines which type of user
+interface component is rendered for which attribute. The edit form looks
+like this:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image7.png" alt="image" width="560" height="570">
+</div>
+<div class="title">Figure 5. An edit form.</div>
+</div>
+<div class="paragraph">
+<p>By now, it should not come as a surprise that you will see text fields
+for String and numeric attributes, combo boxes for enumerations, etc.
+If you look closely, however, you will see that there is no component
+for editing the <code>countryOfOrigin</code> attribute. This
+is because, by default, no components will be created for editing
+complex attributes. There is also no component for modifying the members
+but this is by design.</p>
+</div>
+<div class="paragraph">
+<p>To make the components for editing the complex attributes show up, you
+can set the <strong>visibleInForm</strong> setting for an attribute to true. We do
+this now for the country of origin field:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"country_of_origin"</span><span class="o">)</span>
+<span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span>
+        <span class="n">searchSelectMode</span> <span class="o">=</span> <span class="nc">AttributeSelectMode</span><span class="o">.</span><span class="na">AUTO_COMPLETE</span><span class="o">,</span>
+        <span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Country</span> <span class="n">countryOfOrigin</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, go ahead and add a new organization to the system (be creative).</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>The validations have automatically been added to the form based on
+the Java Validation API annotation like <code>@NotNull</code> and <code>@Size</code> that are
+present on the entity – you don’t have to do anything extra for this.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Sometimes it’s not desirable to be able to directly edit an
+attribute – e.g. in case of a status field that is automatically set, a
+creation time stamp, etc. You can make sure that such an attribute shows
+up as read-only in the form by setting the <code>editable</code> setting of the
+<code>@Attribute</code> annotation to <code>READONLY</code>.</p>
+</div>
+<div class="paragraph">
+<p>It is also possible to specify the  settings <code>CREATE_ONLY</code> and <code>EDITABLE</code>.
+When you use the setting <code>CREATE_ONLY</code> you will only be able to edit the
+attribute when creating a new entity. The <code>EDITABLE</code> value, which is the
+default value, means  that the attribute can always be edited.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_editing_existing_entities">6.2. Editing existing entities</h3>
+<div class="paragraph">
+<p>Now, return to the search screen for a moment, and observe that you can
+click on any row in the table. This will cause the application to
+navigate to the detail screen you just saw, but now the details of the
+selected row will be shown.</p>
+</div>
+<div class="paragraph">
+<p>You can also set the <code>showDetailButton</code> setting on the
+generic-search-layout to <code>true</code>. With this setting in place, you can no
+longer just click anywhere in the table. Instead, a “pencil” button will
+show up in each row in the table. Click this button to navigate to the
+detail screen.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
+ <span class="na">detailNavigationPath=</span><span class="s">"organization"</span> <span class="na">[advancedModeEnabled]=</span><span class="s">"true"</span>
+<span class="na">[showDetailButton]=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/app-generic-search-layout&gt;</span></code></pre>
+</div>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image8.png" alt="image" width="559" height="26">
+</div>
+<div class="title">Figure 6. Field with a button to show details.</div>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+You can also set the <code>detailsModeEnabled</code> setting to <code>false</code>.
+This will completely disable the functionality to navigate to the detail
+screen for existing entities (however, you can still create new entities
+using the “Add” button).
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Some changes you can make to modify the behaviour of edit forms include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Using the <code>defaultValue</code> setting on any simple attribute to define a
+default value. This can be a string, integer, BigDecimal etc. Try this
+out on e.g. the “<code>yearlyMortalityRate</code>” attribute. Use a period (“.”) as
+the decimal separator if needed. Once you click the “Add” button to
+create a new entity, any fields for which a default value has been
+defined will be automatically set to this default value.</p>
+</li>
+<li>
+<p>Using the <code>TextFieldMode</code> to switch between displaying a text field, a
+text area, or a password field. Try this on the <code>address</code> property.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+This only works inside edit forms. The TextFieldMode will be
+ignored when creating a search form, since the text area in the search
+form would take up too much space, and it’s highly unlikely you’d want to
+search for an enormously long string match anyway.
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the <code>booleanFieldMode</code> to switch between using a checkbox, a
+toggle button, or a switch component for editing a Boolean property.</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+This only has an effect inside an edit form. In a search
+form, the framework will always use a tri-state checkbox as described
+earlier.
+</td>
+</tr>
+</table>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Use the <code>enumFieldMode</code> to switch between using a dropdown component
+or a set of radio buttons for editing an enumeration.</p>
+</li>
+<li>
+<p>Use the <code>numberFieldMode</code> to switch between using a text field or a
+numeric input field for a numeric property (this only works for integer
+or long properties). When you set this to <code>NUMBERFIEL</code>, e.g. for the
+<code>memberCount</code> property, you will see the following:</p>
+</li>
+</ul>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image9.png" alt="image" width="560" height="53">
+</div>
+<div class="title">Figure 7. Numeric input field.</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>This is a numeric input field which will only accept numeric input and
+also contains plus and minus buttons for changing the value. You can use
+the <code>numberFieldStep</code> setting to modify the step size.</p>
+</li>
+<li>
+<p>You can use the <code>groupTogetherWith</code> setting to specify that multiple
+components must be placed on the same row in the edit form. To do so,
+use a <code>groupTogetherWith</code> value on the attribute you want to appear
+first in the row:</p>
+</li>
+</ul>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">255</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">,</span> <span class="n">displayName</span> <span class="o">=</span>
+<span class="s">"Headquarters"</span><span class="o">,</span> <span class="n">groupTogetherWith</span> <span class="o">=</span> <span class="s">"address"</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">headQuarters</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The above will make sure that the “address” field shows up on the same
+line as the “headQuarters” field. When using this setting, take care
+that the attributes are in the right order (the attribute on which you
+place the <code>groupTogetherWith</code> setting must occur in the ordering before
+the attribute it refers to. Dynamo will produce an error if you define
+an incorrect attribute grouping)</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image10.png" alt="image" width="560" height="79">
+</div>
+<div class="title">Figure 8. Grouped input fields.</div>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_url_fields">6.3. URL fields</h3>
+<div class="paragraph">
+<p>The Dynamo Framework also supports the functionality of turning certain
+fields into clickable URLs (that point to external resources).</p>
+</div>
+<div class="paragraph">
+<p>To demonstrate, set the <code>url</code> setting to <code>true</code> for the <code>url</code> property
+of the <code>Organization</code> class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Attribute</span><span class="o">(</span><span class="n">url</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">url</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Then, restart the application and verify that in the grid in the
+Organizations screen you will now see an empty “URL” field. Navigate to
+the edit screen and fill in a value.</p>
+</div>
+<div class="paragraph">
+<p>Enter some valid URLs for some of the Organizations, then look at the
+search results grid and check that the URL column now contains clickable
+links that can be used to take you to directly to the pages identified
+by the URLs you entered.</p>
+</div>
+<div class="paragraph">
+<p>The clickable URL field will also show up inside a detail view that is
+in view mode (more on view mode below).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_column_and_form_width">6.4. Column and form width</h3>
+<div class="paragraph">
+<p>By default, an edit form will contain just a single column containing
+the input fields. It will also not take up the entire width of the
+screen. Both of these things are fairly easy to change.</p>
+</div>
+<div class="paragraph">
+<p>In order to change the width of the entire form you can set the value of
+the <code>formWidthClass</code> property on the app-generic-form. This property
+expects standard Bootstrap expressions, e.g. <code>col-12</code> means use up all
+12 available columns</p>
+</div>
+<div class="paragraph">
+<p>If you want to change e.g. the number of columns being used, you can
+modify the <code>numberOfColumns</code> property. By default, this has the value <strong>1</strong>,
+but you can set it to <code>2</code> or <code>3</code>. Using a value other than 1 will cause
+the input components to be displayed behind each other on the same row
+(provided there is enough room).</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_attribute_grouping">6.5. Attribute grouping</h3>
+<div class="paragraph">
+<p>By default, all attributes inside an edit from will be displayed below
+and behind each other, in the order specified by the <code>@AttributeOrder</code>
+annotation you saw before (with an exception for the attributes that
+have been mentioned in the <code>groupTogetherWith</code> setting). However,
+sometimes, especially when you have many attributes, it can be useful to
+have a way of grouping certain attributes together.</p>
+</div>
+<div class="paragraph">
+<p>To demonstrate how this works, add the following annotations to
+the <code>Organization</code> class.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@AttributeGroup</span><span class="o">(</span><span class="n">messageKey</span> <span class="o">=</span> <span class="s">"organization.first"</span><span class="o">,</span> <span class="n">attributeNames</span> <span class="o">=</span> <span class="o">{</span>
+<span class="s">"name"</span><span class="o">,</span> <span class="s">"address"</span><span class="o">,</span> <span class="s">"headQuarters"</span><span class="o">,</span> <span class="s">"countryOfOrigin"</span> <span class="o">})</span>
+<span class="nd">@AttributeGroup</span><span class="o">(</span><span class="n">messageKey</span> <span class="o">=</span> <span class="s">"organization.second"</span><span class="o">,</span> <span class="n">attributeNames</span> <span class="o">=</span> <span class="o">{</span>
+<span class="s">"reputation"</span> <span class="o">})</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Here, you define two attribute groups identified by the message keys
+“organization.first” and “organization.second” and place some attributes
+in each group.</p>
+</div>
+<div class="paragraph">
+<p>In the <em>entitymodel.properties</em> file, add the following lines:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">organization.first</span><span class="p">=</span><span class="s">First</span>
+<span class="py">organization.second</span><span class="p">=</span><span class="s">Second</span>
+<span class="py">dynamoframework.default.attribute.group</span><span class="p">=</span><span class="s">Others</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Restart the application and verify that the edit form now looks as
+follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image11.png" alt="image" width="560" height="279">
+</div>
+<div class="title">Figure 9. Updated edit form with attribute grouping.</div>
+</div>
+<div class="paragraph">
+<p>You will see three attribute groups: the two groups you declared and an
+additional group that contains all attributes that were not explicitly
+assigned to any of the groups.</p>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+The order of the groups is specified by the <code>@AttributeGroup</code> and
+<code>@AttributeGroups</code> annotations, but the order of the attributes within
+the groups is still taken from the (general)  attribute ordering
+specified by the <code>@AttributeOrder</code> annotation.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Also, by default the application will use panels to group the attributes
+together. If you prefer using tabs, define an attribute group mode
+property in your Typescript file:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="nx">attributeGroupMode</span><span class="p">:</span> <span class="nx">AttributeGroupMode</span> <span class="o">=</span> <span class="nx">AttributeGroupMode</span><span class="p">.</span><span class="nx">TAB</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And refer to that property in the HTML file (<em>organization.form.html</em>).</p>
+</div>
+<div class="paragraph">
+<p>After you restart the application you should now see three tab sheets
+(each containing a number of attributes) in the detail screen.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_removing_existing_entities">6.6. Removing existing entities</h3>
+<div class="paragraph">
+<p>By default, the option to delete existing entities is disabled. You can
+easily enable this functionality by setting the <code>deleteAllowed</code> setting
+on the <code>@Model</code> annotation to <code>true</code>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Model</span><span class="o">(</span><span class="n">displayProperty</span> <span class="o">=</span> <span class="s">"name"</span><span class="o">,</span> <span class="n">deleteAllowed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>With this setting in place, the application will now render a big bright
+red “Delete” button in every row in the search results table.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_popup_edit_dialog">6.7. Popup edit dialog</h3>
+<div class="paragraph">
+<p>As an alternative to using a separate detail screen, it is also possible
+to open a pop-up edit dialog directly from the results table. In order
+to enable this functionality, define a <code>popupButtonMode</code> variable in
+<em>organization-search.component.ts</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="nx">popupButtonMode</span><span class="p">:</span> <span class="nx">PopupButtonMode</span> <span class="o">=</span> <span class="nx">PopupButtonMode</span><span class="p">.</span><span class="nx">EDIT</span><span class="p">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>then use it from the HTML file to bind it to the . This will cause a “details” button
+to appear in each row in the details table. Pressing this button will
+cause a pop-up dialog containing the details of the selected entity to
+appear. The fields that will appear in this pop-up dialog are rendered
+according to the same logic as the edit form (e.g. this will mean the
+same attribute groups, ordering, etc. will be used). However, some of the
+options that are available on the full edit form (e.g. setting the
+number of columns) are not available in the pop-up dialog.</p>
+</div>
+<div class="paragraph">
+<p>The value EDIT chosen above will ensure that the dialog will be opened
+in EDIT mode. You can also specify the value VIEW. In this case the
+pop-up dialog will be rendered in read-only mode. The default value, NONE,
+means that no button to open the dialog will appear.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_additional_genericeditform_properties">6.8. Additional GenericEditForm properties</h3>
+<div class="paragraph">
+<p>There are several more options available on the
+<code>GenericEditFormComponent</code> to govern how the component behaves:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>openInViewMode</code> (default: <code>false</code>) can be used to specify that the form
+must be in view mode after first opening it. In this case, an "Edit"
+button will be provided to switch the screen to edit mode.</p>
+</li>
+<li>
+<p><code>confirmSave</code> determines whether to ask for confirmation before saving
+changes after the user presses the "Save" button. The default value is
+<code>false</code>.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_additional_genericsearchlayout_properties">6.9. Additional GenericSearchLayout properties</h3>
+<div class="paragraph">
+<p>There are several more options available on the
+<code>GenericSearchLayoutComponent</code> to govern how the component behaves:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>confirmClear</code> determines whether to ask for confirmation before
+removing all search filters after the user presses the "Clear" button.
+The default value is <code>false</code>.</p>
+</li>
+<li>
+<p><code>searchImmediately</code> determines whether to carry out a search right
+away when opening the screen. The default value for this setting is
+<code>true</code> which means that a search is carried out right away. If you set
+it to <code>false</code>, the search results grid will initially be hidden after you open the
+screen, and you must carry out a search first before it will show up.</p>
+</li>
+<li>
+<p><code>preserveSearchTerms</code> determines whether any search terms that you
+enter in a search form will be preserved when you navigate away from a
+screen and then navigate back to it. This is enabled by default, so you
+don’t normally need to do anything to get this functionality.</p>
+</li>
+</ul>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_adding_your_own_lookup_tables">6.10. Adding your own lookup tables</h3>
+<div class="paragraph">
+<p>It is also fairly easy to define your own lookup tables. As a case in
+point, take a look at the “MainActivity” class. This defines the main
+activity of an Organization. In order to use it in the application,
+modify Organization.java so that it reads as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"main_activity"</span><span class="o">)</span>
+<span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">quickAddAllowed</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span> <span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span> <span class="n">searchable</span> <span class="o">=</span> <span class="nc">SearchMode</span><span class="o">.</span><span class="na">ALWAYS</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">MainActivity</span> <span class="n">mainActivity</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also, set the <code>displayProperty</code> of the <code>MainActivity</code> class to <code>name</code>.</p>
+</div>
+<div class="paragraph">
+<p>Now, when you open the detail page for an organization, you should see a
+“Main Activity” field in the edit form:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image12.png" alt="image" width="462" height="61">
+</div>
+<div class="title">Figure 10. Main activity field.</div>
+</div>
+<div class="paragraph">
+<p>Behind the input component, you will see a “plus” button that allows you
+to quickly add a new value for this lookup table. This button appears
+because you have set the <code>quickAddAllowed</code> setting to <code>true</code>. Clicking
+the button will bring up a dialog that allows the user to create a new
+entity. If the creation is successful, the new entity will be added to
+the list of available options in the component, and selected.</p>
+</div>
+<div class="paragraph">
+<p>Dynamo contains automatic protection against entering duplicate values –
+when you try to add a new lookup table value with the same name as an
+already existing entity, the application will throw a validation
+exception. The message that is shown is expected to be in the message
+bundle under the <code>&lt;DomainName&gt;.not.unique</code> key. To make this work for
+the MainActivity, add the following to <em>entitymodel.properties</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="properties"><span class="py">MainActivity.not.unique</span><span class="p">=</span><span class="s">This main activity already exists</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Now, restart the application, try to add a duplicate main activity and
+verify that you see the error message defined here.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_additional_attribute_model_settings">6.11. Additional attribute model settings</h3>
+<div class="paragraph">
+<p>The attribute model currently support around 60 separate settings.
+Although we refer you to the Dynamo manual for a complete listing, it’s
+good to briefly outline some additional settings here:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The Dynamo framework supports automatic validation of emails (syntax
+only) for fields that are annotated with the Java Validation framework
+<code>@Email</code> annotation. Simply adding this annotation is enough to enable
+e-mail validation in both the service layer and UI.</p>
+</li>
+<li>
+<p>The setting <code>ignoreInSearchFilter</code> can be used to specify that a
+property should be ignored when constructing the search filter when
+searching using a <code>GenericSearchLayoutComponent</code>. When you mark an
+attribute as “searchable” but set “ignoreInSearchFilter” to true, a
+search field will be rendered inside the form, but the contents of the
+field will be ignored when actually searching. The most obvious use case for
+this is when working with cascading input fields (outside the scope of this
+training).</p>
+</li>
+<li>
+<p>By default, sorting is enabled for all attributes. You can disable
+sorting for an attribute by setting the <code>sortable</code> setting to false.</p>
+</li>
+<li>
+<p>Sometimes, when searching or sorting on an attribute, you will want to
+search or sort on an attribute path that is different from the actual
+path to the attribute. For these situations, you can use the
+<code>replacementSearchPath</code> and <code>replacementSortPath</code> settings.</p>
+</li>
+<li>
+<p>The <code>trimSpaces</code> setting can be used to automatically remove spaces
+from the start and end of a field value before saving the value to the
+database.</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_adding_a_splitlayout">7. Adding a SplitLayout</h2>
+<div class="sectionbody">
+<div class="sect2">
+<h3 id="_adding_the_personsearchcomponent">7.1. Adding the PersonSearchComponent</h3>
+<div class="paragraph">
+<p>Now, let’s move to the <code>Person</code> entity which is used to represent the
+various members of the criminal organizations we are interested in.</p>
+</div>
+<div class="paragraph">
+<p>As with the <code>Organization</code> entity, the entity class, DAO, and service
+classes have already been provided for you. We will, however, be adding
+a new Angular component. First, create the skeleton for the component by
+running the following Angular CLI command:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="commandline">ng generate component person-search --module app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will generate an Angular component (4 files in total) and add it to
+the application’s main module.</p>
+</div>
+<div class="paragraph">
+<p>In the <em>app-routing.module.ts</em> file, add the following to the <code>children</code>
+array:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">{</span>
+  <span class="nv">path</span><span class="pi">:</span> <span class="s1">'</span><span class="s">persons'</span><span class="pi">,</span>
+  <span class="nv">title</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Persons'</span><span class="pi">,</span>
+  <span class="nv">component</span><span class="pi">:</span> <span class="nv">PersonSearchComponent</span><span class="pi">,</span>
+<span class="pi">}</span><span class="err">,</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This defines a new route to the persons component. Finally, in the
+<em>nav.component.ts</em> file, add a new menu item:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">{</span>
+  <span class="nv">topLevel</span><span class="pi">:</span> <span class="nv">true</span><span class="pi">,</span>
+  <span class="nv">text</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Persons'</span><span class="pi">,</span>
+  <span class="nv">routerLink</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/persons"</span>
+<span class="pi">}</span><span class="err">,</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Which will add a new top-level menu item named “Persons”. If you click
+on this link, you will be taken to a page that simply reads
+“person-search works”, the Angular default.</p>
+</div>
+<div class="paragraph">
+<p>We will now replace this default implementation by a Split Layout. This
+is a layout that consists of a search results table on the left and a
+form for displaying the selected row on the right. Implementing it is
+even simpler than for the search layout:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Person"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/app-generic-split-layout&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Which will produce a screen that looks as follows:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image13.png" alt="image" width="560" height="247">
+</div>
+<div class="title">Figure 11. Split layout screen.</div>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>You can select a row in the table to the left to make the details of
+that row show up in the form to the right.</p>
+</li>
+<li>
+<p>If <code>createAllowed</code> is true for the entity, an “Add” button will show up
+below the table. Clicking this button will bring up an empty form that
+allows you to create a new entity.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Now, using everything you have learned so far, modify this screen in the following ways:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>Make sure the “organization” property shows up in the grid and in the
+edit form</p>
+</li>
+</ul>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+Don’t forget to modify the relation fetching using the <code>@FetchJoin</code> annotation
+and to set a <code>displayProperty</code> for the Organization if
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>that has not been done already).
+* The attribute order reads <code>firstName</code>, <code>nickName</code>, <code>lastName</code>,
+<code>organization</code>, <code>born</code>, <code>died</code>.
+* The caption for the <code>nickName</code> property must be changed to “Nickname”
+* The "Remove" button must be displayed for each row in the table.</p>
+</div>
+<div class="paragraph">
+<p>Play around with the screen a bit and add, edit, or delete some
+entities.</p>
+</div>
+<div class="paragraph">
+<p>By default, the data that is displayed is not filtered in any way. You
+can change this by adding <em>default filters</em> to the layout. These are
+filters that are automatically applied to any search request. In order
+to add default filters, define the following in the
+<em>person-search.component.ts</em>:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="nf">getDefaultFilters</span><span class="p">():</span> <span class="nx">FilterModel</span><span class="p">[]</span> <span class="p">{</span>
+<span class="k">return</span> <span class="p">[</span><span class="nf">createEqualsFilter</span><span class="p">(</span><span class="dl">'</span><span class="s1">firstName</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">a</span><span class="dl">'</span><span class="p">)]</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Person"</span>
+  <span class="na">[defaultFilters]=</span><span class="s">"getDefaultFilters()"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/app-generic-split-layout&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This sets up a filter for filtering on the <code>firstName</code> property of the
+person, and will match if this first name contains the letter “a” (note
+that the attribute model, specifically the <code>searchPrefixOnly</code> and
+<code>searchCaseSensitive</code> settings determine how exactly the search is
+carried out. You don’t have to specify a “like” query or something in
+the front-end.)</p>
+</div>
+<div class="paragraph">
+<p>The Dynamo framework comes with a range of built-in filters. In addition,
+the <code>EqualsFilterModel</code> shown above, there are classes like
+<code>NumberRangeFilter</code>, <code>DateRangeFilter</code> and <code>NumberInFilter</code>. Please refer
+to the full Dynamo documentation for more details.</p>
+</div>
+<div class="paragraph">
+<p>Like the <code>GenericSearchLayout</code>, the <code>GenericSplitLayout</code> comes with a
+number of useful properties that can be used to modify its behaviour.
+Some of these include:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The <code>quickSearchProperty</code> can be used to define a property that can be
+used to quickly filter the search results. When this property is set, a
+“quick search” text field will appear in the split layout above the
+search results table. Typing in this input field will filter the search
+results based on the specified property. Note that the property must be searchable.</p>
+</li>
+<li>
+<p>If this is not sufficient, you can also set the <code>searchDialogEnabled</code>
+setting to <code>true</code>. With this in place, a “Search” button will be shown
+above the results table. Clicking this button will bring up a pop-up
+search dialog. This basically functions in the same way as the search
+form in the <code>GenericSearchLayout</code>, meaning that all attributes that are
+marked as searchable will show up. You can carry out searches using this
+screen, and when you close it, the search results in the split layout
+will match those you selected in the dialog.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>The split layout also supports settings like <code>openInViewMode</code> and
+<code>confirmSave</code> that we already covered when discussing the
+<code>GenericSearchLayout</code>.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_split_layouts">8. Split layouts</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now, we are finally getting to the good stuff – we are going to add a
+screen to manage the various types of gifts that are being sent around
+between our notorious gangsters.</p>
+</div>
+<div class="paragraph">
+<p>To do so, first we need to add a component for displaying the available
+gifts. This basically follows the same set-up as</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="commandline">ng generate component gift-search --module app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In the <em>app-routing.module.ts</em> file, add the following to the <code>children</code>
+array</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="commandline">{
+  path: 'gifts',
+  title: 'Gifts',
+  component: GiftSearchComponent
+},</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This defines a new route to the persons component. Finally, in the
+<em>nav.component.ts</em> file, add a new menu item:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">{</span>
+  <span class="nv">topLevel</span><span class="pi">:</span> <span class="nv">true</span><span class="pi">,</span>
+  <span class="nv">text</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Gifts'</span><span class="pi">,</span>
+  <span class="nv">routerLink</span><span class="pi">:</span> <span class="s2">"</span><span class="s">/gifts"</span>
+<span class="pi">}</span><span class="err">,</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Defining the actual layout is pretty easy as well:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Gift"</span><span class="nt">&gt;&lt;/app-generic-split-layout&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>One of the functionalities of the gifts screen is the option to upload
+an image to help us identify what the gift looks like. The application
+automatically renders a file upload component for attributes that are of
+type <code>byte[]</code>, in this case the <code>image</code> field in the nested <code>logo</code>
+attribute.</p>
+</div>
+<div class="paragraph">
+<p>When you start the application now, the upload functionality should be
+working, but it’s not very user-friendly yet. To make the application
+behave a bit better, open the <code>GiftLogo</code> class and find the <code>image</code>
+attribute. Annotate it as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Column</span><span class="o">(</span><span class="n">columnDefinition</span> <span class="o">=</span> <span class="s">"bytea"</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">image</span> <span class="o">=</span> <span class="kc">true</span><span class="o">,</span> <span class="n">fileNameProperty</span> <span class="o">=</span> <span class="s">"logo.fileName"</span><span class="o">)</span>
+<span class="kd">private</span> <span class="kt">byte</span><span class="o">[]</span> <span class="n">image</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also annotate the <code>fileName</code> property directly below it as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Attribute</span><span class="o">(</span><span class="n">editable</span> <span class="o">=</span> <span class="nc">EditableType</span><span class="o">.</span><span class="na">READ_ONLY</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span>
+<span class="nc">VisibilityType</span><span class="o">.</span><span class="na">HIDE</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">String</span> <span class="n">fileName</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Note that we are using the full path of the attribute, <code>logo.fileName</code>
+rather than just <code>filename</code>. This is because the Logo is an embedded
+object of the Gift – embedded objects are more or less absorbed into the
+object that is embedding them and don’t have their own models. All the
+attributes of the embedded model become attributes of the embedding
+entity in the Entity Model, and must be referred to using their full
+paths.</p>
+</div>
+<div class="paragraph">
+<p>By changing the value of the <code>image</code> setting to true you mark this field
+as an image, causing the application to try and render a preview of the
+contents of this field (it will of course still fail if you didn&#8217;t
+upload an actual image).</p>
+</div>
+<div class="paragraph">
+<p>The <code>fileNameProperty</code> setting is used to automatically set the value of
+another property to the name of the file you uploaded – in this case the
+<code>fileName</code> property on the <code>GiftLogo</code>.</p>
+</div>
+<div class="paragraph">
+<p>Now, when you try uploading a file again, the application will show
+you a preview of the image you uploaded (provided it’s actually an
+image) and the "fileName" property will be automatically set after uploading the
+image.</p>
+</div>
+<div class="paragraph">
+<p>Now, if you want to restrict the type of files that the user can upload,
+you can use the <code>allowedExtensions</code> setting. This setting takes as its
+value an array of strings, e.g. <code>png</code>, <code>gif</code>. You can also set the
+<code>downloadAllowed</code> setting to make it so that a "download" button will
+show up in the file upload component.</p>
+</div>
+<div class="paragraph">
+<p>Play around with the file upload functionality for a bit if you want,
+then have a look at the rest of the screen and make sure you get all the
+little details right (attribute order, captions etc.).</p>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Storing binary data in a relational database is not always
+an optimal design decision, but we recognize that it is useful for
+scenarios like this where you want to display a quick image or thumbnail
+or something similar. When storing large amounts of data, you might want
+to use a cloud blob storage like Azure Blob Storage or Amazon S3
+instead.</p>
+</div>
+<div class="paragraph">
+<p>In these cases it is still possible to use the Dynamo
+entity model, but you have to modify the service logic to write the data
+to and retrieve it from the blob storage.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Now, there is one more cool thing we can do with the <code>Gift</code> entity, and
+that is displaying and editing a collection of dependent objects, in
+this case the <code>translations</code>.</p>
+</div>
+<div class="paragraph">
+<p>In the <code>Gift</code> class, annotate the <code>translations</code> property as follows.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Valid</span>
+<span class="nd">@OneToMany</span><span class="o">(</span><span class="n">mappedBy</span> <span class="o">=</span> <span class="s">"gift"</span><span class="o">,</span> <span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">,</span> <span class="n">cascade</span> <span class="o">=</span> <span class="o">{</span><span class="nc">CascadeType</span><span class="o">.</span><span class="na">MERGE</span><span class="o">,</span>
+        <span class="nc">CascadeType</span><span class="o">.</span><span class="na">PERSIST</span><span class="o">},</span> <span class="n">orphanRemoval</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">3</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span> <span class="n">nestedDetails</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nc">GiftTranslation</span><span class="o">&gt;</span> <span class="n">translations</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock note">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-note" title="Note"></i>
+</td>
+<td class="content">
+<div class="paragraph">
+<p>Here is the <code>nestedDetails</code> setting that will ensure that the
+framework treats this property as a nested detail property. Also note
+the use of the standard JPA cascade annotations that make sure that the
+detail entities are persisted whenever the parent entity is.</p>
+</div>
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>We also have to make sure that the wiring of the translations to the
+gifts is done properly. To do so, include the following in the Gift
+class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kd">public</span> <span class="kt">void</span> <span class="nf">setTranslations</span><span class="o">(</span><span class="nc">Set</span><span class="o">&lt;</span><span class="nc">GiftTranslation</span><span class="o">&gt;</span> <span class="n">translations</span><span class="o">)</span> <span class="o">{</span>
+    <span class="n">wireRelations</span><span class="o">(</span><span class="k">this</span><span class="o">,</span> <span class="k">this</span><span class="o">.</span><span class="na">translations</span><span class="o">,</span> <span class="n">translations</span><span class="o">,</span> <span class="o">(</span><span class="n">translation</span><span class="o">,</span> <span class="n">gift</span><span class="o">)</span> <span class="o">-&gt;</span> <span class="n">translation</span><span class="o">.</span><span class="na">setGift</span><span class="o">(</span><span class="n">gift</span><span class="o">));</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>wireRelations()</code> method is a convenience method from the
+<code>EntityModelUtils</code> class.</p>
+</div>
+<div class="paragraph">
+<p>With these annotations in place, start the application and verify that
+the application now renders a table that can be used to edit the
+translations of a Gift:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image14.png" alt="image" width="560" height="191">
+</div>
+<div class="title">Figure 12. A table to edit translations.</div>
+</div>
+<div class="paragraph">
+<p>(Note that you can click the button in the top right to add a new row to
+the table). Go ahead and add some translations to the table, then press
+the Save button on the form and verify how the Gift plus its
+translations are neatly saved to the database.</p>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_editable_tables">9. Editable tables</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>Now, let’s add a screen for managing the various gift deliveries from
+one criminal to the other.</p>
+</div>
+<div class="paragraph">
+<p>First, create the component again and add it to the menu and routing
+files:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="commandline">ng generate component delivery-table --module app</code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The component itself is again deceptively simple</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-edit-table-layout</span> <span class="na">entityName=</span><span class="s">"Delivery"</span><span class="nt">&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>However, if you open the Deliveries screen it its current form, it will
+not do an awful lot. This is because the Delivery class contains a
+number of complex attributes that are not present in either the results
+table of the edit form.</p>
+</div>
+<div class="paragraph">
+<p>To make the screen behave, set the visibleInForm and visibleInGrid settings
+for <code>fromPerson</code>, <code>toPerson</code> and <code>gift</code> properties to SHOW. You may also want to set
+the <code>displayProperty</code> setting on the <code>Gift</code> class to "name" if you
+have not done so already, to make sure that a useful description of the
+gift shows up in the table and in the dropdown component.</p>
+</div>
+<div class="paragraph">
+<p>Now, when you restart the application and open the Deliveries screen,
+you will see a table that you can use to edit the displayed entities.
+Initially, the grid will be empty, but you can use the “Add” button to
+add new entries. However, this is not very useful at the moment since
+you won’t be able to see (let alone fill in) all the required fields.</p>
+</div>
+<div class="paragraph">
+<p>Now, start the application, open the Deliveries screen, and you will see
+an empty grid. You can use the “Add” button to add a new delivery.
+Clicking this button will cause a pop-up dialog to appear, which you can
+then use to create the new entity. Go ahead and do so. The new entities
+that you added will show up in the grid.</p>
+</div>
+<div class="admonitionblock tip">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-tip" title="Tip"></i>
+</td>
+<td class="content">
+At the end of every row there is a “Details” button that you
+can use to bring up the details of the current row/entity. If
+<code>updateEnabled</code> is set to true on the entity model, you can also use
+this dialog to edit the entity.
+</td>
+</tr>
+</table>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_filters_custom_components_and_callback_methods">10. Filters, custom components, and callback methods</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The above chapters should have given you a good idea of some of the
+capabilities of the Dynamo Framework, but it can do a lot more. We will
+now go over some of the more common use cases.</p>
+</div>
+<div class="sect2">
+<h3 id="_field_filters">10.1. Field filters</h3>
+<div class="paragraph">
+<p>So far, you have only seen occasions in which a combo box or other
+lookup component contains all the available values. In a small
+application like this, that is usually not an issue, but in a real
+application it is likely that you sometimes want to restrict the values
+that show up inside a selection component or lookup component. For this
+you can use the <em>field filter</em> mechanism.</p>
+</div>
+<div class="paragraph">
+<p>As we’ve seen before with the default filters (in the SplitLayout), the
+field filters are defined in the component’s TypeScript file. As an
+example, we define the following in the <em>organization-form.component.ts</em></p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="nf">getFieldFilters</span><span class="p">()</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">fieldFilters</span><span class="p">:</span> <span class="nb">Map</span><span class="o">&lt;</span><span class="kr">string</span><span class="p">,</span><span class="nx">FilterModel</span><span class="p">[]</span><span class="o">&gt;</span> <span class="o">=</span> <span class="k">new</span> <span class="nb">Map</span><span class="o">&lt;</span><span class="kr">string</span><span class="p">,</span><span class="nx">FilterModel</span><span class="p">[]</span><span class="o">&gt;</span><span class="p">();</span>
+
+  <span class="kd">let</span> <span class="nx">countryFilter</span> <span class="o">=</span> <span class="nf">createEqualsFilter</span><span class="p">(</span><span class="dl">'</span><span class="s1">name</span><span class="dl">'</span><span class="p">,</span> <span class="dl">'</span><span class="s1">au</span><span class="dl">'</span><span class="p">)</span>
+  <span class="nx">fieldFilters</span><span class="p">.</span><span class="nf">set</span><span class="p">(</span><span class="dl">"</span><span class="s2">countryOfOrigin</span><span class="dl">"</span><span class="p">,</span> <span class="p">[</span>
+    <span class="nx">countryFilter</span>
+  <span class="p">]);</span>
+
+  <span class="k">return</span> <span class="nx">fieldFilters</span><span class="p">;</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Also, in the HTML file we bind this method to the [fieldFilters]
+property.</p>
+</div>
+<div class="paragraph">
+<p>Now, if we open the screen to edit an organization (or create a new
+one), we will see that the available option in the <code>countryOfOrigin</code>
+component are limited to those countries that contain the substring <code>au</code>
+(e.g. Austria or Australia). This works regardless of the type of the
+input component, but it will of course show up in different ways.</p>
+</div>
+<div class="paragraph">
+<p>The example above only applies to the edit form, but adding the field
+filters to the search form works in exactly the same way.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_custom_components">10.2. Custom components</h3>
+<div class="paragraph">
+<p>While the Dynamo framework has some fairly robust options to modify the
+way in which input components behave, it is possible to override the
+standard component generated by the framework with a custom one.</p>
+</div>
+<div class="paragraph">
+<p>To do so, you can insert an ng-template element marked with the
+<code>dOverrideField</code> annotation inside the component (in this case,
+<em>organization-form.component.html</em>.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;ng-template</span>
+  <span class="na">dOverrideField</span>
+  <span class="na">attributeName=</span><span class="s">"name"</span>
+  <span class="na">let-am</span>
+  <span class="na">let-formGroup=</span><span class="s">"mainForm"</span>
+<span class="nt">&gt;</span>
+  <span class="nt">&lt;ng-container</span> <span class="na">[formGroup]=</span><span class="s">"formGroup"</span><span class="nt">&gt;</span>
+    <span class="nt">&lt;label</span> <span class="na">for=</span><span class="s">"name"</span><span class="nt">&gt;</span>Custom name<span class="nt">&lt;/label&gt;</span>
+    <span class="nt">&lt;input</span> <span class="na">type=</span><span class="s">"text"</span>
+      <span class="na">pInputText</span>
+      <span class="na">id=</span><span class="s">"name"</span>
+      <span class="na">formControlName=</span><span class="s">"name"</span>
+    <span class="nt">&gt;</span>
+  <span class="nt">&lt;/ng-container&gt;</span>
+<span class="nt">&lt;/ng-template&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The <code>dOverrideField</code> on the template makes sure the mechanism picks up
+this custom component. The “attributeName” must be the name of the
+attribute for which you want to replace the input component.</p>
+</div>
+<div class="paragraph">
+<p>Inside the template you can create basically any component you like.
+Make sure to nest the custom component inside a formGroup though, or no
+data binding between the model and the component will take place. Also
+don’t forget to set the <code>formControlName</code> property to the name of the
+attribute.</p>
+</div>
+<div class="paragraph">
+<p>Using custom components like this is also supported for the search
+layout (when in “standard” mode), the split layout, and the editable
+table layout.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_custom_validators">10.3. Custom validators</h3>
+<div class="paragraph">
+<p>In addition to adding custom components, it is also possible to add
+custom validators to the default Dynamo components.</p>
+</div>
+<div class="paragraph">
+<p>As stated before, the framework will take care of adding validators to
+the front-end based on the Java Validation API annotations like @Min,
+<code>@NotNull</code>, <code>@Size</code> etc. In case this is not enough, it is of course
+possible to provide your own validation logic in the back-end, but this
+functionality cannot be automatically duplicated on the front-end. This
+is where custom front-end validations come in.</p>
+</div>
+<div class="paragraph">
+<p>We have already provided a custom validator in the CustomValidators
+class, and will now apply this to a field in the <em>person-search.component.html</em>
+that we created before.</p>
+</div>
+<div class="paragraph">
+<p>In the <code>app-generic-split-layout</code> we created before, we add a template named
+<strong>customValidatorTemplate</strong> and bind this to the <code>customValidatorTemplate</code>
+property of the layout:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;ng-template</span> <span class="na">#customValidatorTemplate</span> <span class="na">let-formGroup</span><span class="nt">&gt;</span>
+  <span class="nt">&lt;ng-template</span>
+    <span class="na">dAdditionalValidators</span>
+    <span class="na">attributeName=</span><span class="s">"died"</span>
+    <span class="na">[formGroup]=</span><span class="s">"formGroup"</span>
+    <span class="na">[validators]=</span><span class="s">"[CustomValidators.diedAfterBornValidator(formGroup)]"</span>
+  <span class="nt">/&gt;</span>
+<span class="nt">&lt;/ng-template&gt;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Inside the template we can create any number of templates annotated with
+the <code>dAdditionalValidators</code> template. Each template must contain the
+following:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><code>attributeName</code> defines the attribute to bind to</p>
+</li>
+<li>
+<p><code>formGroup</code> is the form group that the input component belongs to</p>
+</li>
+<li>
+<p><code>validators</code> is an array of custom validators that you want to apply
+to the field.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>In the typescript file, add the following, where the <em>CustomValidators</em>
+on the right refers to the class you import from the
+<em>custom-validators.ts</em> file.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="k">readonly</span> <span class="nx">CustomValidators</span> <span class="o">=</span> <span class="nx">CustomValidators</span></code></pre>
+</div>
+</div>
+<div class="admonitionblock warning">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-warning" title="Warning"></i>
+</td>
+<td class="content">
+You must always include the appropriate validations in the
+back-end as well. Never rely on the front-end only for validating data,
+since it is always possible to bypass the front-end and call the
+back-end services directly.
+</td>
+</tr>
+</table>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_additional_actions_and_buttons">10.4. Additional actions and buttons</h3>
+<div class="paragraph">
+<p>As you have probably seen, many of the composite components offered by the
+Dynamo Framework contain button bars that contains buttons to e.g. add entities, switch the
+component to edit mode etc. It is possible to add additional buttons to
+these button bars in several ways.</p>
+</div>
+<div class="paragraph">
+<p>The first way is by means of the back-end, using the concept of Entity
+Model Actions. These are basically methods that are added to your
+service layer that are exposed to the front end as part of the entity
+model.</p>
+</div>
+<div class="paragraph">
+<p>In order to add an entity model action, we need the following things:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>A data transfer object (DTO) to hold the relevant data</p>
+</li>
+<li>
+<p>A service method that accepts that DTO as a parameter</p>
+</li>
+<li>
+<p>An <code>@ModelAction</code> annotation on the service method implementation</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Let’s start with the DTO:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="kn">package</span> <span class="nn">com.opencircle.gts.service</span><span class="o">;</span>
+
+<span class="kn">import</span> <span class="nn">jakarta.validation.constraints.NotNull</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">jakarta.validation.constraints.Size</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Getter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.Setter</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">lombok.ToString</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.dynamoframework.domain.AbstractEntity</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.dynamoframework.domain.model.annotation.Attribute</span><span class="o">;</span>
+<span class="kn">import</span> <span class="nn">org.dynamoframework.domain.model.annotation.Model</span><span class="o">;</span>
+
+<span class="nd">@Getter</span>
+<span class="nd">@Setter</span>
+<span class="nd">@ToString</span>
+<span class="nd">@Model</span><span class="o">(</span><span class="n">displayName</span> <span class="o">=</span> <span class="s">"Organization Name Change"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">OrganizationNameDTO</span> <span class="kd">extends</span> <span class="nc">AbstractEntity</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="o">{</span>
+
+    <span class="kd">private</span> <span class="nc">Integer</span> <span class="n">id</span><span class="o">;</span>
+
+    <span class="nd">@NotNull</span>
+    <span class="nd">@Attribute</span>
+    <span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">255</span><span class="o">)</span>
+    <span class="kd">private</span> <span class="nc">String</span> <span class="n">name</span><span class="o">;</span>
+
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>The DTO class must extend the <code>AbstractEntity</code> class, and must have an ID
+field that has the same data type as the entity that the action belongs
+to (in this case the Organization). The framework constructs an entity
+model for the DTO in the same way as it does for an actual entity, so
+annotations like <code>@Model</code> and <code>@Attribute</code> work in the same way.</p>
+</div>
+<div class="paragraph">
+<p>In the <code>OrganizationService(Impl)</code> we add the action method that we want to carry
+out:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Override</span>
+<span class="nd">@Transactional</span>
+<span class="nd">@ModelAction</span><span class="o">(</span><span class="n">id</span> <span class="o">=</span> <span class="s">"ChangeName"</span><span class="o">,</span> <span class="n">displayName</span> <span class="o">=</span> <span class="s">"Change name"</span><span class="o">,</span> <span class="n">type</span> <span class="o">=</span> <span class="nc">EntityModelActionType</span><span class="o">.</span><span class="na">UPDATE</span><span class="o">,</span>
+<span class="n">icon</span> <span class="o">=</span> <span class="s">"pi-shield"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="nc">Organization</span> <span class="nf">updateName</span><span class="o">(</span><span class="nc">OrganizationNameDTO</span> <span class="n">dto</span><span class="o">)</span> <span class="o">{</span>
+    <span class="nc">Organization</span> <span class="n">org</span> <span class="o">=</span> <span class="n">findById</span><span class="o">(</span><span class="n">dto</span><span class="o">.</span><span class="na">getId</span><span class="o">());</span>
+    <span class="n">org</span><span class="o">.</span><span class="na">setName</span><span class="o">(</span><span class="n">dto</span><span class="o">.</span><span class="na">getName</span><span class="o">());</span>
+    <span class="k">return</span> <span class="nf">save</span><span class="o">(</span><span class="n">org</span><span class="o">);</span>
+<span class="o">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>And in the <code>OrganizationService</code> we add the method definition</p>
+</div>
+<div class="openblock">
+<div class="content">
+<div class="paragraph">
+<p>Organization updateName(OrganizationNameDTO dto);</p>
+</div>
+</div>
+</div>
+<div class="paragraph">
+<p>This is a fairly simple method that accepts the <code>OrganizationNameDTO</code> as a
+parameter, and must return the updated entity (in this case the
+Organization). The logic is easy – it just sets the name on the
+organization, then saves the updated organization to the database.</p>
+</div>
+<div class="paragraph">
+<p>As you can see the method is annotated with <code>@ModelAction</code> which means
+Dynamo will translate it to a button that will show up (in this case) in
+each row in the table. The ModelAction has a unique ID, a display name (which will be
+shown in the tooltip of the button) and a type.</p>
+</div>
+<div class="paragraph">
+<p>The type can be either
+<code>CREATE</code> or <code>UPDATE</code> and determines where the button corresponding to the
+action will show up. <code>UPDATE</code> actions will show up in each button in a
+results table, and <code>CREATE</code> actions will show up in the button bar below
+the table.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image15.png" alt="image" width="560" height="24">
+</div>
+<div class="title">Figure 13. A table with update buttons.</div>
+</div>
+<div class="paragraph">
+<p>Pressing the button will open a pop-up dialog based on the
+<code>OrganizationNameDTO</code> we saw before. Any fields that match between the
+main entity (<code>Organization</code>) and the DTO, in this case the <code>name</code>, will be
+automatically filled in:</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image16.png" alt="image" width="559" height="107">
+</div>
+<div class="title">Figure 14. Automatically filled in name field.</div>
+</div>
+<div class="paragraph">
+<p>In addition to this, you can also add actions/button that are managed on
+the front-end. These come in three varieties:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p><strong>additionalRowActions</strong> show up for each row in the details table</p>
+</li>
+<li>
+<p><strong>additionalFormActions</strong> show up in a details screen</p>
+</li>
+<li>
+<p><strong>additionalGlobalActions</strong> show up below the button bar below a results
+table.</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>As an example of a global action, consider the following code which we add
+to <em>organization-search.component.ts</em>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="nf">getAdditionalGlobalActions</span><span class="p">():</span> <span class="nx">AdditionalGlobalAction</span><span class="p">[]</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">action</span><span class="p">:</span> <span class="nx">AdditionalGlobalAction</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">action</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">messageService</span><span class="p">.</span><span class="nf">warn</span><span class="p">(</span><span class="dl">'</span><span class="s1">This is a global action</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="na">messageKey</span><span class="p">:</span> <span class="dl">'</span><span class="s1">action_one</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">icon</span><span class="p">:</span> <span class="dl">'</span><span class="s1">pi-times</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">buttonClass</span><span class="p">:</span> <span class="dl">'</span><span class="s1">btn btn-primary m-1</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">enabled</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="kc">true</span><span class="p">;</span>
+    <span class="p">},</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="p">[</span><span class="nx">action</span><span class="p">];</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>A global action consists of:</p>
+</div>
+<div class="ulist">
+<ul>
+<li>
+<p>The actual action (code) to carry out</p>
+</li>
+<li>
+<p>The message key. This is used to look up the message to display on the
+button in the application’s message bundle.</p>
+</li>
+<li>
+<p>The icon to display on the button (optional)</p>
+</li>
+<li>
+<p>The CSS classes of the button (from Bootstrap)</p>
+</li>
+<li>
+<p>A function to determine when the action is enabled (in this example it&#8217;s always enabled)</p>
+</li>
+</ul>
+</div>
+<div class="paragraph">
+<p>Now, if you look at the Organization screen, a button will show up below
+the result table, and clicking it will display a notification message.</p>
+</div>
+<div class="paragraph">
+<p>Adding form actions and row actions goes in much the same way, although
+the exact attributes differ based on the action type. Refer to the full
+Dynamo documentation for more information.</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_excel_and_csv_exports">10.5. Excel and CSV exports</h3>
+<div class="paragraph">
+<p>The Dynamo Framework offers some functionality for automatically
+exporting data that is displayed in results grid to Excel (.xlsx) or CSV
+format.</p>
+</div>
+<div class="paragraph">
+<p>This functionality is enabled by default. It can be turned off on an
+entity model by entity model basis by setting the value of
+<code>exportAllowed</code> on the <code>@Model</code> annotation to false.</p>
+</div>
+<div class="paragraph">
+<p>If exporting is enabled for an entity, a context menu will show up in
+any results table (in you right-click anywhere in the table). This menu
+will contain the options to create exports to both Excel and CSV
+formats.</p>
+</div>
+<div class="paragraph">
+<p>The export file that will be created contains all the data in the result
+set (i.e., all data that matches the search criteria), not just the rows
+that are currently displayed – Dynamo will iterate over the entire data set
+using pagination.</p>
+</div>
+<div class="paragraph">
+<p>By default, the export will contain only the columns that are visible
+in the table, but you can change the <code>exportMode</code> setting to <code>FULL</code> in
+order to include all attributes that have their <code>visibleInForm</code> setting
+equal to "true".</p>
+</div>
+</div>
+<div class="sect2">
+<h3 id="_clickable_links">10.6. Clickable links</h3>
+<div class="paragraph">
+<p>For some properties, it is possible to change the default way they are
+displayed (simply as a text or a label) inside a grid or an edit form to
+a hyperlink that allows navigation within the application.</p>
+</div>
+<div class="paragraph">
+<p>We will demonstrate this using the <code>organization</code> property of the
+<code>Person</code>. Change the code inside the Person class so that it reads as
+follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@NotNull</span>
+<span class="nd">@JoinColumn</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"organization"</span><span class="o">)</span>
+<span class="nd">@ManyToOne</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span> <span class="n">visibleInGrid</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span>
+        <span class="n">navigable</span> <span class="o">=</span> <span class="kc">true</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Organization</span> <span class="n">organization</span><span class="o">;</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will lead to the following situation in the Person screen
+(note that you may have to set the <code>openInViewMode</code> to <code>true</code> in order to
+make the link show up).</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image17.png" alt="image" width="503" height="407">
+</div>
+<div class="title">Figure 15. Person screen with link to organization.</div>
+</div>
+<div class="paragraph">
+<p>The <code>navigable</code> setting on the <code>@Attribute</code> annotation will make sure
+that whenever the property is shown in read-only mode, a hyperlink will
+be rendered instead of just a textual representation. Note that this
+applies to both detail forms and result tables.</p>
+</div>
+<div class="paragraph">
+<p>When the user clicks the hyperlink, the application will navigate to a (detail)
+screen by following the route <em>/[lower cased name of the entity]/[entity
+id]</em>, in this case <em>/organization/1</em>. This is the route at which we
+configured our <code>OrganizationFormComponent</code> so the application will
+then show a details screen for the selected organization.</p>
+</div>
+<div class="paragraph">
+<p>In case you want to navigate to a different detail screen, you can set
+the <code>navigationLink</code> setting on the attribute model in order to
+configure a different route.</p>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_authorization">11. Authorization</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>The Dynamo framework comes with built-in support for authorization. This
+support both allows you to show/hide certain screens for certain users,
+and to disable or enable certain functionality within a screen (e.g.
+whether a certain button shows up or whether the user is allowed to
+modify a certain entity type).</p>
+</div>
+<div class="paragraph">
+<p>To test this, open the <code>Person</code> class and modify the class declaration
+by adding the <code>@Roles</code> annotation as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@Roles</span><span class="o">(</span><span class="n">writeRoles</span> <span class="o">=</span> <span class="s">"bogus"</span><span class="o">)</span>
+<span class="kd">public</span> <span class="kd">class</span> <span class="nc">Person</span> <span class="kd">extends</span> <span class="nc">AbstractEntity</span><span class="o">&lt;</span><span class="nc">Integer</span><span class="o">&gt;</span> <span class="o">{</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This means that only users in the “bogus” role are allowed to perform
+write actions (i.e., create and update) on this entity. Since you don’t
+have the “bogus” role, this should disable the edit functionality for
+the Person screen.</p>
+</div>
+<div class="admonitionblock important">
+<table>
+<tr>
+<td class="icon">
+<i class="fa icon-important" title="Important"></i>
+</td>
+<td class="content">
+If you specify multiple roles, the user is  considered eligible
+if they have at least one of the specified roles.
+</td>
+</tr>
+</table>
+</div>
+<div class="paragraph">
+<p>Verify this by opening the Person screen again and making sure that you
+cannot add new persons or modify existing ones.</p>
+</div>
+<div class="paragraph">
+<p>In addition to the “writeRoles” functionality, the <code>@Roles</code> annotation
+also offers the <code>readRoles</code> and <code>deleteRoles</code> settings. The
+<code>deleteRoles</code> setting is easy, it will simply add or remove the option
+to delete entities based on the user’s roles.</p>
+</div>
+<div class="paragraph">
+<p>When you specify one or more roles for the <code>readRoles</code> setting, the
+component will only show up if the user has at least one of the
+specified role. If not, the user simply will see a “You are not allowed
+to view this component” message.</p>
+</div>
+<div class="paragraph">
+<p>Currently, when a user does not have the appropriate roles to
+view a screen, the corresponding menu option is <strong>not</strong> automatically
+removed from the menu. The current version of Dynamo does not make any
+assumptions with regard to how you build your menu.</p>
+</div>
+<div class="paragraph">
+<p>As a result, you manually have to disable the menu option if the user
+does not have the appropriate roles. The demo application supports this
+but since it’s not really part of core Dynamo, we do not cover it as part
+of this training.</p>
+</div>
+<div class="paragraph">
+<p>In addition to this, it is also possible/required to secure the Angular
+route so that only authorized users can access the route in the first
+place. Here, Dynamo does offer some functionality to help you.</p>
+</div>
+<div class="paragraph">
+<p>In the <em>app.routing.module.ts</em>, modify the entry for the
+<code>PersonSearchComponent</code> so that it reads as follows:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="yaml"><span class="pi">{</span>
+  <span class="nv">path</span><span class="pi">:</span> <span class="s1">'</span><span class="s">persons'</span><span class="pi">,</span>
+  <span class="nv">title</span><span class="pi">:</span> <span class="s1">'</span><span class="s">Persons'</span><span class="pi">,</span>
+  <span class="nv">component</span><span class="pi">:</span> <span class="nv">PersonSearchComponent</span><span class="pi">,</span>
+  <span class="nv">canActivate</span><span class="pi">:</span> <span class="pi">[</span><span class="nv">RoleGuard</span><span class="pi">],</span>
+  <span class="nv">data</span><span class="pi">:</span> <span class="pi">{</span> <span class="nv">roles</span><span class="pi">:</span> <span class="pi">[</span><span class="s1">'</span><span class="s">bogus'</span><span class="pi">]</span> <span class="pi">}</span>
+<span class="pi">}</span><span class="err">,</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>Compared to the old situation, we add a <code>canActivate</code> element that
+points to the <code>RoleGuard</code>, and using the “data” element we configure the
+allowed roles.</p>
+</div>
+<div class="paragraph">
+<p>This will result in Angular using the <code>RoleGuard</code> to check whether the
+user is in any of the configured roles before navigating to the
+<code>PersonSearchComponent</code>. If the user does not have any of the roles, an
+error message will be shown and the application will navigate to the
+“/home” route.</p>
+</div>
+<div class="paragraph">
+<p>In addition to using the role-based authentication in the back-end, it is
+possible to use it in the front-end. To do this, you need to inject
+an instance of the AuthenticationService in your Typescript component.</p>
+</div>
+<div class="paragraph">
+<p>You can then use the <code>hasRole()</code> method to enable or disable certain functionalities.
+As an example, see how we can modify the global action we defined earlier so
+that it is only enabled if the user has the "bogus" role.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="typescript"><span class="nf">getAdditionalGlobalActions</span><span class="p">():</span> <span class="nx">AdditionalGlobalAction</span><span class="p">[]</span> <span class="p">{</span>
+  <span class="kd">let</span> <span class="nx">action</span><span class="p">:</span> <span class="nx">AdditionalGlobalAction</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="na">action</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">messageService</span><span class="p">.</span><span class="nf">warn</span><span class="p">(</span><span class="dl">'</span><span class="s1">This is a global action</span><span class="dl">'</span><span class="p">);</span>
+    <span class="p">},</span>
+    <span class="na">messageKey</span><span class="p">:</span> <span class="dl">'</span><span class="s1">action_one</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">icon</span><span class="p">:</span> <span class="dl">'</span><span class="s1">pi-times</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">buttonClass</span><span class="p">:</span> <span class="dl">'</span><span class="s1">btn btn-primary m-1</span><span class="dl">'</span><span class="p">,</span>
+    <span class="na">enabled</span><span class="p">:</span> <span class="p">()</span> <span class="o">=&gt;</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">authenticationService</span><span class="p">.</span><span class="nf">hasRole</span><span class="p">(</span><span class="dl">'</span><span class="s1">bogus</span><span class="dl">'</span><span class="p">)</span>
+    <span class="p">},</span>
+  <span class="p">};</span>
+  <span class="k">return</span> <span class="p">[</span><span class="nx">action</span><span class="p">];</span>
+<span class="p">}</span></code></pre>
+</div>
+</div>
+</div>
+</div>
+<div class="sect1">
+<h2 id="_element_collections">12. Element collections</h2>
+<div class="sectionbody">
+<div class="paragraph">
+<p>One of the lesser known features of JPA is the ability to work with
+<em>element collections</em> and <em>collection tables</em>. An element collection is
+basically a collection of primitive values (String, integer, etc.) that
+can be defined as a property on an entity. Within the context of our
+example, we could define the following in the <code>Person</code> class:</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@ElementCollection</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@CollectionTable</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"person_lucky_numbers"</span><span class="o">)</span>
+<span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"lucky_number"</span><span class="o">)</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">3</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nd">@Min</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="nd">@Max</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">100</span><span class="o">)</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">luckyNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will define a collection of integers that can be used to store a
+person’s lucky numbers. As you can see, these are stored in the database
+in a table named “person_lucky_numbers” (which is already present).</p>
+</div>
+<div class="paragraph">
+<p>Restart the application and navigate to the screen for managing persons.
+Select a Person and verify that you will now see a so-called “chips”
+component for managing the lucky numbers. This component will initially
+be empty. You can add values to it by typing directly inside the
+component and then pressing Enter when you are done with the input. It
+is possible to add multiple values like this.</p>
+</div>
+<div class="imageblock">
+<div class="content">
+<img src="media/training/image18.png" alt="image" width="560" height="81">
+</div>
+<div class="title">Figure 16. An example of a “chips” component used to manage an element collection.</div>
+</div>
+<div class="paragraph">
+<p>The component comes with several validations, e.g. the <code>@Size</code> annotation
+that you can see in the code example above will be used to limit the
+maximum allowed number of elements (in this case 3).</p>
+</div>
+<div class="paragraph">
+<p>We can also use the <code>minValue</code> and <code>maxValue</code> settings on <code>@Attribute</code>
+to set minimum and maximum values.</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@ElementCollection</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@CollectionTable</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"person_lucky_numbers"</span><span class="o">)</span>
+<span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"lucky_number"</span><span class="o">)</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">3</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">_SHOW_</span><span class="o">,</span> <span class="n">minValue</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">maxValue</span>
+<span class="o">=</span> <span class="mi">100</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nd">@Min</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="nd">@Max</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">100</span><span class="o">)</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">luckyNumbers</span> <span class="o">=</span> <span class="k">new</span>
+<span class="nc">HashSet</span><span class="o">&lt;&gt;();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>In addition, it is possible to change the type of the component by
+setting the <code>elementCollectionMode</code> (in this case to <code>DIALOG</code>).</p>
+</div>
+<div class="listingblock">
+<div class="content">
+<pre class="rouge highlight"><code data-lang="java"><span class="nd">@ElementCollection</span><span class="o">(</span><span class="n">fetch</span> <span class="o">=</span> <span class="nc">FetchType</span><span class="o">.</span><span class="na">LAZY</span><span class="o">)</span>
+<span class="nd">@CollectionTable</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"person_lucky_numbers"</span><span class="o">)</span>
+<span class="nd">@Column</span><span class="o">(</span><span class="n">name</span> <span class="o">=</span> <span class="s">"lucky_number"</span><span class="o">)</span>
+<span class="nd">@Size</span><span class="o">(</span><span class="n">max</span> <span class="o">=</span> <span class="mi">3</span><span class="o">)</span>
+<span class="nd">@Attribute</span><span class="o">(</span><span class="n">visibleInForm</span> <span class="o">=</span> <span class="nc">VisibilityType</span><span class="o">.</span><span class="na">SHOW</span><span class="o">,</span> <span class="n">minValue</span> <span class="o">=</span> <span class="mi">0</span><span class="o">,</span> <span class="n">maxValue</span> <span class="o">=</span> <span class="mi">100</span><span class="o">,</span>
+    <span class="n">elementCollectionMode</span> <span class="o">=</span> <span class="nc">ElementCollectionMode</span><span class="o">.</span><span class="na">DIALOG</span><span class="o">)</span>
+<span class="kd">private</span> <span class="nc">Set</span><span class="o">&lt;</span><span class="nd">@Min</span><span class="o">(</span><span class="mi">10</span><span class="o">)</span> <span class="nd">@Max</span><span class="o">(</span><span class="n">value</span> <span class="o">=</span> <span class="mi">100</span><span class="o">)</span> <span class="nc">Integer</span><span class="o">&gt;</span> <span class="n">luckyNumbers</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">HashSet</span><span class="o">&lt;&gt;();</span></code></pre>
+</div>
+</div>
+<div class="paragraph">
+<p>This will result in a different kind of component being used to edit the
+element collection: a component that uses a pop-up dialog to add new
+values.</p>
+</div>
+<div class="paragraph">
+<p>In the example above we used an attribute of type Integer. It is also
+possible to use the element collection functionality with String
+attributes.</p>
+</div>
+</div>
+</div>
+</div>
+<div id="footer">
+<div id="footer-text">
+Last updated 2025-04-18 14:10:57 UTC
+</div>
+</div>
+</body>
+</html>
