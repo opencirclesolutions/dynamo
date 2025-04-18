@@ -1,6 +1,9 @@
 name: Publish Dynamo release
 
 on:
+  push:
+    branches:
+      - release/4.0.0-RC4-fix
   release:
     types: [published]
 
