@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AttributeComparator.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.domain.comparator</a> &gt; <span class="el_source">AttributeComparator.java</span></div><h1>AttributeComparator.java</h1><pre class="source lang-java linenums">package org.dynamoframework.domain.comparator;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.utils.ClassUtils;
+
+import java.util.Comparator;
+
+/**
+ * A comparator for comparing two entities based on a value of an attribute (using reflection)
+ *
+ * @author bas.rutten
+ */
+@Getter
+@AllArgsConstructor
+public class AttributeComparator&lt;T extends AbstractEntity&lt;?&gt;&gt; implements Comparator&lt;T&gt; {
+
+	private final String attribute;
+
+	@Override
+	@SuppressWarnings({&quot;unchecked&quot;})
+	public int compare(T o1, T o2) {
+<span class="fc" id="L44">		Object v1 = ClassUtils.getFieldValue(o1, attribute);</span>
+<span class="fc" id="L45">		Object v2 = ClassUtils.getFieldValue(o2, attribute);</span>
+
+<span class="pc bpc" id="L47" title="1 of 4 branches missed.">		if (v1 == null &amp;&amp; v2 == null) {</span>
+<span class="nc" id="L48">			return 0;</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">		} else if (v1 == null) {</span>
+<span class="fc" id="L50">			return -1;</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		} else if (v2 == null) {</span>
+<span class="fc" id="L52">			return 1;</span>
+<span class="fc bfc" id="L53" title="All 2 branches covered.">		} else if (v1 instanceof String str1) {</span>
+<span class="fc" id="L54">			return str1.compareToIgnoreCase((String) v2);</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">		} else if (v1 instanceof Comparable comp) {</span>
+<span class="fc" id="L56">			return comp.compareTo(v2);</span>
+		}
+<span class="nc" id="L58">		return 0;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

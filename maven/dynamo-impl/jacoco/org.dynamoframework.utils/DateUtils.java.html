@@ -1,0 +1,440 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DateUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.utils</a> &gt; <span class="el_source">DateUtils.java</span></div><h1>DateUtils.java</h1><pre class="source lang-java linenums">package org.dynamoframework.utils;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.experimental.UtilityClass;
+import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
+import org.dynamoframework.exception.OCSRuntimeException;
+
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.time.temporal.TemporalAdjusters;
+import java.time.temporal.WeekFields;
+import java.util.Date;
+
+/**
+ * Date utility class
+ *
+ * @author bas.rutten
+ */
+@UtilityClass
+public final class DateUtils {
+
+	public static final String WEEK_CODE_PATTERN = &quot;\\d{4}-\\d{2}&quot;;
+
+	private static final String DATE_FORMAT = &quot;ddMMyyyy&quot;;
+
+	private static final String DATE_TIME_FORMAT = &quot;ddMMyyyy HHmmss&quot;;
+
+	private static final String TIME_FORMAT = &quot;HHmmss&quot;;
+
+	private static final int FIRST_WEEK_NUMBER = 1;
+
+	private static final int LAST_WEEK_NUMBER = 53;
+
+	private static final int YEAR_STRING_LENGTH = 4;
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public static &lt;T&gt; T createJava8Date(Class&lt;T&gt; clazz, String dateStr, String format) {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		if (LocalDate.class.equals(clazz)) {</span>
+<span class="fc" id="L60">			return (T) createLocalDate(dateStr, format);</span>
+<span class="fc bfc" id="L61" title="All 2 branches covered.">		} else if (LocalDateTime.class.equals(clazz)) {</span>
+<span class="fc" id="L62">			return (T) createLocalDateTime(dateStr, format);</span>
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		} else if (LocalTime.class.equals(clazz)) {</span>
+<span class="fc" id="L64">			return (T) createLocalTime(dateStr, format);</span>
+<span class="pc bpc" id="L65" title="1 of 2 branches missed.">		} else if (Instant.class.equals(clazz)) {</span>
+<span class="nc" id="L66">			return (T) createInstant(dateStr, format);</span>
+		}
+<span class="fc" id="L68">		return null;</span>
+	}
+
+	/**
+	 * Creates a java.time.LocalTime based on a String representation
+	 *
+	 * @param dateStr the String (in the format ddMMyyyy)
+	 * @return the created date
+	 */
+	public static LocalDate createLocalDate(String dateStr) {
+<span class="fc" id="L78">		return createLocalDate(dateStr, DATE_FORMAT);</span>
+	}
+
+	/**
+	 * Creates a java.time.LocalTime based on a String representation
+	 *
+	 * @param dateStr the String
+	 * @param format  the desired format
+	 * @return the created date
+	 */
+	public static LocalDate createLocalDate(String dateStr, String format) {
+<span class="fc bfc" id="L89" title="All 2 branches covered.">		if (dateStr == null) {</span>
+<span class="fc" id="L90">			return null;</span>
+		}
+<span class="fc" id="L92">		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).parseStrict().toFormatter();</span>
+<span class="fc" id="L93">		return LocalDate.from(fmt.parse(dateStr));</span>
+	}
+
+	/**
+	 * Creates a java.time.LocalDateTime based on a String representation
+	 *
+	 * @param dateTimeStr the String representation (ddMMyyyy HHmmss)
+	 * @return the created LocalDateTime
+	 */
+	public static LocalDateTime createLocalDateTime(String dateTimeStr) {
+<span class="fc" id="L103">		return createLocalDateTime(dateTimeStr, DATE_TIME_FORMAT);</span>
+	}
+
+	/**
+	 * Creates a java.time.LocalDateTime based on a String representation
+	 *
+	 * @param dateTimeStr the String representation
+	 * @param format      the desired format
+	 * @return the created LocalDateTime
+	 */
+	public static LocalDateTime createLocalDateTime(String dateTimeStr, String format) {
+<span class="fc bfc" id="L114" title="All 2 branches covered.">		if (dateTimeStr == null) {</span>
+<span class="fc" id="L115">			return null;</span>
+		}
+<span class="fc" id="L117">		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).parseStrict().toFormatter();</span>
+<span class="fc" id="L118">		return LocalDateTime.from(fmt.parse(dateTimeStr));</span>
+	}
+
+	/**
+	 * Creates a java.time.Instant based on a String representation
+	 *
+	 * @param dateTimeStr the String representation
+	 * @param format      the desired format
+	 * @return the created LocalDateTime
+	 */
+	public static Instant createInstant(String dateTimeStr, String format) {
+<span class="fc bfc" id="L129" title="All 2 branches covered.">		if (dateTimeStr == null) {</span>
+<span class="fc" id="L130">			return null;</span>
+		}
+<span class="fc" id="L132">		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).parseStrict().toFormatter();</span>
+<span class="fc" id="L133">		return LocalDateTime.from(fmt.parse(dateTimeStr)).toInstant(ZoneOffset.UTC);</span>
+	}
+
+	/**
+	 * Creates a java.time.LocalTime based on a String representation
+	 *
+	 * @param timeStr the String representation
+	 * @return the created LocalTime
+	 */
+	public static LocalTime createLocalTime(String timeStr) {
+<span class="fc" id="L143">		return createLocalTime(timeStr, TIME_FORMAT);</span>
+	}
+
+	/**
+	 * Creates a java.time.LocalTime based on a String representation
+	 *
+	 * @param timeStr the String representation
+	 * @param format  the desired format
+	 * @return the created LocalTime
+	 */
+	public static LocalTime createLocalTime(String timeStr, String format) {
+<span class="fc bfc" id="L154" title="All 2 branches covered.">		if (timeStr == null) {</span>
+<span class="fc" id="L155">			return null;</span>
+		}
+<span class="fc" id="L157">		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).parseStrict().toFormatter();</span>
+<span class="fc" id="L158">		return LocalTime.from(fmt.parse(timeStr));</span>
+	}
+
+	/**
+	 * Formats a LocalDate according to the specified format
+	 *
+	 * @param date   the date
+	 * @param format the format
+	 * @return the resulting String
+	 */
+	public static String formatDate(LocalDate date, String format) {
+<span class="fc bfc" id="L169" title="All 4 branches covered.">		if (date == null || format == null) {</span>
+<span class="fc" id="L170">			return null;</span>
+		}
+<span class="fc" id="L172">		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).toFormatter();</span>
+<span class="fc" id="L173">		return date.format(fmt);</span>
+	}
+
+	/**
+	 * Formats a LocalDateTime according to the specified format
+	 *
+	 * @param dateTime the DateTime to format
+	 * @param format   the desired format
+	 * @return the resulting String
+	 */
+	public static String formatDateTime(LocalDateTime dateTime, String format) {
+<span class="fc bfc" id="L184" title="All 4 branches covered.">		if (dateTime == null || format == null) {</span>
+<span class="fc" id="L185">			return null;</span>
+		}
+<span class="fc" id="L187">		DateTimeFormatter fmt = new DateTimeFormatterBuilder().appendPattern(format).toFormatter();</span>
+<span class="fc" id="L188">		return dateTime.format(fmt);</span>
+	}
+
+	/**
+	 * Formats a Java 8 date/time/datetime based on the specified format
+	 *
+	 * @param clazz  the class of the object to format
+	 * @param value  the value
+	 * @param format the desired format
+	 * @return the resulting String
+	 */
+	public static String formatJava8Date(Class&lt;?&gt; clazz, Object value, String format) {
+<span class="fc bfc" id="L200" title="All 2 branches covered.">		if (LocalDate.class.equals(clazz)) {</span>
+<span class="fc" id="L201">			return formatDate((LocalDate) value, format);</span>
+<span class="fc bfc" id="L202" title="All 2 branches covered.">		} else if (LocalDateTime.class.equals(clazz)) {</span>
+<span class="fc" id="L203">			return formatDateTime((LocalDateTime) value, format);</span>
+<span class="pc bpc" id="L204" title="1 of 2 branches missed.">		} else if (LocalTime.class.equals(clazz)) {</span>
+<span class="fc" id="L205">			return formatTime((LocalTime) value, format);</span>
+<span class="nc bnc" id="L206" title="All 2 branches missed.">		} else if (Instant.class.equals(clazz)) {</span>
+<span class="nc" id="L207">			return formatInstant((Instant) value, format);</span>
+		}
+<span class="nc" id="L209">		return null;</span>
+	}
+
+	/**
+	 * Formats a java.time.LocalTime according to the specified format
+	 *
+	 * @param time   the object to format
+	 * @param format the desired format
+	 * @return the resulting String
+	 */
+	public static String formatTime(LocalTime time, String format) {
+<span class="fc bfc" id="L220" title="All 4 branches covered.">		if (time == null || format == null) {</span>
+<span class="fc" id="L221">			return null;</span>
+		}
+<span class="fc" id="L223">		DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format);</span>
+<span class="fc" id="L224">		return time.format(fmt);</span>
+	}
+
+	/**
+	 * Formats an Instant value
+	 *
+	 * @param instant the Instant to format
+	 * @param format  the desired format
+	 * @return the resulting String
+	 */
+	public static String formatInstant(Instant instant, String format) {
+<span class="fc bfc" id="L235" title="All 4 branches covered.">		if (instant == null || format == null) {</span>
+<span class="fc" id="L236">			return null;</span>
+		}
+<span class="fc" id="L238">		DateTimeFormatter fmt = DateTimeFormatter.ofPattern(format).withZone(ZoneId.of(&quot;UTC&quot;));</span>
+<span class="fc" id="L239">		return fmt.format(instant);</span>
+	}
+
+	/**
+	 * Return the week number (1 - 53) of the last week of the specified year
+	 *
+	 * @param year the year
+	 * @return the number of the last week
+	 */
+	public static int getLastWeekOfYear(int year) {
+<span class="fc" id="L249">		LocalDate date = createLocalDate(&quot;3112&quot; + year);</span>
+<span class="fc" id="L250">		WeekFields weekFields = WeekFields.ISO;</span>
+<span class="fc" id="L251">		int weekNumber = date.get(weekFields.weekOfWeekBasedYear());</span>
+<span class="fc bfc" id="L252" title="All 2 branches covered.">		while (weekNumber == 1) {</span>
+<span class="fc" id="L253">			date = date.minusDays(1);</span>
+<span class="fc" id="L254">			weekNumber = date.get(weekFields.weekOfWeekBasedYear());</span>
+		}
+<span class="fc" id="L256">		return weekNumber;</span>
+	}
+
+	/**
+	 * Returns the next week code given an existing week code
+	 *
+	 * @param weekCode the week code
+	 * @return the code for the next week
+	 */
+	public static String getNextWeekCode(String weekCode) {
+<span class="pc bpc" id="L266" title="1 of 2 branches missed.">		if (weekCode == null) {</span>
+<span class="nc" id="L267">			return null;</span>
+		}
+
+<span class="fc" id="L270">		int year = getYearFromWeekCode(weekCode);</span>
+<span class="fc" id="L271">		int week = getWeekFromWeekCode(weekCode);</span>
+
+<span class="fc" id="L273">		String next = year + &quot;-&quot; + StringUtils.leftPad(Integer.toString(week + 1), 2, &quot;0&quot;);</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">		if (isValidWeekCode(next)) {</span>
+<span class="fc" id="L275">			return next;</span>
+		} else {
+<span class="fc" id="L277">			return (year + 1) + &quot;-&quot; + &quot;01&quot;;</span>
+		}
+	}
+
+	/**
+	 * Returns the quarter of the year of a date, as an integer (1 to 4). Returns -1
+	 * in case the argument passed to this function is null
+	 *
+	 * @param date the date
+	 * @return
+	 */
+	public static int getQuarter(LocalDate date) {
+<span class="fc bfc" id="L289" title="All 2 branches covered.">		if (date == null) {</span>
+<span class="fc" id="L290">			return -1;</span>
+		}
+<span class="fc" id="L292">		return 1 + date.getMonth().ordinal() / 3;</span>
+	}
+
+	/**
+	 * Translates a week code (yyyy-ww) to the starting day (this is taken to be a
+	 * Monday) of that week
+	 *
+	 * @param weekCode the week code
+	 * @return the date
+	 */
+	public static LocalDate getStartDateOfWeek(String weekCode) {
+<span class="pc bpc" id="L303" title="1 of 2 branches missed.">		if (weekCode == null) {</span>
+<span class="nc" id="L304">			return null;</span>
+		}
+<span class="pc bpc" id="L306" title="1 of 2 branches missed.">		if (weekCode.matches(WEEK_CODE_PATTERN)) {</span>
+<span class="fc" id="L307">			int year = getYearFromWeekCode(weekCode);</span>
+<span class="fc" id="L308">			int week = getWeekFromWeekCode(weekCode);</span>
+<span class="fc" id="L309">			WeekFields weekFields = WeekFields.ISO;</span>
+<span class="fc" id="L310">			return LocalDate.ofYearDay(year, 1).with(weekFields.weekOfYear(), week)</span>
+<span class="fc" id="L311">				.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY));</span>
+		}
+<span class="nc" id="L313">		throw new OCSRuntimeException(&quot;Cannot convert&quot;);</span>
+	}
+
+	private static int getWeekFromWeekCode(String weekCode) {
+<span class="fc" id="L317">		return Integer.parseInt(weekCode.substring(5));</span>
+	}
+
+	/**
+	 * Retrieves the year part from a week code (yyyy-ww)
+	 *
+	 * @param weekCode the week code
+	 * @return the year
+	 */
+	private static int getYearFromWeekCode(String weekCode) {
+<span class="fc" id="L327">		return Integer.parseInt(weekCode.substring(0, YEAR_STRING_LENGTH));</span>
+	}
+
+	/**
+	 * Çhecks whether a class represents a Java 8 date or time type
+	 *
+	 * @param clazz the class
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isJava8DateType(Class&lt;?&gt; clazz) {
+<span class="fc bfc" id="L337" title="All 6 branches covered.">		return LocalDate.class.equals(clazz) || LocalDateTime.class.equals(clazz) || LocalTime.class.equals(clazz) ||</span>
+<span class="pc bpc" id="L338" title="1 of 2 branches missed.">			Instant.class.equals(clazz);</span>
+	}
+
+	/**
+	 * Checks if a string represents a valid week code (yyyy-ww). An empty String is
+	 * considered valid
+	 *
+	 * @param weekCode the week code
+	 * @return the week code
+	 */
+	public static boolean isValidWeekCode(String weekCode) {
+<span class="fc bfc" id="L349" title="All 2 branches covered.">		if (weekCode == null) {</span>
+<span class="fc" id="L350">			return true;</span>
+		}
+
+		// pattern must match
+<span class="fc bfc" id="L354" title="All 2 branches covered.">		if (!weekCode.matches(WEEK_CODE_PATTERN)) {</span>
+<span class="fc" id="L355">			return false;</span>
+		}
+
+<span class="fc" id="L358">		int year = getYearFromWeekCode(weekCode);</span>
+<span class="fc" id="L359">		int week = getWeekFromWeekCode(weekCode);</span>
+
+<span class="fc" id="L361">		int lastWeekOfYear = getLastWeekOfYear(year);</span>
+<span class="fc bfc" id="L362" title="All 4 branches covered.">		return FIRST_WEEK_NUMBER &lt;= week &amp;&amp; week &lt;= lastWeekOfYear;</span>
+	}
+
+	/**
+	 * Converts a date to its corresponding week code
+	 *
+	 * @param date the date
+	 * @return the result of the conversion
+	 */
+	public static String toWeekCode(LocalDate date) {
+<span class="pc bpc" id="L372" title="1 of 2 branches missed.">		if (date != null) {</span>
+<span class="fc" id="L373">			WeekFields weekFields = WeekFields.ISO;</span>
+<span class="fc" id="L374">			int year = date.getYear();</span>
+<span class="fc" id="L375">			int week = date.get(weekFields.weekOfWeekBasedYear());</span>
+<span class="fc" id="L376">			Month month = date.getMonth();</span>
+
+			// if the week number is reported as 1, but we are in December,
+			// then we have an &quot;overflow&quot;
+<span class="fc bfc" id="L380" title="All 4 branches covered.">			if (week == FIRST_WEEK_NUMBER &amp;&amp; month == Month.DECEMBER) {</span>
+<span class="fc" id="L381">				year++;</span>
+			}
+
+			// if the week number is 53 but we are in January, then reduce the
+			// year by one
+<span class="pc bpc" id="L386" title="1 of 6 branches missed.">			if ((week == LAST_WEEK_NUMBER || week == LAST_WEEK_NUMBER - 1) &amp;&amp; month == Month.JANUARY) {</span>
+<span class="nc" id="L387">				year--;</span>
+			}
+
+<span class="fc" id="L390">			return year + &quot;-&quot; + StringUtils.leftPad(Integer.toString(week), 2, &quot;0&quot;);</span>
+		}
+<span class="nc" id="L392">		return null;</span>
+	}
+
+	/**
+	 * Converts a LocalDate to a legacy java.util.Date
+	 *
+	 * @param date the LocalDate to convert
+	 * @return the value converted to a java.util.Date
+	 */
+	public static Date toLegacyDate(LocalDate date) {
+<span class="nc bnc" id="L402" title="All 2 branches missed.">		if (date == null) {</span>
+<span class="nc" id="L403">			return null;</span>
+		}
+<span class="nc" id="L405">		return Date.from(date.atStartOfDay(ZoneId.systemDefault()).toInstant());</span>
+	}
+
+	/**
+	 * Converts a java.time.LocalDateTime to a java.util.Date
+	 *
+	 * @param ldt the LocalDatetime to convert
+	 * @return the value converted to a java.util.Date
+	 */
+	public static Date toLegacyDate(LocalDateTime ldt) {
+<span class="nc bnc" id="L415" title="All 2 branches missed.">		if (ldt == null) {</span>
+<span class="nc" id="L416">			return null;</span>
+		}
+<span class="nc" id="L418">		return Date.from(ldt.atZone(ZoneId.systemDefault()).toInstant());</span>
+	}
+
+	/**
+	 * Returns the default display format for a given (date) class
+	 *
+	 * @param clazz the class
+	 * @return the default display format
+	 */
+	public static String getDefaultDisplayFormat(Class&lt;?&gt; clazz) {
+<span class="fc bfc" id="L428" title="All 2 branches covered.">		if (LocalDate.class.equals(clazz)) {</span>
+<span class="fc" id="L429">			return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat();</span>
+<span class="fc bfc" id="L430" title="All 2 branches covered.">		} else if (LocalDateTime.class.equals(clazz)) {</span>
+<span class="fc" id="L431">			return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateTimeFormat();</span>
+<span class="pc bpc" id="L432" title="1 of 2 branches missed.">		} else if (LocalTime.class.equals(clazz)) {</span>
+<span class="fc" id="L433">			return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getTimeFormat();</span>
+<span class="nc bnc" id="L434" title="All 2 branches missed.">		} else if (Instant.class.equals(clazz)) {</span>
+<span class="nc" id="L435">			return DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateTimeFormat();</span>
+		}
+<span class="nc" id="L437">		return null;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

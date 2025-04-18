@@ -1,0 +1,270 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.service.impl</a> &gt; <span class="el_source">BaseServiceImpl.java</span></div><h1>BaseServiceImpl.java</h1><pre class="source lang-java linenums">package org.dynamoframework.service.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.Validator;
+import jakarta.validation.ValidatorFactory;
+import jakarta.validation.constraints.AssertFalse;
+import jakarta.validation.constraints.AssertTrue;
+import lombok.Getter;
+import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.configuration.DynamoProperties;
+import org.dynamoframework.dao.*;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.exception.OCSNonUniqueException;
+import org.dynamoframework.exception.OCSValidationException;
+import org.dynamoframework.filter.Filter;
+import org.dynamoframework.service.BaseService;
+import org.dynamoframework.service.MessageService;
+import org.dynamoframework.utils.ClassUtils;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Set;
+
+/**
+ * Base service implementation
+ *
+ * @param &lt;ID&gt; type of the primary key
+ * @param &lt;T&gt;  type of the entity
+ * @author bas.rutten
+ */
+<span class="fc" id="L54">@Slf4j</span>
+<span class="fc" id="L55">public abstract class BaseServiceImpl&lt;ID, T extends AbstractEntity&lt;ID&gt;&gt; implements BaseService&lt;ID, T&gt; {</span>
+
+	@Autowired
+	private DynamoProperties dynamoProperties;
+
+	@Autowired
+	private ValidatorFactory factory;
+
+	@Autowired
+	@Getter
+	private MessageService messageService;
+
+	/**
+	 * Creates a paging request
+	 *
+	 * @param pageNumber the zero-based number of the first page
+	 * @param pageSize   the page size
+	 * @param orders     the sort orders
+	 * @return the request
+	 */
+	private Pageable constructPageRequest(int pageNumber, int pageSize, SortOrder... orders) {
+<span class="fc" id="L76">		return new PageableImpl(pageNumber, pageSize, orders);</span>
+	}
+
+	@Override
+	public long count() {
+<span class="fc" id="L81">		return getDao().count();</span>
+	}
+
+	@Override
+	public long count(Filter filter, boolean distinct) {
+<span class="fc" id="L86">		return getDao().count(filter, distinct);</span>
+	}
+
+	@Override
+	@Transactional
+	public void delete(List&lt;T&gt; list) {
+<span class="fc" id="L92">		getDao().delete(list);</span>
+<span class="fc" id="L93">	}</span>
+
+	@Override
+	@Transactional
+	public void delete(T entity) {
+<span class="fc" id="L98">		getDao().delete(entity);</span>
+<span class="fc" id="L99">	}</span>
+
+	@Override
+	public List&lt;T&gt; fetch(Filter filter, FetchJoinInformation... joins) {
+<span class="fc" id="L103">		return getDao().fetch(filter, joins);</span>
+	}
+
+	@Override
+	public List&lt;T&gt; fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders,
+						 FetchJoinInformation... joins) {
+<span class="fc" id="L109">		return getDao().fetch(filter,</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">			constructPageRequest(pageNumber, pageSize, sortOrders == null ? null : sortOrders.toArray()), joins);</span>
+	}
+
+	@Override
+	public List&lt;T&gt; fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins) {
+<span class="fc" id="L115">		return getDao().fetch(filter, orders, joins);</span>
+	}
+
+	@Override
+	public T fetchById(ID id, FetchJoinInformation... joins) {
+<span class="fc" id="L120">		return getDao().fetchById(id, joins);</span>
+	}
+
+	@Override
+	public List&lt;T&gt; fetchByIds(List&lt;ID&gt; ids, Filter additionalFilter, SortOrders sortOrders,
+							  FetchJoinInformation... joins) {
+<span class="fc" id="L126">		return getDao().fetchByIds(ids, additionalFilter, sortOrders, joins);</span>
+	}
+
+	@Override
+	public T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive,
+								   FetchJoinInformation... joins) {
+<span class="fc" id="L132">		return getDao().fetchByUniqueProperty(propertyName, value, caseSensitive, joins);</span>
+	}
+
+	@Override
+	public List&lt;T&gt; find(Filter filter, SortOrder... sortOrders) {
+<span class="fc" id="L137">		return getDao().find(filter, sortOrders);</span>
+	}
+
+	@Override
+	public List&lt;T&gt; findAll(SortOrder... orders) {
+<span class="fc" id="L142">		return getDao().findAll(orders);</span>
+	}
+
+	@Override
+	public T findById(ID id) {
+<span class="fc" id="L147">		return getDao().findById(id);</span>
+	}
+
+	@Override
+	public T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive) {
+<span class="nc" id="L152">		return getDao().findByUniqueProperty(propertyName, value, caseSensitive);</span>
+	}
+
+	@Override
+	public &lt;S&gt; List&lt;S&gt; findDistinctValues(Filter filter, String distinctField, Class&lt;S&gt; elementType, SortOrder... orders) {
+<span class="fc" id="L157">		return getDao().findDistinctValues(filter, distinctField, elementType, orders);</span>
+	}
+
+	/**
+	 * Looks for an identical entity (which has a different primary key but is otherwise identical)
+	 * Returns &lt;code&gt;null&lt;/code&gt; by default, override in subclasses
+	 *
+	 * @param entity the entity
+	 * @return the identical entity
+	 */
+	protected T findIdenticalEntity(T entity) {
+<span class="fc" id="L168">		return null;</span>
+	}
+
+	@Override
+	public List&lt;ID&gt; findIds(Filter filter, Integer maxResults, SortOrder... orders) {
+<span class="nc" id="L173">		return getDao().findIds(filter, maxResults, orders);</span>
+	}
+
+	@Override
+	public List&lt;ID&gt; findIds(Filter filter, SortOrder... orders) {
+<span class="fc" id="L178">		return getDao().findIds(filter, orders);</span>
+	}
+
+
+	protected abstract BaseDao&lt;ID, T&gt; getDao();
+
+	@Override
+	public Class&lt;T&gt; getEntityClass() {
+<span class="fc" id="L186">		return getDao().getEntityClass();</span>
+	}
+
+
+	/**
+	 * Checks if there is an entity that is identical to this one. Subclasses must
+	 * override the findIdenticalEntity method to perform the actual calculation
+	 *
+	 * @param entity the entity to check
+	 * @return true if an identical entity exists, false otherwise
+	 */
+	protected final boolean identicalEntityExists(T entity) {
+<span class="fc" id="L198">		T other = findIdenticalEntity(entity);</span>
+<span class="pc bpc" id="L199" title="2 of 6 branches missed.">		return other != null &amp;&amp; (entity.getId() == null || !entity.getId().equals(other.getId()));</span>
+	}
+
+	protected String message(String key) {
+<span class="nc" id="L203">		return messageService.getMessage(key, Locale.getDefault());</span>
+	}
+
+	protected String message(String key, Object... args) {
+<span class="nc" id="L207">		return messageService.getMessage(key, Locale.getDefault(), args);</span>
+	}
+
+	@Override
+	@Transactional
+	public List&lt;T&gt; save(List&lt;T&gt; list) {
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		for (T entity : list) {</span>
+<span class="fc" id="L214">			validate(entity);</span>
+<span class="fc" id="L215">		}</span>
+<span class="fc" id="L216">		return getDao().save(list);</span>
+	}
+
+	@Override
+	@Transactional
+	public T save(T entity) {
+<span class="fc" id="L222">		validate(entity);</span>
+<span class="fc" id="L223">		return getDao().save(entity);</span>
+	}
+
+	/**
+	 * Validates an entity
+	 *
+	 * @param entity the entity to validate
+	 */
+	@Override
+	public void validate(T entity) {
+
+<span class="fc" id="L234">		Validator validator = factory.getValidator();</span>
+<span class="fc" id="L235">		Set&lt;ConstraintViolation&lt;T&gt;&gt; constraintViolations = validator.validate(entity);</span>
+
+<span class="fc bfc" id="L237" title="All 2 branches covered.">		if (!constraintViolations.isEmpty()) {</span>
+<span class="fc" id="L238">			List&lt;String&gt; errors = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L239" title="All 2 branches covered.">			for (ConstraintViolation&lt;T&gt; c : constraintViolations) {</span>
+<span class="fc" id="L240">				Class&lt;?&gt; annotationType = c.getConstraintDescriptor().getAnnotation().annotationType();</span>
+<span class="pc bpc" id="L241" title="1 of 4 branches missed.">				if (annotationType.equals(AssertTrue.class) || annotationType.equals(AssertFalse.class)) {</span>
+					// in case of assert true or assert false, don't mention
+					// the property name
+<span class="fc" id="L244">					errors.add(c.getMessage());</span>
+				} else {
+<span class="fc" id="L246">					errors.add(c.getPropertyPath() + &quot; &quot; + c.getMessage());</span>
+				}
+<span class="fc" id="L248">			}</span>
+<span class="fc" id="L249">			errors.forEach(error -&gt; log.warn(error));</span>
+
+<span class="fc" id="L251">			throw new OCSValidationException(errors);</span>
+		}
+
+<span class="fc bfc" id="L254" title="All 2 branches covered.">		if (identicalEntityExists(entity)) {</span>
+<span class="fc" id="L255">			throw new OCSNonUniqueException(messageService.getMessage(getEntityClass().getSimpleName() + &quot;.not.unique&quot;, dynamoProperties.getDefaults().getLocale()));</span>
+		}
+<span class="fc" id="L257">	}</span>
+
+	@Override
+	@Transactional
+	public void deleteAll() {
+<span class="nc" id="L262">		getDao().deleteAll();</span>
+<span class="nc" id="L263">	}</span>
+
+	public T initialize() {
+<span class="nc" id="L266">		return ClassUtils.instantiateClass(getDao().getEntityClass());</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

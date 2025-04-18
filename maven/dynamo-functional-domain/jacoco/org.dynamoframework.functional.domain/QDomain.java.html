@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QDomain.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Functional extension - Domain</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.functional.domain</a> &gt; <span class="el_source">QDomain.java</span></div><h1>QDomain.java</h1><pre class="source lang-java linenums">package org.dynamoframework.functional.domain;
+
+import static com.querydsl.core.types.PathMetadataFactory.*;
+
+import com.querydsl.core.types.dsl.*;
+
+import com.querydsl.core.types.PathMetadata;
+import javax.annotation.processing.Generated;
+import com.querydsl.core.types.Path;
+
+
+/**
+ * QDomain is a Querydsl query type for Domain
+ */
+@Generated(&quot;com.querydsl.codegen.DefaultEntitySerializer&quot;)
+public class QDomain extends EntityPathBase&lt;Domain&gt; {
+
+    private static final long serialVersionUID = 569013383L;
+
+<span class="nc" id="L20">    public static final QDomain domain = new QDomain(&quot;domain&quot;);</span>
+
+<span class="nc" id="L22">    public final org.dynamoframework.domain.QAbstractEntity _super = new org.dynamoframework.domain.QAbstractEntity(this);</span>
+
+<span class="nc" id="L24">    public final StringPath code = createString(&quot;code&quot;);</span>
+
+<span class="nc" id="L26">    public final NumberPath&lt;Integer&gt; id = createNumber(&quot;id&quot;, Integer.class);</span>
+
+<span class="nc" id="L28">    public final StringPath name = createString(&quot;name&quot;);</span>
+
+<span class="nc" id="L30">    public final StringPath type = createString(&quot;type&quot;);</span>
+
+    //inherited
+<span class="nc" id="L33">    public final NumberPath&lt;Integer&gt; version = _super.version;</span>
+
+    public QDomain(String variable) {
+<span class="nc" id="L36">        super(Domain.class, forVariable(variable));</span>
+<span class="nc" id="L37">    }</span>
+
+    public QDomain(Path&lt;? extends Domain&gt; path) {
+<span class="nc" id="L40">        super(path.getType(), path.getMetadata());</span>
+<span class="nc" id="L41">    }</span>
+
+    public QDomain(PathMetadata metadata) {
+<span class="nc" id="L44">        super(Domain.class, metadata);</span>
+<span class="nc" id="L45">    }</span>
+
+}
+
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

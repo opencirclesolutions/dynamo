@@ -1,0 +1,383 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseXlsImporter.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Integration Import</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.importer.impl</a> &gt; <span class="el_source">BaseXlsImporter.java</span></div><h1>BaseXlsImporter.java</h1><pre class="source lang-java linenums">package org.dynamoframework.importer.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import com.github.pjfanning.xlsx.StreamingReader;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
+import org.apache.poi.poifs.filesystem.OfficeXmlFileException;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.dynamoframework.exception.OCSImportException;
+import org.dynamoframework.exception.OCSRuntimeException;
+import org.dynamoframework.importer.ImportField;
+import org.dynamoframework.importer.dto.AbstractDTO;
+import org.dynamoframework.utils.ClassUtils;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
+import org.springframework.beans.BeanUtils;
+
+import java.beans.PropertyDescriptor;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+
+import static java.lang.String.format;
+
+/**
+ * Base class for services that can be used to import Excel files.
+ *
+ * @author bas.rutten
+ */
+<span class="fc" id="L51">public class BaseXlsImporter extends BaseImporter&lt;Row, Cell&gt; {</span>
+
+	private static final int CACHE_SIZE = 500;
+
+	/**
+	 * Checks if any cell in a row contains a certain (String) value
+	 *
+	 * @param row   the row to check
+	 * @param value the String value to check for
+	 * @return true if this is the case, false otherwise
+	 */
+	protected boolean containsStringValue(Row row, String value) {
+<span class="pc bpc" id="L63" title="1 of 4 branches missed.">		if (row == null || !row.iterator().hasNext()) {</span>
+<span class="fc" id="L64">			return false;</span>
+		}
+
+<span class="fc" id="L67">		boolean found = false;</span>
+<span class="fc bfc" id="L68" title="All 4 branches covered.">		for (int i = row.getFirstCellNum(); !found &amp;&amp; i &lt; row.getLastCellNum(); i++) {</span>
+<span class="pc bpc" id="L69" title="1 of 2 branches missed.">			if (row.getCell(i) != null) {</span>
+				try {
+<span class="fc" id="L71">					found = value.equalsIgnoreCase(row.getCell(i).getStringCellValue());</span>
+<span class="fc" id="L72">				} catch (Exception ex) {</span>
+					// exception when there is not a String in the cell - nothing can be done about
+					// this
+<span class="fc" id="L75">				}</span>
+			}
+		}
+<span class="fc" id="L78">		return found;</span>
+	}
+
+	@Override
+	public int countRows(byte[] bytes, int sheetIndex) {
+<span class="fc" id="L83">		int count = 0;</span>
+<span class="fc" id="L84">		try (Workbook wb = createReader(bytes, CACHE_SIZE)) {</span>
+<span class="fc bfc" id="L85" title="All 2 branches covered.">			for (Row r : wb.getSheetAt(sheetIndex)) {</span>
+				// if a row in the middle of the sheet is empty, we assume
+				// everything else is empty
+<span class="pc bpc" id="L88" title="1 of 2 branches missed.">				if (isRowEmpty(r)) {</span>
+<span class="nc" id="L89">					break;</span>
+				}
+<span class="fc" id="L91">				count++;</span>
+<span class="fc" id="L92">			}</span>
+<span class="fc" id="L93">			return count;</span>
+<span class="nc" id="L94">		} catch (IOException ex) {</span>
+<span class="nc" id="L95">			throw new OCSRuntimeException(ex.getMessage());</span>
+		}
+	}
+
+	/**
+	 * Creates a reader for processing an Excel file using streaming
+	 *
+	 * @param bytes     the content of the file
+	 * @param cacheSize the cache size
+	 * @return the reader
+	 */
+	public Workbook createReader(byte[] bytes, int cacheSize) {
+<span class="fc" id="L107">		return StreamingReader.builder().rowCacheSize(cacheSize).open(new ByteArrayInputStream(bytes));</span>
+	}
+
+	/**
+	 * Creates a workbook from an array of bytes
+	 *
+	 * @param bytes the byte content of the file
+	 * @return the workbook
+	 */
+	public Workbook createWorkbook(byte[] bytes) {
+		Workbook workbook;
+		try {
+			// first, try to check if it's an old Excel file
+<span class="nc" id="L120">			workbook = new HSSFWorkbook(new ByteArrayInputStream(bytes));</span>
+<span class="fc" id="L121">		} catch (OfficeXmlFileException ex) {</span>
+			try {
+<span class="fc" id="L123">				workbook = new XSSFWorkbook(new ByteArrayInputStream(bytes));</span>
+<span class="nc" id="L124">			} catch (IOException e) {</span>
+<span class="nc" id="L125">				throw new OCSRuntimeException(e.getMessage(), e);</span>
+<span class="fc" id="L126">			}</span>
+<span class="nc" id="L127">		} catch (IOException e) {</span>
+<span class="nc" id="L128">			throw new OCSRuntimeException(e.getMessage(), e);</span>
+<span class="pc" id="L129">		}</span>
+<span class="fc" id="L130">		return workbook;</span>
+	}
+
+	/**
+	 * Extracts a Boolean value from a cell
+	 *
+	 * @param cell the cell to extract the value from
+	 * @return the value
+	 */
+	protected Boolean getBooleanValue(Cell cell) {
+<span class="fc bfc" id="L140" title="All 4 branches covered.">		if (cell != null &amp;&amp; (CellType.BOOLEAN == cell.getCellType())) {</span>
+<span class="fc" id="L141">			return cell.getBooleanCellValue();</span>
+<span class="pc bpc" id="L142" title="1 of 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.STRING == cell.getCellType()) {</span>
+<span class="fc" id="L143">			return Boolean.valueOf(cell.getStringCellValue());</span>
+<span class="pc bpc" id="L144" title="3 of 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.FORMULA == cell.getCellType()) {</span>
+<span class="nc" id="L145">			return cell.getBooleanCellValue();</span>
+		}
+<span class="fc" id="L147">		return Boolean.FALSE;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected Boolean getBooleanValueWithDefault(Cell unit, ImportField field) {
+<span class="fc" id="L155">		Boolean b = getBooleanValue(unit);</span>
+<span class="pc bpc" id="L156" title="3 of 4 branches missed.">		if (b == null &amp;&amp; field.defaultValue() != null) {</span>
+<span class="nc" id="L157">			return Boolean.valueOf(field.defaultValue());</span>
+		}
+<span class="fc" id="L159">		return b;</span>
+	}
+
+	/**
+	 * Retrieves a date value from a cell
+	 *
+	 * @param cell the cell to extract the value from
+	 * @return the value
+	 */
+	protected LocalDate getDateValue(Cell cell) {
+<span class="fc bfc" id="L169" title="All 6 branches covered.">		if (cell != null &amp;&amp; (CellType.NUMERIC == cell.getCellType() || CellType.BLANK == cell.getCellType())) {</span>
+			try {
+<span class="fc" id="L171">				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));</span>
+<span class="fc" id="L172">			} catch (NullPointerException nex) {</span>
+				// horrible code throws NPE when cell is empty
+<span class="fc" id="L174">				return null;</span>
+			}
+<span class="pc bpc" id="L176" title="1 of 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.FORMULA == cell.getCellType()) {</span>
+			try {
+<span class="nc" id="L178">				return LocalDate.from(cell.getDateCellValue().toInstant().atZone(ZoneId.systemDefault()));</span>
+<span class="nc" id="L179">			} catch (NullPointerException nex) {</span>
+				// horrible code throws NPE when cell is empty
+<span class="nc" id="L181">				return null;</span>
+			}
+		}
+<span class="fc" id="L184">		return null;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected LocalDate getDateValueWithDefault(Cell cell, ImportField field) {
+<span class="fc" id="L192">		LocalDate value = getDateValue(cell);</span>
+<span class="pc bpc" id="L193" title="1 of 4 branches missed.">		if (value == null &amp;&amp; !StringUtils.isEmpty(field.defaultValue())) {</span>
+<span class="fc" id="L194">			value = LocalDate.parse(field.defaultValue(),</span>
+<span class="fc" id="L195">				DateTimeFormatter.ofPattern(DynamoPropertiesHolder.getDynamoProperties().getDefaults().getDateFormat()));</span>
+		}
+<span class="fc" id="L197">		return value;</span>
+	}
+
+	/**
+	 * Retrieves a numeric value for a cell
+	 *
+	 * @param cell the cell to retrieve the value from
+	 * @return the value
+	 */
+	protected Double getNumericValue(Cell cell) {
+<span class="pc bpc" id="L207" title="1 of 6 branches missed.">		if (cell != null &amp;&amp; (CellType.NUMERIC == cell.getCellType() || CellType.BLANK == cell.getCellType())) {</span>
+			try {
+<span class="fc" id="L209">				return cell.getNumericCellValue();</span>
+<span class="nc" id="L210">			} catch (NullPointerException nex) {</span>
+				// cannot return null from getNumericCellValue - so if the cell
+				// is empty we
+				// have to handle it in this ugly way
+<span class="nc" id="L214">				return null;</span>
+<span class="nc" id="L215">			} catch (Exception ex) {</span>
+<span class="nc" id="L216">				throw new OCSImportException(format(&quot;Found an invalid numeric value: %s&quot;, cell.getStringCellValue()),</span>
+					ex);
+			}
+<span class="pc bpc" id="L219" title="1 of 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.STRING == cell.getCellType()) {</span>
+			// in case the value is not numeric, simply output a warning. If the
+			// field is required, this will trigger
+			// an error at a later stage
+<span class="fc bfc" id="L223" title="All 2 branches covered.">			if (!StringUtils.isEmpty(cell.getStringCellValue().trim())) {</span>
+<span class="fc" id="L224">				throw new OCSImportException(format(&quot;Found an invalid numeric value: %s&quot;, cell.getStringCellValue()));</span>
+			}
+<span class="pc bpc" id="L226" title="3 of 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.FORMULA == cell.getCellType()) {</span>
+			try {
+<span class="nc" id="L228">				return cell.getNumericCellValue();</span>
+<span class="nc" id="L229">			} catch (NullPointerException nex) {</span>
+<span class="nc" id="L230">				return null;</span>
+<span class="nc" id="L231">			} catch (NumberFormatException ex) {</span>
+<span class="nc" id="L232">				throw new OCSImportException(format(&quot;Found an invalid numeric value: %s&quot;, cell.getStringCellValue()));</span>
+			}
+		}
+<span class="fc" id="L235">		return null;</span>
+	}
+
+	/**
+	 * Retrieves the numeric value of a cell, or falls back to a suitable default
+	 * value if the cell is empty and a default value has been specified
+	 *
+	 * @param cell  the cell to extract the value from
+	 * @param field the field definition
+	 * @return the value
+	 */
+	@Override
+	public Double getNumericValueWithDefault(Cell cell, ImportField field) {
+<span class="fc" id="L248">		Double value = getNumericValue(cell);</span>
+<span class="fc bfc" id="L249" title="All 4 branches covered.">		if (value == null &amp;&amp; !StringUtils.isEmpty(field.defaultValue())) {</span>
+<span class="fc" id="L250">			value = Double.valueOf(field.defaultValue());</span>
+		}
+<span class="fc" id="L252">		return value;</span>
+	}
+
+	/**
+	 * Retrieves the value of a cell as a string. Returns &lt;code&gt;null&lt;/code&gt; if the
+	 * cell does not contain a string
+	 *
+	 * @param cell the cell to extract the value from
+	 * @return the value
+	 */
+	protected String getStringValue(Cell cell) {
+<span class="pc bpc" id="L263" title="4 of 6 branches missed.">		if (cell != null &amp;&amp; (CellType.STRING == cell.getCellType() || cell.getCellType() == CellType.BLANK)) {</span>
+<span class="fc" id="L264">			String value = cell.getStringCellValue();</span>
+<span class="pc bpc" id="L265" title="1 of 2 branches missed.">			return value == null ? null : value.trim();</span>
+<span class="nc bnc" id="L266" title="All 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.NUMERIC == cell.getCellType()) {</span>
+			// if a number is entered in a field that is supposed to contain a
+			// string, Excel goes insane. We have to compensate for this
+<span class="nc" id="L269">			double d = cell.getNumericCellValue();</span>
+<span class="nc" id="L270">			return Double.toString(d);</span>
+<span class="nc bnc" id="L271" title="All 4 branches missed.">		} else if (cell != null &amp;&amp; CellType.FORMULA == cell.getCellType()) {</span>
+			try {
+<span class="nc" id="L273">				return cell.getStringCellValue();</span>
+<span class="nc" id="L274">			} catch (Exception ex) {</span>
+<span class="nc" id="L275">				throw new OCSImportException(&quot;Found an invalid string value&quot;, ex);</span>
+			}
+		}
+<span class="nc" id="L278">		return null;</span>
+	}
+
+	/**
+	 * Retrieves the value of a cell as a String, or falls back to a default value
+	 * if the value is empty and a suitable default value is defined
+	 *
+	 * @param cell  the cell to extract the value from
+	 * @param field the field definition
+	 * @return the value
+	 */
+	@Override
+	protected String getStringValueWithDefault(Cell cell, ImportField field) {
+<span class="fc" id="L291">		String value = getStringValue(cell);</span>
+<span class="pc bpc" id="L292" title="1 of 4 branches missed.">		if (StringUtils.isEmpty(value) &amp;&amp; !StringUtils.isEmpty(field.defaultValue())) {</span>
+<span class="fc" id="L293">			value = field.defaultValue();</span>
+		}
+<span class="fc" id="L295">		return value;</span>
+	}
+
+	@Override
+	protected Cell getUnit(Row row, ImportField field) {
+<span class="fc" id="L300">		return row.getCell(row.getFirstCellNum() + field.index());</span>
+	}
+
+	@Override
+	public boolean isPercentageCorrectionSupported() {
+<span class="fc" id="L305">		return true;</span>
+	}
+
+	/**
+	 * Check if the specified row is completely empty
+	 *
+	 * @param row the row to check
+	 * @return true if ths is the case, false otherwise
+	 */
+	public boolean isRowEmpty(Row row) {
+<span class="pc bpc" id="L315" title="1 of 4 branches missed.">		if (row == null || row.getFirstCellNum() &lt; 0) {</span>
+<span class="fc" id="L316">			return true;</span>
+		}
+
+<span class="pc bpc" id="L319" title="1 of 2 branches missed.">		for (Cell next : row) {</span>
+<span class="fc" id="L320">			String value = next.getStringCellValue();</span>
+<span class="pc bpc" id="L321" title="1 of 2 branches missed.">			if (!StringUtils.isEmpty(value)) {</span>
+<span class="fc" id="L322">				return false;</span>
+			}
+<span class="nc" id="L324">		}</span>
+
+<span class="nc" id="L326">		return true;</span>
+	}
+
+	/**
+	 * {@inheritDoc}
+	 */
+	@Override
+	protected boolean isWithinRange(Row row, ImportField field) {
+<span class="fc bfc" id="L334" title="All 2 branches covered.">		return row.getFirstCellNum() + field.index() &lt; row.getLastCellNum();</span>
+	}
+
+	/**
+	 * Processes a number of consecutive rows and translates them into a DTO
+	 *
+	 * @param sheet         the sheet to read the values from
+	 * @param firstRowIndex the index of the first row to start reading from
+	 * @param colIndex      the index of the column that contains the values
+	 * @param clazz         the class
+	 * @return the resulting DTO
+	 */
+	public &lt;T extends AbstractDTO&gt; T processRows(Sheet sheet, int firstRowIndex, int colIndex, Class&lt;T&gt; clazz) {
+<span class="fc" id="L347">		T dto = ClassUtils.instantiateClass(clazz);</span>
+
+<span class="fc" id="L349">		Object firstCellValue = null;</span>
+		try {
+<span class="fc" id="L351">			firstCellValue = sheet.getRow(firstRowIndex).getCell(colIndex).getStringCellValue();</span>
+<span class="nc" id="L352">		} catch (Exception ex) {</span>
+			// do nothing - not a String value
+<span class="fc" id="L354">		}</span>
+
+<span class="pc bpc" id="L356" title="2 of 4 branches missed.">		if (firstCellValue != null &amp;&amp; !&quot;&quot;.equals(firstCellValue.toString())) {</span>
+<span class="fc" id="L357">			PropertyDescriptor[] descriptors = BeanUtils.getPropertyDescriptors(clazz);</span>
+<span class="fc bfc" id="L358" title="All 2 branches covered.">			for (PropertyDescriptor d : descriptors) {</span>
+<span class="fc" id="L359">				ImportField field = ClassUtils.getAnnotation(clazz, d.getName(), ImportField.class);</span>
+<span class="fc bfc" id="L360" title="All 2 branches covered.">				if (field != null) {</span>
+<span class="fc" id="L361">					int rowNum = firstRowIndex + field.index();</span>
+<span class="fc bfc" id="L362" title="All 2 branches covered.">					if (rowNum &lt;= sheet.getLastRowNum()) {</span>
+<span class="fc" id="L363">						Row row = sheet.getRow(rowNum);</span>
+<span class="fc" id="L364">						Cell unit = row.getCell(colIndex);</span>
+<span class="fc" id="L365">						Object obj = getFieldValue(d, unit, field);</span>
+<span class="fc bfc" id="L366" title="All 2 branches covered.">						if (obj != null) {</span>
+<span class="fc" id="L367">							ClassUtils.setFieldValue(dto, d.getName(), obj);</span>
+<span class="fc bfc" id="L368" title="All 2 branches covered.">						} else if (field.required()) {</span>
+							// a required value is missing!
+<span class="fc" id="L370">							throw new OCSImportException(</span>
+<span class="fc" id="L371">								format(&quot;Required value for field '%s' is missing&quot;, d.getName()));</span>
+						}
+<span class="fc" id="L373">					} else {</span>
+<span class="fc" id="L374">						throw new OCSImportException(</span>
+<span class="fc" id="L375">							format(&quot;Input doesn't have enough rows: row %d does not exist&quot;, rowNum));</span>
+					}
+				}
+			}
+		}
+<span class="fc" id="L380">		return dto;</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

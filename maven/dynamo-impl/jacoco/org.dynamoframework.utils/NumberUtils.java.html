@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>NumberUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.utils</a> &gt; <span class="el_source">NumberUtils.java</span></div><h1>NumberUtils.java</h1><pre class="source lang-java linenums">package org.dynamoframework.utils;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.domain.model.AttributeModel;
+
+import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.text.NumberFormat;
+import java.util.Currency;
+import java.util.Locale;
+
+/**
+ * Utility methods for dealing with numbers
+ *
+ * @author bas.rutten
+ */
+public final class NumberUtils {
+
+	/**
+	 * Appends a percentage sing to the provided string if needed
+	 *
+	 * @param s          the string
+	 * @param percentage whether to append the sign
+	 * @return the
+	 */
+	private static String appendPercentage(String s, boolean percentage) {
+<span class="pc bpc" id="L48" title="1 of 2 branches missed.">		if (s == null) {</span>
+<span class="nc" id="L49">			return null;</span>
+		}
+<span class="fc bfc" id="L51" title="All 2 branches covered.">		return percentage ? s + &quot;%&quot; : s;</span>
+	}
+
+	/**
+	 * Converts a BigDecimal value to a String
+	 *
+	 * @param percentage   whether the value represents a percentage
+	 * @param useGrouping  whether to use a thousand grouping
+	 * @param value        the value
+	 * @param currencyCode the currency code
+	 * @param locale       the locale to use
+	 * @return the result of the formatting
+	 */
+	public static String bigDecimalToString(boolean percentage, boolean useGrouping, int precision,
+											BigDecimal value, Locale locale, String currencyCode) {
+<span class="nc" id="L66">		return fractionalToString(percentage, useGrouping, precision, value, locale, currencyCode);</span>
+	}
+
+	/**
+	 * Formats a value
+	 *
+	 * @param value the value to format
+	 * @return the result of the formatting
+	 */
+	public static String format(Object value) {
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L77">			return null;</span>
+		}
+
+<span class="fc bfc" id="L80" title="All 2 branches covered.">		if (value instanceof BigDecimal) {</span>
+<span class="fc" id="L81">			value = String.format(&quot;%.2f&quot;, value);</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">		} else if (value instanceof Double) {</span>
+<span class="fc" id="L83">			value = String.format(&quot;%.2f&quot;, value);</span>
+<span class="fc bfc" id="L84" title="All 2 branches covered.">		} else if (value instanceof Float) {</span>
+<span class="fc" id="L85">			value = String.format(&quot;%.2f&quot;, value);</span>
+		}
+
+<span class="fc" id="L88">		return value.toString();</span>
+	}
+
+	/**
+	 * Converts a double to a String
+	 *
+	 * @param percentage   whether to include a percentage sign
+	 * @param useGrouping  whether to use a thousand grouping separator
+	 * @param precision    the desired precision
+	 * @param value        the value to convert
+	 * @param locale       the locale to use
+	 * @param currencyCode the currency symbol to use
+	 * @return the result of the formatting
+	 */
+	public static String doubleToString(boolean percentage, boolean useGrouping, int precision,
+										Double value, Locale locale, String currencyCode) {
+<span class="nc" id="L104">		return fractionalToString(percentage, useGrouping, precision, value, locale, currencyCode);</span>
+	}
+
+	/**
+	 * Converts a fractional value to a String
+	 *
+	 * @param percentage   whether to include a percentage sign
+	 * @param useGrouping  whether to use a thousand grouping separator
+	 * @param precision    the desired precision
+	 * @param value        the value to convert
+	 * @param locale       the locale to use
+	 * @param currencyCode the currency code to use
+	 * @return the string representation
+	 */
+	public static String fractionalToString(boolean percentage, boolean useGrouping, int precision,
+											Number value, Locale locale, String currencyCode) {
+<span class="pc bpc" id="L120" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L121">			return null;</span>
+		}
+
+		DecimalFormat df;
+<span class="pc bpc" id="L125" title="1 of 2 branches missed.">		if (!StringUtils.isEmpty(currencyCode)) {</span>
+<span class="nc" id="L126">			df = (DecimalFormat) DecimalFormat.getCurrencyInstance(locale);</span>
+<span class="nc" id="L127">			DecimalFormatSymbols s = df.getDecimalFormatSymbols();</span>
+<span class="nc" id="L128">			s.setCurrency(Currency.getInstance(currencyCode));</span>
+<span class="nc" id="L129">			df.setDecimalFormatSymbols(s);</span>
+<span class="nc" id="L130">		} else {</span>
+<span class="fc" id="L131">			df = (DecimalFormat) DecimalFormat.getInstance(locale);</span>
+		}
+<span class="fc" id="L133">		df.setGroupingUsed(useGrouping);</span>
+<span class="fc" id="L134">		df.setMaximumFractionDigits(precision);</span>
+<span class="fc" id="L135">		df.setMinimumFractionDigits(precision);</span>
+
+<span class="fc" id="L137">		String s = df.format(value);</span>
+<span class="fc" id="L138">		return appendPercentage(s, percentage);</span>
+	}
+
+	/**
+	 * Converts an Integer to a String
+	 *
+	 * @param grouping indicates whether grouping separators must be used
+	 * @param value    the value to convert
+	 * @param locale   the locale
+	 * @return the result of the formatting
+	 */
+	public static String integerToString(boolean grouping, boolean percentage, Integer value, Locale locale) {
+<span class="pc bpc" id="L150" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L151">			return null;</span>
+		}
+<span class="fc" id="L153">		NumberFormat format = NumberFormat.getInstance(locale);</span>
+<span class="fc" id="L154">		format.setGroupingUsed(grouping);</span>
+<span class="fc" id="L155">		String s = format.format(value);</span>
+<span class="fc" id="L156">		return appendPercentage(s, percentage);</span>
+	}
+
+	/**
+	 * Checks whether a class is a double (either wrapper or primitive)
+	 *
+	 * @param clazz the class to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isDouble(Class&lt;?&gt; clazz) {
+<span class="fc bfc" id="L166" title="All 4 branches covered.">		return Double.class.equals(clazz) || double.class.equals(clazz);</span>
+	}
+
+	/**
+	 * Checks if an object is a double (either wrapper or primitive)
+	 *
+	 * @param value the value to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isDouble(Object value) {
+<span class="pc bpc" id="L176" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L177">			return false;</span>
+		}
+<span class="fc" id="L179">		return value.getClass().equals(Double.class);</span>
+	}
+
+	/**
+	 * Checks if a class is a float (either wrapper or primitive)
+	 *
+	 * @param clazz the class to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isFloat(Class&lt;?&gt; clazz) {
+<span class="nc bnc" id="L189" title="All 4 branches missed.">		return Float.class.equals(clazz) || float.class.equals(clazz);</span>
+	}
+
+	/**
+	 * Checks if a class is an integer (either wrapper or primitive)
+	 *
+	 * @param clazz the class to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isInteger(Class&lt;?&gt; clazz) {
+<span class="fc bfc" id="L199" title="All 4 branches covered.">		return Integer.class.equals(clazz) || int.class.equals(clazz);</span>
+	}
+
+	/**
+	 * Checks if an object is an integer (either wrapper or primitive)
+	 *
+	 * @param value the value to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isInteger(Object value) {
+<span class="pc bpc" id="L209" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L210">			return false;</span>
+		}
+<span class="fc" id="L212">		return value.getClass().equals(Integer.class);</span>
+	}
+
+	/**
+	 * Checks if a class is a long (either wrapper or primitive)
+	 *
+	 * @param clazz the class to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isLong(Class&lt;?&gt; clazz) {
+<span class="fc bfc" id="L222" title="All 4 branches covered.">		return Long.class.equals(clazz) || long.class.equals(clazz);</span>
+	}
+
+	/**
+	 * Checks if an object is a Long (either primitive or wrapper)
+	 *
+	 * @param value the value to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isLong(Object value) {
+<span class="pc bpc" id="L232" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L233">			return false;</span>
+		}
+<span class="fc" id="L235">		return value.getClass().equals(Long.class);</span>
+	}
+
+	/**
+	 * Indicates whether a certain class is a numeric class (either a primitive or a
+	 * wrapper that extends the Number class) that is supported by the framework
+	 *
+	 * @param clazz the class to check
+	 * @return true if this is the case, false otherwise
+	 */
+	public static boolean isNumeric(Class&lt;?&gt; clazz) {
+<span class="fc bfc" id="L246" title="All 6 branches covered.">		return Number.class.isAssignableFrom(clazz) || float.class.equals(clazz) || double.class.equals(clazz)</span>
+<span class="fc bfc" id="L247" title="All 4 branches covered.">			|| int.class.isAssignableFrom(clazz) || long.class.isAssignableFrom(clazz)</span>
+<span class="fc bfc" id="L248" title="All 4 branches covered.">			|| byte.class.isAssignableFrom(clazz) || short.class.isAssignableFrom(clazz);</span>
+	}
+
+	/**
+	 * Converts a Long to a String
+	 *
+	 * @param grouping indicates whether grouping separators must be used
+	 * @param value    the value to convert
+	 * @param locale   the locale
+	 * @return the result of the conversion
+	 */
+	public static String longToString(boolean grouping, boolean percentage, Long value, Locale locale) {
+<span class="pc bpc" id="L260" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L261">			return null;</span>
+		}
+
+<span class="fc" id="L264">		NumberFormat format = NumberFormat.getInstance(locale);</span>
+<span class="fc" id="L265">		format.setGroupingUsed(grouping);</span>
+<span class="fc" id="L266">		String s = format.format(value);</span>
+<span class="fc" id="L267">		return appendPercentage(s, percentage);</span>
+	}
+
+	/**
+	 * Converts a number to a String based on an attribute model and additional options
+	 *
+	 * @param am       the attribute model of the attribute to convert
+	 * @param value    the value to convert
+	 * @param grouping the thousand grouping symbol
+	 * @param locale   the locale used in the formatting
+	 * @return the resulting String value
+	 */
+	public static &lt;T&gt; String numberToString(AttributeModel am, T value, boolean grouping, Locale locale) {
+<span class="fc bfc" id="L280" title="All 2 branches covered.">		if (NumberUtils.isInteger(am.getNormalizedType())) {</span>
+<span class="fc" id="L281">			return integerToString(grouping, am.isPercentage(), (Integer) value, locale);</span>
+<span class="fc bfc" id="L282" title="All 2 branches covered.">		} else if (NumberUtils.isLong(am.getNormalizedType())) {</span>
+<span class="fc" id="L283">			return longToString(grouping, am.isPercentage(), (Long) value, locale);</span>
+<span class="pc bpc" id="L284" title="2 of 4 branches missed.">		} else if (NumberUtils.isDouble(am.getNormalizedType()) || BigDecimal.class.equals(am.getNormalizedType())) {</span>
+<span class="fc" id="L285">			return fractionalToString(am.isPercentage(), grouping, am.getPrecision(), (Number) value,</span>
+<span class="fc" id="L286">				locale, am.getCurrencyCode());</span>
+		}
+<span class="nc" id="L288">		return null;</span>
+	}
+
+	private NumberUtils() {
+		// default constructor
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Domain.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Functional extension - Domain</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.functional.domain</a> &gt; <span class="el_source">Domain.java</span></div><h1>Domain.java</h1><pre class="source lang-java linenums">package org.dynamoframework.functional.domain;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+import lombok.*;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.domain.model.EditableType;
+import org.dynamoframework.domain.model.VisibilityType;
+import org.dynamoframework.domain.model.annotation.Attribute;
+import org.dynamoframework.domain.model.annotation.Model;
+import org.dynamoframework.domain.model.annotation.SearchMode;
+
+import java.util.Objects;
+
+/**
+ * Base class for reference information.
+ *
+ * @author Patrick Deenen (patrick@opencircle.solutions)
+ */
+@Getter
+@Setter
+@Inheritance
+@DiscriminatorColumn(name = &quot;type&quot;)
+@Entity(name = &quot;domain&quot;)
+@ToString(onlyExplicitlyIncluded = true)
+@Model(displayProperty = &quot;name&quot;, sortOrder = &quot;name asc&quot;)
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public abstract class Domain extends AbstractEntity&lt;Integer&gt; {
+
+	public static final String ATTRIBUTE_NAME = &quot;name&quot;;
+
+	public static final String ATTRIBUTE_CODE = &quot;code&quot;;
+
+	private static final long serialVersionUID = 1598343469161718498L;
+
+	@Id
+	@ToString.Include
+	private Integer id;
+
+	@Attribute(visibleInForm = VisibilityType.HIDE, editable = EditableType.READ_ONLY,
+		visibleInGrid = VisibilityType.HIDE)
+	@Column(name = &quot;type&quot;, insertable = false, updatable = false)
+	private String type;
+
+	/**
+	 * By default, we only use &quot;name&quot; so the code is hidden
+	 */
+	@Attribute(visibleInForm = VisibilityType.HIDE)
+	@Size(max = 5)
+	@ToString.Include
+	private String code;
+
+	@Size(max = 255)
+	@NotNull
+	@Attribute(maxLength = 255, searchable = SearchMode.ALWAYS)
+	@ToString.Include
+	private String name;
+
+<span class="fc" id="L80">	protected Domain(String code, String name) {</span>
+<span class="fc" id="L81">		this.code = code;</span>
+<span class="fc" id="L82">		this.name = name;</span>
+<span class="fc" id="L83">	}</span>
+
+	@Override
+	public int hashCode() {
+<span class="fc" id="L87">		return Objects.hashCode(id);</span>
+	}
+
+	@Override
+	public boolean equals(final Object obj) {
+<span class="pc bpc" id="L92" title="1 of 2 branches missed.">		if (this == obj) {</span>
+<span class="nc" id="L93">			return true;</span>
+		}
+<span class="fc bfc" id="L95" title="All 2 branches covered.">		if (!(obj instanceof final Domain other)) {</span>
+<span class="fc" id="L96">			return false;</span>
+		}
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">		if (!this.getClass().equals(obj.getClass())) {</span>
+<span class="fc" id="L100">			return false;</span>
+		}
+
+<span class="fc bfc" id="L103" title="All 4 branches covered.">		if (this.id != null &amp;&amp; other.id != null) {</span>
+			// first, check if the IDs match
+<span class="fc" id="L105">			return Objects.equals(this.id, other.id);</span>
+		} else {
+			// if this is not the case, check for code and type
+<span class="fc" id="L108">			return Objects.equals(this.code, other.code);</span>
+		}
+
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

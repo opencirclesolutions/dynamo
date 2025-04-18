@@ -1,0 +1,10 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+Integration Import,org.dynamoframework.importer.impl,BaseFixedLengthImporter,16,165,1,11,4,35,1,9,0,4
+Integration Import,org.dynamoframework.importer.impl,BaseImporter,20,271,10,46,4,55,10,22,0,4
+Integration Import,org.dynamoframework.importer.impl,BaseTextImporter,11,103,7,17,2,29,6,17,0,11
+Integration Import,org.dynamoframework.importer.impl,BaseXlsImporter,141,419,36,72,33,93,28,44,0,18
+Integration Import,org.dynamoframework.importer.impl,BaseCsvImporter,8,45,0,0,2,8,0,3,0,3
+Integration Import,org.dynamoframework.importer.impl,XlsRowImportTemplate,2,178,4,12,1,39,4,6,0,2
+Integration Import,org.dynamoframework.importer.dto,AbstractDTO,0,3,0,0,0,1,0,1,0,1
+Integration Import,org.dynamoframework.importer.template,DefaultTextImportTemplate,25,0,0,0,7,0,4,0,4,0
+Integration Import,org.dynamoframework.importer.template,TextImportTemplate,4,143,3,11,1,28,3,8,0,4

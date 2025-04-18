@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>BaseSearchService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">API</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.service</a> &gt; <span class="el_source">BaseSearchService.java</span></div><h1>BaseSearchService.java</h1><pre class="source lang-java linenums">package org.dynamoframework.service;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.dynamoframework.dao.FetchJoinInformation;
+import org.dynamoframework.dao.SortOrder;
+import org.dynamoframework.dao.SortOrders;
+import org.dynamoframework.domain.AbstractEntity;
+import org.dynamoframework.filter.Filter;
+
+import java.util.List;
+
+/**
+ * The interface for a service that can be used to search on or retrieve an entity
+ *
+ * @param &lt;ID&gt; the type of the primary key of the entity
+ * @param &lt;T&gt;  the type of the entity
+ */
+public interface BaseSearchService&lt;ID, T extends AbstractEntity&lt;ID&gt;&gt; {
+
+	/**
+	 * @return the total number of entities of this type
+	 */
+	long count();
+
+	/**
+	 * Returns the number of entities that match the provided filter
+	 *
+	 * @param filter   the filter
+	 * @param distinct whether to return only distinct results
+	 * @return the number of entities that match the filter
+	 */
+	long count(Filter filter, boolean distinct);
+
+	/**
+	 * Fetches entities that match the provided filter
+	 *
+	 * @param filter the filter to match
+	 * @param joins  the desired relations to fetch
+	 * @return a list of entities that match the filter
+	 */
+	List&lt;T&gt; fetch(Filter filter, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches a page of entities that match the provided filter
+	 *
+	 * @param filter     the filter
+	 * @param pageNumber the page number of the page to fetch
+	 * @param pageSize   the page size
+	 * @param joins      the desired relations to fetch
+	 * @return a list of entities that match the filter
+	 */
+	default List&lt;T&gt; fetch(Filter filter, int pageNumber, int pageSize, FetchJoinInformation... joins) {
+<span class="nc" id="L72">		return fetch(filter, pageNumber, pageSize, null, joins);</span>
+	}
+
+	/**
+	 * Fetches a page of entities that match the provided filter
+	 *
+	 * @param filter     the filter
+	 * @param pageNumber the page number of the page to fetch
+	 * @param pageSize   the page size
+	 * @param sortOrders the sort orders that must be used
+	 * @param joins      the desired relations to fetch
+	 * @return a list of entities that match the filter
+	 */
+	List&lt;T&gt; fetch(Filter filter, int pageNumber, int pageSize, SortOrders sortOrders, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches a list of entities that match the provided filter
+	 *
+	 * @param filter the filter
+	 * @param orders the sort orders that must be used
+	 * @param joins  the desired relations to fetch
+	 * @return a list of entities that match the filter
+	 */
+	List&lt;T&gt; fetch(Filter filter, SortOrders orders, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches an entity (and its relations) based on its ID
+	 *
+	 * @param id    the ID of the entity
+	 * @param joins the desired relations to fetch
+	 * @return the entity identified by the supplied ID, or null if it cannot be found
+	 */
+	T fetchById(ID id, FetchJoinInformation... joins);
+
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 *
+	 * @param ids   the IDs
+	 * @param joins desired relations to fetch
+	 * @return a list of the entities identified by the supplied IDs
+	 */
+	default List&lt;T&gt; fetchByIds(List&lt;ID&gt; ids, FetchJoinInformation... joins) {
+<span class="nc" id="L114">		return fetchByIds(ids, null, null, joins);</span>
+	}
+
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 *
+	 * @param ids        the IDs of the entities to fetch
+	 * @param sortOrders the sort orders that must be used
+	 * @param joins      the desired relations to fetch
+	 * @return a list of the entities identified by the supplied IDs
+	 */
+	default List&lt;T&gt; fetchByIds(List&lt;ID&gt; ids, SortOrders sortOrders, FetchJoinInformation... joins) {
+<span class="nc" id="L126">		return fetchByIds(ids, null, sortOrders, joins);</span>
+	}
+
+	/**
+	 * Fetches the entities identified by the provided IDs
+	 *
+	 * @param ids        the IDs of the entities to fetch
+	 * @param sortOrders the sort orders that must be used
+	 * @param joins      the desired relations to fetch
+	 * @return a list of the entities identified by the supplied IDs
+	 */
+	List&lt;T&gt; fetchByIds(List&lt;ID&gt; ids, Filter additionalFilter, SortOrders sortOrders, FetchJoinInformation... joins);
+
+
+	/**
+	 * Fetches an entity based on a unique property
+	 *
+	 * @param propertyName  the name of the property
+	 * @param value         the value of the property
+	 * @param caseSensitive indicates whether the value is case-sensitive
+	 * @param joins         the desired relations to fetch
+	 * @return the entity identified by the unique property value, or null if no such entity can be found
+	 */
+	T fetchByUniqueProperty(String propertyName, Object value, boolean caseSensitive, FetchJoinInformation... joins);
+
+	/**
+	 * Returns all entities that match the provided filter
+	 *
+	 * @param filter the filter
+	 * @return a list containing the entities that match the filter
+	 */
+	default List&lt;T&gt; find(Filter filter) {
+<span class="nc" id="L158">		return find(filter, new SortOrder[0]);</span>
+	}
+
+	/**
+	 * Returns all entities that match the provided filter, sorted according to the
+	 * provided sort orders
+	 *
+	 * @param filter     the filter
+	 * @param sortOrders the sort orders that must be used
+	 * @return a list containing the entities that match the filter
+	 */
+	List&lt;T&gt; find(Filter filter, SortOrder... sortOrders);
+
+	/**
+	 * Returns a list of all entities. Use with caution
+	 *
+	 * @return a list containing all the entities
+	 */
+	default List&lt;T&gt; findAll() {
+<span class="nc" id="L177">		return findAll(new SortOrder[0]);</span>
+	}
+
+	/**
+	 * Returns a list of all entities, sorted according to the provided sort orders
+	 *
+	 * @param sortOrders the sort orders that must be used
+	 * @return a list containing all the entities
+	 */
+	List&lt;T&gt; findAll(SortOrder... sortOrders);
+
+	/**
+	 * Finds an object based on its ID
+	 *
+	 * @param id the ID
+	 * @return the object identified by the ID, or &lt;code&gt;null&lt;/code&gt; if it cannot be
+	 * found
+	 */
+	T findById(ID id);
+
+	/**
+	 * Retrieves an object based on a unique property value. Does not apply any fetches
+	 *
+	 * @param propertyName  the name of the property
+	 * @param value         the desired value of the property
+	 * @param caseSensitive whether the match is case-sensitive
+	 * @return the entity identified by the unique property value, or null if no such entity can be found
+	 */
+	T findByUniqueProperty(String propertyName, Object value, boolean caseSensitive);
+
+	/**
+	 * Returns all distinct values that appear in a certain field for all entities
+	 * that match the provided filter
+	 *
+	 * @param filter        the filter
+	 * @param distinctField the field for which to return the distinct values
+	 * @param resultType    the type of the distinct values
+	 * @param sortOrders    the sort orders
+	 * @return the list of distinct values
+	 */
+	&lt;S&gt; List&lt;S&gt; findDistinctValues(Filter filter, String distinctField, Class&lt;S&gt; resultType, SortOrder... sortOrders);
+
+	/**
+	 * Returns the IDs of the entities that match the provided filter
+	 *
+	 * @param filter     the filter
+	 * @param maxResults limit the amount of results
+	 * @param sortOrders the sort orders
+	 * @return a list containing the IDs
+	 */
+	List&lt;ID&gt; findIds(Filter filter, Integer maxResults, SortOrder... sortOrders);
+
+	/**
+	 * Returns the IDs of the entities that match the provided filter
+	 *
+	 * @param filter     the filter
+	 * @param sortOrders the sort orders
+	 * @return a list containing the IDs
+	 */
+	List&lt;ID&gt; findIds(Filter filter, SortOrder... sortOrders);
+
+	/**
+	 * Returns the class of the entity managed by this DAO
+	 *
+	 * @return the entity class
+	 */
+	Class&lt;T&gt; getEntityClass();
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

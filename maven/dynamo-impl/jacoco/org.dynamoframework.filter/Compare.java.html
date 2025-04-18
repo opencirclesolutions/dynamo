@@ -1,0 +1,246 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Compare.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.filter</a> &gt; <span class="el_source">Compare.java</span></div><h1>Compare.java</h1><pre class="source lang-java linenums">package org.dynamoframework.filter;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import java.util.Objects;
+
+/**
+ * A filter that compares a property value against a provided value
+ *
+ * @author bas.rutten
+ */
+public abstract class Compare extends AbstractFilter implements PropertyFilter {
+
+<span class="fc" id="L32">	public enum Operation {</span>
+<span class="fc" id="L33">		EQUAL, GREATER, LESS, GREATER_OR_EQUAL, LESS_OR_EQUAL</span>
+	}
+
+	private final String propertyId;
+
+	private final Operation operation;
+
+	private final Object value;
+
+	/**
+	 * A filter that evaluates to true if the property value is equal to the provided value
+	 *
+	 * @author bas.rutten
+	 */
+	public static final class Equal extends Compare {
+
+		/**
+		 * Constructor
+		 *
+		 * @param propertyId
+		 * @param value
+		 */
+		public Equal(String propertyId, Object value) {
+<span class="fc" id="L56">			super(propertyId, value, Operation.EQUAL);</span>
+<span class="fc" id="L57">		}</span>
+	}
+
+	/**
+	 * A filter that evaluates to true if the property value is greater than the provided value
+	 *
+	 * @author bas.rutten
+	 */
+	public static final class Greater extends Compare {
+
+		/**
+		 * Constructor
+		 *
+		 * @param propertyId
+		 * @param value
+		 */
+		public Greater(String propertyId, Object value) {
+<span class="fc" id="L74">			super(propertyId, value, Operation.GREATER);</span>
+<span class="fc" id="L75">		}</span>
+	}
+
+	/**
+	 * A filter that evaluates to true if the property value is less than the provided value
+	 *
+	 * @author bas.rutten
+	 */
+	public static final class Less extends Compare {
+
+		/**
+		 * Constructor
+		 *
+		 * @param propertyId
+		 * @param value
+		 */
+		public Less(String propertyId, Object value) {
+<span class="fc" id="L92">			super(propertyId, value, Operation.LESS);</span>
+<span class="fc" id="L93">		}</span>
+	}
+
+	/**
+	 * A filter that evaluates to true if the property value is greater than or equal to the
+	 * provided value
+	 *
+	 * @author bas.rutten
+	 */
+	public static final class GreaterOrEqual extends Compare {
+
+		/**
+		 * @param propertyId
+		 * @param value
+		 */
+		public GreaterOrEqual(String propertyId, Object value) {
+<span class="fc" id="L109">			super(propertyId, value, Operation.GREATER_OR_EQUAL);</span>
+<span class="fc" id="L110">		}</span>
+	}
+
+	/**
+	 * A filter that evaluates to true if the property value is less than or equal to the provided
+	 * value
+	 *
+	 * @author bas.rutten
+	 */
+	public static final class LessOrEqual extends Compare {
+
+		/**
+		 * Constructor
+		 *
+		 * @param propertyId
+		 * @param value
+		 */
+		public LessOrEqual(String propertyId, Object value) {
+<span class="fc" id="L128">			super(propertyId, value, Operation.LESS_OR_EQUAL);</span>
+<span class="fc" id="L129">		}</span>
+	}
+
+	/**
+	 * Base constructor
+	 *
+	 * @param propertyId
+	 * @param value
+	 * @param operation
+	 */
+<span class="fc" id="L139">	Compare(String propertyId, Object value, Operation operation) {</span>
+<span class="fc" id="L140">		this.propertyId = propertyId;</span>
+<span class="fc" id="L141">		this.value = value;</span>
+<span class="fc" id="L142">		this.operation = operation;</span>
+<span class="fc" id="L143">	}</span>
+
+	@Override
+	public boolean evaluate(Object that) {
+<span class="fc bfc" id="L147" title="All 2 branches covered.">		if (null == that) {</span>
+<span class="fc" id="L148">			return false;</span>
+		}
+<span class="fc" id="L150">		Object val = getProperty(that, getPropertyId());</span>
+<span class="fc bfc" id="L151" title="All 2 branches covered.">		if (val == null) {</span>
+<span class="fc" id="L152">			return false;</span>
+		}
+<span class="pc bpc" id="L154" title="1 of 6 branches missed.">		switch (getOperation()) {</span>
+			case EQUAL:
+<span class="fc" id="L156">				return compareEquals(val);</span>
+			case GREATER:
+<span class="fc bfc" id="L158" title="All 2 branches covered.">				return compareValue(val) &gt; 0;</span>
+			case LESS:
+<span class="fc bfc" id="L160" title="All 2 branches covered.">				return compareValue(val) &lt; 0;</span>
+			case GREATER_OR_EQUAL:
+<span class="fc bfc" id="L162" title="All 2 branches covered.">				return compareValue(val) &gt;= 0;</span>
+			case LESS_OR_EQUAL:
+<span class="fc bfc" id="L164" title="All 2 branches covered.">				return compareValue(val) &lt;= 0;</span>
+			default:
+<span class="nc" id="L166">				return false;</span>
+		}
+	}
+
+	/**
+	 * Checks if the this value equals the given value. Favors Comparable over equals to better
+	 * support e.g. BigDecimal where equals is stricter than compareTo.
+	 *
+	 * @param otherValue The value to compare to
+	 * @return true if the values are equal, false otherwise
+	 */
+	@SuppressWarnings(&quot;unchecked&quot;)
+	private boolean compareEquals(Object otherValue) {
+<span class="pc bpc" id="L179" title="1 of 4 branches missed.">		if (value == null || otherValue == null) {</span>
+<span class="pc bpc" id="L180" title="1 of 2 branches missed.">			return otherValue == value;</span>
+<span class="fc bfc" id="L181" title="All 2 branches covered.">		} else if (value == otherValue) {</span>
+<span class="fc" id="L182">			return true;</span>
+<span class="pc bpc" id="L183" title="1 of 2 branches missed.">		} else if (value instanceof Comparable</span>
+<span class="fc bfc" id="L184" title="All 2 branches covered.">			&amp;&amp; otherValue.getClass().isAssignableFrom(getValue().getClass())) {</span>
+<span class="pc bpc" id="L185" title="1 of 2 branches missed.">			return ((Comparable&lt;Object&gt;) value).compareTo(otherValue) == 0;</span>
+		} else {
+<span class="fc" id="L187">			return value.equals(otherValue);</span>
+		}
+	}
+
+	@SuppressWarnings({&quot;unchecked&quot;, &quot;rawtypes&quot;})
+	protected int compareValue(Object value1) {
+<span class="pc bpc" id="L193" title="1 of 2 branches missed.">		if (null == value) {</span>
+<span class="nc bnc" id="L194" title="All 2 branches missed.">			return null == value1 ? 0 : -1;</span>
+<span class="pc bpc" id="L195" title="1 of 2 branches missed.">		} else if (null == value1) {</span>
+<span class="nc" id="L196">			return 1;</span>
+<span class="pc bpc" id="L197" title="1 of 2 branches missed.">		} else if (getValue() instanceof Comparable</span>
+<span class="pc bpc" id="L198" title="1 of 2 branches missed.">			&amp;&amp; value1.getClass().isAssignableFrom(getValue().getClass())) {</span>
+<span class="fc" id="L199">			return -((Comparable) getValue()).compareTo(value1);</span>
+		}
+<span class="nc" id="L201">		throw new IllegalArgumentException(</span>
+<span class="nc" id="L202">			&quot;Could not compare the arguments: &quot; + value1 + &quot;, &quot; + getValue());</span>
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+
+		// Only objects of the same class can be equal
+<span class="fc bfc" id="L209" title="All 4 branches covered.">		if (obj == null || !getClass().equals(obj.getClass())) {</span>
+<span class="fc" id="L210">			return false;</span>
+		}
+<span class="fc" id="L212">		final Compare o = (Compare) obj;</span>
+
+<span class="fc bfc" id="L214" title="All 2 branches covered.">		if (!Objects.equals(propertyId, o.propertyId)) {</span>
+<span class="fc" id="L215">			return false;</span>
+		}
+
+<span class="fc" id="L218">		return Objects.equals(this.value, o.value);</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="pc bpc" id="L223" title="1 of 2 branches missed.">		return (null != getPropertyId() ? getPropertyId().hashCode() : 0)</span>
+<span class="pc bpc" id="L224" title="1 of 2 branches missed.">			^ (null != getValue() ? getValue().hashCode() : 0);</span>
+	}
+
+	@Override
+	public String getPropertyId() {
+<span class="fc" id="L229">		return propertyId;</span>
+	}
+
+	public Operation getOperation() {
+<span class="fc" id="L233">		return operation;</span>
+	}
+
+	public Object getValue() {
+<span class="fc" id="L237">		return value;</span>
+	}
+
+	@Override
+	public String toString() {
+<span class="fc" id="L242">		return getPropertyId() + &quot; &quot; + super.toString() + &quot; &quot; + getValue();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

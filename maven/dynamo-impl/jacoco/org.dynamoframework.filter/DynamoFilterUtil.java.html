@@ -1,0 +1,344 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>DynamoFilterUtil.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.filter</a> &gt; <span class="el_source">DynamoFilterUtil.java</span></div><h1>DynamoFilterUtil.java</h1><pre class="source lang-java linenums">package org.dynamoframework.filter;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.experimental.UtilityClass;
+import org.dynamoframework.domain.model.AttributeModel;
+import org.dynamoframework.domain.model.AttributeType;
+import org.dynamoframework.domain.model.EntityModel;
+import org.dynamoframework.exception.OCSRuntimeException;
+
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
+
+/**
+ * @author Bas Rutten
+ */
+@UtilityClass
+public final class DynamoFilterUtil {
+
+	/**
+	 * Extracts a specific filter from a (possibly) composite filter
+	 *
+	 * @param filter     the filter from which to extract a certain part
+	 * @param propertyId the propertyId of the filter to extract
+	 * @return the extracted filter
+	 */
+	public static Filter extractFilter(Filter filter, String propertyId) {
+<span class="fc bfc" id="L48" title="All 2 branches covered.">		if (filter instanceof AbstractJunctionFilter junction) {</span>
+<span class="fc bfc" id="L49" title="All 2 branches covered.">			for (Filter child : junction.getFilters()) {</span>
+<span class="fc" id="L50">				Filter found = extractFilter(child, propertyId);</span>
+<span class="fc bfc" id="L51" title="All 2 branches covered.">				if (found != null) {</span>
+<span class="fc" id="L52">					return found;</span>
+				}
+<span class="fc" id="L54">			}</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		} else if (filter instanceof Compare compare) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (compare.getPropertyId().equals(propertyId)) {</span>
+<span class="fc" id="L57">				return compare;</span>
+			}
+<span class="fc bfc" id="L59" title="All 2 branches covered.">		} else if (filter instanceof Like like) {</span>
+<span class="fc bfc" id="L60" title="All 2 branches covered.">			if (like.getPropertyId().equals(propertyId)) {</span>
+<span class="fc" id="L61">				return like;</span>
+			}
+<span class="fc bfc" id="L63" title="All 2 branches covered.">		} else if (filter instanceof In in) {</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (in.getPropertyId().equals(propertyId)) {</span>
+<span class="fc" id="L65">				return in;</span>
+			}
+<span class="fc bfc" id="L67" title="All 2 branches covered.">		} else if (filter instanceof Contains contains) {</span>
+<span class="fc bfc" id="L68" title="All 2 branches covered.">			if (contains.getPropertyId().equals(propertyId)) {</span>
+<span class="fc" id="L69">				return contains;</span>
+			}
+<span class="pc bpc" id="L71" title="1 of 2 branches missed.">		} else if (filter instanceof Between between) {</span>
+<span class="fc bfc" id="L72" title="All 2 branches covered.">			if (between.getPropertyId().equals(propertyId)) {</span>
+<span class="fc" id="L73">				return between;</span>
+			}
+<span class="nc bnc" id="L75" title="All 2 branches missed.">		} else if (filter instanceof Not not) {</span>
+<span class="nc" id="L76">			return extractFilter(not.getFilter(), propertyId);</span>
+		}
+<span class="fc" id="L78">		return null;</span>
+
+	}
+
+	/**
+	 * Flattens the provided filter, removing any nested And-filters
+	 *
+	 * @param and the filter to flatten
+	 * @return the result of the flattening
+	 */
+	public static List&lt;Filter&gt; flattenAnd(And and) {
+<span class="fc" id="L89">		List&lt;Filter&gt; children = new ArrayList&lt;&gt;();</span>
+
+<span class="fc bfc" id="L91" title="All 2 branches covered.">		for (Filter filter : and.getFilters()) {</span>
+<span class="fc bfc" id="L92" title="All 2 branches covered.">			if (filter instanceof And childAnd) {</span>
+<span class="fc" id="L93">				List&lt;Filter&gt; temp = flattenAnd(childAnd);</span>
+<span class="fc" id="L94">				children.addAll(temp);</span>
+<span class="fc" id="L95">			} else {</span>
+<span class="fc" id="L96">				children.add(filter);</span>
+			}
+<span class="fc" id="L98">		}</span>
+<span class="fc" id="L99">		return children;</span>
+	}
+
+	/**
+	 * Removes the specified filters from the provided junction filter
+	 *
+	 * @param junction    the junction filter
+	 * @param propertyIds the propertyIds of the filters to remove
+	 */
+	private static void removeFilterFormJunction(AbstractJunctionFilter junction, String... propertyIds) {
+<span class="fc" id="L109">		Iterator&lt;Filter&gt; it = junction.getFilters().iterator();</span>
+<span class="fc bfc" id="L110" title="All 2 branches covered.">		while (it.hasNext()) {</span>
+<span class="fc" id="L111">			Filter child = it.next();</span>
+<span class="fc bfc" id="L112" title="All 2 branches covered.">			if (child instanceof PropertyFilter propertyFilter) {</span>
+<span class="fc bfc" id="L113" title="All 2 branches covered.">				for (String s : propertyIds) {</span>
+<span class="fc bfc" id="L114" title="All 2 branches covered.">					if (propertyFilter.getPropertyId().equals(s)) {</span>
+<span class="fc" id="L115">						it.remove();</span>
+					}
+				}
+			}
+<span class="fc" id="L119">		}</span>
+
+		// pass through to nested junction filters
+<span class="fc" id="L122">		it = junction.getFilters().iterator();</span>
+<span class="fc bfc" id="L123" title="All 2 branches covered.">		while (it.hasNext()) {</span>
+<span class="fc" id="L124">			Filter child = it.next();</span>
+<span class="fc bfc" id="L125" title="All 2 branches covered.">			if (!(child instanceof PropertyFilter)) {</span>
+<span class="fc" id="L126">				removeFilters(child, propertyIds);</span>
+			}
+<span class="fc" id="L128">		}</span>
+<span class="fc" id="L129">	}</span>
+
+	/**
+	 * Remove any empty junction filters that don't contain any filters of their own
+	 * anymore
+	 *
+	 * @param junction the junction filter to remove the empty filters from
+	 */
+	private static void cleanupEmptyFilters(AbstractJunctionFilter junction) {
+<span class="fc" id="L138">		Iterator&lt;Filter&gt; it = junction.getFilters().iterator();</span>
+<span class="fc bfc" id="L139" title="All 2 branches covered.">		while (it.hasNext()) {</span>
+<span class="fc" id="L140">			Filter child = it.next();</span>
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			if (child instanceof AbstractJunctionFilter junctionFilter) {</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">				if (junctionFilter.getFilters().isEmpty()) {</span>
+<span class="fc" id="L143">					it.remove();</span>
+				}
+<span class="fc bfc" id="L145" title="All 2 branches covered.">			} else if (child instanceof Not not) {</span>
+<span class="pc bpc" id="L146" title="1 of 2 branches missed.">				if (not.getFilter() == null) {</span>
+<span class="fc" id="L147">					it.remove();</span>
+				}
+			}
+<span class="fc" id="L150">		}</span>
+<span class="fc" id="L151">	}</span>
+
+	/**
+	 * Removes filters with the specified property IDs from a certain filter
+	 *
+	 * @param filter      the filter to remove the filters from
+	 * @param propertyIds the property IDs of the filters to remove
+	 */
+	public static void removeFilters(Filter filter, String... propertyIds) {
+<span class="fc bfc" id="L160" title="All 2 branches covered.">		if (filter instanceof AbstractJunctionFilter junction) {</span>
+			// junction filter, iterate over its children
+<span class="fc" id="L162">			removeFilterFormJunction(junction, propertyIds);</span>
+<span class="fc" id="L163">			cleanupEmptyFilters(junction);</span>
+<span class="fc bfc" id="L164" title="All 2 branches covered.">		} else if (filter instanceof Not not) {</span>
+			// in case of a not-filter, propagate to the child
+
+<span class="pc bpc" id="L167" title="1 of 2 branches missed.">			if (not.getFilter() != null) {</span>
+<span class="fc" id="L168">				removeFilters(not.getFilter(), propertyIds);</span>
+			}
+
+<span class="fc" id="L171">			Filter child = not.getFilter();</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (child instanceof PropertyFilter propertyFilter) {</span>
+<span class="fc bfc" id="L173" title="All 2 branches covered.">				for (String s : propertyIds) {</span>
+<span class="pc bpc" id="L174" title="1 of 2 branches missed.">					if (propertyFilter.getPropertyId().equals(s)) {</span>
+<span class="fc" id="L175">						not.setFilter(null);</span>
+					}
+				}
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">			} else if (child instanceof AbstractJunctionFilter junctionFilter) {</span>
+<span class="pc bpc" id="L179" title="1 of 2 branches missed.">				if (junctionFilter.getFilters().isEmpty()) {</span>
+<span class="fc" id="L180">					not.setFilter(null);</span>
+				}
+			}
+		}
+<span class="fc" id="L184">	}</span>
+
+	/**
+	 * Replaces all filters that query a detail relation by the appropriate filters
+	 *
+	 * @param filter      the original filter
+	 * @param entityModel the entity model used to determine which filters must be
+	 *                    replaced
+	 */
+	public static void replaceMasterAndDetailFilters(Filter filter, EntityModel&lt;?&gt; entityModel) {
+
+		// iterate over models and try to find filters that query DETAIL relations
+<span class="fc bfc" id="L196" title="All 2 branches covered.">		for (AttributeModel am : entityModel.getAttributeModels()) {</span>
+<span class="fc" id="L197">			replaceMasterDetailFilter(filter, am);</span>
+<span class="fc bfc" id="L198" title="All 2 branches covered.">			if (am.getNestedEntityModel() != null) {</span>
+<span class="fc" id="L199">				replaceMasterAndDetailFilters(filter, am.getNestedEntityModel());</span>
+			}
+
+<span class="fc" id="L202">		}</span>
+<span class="fc" id="L203">	}</span>
+
+	/**
+	 * Replaces a &quot;Compare.Equal&quot; filter that searches on a master or detail field
+	 * by a &quot;Contains&quot; or &quot;In&quot; filter
+	 *
+	 * @param filter the filter
+	 * @param am     the attribute model
+	 */
+	private static void replaceMasterDetailFilter(Filter filter, AttributeModel am) {
+<span class="fc bfc" id="L213" title="All 2 branches covered.">		if (AttributeType.DETAIL.equals(am.getAttributeType())</span>
+<span class="fc bfc" id="L214" title="All 2 branches covered.">			|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())</span>
+<span class="fc bfc" id="L215" title="All 2 branches covered.">			|| AttributeType.MASTER.equals(am.getAttributeType())</span>
+<span class="pc bpc" id="L216" title="1 of 4 branches missed.">			|| (AttributeType.BASIC.equals(am.getAttributeType()) &amp;&amp; am.isMultipleSearch())) {</span>
+<span class="fc" id="L217">			Filter detailFilter = extractFilter(filter, am.getPath());</span>
+<span class="fc bfc" id="L218" title="All 2 branches covered.">			if (detailFilter instanceof Compare.Equal equal) {</span>
+				// check which property to use in the query
+<span class="fc" id="L220">				String prop = am.getActualSearchPath();</span>
+
+<span class="pc bpc" id="L222" title="1 of 2 branches missed.">				if (AttributeType.DETAIL.equals(am.getAttributeType())</span>
+<span class="fc bfc" id="L223" title="All 2 branches covered.">					|| AttributeType.ELEMENT_COLLECTION.equals(am.getAttributeType())) {</span>
+<span class="fc" id="L224">					replaceDetailOrElementCollectionFilter(filter, am, prop, equal);</span>
+				} else {
+					// master attribute - translate to an &quot;in&quot; filter
+<span class="fc" id="L227">					replaceMasterFilter(filter, am, prop, equal);</span>
+				}
+			}
+		}
+<span class="fc" id="L231">	}</span>
+
+	/**
+	 * Replaces a filter on a master attribute
+	 *
+	 * @param filter the overall filter
+	 * @param am     the attribute model
+	 * @param prop   the name of the property
+	 * @param equal  the &quot;equal&quot; filter to replace
+	 */
+	private static void replaceMasterFilter(Filter filter, AttributeModel am, String prop, Compare.Equal equal) {
+<span class="fc bfc" id="L242" title="All 2 branches covered.">		if (equal.getValue() instanceof Collection&lt;?&gt; col) {</span>
+			// multiple values supplied - construct an OR filter
+<span class="pc bpc" id="L244" title="1 of 2 branches missed.">			if (!col.isEmpty()) {</span>
+<span class="fc" id="L245">				In in = new In(prop, col);</span>
+<span class="fc" id="L246">				replaceFilter(null, filter, in, am.getPath(), false);</span>
+<span class="fc" id="L247">			} else {</span>
+				// filtering on an empty collection is a bad idea
+<span class="nc" id="L249">				removeFilters(filter, am.getPath());</span>
+			}
+<span class="pc bpc" id="L251" title="1 of 2 branches missed.">		} else if (am.getReplacementSearchPath() != null) {</span>
+			// single value property implemented by means of a collection
+<span class="nc" id="L253">			Object o = equal.getValue();</span>
+<span class="nc" id="L254">			Compare.Equal equals = new Compare.Equal(prop, o);</span>
+<span class="nc" id="L255">			replaceFilter(null, filter, equals, am.getPath(), false);</span>
+		}
+<span class="fc" id="L257">	}</span>
+
+	/**
+	 * Replaces a filter on a detail or element collection
+	 *
+	 * @param filter the overall filter
+	 * @param am     the attribute model
+	 * @param prop   the property
+	 * @param equal  the &quot;equal&quot; filter to replace
+	 */
+	private static void replaceDetailOrElementCollectionFilter(Filter filter, AttributeModel am, String prop,
+															   Compare.Equal equal) {
+<span class="fc bfc" id="L269" title="All 2 branches covered.">		if (equal.getValue() instanceof Collection&lt;?&gt; col) {</span>
+			// multiple values supplied - construct an OR filter
+
+<span class="pc bpc" id="L272" title="1 of 2 branches missed.">			if (!col.isEmpty()) {</span>
+<span class="fc" id="L273">				Or or = new Or();</span>
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				for (Object o : col) {</span>
+<span class="fc" id="L275">					or.or(new Contains(prop, o));</span>
+<span class="fc" id="L276">				}</span>
+<span class="fc" id="L277">				replaceFilter(filter, or, am.getPath(), false);</span>
+<span class="fc" id="L278">			} else {</span>
+				// filtering on an empty collection is a bad idea
+<span class="nc" id="L280">				removeFilters(filter, am.getPath());</span>
+			}
+		} else {
+			// just a single value - construct a single contains filter
+<span class="fc" id="L284">			replaceFilter(filter, new Contains(prop, equal.getValue()), am.getPath(), false);</span>
+		}
+<span class="fc" id="L286">	}</span>
+
+	/**
+	 * Replaces a filter by another filter
+	 *
+	 * @param original   the main filter that contains the filter to be replaced
+	 * @param newFilter  the replacement filter
+	 * @param propertyId the property ID of the filter to replace
+	 * @param firstOnly  indicates whether to replace only the first instance
+	 */
+	public static void replaceFilter(Filter original, Filter newFilter, String propertyId, boolean firstOnly) {
+		try {
+<span class="fc" id="L298">			replaceFilter(null, original, newFilter, propertyId, firstOnly);</span>
+<span class="fc" id="L299">		} catch (RuntimeException ex) {</span>
+			// do nothing - only used to break out of loop
+<span class="fc" id="L301">		}</span>
+<span class="fc" id="L302">	}</span>
+
+	/**
+	 * Replaces a filter by another filter. This method only works for junction
+	 * filters
+	 *
+	 * @param parent     the parent
+	 * @param original   the original filter
+	 * @param newFilter  the new filter
+	 * @param propertyId the property id of the filter that must be replaced
+	 * @param firstOnly  whether to only replace the first occurrence
+	 */
+	private static void replaceFilter(Filter parent, Filter original, Filter newFilter, String propertyId,
+									  boolean firstOnly) {
+<span class="fc bfc" id="L316" title="All 2 branches covered.">		if (original instanceof AbstractJunctionFilter junction) {</span>
+			// junction filter, iterate over its children
+<span class="fc bfc" id="L318" title="All 2 branches covered.">			for (Filter child : junction.getFilters()) {</span>
+<span class="fc" id="L319">				replaceFilter(junction, child, newFilter, propertyId, firstOnly);</span>
+<span class="fc" id="L320">			}</span>
+<span class="fc bfc" id="L321" title="All 2 branches covered.">		} else if (original instanceof PropertyFilter propertyFilter) {</span>
+			// filter has a property ID, see if it matches
+<span class="fc bfc" id="L323" title="All 2 branches covered.">			if (propertyFilter.getPropertyId().equals(propertyId)) {</span>
+<span class="fc bfc" id="L324" title="All 2 branches covered.">				if (parent instanceof AbstractJunctionFilter junctionFilter) {</span>
+<span class="fc" id="L325">					junctionFilter.replace(original, newFilter, firstOnly);</span>
+<span class="pc bpc" id="L326" title="1 of 2 branches missed.">				} else if (parent instanceof Not not) {</span>
+<span class="fc" id="L327">					not.setFilter(newFilter);</span>
+				}
+
+				// throw exception to abort processing - this is nasty but better than
+				// propagating
+				// the state via parameters
+<span class="fc bfc" id="L333" title="All 2 branches covered.">				if (firstOnly) {</span>
+<span class="fc" id="L334">					throw new OCSRuntimeException();</span>
+				}
+			}
+<span class="pc bpc" id="L337" title="1 of 2 branches missed.">		} else if (original instanceof Not not) {</span>
+			// in case of a not-filter, propagate to the child
+<span class="fc" id="L339">			replaceFilter(not, not.getFilter(), newFilter, propertyId, firstOnly);</span>
+		}
+<span class="fc" id="L341">	}</span>
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

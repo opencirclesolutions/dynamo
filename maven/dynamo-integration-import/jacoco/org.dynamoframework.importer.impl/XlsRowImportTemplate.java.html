@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>XlsRowImportTemplate.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Integration Import</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.importer.impl</a> &gt; <span class="el_source">XlsRowImportTemplate.java</span></div><h1>XlsRowImportTemplate.java</h1><pre class="source lang-java linenums">package org.dynamoframework.importer.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.dynamoframework.exception.OCSImportException;
+import org.dynamoframework.importer.dto.AbstractDTO;
+import org.dynamoframework.service.MessageService;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+/**
+ * A template for processing an Excel file that contains row-based data, and
+ * transforming it into a collection of DTOs
+ *
+ * @param &lt;ID&gt; the type of the key of the DTO
+ * @param &lt;T&gt;  the type of the DTO
+ * @author bas.rutten
+ */
+public abstract class XlsRowImportTemplate&lt;ID, T extends AbstractDTO&gt; {
+
+	/**
+	 * The importer
+	 */
+	private final BaseXlsImporter importer;
+
+	/**
+	 * Index of the column (zero based) from which to read the values
+	 */
+	private final int colIndex;
+
+	/**
+	 * Byte representation of the file
+	 */
+	private final byte[] bytes;
+
+	/**
+	 * Index of the sheet from which to read the values
+	 */
+	private final int sheetIndex;
+
+	/**
+	 * Whether to check for duplicates
+	 */
+	private final boolean checkForDuplicates;
+
+	/**
+	 * List of errors/warnings that have occurred so far
+	 */
+	private final List&lt;String&gt; errors;
+
+	/**
+	 * Index of the first row from which to start reading
+	 */
+	private final int firstRowNumber;
+
+	/**
+	 * Length (number of rows) in a single record
+	 */
+	private final int recordLength;
+
+	/**
+	 * Keys of the records processed so far
+	 */
+<span class="fc" id="L89">	private final Set&lt;ID&gt; keys = new HashSet&lt;&gt;();</span>
+
+	/**
+	 * The message service
+	 */
+	private final MessageService messageService;
+
+	/**
+	 * The class of the DTO object to create
+	 */
+	private final Class&lt;T&gt; clazz;
+
+	/**
+	 * Constructor
+	 *
+	 * @param importer           the XLS importer that is used to do the actual
+	 *                           reading from the file
+	 * @param messageService     the message service
+	 * @param bytes              the raw content to process
+	 * @param errors             list of errors
+	 * @param clazz              the class
+	 * @param sheetIndex         the index of the sheet to read from
+	 * @param firstRowNumber     the index of the first row to read from
+	 * @param colIndex           the index of the column to read from
+	 * @param recordLength       the length (number of lines) of a single record
+	 * @param checkForDuplicates whether to check for duplicates
+	 */
+	protected XlsRowImportTemplate(BaseXlsImporter importer, MessageService messageService, byte[] bytes,
+								   List&lt;String&gt; errors, Class&lt;T&gt; clazz, int sheetIndex, int firstRowNumber, int colIndex, int recordLength,
+<span class="fc" id="L118">								   boolean checkForDuplicates) {</span>
+<span class="fc" id="L119">		this.messageService = messageService;</span>
+<span class="fc" id="L120">		this.importer = importer;</span>
+<span class="fc" id="L121">		this.bytes = bytes;</span>
+<span class="fc" id="L122">		this.sheetIndex = sheetIndex;</span>
+<span class="fc" id="L123">		this.errors = errors;</span>
+<span class="fc" id="L124">		this.checkForDuplicates = checkForDuplicates;</span>
+<span class="fc" id="L125">		this.firstRowNumber = firstRowNumber;</span>
+<span class="fc" id="L126">		this.colIndex = colIndex;</span>
+<span class="fc" id="L127">		this.clazz = clazz;</span>
+<span class="fc" id="L128">		this.recordLength = recordLength;</span>
+<span class="fc" id="L129">	}</span>
+
+	@SuppressWarnings(&quot;unchecked&quot;)
+	public List&lt;T&gt; execute() throws IOException {
+
+<span class="fc" id="L134">		List&lt;T&gt; results = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L136">		try (Workbook wb = importer.createWorkbook(bytes)) {</span>
+<span class="fc" id="L137">			Sheet sheet = wb.getSheetAt(sheetIndex);</span>
+
+<span class="fc" id="L139">			int i = 0;</span>
+
+<span class="fc bfc" id="L141" title="All 2 branches covered.">			while (i &lt;= sheet.getLastRowNum()) {</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">				if (i &gt;= firstRowNumber) {</span>
+					try {
+						// check for non-empty separator row
+<span class="fc bfc" id="L145" title="All 2 branches covered.">						if (importer.isRowEmpty(sheet.getRow(i))) {</span>
+<span class="fc" id="L146">							break;</span>
+						} else {
+<span class="fc" id="L148">							i++;</span>
+						}
+
+<span class="fc" id="L151">						T entity = importer.processRows(sheet, i, colIndex, clazz);</span>
+
+<span class="pc bpc" id="L153" title="2 of 4 branches missed.">						if (entity != null &amp;&amp; extractKey(entity) != null) {</span>
+<span class="fc" id="L154">							ID key = extractKey(entity);</span>
+
+							// in case of a string, compare by lower case
+<span class="pc bpc" id="L157" title="1 of 2 branches missed.">							if (key instanceof String) {</span>
+<span class="fc" id="L158">								key = (ID) ((String) key).toLowerCase();</span>
+							}
+
+<span class="fc bfc" id="L161" title="All 2 branches covered.">							if (checkForDuplicates) {</span>
+<span class="fc bfc" id="L162" title="All 2 branches covered.">								if (!keys.contains(key)) {</span>
+<span class="fc" id="L163">									keys.add(key);</span>
+<span class="fc" id="L164">									results.add(entity);</span>
+								} else {
+<span class="fc" id="L166">									errors.add(messageService.getMessage(&quot;dynamoframework.duplicate.row&quot;,</span>
+<span class="fc" id="L167">										DynamoPropertiesHolder.getDynamoProperties().getDefaults().getLocale(), i + 1, key));</span>
+								}
+							} else {
+<span class="fc" id="L170">								results.add(entity);</span>
+							}
+						}
+<span class="fc" id="L173">					} catch (OCSImportException ex) {</span>
+						// catch errors on a record by record level
+<span class="fc" id="L175">						errors.add(String.format(&quot;Row %d: %s&quot;, i + 1, ex.getMessage()));</span>
+<span class="fc" id="L176">					}</span>
+<span class="fc" id="L177">					i += recordLength;</span>
+				} else {
+					// row is before the start of the input, skip row and try
+					// the next
+<span class="nc" id="L181">					i++;</span>
+				}
+			}
+
+<span class="fc" id="L185">			return results;</span>
+		}
+	}
+
+	/**
+	 * Retrieves the key value from a record (used for duplicate checking)
+	 *
+	 * @param row the row
+	 * @return the value of the key
+	 */
+	protected abstract ID extractKey(T row);
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

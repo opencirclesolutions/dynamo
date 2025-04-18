@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>ServiceLocatorFactory.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">API</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.service</a> &gt; <span class="el_source">ServiceLocatorFactory.java</span></div><h1>ServiceLocatorFactory.java</h1><pre class="source lang-java linenums">package org.dynamoframework.service;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.experimental.UtilityClass;
+import lombok.extern.slf4j.Slf4j;
+import org.dynamoframework.exception.OCSRuntimeException;
+
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+
+/**
+ * Factory class for creating a service locator.
+ *
+ * @author bas.rutten
+ */
+@UtilityClass
+<span class="fc" id="L36">@Slf4j</span>
+public final class ServiceLocatorFactory {
+
+	private static volatile ServiceLocator serviceLocator;
+
+	private static final String DEFAULT_CLASS_NAME = &quot;org.dynamoframework.SpringWebServiceLocator&quot;;
+
+	@SuppressWarnings(&quot;deprecation&quot;)
+	public static ServiceLocator getServiceLocator() {
+<span class="nc bnc" id="L45" title="All 2 branches missed.">		if (serviceLocator == null) {</span>
+<span class="nc" id="L46">			synchronized (ServiceLocatorFactory.class) {</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">				if (serviceLocator == null) {</span>
+<span class="nc" id="L48">					String serviceLocatorClassName = getServiceLocatorClassName();</span>
+<span class="nc" id="L49">					log.info(&quot;Using service locator class {} &quot;, serviceLocatorClassName);</span>
+					try {
+<span class="nc" id="L51">						serviceLocator = (ServiceLocator) Class.forName(serviceLocatorClassName).newInstance();</span>
+<span class="nc" id="L52">					} catch (ClassNotFoundException | InstantiationException | IllegalAccessException e) {</span>
+<span class="nc" id="L53">						throw new OCSRuntimeException(e.getMessage());</span>
+<span class="nc" id="L54">					}</span>
+				}
+<span class="nc" id="L56">			}</span>
+		}
+<span class="nc" id="L58">		return serviceLocator;</span>
+	}
+
+	protected static String getServiceLocatorClassName() {
+<span class="fc" id="L62">		try (BufferedReader in = new BufferedReader(new InputStreamReader(ServiceLocatorFactory.class.getClassLoader().getResourceAsStream(&quot;dynamoservicelocator&quot;)))) {</span>
+<span class="fc" id="L63">			String className = in.readLine();</span>
+<span class="fc bfc" id="L64" title="All 2 branches covered.">			if (className != null) {</span>
+<span class="fc" id="L65">				return className;</span>
+			}
+<span class="fc" id="L67">		} catch (Exception e) {</span>
+<span class="fc" id="L68">			log.debug(&quot;Resource dynamoservicelocator not found or could not be read, using default service locator&quot;);</span>
+<span class="fc" id="L69">		}</span>
+<span class="fc" id="L70">		return DEFAULT_CLASS_NAME;</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

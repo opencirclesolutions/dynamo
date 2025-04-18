@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SortOrder.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">API</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.dao</a> &gt; <span class="el_source">SortOrder.java</span></div><h1>SortOrder.java</h1><pre class="source lang-java linenums">package org.dynamoframework.dao;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.EqualsAndHashCode;
+import lombok.Getter;
+import lombok.ToString;
+import org.dynamoframework.exception.OCSRuntimeException;
+
+import java.io.Serializable;
+
+/**
+ * Object representing a sort order and direction
+ *
+ * @author bas.rutten
+ */
+@Getter
+@EqualsAndHashCode
+@ToString
+public class SortOrder implements Serializable {
+
+	private static final long serialVersionUID = -4702369564151453555L;
+
+<span class="fc" id="L42">	private static final Direction DEFAULT_DIRECTION = Direction.ASC;</span>
+
+	private final Direction direction;
+
+	private final String property;
+
+<span class="fc" id="L48">	public enum Direction {</span>
+
+<span class="fc" id="L50">		ASC, DESC;</span>
+
+		/**
+		 * Translates the provided String into the corresponding Direction enum
+		 *
+		 * @param value the String representation of the Direction
+		 * @return the Direction
+		 */
+		public static Direction fromString(String value) {
+			try {
+<span class="fc" id="L60">				return Direction.valueOf(value.toUpperCase());</span>
+<span class="fc" id="L61">			} catch (Exception e) {</span>
+<span class="fc" id="L62">				throw new OCSRuntimeException(String.format(&quot;Sort order [%s] is not recognized&quot;, value), e);</span>
+			}
+		}
+	}
+
+	/**
+	 * Constructor
+	 *
+	 * @param property  the property to sort on
+	 * @param direction the desired sort direction
+	 */
+<span class="fc" id="L73">	public SortOrder(String property, Direction direction) {</span>
+<span class="pc bpc" id="L74" title="1 of 2 branches missed.">		this.direction = direction == null ? DEFAULT_DIRECTION : direction;</span>
+<span class="fc" id="L75">		this.property = property;</span>
+<span class="fc" id="L76">	}</span>
+
+	/**
+	 * Constructor
+	 *
+	 * @param property the property to sort on (in ascending direction)
+	 */
+	public SortOrder(String property) {
+<span class="fc" id="L84">		this(property, DEFAULT_DIRECTION);</span>
+<span class="fc" id="L85">	}</span>
+
+	public boolean isAscending() {
+<span class="nc" id="L88">		return this.direction.equals(Direction.ASC);</span>
+	}
+
+	public SortOrder withDirection(Direction direction) {
+<span class="fc" id="L92">		return new SortOrder(this.property, direction);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

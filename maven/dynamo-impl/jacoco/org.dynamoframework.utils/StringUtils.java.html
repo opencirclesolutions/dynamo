@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>StringUtils.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.utils</a> &gt; <span class="el_source">StringUtils.java</span></div><h1>StringUtils.java</h1><pre class="source lang-java linenums">package org.dynamoframework.utils;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.experimental.UtilityClass;
+
+import java.text.Normalizer;
+import java.util.Locale;
+
+/**
+ * String utility functions
+ *
+ * @author Bas Rutten
+ */
+@UtilityClass
+public final class StringUtils {
+
+	private static final String EMAIL_PATTERN = &quot;([\\w-\\.]+)@(?:[\\w]+\\.)(\\w){2,4}&quot;;
+
+	private static final String HTTP = &quot;http&quot;;
+
+	/**
+	 * Converts CamelCase string to human friendly
+	 *
+	 * @param camelCaseString the Camel Case string to convert
+	 * @param capitalize      indicates whether to capitalize every word (if set to
+	 *                        &lt;code&gt;false&lt;/code&gt; then only the first word will be
+	 *                        capitalized
+	 * @return the result of the conversions
+	 */
+	public static String camelCaseToHumanFriendly(String camelCaseString, boolean capitalize) {
+<span class="fc bfc" id="L50" title="All 2 branches covered.">		if (camelCaseString == null) {</span>
+<span class="fc" id="L51">			return null;</span>
+		}
+
+<span class="fc" id="L54">		String[] parts = splitCamelCase(camelCaseString);</span>
+<span class="fc bfc" id="L55" title="All 2 branches covered.">		for (int i = 0; i &lt; parts.length; i++) {</span>
+<span class="fc bfc" id="L56" title="All 2 branches covered.">			if (capitalize) {</span>
+<span class="fc" id="L57">				parts[i] = capitalize(parts[i]);</span>
+			} else {
+<span class="fc bfc" id="L59" title="All 2 branches covered.">				parts[i] = i &gt; 0 ? parts[i].toLowerCase() : capitalize(parts[i]);</span>
+			}
+		}
+<span class="fc" id="L62">		return String.join(&quot; &quot;, parts);</span>
+	}
+
+	/**
+	 * Capitalize a String
+	 *
+	 * @param string the String to capitalize
+	 * @return the result of the capitalization
+	 */
+	private static String capitalize(String string) {
+<span class="pc bpc" id="L72" title="1 of 2 branches missed.">		if (string == null) {</span>
+<span class="nc" id="L73">			return null;</span>
+		}
+
+<span class="pc bpc" id="L76" title="1 of 2 branches missed.">		if (string.length() &lt;= 1) {</span>
+<span class="nc" id="L77">			return string.toUpperCase();</span>
+		}
+
+<span class="fc" id="L80">		return string.substring(0, 1).toUpperCase(Locale.ENGLISH) + string.substring(1);</span>
+	}
+
+	/**
+	 * Checks if a value is a valid email address - this is actually a very simple
+	 * check that only checks for the @-sign
+	 *
+	 * @param value the value to check
+	 */
+	public static boolean isValidEmail(String value) {
+<span class="pc bpc" id="L90" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L91">			return true;</span>
+		}
+<span class="fc" id="L93">		return value.matches(EMAIL_PATTERN);</span>
+	}
+
+	/**
+	 * Indicates whether a word ends at position index in the string
+	 *
+	 * @param camelCaseString the string
+	 * @param index           the index
+	 * @return true if this is the case, false otherwise
+	 */
+	private static boolean isWordComplete(String camelCaseString, int index) {
+<span class="fc bfc" id="L104" title="All 2 branches covered.">		if (index == 0) {</span>
+			// Word can't end at the beginning
+<span class="fc" id="L106">			return false;</span>
+		} else { // Word ends if next char isn't upper case
+<span class="fc bfc" id="L108" title="All 2 branches covered.">			if (!Character.isUpperCase(camelCaseString.charAt(index - 1))) {</span>
+				// Word ends if previous char wasn't upper case
+<span class="fc" id="L110">				return true;</span>
+			} else {
+<span class="pc bpc" id="L112" title="1 of 4 branches missed.">				return index + 1 &lt; camelCaseString.length() &amp;&amp; !Character.isUpperCase(camelCaseString.charAt(index + 1));</span>
+			}
+		}
+	}
+
+	/**
+	 * Prepends the default protocol (&quot;http://&quot;) to a value that represents a URL
+	 *
+	 * @param value the value
+	 * @return the result of the action
+	 */
+	public static String prependProtocol(String value) {
+<span class="pc bpc" id="L124" title="1 of 2 branches missed.">		if (value == null) {</span>
+<span class="nc" id="L125">			return null;</span>
+		}
+
+<span class="fc bfc" id="L128" title="All 2 branches covered.">		if (!value.startsWith(HTTP)) {</span>
+<span class="fc" id="L129">			return HTTP + &quot;://&quot; + value;</span>
+		}
+<span class="fc" id="L131">		return value;</span>
+	}
+
+	/**
+	 * Converts a propertyId to a human-friendly representation
+	 *
+	 * @param propertyId the ID of the property
+	 * @return the result of the conversion
+	 */
+	public static String propertyIdToHumanFriendly(Object propertyId, boolean capitalize) {
+<span class="fc" id="L141">		String string = propertyId.toString();</span>
+<span class="pc bpc" id="L142" title="1 of 2 branches missed.">		if (string.isEmpty()) {</span>
+<span class="nc" id="L143">			return &quot;&quot;;</span>
+		}
+
+		// For nested properties, only use the last part
+<span class="fc" id="L147">		int dotLocation = string.lastIndexOf('.');</span>
+<span class="pc bpc" id="L148" title="3 of 4 branches missed.">		if (dotLocation &gt; 0 &amp;&amp; dotLocation &lt; string.length() - 1) {</span>
+<span class="nc" id="L149">			string = string.substring(dotLocation + 1);</span>
+		}
+
+<span class="fc" id="L152">		return camelCaseToHumanFriendly(string, capitalize);</span>
+	}
+
+	/**
+	 * Restricts a string value to the maximum length of a certain field
+	 *
+	 * @param value     the value to restrict
+	 * @param clazz     the clazz on which the field is located
+	 * @param fieldName the name of the field
+	 * @return the result of the restriction
+	 */
+	public static String restrictToMaxFieldLength(String value, Class&lt;?&gt; clazz, String fieldName) {
+<span class="fc bfc" id="L164" title="All 2 branches covered.">		if (value == null) {</span>
+<span class="fc" id="L165">			return null;</span>
+		} else {
+<span class="fc" id="L167">			int maxLength = ClassUtils.getMaxLength(clazz, fieldName);</span>
+<span class="fc bfc" id="L168" title="All 4 branches covered.">			if (maxLength &gt;= 0 &amp;&amp; value.length() &gt; maxLength) {</span>
+<span class="fc" id="L169">				value = value.substring(0, maxLength);</span>
+			}
+		}
+<span class="fc" id="L172">		return value;</span>
+	}
+
+	/**
+	 * Splits a CamelCase String into words
+	 *
+	 * @param camelCaseString the String to split
+	 * @return the result of the split action
+	 */
+	private static String[] splitCamelCase(String camelCaseString) {
+<span class="fc" id="L182">		StringBuilder sb = new StringBuilder();</span>
+<span class="fc bfc" id="L183" title="All 2 branches covered.">		for (int i = 0; i &lt; camelCaseString.length(); i++) {</span>
+<span class="fc" id="L184">			char c = camelCaseString.charAt(i);</span>
+<span class="fc bfc" id="L185" title="All 4 branches covered.">			if (Character.isUpperCase(c) &amp;&amp; isWordComplete(camelCaseString, i)) {</span>
+<span class="fc" id="L186">				sb.append(' ');</span>
+			}
+<span class="fc" id="L188">			sb.append(c);</span>
+		}
+<span class="fc" id="L190">		return sb.toString().split(&quot; &quot;);</span>
+	}
+
+	public static String removeAccents(String input) {
+<span class="nc bnc" id="L194" title="All 2 branches missed.">		if (input == null) {</span>
+<span class="nc" id="L195">			return null;</span>
+		}
+
+<span class="nc" id="L198">		String temp = Normalizer.normalize(input, Normalizer.Form.NFD);</span>
+<span class="nc" id="L199">		return temp.replaceAll(&quot;[^\\p{ASCII}]&quot;, &quot;&quot;);</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

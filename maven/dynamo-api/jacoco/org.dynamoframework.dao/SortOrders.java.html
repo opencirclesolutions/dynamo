@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SortOrders.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">API</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.dao</a> &gt; <span class="el_source">SortOrders.java</span></div><h1>SortOrders.java</h1><pre class="source lang-java linenums">package org.dynamoframework.dao;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.ToString;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+
+/**
+ * A list of SortOrder objects
+ *
+ * @author bas.rutten
+ */
+@ToString
+public class SortOrders {
+
+<span class="fc" id="L37">	private List&lt;SortOrder&gt; orders = new ArrayList&lt;&gt;();</span>
+
+	/**
+	 * Constructor
+	 *
+	 * @param orders the sort orders that must be used
+	 */
+<span class="fc" id="L44">	public SortOrders(SortOrder... orders) {</span>
+<span class="pc bpc" id="L45" title="1 of 2 branches missed.">		if (orders != null) {</span>
+<span class="fc bfc" id="L46" title="All 2 branches covered.">			for (SortOrder order : orders) {</span>
+<span class="pc bpc" id="L47" title="2 of 4 branches missed.">				if (order != null &amp;&amp; order.getProperty() != null) {</span>
+<span class="fc" id="L48">					addSortOrder(order);</span>
+				}
+			}
+		}
+<span class="fc" id="L52">	}</span>
+
+	/**
+	 * Adds a sort order
+	 *
+	 * @param order the sort order that must be added
+	 * @return the SortOrders object
+	 */
+	public SortOrders addSortOrder(SortOrder order) {
+<span class="pc bpc" id="L61" title="1 of 4 branches missed.">		if (order != null &amp;&amp; order.getProperty() != null) {</span>
+<span class="fc" id="L62">			this.orders.add(order);</span>
+		}
+<span class="fc" id="L64">		return this;</span>
+	}
+
+	/**
+	 * Returns the first sort order for the specified property
+	 *
+	 * @param property the property
+	 * @return an Optional containing the sort order
+	 */
+	public Optional&lt;SortOrder&gt; getOrderFor(String property) {
+<span class="fc" id="L74">		return orders.stream().filter(o -&gt; o.getProperty().equals(property)).findFirst();</span>
+	}
+
+	public SortOrder[] toArray() {
+<span class="fc" id="L78">		return orders.toArray(new SortOrder[0]);</span>
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+<span class="nc bnc" id="L83" title="All 2 branches missed.">		if (obj == this) {</span>
+<span class="nc" id="L84">			return true;</span>
+		}
+
+<span class="nc bnc" id="L87" title="All 2 branches missed.">		if (!(obj instanceof SortOrders other)) {</span>
+<span class="nc" id="L88">			return false;</span>
+		}
+
+<span class="nc bnc" id="L91" title="All 2 branches missed.">		if (other.toArray().length != this.toArray().length) {</span>
+<span class="nc" id="L92">			return false;</span>
+		}
+
+<span class="nc bnc" id="L95" title="All 2 branches missed.">		for (int i = 0; i &lt; toArray().length; i++) {</span>
+<span class="nc" id="L96">			SortOrder so1 = toArray()[i];</span>
+<span class="nc" id="L97">			SortOrder so2 = other.toArray()[i];</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">			if (!so1.equals(so2)) {</span>
+<span class="nc" id="L99">				return false;</span>
+			}
+		}
+<span class="nc" id="L102">		return true;</span>
+	}
+
+	@Override
+	public int hashCode() {
+<span class="nc" id="L107">		return super.hashCode();</span>
+	}
+
+	public List&lt;SortOrder&gt; getOrders() {
+<span class="nc" id="L111">		return orders;</span>
+	}
+
+	public void setOrders(List&lt;SortOrder&gt; orders) {
+<span class="nc" id="L115">		this.orders = orders;</span>
+<span class="nc" id="L116">	}</span>
+
+	public int getNrOfSortOrders() {
+<span class="fc" id="L119">		return orders.size();</span>
+	}
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>

@@ -1,0 +1,338 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang=""><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EntityModelImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Implementation</a> &gt; <a href="index.source.html" class="el_package">org.dynamoframework.domain.model.impl</a> &gt; <span class="el_source">EntityModelImpl.java</span></div><h1>EntityModelImpl.java</h1><pre class="source lang-java linenums">package org.dynamoframework.domain.model.impl;
+
+/*-
+ * #%L
+ * Dynamo Framework
+ * %%
+ * Copyright (C) 2014 - 2024 Open Circle Solutions
+ * %%
+ * Licensed under the Apache License, Version 2.0 (the &quot;License&quot;);
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an &quot;AS IS&quot; BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * #L%
+ */
+
+import lombok.Builder;
+import lombok.Data;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
+import org.apache.commons.lang3.StringUtils;
+import org.dynamoframework.dao.FetchJoinInformation;
+import org.dynamoframework.domain.model.*;
+import org.dynamoframework.utils.ClassUtils;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.Predicate;
+import java.util.stream.Stream;
+
+/**
+ * An implementation of an entity model - holds metadata about an entity
+ *
+ * @param &lt;T&gt; the class of the entity
+ * @author bas.rutten
+ */
+@Data
+@EqualsAndHashCode(callSuper = false, of = {&quot;reference&quot;, &quot;entityClass&quot;})
+@Builder(toBuilder = true)
+@ToString
+public class EntityModelImpl&lt;T&gt; implements EntityModel&lt;T&gt; {
+
+	private String autofillInstructions;
+
+	@Builder.Default
+	@ToString.Exclude
+	private final Map&lt;String, List&lt;AttributeModel&gt;&gt; attributeModels = new LinkedHashMap&lt;&gt;();
+
+	private String defaultDescription;
+
+	private String defaultDisplayName;
+
+	private String defaultDisplayNamePlural;
+
+	@Builder.Default
+	private Map&lt;String, Optional&lt;String&gt;&gt; descriptions = new ConcurrentHashMap&lt;&gt;();
+
+	@Builder.Default
+	private Map&lt;String, Optional&lt;String&gt;&gt; displayNames = new ConcurrentHashMap&lt;&gt;();
+
+	@Builder.Default
+	private Map&lt;String, Optional&lt;String&gt;&gt; displayNamesPlural = new ConcurrentHashMap&lt;&gt;();
+
+	private String displayProperty;
+
+	private Class&lt;T&gt; entityClass;
+
+	private boolean gridOrderSet;
+
+	private int nestingDepth;
+
+	private String reference;
+
+	private boolean searchOrderSet;
+
+	private boolean listAllowed;
+
+	private boolean exportAllowed;
+
+	private boolean updateAllowed;
+
+	private boolean deleteAllowed;
+
+	private boolean createAllowed;
+
+	private boolean searchAllowed;
+
+	private String fileUploadEntityName;
+
+	private String fileUploadAttributeName;
+
+	private String fileUploadEntityIdPath;
+
+	private List&lt;FetchJoinInformation&gt; fetchJoins;
+
+	private List&lt;FetchJoinInformation&gt; detailJoins;
+
+	private int maxSearchResults;
+
+	private List&lt;EntityModelAction&gt; entityModelActions;
+
+	@Builder.Default
+	private Map&lt;AttributeModel, Boolean&gt; sortOrder = new LinkedHashMap&lt;&gt;();
+
+	@Builder.Default
+	private List&lt;String&gt; readRoles = new ArrayList&lt;&gt;();
+
+	@Builder.Default
+	private List&lt;String&gt; writeRoles = new ArrayList&lt;&gt;();
+
+	@Builder.Default
+	private List&lt;String&gt; deleteRoles = new ArrayList&lt;&gt;();
+
+	@Override
+	public void addAttributeGroup(String attributeGroup) {
+<span class="pc bpc" id="L122" title="1 of 2 branches missed.">		if (!attributeModels.containsKey(attributeGroup)) {</span>
+<span class="fc" id="L123">			attributeModels.put(attributeGroup, new ArrayList&lt;&gt;());</span>
+		}
+<span class="fc" id="L125">	}</span>
+
+	public void addAttributeModel(String attributeGroup, AttributeModel model) {
+<span class="fc" id="L128">		attributeModels.get(attributeGroup).add(model);</span>
+<span class="fc" id="L129">	}</span>
+
+	@Override
+	public void addAttributeModel(String attributeGroup, AttributeModel model, AttributeModel existingModel) {
+<span class="nc" id="L133">		List&lt;AttributeModel&gt; group = attributeModels.get(attributeGroup);</span>
+<span class="nc bnc" id="L134" title="All 2 branches missed.">		if (group.contains(existingModel)) {</span>
+<span class="nc" id="L135">			group.add(group.indexOf(existingModel), model);</span>
+		} else {
+<span class="nc" id="L137">			group.add(model);</span>
+		}
+<span class="nc" id="L139">	}</span>
+
+	private Stream&lt;AttributeModel&gt; constructAttributeModelStream(Comparator&lt;AttributeModel&gt; comp) {
+<span class="fc" id="L142">		return attributeModels.values().stream().flatMap(List::stream).sorted(comp);</span>
+	}
+
+	private List&lt;AttributeModel&gt; filterAttributeModels(Predicate&lt;AttributeModel&gt; p) {
+<span class="fc" id="L146">		return Collections</span>
+<span class="fc" id="L147">			.unmodifiableList(constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))</span>
+<span class="fc" id="L148">				.filter(p).toList());</span>
+	}
+
+	private AttributeModel findAttributeModel(Predicate&lt;AttributeModel&gt; p) {
+<span class="fc" id="L152">		return constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder)).filter(p).findFirst()</span>
+<span class="fc" id="L153">			.orElse(null);</span>
+	}
+
+	@Override
+	public List&lt;String&gt; getAttributeGroups() {
+<span class="fc" id="L158">		return new ArrayList&lt;&gt;(attributeModels.keySet());</span>
+	}
+
+	@Override
+	public AttributeModel getAttributeModel(String attributeName) {
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">		if (!StringUtils.isEmpty(attributeName)) {</span>
+
+<span class="fc" id="L165">			AttributeModel attributeModel = findAttributeModel(am -&gt; am.getName().equals(attributeName));</span>
+<span class="fc bfc" id="L166" title="All 2 branches covered.">			if (attributeModel != null) {</span>
+<span class="fc" id="L167">				return attributeModel;</span>
+			}
+
+			// check for nested property
+<span class="fc" id="L171">			String[] names = attributeName.split(&quot;\\.&quot;);</span>
+<span class="fc bfc" id="L172" title="All 2 branches covered.">			if (names.length &gt; 1) {</span>
+				// Find Attribute attributeModel
+<span class="fc" id="L174">				AttributeModel am = getAttributeModel(names[0]);</span>
+<span class="fc bfc" id="L175" title="All 2 branches covered.">				if (am != null) {</span>
+					// Find nested entity attributeModel
+<span class="fc" id="L177">					EntityModel&lt;?&gt; nem = am.getNestedEntityModel();</span>
+<span class="pc bpc" id="L178" title="1 of 2 branches missed.">					if (nem != null) {</span>
+<span class="fc" id="L179">						return nem.getAttributeModel(attributeName.substring(names[0].length() + 1));</span>
+					}
+				}
+			}
+		}
+<span class="fc" id="L184">		return null;</span>
+	}
+
+	@Override
+	public AttributeModel getAttributeModelByActualSortPath(String actualSortPath) {
+<span class="fc" id="L189">		return findAttributeModel(m -&gt; m.getActualSortPath().equals(actualSortPath));</span>
+	}
+
+	@Override
+	public List&lt;AttributeModel&gt; getAttributeModels() {
+<span class="fc" id="L194">		List&lt;AttributeModel&gt; list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))</span>
+<span class="fc" id="L195">			.toList();</span>
+<span class="fc" id="L196">		return Collections.unmodifiableList(list);</span>
+	}
+
+	@Override
+	public List&lt;AttributeModel&gt; getAttributeModelsForGroup(String group) {
+<span class="fc" id="L201">		return Collections.unmodifiableList(attributeModels.get(group));</span>
+	}
+
+	@Override
+	public List&lt;AttributeModel&gt; getAttributeModelsForType(AttributeType attributeType, Class&lt;?&gt; type) {
+<span class="fc" id="L206">		return filterAttributeModels(model -&gt; {</span>
+<span class="fc" id="L207">			Class&lt;?&gt; rt = ClassUtils.getResolvedType(getEntityClass(), model.getName(), 0);</span>
+<span class="fc bfc" id="L208" title="All 6 branches covered.">			return (attributeType == null || attributeType.equals(model.getAttributeType())) &amp;&amp; (type == null</span>
+<span class="pc bpc" id="L209" title="1 of 6 branches missed.">				|| type.isAssignableFrom(model.getType()) || (rt != null &amp;&amp; type.isAssignableFrom(rt)));</span>
+		});
+	}
+
+	@Override
+	public List&lt;AttributeModel&gt; getAttributeModelsSortedForGrid() {
+<span class="pc bpc" id="L215" title="1 of 2 branches missed.">		if (!gridOrderSet) {</span>
+<span class="nc" id="L216">			return getAttributeModels();</span>
+		}
+<span class="fc" id="L218">		List&lt;AttributeModel&gt; list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getGridOrder))</span>
+<span class="fc" id="L219">			.toList();</span>
+<span class="fc" id="L220">		return Collections.unmodifiableList(list);</span>
+	}
+
+	@Override
+	public List&lt;AttributeModel&gt; getAttributeModelsSortedForSearch() {
+<span class="pc bpc" id="L225" title="1 of 2 branches missed.">		if (!searchOrderSet) {</span>
+<span class="nc" id="L226">			return getAttributeModels();</span>
+		}
+<span class="fc" id="L228">		List&lt;AttributeModel&gt; list = constructAttributeModelStream(Comparator.comparing(AttributeModel::getSearchOrder))</span>
+<span class="fc" id="L229">			.toList();</span>
+<span class="fc" id="L230">		return Collections.unmodifiableList(list);</span>
+	}
+
+	@Override
+	public List&lt;AttributeModel&gt; getCascadeAttributeModels() {
+<span class="fc" id="L235">		List&lt;AttributeModel&gt; result = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L236" title="All 2 branches covered.">		for (AttributeModel model : getAttributeModels()) {</span>
+<span class="fc bfc" id="L237" title="All 2 branches covered.">			if (!model.getCascadeAttributes().isEmpty()) {</span>
+<span class="fc" id="L238">				result.add(model);</span>
+			}
+
+			// add nested models
+<span class="pc bpc" id="L242" title="1 of 2 branches missed.">			if (model.getNestedEntityModel() != null) {</span>
+<span class="nc" id="L243">				List&lt;AttributeModel&gt; nested = model.getNestedEntityModel().getCascadeAttributeModels();</span>
+<span class="nc" id="L244">				result.addAll(nested);</span>
+			}
+<span class="fc" id="L246">		}</span>
+<span class="fc" id="L247">		return Collections.unmodifiableList(result);</span>
+	}
+
+	@Override
+	public String getDescription(Locale locale) {
+<span class="fc" id="L252">		return lookup(descriptions, locale, EntityModel.DESCRIPTION, defaultDescription);</span>
+	}
+
+	@Override
+	public String getDisplayName(Locale locale) {
+<span class="fc" id="L257">		return lookup(displayNames, locale, EntityModel.DISPLAY_NAME, defaultDisplayName);</span>
+	}
+
+	@Override
+	public String getDisplayNamePlural(Locale locale) {
+<span class="fc" id="L262">		return lookup(displayNamesPlural, locale, EntityModel.DISPLAY_NAME_PLURAL, defaultDisplayNamePlural);</span>
+	}
+
+	@Override
+	public List&lt;AttributeModel&gt; getRequiredForSearchingAttributeModels() {
+<span class="fc" id="L267">		List&lt;AttributeModel&gt; result = constructAttributeModelStream(Comparator.comparing(AttributeModel::getOrder))</span>
+<span class="fc" id="L268">			.map(m -&gt; {</span>
+<span class="fc" id="L269">				List&lt;AttributeModel&gt; list = new ArrayList&lt;&gt;();</span>
+<span class="fc bfc" id="L270" title="All 4 branches covered.">				if (m.isSearchable() &amp;&amp; m.isRequiredForSearching()) {</span>
+<span class="fc" id="L271">					list.add(m);</span>
+				}
+				// add nested models
+<span class="fc bfc" id="L274" title="All 2 branches covered.">				if (m.getNestedEntityModel() != null) {</span>
+<span class="fc" id="L275">					List&lt;AttributeModel&gt; nested = m.getNestedEntityModel().getRequiredForSearchingAttributeModels();</span>
+<span class="fc" id="L276">					list.addAll(nested);</span>
+				}
+<span class="fc" id="L278">				return list;</span>
+<span class="fc" id="L279">			}).flatMap(List::stream).toList();</span>
+<span class="fc" id="L280">		return Collections.unmodifiableList(result);</span>
+	}
+
+	@Override
+	public boolean isAttributeGroupVisible(String group, boolean readOnly) {
+<span class="fc" id="L285">		return attributeModels.get(group).stream()</span>
+<span class="pc bpc" id="L286" title="2 of 6 branches missed.">			.anyMatch(am -&gt; am.isVisibleInForm() &amp;&amp; (readOnly || !am.getEditableType().equals(EditableType.READ_ONLY)));</span>
+	}
+
+	/**
+	 * Looks up a text message from a resource bundle
+	 *
+	 * @param source   the message cache
+	 * @param locale   the desired locale
+	 * @param key      the message key
+	 * @param fallBack value to fall back to if no match is found
+	 * @return the translation of the key
+	 */
+	private String lookup(Map&lt;String, Optional&lt;String&gt;&gt; source, Locale locale, String key, String fallBack) {
+		// look up in message bundle and add to cache
+<span class="pc bpc" id="L300" title="1 of 2 branches missed.">		if (!source.containsKey(locale.toString())) {</span>
+			try {
+<span class="fc" id="L302">				ResourceBundle rb = ResourceBundle.getBundle(&quot;META-INF/entitymodel&quot;, locale);</span>
+<span class="fc" id="L303">				String str = rb.getString(reference + &quot;.&quot; + key);</span>
+<span class="fc" id="L304">				source.put(locale.toString(), Optional.of(str));</span>
+<span class="fc" id="L305">			} catch (MissingResourceException ex) {</span>
+<span class="fc" id="L306">				source.put(locale.toString(), Optional.empty());</span>
+<span class="fc" id="L307">			}</span>
+		}
+
+		// look up or return fallback value
+<span class="fc" id="L311">		Optional&lt;String&gt; optional = source.get(locale.toString());</span>
+<span class="fc" id="L312">		return optional.orElse(fallBack);</span>
+	}
+
+	@Override
+	public boolean usesDefaultGroupOnly() {
+<span class="fc bfc" id="L317" title="All 2 branches covered.">		return attributeModels.keySet().size() == 1</span>
+<span class="pc bpc" id="L318" title="1 of 2 branches missed.">			&amp;&amp; attributeModels.keySet().iterator().next().equals(EntityModel.DEFAULT_GROUP);</span>
+	}
+
+	@Override
+	public Stream&lt;AttributeModel&gt; getAttributeModels(Predicate&lt;AttributeModel&gt; predicate) {
+<span class="nc" id="L323">		return getAttributeModels().stream().filter(predicate::test);</span>
+	}
+
+	@Override
+	public EntityModelAction findAction(String actionId) {
+<span class="fc" id="L328">		return entityModelActions.stream().filter(action -&gt; action.getId().equals(actionId))</span>
+<span class="fc" id="L329">			.findFirst().orElse(null);</span>
+	}
+
+	@Override
+	public boolean hasEmbeddedAttributeModel(String property) {
+<span class="nc bnc" id="L334" title="All 2 branches missed.">		return !filterAttributeModels(am -&gt; am.getName().startsWith(property + &quot;.&quot;)).isEmpty();</span>
+	}
+
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.12.202403310830</span></div></body></html>
