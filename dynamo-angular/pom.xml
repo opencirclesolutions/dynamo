@@ -150,7 +150,7 @@
 
 	<profiles>
 		<profile>
-			<id>release</id>
+			<id>npm-publish</id>
 			<properties>
 				<node.auth_token/>
 			</properties>
@@ -197,6 +197,7 @@
 									<goal>npm</goal>
 								</goals>
 								<configuration>
+									<skip>true</skip>
 									<arguments>publish --access public</arguments>
 									<workingDirectory>src/main/dynamo/dist/dynamo-angular</workingDirectory>
 								</configuration>
