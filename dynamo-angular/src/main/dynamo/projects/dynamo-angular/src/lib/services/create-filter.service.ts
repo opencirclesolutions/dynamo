@@ -18,8 +18,7 @@
  * #L%
  */
 import { Injectable } from '@angular/core';
-import { createDateRangeFilter, createElementCollectionFilter, createEqualsFilter, createNumberInFilter, createNumberRangeFilter, createTimeRangeFilter, createTimestampFilter, isBoolean, isDecimal, isElementCollection, isEnum, isFreeDetail, isInstant, isIntegral, isLocalDateTime, isMaster, isString, isTime } from '../functions/entitymodel-functions';
-import { isDate } from 'date-fns';
+import { createDateRangeFilter, createElementCollectionFilter, createEqualsFilter, createNumberInFilter, createNumberRangeFilter, createTimeRangeFilter, createTimestampFilter, isBoolean, isDate, isDecimal, isElementCollection, isEnum, isFreeDetail, isInstant, isIntegral, isLocalDateTime, isMaster, isString, isTime } from '../functions/entitymodel-functions';
 import { dateToString } from '../functions/functions';
 import { FilterModel } from '../interfaces/model/filterModel';
 import { SelectOption } from '../interfaces/select-option';
