@@ -33,3 +33,13 @@ jobs:
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
           MAVEN_GPG_PASSPHRASE: ${{ secrets.GPG_PASSPHRASE }}
           NODE_AUTH_TOKEN: ${{ secrets.NODE_AUTH_TOKEN }}
+      - name: asciidoctor-ghpages
+        uses: manoelcampos/asciidoctor-ghpages-action@v2
+        with:
+          pdf_build: true
+          # asciidoctor_params: --attribute=nofooter
+          # adoc_file_ext: .ascii # default is .adoc
+          # source_dir: docs/ # default is .
+          # slides_build: true
+          # pre_build:
+          # post_build:
