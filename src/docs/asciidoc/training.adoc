@@ -327,11 +327,11 @@ The HTML file is very small and looks as follows:
 
 [source,html]
 --
-<app-generic-search-layout entityName="Organization"
-  detailNavigationPath="organization"></app-generic-search-layout>
+<d-generic-search-layout entityName="Organization"
+  detailNavigationPath="organization"></d-generic-search-layout>
 --
 
-* As you can see, we define an `<app-generic-search-layout>` component
+* As you can see, we define an `<d-generic-search-layout>` component
 which is the generic component from the Dynamo framework that consists
 of a search form and a results table.
 * It is instantiated here with only a couple of properties:
@@ -452,9 +452,9 @@ that the line referring to FormOptions looks as follows:
 
 [source,html]
 --
-<app-generic-search-layout entityName="Organization"
+<d-generic-search-layout entityName="Organization"
   detailNavigationPath="organization" [advancedModeEnabled]="true">
-</app-generic-search-layout>
+</d-generic-search-layout>
 --
 
 You will now see an additional button show up in the button bar.
@@ -913,12 +913,12 @@ And bind it in the *organization-search.component.html*:
 
 [source,html]
 --
-<app-generic-search-layout
+<d-generic-search-layout
   entityName="Organization"
   detailNavigationPath="organization"
   [searchFormMode]="searchFormMode"
 >
-</app-generic-search-layout>
+</d-generic-search-layout>
 --
 
 Now, you will see that the search screen you saw before has been
@@ -988,11 +988,11 @@ follows:
 
 [source,html]
 --
-<app-generic-form
-entityName="Organization"
-[entityId]="entityId"
-navigateBackRoute="organizations">
-</app-generic-form>
+<d-generic-form
+    entityName="Organization"
+    [entityId]="entityId"
+    navigateBackRoute="organizations">
+</d-generic-form>
 --
 
 This is a minimal set-up that includes:
@@ -1074,10 +1074,11 @@ detail screen.
 
 [source,html]
 --
-<app-generic-search-layout entityName="Organization"
- detailNavigationPath="organization" [advancedModeEnabled]="true"
-[showDetailButton]="true">
-</app-generic-search-layout>
+<d-generic-search-layout entityName="Organization"
+    detailNavigationPath="organization"
+    [advancedModeEnabled]="true"
+    [showDetailButton]="true">
+</d-generic-search-layout>
 --
 
 .Field with a button to show details.
@@ -1181,7 +1182,7 @@ the input fields. It will also not take up the entire width of the
 screen. Both of these things are fairly easy to change.
 
 In order to change the width of the entire form you can set the value of
-the `formWidthClass` property on the app-generic-form. This property
+the `formWidthClass` property on the `d-generic-form`. This property
 expects standard Bootstrap expressions, e.g. `col-12` means use up all
 12 available columns
 
@@ -1451,8 +1452,8 @@ even simpler than for the search layout:
 
 [source,html]
 --
-<app-generic-split-layout entityName="Person">
-</app-generic-split-layout>
+<d-generic-split-layout entityName="Person">
+</d-generic-split-layout>
 --
 
 Which will produce a screen that looks as follows:
@@ -1498,9 +1499,9 @@ return [createEqualsFilter('firstName', 'a')]
 
 [source,html]
 --
-<app-generic-split-layout entityName="Person"
-  [defaultFilters]="getDefaultFilters()">
-</app-generic-split-layout>
+<d-generic-split-layout entityName="Person"
+    [defaultFilters]="getDefaultFilters()">
+</d-generic-split-layout>
 --
 
 This sets up a filter for filtering on the `firstName` property of the
@@ -1579,7 +1580,7 @@ Defining the actual layout is pretty easy as well:
 
 [source,html]
 --
-<app-generic-split-layout entityName="Gift"></app-generic-split-layout>
+<d-generic-split-layout entityName="Gift"></d-generic-split-layout>
 --
 
 One of the functionalities of the gifts screen is the option to upload
@@ -1722,7 +1723,8 @@ The component itself is again deceptively simple
 
 [source,html]
 --
-<app-generic-edit-table-layout entityName="Delivery">
+<d-generic-edit-table-layout entityName="Delivery">
+</d-generic-edit-table-layout>
 --
 
 However, if you open the Deliveries screen it its current form, it will
@@ -1857,7 +1859,7 @@ We have already provided a custom validator in the CustomValidators
 class, and will now apply this to a field in the _person-search.component.html_
 that we created before.
 
-In the `app-generic-split-layout` we created before, we add a template named
+In the `d-generic-split-layout` we created before, we add a template named
 *customValidatorTemplate* and bind this to the `customValidatorTemplate`
 property of the layout:
 
