@@ -29,7 +29,6 @@ limitations under the License.
       [entityModelReference]="entityModelReference"
       [locale]="locale"
       [multiSelect]="false"
-      [locale]="locale"
       [nested]="true"
       [searchImmediately]="true"
       [defaultFilters]="defaultFilters"
@@ -63,9 +62,7 @@ limitations under the License.
       >
       <div class="col">
         @if (quickSearchProperty) {
-          <form
-            [formGroup]="quickSearchForm!"
-            >
+          <form [formGroup]="quickSearchForm!">
             <input
               id="quickSearchField"
               type="text"

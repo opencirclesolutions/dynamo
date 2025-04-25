@@ -57,6 +57,7 @@ export * from './lib/interfaces/service/status.service'
 export * from './lib/components/base/base.component'
 export * from './lib/components/base-entity/base-entity.component'
 export * from './lib/components/data-table/data-table.component'
+export * from './lib/components/generic-split-layout/generic-split-layout.component'
 export * from './lib/components/generic-edit-table-layout/generic-edit-table-layout.component'
 export * from './lib/components/generic-table/generic-table.component'
 

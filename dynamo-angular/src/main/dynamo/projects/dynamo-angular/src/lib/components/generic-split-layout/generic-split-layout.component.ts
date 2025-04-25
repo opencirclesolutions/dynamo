@@ -20,7 +20,7 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseCompositeCollectionComponent } from '../forms/base-composite-collection/base-composite-collection.component';
@@ -33,11 +33,15 @@ import { HiddenFieldService } from '../../services/hidden-field.service';
 import { DynamoConfig } from '../../interfaces/dynamo-config';
 import { FormInfo } from '../../interfaces/info';
 import {Button} from "primeng/button";
+import {GenericSearchLayoutComponent} from "../forms/search/generic-search-layout/generic-search-layout.component";
+import {DialogModule} from "primeng/dialog";
+import {SplitterModule} from "primeng/splitter";
+import {InputTextModule} from "primeng/inputtext";
 
 @Component({
   selector: 'd-generic-split-layout',
   standalone: true,
-  imports: [TranslateModule, GenericTableComponent, Button],
+  imports: [TranslateModule, GenericTableComponent, Button, GenericSearchLayoutComponent, DialogModule, SplitterModule, GenericFormComponent, ReactiveFormsModule, InputTextModule],
   templateUrl: './generic-split-layout.component.html',
   styleUrl: './generic-split-layout.component.css'
 })
