@@ -473,7 +473,7 @@ pre.rouge {
 <p><span class="image"><img src="media/logo-dynamo.png" alt="image"></span></p>
 </div>
 <div class="paragraph text-center">
-<p>Dynamo: Web Application Accelerator Framework, version 4.0.0-RC4.</p>
+<p>Dynamo: Web Application Accelerator Framework, version 4.0.0.</p>
 </div>
 <div class="paragraph text-center">
 <p>Developed, maintained and sponsored by:</p>
@@ -947,14 +947,14 @@ The HTML file is very small and looks as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
-  <span class="na">detailNavigationPath=</span><span class="s">"organization"</span><span class="nt">&gt;&lt;/app-generic-search-layout&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
+  <span class="na">detailNavigationPath=</span><span class="s">"organization"</span><span class="nt">&gt;&lt;/d-generic-search-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="ulist">
 <ul>
 <li>
-<p>As you can see, we define an <code>&lt;app-generic-search-layout&gt;</code> component
+<p>As you can see, we define an <code>&lt;d-generic-search-layout&gt;</code> component
 which is the generic component from the Dynamo framework that consists
 of a search form and a results table.</p>
 </li>
@@ -1138,9 +1138,9 @@ that the line referring to FormOptions looks as follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
   <span class="na">detailNavigationPath=</span><span class="s">"organization"</span> <span class="na">[advancedModeEnabled]=</span><span class="s">"true"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;/app-generic-search-layout&gt;</span></code></pre>
+<span class="nt">&lt;/d-generic-search-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1801,12 +1801,12 @@ the following in <em>organization-search.component.ts</em>:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-search-layout</span>
   <span class="na">entityName=</span><span class="s">"Organization"</span>
   <span class="na">detailNavigationPath=</span><span class="s">"organization"</span>
   <span class="na">[searchFormMode]=</span><span class="s">"searchFormMode"</span>
 <span class="nt">&gt;</span>
-<span class="nt">&lt;/app-generic-search-layout&gt;</span></code></pre>
+<span class="nt">&lt;/d-generic-search-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -1892,11 +1892,11 @@ follows:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-form</span>
-<span class="na">entityName=</span><span class="s">"Organization"</span>
-<span class="na">[entityId]=</span><span class="s">"entityId"</span>
-<span class="na">navigateBackRoute=</span><span class="s">"organizations"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;/app-generic-form&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-form</span>
+    <span class="na">entityName=</span><span class="s">"Organization"</span>
+    <span class="na">[entityId]=</span><span class="s">"entityId"</span>
+    <span class="na">navigateBackRoute=</span><span class="s">"organizations"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/d-generic-form&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2027,10 +2027,11 @@ detail screen.</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
- <span class="na">detailNavigationPath=</span><span class="s">"organization"</span> <span class="na">[advancedModeEnabled]=</span><span class="s">"true"</span>
-<span class="na">[showDetailButton]=</span><span class="s">"true"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;/app-generic-search-layout&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-search-layout</span> <span class="na">entityName=</span><span class="s">"Organization"</span>
+    <span class="na">detailNavigationPath=</span><span class="s">"organization"</span>
+    <span class="na">[advancedModeEnabled]=</span><span class="s">"true"</span>
+    <span class="na">[showDetailButton]=</span><span class="s">"true"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/d-generic-search-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="imageblock">
@@ -2210,7 +2211,7 @@ screen. Both of these things are fairly easy to change.</p>
 </div>
 <div class="paragraph">
 <p>In order to change the width of the entire form you can set the value of
-the <code>formWidthClass</code> property on the app-generic-form. This property
+the <code>formWidthClass</code> property on the <code>d-generic-form</code>. This property
 expects standard Bootstrap expressions, e.g. <code>col-12</code> means use up all
 12 available columns</p>
 </div>
@@ -2567,8 +2568,8 @@ even simpler than for the search layout:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Person"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;/app-generic-split-layout&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Person"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/d-generic-split-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2644,9 +2645,9 @@ to add default filters, define the following in the
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Person"</span>
-  <span class="na">[defaultFilters]=</span><span class="s">"getDefaultFilters()"</span><span class="nt">&gt;</span>
-<span class="nt">&lt;/app-generic-split-layout&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Person"</span>
+    <span class="na">[defaultFilters]=</span><span class="s">"getDefaultFilters()"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/d-generic-split-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2745,7 +2746,7 @@ array</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Gift"</span><span class="nt">&gt;&lt;/app-generic-split-layout&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-split-layout</span> <span class="na">entityName=</span><span class="s">"Gift"</span><span class="nt">&gt;&lt;/d-generic-split-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -2931,7 +2932,8 @@ files:</p>
 </div>
 <div class="listingblock">
 <div class="content">
-<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;app-generic-edit-table-layout</span> <span class="na">entityName=</span><span class="s">"Delivery"</span><span class="nt">&gt;</span></code></pre>
+<pre class="rouge highlight"><code data-lang="html"><span class="nt">&lt;d-generic-edit-table-layout</span> <span class="na">entityName=</span><span class="s">"Delivery"</span><span class="nt">&gt;</span>
+<span class="nt">&lt;/d-generic-edit-table-layout&gt;</span></code></pre>
 </div>
 </div>
 <div class="paragraph">
@@ -3100,7 +3102,7 @@ class, and will now apply this to a field in the <em>person-search.component.htm
 that we created before.</p>
 </div>
 <div class="paragraph">
-<p>In the <code>app-generic-split-layout</code> we created before, we add a template named
+<p>In the <code>d-generic-split-layout</code> we created before, we add a template named
 <strong>customValidatorTemplate</strong> and bind this to the <code>customValidatorTemplate</code>
 property of the layout:</p>
 </div>
@@ -3671,7 +3673,7 @@ attributes.</p>
 </div>
 <div id="footer">
 <div id="footer-text">
-Last updated 2025-04-18 16:06:04 +0200
+Last updated 2025-04-25 14:17:59 +0200
 </div>
 </div>
 </body>
