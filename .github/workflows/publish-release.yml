@@ -27,7 +27,7 @@ jobs:
           gpg-private-key: ${{ secrets.GPG_PRIVATE_KEY }}
           gpg-passphrase:  MAVEN_GPG_PASSPHRASE
       - name: Deploy to registry
-        run: mvn -B clean deploy -P release
+        run: mvn -B clean deploy -P release,npm-publish
         env:
           MAVEN_USERNAME: ${{ secrets.OSS_SONATYPE_USERNAME }}
           MAVEN_PASSWORD: ${{ secrets.OSS_SONATYPE_PASSWORD }}
