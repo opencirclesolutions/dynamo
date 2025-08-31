@@ -151,4 +151,8 @@ export class AutoFillDialogComponent extends BaseComponent implements OnInit {
   cancel() {
     this.dialogVisible = false;
   }
+
+  override getErrorString(attribute: string): string {
+    return this.entityModelFunctions.getErrorString(attribute, this.formGroup!, this.translate);
+  }
 }

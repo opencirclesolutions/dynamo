@@ -37,6 +37,7 @@ limitations under the License.
         role="group">
         <button
           id="clearButton"
+          type="button"
           (click)="clear()"
           class="btn btn-danger"
 					[disabled]="
@@ -46,6 +47,7 @@ limitations under the License.
         </button>
         <button
           id="addButton"
+          type="button"
           [disabled]="disabled"
           class="btn btn-primary"
           (click)="showDialog()">

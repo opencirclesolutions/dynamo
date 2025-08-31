@@ -119,7 +119,7 @@ public class DynamoConfigurationProperties implements Serializable, DynamoProper
         /**
          * The default nesting depth
          */
-        private Integer nestingDepth = 2;
+        private Integer nestingDepth = 3;
 
         /**
          * The default number field mode

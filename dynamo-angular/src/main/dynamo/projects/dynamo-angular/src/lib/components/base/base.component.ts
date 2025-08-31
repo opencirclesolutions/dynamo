@@ -17,57 +17,23 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, inject } from '@angular/core';
-import {
-  isBoolean,
-  isDate,
-  isDecimal,
-  isEnum,
-  isFreeDetail,
-  isIntegral,
-  isLob,
-  isMaster,
-  isNestedDetail,
-  isString,
-  isTime,
-  isInstant,
-  isLocalDateTime,
-  isUrl,
-  isElementCollection,
-  getErrorString
-} from '../../functions/entitymodel-functions';
+import {Component, Input, inject, Directive} from '@angular/core';
 import { getLocale, prependUrl } from '../../functions/functions';
-import { FormGroup } from '@angular/forms';
+import {FormGroup, ValidatorFn} from '@angular/forms';
 import { TranslateService } from '@ngx-translate/core';
 import { AttributeModelResponse } from '../../interfaces/model/attributeModelResponse';
+import {EntityModelFunctions} from "../../functions/entitymodel-functions";
+import {EqualsFilterModel} from "../../interfaces/model/equalsFilterModel";
 
-@Component({
+@Directive({
   selector: 'd-base',
-  standalone: true,
-  imports: [],
-  templateUrl: './base.component.html',
-  styleUrl: './base.component.css'
+  standalone: true
 })
 export abstract class BaseComponent {
   protected translate = inject(TranslateService);
+  protected entityModelFunctions = new EntityModelFunctions();
 
-  isDate = isDate;
-  isBoolean = isBoolean;
-  isDecimal = isDecimal;
-  isEnum = isEnum;
-  isIntegral = isIntegral;
-  isMaster = isMaster;
-  isString = isString;
-  isInstant = isInstant;
-  isLocalDateTime = isLocalDateTime;
-  isFreeDetail = isFreeDetail;
-  isTime = isTime;
-  isNestedDetail = isNestedDetail;
-  isLob = isLob;
-  isUrl = isUrl;
-  isElementCollection = isElementCollection;
   prependUrl = prependUrl;
-
   getLocale = getLocale();
 
   @Input() public locale: string = getLocale();
@@ -86,10 +52,6 @@ export abstract class BaseComponent {
 
   getDigitsInfo(am?: AttributeModelResponse) {
     return `1.${am!.precision}-${am!.precision}`
-  }
-
-  getErrorString(attribute: string): string {
-    return getErrorString(attribute, this.formGroup!, this.translate);
   }
 
   getFromName(am: AttributeModelResponse): string {
@@ -119,4 +81,83 @@ export abstract class BaseComponent {
     return 'dd-mm-yy';
   }
 
+  isString(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isString(am);
+  }
+
+  isDate(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isDate(am);
+  }
+
+  isInstant(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isInstant(am);
+  }
+
+  isLocalDateTime(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isLocalDateTime(am);
+  }
+
+  isTime(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isTime(am);
+  }
+
+  isEnum(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isEnum(am);
+  }
+
+  isIntegral(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isIntegral(am);
+  }
+
+  isBoolean(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isBoolean(am);
+  }
+
+  isDecimal(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isDecimal(am);
+  }
+
+  isMaster(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isMaster(am);
+  }
+
+  isFreeDetail(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isFreeDetail(am);
+  }
+
+  isNestedDetail(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isNestedDetail(am);
+  }
+
+  isBasic(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isBasic(am);
+  }
+
+  isElementCollection(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isElementCollection(am);
+  }
+
+  isLob(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isLob(am);
+  }
+
+  isUrl(am?: AttributeModelResponse): boolean {
+    return this.entityModelFunctions.isUrl(am);
+  }
+
+  setNestedValue(obj: any, am: AttributeModelResponse, value: any) {
+    this.entityModelFunctions.setNestedValue(obj, am, value);
+  }
+
+  createValidators(am: AttributeModelResponse, elementCollectionPopup: boolean, searchMode: boolean): ValidatorFn[] {
+    return this.entityModelFunctions.createValidators(this.translate, am, elementCollectionPopup, searchMode);
+  }
+
+  createEqualsFilter(attributeName: string, value: any): EqualsFilterModel {
+    return this.entityModelFunctions.createEqualsFilter(attributeName, value);
+  }
+
+  getErrorString(attribute: string): string {
+    return this.entityModelFunctions.getErrorString(attribute, this.formGroup!, this.translate);
+  }
 }

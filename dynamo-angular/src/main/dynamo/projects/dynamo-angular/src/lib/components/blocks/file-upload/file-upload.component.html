@@ -21,7 +21,7 @@ limitations under the License.
   <div class="col-lg-6">
     <!-- image containing base 64 representation -->
     @if (getImageContent() && am.image) {
-      <img
+      <img alt="preview"
         width="200px"
         height="200px"
         src="{{ getImageContent() }}" />
@@ -32,7 +32,7 @@ limitations under the License.
         width="200px"
         height="200px"
         src="assets/no-preview.png"
-        alt />
+        alt="no preview" />
     }
   </div>
   <!-- Actual file upload component-->

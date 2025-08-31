@@ -27,9 +27,9 @@ import {FilterModel} from '../../../../interfaces/model/filterModel';
 import {SelectOption} from '../../../../interfaces/select-option';
 import {AuthenticationService} from '../../../../services/authentication.service';
 import {EntityPopupDialogComponent} from '../../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
-import {truncateDescriptions} from '../../../../functions/entitymodel-functions';
 import {DialogModule} from 'primeng/dialog';
 import {EntitySearchDialogComponent} from "../../../dialogs/entity-search-dialog/entity-search-dialog.component";
+import {EntityModelFunctions} from "../../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-lookup-field',
@@ -210,7 +210,7 @@ export class LookupFieldComponent
     if (!this.selectedValues || this.selectedValues.length == 0) {
       return undefined;
     }
-    return truncateDescriptions(this.selectedValues, 'name', this.translate);
+    return new EntityModelFunctions().truncateDescriptions(this.selectedValues, 'name', this.translate);
   }
 
   writeValue(obj: any): void {

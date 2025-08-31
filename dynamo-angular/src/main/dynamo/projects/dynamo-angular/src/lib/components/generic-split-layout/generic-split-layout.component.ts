@@ -20,7 +20,7 @@
 import { Component, EventEmitter, Input, Output, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import { GenericTableComponent } from '../generic-table/generic-table.component';
 import { Router } from '@angular/router';
-import { FormBuilder, FormGroup } from '@angular/forms';
+import {FormBuilder, FormGroup, ReactiveFormsModule} from '@angular/forms';
 import { debounceTime } from 'rxjs';
 import { TranslateModule } from '@ngx-translate/core';
 import { BaseCompositeCollectionComponent } from '../forms/base-composite-collection/base-composite-collection.component';
@@ -32,17 +32,19 @@ import { AuthenticationService } from '../../services/authentication.service';
 import { HiddenFieldService } from '../../services/hidden-field.service';
 import { DynamoConfig } from '../../interfaces/dynamo-config';
 import { FormInfo } from '../../interfaces/info';
+import {GenericSearchLayoutComponent} from "../forms/search/generic-search-layout/generic-search-layout.component";
+import {DialogModule} from "primeng/dialog";
+import {SplitterModule} from "primeng/splitter";
 
 @Component({
   selector: 'd-generic-split-layout',
   standalone: true,
-  imports: [TranslateModule, GenericTableComponent],
+  imports: [TranslateModule, GenericTableComponent, GenericSearchLayoutComponent, DialogModule, SplitterModule, GenericFormComponent, ReactiveFormsModule],
   templateUrl: './generic-split-layout.component.html',
   styleUrl: './generic-split-layout.component.css'
 })
 export class GenericSplitLayoutComponent extends BaseCompositeCollectionComponent {
   private formBuilder = inject(FormBuilder);
-
 
   // whether to open the component in view
   @Input() openInViewMode: boolean = false;
@@ -74,7 +76,6 @@ export class GenericSplitLayoutComponent extends BaseCompositeCollectionComponen
   vcr!: ViewContainerRef;
 
   dialogVisible: boolean = false;
-
   searchObject: any = {};
   tableCaptionPlural: string = '';
   splitLayoutMode: SplitLayoutMode = SplitLayoutMode.EMPTY;

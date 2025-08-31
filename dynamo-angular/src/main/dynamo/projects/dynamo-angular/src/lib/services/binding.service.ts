@@ -17,58 +17,29 @@
  * limitations under the License.
  * #L%
  */
-import { Injectable } from '@angular/core';
-import { AbstractControl } from '@angular/forms';
+import {Injectable} from '@angular/core';
+import {AbstractControl} from '@angular/forms';
 import {
-  isBoolean,
-  isDate,
-  isDecimal,
-  isElementCollection,
-  isEnum,
-  isFreeDetail,
-  isInstant,
-  isIntegral,
-  isLob,
-  isLocalDateTime,
-  isMaster,
-  isNestedDetail,
-  isString,
-  isTime,
-  mustFetchListValues,
-} from '../functions/entitymodel-functions';
-import {
-  getSimpleLocale,
   timeToDate,
   timestampToDate,
   getNestedValue,
 } from '../functions/functions';
-import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
+import {AttributeModelResponse} from '../interfaces/model/attributeModelResponse';
+import {EntityModelFunctions} from "../functions/entitymodel-functions";
 
 @Injectable({
   providedIn: 'root',
 })
 export class BindingService {
-  isDate = isDate;
-  isBoolean = isBoolean;
-  isDecimal = isDecimal;
-  isEnum = isEnum;
-  isIntegral = isIntegral;
-  isMaster = isMaster;
-  isString = isString;
-  isLocalDateTime = isLocalDateTime;
-  isInstant = isInstant;
-  isFreeDetail = isFreeDetail;
-  isTime = isTime;
-  isNestedDetail = isNestedDetail;
-  isLob = isLob;
-  getSimpleLocale = getSimpleLocale;
-  mustFetchListValues = mustFetchListValues;
-  isElementCollection = isElementCollection;
+
+  private entityModelFunctions: EntityModelFunctions = new EntityModelFunctions();
 
   /**
    * Binds a value from an entity to a field
    * @param am the attribute model
    * @param control the control
+   * @param editObject the object being edited
+   * @param enumMap mapping from attribute name to enum values
    */
   public bindField(
     am: AttributeModelResponse,
@@ -77,47 +48,47 @@ export class BindingService {
     enumMap: Map<string, any[]>
   ) {
     if (
-      this.isString(am) ||
-      this.isDecimal(am) ||
-      this.isIntegral(am) ||
-      this.isBoolean(am) ||
-      this.isElementCollection(am)
+      this.entityModelFunctions.isString(am) ||
+      this.entityModelFunctions.isDecimal(am) ||
+      this.entityModelFunctions.isIntegral(am) ||
+      this.entityModelFunctions.isBoolean(am) ||
+      this.entityModelFunctions.isElementCollection(am)
     ) {
       // no special conversion required
       control.patchValue(getNestedValue(editObject, am.name));
-    } else if (this.isEnum(am)) {
+    } else if (this.entityModelFunctions.isEnum(am)) {
       // enum value, look up in map
       let val = getNestedValue(editObject, am.name);
       let match: any = enumMap
         .get(am.name)!
         .find((option) => option.value === val);
       control.patchValue(match);
-    } else if (this.isDate(am)) {
+    } else if (this.entityModelFunctions.isDate(am)) {
       let val = getNestedValue(editObject, am.name);
       if (val) {
         control.patchValue(new Date(val));
       } else {
         control.reset();
       }
-    } else if (this.isTime(am)) {
+    } else if (this.entityModelFunctions.isTime(am)) {
       let val = getNestedValue(editObject, am.name) as string;
       if (val) {
         control.patchValue(timeToDate(val));
       } else {
         control.reset();
       }
-    } else if (this.isInstant(am) || this.isLocalDateTime(am)) {
+    } else if (this.entityModelFunctions.isInstant(am) || this.entityModelFunctions.isLocalDateTime(am)) {
       let val = getNestedValue(editObject, am.name) as string;
       if (val) {
-        control.patchValue(timestampToDate(val, this.isInstant(am)));
+        control.patchValue(timestampToDate(val, this.entityModelFunctions.isInstant(am)));
       } else {
         control.reset();
       }
-    } else if (this.isNestedDetail(am)) {
+    } else if (this.entityModelFunctions.isNestedDetail(am)) {
       control.patchValue(getNestedValue(editObject, am.name));
     } else if (
-      this.isMaster(am) ||
-      (this.isFreeDetail(am) &&
+      this.entityModelFunctions.isMaster(am) ||
+      (this.entityModelFunctions.isFreeDetail(am) &&
         am.selectMode == AttributeModelResponse.SelectModeEnum.LOOKUP)
     ) {
       this.bindLookupField(am, control, editObject);
@@ -129,6 +100,7 @@ export class BindingService {
    * to an array of objects containing a value and a name
    * @param am the attribute model
    * @param control the lookup field
+   * @param editObject the object being edited
    */
   private bindLookupField(
     am: AttributeModelResponse,

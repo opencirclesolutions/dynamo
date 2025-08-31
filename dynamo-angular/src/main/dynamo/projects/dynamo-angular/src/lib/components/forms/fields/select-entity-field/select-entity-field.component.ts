@@ -31,7 +31,7 @@ import {EqualsFilterModel} from '../../../../interfaces/model/equalsFilterModel'
 import {SearchModel} from '../../../../interfaces/model/searchModel';
 import {PagingModel} from '../../../../interfaces/model/pagingModel';
 import {SortModel} from '../../../../interfaces/model/sortModel';
-import {NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {MessageModule} from 'primeng/message';
 import {TooltipModule} from 'primeng/tooltip';
@@ -66,8 +66,6 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
   // the options that are applicable in case of a lookup field
   filteredOptions$: Observable<any[]> = of([]);
 
-  //private crudService: CRUDServiceInterface;
-
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
 
@@ -76,7 +74,6 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
     const authService = inject(AuthenticationService);
 
     super(authService, translate);
-    //this.crudService = configuration.getCRUDService()
   }
 
   useLookupField(am: AttributeModelResponse) {
@@ -210,6 +207,5 @@ export class SelectEntityFieldComponent extends BaseEntityComponent {
     };
     componentRef.instance.showDialog();
   }
-
 
 }

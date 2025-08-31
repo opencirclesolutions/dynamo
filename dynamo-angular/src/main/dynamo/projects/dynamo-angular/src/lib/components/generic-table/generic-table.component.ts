@@ -54,7 +54,7 @@ import { TooltipModule } from 'primeng/tooltip';
 export class GenericTableComponent
   extends BaseCompositeCollectionComponent
   implements OnInit {
-  private translate = inject(TranslateService);
+
   private createFilterService = inject(CreateFilterService);
 
   defaultPageSize = 10;
@@ -96,7 +96,7 @@ export class GenericTableComponent
   tableCaptionPlural: string = '';
   searchAttributeModels: AttributeModelResponse[] = [];
   loading: boolean = true;
-  popupMenuItems!: MenuItem[];
+  items!: MenuItem[];
   storedSortField: string = 'id';
   storedSortOrder: number = 1;
   private exportService: ExportServiceInterface
@@ -135,7 +135,7 @@ export class GenericTableComponent
         });
     }
 
-    this.popupMenuItems = [
+    this.items = [
       {
         label: this.translate.instant('export_excel'),
         icon: 'pi pi-download',
@@ -513,7 +513,7 @@ export class GenericTableComponent
   }
 
   getContextMenuItems() {
-    return this.entityModel?.exportAllowed ? this.popupMenuItems : [];
+    return this.entityModel?.exportAllowed ? this.items : [];
   }
 
   override afterActionDialogClosed(): void {

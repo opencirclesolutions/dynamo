@@ -17,42 +17,32 @@
  * limitations under the License.
  * #L%
  */
-import { Component, ContentChildren, EventEmitter, Input, Output, QueryList, TemplateRef, inject } from '@angular/core';
-import {
-  AbstractControl,
-  FormBuilder,
-  FormGroup,
-  ValidatorFn,
-} from '@angular/forms';
-import { Router } from '@angular/router';
-import { TranslateService } from '@ngx-translate/core';
-import { parseISO } from 'date-fns';
-import { BaseCompositeComponent } from '../../base-composite/base-composite.component';
-import { OverrideFieldDirective } from '../../../../directives/override-field.directive';
-import { FormInfo } from '../../../../interfaces/info';
-import { AttributeModelResponse } from '../../../../interfaces/model/attributeModelResponse';
-import { SearchFormStateService } from '../../../../services/search-form-state.service';
-import { NotificationService } from '../../../../services/notification.service';
-import { ConfirmService } from '../../../../services/confirm.service';
-import { AuthenticationService } from '../../../../services/authentication.service';
-import { DynamoConfig } from '../../../../interfaces/dynamo-config';
-import { EntityModelResponse } from '../../../../interfaces/model/entityModelResponse';
-import { DynamoValidators } from '../../../../functions/validators';
-import { timeToDate } from '../../../../functions/functions';
+import {ContentChildren, Directive, EventEmitter, inject, Input, Output, QueryList, TemplateRef} from '@angular/core';
+import {AbstractControl, FormBuilder, FormGroup, ValidatorFn,} from '@angular/forms';
+import {Router} from '@angular/router';
+import {TranslateService} from '@ngx-translate/core';
+import {parseISO} from 'date-fns';
+import {BaseCompositeComponent} from '../../base-composite/base-composite.component';
+import {OverrideFieldDirective} from '../../../../directives/override-field.directive';
+import {FormInfo} from '../../../../interfaces/info';
+import {AttributeModelResponse} from '../../../../interfaces/model/attributeModelResponse';
+import {SearchFormStateService} from '../../../../services/search-form-state.service';
+import {NotificationService} from '../../../../services/notification.service';
+import {ConfirmService} from '../../../../services/confirm.service';
+import {AuthenticationService} from '../../../../services/authentication.service';
+import {DynamoConfig} from '../../../../interfaces/dynamo-config';
+import {EntityModelResponse} from '../../../../interfaces/model/entityModelResponse';
+import {DynamoValidators} from '../../../../functions/validators';
+import {timeToDate} from '../../../../functions/functions';
 
-@Component({
-  selector: 'd-base-search-component',
-  standalone: true,
-  imports: [],
-  templateUrl: './base-search-component.component.html',
-  styleUrl: './base-search-component.component.css'
+@Directive({
+  standalone: true
 })
 export abstract class BaseSearchComponent extends BaseCompositeComponent {
+
   private confirmService = inject(ConfirmService);
 
-
   @Input() injectedCustomInputs?: QueryList<OverrideFieldDirective>;
-
   @Input() stateStoreKey?: string = undefined;
   @Input() nested: boolean = false;
   @Input() loading: boolean = false;
@@ -68,7 +58,6 @@ export abstract class BaseSearchComponent extends BaseCompositeComponent {
   protected searchAttributeModels: AttributeModelResponse[] = [];
   protected mainForm?: FormGroup;
   protected formBuilder: FormBuilder;
-  protected translate: TranslateService;
   protected changing: boolean = false;
   protected stateService: SearchFormStateService;
 
@@ -210,26 +199,14 @@ export abstract class BaseSearchComponent extends BaseCompositeComponent {
   }
 
   clear(): void {
-    if (this.confirmClear === true) {
-      var callback = (event: any): void => {
+    if (this.confirmClear) {
+      let callback = (): void => {
         this.doClear();
       };
       this.confirmService.confirm('clear_confirmation', callback);
     } else {
       this.doClear();
     }
-  }
-
-  getPlaceholderFrom(am: AttributeModelResponse) {
-    return this.translate.instant('placeholder_from', {
-      placeholder: am.placeholders[this.locale],
-    });
-  }
-
-  getPlaceholderTo(am: AttributeModelResponse) {
-    return this.translate.instant('placeholder_to', {
-      placeholder: am.placeholders[this.locale],
-    });
   }
 
   /**
@@ -250,14 +227,14 @@ export abstract class BaseSearchComponent extends BaseCompositeComponent {
       controlTo.addValidators(valsTo);
 
       // listen to changes and check validity after changes
-      controlFrom.valueChanges.subscribe((val) => {
+      controlFrom.valueChanges.subscribe(() => {
         if (!this.changing) {
           this.changing = true;
           controlTo.updateValueAndValidity();
           this.changing = false;
         }
       });
-      controlTo.valueChanges.subscribe((val) => {
+      controlTo.valueChanges.subscribe(() => {
         if (!this.changing) {
           this.changing = true;
           controlFrom.updateValueAndValidity();
@@ -277,10 +254,9 @@ export abstract class BaseSearchComponent extends BaseCompositeComponent {
   protected convertDefaultValue(defaultValue: any, am: AttributeModelResponse) {
     if (this.isEnum(am) && defaultValue) {
       // look up correct value in enum values
-      let match: any = this.enumMap
+      defaultValue = this.enumMap
         .get(am.name)!
         .find((v) => v.value === defaultValue);
-      defaultValue = match;
     } else if (this.isDate(am) && defaultValue) {
       defaultValue = parseISO(defaultValue! as string);
     } else if (am.searchDateOnly && defaultValue) {

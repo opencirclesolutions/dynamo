@@ -19,7 +19,7 @@
  */
 import { Pipe, PipeTransform, inject } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
-import { truncateDescriptions } from '../functions/entitymodel-functions';
+import {EntityModelFunctions} from "../functions/entitymodel-functions";
 
 /**
  * Pipe for translating an entity to its display property value
@@ -44,7 +44,7 @@ export class TranslateEntityPipe implements PipeTransform {
       return ''
     }
     if (Array.isArray(obj)) {
-      return truncateDescriptions(obj, displayProperty, this.translate)
+      return new EntityModelFunctions().truncateDescriptions(obj, displayProperty, this.translate)
     }
 
     return obj[displayProperty] || this.translate.instant('display_unknown')

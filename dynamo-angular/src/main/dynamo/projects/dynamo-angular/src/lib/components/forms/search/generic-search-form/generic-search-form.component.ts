@@ -27,7 +27,6 @@ import { ConfirmService } from '../../../../services/confirm.service';
 import { SearchFormStateService } from '../../../../services/search-form-state.service';
 import { AuthenticationService } from '../../../../services/authentication.service';
 import { DynamoConfig } from '../../../../interfaces/dynamo-config';
-import { createEqualsFilter } from '../../../../functions/entitymodel-functions';
 import { CascadeModel } from '../../../../interfaces/model/cascadeModel';
 import { AttributeModelResponse } from '../../../../interfaces/model/attributeModelResponse';
 import { getNestedValue } from '../../../../functions/functions';
@@ -67,6 +66,7 @@ export class GenericSearchFormComponent
   // whether advanced search mode is enabled
   @Input() advancedModeEnabled: boolean = false;
 
+  // whether the form is currently in advanced mode
   advancedMode: boolean = false;
 
   /** Inserted by Angular inject() migration for backwards compatibility */
@@ -134,7 +134,7 @@ export class GenericSearchFormComponent
             if (cascadeControl) {
               control.valueChanges.subscribe((val) => {
                 if (val) {
-                  let cascadeFilter = createEqualsFilter(
+                  let cascadeFilter = this.entityModelFunctions.createEqualsFilter(
                     cascade.filterPath,
                     val.value
                   );

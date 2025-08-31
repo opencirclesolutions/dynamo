@@ -17,62 +17,61 @@
  * limitations under the License.
  * #L%
  */
-import { Component, ContentChildren, EventEmitter, Input, OnInit, Output, QueryList, TemplateRef, ViewChild, ViewContainerRef, inject } from '@angular/core';
 import {
-  FormGroup,
-  AbstractControl,
-  FormArray,
-  FormControl,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
-import {
-  createEqualsFilter,
-  createValidators,
-  getErrorString,
-  setNestedValue,
-} from '../../../functions/entitymodel-functions';
+  Component,
+  ContentChildren,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  TemplateRef,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule,} from '@angular/forms';
+import {Router} from '@angular/router';
 import {
   dateToTimestamp,
   getNestedValue,
   stringToTime,
-  timeToDate,
   timestampToDate,
+  timeToDate,
 } from '../../../functions/functions';
-import { formatISO, parseISO } from 'date-fns';
-import { Observable, concat, concatMap, finalize, map, of, zip } from 'rxjs';
-import { AttributeGroupMode } from '../../../interfaces/mode';
-import { HiddenFieldService } from '../../../services/hidden-field.service';
-import { AdditionalActionMode, AdditionalFormAction } from '../../../interfaces/action';
-import { OverrideFieldDirective } from '../../../directives/override-field.directive';
-import { FileClearInfo, FileUploadInfo, FormInfo } from '../../../interfaces/info';
-import { NotificationService } from '../../../services/notification.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { BindingService } from '../../../services/binding.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { ConfirmService } from '../../../services/confirm.service';
-import { DynamoConfig } from '../../../interfaces/dynamo-config';
-import { FileServiceInterface } from '../../../interfaces/service/file.service';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { AttributeGroupResponse } from '../../../interfaces/model/attributeGroupResponse';
-import { EntityModelResponse } from '../../../interfaces/model/entityModelResponse';
-import { SelectOption } from '../../../interfaces/select-option';
-import { AbstractEntity } from '../../../interfaces/model/abstractEntity';
-import { EntityModelActionResponse } from '../../../interfaces/model/entityModelActionResponse';
-import { CascadeModel } from '../../../interfaces/model/cascadeModel';
-import { EntityPopupDialogComponent } from '../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
-import { AutoFillDialogComponent } from '../../dialogs/auto-fill-dialog/auto-fill-dialog.component';
-import { CommonModule } from '@angular/common';
-import { FileUploadComponent } from '../../blocks/file-upload/file-upload.component';
-import { DetailsGridComponent } from '../details-grid/details-grid.component';
-import { FieldViewComponent } from '../field-view/field-view.component';
-import { TabViewModule } from 'primeng/tabview';
-import { PanelModule } from 'primeng/panel';
-import { GenericFormViewComponent } from '../generic-form-view/generic-form-view.component';
-import { DividerModule } from 'primeng/divider';
-import { GenericFieldComponent } from '../fields/generic-field/generic-field.component';
-import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {formatISO, parseISO} from 'date-fns';
+import {concat, concatMap, finalize, map, Observable, of, zip} from 'rxjs';
+import {AttributeGroupMode} from '../../../interfaces/mode';
+import {HiddenFieldService} from '../../../services/hidden-field.service';
+import {AdditionalActionMode, AdditionalFormAction} from '../../../interfaces/action';
+import {OverrideFieldDirective} from '../../../directives/override-field.directive';
+import {FileClearInfo, FileUploadInfo, FormInfo} from '../../../interfaces/info';
+import {NotificationService} from '../../../services/notification.service';
+import {TranslateModule} from '@ngx-translate/core';
+import {BindingService} from '../../../services/binding.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {ConfirmService} from '../../../services/confirm.service';
+import {DynamoConfig} from '../../../interfaces/dynamo-config';
+import {FileServiceInterface} from '../../../interfaces/service/file.service';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {AttributeGroupResponse} from '../../../interfaces/model/attributeGroupResponse';
+import {EntityModelResponse} from '../../../interfaces/model/entityModelResponse';
+import {SelectOption} from '../../../interfaces/select-option';
+import {AbstractEntity} from '../../../interfaces/model/abstractEntity';
+import {EntityModelActionResponse} from '../../../interfaces/model/entityModelActionResponse';
+import {CascadeModel} from '../../../interfaces/model/cascadeModel';
+import {EntityPopupDialogComponent} from '../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
+import {AutoFillDialogComponent} from '../../dialogs/auto-fill-dialog/auto-fill-dialog.component';
+import {CommonModule} from '@angular/common';
+import {FileUploadComponent} from '../../blocks/file-upload/file-upload.component';
+import {DetailsGridComponent} from '../details-grid/details-grid.component';
+import {FieldViewComponent} from '../field-view/field-view.component';
+import {TabViewModule} from 'primeng/tabview';
+import {PanelModule} from 'primeng/panel';
+import {GenericFormViewComponent} from '../generic-form-view/generic-form-view.component';
+import {DividerModule} from 'primeng/divider';
+import {GenericFieldComponent} from '../fields/generic-field/generic-field.component';
+import {BaseCompositeComponent} from '../base-composite/base-composite.component';
 
 @Component({
   selector: 'd-generic-form',
@@ -85,7 +84,6 @@ export class GenericFormComponent
   extends BaseCompositeComponent
   implements OnInit {
   protected formBuilder = inject(FormBuilder);
-  private translate = inject(TranslateService);
   private confirmService = inject(ConfirmService);
   private bindingService = inject(BindingService);
   private hiddenFieldService = inject(HiddenFieldService);
@@ -120,10 +118,8 @@ export class GenericFormComponent
 
   // callback to enable/disable model action
   @Input() modelActionEnabled?: (action: EntityModelActionResponse, editObject: any, formGroup: FormGroup) => boolean;
-
-  // callback that is used to modify the event before save
+  // hidden field service
   @Input() injectedHiddenFieldService?: HiddenFieldService;
-
   // whether to ask for confirmation before saving
   @Input() confirmSave: boolean = false;
   // whether the form is nested
@@ -180,14 +176,14 @@ export class GenericFormComponent
     EntityModelResponse
   >();
 
+  detailIdMap: Map<string, number[]> = new Map<string, number[]>();
   viewMode: boolean = false;
   editObject: any = {};
   visibleAttributeModels: AttributeModelResponse[] = [];
   mainForm!: FormGroup;
-  nestedFormGroups: Map<String, FormGroup> = new Map<String, FormGroup>();
   loading: boolean = false;
   initDone: boolean = false;
-  private fileController: FileServiceInterface
+  private fileService: FileServiceInterface;
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
@@ -199,15 +195,11 @@ export class GenericFormComponent
     const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
 
     super(messageService, router, authService, configuration);
-    const hiddenFieldService = this.hiddenFieldService;
-
-    this.hiddenFieldService = hiddenFieldService;
-    this.fileController = configuration.getFileService()
+    this.fileService = configuration.getFileService();
   }
 
   ngOnInit(): void {
-    this.hiddenFieldService = this.injectedHiddenFieldService || this.hiddenFieldService
-
+    this.hiddenFieldService = this.injectedHiddenFieldService || this.hiddenFieldService;
     this.viewMode = this.openInViewMode || this.readOnly;
     if (!this.entityModel) {
       this.entityModelService
@@ -286,7 +278,7 @@ export class GenericFormComponent
     >[] = this.visibleAttributeModels
       .filter(
         (am) =>
-          this.isNestedDetail(am) || this.isFreeDetail(am) || this.isMaster(am)
+          this.isNestedDetail(am) || this.isFreeDetail(am) ||  this.isMaster(am)
       )
       .map((am) => this.getNestedModel(am));
 
@@ -414,10 +406,9 @@ export class GenericFormComponent
       let defaultValue: any = this.entityId ? undefined : am.defaultValue;
       if (this.isEnum(am) && am.defaultValue) {
         // look up correct value in enum values
-        let match: any = this.enumMap
+        defaultValue = this.enumMap
           .get(am.name)!
           .find((v) => v.value === am.defaultValue);
-        defaultValue = match;
       } else if (this.isDate(am) && defaultValue) {
         defaultValue = parseISO(defaultValue! as string);
       } else if (this.isTime(am) && defaultValue) {
@@ -437,7 +428,7 @@ export class GenericFormComponent
     this.mainForm = this.formBuilder.group([]);
 
     this.visibleAttributeModels.forEach((am) => {
-      let validators = createValidators(this.translate, am, false, false);
+      let validators = this.createValidators(am, false, false);
       if (!this.isNestedDetail(am)) {
         let control = this.formBuilder.control(
           {
@@ -465,13 +456,9 @@ export class GenericFormComponent
     return this.mainForm?.get(am.name) as FormArray;
   }
 
-  getErrorString(attribute: string): string {
-    return getErrorString(attribute, this.mainForm!, this.translate);
-  }
-
   save(): void {
-    if (this.confirmSave === true) {
-      var callback = (event: any): void => {
+    if (this.confirmSave) {
+      const callback = (_: any): void => {
         this.doSave();
       };
       this.confirmService.confirm('save_confirmation', callback);
@@ -479,8 +466,6 @@ export class GenericFormComponent
       this.doSave();
     }
   }
-
-  detailIdMap: Map<string, number[]> = new Map<string, number[]>();
 
   doSave() {
     this.detailIdMap.clear();
@@ -498,9 +483,9 @@ export class GenericFormComponent
 
     console.log(JSON.stringify(this.editObject));
 
-    if (!this.mainForm!.valid) {
+    if (!this.mainForm?.valid) {
       this.messageService.error(this.translate.instant('form_not_valid'));
-      this.mainForm!.markAllAsTouched();
+      this.mainForm.markAllAsTouched();
       return;
     }
 
@@ -508,7 +493,7 @@ export class GenericFormComponent
       let valMessage = this.additionalValidation(this.mainForm);
       if (valMessage) {
         this.messageService.error(valMessage);
-        this.mainForm!.markAllAsTouched();
+        this.mainForm.markAllAsTouched();
         return;
       }
     }
@@ -530,7 +515,7 @@ export class GenericFormComponent
   }
 
   private wrapInObject(attribute: string, value: any): any {
-    let am = this.findAttributeModel(attribute);
+    const am = this.findAttributeModel(attribute);
     if (this.isMaster(am)) {
       return { id: value };
     } else if (this.isFreeDetail(am)) {
@@ -600,7 +585,7 @@ export class GenericFormComponent
   }
 
   /**
-   * Handles a PUT request to update an existing entity
+   * Handles a PUT request to update an existing entity or call an action
    * @param editObject the edit object
    */
   private handlePut(editObject: any) {
@@ -628,7 +613,7 @@ export class GenericFormComponent
         })
       )
       .subscribe({
-        next: (v: any) => { },
+        next: () => { },
         error: (error) =>
           error.error
             ? this.messageService.error(error.error.message)
@@ -726,7 +711,7 @@ export class GenericFormComponent
   }
 
   private createUploadFileObservables(
-    v: AbstractEntity
+    entity: AbstractEntity
   ): Observable<AbstractEntity>[] {
     let observables: Observable<AbstractEntity>[] = [];
 
@@ -734,26 +719,26 @@ export class GenericFormComponent
     this.fileClearMap.forEach((val, am) => {
       if (val) {
         observables.push(
-          this.fileController
-            .clear(v.id!.toString(), this.entityName, am!.name)
-            .pipe(map((_) => v))
+          this.fileService
+            .clear((entity?.id || 0).toString(), this.entityName, am.name)
+            .pipe(map((_) => entity))
         );
       }
     });
 
     // create observables for uploading files
-    this.fileMap.forEach((val, am) => {
+    this.fileMap.forEach((_, am) => {
       let file = this.fileMap.get(am);
       if (file) {
         observables.push(
-          this.fileController
+          this.fileService
             .upload(
-              v.id!.toString(),
+              entity.id!.toString(),
               this.entityName,
               am!.name,
               this.fileMap.get(am!)!
             )
-            .pipe(map((_) => v))
+            .pipe(map((_) => entity))
         );
       }
     });
@@ -865,8 +850,8 @@ export class GenericFormComponent
 
   mustClearFileUploads() {
     let mustClear: boolean = false;
-    this.fileClearMap.forEach((val, am) => {
-      if (val === true) {
+    this.fileClearMap.forEach((val, _) => {
+      if (val) {
         mustClear = true;
       }
     });
@@ -883,7 +868,7 @@ export class GenericFormComponent
 
     if (info.am.fileNameAttribute) {
       let fileNameAm = this.findAttributeModel(info.am.fileNameAttribute)!;
-      setNestedValue(this.editObject, fileNameAm, fileName);
+      this.setNestedValue(this.editObject, fileNameAm, fileName);
     }
     if (this.fileClearMap.has(info.am)) {
       this.fileClearMap.set(info.am, false);
@@ -898,7 +883,7 @@ export class GenericFormComponent
     this.fileMap.delete(info.am);
     if (info.am.fileNameAttribute) {
       let fileNameAm = this.findAttributeModel(info.am.fileNameAttribute)!;
-      setNestedValue(this.editObject, fileNameAm, undefined);
+      this.setNestedValue(this.editObject, fileNameAm, undefined);
     }
     if (this.fileClearMap.has(info.am)) {
       this.fileClearMap.set(info.am, true);
@@ -942,10 +927,7 @@ export class GenericFormComponent
   }
 
   isUpdateMode(): boolean {
-    if (this.entityId) {
-      return true;
-    }
-    return false;
+    return !!this.entityId;
   }
 
   getNestedValue(obj: any, am: AttributeModelResponse): any {
@@ -1058,7 +1040,7 @@ export class GenericFormComponent
             if (cascadeControl) {
               control.valueChanges.subscribe((val) => {
                 if (val) {
-                  let cascadeFilter = createEqualsFilter(
+                  let cascadeFilter = this.createEqualsFilter(
                     cascade.filterPath,
                     val.value
                   );
@@ -1132,9 +1114,8 @@ export class GenericFormComponent
 
   /**
    * Executes an action defined in the entity model
-   * @param viewContainerRef container ref
+   * @param viewContainerRef container ref for holding the pop-up
    * @param action the action to carry out
-   * @param row the row
    */
   callModelAction(
     viewContainerRef: ViewContainerRef | undefined,
@@ -1161,8 +1142,7 @@ export class GenericFormComponent
           componentRef.instance.fieldFilters = this.fieldFilters;
           componentRef.instance.entityId = this.entityId;
           componentRef.instance.readOnly = false;
-
-          var callback = (event: any): void => {
+          componentRef.instance.onDialogClosed = (_: any): void => {
             this.service
               .get(
                 this.entityName,
@@ -1171,7 +1151,6 @@ export class GenericFormComponent
               )
               .subscribe((entity) => this.bindExistingEntity(entity));
           };
-          componentRef.instance.onDialogClosed = callback;
           componentRef.instance.showDialog();
         }
       });

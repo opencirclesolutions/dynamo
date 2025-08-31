@@ -59,6 +59,7 @@ export * from './lib/components/base-entity/base-entity.component'
 export * from './lib/components/data-table/data-table.component'
 export * from './lib/components/generic-edit-table-layout/generic-edit-table-layout.component'
 export * from './lib/components/generic-table/generic-table.component'
+export * from './lib/components/generic-split-layout/generic-split-layout.component'
 
 export * from './lib/components/blocks/backend-not-available/backend-not-available.component'
 export * from './lib/components/blocks/file-upload/file-upload.component'
@@ -103,6 +104,7 @@ export * from './lib/directives/hidden-field.directive'
 export * from './lib/directives/override-field.directive'
 
 export * from './lib/functions/validators'
+export * from './lib/functions/entitymodel-functions'
 
 export * from './lib/guards/backend-available.guard'
 export * from './lib/guards/role.guard'

@@ -17,16 +17,16 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, Output, EventEmitter, ViewChild, inject } from '@angular/core';
-import { FileUpload, FileUploadHandlerEvent, FileUploadModule } from 'primeng/fileupload';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { getNestedValue } from '../../../functions/functions';
-import { BaseComponent } from '../../base/base.component';
-import { FileClearInfo, FileUploadInfo } from '../../../interfaces/info';
-import { DynamoConfig } from '../../../interfaces/dynamo-config';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { FileServiceInterface } from '../../../interfaces/service/file.service';
-import { setNestedValue } from '../../../functions/entitymodel-functions';
+import {Component, EventEmitter, inject, Input, Output, ViewChild} from '@angular/core';
+import {FileUpload, FileUploadHandlerEvent, FileUploadModule} from 'primeng/fileupload';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {getNestedValue} from '../../../functions/functions';
+import {BaseComponent} from '../../base/base.component';
+import {FileClearInfo, FileUploadInfo} from '../../../interfaces/info';
+import {DynamoConfig} from '../../../interfaces/dynamo-config';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {FileServiceInterface} from '../../../interfaces/service/file.service';
+import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-file-upload',
@@ -98,14 +98,13 @@ export class FileUploadComponent extends BaseComponent {
   /**
    * Event handler for dealing with a file upload
    * @param event the file upload event
-   * @param am the attribute model
    */
   uploadHandler(event: FileUploadHandlerEvent) {
     // reads the file and show it in the preview
     var reader = new FileReader();
     let self = this;
     reader.onload = function() {
-      setNestedValue(self.editObject, self.am, reader.result);
+      new EntityModelFunctions().setNestedValue(self.editObject, self.am, reader.result);
     };
     reader.readAsDataURL(event.files[0]);
 
@@ -127,7 +126,7 @@ export class FileUploadComponent extends BaseComponent {
    * Clears a file upload component
    */
   clearUpload() {
-    setNestedValue(this.editObject, this.am, undefined);
+    new EntityModelFunctions().setNestedValue(this.editObject, this.am, undefined);
     this.onFileClear.emit({
       am: this.am,
     });

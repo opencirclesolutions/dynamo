@@ -18,18 +18,20 @@
  * #L%
  */
 import { Injectable } from '@angular/core';
-import { createDateRangeFilter, createElementCollectionFilter, createEqualsFilter, createNumberInFilter, createNumberRangeFilter, createTimeRangeFilter, createTimestampFilter, isBoolean, isDecimal, isElementCollection, isEnum, isFreeDetail, isInstant, isIntegral, isLocalDateTime, isMaster, isString, isTime } from '../functions/entitymodel-functions';
 import { isDate } from 'date-fns';
 import { dateToString } from '../functions/functions';
 import { FilterModel } from '../interfaces/model/filterModel';
 import { SelectOption } from '../interfaces/select-option';
 import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
 import { TimeRangeFilterModel } from '../interfaces/model/timeRangeFilterModel';
+import {EntityModelFunctions} from "../functions/entitymodel-functions";
 
 @Injectable({
   providedIn: 'root',
 })
 export class CreateFilterService {
+
+  private entityModelFunctions = new EntityModelFunctions();
 
   constructor() { }
 
@@ -49,18 +51,18 @@ export class CreateFilterService {
           searchObject[this.getFromName(am)] ||
           searchObject[this.getToName(am)])
       ) {
-        if (isString(am)) {
-          let filter = createEqualsFilter(am.name, searchObject[am.name]);
+        if (this.entityModelFunctions.isString(am)) {
+          let filter = this.entityModelFunctions.createEqualsFilter(am.name, searchObject[am.name]);
           filters.push(filter);
-        } else if (isEnum(am)) {
-          let filter = createEqualsFilter(
+        } else if (this.entityModelFunctions.isEnum(am)) {
+          let filter = this.entityModelFunctions.createEqualsFilter(
             am.name,
             searchObject[am.name].value
           );
           filters.push(filter);
-        } else if (isIntegral(am)) {
+        } else if (this.entityModelFunctions.isIntegral(am)) {
           if (am.searchForExactValue === true) {
-            let filter = createEqualsFilter(
+            let filter = this.entityModelFunctions.createEqualsFilter(
               am.name,
               searchObject[am.name]
             );
@@ -70,7 +72,7 @@ export class CreateFilterService {
               searchObject[this.getFromName(am)] ||
               searchObject[this.getToName(am)]
             ) {
-              let filter = createNumberRangeFilter(
+              let filter = this.entityModelFunctions.createNumberRangeFilter(
                 am.name,
                 searchObject[this.getFromName(am)],
                 searchObject[this.getToName(am)]
@@ -78,12 +80,12 @@ export class CreateFilterService {
               filters.push(filter);
             }
           }
-        } else if (isDecimal(am)) {
+        } else if (this.entityModelFunctions.isDecimal(am)) {
           if (
             searchObject[this.getFromName(am)] ||
             searchObject[this.getToName(am)]
           ) {
-            let filter = createNumberRangeFilter(
+            let filter = this.entityModelFunctions.createNumberRangeFilter(
               am.name,
               searchObject[this.getFromName(am)],
               searchObject[this.getToName(am)]
@@ -92,45 +94,45 @@ export class CreateFilterService {
           }
         } else if (isDate(am)) {
           this.createDateFilter(searchObject, am, filters);
-        } else if (isMaster(am)) {
+        } else if (this.entityModelFunctions.isMaster(am)) {
           // single select
           if (am.multipleSearch) {
             let selectedOptions: SelectOption[] = searchObject[am.name];
             if (selectedOptions && selectedOptions.length > 0) {
               let mapped = selectedOptions.map((option) => option.value || option);
-              let filter = createNumberInFilter(am.name, mapped);
+              let filter = this.entityModelFunctions.createNumberInFilter(am.name, mapped);
               filters.push(filter);
             }
           } else {
-            let filter = createEqualsFilter(
+            let filter = this.entityModelFunctions.createEqualsFilter(
               am.name,
               searchObject[am.name].value
             );
             filters.push(filter);
           }
-        } else if (isFreeDetail(am)) {
+        } else if (this.entityModelFunctions.isFreeDetail(am)) {
           // multiple select
           let selectedOptions: SelectOption[] = searchObject[am.name];
           if (selectedOptions && selectedOptions.length > 0) {
             let mapped = selectedOptions.map((option) => option.value || option);
-            let filter = createNumberInFilter(am.name, mapped);
+            let filter = this.entityModelFunctions.createNumberInFilter(am.name, mapped);
             filters.push(filter);
           }
-        } else if (isInstant(am) || isLocalDateTime(am)) {
+        } else if (this.entityModelFunctions.isInstant(am) || this.entityModelFunctions.isLocalDateTime(am)) {
           this.createTimestampFilter(searchObject, am, filters);
-        } else if (isTime(am)) {
+        } else if (this.entityModelFunctions.isTime(am)) {
           this.createTimeFilter(searchObject, am, filters);
-        } else if (isElementCollection(am)) {
+        } else if (this.entityModelFunctions.isElementCollection(am)) {
           let values = searchObject[am.name];
-          filters.push(createElementCollectionFilter(am, values));
+          filters.push(this.entityModelFunctions.createElementCollectionFilter(am, values));
         }
       }
 
       // special case for boolean (explicitly check for TRUE and FALSE)
-      if (isBoolean(am)) {
+      if (this.entityModelFunctions.isBoolean(am)) {
         let value = searchObject[am.name];
         if (value === true || value === false) {
-          let filter = createEqualsFilter(am.name, value);
+          let filter = this.entityModelFunctions.createEqualsFilter(am.name, value);
           filters.push(filter);
         }
       }
@@ -149,7 +151,7 @@ export class CreateFilterService {
   createDateFilter(searchObject: any, am: AttributeModelResponse, filters: FilterModel[]): void {
     if (am.searchForExactValue === true) {
       let dateStr: any = dateToString(searchObject[am.name]);
-      let filter = createEqualsFilter(am.name, dateStr);
+      let filter = this.entityModelFunctions.createEqualsFilter(am.name, dateStr);
       filters.push(filter);
     } else if (
       searchObject[this.getFromName(am)] ||
@@ -158,7 +160,7 @@ export class CreateFilterService {
       // upper bound, lower bound, or both specified
       let from = searchObject[this.getFromName(am)];
       let to = searchObject[this.getToName(am)];
-      filters.push(createDateRangeFilter(am.name, from as Date, to as Date));
+      filters.push(this.entityModelFunctions.createDateRangeFilter(am.name, from as Date, to as Date));
     }
   }
 
@@ -170,7 +172,7 @@ export class CreateFilterService {
       let from = searchObject[this.getFromName(am)];
       let to = searchObject[this.getToName(am)];
 
-      let filter: TimeRangeFilterModel = createTimeRangeFilter(
+      let filter: TimeRangeFilterModel = this.entityModelFunctions.createTimeRangeFilter(
         am.name,
         from,
         to
@@ -182,7 +184,7 @@ export class CreateFilterService {
   createTimestampFilter(searchObject: any, am: AttributeModelResponse, filters: FilterModel[]): void {
     if (am.searchDateOnly === true) {
       let dateStr: any = dateToString(searchObject[am.name]);
-      let filter = createEqualsFilter(am.name, dateStr);
+      let filter = this.entityModelFunctions.createEqualsFilter(am.name, dateStr);
       filters.push(filter);
     } else {
       if (
@@ -192,11 +194,11 @@ export class CreateFilterService {
         // upper bound, lower bound, or both specified
         let from = searchObject[this.getFromName(am)];
         let to = searchObject[this.getToName(am)];
-        let filter = createTimestampFilter(
+        let filter = this.entityModelFunctions.createTimestampFilter(
           am.name,
           from,
           to,
-          isInstant(am)
+          this.entityModelFunctions.isInstant(am)
         );
         filters.push(filter);
       }

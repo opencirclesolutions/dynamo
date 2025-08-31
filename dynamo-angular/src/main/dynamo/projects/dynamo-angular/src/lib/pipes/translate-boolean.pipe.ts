@@ -34,14 +34,14 @@ export class TranslateBooleanPipe implements PipeTransform {
       return '';
     }
 
-    if (value === true) {
+    if (value) {
       if (trueRepresentations[locale]) {
         return trueRepresentations[locale]
       }
       return 'true'
     }
 
-    if (value === false) {
+    if (!value) {
       if (falseRepresentations[locale]) {
         return falseRepresentations[locale]
       }

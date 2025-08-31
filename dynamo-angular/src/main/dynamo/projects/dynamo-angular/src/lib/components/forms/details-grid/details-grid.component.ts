@@ -17,51 +17,32 @@
  * limitations under the License.
  * #L%
  */
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { SimpleChanges, TemplateRef, inject } from '@angular/core';
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import {
-  createValidators,
-  getErrorString,
-  isBoolean,
-  isDecimal,
-  isEnum,
-  isIntegral,
-  isMaster,
-  isString,
-  isTime,
-  isInstant,
-  isLocalDateTime,
-  isDate,
-} from '../../../functions/entitymodel-functions';
-import {
-  getNestedValue,
-  timeToDate,
-  timestampToDate,
-} from '../../../functions/functions';
-import { Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { concat, Observable, of, zip } from 'rxjs';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { EntityModelResponse } from '../../../interfaces/model/entityModelResponse';
-import { NotificationService } from '../../../services/notification.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { DynamoConfig } from '../../../interfaces/dynamo-config';
-import { SelectOption } from '../../../interfaces/select-option';
-import { CommonModule } from '@angular/common';
-import { TooltipModule } from 'primeng/tooltip';
-import { DecimalFieldComponent } from '../fields/decimal-field/decimal-field.component';
-import { NumberFieldComponent } from '../fields/number-field/number-field.component';
-import { CheckboxModule } from 'primeng/checkbox';
-import { SelectEntityFieldComponent } from '../fields/select-entity-field/select-entity-field.component';
-import { TimestampFieldComponent } from '../fields/timestamp-field/timestamp-field.component';
-import { TimeFieldComponent } from '../fields/time-field/time-field.component';
-import { DateFieldComponent } from '../fields/date-field/date-field.component';
-import { EnumFieldComponent } from '../fields/enum-field/enum-field.component';
-import { StringFieldComponent } from '../fields/string-field/string-field.component';
-import { FieldViewComponent } from '../field-view/field-view.component';
-import { TableModule } from 'primeng/table';
-import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {Component, inject, Input, OnChanges, OnInit, SimpleChanges, TemplateRef} from '@angular/core';
+import {getNestedValue, timestampToDate, timeToDate,} from '../../../functions/functions';
+import {Router} from '@angular/router';
+import {TranslateModule} from '@ngx-translate/core';
+import {concat, Observable, of, zip} from 'rxjs';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {EntityModelResponse} from '../../../interfaces/model/entityModelResponse';
+import {NotificationService} from '../../../services/notification.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {DynamoConfig} from '../../../interfaces/dynamo-config';
+import {SelectOption} from '../../../interfaces/select-option';
+import {CommonModule} from '@angular/common';
+import {TooltipModule} from 'primeng/tooltip';
+import {DecimalFieldComponent} from '../fields/decimal-field/decimal-field.component';
+import {NumberFieldComponent} from '../fields/number-field/number-field.component';
+import {CheckboxModule} from 'primeng/checkbox';
+import {SelectEntityFieldComponent} from '../fields/select-entity-field/select-entity-field.component';
+import {TimestampFieldComponent} from '../fields/timestamp-field/timestamp-field.component';
+import {TimeFieldComponent} from '../fields/time-field/time-field.component';
+import {DateFieldComponent} from '../fields/date-field/date-field.component';
+import {EnumFieldComponent} from '../fields/enum-field/enum-field.component';
+import {StringFieldComponent} from '../fields/string-field/string-field.component';
+import {FieldViewComponent} from '../field-view/field-view.component';
+import {TableModule} from 'primeng/table';
+import {BaseCompositeComponent} from '../base-composite/base-composite.component';
 
 @Component({
   selector: 'd-details-grid',
@@ -73,7 +54,6 @@ import { BaseCompositeComponent } from '../base-composite/base-composite.compone
 export class DetailsGridComponent
   extends BaseCompositeComponent
   implements OnInit, OnChanges {
-  private translate = inject(TranslateService);
 
   // parent entity name
   @Input({ required: true }) parentEntityName!: string;
@@ -167,16 +147,16 @@ export class DetailsGridComponent
       if (
         attrib &&
         attrib.visibleInForm &&
-        (isString(attrib) ||
-          isEnum(attrib) ||
-          isIntegral(attrib) ||
-          isBoolean(attrib) ||
-          isDate(attrib) ||
-          isMaster(attrib) ||
-          isTime(attrib) ||
-          isInstant(attrib) ||
-          isDecimal(attrib) ||
-          isLocalDateTime(attrib))
+        (this.isString(attrib) ||
+          this.isEnum(attrib) ||
+          this.isIntegral(attrib) ||
+          this.isBoolean(attrib) ||
+          this.isDate(attrib) ||
+          this.isMaster(attrib) ||
+          this. isTime(attrib) ||
+          this.isInstant(attrib) ||
+          this.isDecimal(attrib) ||
+          this.isLocalDateTime(attrib))
       ) {
         // this covers basically everything now except nested forms
         this.attributeModels.push(attrib);
@@ -231,8 +211,7 @@ export class DetailsGridComponent
   }
 
   getFormGroup(index: number): FormGroup {
-    let group = this.formArray?.at(index) as FormGroup;
-    return group;
+    return this.formArray?.at(index) as FormGroup;
   }
 
   /**
@@ -258,31 +237,30 @@ export class DetailsGridComponent
     this.formArray?.push(rowGroup);
     this.attributeModels.forEach((am) => {
       let val = getNestedValue(row, am.name);
-      if (isEnum(am)) {
+      if (this.isEnum(am)) {
         let match: any = this.enumMap
           .get(am.name)!
           .find((v) => v.value === val);
         val = match;
-      } else if (isDate(am)) {
+      } else if (this.isDate(am)) {
         if (val) {
           val = new Date(val);
         }
-      } else if (isTime(am)) {
+      } else if (this.isTime(am)) {
         if (val) {
           val = timeToDate(val);
         }
-      } else if (isInstant(am) || isLocalDateTime(am)) {
-        val = timestampToDate(val, isInstant(am));
-      } else if (isMaster(am)) {
+      } else if (this.isInstant(am) || this.isLocalDateTime(am)) {
+        val = timestampToDate(val, this.isInstant(am));
+      } else if (this.isMaster(am)) {
         if (this.entityLists.get(am.lookupEntityName!)) {
-          let match: any = this.entityLists
+          val = this.entityLists
             .get(am.lookupEntityName!)!
             .find((v) => val && v.value === val.id);
-          val = match;
         }
       }
 
-      let validators = createValidators(this.translate, am, false, false);
+      let validators = this.createValidators(am, false, false);
       let control = this.formBuilder!.control(
         {
           disabled: false,
@@ -305,19 +283,19 @@ export class DetailsGridComponent
     return this.enumMap.get(attribute)!;
   }
 
-  getErrorString(attribute: string, formGroup: FormGroup): string {
-    if (!formGroup) {
-      return '';
-    }
-    return getErrorString(attribute, formGroup, this.translate);
-  }
+  // override getErrorString(attribute: string, formGroup: FormGroup): string {
+  //   if (!formGroup) {
+  //     return '';
+  //   }
+  //   return this.getErrorString(attribute, formGroup, this.translate);
+  // }
 
   protected override onLookupFilled(am: AttributeModelResponse): void {
     for (let i = 0; i < this.formArray!.length; i++) {
       let formArray = this.formArray?.at(i)!;
       let control = formArray.get(am.name)!;
 
-      if (isMaster(am) && control && this.rows && this.rows[i]) {
+      if (this.isMaster(am) && control && this.rows && this.rows[i]) {
         let val = this.rows[i][am.name];
         if (val) {
           if (this.entityLists.get(am.lookupEntityName!)) {

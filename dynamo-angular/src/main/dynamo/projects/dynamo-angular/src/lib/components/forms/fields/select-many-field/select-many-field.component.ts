@@ -101,4 +101,8 @@ export class SelectManyFieldComponent extends BaseEntityComponent {
     };
     componentRef.instance.showDialog();
   }
+
+  override getErrorString(attribute: string): string {
+    return this.entityModelFunctions.getErrorString(attribute, this.formGroup!, this.translate);
+  }
 }

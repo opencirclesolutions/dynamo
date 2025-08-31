@@ -50,4 +50,7 @@ export class NumberFieldComponent extends BaseComponent {
     return am.includeNumberSpinnerButton === true;
   }
 
+  override getErrorString(attribute: string): string {
+    return this.entityModelFunctions.getErrorString(attribute, this.formGroup!, this.translate);
+  }
 }

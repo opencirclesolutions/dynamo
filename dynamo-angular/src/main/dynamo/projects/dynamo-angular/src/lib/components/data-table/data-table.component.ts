@@ -139,7 +139,7 @@ export class DataTableComponent implements OnInit {
    * @param event
    */
   onDeleteClick(event: any) {
-    var callback = (e: any): void => {
+    const callback = (): void => {
       this.onDelete(event);
     };
     this.confirmService.confirm('delete_confirmation', callback);
@@ -181,7 +181,7 @@ export class DataTableComponent implements OnInit {
 
   navigate(row: any, col: TableColumn) {
     let link = `${col.navigateLink}/${row[col.field]['id']} `
-    this.router.navigateByUrl(link)
+    this.router.navigateByUrl(link).then(() => {});
   }
 
   getNestedValue(row: any, name: string) {
