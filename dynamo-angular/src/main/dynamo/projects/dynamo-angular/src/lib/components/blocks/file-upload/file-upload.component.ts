@@ -27,11 +27,12 @@ import {DynamoConfig} from '../../../interfaces/dynamo-config';
 import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
 import {FileServiceInterface} from '../../../interfaces/service/file.service';
 import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
+import {NgOptimizedImage} from "@angular/common";
 
 @Component({
   selector: 'd-file-upload',
   standalone: true,
-  imports: [FileUploadModule, TranslateModule],
+  imports: [FileUploadModule, TranslateModule, NgOptimizedImage],
   templateUrl: './file-upload.component.html',
   styleUrl: './file-upload.component.css'
 })

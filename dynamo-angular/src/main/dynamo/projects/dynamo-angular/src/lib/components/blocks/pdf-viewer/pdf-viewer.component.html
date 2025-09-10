@@ -18,15 +18,15 @@ limitations under the License.
 #L%
 -->
 <div class="container">
-  @if (isModelMode()) {
-	  @if (file | async; as f) {
-		@if (f.length) {
-		  <ngx-extended-pdf-viewer
-		  [base64Src]="f"></ngx-extended-pdf-viewer>
-		}
-	  }
-  }
-  @if (isExternalMode()) {
-    <ngx-extended-pdf-viewer [src]="externalUrl!"></ngx-extended-pdf-viewer>
-  }
+    @if (isModelMode()) {
+        @if (file | async; as f) {
+            @if (f.length) {
+                <ngx-extended-pdf-viewer
+                    [base64Src]="f"></ngx-extended-pdf-viewer>
+            }
+        }
+    }
+    @if (isExternalMode()) {
+        <ngx-extended-pdf-viewer [src]="externalUrl!"></ngx-extended-pdf-viewer>
+    }
 </div>

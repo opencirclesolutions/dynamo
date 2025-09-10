@@ -236,31 +236,29 @@
             </div>
         }
 
+        <!-- empty template, can be overrideen to include custom validations -->
         <ng-template #defaultCustomValidatorTemplate></ng-template>
-        <ng-template
-            #customActionTemplate
-            let-action>
+
+        <!-- custom action template -->
+        <ng-template #customActionTemplate let-action>
             <button
                 type="submit"
                 class="btn btn-primary m-1"
                 (click)="callAdditionalAction(action)"
                 [class]="action.buttonClass"
                 [disabled]="loading || isAdditionalFormActionDisabled(action)">
-	<span
-        *ngIf="action.icon"
-        class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
+	        <span *ngIf="action.icon" class="pi {{ action.icon }}"></span> {{ action.messageKey | translate }}
             </button>
-        </ng-template> <!-- template for showing a single form field -->
-        <ng-template
-            #formTemplate
-            let-am>
+        </ng-template>
+
+        <!-- template for showing a single form field -->
+        <ng-template #formTemplate let-am>
             <ng-container *ngIf="isEditable(am)"> <!-- include default-->
                 <ng-container
                     [ngTemplateOutlet]="getTemplateForField(am.name) || defaultFieldTemplate"
                     [ngTemplateOutletContext]="{ $implicit: am, mainForm: mainForm }"></ng-container>
             </ng-container> <!-- Read only view -->
-            <div
-                *ngIf="!isEditable(am) && isAttributeVisible(am)"
+            <div *ngIf="!isEditable(am) && isAttributeVisible(am)"
                 class="row">
                 <b><label for="{{ am.name }}">{{ am.displayNames[locale] }}</label></b>
                 <div class="row">
@@ -276,6 +274,8 @@
                 </div>
             </div>
         </ng-template>
+
+        <!-- Default editable field template -->
         <ng-template #defaultFieldTemplate let-am>
             @if (isAttributeVisible(am)) {
                 <ng-container [formGroup]="mainForm">

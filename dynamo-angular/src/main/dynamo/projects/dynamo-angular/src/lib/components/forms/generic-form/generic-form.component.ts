@@ -106,10 +106,9 @@ export class GenericFormComponent
   @Input() readOnly: boolean = false;
   // additional validation function to carry out before submitting the form
   @Input() additionalValidation?: (formGroup: FormGroup) => string | undefined;
-
   // post process input form (add dependencies between components)
   @Input() postProcessInputForm?: (formGroup: FormGroup) => void;
-  // callback to check whether an attribute is visible
+  // callback to check whether an attribute is visible given the current form state
   @Input() attributeVisible?: (
     am: AttributeModelResponse,
     editObject: any,
@@ -130,14 +129,12 @@ export class GenericFormComponent
   @Input() freeFormTemplate?: TemplateRef<any>;
   // custom validators
   @Input() customValidatorTemplate?: TemplateRef<any>;
-
   // additional button bar actions
   @Input() additionalActions: AdditionalFormAction[] = [];
   // custom inputs (injected from split layout)
   @Input() injectedCustomInputs?: QueryList<OverrideFieldDirective>;
   // whether form fill functionality is
   @Input() formFillEnabled: boolean = false;
-
   // callback that is carried out after creating a new entity
   @Output() afterEntityCreated = new EventEmitter<FormInfo>();
   // callback that is carried out after performing a save operation
@@ -146,16 +143,18 @@ export class GenericFormComponent
   @Output() onClose = new EventEmitter<any>();
   // optional action ID (when the form is used to carry out a model based action)
   @Input() actionId?: string;
+  // label to display for the action
   @Input() actionDisplayName?: string;
 
   //container for holding optional popup dialog
-  @ViewChild('popupDialogContainerRef', { read: ViewContainerRef })
+  @ViewChild('popupDialogContainerRef', {read: ViewContainerRef})
   vcr!: ViewContainerRef;
 
-  @ViewChild('formFillContainerRef', { read: ViewContainerRef })
+  // container for holding formfill dialog
+  @ViewChild('formFillContainerRef', {read: ViewContainerRef})
   formFillContainerRef!: ViewContainerRef;
 
-  @ContentChildren(OverrideFieldDirective, { descendants: true })
+  @ContentChildren(OverrideFieldDirective, {descendants: true})
   customInputs!: QueryList<OverrideFieldDirective>;
 
   // map for keeping track of uploaded files
@@ -193,7 +192,6 @@ export class GenericFormComponent
     const router = inject(Router);
     const authService = inject(AuthenticationService);
     const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
-
     super(messageService, router, authService, configuration);
     this.fileService = configuration.getFileService();
   }
@@ -278,7 +276,7 @@ export class GenericFormComponent
     >[] = this.visibleAttributeModels
       .filter(
         (am) =>
-          this.isNestedDetail(am) || this.isFreeDetail(am) ||  this.isMaster(am)
+          this.isNestedDetail(am) || this.isFreeDetail(am) || this.isMaster(am)
       )
       .map((am) => this.getNestedModel(am));
 
@@ -335,7 +333,7 @@ export class GenericFormComponent
           this.viewMode = false;
           this.setupLookups(this.entityModel!);
 
-          this.afterEntityCreated.emit({ formGroup: this.mainForm });
+          this.afterEntityCreated.emit({formGroup: this.mainForm});
         });
     }
   }
@@ -435,7 +433,7 @@ export class GenericFormComponent
             disabled: !this.isEditable(am),
             value: undefined,
           },
-          { validators: validators }
+          {validators: validators}
         );
         this.mainForm!.addControl(am.name, control);
       } else {
@@ -514,10 +512,15 @@ export class GenericFormComponent
     }
   }
 
+  /**
+   * Wraps an attribute value in an otherwise empty object
+   * @param attribute the attribute name
+   * @param value the value
+   */
   private wrapInObject(attribute: string, value: any): any {
     const am = this.findAttributeModel(attribute);
     if (this.isMaster(am)) {
-      return { id: value };
+      return {id: value};
     } else if (this.isFreeDetail(am)) {
       if (Array.isArray(value)) {
         let arr = value as any[];
@@ -613,7 +616,8 @@ export class GenericFormComponent
         })
       )
       .subscribe({
-        next: () => { },
+        next: () => {
+        },
         error: (error) =>
           error.error
             ? this.messageService.error(error.error.message)
@@ -632,7 +636,8 @@ export class GenericFormComponent
     this.messageService.info(msg);
 
     if (this.navigationAllowed && !this.openInViewMode) {
-      this.router.navigate([this.navigateBackRoute]);
+      this.router.navigate([this.navigateBackRoute]).then(_ => {
+      });
     } else {
       this.viewMode = this.openInViewMode || this.readOnly || false;
       this.bindExistingEntity(true);
@@ -703,7 +708,8 @@ export class GenericFormComponent
     this.messageService.info(msg);
 
     if (this.navigationAllowed && !this.openInViewMode) {
-      this.router.navigate([this.navigateBackRoute]);
+      this.router.navigate([this.navigateBackRoute]).then(_ => {
+      });
     } else {
       this.bindExistingEntity(true);
       this.viewMode = this.openInViewMode || false;
@@ -783,7 +789,7 @@ export class GenericFormComponent
         } else if (this.isDate(nam)) {
           let val = no[nam.name];
           if (val) {
-            no[nam.name] = formatISO(val, { representation: 'date' });
+            no[nam.name] = formatISO(val, {representation: 'date'});
           }
         } else if (this.isInstant(nam) || this.isLocalDateTime(nam)) {
           let val = no[nam.name];
@@ -913,7 +919,8 @@ export class GenericFormComponent
 
   back() {
     if (this.navigateBackRoute) {
-      this.router.navigateByUrl(this.navigateBackRoute);
+      this.router.navigateByUrl(this.navigateBackRoute).then(_ => {
+      });
     }
   }
 
@@ -1077,7 +1084,7 @@ export class GenericFormComponent
   /**
    * Returns any configured custom component for an attribute
    * @param attributeName the name of the attribute
-   * @returns
+   * @returns the custom attribute for the attribute if one exists
    */
   getCustomInput(attributeName: string): TemplateRef<any> | undefined {
     if (this.injectedCustomInputs && this.injectedCustomInputs.length > 0) {
@@ -1102,9 +1109,7 @@ export class GenericFormComponent
     }
 
     return this.entityModel?.actions
-      ?.filter(
-        (action) => action.type == EntityModelActionResponse.TypeEnum.UPDATE
-      )
+      ?.filter((action) => action.type == EntityModelActionResponse.TypeEnum.UPDATE)
       .filter(action => action.formMode == EntityModelActionResponse.FormModeEnum.BOTH
         || (action.formMode == EntityModelActionResponse.FormModeEnum.EDIT && !this.viewMode)
         || (action.formMode == EntityModelActionResponse.FormModeEnum.VIEW && this.viewMode)
@@ -1163,10 +1168,9 @@ export class GenericFormComponent
 
     componentRef.instance.entityName = this.entityName;
     componentRef.instance.entityModelReference = this.entityModelReference;
-    var callback = (event: any): void => {
+    componentRef.instance.onFormFillCompleted = (event: any): void => {
       this.bindFields(event);
     };
-    componentRef.instance.onFormFillCompleted = callback;
     componentRef.instance.openDialog();
   }
 

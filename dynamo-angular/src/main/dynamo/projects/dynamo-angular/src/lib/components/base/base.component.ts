@@ -17,11 +17,11 @@
  * limitations under the License.
  * #L%
  */
-import {Component, Input, inject, Directive} from '@angular/core';
-import { getLocale, prependUrl } from '../../functions/functions';
+import {Input, inject, Directive} from '@angular/core';
+import {getLocale, prependUrl} from '../../functions/functions';
 import {FormGroup, ValidatorFn} from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
-import { AttributeModelResponse } from '../../interfaces/model/attributeModelResponse';
+import {TranslateService} from '@ngx-translate/core';
+import {AttributeModelResponse} from '../../interfaces/model/attributeModelResponse';
 import {EntityModelFunctions} from "../../functions/entitymodel-functions";
 import {EqualsFilterModel} from "../../interfaces/model/equalsFilterModel";
 

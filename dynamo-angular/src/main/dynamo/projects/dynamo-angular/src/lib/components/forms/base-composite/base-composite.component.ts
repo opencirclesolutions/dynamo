@@ -36,7 +36,7 @@ import {AdditionalGlobalAction} from '../../../interfaces/action';
 import {EntityModelActionResponse} from '../../../interfaces/model/entityModelActionResponse';
 import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 import {TranslateService} from "@ngx-translate/core";
-import {FormGroup, ValidatorFn} from "@angular/forms";
+import {ValidatorFn} from "@angular/forms";
 import {EqualsFilterModel} from "../../../interfaces/model/equalsFilterModel";
 
 @Directive({
@@ -320,10 +320,7 @@ export abstract class BaseCompositeComponent {
       return false;
     }
 
-    if (
-      !this.entityModel.writeRoles ||
-      this.entityModel.writeRoles.length == 0
-    ) {
+    if (!this.entityModel.writeRoles || this.entityModel.writeRoles.length == 0) {
       return true;
     }
     return this.authService.hasRole(this.entityModel.writeRoles);

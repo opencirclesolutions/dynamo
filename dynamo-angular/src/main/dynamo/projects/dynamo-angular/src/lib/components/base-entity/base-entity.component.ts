@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {Component, inject, Input, ViewChild, ViewContainerRef} from '@angular/core';
+import {Directive, inject, Input, ViewChild, ViewContainerRef} from '@angular/core';
 import {AbstractControl} from '@angular/forms';
 import {TranslateService} from '@ngx-translate/core';
 import {BaseComponent} from '../base/base.component';
@@ -26,12 +26,8 @@ import {SelectOption} from '../../interfaces/select-option';
 import {FilterModel} from '../../interfaces/model/filterModel';
 import {AuthenticationService} from '../../services/authentication.service';
 
-@Component({
-  selector: 'd-base-entity',
-  standalone: true,
-  imports: [],
-  templateUrl: './base-entity.component.html',
-  styleUrl: './base-entity.component.css'
+@Directive({
+  standalone: true
 })
 export abstract class BaseEntityComponent extends BaseComponent {
   private authService = inject(AuthenticationService);
@@ -39,7 +35,7 @@ export abstract class BaseEntityComponent extends BaseComponent {
   // entity model
   @Input() entityModel?: EntityModelResponse;
   // the available options in case of a dropdown
-  @Input({ required: true }) options: SelectOption[] = [];
+  @Input({required: true}) options: SelectOption[] = [];
   // the optional entity model reference
   @Input() entityModelReference?: string;
   // whether to display the "quick add" button
@@ -50,7 +46,7 @@ export abstract class BaseEntityComponent extends BaseComponent {
   @Input() formControl?: AbstractControl<any>;
 
   // container for holding optional popup dialog
-  @ViewChild('popupDialogContainerRef', { read: ViewContainerRef })
+  @ViewChild('popupDialogContainerRef', {read: ViewContainerRef})
   viewContainerRef!: ViewContainerRef;
 
   /** Inserted by Angular inject() migration for backwards compatibility */

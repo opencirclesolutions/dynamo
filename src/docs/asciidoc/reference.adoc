@@ -4879,7 +4879,7 @@ necessary to include an additional container that binds the from-group.
   </ng-template>
 --
 
-NOTE: that this functionality can also be used inside a Split Layout or
+NOTE: This functionality can also be used inside a Split Layout or
 an Editable Table Layout.
 
 ==== Free-form mode

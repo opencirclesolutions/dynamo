@@ -17,23 +17,23 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, OnInit, SimpleChanges, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { FormGroup } from '@angular/forms';
-import { AttributeGroupMode } from '../../../interfaces/mode';
-import { EntityModelResponse } from '../../../interfaces/model/entityModelResponse';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { DynamoConfig } from '../../../interfaces/dynamo-config';
-import { NotificationService } from '../../../services/notification.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { AttributeGroupResponse } from '../../../interfaces/model/attributeGroupResponse';
-import { FieldViewComponent } from '../field-view/field-view.component';
-import { TooltipModule } from 'primeng/tooltip';
-import { TabViewModule } from 'primeng/tabview';
-import { PanelModule } from 'primeng/panel';
-import { TranslateModule } from '@ngx-translate/core';
-import { TranslateEntityPipe } from '../../../pipes/translate-entity.pipe';
-import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {Component, Input, OnInit, SimpleChanges, inject} from '@angular/core';
+import {Router} from '@angular/router';
+import {FormGroup} from '@angular/forms';
+import {AttributeGroupMode} from '../../../interfaces/mode';
+import {EntityModelResponse} from '../../../interfaces/model/entityModelResponse';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {DynamoConfig} from '../../../interfaces/dynamo-config';
+import {NotificationService} from '../../../services/notification.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {AttributeGroupResponse} from '../../../interfaces/model/attributeGroupResponse';
+import {FieldViewComponent} from '../field-view/field-view.component';
+import {TooltipModule} from 'primeng/tooltip';
+import {TabViewModule} from 'primeng/tabview';
+import {PanelModule} from 'primeng/panel';
+import {TranslateModule} from '@ngx-translate/core';
+import {TranslateEntityPipe} from '../../../pipes/translate-entity.pipe';
+import {BaseCompositeComponent} from '../base-composite/base-composite.component';
 import {NgTemplateOutlet} from "@angular/common";
 
 @Component({
@@ -49,7 +49,7 @@ export class GenericFormViewComponent
   @Input() entity: any = undefined;
   @Input() attributeGroupMode: AttributeGroupMode = AttributeGroupMode.PANEL;
   @Input() numberOfColumns: number = 1;
-  @Input({ required: true }) formGroup!: FormGroup;
+  @Input({required: true}) formGroup!: FormGroup;
 
   @Input() nestedEntityModelMap: Map<string, EntityModelResponse> = new Map<
     string,
@@ -101,7 +101,7 @@ export class GenericFormViewComponent
   getAttributeModelGroups(): string[] {
     return (
       this.entityModel?.attributeGroups
-        .sort((a, b) => a.index! - b.index!)
+        .sort((a, b) => a.index - b.index)
         .map((group) => group.groupName!) || []
     );
   }
@@ -133,7 +133,8 @@ export class GenericFormViewComponent
     return 'col-lg-12 col-md-12 col-sm-12';
   }
 
-  protected override onLookupFilled(am: AttributeModelResponse): void { }
+  protected override onLookupFilled(am: AttributeModelResponse): void {
+  }
 
   useGroupTabs() {
     return this.attributeGroupMode === AttributeGroupMode.TAB;
