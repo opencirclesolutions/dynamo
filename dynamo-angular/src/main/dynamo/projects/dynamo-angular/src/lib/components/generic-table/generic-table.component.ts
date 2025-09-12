@@ -17,34 +17,44 @@
  * limitations under the License.
  * #L%
  */
-import { Component, EventEmitter, Input, Output, OnInit, ViewChild, ViewContainerRef, QueryList, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { TableLazyLoadEvent } from 'primeng/table';
-import { decapitalize } from '../../functions/functions';
-import { finalize } from 'rxjs';
-import { FormGroup } from '@angular/forms';
-import { HttpResponse } from '@angular/common/http';
-import { MenuItem } from 'primeng/api';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { EntityModelResponse } from '../../interfaces/model/entityModelResponse';
-import { PopupButtonMode } from '../../interfaces/mode';
-import { OverrideFieldDirective } from '../../directives/override-field.directive';
-import { AttributeModelResponse } from '../../interfaces/model/attributeModelResponse';
-import { NotificationService } from '../../services/notification.service';
-import { AuthenticationService } from '../../services/authentication.service';
-import { DynamoConfig } from '../../interfaces/dynamo-config';
-import { CreateFilterService } from '../../services/create-filter.service';
-import { ExportServiceInterface } from '../../interfaces/service/export.service';
-import { EntityPopupDialogComponent } from '../dialogs/entity-popup-dialog/entity-popup-dialog.component';
-import { SearchModel } from '../../interfaces/model/searchModel';
-import { FilterModel } from '../../interfaces/model/filterModel';
-import { EntityModelActionResponse } from '../../interfaces/model/entityModelActionResponse';
-import { AdditionalRowAction } from '../../interfaces/action';
-import { DataTableComponent, TableColumn } from '../data-table/data-table.component';
-import { BaseCompositeCollectionComponent } from '../forms/base-composite-collection/base-composite-collection.component';
-import { TooltipModule } from 'primeng/tooltip';
+import {
+  Component,
+  EventEmitter,
+  inject,
+  Input,
+  OnInit,
+  Output,
+  QueryList,
+  ViewChild,
+  ViewContainerRef
+} from '@angular/core';
+import {Router} from '@angular/router';
+import {TableLazyLoadEvent} from 'primeng/table';
+import {decapitalize} from '../../functions/functions';
+import {finalize} from 'rxjs';
+import {FormGroup} from '@angular/forms';
+import {HttpResponse} from '@angular/common/http';
+import {MenuItem} from 'primeng/api';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {EntityModelResponse} from '../../interfaces/model/entityModelResponse';
+import {PopupButtonMode} from '../../interfaces/mode';
+import {OverrideFieldDirective} from '../../directives/override-field.directive';
+import {AttributeModelResponse} from '../../interfaces/model/attributeModelResponse';
+import {NotificationService} from '../../services/notification.service';
+import {AuthenticationService} from '../../services/authentication.service';
+import {DynamoConfig} from '../../interfaces/dynamo-config';
+import {CreateFilterService} from '../../services/create-filter.service';
+import {ExportServiceInterface} from '../../interfaces/service/export.service';
+import {EntityPopupDialogComponent} from '../dialogs/entity-popup-dialog/entity-popup-dialog.component';
+import {SearchModel} from '../../interfaces/model/searchModel';
+import {FilterModel} from '../../interfaces/model/filterModel';
+import {EntityModelActionResponse} from '../../interfaces/model/entityModelActionResponse';
+import {AdditionalRowAction} from '../../interfaces/action';
+import {DataTableComponent, TableColumn} from '../data-table/data-table.component';
+import {BaseCompositeCollectionComponent} from '../forms/base-composite-collection/base-composite-collection.component';
+import {TooltipModule} from 'primeng/tooltip';
 import {Button} from "primeng/button";
-import {ButtonGroup, ButtonGroupModule} from "primeng/buttongroup";
+import {EntityModelFunctions} from "../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-generic-table',
@@ -58,6 +68,7 @@ export class GenericTableComponent
   implements OnInit {
 
   private createFilterService = inject(CreateFilterService);
+  private translate = inject(TranslateService);
 
   defaultPageSize = 10;
 
@@ -218,7 +229,7 @@ export class GenericTableComponent
             am.dateType == AttributeModelResponse.DateTypeEnum.LOCAL_DATE_TIME
             ? {
               formats: am.displayFormats!,
-              instant: this.isInstant(am),
+              instant: this.entityModelFunctions.isInstant(am),
             }
             : null;
 
@@ -228,7 +239,7 @@ export class GenericTableComponent
         let currencyCode = undefined;
         let maxLengthInGrid = am.maxLengthInGrid;
 
-        if (this.isDecimal(am)) {
+        if (this.entityModelFunctions.isDecimal(am)) {
           if (!am.currencyCode) {
             numberFormat = {
               digitsInfo: `1.${am.precision}-${am.precision}`,
@@ -241,12 +252,12 @@ export class GenericTableComponent
         }
 
         let translateEnum = undefined;
-        if (this.isEnum(am)) {
+        if (this.entityModelFunctions.isEnum(am)) {
           translateEnum = this.simpleEnumMap.get(am.name);
         }
 
         let translateBoolean;
-        if (this.isBoolean(am)) {
+        if (this.entityModelFunctions.isBoolean(am)) {
           translateBoolean = {
             trueRepresentations: am.trueRepresentations,
             falseRepresentations: am.falseRepresentations,
