@@ -1,27 +1,30 @@
 # Dynamo
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.8.
+The Dynamo Web Application Accelerator Framework is a software development framework developed by Open Circle Solutions that aims to increase productivity by using design principles such as convention over configuration, model-driven development and DRY (don’t repeat yourself).
 
-## Development server
+![Dynamo Logo](https://opencirclesolutions.github.io/dynamo/media/logo-dynamo.png)
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+Developed, maintained and sponsored by:
 
-## Code scaffolding
+<img src="https://opencirclesolutions.github.io/dynamo/media/logo-ocs.png" width="256">
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+See the [Dynamo Framework website](https://www.dynamoframework.org) for more information.
 
-## Build
+## Adding to your Angular project
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+The Dynamo Angular library requires the following dependencies to be added to your project:
 
-## Running unit tests
+- Angular
+- Angular Oauth2 OIDC
+- PrimeNG
+- Bootstrap
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+You can add the latest version of the Dynamo Angular library to your existing application by running:
 
-## Running end-to-end tests
+```bash
+npm install @open-circle-solutions/dynamo-angular
+```
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+For the exact versions required of the dependencies, please see the [Dynamo Framework Website](https://opencirclesolutions.github.io/dynamo/reference.html#_adding_dynamo_to_an_existing_front_end_project).
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+_Copyright © 2014 - 2025 Open Circle Solutions._

@@ -36,31 +36,25 @@ limitations under the License.
             <div
                 class="btn-group"
                 role="group">
-                <button
+                <p-button
                     type="button"
-                    class="btn btn-danger"
+                    severity="danger"
+                    icon="pi pi-times"
                     (click)="clear()"
-                    [disabled]="selectedValues.length == 0 || disabled">
-                    <span class="pi pi-times"></span>
-                </button>
-                <button
-                    class="btn btn-primary"
+                    [disabled]="selectedValues.length == 0 || disabled"/>
+                <p-button
                     type="button"
+                    icon="pi pi-search"
                     (click)="showDialog()"
-                    [disabled]="disabled">
-                    <span class="pi pi-search"></span>
-                </button>
+                    [disabled]="disabled"/>
                 <ng-template #searchDialogContainerRef></ng-template>
 
                 @if (isQuickAddButtonVisible()) {
-                    <button
-                        class="btn btn-primary"
+                    <p-button
                         type="button"
+                        icon="pi pi-plus"
                         (click)="showQuickAddDialog()"
-                        [disabled]="disabled"
-                    >
-                        <span class="pi pi-plus"></span>
-                    </button>
+                        [disabled]="disabled"/>
                 }
                 <ng-template #popupDialogContainerRef></ng-template>
             </div>

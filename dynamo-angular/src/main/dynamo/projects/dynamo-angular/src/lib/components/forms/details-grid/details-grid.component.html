@@ -44,13 +44,11 @@ limitations under the License.
             </ng-container></th>
           }
           <th>
-            <button
-              type="submit"
-              class="btn btn-primary"
+            <p-button
+              type="button"
+              icon="pi pi-plus"
               pTooltip=" {{ 'add' | translate }}"
-              (click)="addButtonClick()">
-              <span class="pi pi-plus"></span>
-            </button>
+              (click)="addButtonClick()"/>
           </th>
         </tr>
       </ng-template>
@@ -186,13 +184,12 @@ limitations under the License.
             }</td>
           }
           <td>
-            <button
-              type="submit"
-              class="btn btn-danger"
+            <p-button
+              type="button"
+              severity="danger"
+              icon="pi pi-trash"
               pTooltip=" {{ 'add' | translate}}"
-              (click)="deleteRow(rowIndex)">
-              <span class="pi pi-trash"></span>
-            </button>
+              (click)="deleteRow(rowIndex)"/>
           </td>
         </tr>
       }

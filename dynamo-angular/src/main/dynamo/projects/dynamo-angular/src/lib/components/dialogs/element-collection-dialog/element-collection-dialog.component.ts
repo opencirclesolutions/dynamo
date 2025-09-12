@@ -28,17 +28,18 @@ import {
 } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BaseComponent } from '../../base/base.component';
+import { createValidators, getErrorString } from '../../../functions/entitymodel-functions';
 import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
 import { MessageModule } from 'primeng/message';
 import { StringFieldComponent } from '../../forms/fields/string-field/string-field.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
-import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-element-collection-dialog',
   standalone: true,
-  imports: [TranslateModule, ReactiveFormsModule, InputNumberModule, DialogModule, MessageModule, StringFieldComponent],
+  imports: [TranslateModule, ReactiveFormsModule, InputNumberModule, DialogModule, MessageModule, StringFieldComponent, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -77,7 +78,7 @@ export class ElementCollectionDialogComponent
   }
 
   ngOnInit(): void {
-    let validators = new EntityModelFunctions().createValidators(this.translate, this.am, true, this.searchMode);
+    let validators = createValidators(this.translate, this.am, true, this.searchMode);
     validators.push(Validators.required);
 
     let control = this.formBuilder.control(
@@ -90,13 +91,13 @@ export class ElementCollectionDialogComponent
     this.dialogForm.addControl(this.am.name, control);
   }
 
-  // override getErrorString(attribute: string): string {
-  //   if (!this.dialogForm) {
-  //     return '';
-  //   }
-  //
-  //   return getErrorString(attribute, this.dialogForm!, this.translate);
-  // }
+  override getErrorString(attribute: string): string {
+    if (!this.dialogForm) {
+      return '';
+    }
+
+    return getErrorString(attribute, this.dialogForm!, this.translate);
+  }
 
   getSelectedValueString(): string | undefined {
     if (!this.selectedValues || this.selectedValues.length == 0) {

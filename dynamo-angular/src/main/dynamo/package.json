@@ -1,5 +1,5 @@
 {
-  "name": "dynamo",
+  "name": "@open-circle-solutions/dynamo",
   "version": "4.0.0-RC3-SNAPSHOT",
   "scripts": {
     "ng": "ng",

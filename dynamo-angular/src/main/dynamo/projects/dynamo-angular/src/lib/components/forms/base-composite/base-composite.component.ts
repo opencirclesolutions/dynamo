@@ -17,45 +17,78 @@
  * limitations under the License.
  * #L%
  */
-import {Directive, inject, Input} from '@angular/core';
-import {Router} from '@angular/router';
-import {getLocale} from '../../../functions/functions';
-import {FilterModel} from '../../../interfaces/model/filterModel';
-import {SelectOption} from '../../../interfaces/select-option';
-import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
-import {CRUDServiceInterface} from '../../../interfaces/service/crud.service';
-import {NotificationService} from '../../../services/notification.service';
-import {AuthenticationService} from '../../../services/authentication.service';
-import {DynamoConfig} from '../../../interfaces/dynamo-config';
-import {ModelServiceInterface} from '../../../interfaces/service/model.service';
-import {EntityModelResponse} from '../../../interfaces/model/entityModelResponse';
-import {SearchModel} from '../../../interfaces/model/searchModel';
-import {PagingModel} from '../../../interfaces/model/pagingModel';
-import {SortModel} from '../../../interfaces/model/sortModel';
-import {AdditionalGlobalAction} from '../../../interfaces/action';
-import {EntityModelActionResponse} from '../../../interfaces/model/entityModelActionResponse';
-import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
+import { Component, Input, inject } from '@angular/core';
+import {
+  isBoolean,
+  isDate,
+  isDecimal,
+  isEnum,
+  isFreeDetail,
+  isIntegral,
+  isLob,
+  isMaster,
+  isNestedDetail,
+  isString,
+  isTime,
+  isLocalDateTime,
+  isInstant,
+  isElementCollection,
+  mustFetchListValues,
+} from '../../../functions/entitymodel-functions';
+import { Router } from '@angular/router';
+import { getLocale, getSimpleLocale } from '../../../functions/functions';
+import { FilterModel } from '../../../interfaces/model/filterModel';
+import { SelectOption } from '../../../interfaces/select-option';
+import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
+import { CRUDServiceInterface } from '../../../interfaces/service/crud.service';
+import { NotificationService } from '../../../services/notification.service';
+import { AuthenticationService } from '../../../services/authentication.service';
+import { DynamoConfig } from '../../../interfaces/dynamo-config';
+import { ModelServiceInterface } from '../../../interfaces/service/model.service';
+import { EntityModelResponse } from '../../../interfaces/model/entityModelResponse';
+import { SearchModel } from '../../../interfaces/model/searchModel';
+import { PagingModel } from '../../../interfaces/model/pagingModel';
+import { SortModel } from '../../../interfaces/model/sortModel';
+import { AdditionalGlobalAction } from '../../../interfaces/action';
+import { EntityModelActionResponse } from '../../../interfaces/model/entityModelActionResponse';
 import {TranslateService} from "@ngx-translate/core";
-import {ValidatorFn} from "@angular/forms";
-import {EqualsFilterModel} from "../../../interfaces/model/equalsFilterModel";
 
-@Directive({
-  standalone: true
+@Component({
+  selector: 'd-base-composite',
+  standalone: true,
+  imports: [],
+  templateUrl: './base-composite.component.html',
+  styleUrl: './base-composite.component.css'
 })
+
 export abstract class BaseCompositeComponent {
   protected messageService = inject(NotificationService);
   protected router = inject(Router);
   protected authService = inject(AuthenticationService);
-  protected translate = inject(TranslateService);
 
-  protected entityModelFunctions: EntityModelFunctions = new EntityModelFunctions();
+  isDate = isDate;
+  isBoolean = isBoolean;
+  isDecimal = isDecimal;
+  isEnum = isEnum;
+  isIntegral = isIntegral;
+  isMaster = isMaster;
+  isString = isString;
+  isLocalDateTime = isLocalDateTime;
+  isInstant = isInstant;
+  isFreeDetail = isFreeDetail;
+  isTime = isTime;
+  isNestedDetail = isNestedDetail;
+  isLob = isLob;
+  getSimpleLocale = getSimpleLocale;
+  mustFetchListValues = mustFetchListValues;
+  isElementCollection = isElementCollection;
 
   // the name of the entity to display
-  @Input({required: true}) entityName: string = '';
+  @Input({ required: true }) entityName: string = '';
   // optional reference to further specify which entity model to use
   @Input() entityModelReference?: string = undefined;
   // the locale to use
-  @Input() public locale: string = getLocale();
+  @Input() public locale: string;
   // default filters to apply when searching
   @Input() defaultFilters: FilterModel[] = [];
   // filters to apply to individual fields
@@ -97,6 +130,10 @@ export abstract class BaseCompositeComponent {
 
     this.service = configuration.getCRUDService()
     this.entityModelService = configuration.getModelService()
+
+    // use the translation service to determine the active locale, only fallback to the getLocale when unknown
+    const translationService = inject(TranslateService)
+    this.locale = translationService.currentLang || translationService.defaultLang || getLocale()
   }
 
   lookupEntities(key: string): any[] {
@@ -105,13 +142,13 @@ export abstract class BaseCompositeComponent {
 
   protected setupEnums(model: EntityModelResponse) {
     model.attributeModels.forEach((am) => {
-      if (this.entityModelFunctions.isEnum(am)) {
+      if (isEnum(am)) {
         let descriptions = am.enumDescriptions![this.locale];
         let values: SelectOption[] = [];
         let simpleValues = new Map<string, string>();
 
         Object.keys(descriptions).forEach((key) => {
-          values.push({value: key, name: descriptions[key]});
+          values.push({ value: key, name: descriptions[key] });
           simpleValues.set(key, descriptions[key]);
         });
 
@@ -129,13 +166,13 @@ export abstract class BaseCompositeComponent {
   protected setupLookups(model: EntityModelResponse) {
     model.attributeModels.forEach((am) => {
       if (
-        (this.entityModelFunctions.isMaster(am) || this.entityModelFunctions.isFreeDetail(am)) &&
+        (isMaster(am) || isFreeDetail(am)) &&
         (this.searchMode
           ? am.searchMode == AttributeModelResponse.SearchModeEnum.ALWAYS ||
           am.searchMode == AttributeModelResponse.SearchModeEnum.ADVANCED
           : am.visibleInForm && this.isLookupEditable(am)) &&
         am.lookupEntityName &&
-        this.entityModelFunctions.mustFetchListValues(am, this.searchMode)
+        mustFetchListValues(am, this.searchMode)
       ) {
         this.fillOptions(am);
       }
@@ -320,7 +357,10 @@ export abstract class BaseCompositeComponent {
       return false;
     }
 
-    if (!this.entityModel.writeRoles || this.entityModel.writeRoles.length == 0) {
+    if (
+      !this.entityModel.writeRoles ||
+      this.entityModel.writeRoles.length == 0
+    ) {
       return true;
     }
     return this.authService.hasRole(this.entityModel.writeRoles);
@@ -373,7 +413,6 @@ export abstract class BaseCompositeComponent {
 
   /**
    * Checks whether an attribute is grouped with another attribute
-   * @param attributeModels the collection of all attribute models
    * @param am the attribute
    * @returns true if this is the case, false otherwise
    */
@@ -381,11 +420,13 @@ export abstract class BaseCompositeComponent {
     attributeModels: AttributeModelResponse[],
     am: AttributeModelResponse
   ): boolean {
-    return attributeModels.filter(
-      (other) =>
-        other.groupTogetherWith &&
-        other.groupTogetherWith.indexOf(am.name) >= 0
-    ).length > 0;
+    let grouped =
+      attributeModels.filter(
+        (other) =>
+          other.groupTogetherWith &&
+          other.groupTogetherWith!.indexOf(am.name)! >= 0
+      ).length > 0;
+    return grouped;
   }
 
   /**
@@ -397,82 +438,6 @@ export abstract class BaseCompositeComponent {
     return attributeModels.filter(
       (am) => !this.isGroupedWithOther(attributeModels, am)
     );
-  }
-
-  isString(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isString(am);
-  }
-
-  isDate(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isDate(am);
-  }
-
-  isInstant(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isInstant(am);
-  }
-
-  isLocalDateTime(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isLocalDateTime(am);
-  }
-
-  isTime(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isTime(am);
-  }
-
-  isEnum(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isEnum(am);
-  }
-
-  isIntegral(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isIntegral(am);
-  }
-
-  isBoolean(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isBoolean(am);
-  }
-
-  isDecimal(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isDecimal(am);
-  }
-
-  isMaster(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isMaster(am);
-  }
-
-  isFreeDetail(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isFreeDetail(am);
-  }
-
-  isNestedDetail(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isNestedDetail(am);
-  }
-
-  isBasic(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isBasic(am);
-  }
-
-  isElementCollection(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isElementCollection(am);
-  }
-
-  isLob(am?: AttributeModelResponse): boolean {
-    return this.entityModelFunctions.isLob(am);
-  }
-
-  mustFetchListValues(am: AttributeModelResponse, search: boolean): boolean {
-    return this.entityModelFunctions.mustFetchListValues(am, search);
-  }
-
-  setNestedValue(obj: any, am: AttributeModelResponse, value: any) {
-    this.entityModelFunctions.setNestedValue(obj, am, value);
-  }
-
-  createValidators(am: AttributeModelResponse, elementCollectionPopup: boolean, searchMode: boolean): ValidatorFn[] {
-    return this.entityModelFunctions.createValidators(this.translate, am, elementCollectionPopup, searchMode);
-  }
-
-  createEqualsFilter(attributeName: string, value: any): EqualsFilterModel {
-    return this.entityModelFunctions.createEqualsFilter(attributeName, value);
   }
 
   protected abstract onLookupFilled(am: AttributeModelResponse): void;

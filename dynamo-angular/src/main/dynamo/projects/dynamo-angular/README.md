@@ -1,24 +1,30 @@
-# DynamoAngular
+# Dynamo
 
-This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.0.
+The Dynamo Web Application Accelerator Framework is a software development framework developed by Open Circle Solutions that aims to increase productivity by using design principles such as convention over configuration, model-driven development and DRY (don’t repeat yourself).
 
-## Code scaffolding
+![Dynamo Logo](https://opencirclesolutions.github.io/dynamo/media/logo-dynamo.png)
 
-Run `ng generate component component-name --project dynamo-angular` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project dynamo-angular`.
-> Note: Don't forget to add `--project dynamo-angular` or else it will be added to the default project in your `angular.json` file. 
+Developed, maintained and sponsored by:
 
-## Build
+<img alt="Open Circle Solutions" src="https://opencirclesolutions.github.io/dynamo/media/logo-ocs.png" width="256">
 
-Run `ng build dynamo-angular` to build the project. The build artifacts will be stored in the `dist/` directory.
+See the [Dynamo Framework website](https://www.dynamoframework.org) for more information.
 
-## Publishing
+## Adding to your Angular project
 
-After building your library with `ng build dynamo-angular`, go to the dist folder `cd dist/dynamo-angular` and run `npm publish`.
+The Dynamo Angular library requires the following dependencies to be added to your project:
 
-## Running unit tests
+- Angular
+- Angular Oauth2 OIDC
+- PrimeNG
+- Bootstrap
 
-Run `ng test dynamo-angular` to execute the unit tests via [Karma](https://karma-runner.github.io).
+You can add the latest version of the Dynamo Angular library to your existing application by running:
 
-## Further help
+```bash
+npm install @open-circle-solutions/dynamo-angular
+```
 
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+For the exact versions required of the dependencies, please see the [Dynamo Framework Website](https://opencirclesolutions.github.io/dynamo/reference.html#_adding_dynamo_to_an_existing_front_end_project).
+
+_Copyright © 2014 - 2025 Open Circle Solutions._

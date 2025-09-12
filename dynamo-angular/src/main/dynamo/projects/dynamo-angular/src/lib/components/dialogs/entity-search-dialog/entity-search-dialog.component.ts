@@ -27,11 +27,12 @@ import {SelectOption} from "../../../interfaces/select-option";
 import {NG_VALUE_ACCESSOR} from "@angular/forms";
 import LookupQueryTypeEnum = AttributeModelResponse.LookupQueryTypeEnum;
 import {GenericSearchLayoutComponent} from "../../forms/search/generic-search-layout/generic-search-layout.component";
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-entity-search-dialog',
   standalone: true,
-  imports: [DialogModule, TranslateModule, GenericSearchLayoutComponent],
+  imports: [DialogModule, TranslateModule, GenericSearchLayoutComponent, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
@@ -54,9 +55,27 @@ export class EntitySearchDialogComponent
   selectedValues: SelectOption[] = [];
   // value cache, for holding the items selected in the popup
   valueCache: SelectOption[] = [];
+  displayPropertyName?: string;
 
   @Output() onRowSelect = new EventEmitter<any>();
   @Output() onChange = new EventEmitter<any>();
+
+  entitySelected(event: any) {
+    if (!this.multiSelect) {
+      // prevent multiple selected when that is not available
+      this.valueCache = [];
+    }
+
+    const inCache = this.valueCache.find(element => element.value === event.id);
+    if (!inCache) {
+      this.valueCache.push({
+        name: this.displayPropertyName ? event[this.displayPropertyName] : '',
+        value: event.id
+      });
+    } else {
+      this.valueCache = this.valueCache.filter(element => element.value !== event.id);
+    }
+  }
 
   protected onLookupFilled(am: AttributeModelResponse): void {
   }

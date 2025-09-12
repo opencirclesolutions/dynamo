@@ -18,50 +18,51 @@ limitations under the License.
 #L%
 -->
 <div class="row">
-    <div class="col-lg-6">
-        <!-- image containing base 64 representation -->
-        @if (getImageContent() && am.image) {
-            <img alt="preview"
-                 width="200px"
-                 height="200px" ngSrc="{{ getImageContent() }}"/>
-        }
-        <!-- no preview available -->
-        @if (!getImageContent() || !am.image) {
-            <img
-                width="200px"
-                height="200px"
-                ngSrc="/assets/no-preview.png"
-                alt="no preview"/>
-        }
-    </div>
-    <!-- Actual file upload component-->
-    <div class="col-lg-6">
-        <p-fileUpload
-            mode="basic"
-            #upload
-            chooseLabel="{{ 'upload' | translate }}"
-            [customUpload]="true"
-            [maxFileSize]="10000000"
-            [multiple]="true"
-            [accept]="getAllowedExtensions()"
-            (uploadHandler)="uploadHandler($event)"
-            [auto]="true"></p-fileUpload>
-        <!-- Clear button -->
-        <button
-            type="button"
-            class="btn btn-primary mt-1 mr-1"
-            (click)="clearUpload()"
-            [disabled]="!getImageContent()">
-            <span class="pi pi-ban"></span> {{ "clear" | translate }}
-        </button>
-        <!-- Download button -->
-        @if (getImageContent() && am.downloadAllowed) {
-            <button
-                type="button"
-                class="btn btn-primary mt-1 mr-1"
-                (click)="downloadFile()">
-                <span class="pi pi-download"></span> {{ "download" | translate }}
-            </button>
-        }
-    </div>
+  <div class="col-lg-6">
+    <!-- image containing base 64 representation -->
+    @if (getImageContent() && am.image) {
+      <img
+        width="200px"
+        height="200px"
+        src="{{ getImageContent() }}" />
+    }
+    <!-- no preview available -->
+    @if (!getImageContent() || !am.image) {
+      <img
+        width="200px"
+        height="200px"
+        src="assets/no-preview.png"
+        alt />
+    }
+  </div>
+  <!-- Actual file upload component-->
+  <div class="col-lg-6">
+    <p-fileUpload
+      mode="basic"
+      #upload
+      chooseLabel="{{ 'upload' | translate }}"
+      [customUpload]="true"
+      [maxFileSize]="10000000"
+      [multiple]="true"
+      [accept]="getAllowedExtensions()"
+      (uploadHandler)="uploadHandler($event)"
+    [auto]="true"></p-fileUpload>
+    <!-- Clear button -->
+    <p-button
+      type="button"
+      class="mt-1 mr-1"
+      icon="pi pi-ban"
+      label="{{ 'clear' | translate }}"
+      (click)="clearUpload()"
+      [disabled]="!getImageContent()"/>
+    <!-- Download button -->
+    @if (getImageContent() && am.downloadAllowed) {
+      <p-button
+        type="button"
+        icon="pi pi-download"
+        label="{{ 'download' | translate }}"
+        class="mt-1 mr-1"
+        (click)="downloadFile()"/>
+    }
+  </div>
 </div>

@@ -23,11 +23,12 @@ import { NotificationService } from '../../../services/notification.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { PdfViewerComponent } from '../../blocks/pdf-viewer/pdf-viewer.component';
 import { DialogModule } from 'primeng/dialog';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-pdf-viewer-dialog',
   standalone: true,
-  imports: [TranslateModule, PdfViewerComponent, DialogModule],
+  imports: [TranslateModule, PdfViewerComponent, DialogModule, Button],
   templateUrl: './pdf-viewer-dialog.component.html',
   styleUrl: './pdf-viewer-dialog.component.css'
 })

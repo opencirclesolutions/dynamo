@@ -4,7 +4,7 @@
     <groupId>org.dynamoframework</groupId>
     <artifactId>dynamo-parent</artifactId>
     <packaging>pom</packaging>
-    <version>4.0.0-RC3-SNAPSHOT</version>
+    <version>4.0.1-SNAPSHOT</version>
     <name>Dynamo Framework</name>
     <description>Dynamo Web Application Accelerator is a development framework that aims to increase productivity.</description>
     <url>https://www.dynamoframework.org</url>
@@ -256,7 +256,7 @@
                             </goals>
                             <configuration>
                                 <outputDirectory>target/generated-sources/annotations</outputDirectory>
-                                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor</processor>
+                                <processor>com.querydsl.apt.jpa.JPAAnnotationProcessor,lombok.launch.AnnotationProcessorHider$AnnotationProcessor</processor>
                             </configuration>
                         </execution>
                         <execution>
@@ -423,7 +423,7 @@
                 <executions>
                     <execution>
                         <id>convert-to-html</id>
-                        <phase>pre-site</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
@@ -434,7 +434,7 @@
                     </execution>
                     <execution>
                         <id>convert-training-to-pdf</id>
-                        <phase>pre-site</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
@@ -447,7 +447,7 @@
                     </execution>
                     <execution>
                         <id>convert-reference-to-pdf</id>
-                        <phase>pre-site</phase>
+                        <phase>prepare-package</phase>
                         <goals>
                             <goal>process-asciidoc</goal>
                         </goals>
@@ -684,26 +684,27 @@
                             <autoReleaseAfterClose>false</autoReleaseAfterClose>
                         </configuration>
                     </plugin>
-                    <plugin>
-                        <groupId>com.ragedunicorn.tools.maven</groupId>
-				<artifactId>github-release-maven-plugin</artifactId>
-				<version>1.0.7</version>
-                        <executions>
-                            <execution>
-                                <id>default-cli</id>
-                                <phase>deploy</phase>
-                                <configuration>
-                                    <owner>opencirclesolutions</owner>
-                                    <repository>dynamo</repository>
-                                    <server>github-oauth</server>
-                                    <tagName>dynamoframework-${project.version}</tagName>
-                                    <name>v${project.version}</name>
-                                    <generateReleaseNotes>true</generateReleaseNotes>
-                                    <body>${project.description}</body>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
+<!--					This is done in a workflow before publishing the release-->
+<!--                    <plugin>-->
+<!--                        <groupId>com.ragedunicorn.tools.maven</groupId>-->
+<!--				<artifactId>github-release-maven-plugin</artifactId>-->
+<!--				<version>1.0.7</version>-->
+<!--                        <executions>-->
+<!--                            <execution>-->
+<!--                                <id>default-cli</id>-->
+<!--                                <phase>deploy</phase>-->
+<!--                                <configuration>-->
+<!--                                    <owner>opencirclesolutions</owner>-->
+<!--                                    <repository>dynamo</repository>-->
+<!--                                    <server>github-oauth</server>-->
+<!--                                    <tagName>dynamoframework-${project.version}</tagName>-->
+<!--                                    <name>v${project.version}</name>-->
+<!--                                    <generateReleaseNotes>true</generateReleaseNotes>-->
+<!--                                    <body>${project.description}</body>-->
+<!--                                </configuration>-->
+<!--                            </execution>-->
+<!--                        </executions>-->
+<!--                    </plugin>-->
                 </plugins>
             </build>
         </profile>

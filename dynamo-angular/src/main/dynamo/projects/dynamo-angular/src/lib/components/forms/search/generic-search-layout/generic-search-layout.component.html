@@ -89,36 +89,34 @@ limitations under the License.
           role="group"
           >
           @if (entityModel?.createAllowed! && isWriteAllowed()) {
-            <button
+            <p-button
               type="button"
-              class="btn btn-primary m-1"
+              class="m-1"
+              icon="pi pi-plus"
+              label="{{ 'add' | translate }}"
               (click)="add()"
-              [disabled]="loading">
-              <span class="pi pi-plus"></span> {{ "add" | translate }}
-            </button>
+              [disabled]="loading"/>
           }
           <!-- Server defined actions-->
           @for (action of filterEntityModelActions(); track action) {
-            <button
+            <p-button
               type="button"
-              class="btn btn-primary m-1"
+              class="m-1"
+              icon="pi {{ action.icon }}"
+              label="{{ action.displayNames[locale] }}"
               (click)="callModelAction(vcr, action, undefined)"
-              [disabled]="loading || !isModelActionEnabled({}, action)">
-              <span class="pi {{ action.icon }}"></span> {{ action.displayNames[locale] }}
-            </button>
+              [disabled]="loading || !isModelActionEnabled({}, action)"/>
           }
           <!-- UI defined global actions -->
           @for (action of additionalGlobalActions; track action) {
-            <button
+            <p-button
               type="button"
-              [class]="action.buttonClass"
+              icon="{{ action.icon ? 'pi ' + action.icon : '' }}"
+              label="{{ action.messageKey | translate }}"
+              class="m-1"
+              [severity]="action.buttonClass"
               (click)="callAdditionalGlobalAction(action)"
-              [disabled]="loading || isGlobalActionDisabled(action)">
-              @if (action.icon) {
-                <span
-                class="pi {{ action.icon }}"></span>
-                } {{ action.messageKey | translate }}
-              </button>
+              [disabled]="loading || isGlobalActionDisabled(action)"/>
             }
           </div>
         }

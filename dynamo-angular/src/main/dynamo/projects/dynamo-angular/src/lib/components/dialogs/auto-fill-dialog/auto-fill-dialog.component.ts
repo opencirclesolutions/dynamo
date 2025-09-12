@@ -29,11 +29,12 @@ import { AutoFillRequest } from '../../../interfaces/model/autoFillRequest';
 import { MessageModule } from 'primeng/message';
 import { DropdownModule } from 'primeng/dropdown';
 import { DialogModule } from 'primeng/dialog';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-auto-fill-dialog',
   standalone: true,
-  imports: [TranslateModule, ReactiveFormsModule, MessageModule, DropdownModule, DialogModule],
+  imports: [TranslateModule, ReactiveFormsModule, MessageModule, DropdownModule, DialogModule, Button],
   templateUrl: './auto-fill-dialog.component.html',
   styleUrl: './auto-fill-dialog.component.css'
 })

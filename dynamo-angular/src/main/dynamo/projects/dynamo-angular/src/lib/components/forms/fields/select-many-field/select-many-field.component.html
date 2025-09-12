@@ -38,13 +38,10 @@ limitations under the License.
         </div>
         <div class="col-2">
           @if (isQuickAddButtonVisible() && !useLookupField(am)) {
-            <button
-              class="btn btn-primary"
+            <p-button
               type="button"
-              (click)="showQuickAddDialog()"
-              >
-              <span class="pi pi-plus"></span>
-            </button>
+              icon="pi pi-plus"
+              (click)="showQuickAddDialog()"/>
           }
         </div>
       </div>

@@ -30,11 +30,12 @@ import { HiddenFieldService } from '../../services/hidden-field.service';
 import { EntityPopupDialogComponent } from '../dialogs/entity-popup-dialog/entity-popup-dialog.component';
 import { AttributeModelResponse } from '../../interfaces/model/attributeModelResponse';
 import { TranslateModule } from '@ngx-translate/core';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-generic-edit-table-layout',
   standalone: true,
-  imports: [TranslateModule, GenericTableComponent],
+  imports: [TranslateModule, GenericTableComponent, Button],
   providers: [HiddenFieldService],
   templateUrl: './generic-edit-table-layout.component.html',
   styleUrl: './generic-edit-table-layout.component.css'

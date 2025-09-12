@@ -39,13 +39,10 @@ limitations under the License.
         </div>
         <div class="col-2">
           @if (isQuickAddButtonVisible() && useComboField(am)) {
-            <button
-              class="btn btn-primary"
+            <p-button
               type="button"
-              (click)="showQuickAddDialog()"
-              >
-              <span class="pi pi-plus"></span>
-            </button>
+              icon="pi pi-plus"
+              (click)="showQuickAddDialog()"/>
           }
         </div>
       </div>
@@ -84,13 +81,10 @@ limitations under the License.
         </div>
         <div class="col-1">
           @if (isQuickAddButtonVisible() && useAutocompleteField(am)) {
-            <button
-              class="btn btn-primary"
+            <p-button
               type="button"
-              (click)="showQuickAddDialog()"
-              >
-              <span class="pi pi-plus"></span>
-            </button>
+              icon="pi pi-plus"
+              (click)="showQuickAddDialog()"/>
           }
         </div>
       </div>

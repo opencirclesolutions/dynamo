@@ -34,10 +34,11 @@ limitations under the License.
   <div
     class="btn-group"
     role="group">
-    <button
+    <p-button
       type="button"
-      class="btn btn-primary m-1"
-    (click)="closeDialog()">{{ 'close' | translate }}</button>
+      label="{{ 'close' | translate }}"
+      class="m-1"
+      (click)="closeDialog()"/>
   </div>
 </p-dialog>
 }

@@ -24,10 +24,16 @@ import org.apache.commons.io.FileUtils;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
+import org.dynamoframework.configuration.DynamoConfigurationProperties;
+import org.dynamoframework.configuration.DynamoPropertiesHolder;
 import org.dynamoframework.exception.OCSImportException;
 import org.dynamoframework.utils.DateUtils;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import java.io.File;
 import java.io.IOException;
@@ -35,6 +41,9 @@ import java.util.Iterator;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+@ExtendWith(SpringExtension.class)
+@Import({DynamoPropertiesHolder.class})
+@EnableConfigurationProperties(value = DynamoConfigurationProperties.class)
 public class BaseXlsImporterTest {
 
 	private final BaseXlsImporter importer = new BaseXlsImporter();

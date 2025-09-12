@@ -40,39 +40,41 @@ limitations under the License.
       </div>
     </p-panel>
     <div
-      class="btn-group mt-2"
+      class="mt-2 btn-group"
       role="group">
-      <button
+      <p-button
         type="button"
-        class="btn btn-primary m-1"
+        severity="primary"
+        class="m-1"
+        icon="pi pi-search"
+        label="{{ 'search' | translate }}"
         [disabled]="loading"
-        (click)="search()">
-        <span class="pi pi-search"></span> {{ "search" | translate }}
-      </button>
-      <button
+        (click)="search()"/>
+      <p-button
         type="button"
-        class="btn btn-primary m-1"
+        severity="primary"
+        class="m-1"
+        icon="pi pi-eraser"
+        label="{{ 'clear' | translate }}"
         [disabled]="loading"
-        (click)="clear()">
-        <span class="pi pi-eraser"></span> {{ "clear" | translate }}
-      </button>
+        (click)="clear()"/>
       @if (!advancedMode && advancedModeEnabled) {
-        <button
+        <p-button
           type="button"
-          class="btn btn-primary m-1"
+          class="m-1"
+          severity="primary"
+          icon="pi pi-search-plus"
+          label="{{ 'advanced_mode' | translate }}"
           (click)="toAdvancedMode()"
-          [disabled]="loading">
-          <span class="pi pi-search-plus"></span> {{ "advanced_mode" | translate }}
-        </button>
+          [disabled]="loading"/>
       }
       @if (advancedMode && advancedModeEnabled) {
-        <button
+        <p-button
           type="button"
-          class="btn btn-primary m-1"
-          (click)="toSimpleMode()"
-          >
-          <span class="pi pi-search-minus"></span> {{ "simple_mode" | translate }}
-        </button>
+          class="m-1"
+          icon="pi pi-search-minus"
+          label="{{ 'simple_mode' | translate }}"
+          (click)="toSimpleMode()"/>
       }
     </div>
     <ng-template

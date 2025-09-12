@@ -44,12 +44,13 @@ import { NumberFieldComponent } from '../../fields/number-field/number-field.com
 import { StringFieldComponent } from '../../fields/string-field/string-field.component';
 import { CommonModule } from '@angular/common';
 import { PanelModule } from 'primeng/panel';
+import {Button} from "primeng/button";
 
 @Component({
   selector: 'd-generic-search-form',
   standalone: true,
-  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, TriStateCheckboxModule, TooltipModule, ElementCollectionFieldComponent, SelectManyFieldComponent,
-     SelectEntityFieldComponent, TimeFieldComponent, TimestampFieldComponent, DateFieldComponent, EnumFieldComponent, DecimalFieldComponent, NumberFieldComponent, StringFieldComponent],
+  imports: [TranslateModule, CommonModule, ReactiveFormsModule, PanelModule, TriStateCheckboxModule, TooltipModule, ElementCollectionFieldComponent, forwardRef(() => SelectManyFieldComponent),
+    forwardRef(() => SelectEntityFieldComponent), TimeFieldComponent, TimestampFieldComponent, DateFieldComponent, EnumFieldComponent, DecimalFieldComponent, NumberFieldComponent, StringFieldComponent, Button],
   providers: [
     {
       provide: NG_VALUE_ACCESSOR,
