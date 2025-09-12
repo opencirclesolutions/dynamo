@@ -1,38 +1,41 @@
 {
-  "name": "@open-circle-solutions/dynamo",
-  "version": "4.0.0-RC3-SNAPSHOT",
-  "scripts": {
-    "ng": "ng",
-    "start": "ng serve",
-    "build": "ng build",
-    "watch": "ng build --watch --configuration development",
-    "test": "ng test"
-  },
-  "dependencies": {
-    "@angular/animations": "^18.2.0",
-    "@angular/common": "^18.2.0",
-    "@angular/compiler": "^18.2.0",
-    "@angular/core": "^18.2.0",
-    "@angular/forms": "^18.2.0",
-    "@angular/platform-browser": "^18.2.0",
-    "@angular/platform-browser-dynamic": "^18.2.0",
-    "@angular/router": "^18.2.0",
-    "@ngx-translate/core": "^15.0.0",
-    "@ngx-translate/http-loader": "^8.0.0",
-    "angular-oauth2-oidc": "^17.0.2",
-    "date-fns": "^4.1.0",
-    "ngx-extended-pdf-viewer": "^22.0.0-alpha.0",
-    "primeicons": "^7.0.0",
-    "primeng": "^17.18.11",
-    "rxjs": "~7.8.0",
-    "tslib": "^2.3.0",
-    "zone.js": "~0.14.10"
-  },
-  "devDependencies": {
-    "@angular-devkit/build-angular": "^18.2.9",
-    "@angular/cli": "^18.2.9",
-    "@angular/compiler-cli": "^18.2.0",
-    "ng-packagr": "^18.2.0",
-    "typescript": "~5.5.2"
-  }
+    "name": "@open-circle-solutions/dynamo-angular",
+    "version": "4.0.1-SNAPSHOT",
+    "scripts": {
+        "ng": "ng",
+        "start": "ng serve",
+        "build": "ng build",
+        "watch": "ng build --watch --configuration development",
+        "test": "ng test",
+        "build_lib": "ng build dynamo-angular",
+        "npm_pack": "cd dist/dynamo-angular && npm pack",
+        "package": "npm run build_lib && npm run npm_pack"
+    },
+    "dependencies": {
+        "@angular/animations": "^18.2.0",
+        "@angular/common": "^18.2.0",
+        "@angular/compiler": "^18.2.0",
+        "@angular/core": "^18.2.0",
+        "@angular/forms": "^18.2.0",
+        "@angular/platform-browser": "^18.2.0",
+        "@angular/platform-browser-dynamic": "^18.2.0",
+        "@angular/router": "^18.2.0",
+        "@ngx-translate/core": "^15.0.0",
+        "@ngx-translate/http-loader": "^8.0.0",
+        "angular-oauth2-oidc": "^17.0.2",
+        "date-fns": "^4.1.0",
+        "ngx-extended-pdf-viewer": "^22.0.0-alpha.0",
+        "primeicons": "^7.0.0",
+        "primeng": "^17.18.11",
+        "rxjs": "~7.8.0",
+        "tslib": "^2.3.0",
+        "zone.js": "~0.14.10"
+    },
+    "devDependencies": {
+        "@angular-devkit/build-angular": "^18.2.9",
+        "@angular/cli": "^18.2.9",
+        "@angular/compiler-cli": "^18.2.0",
+        "ng-packagr": "^18.2.0",
+        "typescript": "~5.5.2"
+    }
 }

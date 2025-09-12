@@ -92,7 +92,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 		validateMethodAllowed(model, EntityModel::isCreateAllowed);
 		userDetailsService.validateWriteAllowed(model);
 
-		T source = objectMapper.readerFor(clazz).readValue(request);
+		T source = objectMapper.readerFor(clazz).readValue(sanitizeJsonForMacOS(request));
 		T copy = ClassUtils.instantiateClass(clazz);
 
 		mergeSimpleValues(source, copy, model, false);
@@ -143,7 +143,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 
 		EntityModel<U> actionModel = (EntityModel<U>) action.getEntityModel();
 
-		U source = objectMapper.readerFor(action.getEntityClass()).readValue(request);
+		U source = objectMapper.readerFor(action.getEntityClass()).readValue(sanitizeJsonForMacOS(request));
 		ID convertedId = convertId(clazz, id);
 
 		U copy = ClassUtils.instantiateClass(actionModel.getEntityClass());
@@ -194,7 +194,7 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 				.formatted(entityName, id));
 		}
 
-		T source = objectMapper.readerFor(clazz).readValue(request);
+		T source = objectMapper.readerFor(clazz).readValue(sanitizeJsonForMacOS(request));
 
 		mergeSimpleValues(source, existingEntity, model, true);
 		mergeComplexValues(source, existingEntity, model, true, false);
@@ -564,5 +564,18 @@ public class CrudController<ID, T extends AbstractEntity<ID>> extends BaseContro
 		});
 		return am.getType().isAssignableFrom(Set.class) ? stream.collect(Collectors.toSet()) :
 			stream.toList();
+	}
+
+	private boolean isMacOS() {
+		String osName = System.getProperty("os.name").toLowerCase();
+		return osName.contains("mac");
+	}
+
+	private String sanitizeJsonForMacOS(String json) {
+		if (isMacOS()) {
+			// Replace both left (201C) and right (201D) curly quotes with standard quotes
+			return json.replace('\u201c', '"').replace('\u201D', '"');
+		}
+		return json;
 	}
 }
