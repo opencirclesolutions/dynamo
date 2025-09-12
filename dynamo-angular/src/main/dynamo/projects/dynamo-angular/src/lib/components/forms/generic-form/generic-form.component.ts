@@ -41,12 +41,6 @@ import {
 import { FormBuilder } from '@angular/forms';
 import { Router } from '@angular/router';
 import {
-  createEqualsFilter,
-  createValidators,
-  getErrorString,
-  setNestedValue,
-} from '../../../functions/entitymodel-functions';
-import {
   dateToTimestamp,
   getNestedValue,
   stringToTime,
@@ -87,6 +81,7 @@ import { DividerModule } from 'primeng/divider';
 import { GenericFieldComponent } from '../fields/generic-field/generic-field.component';
 import { BaseCompositeComponent } from '../base-composite/base-composite.component';
 import {Button} from "primeng/button";
+import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-generic-form',
@@ -103,6 +98,8 @@ export class GenericFormComponent
   private confirmService = inject(ConfirmService);
   private bindingService = inject(BindingService);
   private hiddenFieldService = inject(HiddenFieldService);
+
+  private entityModelFunctions = new EntityModelFunctions();
 
   // the ID of the entity that is being edited
   @Input() entityId?: number = undefined;
@@ -458,7 +455,7 @@ export class GenericFormComponent
     this.mainForm = this.formBuilder.group([]);
 
     this.visibleAttributeModels.forEach((am) => {
-      let validators = createValidators(this.translate, am, false, false);
+      let validators = this.entityModelFunctions.createValidators(this.translate, am, false, false);
       if (!this.isNestedDetail(am)) {
         let control = this.formBuilder.control(
           {
@@ -487,7 +484,7 @@ export class GenericFormComponent
   }
 
   getErrorString(attribute: string): string {
-    return getErrorString(attribute, this.mainForm!, this.translate);
+    return this.entityModelFunctions.getErrorString(attribute, this.mainForm!, this.translate);
   }
 
   isFormDisabled(): boolean {
@@ -496,7 +493,7 @@ export class GenericFormComponent
   }
 
   save(): void {
-    if (this.confirmSave === true) {
+    if (this.confirmSave) {
       var callback = (event: any): void => {
         this.doSave();
       };
@@ -909,7 +906,7 @@ export class GenericFormComponent
 
     if (info.am.fileNameAttribute) {
       let fileNameAm = this.findAttributeModel(info.am.fileNameAttribute)!;
-      setNestedValue(this.editObject, fileNameAm, fileName);
+      this.entityModelFunctions.setNestedValue(this.editObject, fileNameAm, fileName);
     }
     if (this.fileClearMap.has(info.am)) {
       this.fileClearMap.set(info.am, false);
@@ -924,7 +921,7 @@ export class GenericFormComponent
     this.fileMap.delete(info.am);
     if (info.am.fileNameAttribute) {
       let fileNameAm = this.findAttributeModel(info.am.fileNameAttribute)!;
-      setNestedValue(this.editObject, fileNameAm, undefined);
+      this.entityModelFunctions.setNestedValue(this.editObject, fileNameAm, undefined);
     }
     if (this.fileClearMap.has(info.am)) {
       this.fileClearMap.set(info.am, true);
@@ -1084,7 +1081,7 @@ export class GenericFormComponent
             if (cascadeControl) {
               control.valueChanges.subscribe((val) => {
                 if (val) {
-                  let cascadeFilter = createEqualsFilter(
+                  let cascadeFilter = this.entityModelFunctions.createEqualsFilter(
                     cascade.filterPath,
                     val.value
                   );
