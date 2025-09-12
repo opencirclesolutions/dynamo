@@ -21,20 +21,6 @@ import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } f
 import { SimpleChanges, TemplateRef, inject } from '@angular/core';
 import { Component, Input, OnChanges, OnInit } from '@angular/core';
 import {
-  createValidators,
-  getErrorString,
-  isBoolean,
-  isDecimal,
-  isEnum,
-  isIntegral,
-  isMaster,
-  isString,
-  isTime,
-  isInstant,
-  isLocalDateTime,
-  isDate,
-} from '../../../functions/entitymodel-functions';
-import {
   getNestedValue,
   timeToDate,
   timestampToDate,
@@ -63,6 +49,7 @@ import { FieldViewComponent } from '../field-view/field-view.component';
 import { TableModule } from 'primeng/table';
 import { BaseCompositeComponent } from '../base-composite/base-composite.component';
 import {Button} from "primeng/button";
+import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-details-grid',
@@ -75,6 +62,7 @@ export class DetailsGridComponent
   extends BaseCompositeComponent
   implements OnInit, OnChanges {
   private translate = inject(TranslateService);
+  private entityModelFunctions = new EntityModelFunctions();
 
   // parent entity name
   @Input({ required: true }) parentEntityName!: string;
@@ -168,16 +156,16 @@ export class DetailsGridComponent
       if (
         attrib &&
         attrib.visibleInForm &&
-        (isString(attrib) ||
-          isEnum(attrib) ||
-          isIntegral(attrib) ||
-          isBoolean(attrib) ||
-          isDate(attrib) ||
-          isMaster(attrib) ||
-          isTime(attrib) ||
-          isInstant(attrib) ||
-          isDecimal(attrib) ||
-          isLocalDateTime(attrib))
+        (this.entityModelFunctions.isString(attrib) ||
+          this.entityModelFunctions.isEnum(attrib) ||
+          this.entityModelFunctions.isIntegral(attrib) ||
+          this.entityModelFunctions.isBoolean(attrib) ||
+          this.entityModelFunctions.isDate(attrib) ||
+          this.entityModelFunctions. isMaster(attrib) ||
+          this.entityModelFunctions.isTime(attrib) ||
+          this.entityModelFunctions.isInstant(attrib) ||
+          this.entityModelFunctions.isDecimal(attrib) ||
+          this.entityModelFunctions.isLocalDateTime(attrib))
       ) {
         // this covers basically everything now except nested forms
         this.attributeModels.push(attrib);
@@ -259,22 +247,22 @@ export class DetailsGridComponent
     this.formArray?.push(rowGroup);
     this.attributeModels.forEach((am) => {
       let val = getNestedValue(row, am.name);
-      if (isEnum(am)) {
+      if (this.entityModelFunctions.isEnum(am)) {
         let match: any = this.enumMap
           .get(am.name)!
           .find((v) => v.value === val);
         val = match;
-      } else if (isDate(am)) {
+      } else if (this.entityModelFunctions.isDate(am)) {
         if (val) {
           val = new Date(val);
         }
-      } else if (isTime(am)) {
+      } else if (this.entityModelFunctions.isTime(am)) {
         if (val) {
           val = timeToDate(val);
         }
-      } else if (isInstant(am) || isLocalDateTime(am)) {
-        val = timestampToDate(val, isInstant(am));
-      } else if (isMaster(am)) {
+      } else if (this.entityModelFunctions.isInstant(am) || this.entityModelFunctions.isLocalDateTime(am)) {
+        val = timestampToDate(val, this.entityModelFunctions.isInstant(am));
+      } else if (this.entityModelFunctions.isMaster(am)) {
         if (this.entityLists.get(am.lookupEntityName!)) {
           let match: any = this.entityLists
             .get(am.lookupEntityName!)!
@@ -283,7 +271,7 @@ export class DetailsGridComponent
         }
       }
 
-      let validators = createValidators(this.translate, am, false, false);
+      let validators = this.entityModelFunctions.createValidators(this.translate, am, false, false);
       let control = this.formBuilder!.control(
         {
           disabled: false,
@@ -310,7 +298,7 @@ export class DetailsGridComponent
     if (!formGroup) {
       return '';
     }
-    return getErrorString(attribute, formGroup, this.translate);
+    return this.entityModelFunctions.getErrorString(attribute, formGroup, this.translate);
   }
 
   protected override onLookupFilled(am: AttributeModelResponse): void {
@@ -318,7 +306,7 @@ export class DetailsGridComponent
       let formArray = this.formArray?.at(i)!;
       let control = formArray.get(am.name)!;
 
-      if (isMaster(am) && control && this.rows && this.rows[i]) {
+      if (this.entityModelFunctions.isMaster(am) && control && this.rows && this.rows[i]) {
         let val = this.rows[i][am.name];
         if (val) {
           if (this.entityLists.get(am.lookupEntityName!)) {
