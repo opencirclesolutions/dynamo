@@ -99,8 +99,6 @@ export class GenericFormComponent
   private bindingService = inject(BindingService);
   private hiddenFieldService = inject(HiddenFieldService);
 
-  private entityModelFunctions = new EntityModelFunctions();
-
   // the ID of the entity that is being edited
   @Input() entityId?: number = undefined;
   // whether navigation is allowed

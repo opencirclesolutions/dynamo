@@ -58,6 +58,7 @@ export class GenericTableComponent
   implements OnInit {
 
   private createFilterService = inject(CreateFilterService);
+  protected translate = inject(TranslateService);
 
   defaultPageSize = 10;
 

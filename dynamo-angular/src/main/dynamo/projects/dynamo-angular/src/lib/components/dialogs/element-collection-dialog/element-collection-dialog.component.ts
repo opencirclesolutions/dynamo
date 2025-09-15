@@ -28,13 +28,13 @@ import {
 } from '@angular/forms';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { BaseComponent } from '../../base/base.component';
-import { createValidators, getErrorString } from '../../../functions/entitymodel-functions';
 import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
 import { MessageModule } from 'primeng/message';
 import { StringFieldComponent } from '../../forms/fields/string-field/string-field.component';
 import { InputNumberModule } from 'primeng/inputnumber';
 import { DialogModule } from 'primeng/dialog';
 import {Button} from "primeng/button";
+import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-element-collection-dialog',
@@ -54,7 +54,6 @@ export class ElementCollectionDialogComponent
   extends BaseComponent
   implements ControlValueAccessor, OnInit {
   private formBuilder = inject(FormBuilder);
-
 
   @Input() searchMode: boolean = false;
   @Input() rowClass: string = 'row';
@@ -78,7 +77,7 @@ export class ElementCollectionDialogComponent
   }
 
   ngOnInit(): void {
-    let validators = createValidators(this.translate, this.am, true, this.searchMode);
+    let validators = this.entityModelFunctions.createValidators(this.translate, this.am, true, this.searchMode);
     validators.push(Validators.required);
 
     let control = this.formBuilder.control(
@@ -96,7 +95,7 @@ export class ElementCollectionDialogComponent
       return '';
     }
 
-    return getErrorString(attribute, this.dialogForm!, this.translate);
+    return this.entityModelFunctions.getErrorString(attribute, this.dialogForm!, this.translate);
   }
 
   getSelectedValueString(): string | undefined {

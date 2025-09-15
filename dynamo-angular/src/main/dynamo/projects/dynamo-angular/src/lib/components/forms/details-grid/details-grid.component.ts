@@ -62,7 +62,6 @@ export class DetailsGridComponent
   extends BaseCompositeComponent
   implements OnInit, OnChanges {
   private translate = inject(TranslateService);
-  private entityModelFunctions = new EntityModelFunctions();
 
   // parent entity name
   @Input({ required: true }) parentEntityName!: string;

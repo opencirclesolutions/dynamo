@@ -18,23 +18,6 @@
  * #L%
  */
 import { Component, Input, inject } from '@angular/core';
-import {
-  isBoolean,
-  isDate,
-  isDecimal,
-  isEnum,
-  isFreeDetail,
-  isIntegral,
-  isLob,
-  isMaster,
-  isNestedDetail,
-  isString,
-  isTime,
-  isLocalDateTime,
-  isInstant,
-  isElementCollection,
-  mustFetchListValues,
-} from '../../../functions/entitymodel-functions';
 import { Router } from '@angular/router';
 import { getLocale, getSimpleLocale } from '../../../functions/functions';
 import { FilterModel } from '../../../interfaces/model/filterModel';
@@ -52,6 +35,7 @@ import { SortModel } from '../../../interfaces/model/sortModel';
 import { AdditionalGlobalAction } from '../../../interfaces/action';
 import { EntityModelActionResponse } from '../../../interfaces/model/entityModelActionResponse';
 import {TranslateService} from "@ngx-translate/core";
+import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-base-composite',
@@ -66,22 +50,25 @@ export abstract class BaseCompositeComponent {
   protected router = inject(Router);
   protected authService = inject(AuthenticationService);
 
-  isDate = isDate;
-  isBoolean = isBoolean;
-  isDecimal = isDecimal;
-  isEnum = isEnum;
-  isIntegral = isIntegral;
-  isMaster = isMaster;
-  isString = isString;
-  isLocalDateTime = isLocalDateTime;
-  isInstant = isInstant;
-  isFreeDetail = isFreeDetail;
-  isTime = isTime;
-  isNestedDetail = isNestedDetail;
-  isLob = isLob;
+  protected entityModelFunctions = new EntityModelFunctions();
+
+  isDate = this.entityModelFunctions.isDate;
+  isBoolean = this.entityModelFunctions.isBoolean;
+  isDecimal = this.entityModelFunctions.isDecimal;
+  isEnum = this.entityModelFunctions.isEnum;
+  isIntegral = this.entityModelFunctions.isIntegral;
+  isMaster = this.entityModelFunctions.isMaster;
+  isString = this.entityModelFunctions.isString;
+  isLocalDateTime = this.entityModelFunctions.isLocalDateTime;
+  isInstant = this.entityModelFunctions.isInstant;
+  isFreeDetail = this.entityModelFunctions.isFreeDetail;
+  isTime = this.entityModelFunctions.isTime;
+  isNestedDetail = this.entityModelFunctions.isNestedDetail;
+  isLob = this.entityModelFunctions.isLob;
   getSimpleLocale = getSimpleLocale;
-  mustFetchListValues = mustFetchListValues;
-  isElementCollection = isElementCollection;
+  mustFetchListValues = this.entityModelFunctions.mustFetchListValues;
+  isElementCollection = this.entityModelFunctions.isElementCollection;
+
 
   // the name of the entity to display
   @Input({ required: true }) entityName: string = '';
@@ -142,7 +129,7 @@ export abstract class BaseCompositeComponent {
 
   protected setupEnums(model: EntityModelResponse) {
     model.attributeModels.forEach((am) => {
-      if (isEnum(am)) {
+      if (this.entityModelFunctions.isEnum(am)) {
         let descriptions = am.enumDescriptions![this.locale];
         let values: SelectOption[] = [];
         let simpleValues = new Map<string, string>();
@@ -166,13 +153,13 @@ export abstract class BaseCompositeComponent {
   protected setupLookups(model: EntityModelResponse) {
     model.attributeModels.forEach((am) => {
       if (
-        (isMaster(am) || isFreeDetail(am)) &&
+        (this.entityModelFunctions.isMaster(am) || this.entityModelFunctions.isFreeDetail(am)) &&
         (this.searchMode
           ? am.searchMode == AttributeModelResponse.SearchModeEnum.ALWAYS ||
           am.searchMode == AttributeModelResponse.SearchModeEnum.ADVANCED
           : am.visibleInForm && this.isLookupEditable(am)) &&
         am.lookupEntityName &&
-        mustFetchListValues(am, this.searchMode)
+        this.entityModelFunctions.mustFetchListValues(am, this.searchMode)
       ) {
         this.fillOptions(am);
       }

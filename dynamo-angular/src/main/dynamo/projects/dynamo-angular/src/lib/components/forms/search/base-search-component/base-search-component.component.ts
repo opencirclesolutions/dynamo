@@ -41,6 +41,7 @@ import {timeToDate} from '../../../../functions/functions';
 export abstract class BaseSearchComponent extends BaseCompositeComponent {
 
   private confirmService = inject(ConfirmService);
+  private translate = inject(TranslateService);
 
   @Input() injectedCustomInputs?: QueryList<OverrideFieldDirective>;
   @Input() stateStoreKey?: string = undefined;
