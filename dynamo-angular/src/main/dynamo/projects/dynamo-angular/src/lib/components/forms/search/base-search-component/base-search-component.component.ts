@@ -17,7 +17,7 @@
  * limitations under the License.
  * #L%
  */
-import {ContentChildren, Directive, EventEmitter, inject, Input, Output, QueryList, TemplateRef} from '@angular/core';
+import {Component, ContentChildren, EventEmitter, inject, Input, Output, QueryList, TemplateRef} from '@angular/core';
 import {AbstractControl, FormBuilder, FormGroup, ValidatorFn,} from '@angular/forms';
 import {Router} from '@angular/router';
 import {TranslateService} from '@ngx-translate/core';
@@ -35,8 +35,11 @@ import {EntityModelResponse} from '../../../../interfaces/model/entityModelRespo
 import {DynamoValidators} from '../../../../functions/validators';
 import {timeToDate} from '../../../../functions/functions';
 
-@Directive({
-  standalone: true
+@Component({
+  selector: 'd-base-search',
+  standalone: true,
+  template: '<!-- Abstract base component -->',
+  imports: []
 })
 export abstract class BaseSearchComponent extends BaseCompositeComponent {
 
