@@ -17,39 +17,33 @@
  * limitations under the License.
  * #L%
  */
-import { FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule } from '@angular/forms';
-import { SimpleChanges, TemplateRef, inject } from '@angular/core';
-import { Component, Input, OnChanges, OnInit } from '@angular/core';
-import {
-  getNestedValue,
-  timeToDate,
-  timestampToDate,
-} from '../../../functions/functions';
-import { Router } from '@angular/router';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { concat, Observable, of, zip } from 'rxjs';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { EntityModelResponse } from '../../../interfaces/model/entityModelResponse';
-import { NotificationService } from '../../../services/notification.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { DynamoConfig } from '../../../interfaces/dynamo-config';
-import { SelectOption } from '../../../interfaces/select-option';
-import { CommonModule } from '@angular/common';
-import { TooltipModule } from 'primeng/tooltip';
-import { DecimalFieldComponent } from '../fields/decimal-field/decimal-field.component';
-import { NumberFieldComponent } from '../fields/number-field/number-field.component';
-import { CheckboxModule } from 'primeng/checkbox';
-import { SelectEntityFieldComponent } from '../fields/select-entity-field/select-entity-field.component';
-import { TimestampFieldComponent } from '../fields/timestamp-field/timestamp-field.component';
-import { TimeFieldComponent } from '../fields/time-field/time-field.component';
-import { DateFieldComponent } from '../fields/date-field/date-field.component';
-import { EnumFieldComponent } from '../fields/enum-field/enum-field.component';
-import { StringFieldComponent } from '../fields/string-field/string-field.component';
-import { FieldViewComponent } from '../field-view/field-view.component';
-import { TableModule } from 'primeng/table';
-import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule} from '@angular/forms';
+import {Component, inject, Input, OnChanges, OnInit, SimpleChanges, TemplateRef} from '@angular/core';
+import {getNestedValue, timestampToDate, timeToDate,} from '../../../functions/functions';
+import {Router} from '@angular/router';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {concat, Observable, of, zip} from 'rxjs';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {EntityModelResponse} from '../../../interfaces/model/entityModelResponse';
+import {NotificationService} from '../../../services/notification.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {DynamoConfig} from '../../../interfaces/dynamo-config';
+import {SelectOption} from '../../../interfaces/select-option';
+import {CommonModule} from '@angular/common';
+import {TooltipModule} from 'primeng/tooltip';
+import {DecimalFieldComponent} from '../fields/decimal-field/decimal-field.component';
+import {NumberFieldComponent} from '../fields/number-field/number-field.component';
+import {CheckboxModule} from 'primeng/checkbox';
+import {SelectEntityFieldComponent} from '../fields/select-entity-field/select-entity-field.component';
+import {TimestampFieldComponent} from '../fields/timestamp-field/timestamp-field.component';
+import {TimeFieldComponent} from '../fields/time-field/time-field.component';
+import {DateFieldComponent} from '../fields/date-field/date-field.component';
+import {EnumFieldComponent} from '../fields/enum-field/enum-field.component';
+import {StringFieldComponent} from '../fields/string-field/string-field.component';
+import {FieldViewComponent} from '../field-view/field-view.component';
+import {TableModule} from 'primeng/table';
+import {BaseCompositeComponent} from '../base-composite/base-composite.component';
 import {Button} from "primeng/button";
-import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-details-grid',

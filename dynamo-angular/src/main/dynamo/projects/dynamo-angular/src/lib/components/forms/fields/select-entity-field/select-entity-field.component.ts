@@ -31,7 +31,7 @@ import {EqualsFilterModel} from '../../../../interfaces/model/equalsFilterModel'
 import {SearchModel} from '../../../../interfaces/model/searchModel';
 import {PagingModel} from '../../../../interfaces/model/pagingModel';
 import {SortModel} from '../../../../interfaces/model/sortModel';
-import {FormGroup, NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
+import {NG_VALUE_ACCESSOR, ReactiveFormsModule} from '@angular/forms';
 import {CommonModule} from '@angular/common';
 import {MessageModule} from 'primeng/message';
 import {TooltipModule} from 'primeng/tooltip';

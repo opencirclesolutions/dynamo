@@ -17,24 +17,23 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, OnInit, forwardRef, inject } from '@angular/core';
+import {Component, forwardRef, inject, Input, OnInit} from '@angular/core';
 import {
   ControlValueAccessor,
-  NG_VALUE_ACCESSOR,
   FormBuilder,
   FormGroup,
-  Validators,
+  NG_VALUE_ACCESSOR,
   ReactiveFormsModule,
+  Validators,
 } from '@angular/forms';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { BaseComponent } from '../../base/base.component';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { MessageModule } from 'primeng/message';
-import { StringFieldComponent } from '../../forms/fields/string-field/string-field.component';
-import { InputNumberModule } from 'primeng/inputnumber';
-import { DialogModule } from 'primeng/dialog';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {BaseComponent} from '../../base/base.component';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {MessageModule} from 'primeng/message';
+import {StringFieldComponent} from '../../forms/fields/string-field/string-field.component';
+import {InputNumberModule} from 'primeng/inputnumber';
+import {DialogModule} from 'primeng/dialog';
 import {Button} from "primeng/button";
-import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-element-collection-dialog',
