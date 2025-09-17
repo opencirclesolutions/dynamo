@@ -21,67 +21,60 @@ import {
   Component,
   ContentChildren,
   EventEmitter,
+  inject,
   Input,
+  OnChanges,
   OnInit,
   Output,
   QueryList,
+  SimpleChanges,
   TemplateRef,
   ViewChild,
-  ViewContainerRef,
-  inject,
-  OnChanges, SimpleChanges
+  ViewContainerRef
 } from '@angular/core';
-import {
-  FormGroup,
-  AbstractControl,
-  FormArray,
-  FormControl,
-  ReactiveFormsModule,
-} from '@angular/forms';
-import { FormBuilder } from '@angular/forms';
-import { Router } from '@angular/router';
+import {AbstractControl, FormArray, FormBuilder, FormControl, FormGroup, ReactiveFormsModule,} from '@angular/forms';
+import {Router} from '@angular/router';
 import {
   dateToTimestamp,
   getNestedValue,
   stringToTime,
-  timeToDate,
   timestampToDate,
+  timeToDate,
 } from '../../../functions/functions';
-import { formatISO, parseISO } from 'date-fns';
-import { Observable, concat, concatMap, finalize, map, of, zip } from 'rxjs';
-import { AttributeGroupMode } from '../../../interfaces/mode';
-import { HiddenFieldService } from '../../../services/hidden-field.service';
-import { AdditionalActionMode, AdditionalFormAction } from '../../../interfaces/action';
-import { OverrideFieldDirective } from '../../../directives/override-field.directive';
-import { FileClearInfo, FileUploadInfo, FormInfo } from '../../../interfaces/info';
-import { NotificationService } from '../../../services/notification.service';
-import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { BindingService } from '../../../services/binding.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { ConfirmService } from '../../../services/confirm.service';
-import { DynamoConfig } from '../../../interfaces/dynamo-config';
-import { FileServiceInterface } from '../../../interfaces/service/file.service';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { AttributeGroupResponse } from '../../../interfaces/model/attributeGroupResponse';
-import { EntityModelResponse } from '../../../interfaces/model/entityModelResponse';
-import { SelectOption } from '../../../interfaces/select-option';
-import { AbstractEntity } from '../../../interfaces/model/abstractEntity';
-import { EntityModelActionResponse } from '../../../interfaces/model/entityModelActionResponse';
-import { CascadeModel } from '../../../interfaces/model/cascadeModel';
-import { EntityPopupDialogComponent } from '../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
-import { AutoFillDialogComponent } from '../../dialogs/auto-fill-dialog/auto-fill-dialog.component';
-import { CommonModule } from '@angular/common';
-import { FileUploadComponent } from '../../blocks/file-upload/file-upload.component';
-import { DetailsGridComponent } from '../details-grid/details-grid.component';
-import { FieldViewComponent } from '../field-view/field-view.component';
-import { TabViewModule } from 'primeng/tabview';
-import { PanelModule } from 'primeng/panel';
-import { GenericFormViewComponent } from '../generic-form-view/generic-form-view.component';
-import { DividerModule } from 'primeng/divider';
-import { GenericFieldComponent } from '../fields/generic-field/generic-field.component';
-import { BaseCompositeComponent } from '../base-composite/base-composite.component';
+import {formatISO, parseISO} from 'date-fns';
+import {concat, concatMap, finalize, map, Observable, of, zip} from 'rxjs';
+import {AttributeGroupMode} from '../../../interfaces/mode';
+import {HiddenFieldService} from '../../../services/hidden-field.service';
+import {AdditionalActionMode, AdditionalFormAction} from '../../../interfaces/action';
+import {OverrideFieldDirective} from '../../../directives/override-field.directive';
+import {FileClearInfo, FileUploadInfo, FormInfo} from '../../../interfaces/info';
+import {NotificationService} from '../../../services/notification.service';
+import {TranslateModule, TranslateService} from '@ngx-translate/core';
+import {BindingService} from '../../../services/binding.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {ConfirmService} from '../../../services/confirm.service';
+import {DynamoConfig} from '../../../interfaces/dynamo-config';
+import {FileServiceInterface} from '../../../interfaces/service/file.service';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {AttributeGroupResponse} from '../../../interfaces/model/attributeGroupResponse';
+import {EntityModelResponse} from '../../../interfaces/model/entityModelResponse';
+import {SelectOption} from '../../../interfaces/select-option';
+import {AbstractEntity} from '../../../interfaces/model/abstractEntity';
+import {EntityModelActionResponse} from '../../../interfaces/model/entityModelActionResponse';
+import {CascadeModel} from '../../../interfaces/model/cascadeModel';
+import {EntityPopupDialogComponent} from '../../dialogs/entity-popup-dialog/entity-popup-dialog.component';
+import {AutoFillDialogComponent} from '../../dialogs/auto-fill-dialog/auto-fill-dialog.component';
+import {CommonModule} from '@angular/common';
+import {FileUploadComponent} from '../../blocks/file-upload/file-upload.component';
+import {DetailsGridComponent} from '../details-grid/details-grid.component';
+import {FieldViewComponent} from '../field-view/field-view.component';
+import {TabViewModule} from 'primeng/tabview';
+import {PanelModule} from 'primeng/panel';
+import {GenericFormViewComponent} from '../generic-form-view/generic-form-view.component';
+import {DividerModule} from 'primeng/divider';
+import {GenericFieldComponent} from '../fields/generic-field/generic-field.component';
+import {BaseCompositeComponent} from '../base-composite/base-composite.component';
 import {Button} from "primeng/button";
-import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
 @Component({
   selector: 'd-generic-form',
@@ -98,8 +91,6 @@ export class GenericFormComponent
   private confirmService = inject(ConfirmService);
   private bindingService = inject(BindingService);
   private hiddenFieldService = inject(HiddenFieldService);
-
-  private entityModelFunctions = new EntityModelFunctions();
 
   // the ID of the entity that is being edited
   @Input() entityId?: number = undefined;

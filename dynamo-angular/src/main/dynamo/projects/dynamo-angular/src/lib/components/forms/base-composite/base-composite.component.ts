@@ -17,23 +17,23 @@
  * limitations under the License.
  * #L%
  */
-import { Component, Input, inject } from '@angular/core';
-import { Router } from '@angular/router';
-import { getLocale, getSimpleLocale } from '../../../functions/functions';
-import { FilterModel } from '../../../interfaces/model/filterModel';
-import { SelectOption } from '../../../interfaces/select-option';
-import { AttributeModelResponse } from '../../../interfaces/model/attributeModelResponse';
-import { CRUDServiceInterface } from '../../../interfaces/service/crud.service';
-import { NotificationService } from '../../../services/notification.service';
-import { AuthenticationService } from '../../../services/authentication.service';
-import { DynamoConfig } from '../../../interfaces/dynamo-config';
-import { ModelServiceInterface } from '../../../interfaces/service/model.service';
-import { EntityModelResponse } from '../../../interfaces/model/entityModelResponse';
-import { SearchModel } from '../../../interfaces/model/searchModel';
-import { PagingModel } from '../../../interfaces/model/pagingModel';
-import { SortModel } from '../../../interfaces/model/sortModel';
-import { AdditionalGlobalAction } from '../../../interfaces/action';
-import { EntityModelActionResponse } from '../../../interfaces/model/entityModelActionResponse';
+import {Component, inject, Input} from '@angular/core';
+import {Router} from '@angular/router';
+import {getLocale, getSimpleLocale} from '../../../functions/functions';
+import {FilterModel} from '../../../interfaces/model/filterModel';
+import {SelectOption} from '../../../interfaces/select-option';
+import {AttributeModelResponse} from '../../../interfaces/model/attributeModelResponse';
+import {CRUDServiceInterface} from '../../../interfaces/service/crud.service';
+import {NotificationService} from '../../../services/notification.service';
+import {AuthenticationService} from '../../../services/authentication.service';
+import {DynamoConfig} from '../../../interfaces/dynamo-config';
+import {ModelServiceInterface} from '../../../interfaces/service/model.service';
+import {EntityModelResponse} from '../../../interfaces/model/entityModelResponse';
+import {SearchModel} from '../../../interfaces/model/searchModel';
+import {PagingModel} from '../../../interfaces/model/pagingModel';
+import {SortModel} from '../../../interfaces/model/sortModel';
+import {AdditionalGlobalAction} from '../../../interfaces/action';
+import {EntityModelActionResponse} from '../../../interfaces/model/entityModelActionResponse';
 import {TranslateService} from "@ngx-translate/core";
 import {EntityModelFunctions} from "../../../functions/entitymodel-functions";
 
@@ -52,8 +52,26 @@ export abstract class BaseCompositeComponent {
 
   protected entityModelFunctions = new EntityModelFunctions();
 
+  isDate = this.entityModelFunctions.isDate;
+  isBoolean = this.entityModelFunctions.isBoolean;
+  isDecimal = this.entityModelFunctions.isDecimal;
+  isEnum = this.entityModelFunctions.isEnum;
+  isIntegral = this.entityModelFunctions.isIntegral;
+  isMaster = this.entityModelFunctions.isMaster;
+  isString = this.entityModelFunctions.isString;
+  isLocalDateTime = this.entityModelFunctions.isLocalDateTime;
+  isInstant = this.entityModelFunctions.isInstant;
+  isFreeDetail = this.entityModelFunctions.isFreeDetail;
+  isTime = this.entityModelFunctions.isTime;
+  isNestedDetail = this.entityModelFunctions.isNestedDetail;
+  isLob = this.entityModelFunctions.isLob;
+  getSimpleLocale = getSimpleLocale;
+  mustFetchListValues = this.entityModelFunctions.mustFetchListValues;
+  isElementCollection = this.entityModelFunctions.isElementCollection;
+
+
   // the name of the entity to display
-  @Input({ required: true }) entityName: string = '';
+  @Input({required: true}) entityName: string = '';
   // optional reference to further specify which entity model to use
   @Input() entityModelReference?: string = undefined;
   // the locale to use
@@ -117,7 +135,7 @@ export abstract class BaseCompositeComponent {
         let simpleValues = new Map<string, string>();
 
         Object.keys(descriptions).forEach((key) => {
-          values.push({ value: key, name: descriptions[key] });
+          values.push({value: key, name: descriptions[key]});
           simpleValues.set(key, descriptions[key]);
         });
 
@@ -141,7 +159,7 @@ export abstract class BaseCompositeComponent {
           am.searchMode == AttributeModelResponse.SearchModeEnum.ADVANCED
           : am.visibleInForm && this.isLookupEditable(am)) &&
         am.lookupEntityName &&
-        this.entityModelFunctions. mustFetchListValues(am, this.searchMode)
+        this.entityModelFunctions.mustFetchListValues(am, this.searchMode)
       ) {
         this.fillOptions(am);
       }

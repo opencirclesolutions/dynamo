@@ -134,33 +134,40 @@ let-row>
       }
     </td>
   }
-  @if (showDetailButton && detailsModeEnabled) {
-    <td>
-        <p-button
-            type="submit"
-            icon="pi pi-pencil"
-            severity="primary"
-            pTooltip="{{ 'to_details_screen' | translate }}"
-            (onClick)="onDetailButtonClick(row)"/>
-    </td>
-  }
-  @if (deleteEnabled) {
-    <td>
-        <p-button
-          type="button"
-          icon="pi pi-trash"
-          severity="danger"
-          pTooltip="{{ 'delete' | translate }}"
-          (onClick)="onDeleteClick(row)" />
-    </td>
-  }
-  <td><ng-container
-			[ngTemplateOutlet]="
-            customButtonTemplate || defaultCustomButtonTemplate
-          "
-  [ngTemplateOutletContext]="{ $implicit: row }"></ng-container></td>
+  <td>
+      <div
+          class="btn-group"
+          role="group">
+      @if (showDetailButton && detailsModeEnabled) {
+          <td>
+              <p-button
+                  type="submit"
+                  icon="pi pi-pencil"
+                  severity="primary"
+                  pTooltip="{{ 'to_details_screen' | translate }}"
+                  (onClick)="onDetailButtonClick(row)"/>
+          </td>
+      }
+      @if (deleteEnabled) {
+          <td>
+              <p-button
+                  type="button"
+                  icon="pi pi-trash"
+                  severity="danger"
+                  pTooltip="{{ 'delete' | translate }}"
+                  (onClick)="onDeleteClick(row)" />
+          </td>
+      }
+
+      <ng-container [ngTemplateOutlet]="customButtonTemplate || defaultCustomButtonTemplate"
+                    [ngTemplateOutletContext]="{ $implicit: row }"
+      >
+      </ng-container>
+      </div>
+  </td>
 </tr>
-</ng-template> </p-table>
+</ng-template>
+</p-table>
 
 <!-- -->
 <ng-template
