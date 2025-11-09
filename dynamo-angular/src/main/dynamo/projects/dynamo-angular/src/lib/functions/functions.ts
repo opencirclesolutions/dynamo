@@ -20,7 +20,7 @@
 import { addMinutes, formatISO } from 'date-fns';
 
 export function getSimpleLocale(locale: string) {
-  let index = locale.indexOf('_');
+  let index: number = locale.indexOf('_');
   if (index > 0) {
     return locale.substring(0, index);
   }
@@ -131,12 +131,12 @@ export function dateToTimestamp(val: any, instant: boolean) {
     return undefined;
   }
 
-  let timeStr = formatISO(val, {
+  const timeStr = formatISO(val, {
     representation: 'complete',
   });
 
-  // strip off time
-  let p = timeStr.indexOf('+');
+  // strip off time zone
+  const p = timeStr.indexOf('+');
   if (p > 0) {
     return timeStr.substring(0, p) + (instant ? 'Z' : '');
   }

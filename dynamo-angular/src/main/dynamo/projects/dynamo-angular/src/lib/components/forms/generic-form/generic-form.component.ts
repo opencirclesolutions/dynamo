@@ -81,7 +81,8 @@ import {Button} from "primeng/button";
   standalone: true,
   imports: [TranslateModule, CommonModule, TabViewModule, PanelModule, DividerModule, ReactiveFormsModule, GenericFieldComponent, FileUploadComponent, DetailsGridComponent, FieldViewComponent, GenericFormViewComponent, Button],
   templateUrl: './generic-form.component.html',
-  styleUrl: './generic-form.component.css'
+  styleUrl: './generic-form.component.css',
+  providers: [HiddenFieldService]
 })
 export class GenericFormComponent
   extends BaseCompositeComponent
@@ -94,7 +95,7 @@ export class GenericFormComponent
 
   // the ID of the entity that is being edited
   @Input() entityId?: number = undefined;
-  // whether navigation is allowed
+  // whether navigation (back to another screen) is allowed
   @Input() navigationAllowed: boolean = true;
   // the route to use when navigating back to the main screen
   @Input() navigateBackRoute?: string = undefined;
@@ -201,10 +202,7 @@ export class GenericFormComponent
     const configuration = inject<DynamoConfig>("DYNAMO_CONFIG" as any);
 
     super(messageService, router, authService, configuration);
-    const hiddenFieldService = this.hiddenFieldService;
-
-    this.hiddenFieldService = hiddenFieldService;
-    this.fileController = configuration.getFileService()
+    this.fileController = configuration.getFileService();
   }
 
   ngOnInit(): void {
@@ -455,11 +453,11 @@ export class GenericFormComponent
           },
           { validators: validators }
         );
-        this.mainForm!.addControl(am.name, control);
+        this.mainForm.addControl(am.name, control);
       } else {
         // for nested details, create a FormArray
         let array = this.formBuilder.array([], validators);
-        this.mainForm!.addControl(am.name, array);
+        this.mainForm.addControl(am.name, array);
       }
     });
 
@@ -809,7 +807,7 @@ export class GenericFormComponent
               id: val.value,
             };
           }
-        } else if (this.isDate(nam)) {
+        } else if (this.entityModelFunctions.isDate(nam)) {
           let val = no[nam.name];
           if (val) {
             no[nam.name] = formatISO(val, { representation: 'date' });

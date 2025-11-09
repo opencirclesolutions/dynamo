@@ -17,24 +17,23 @@
  * limitations under the License.
  * #L%
  */
-import { FormGroup, ValidatorFn, Validators } from '@angular/forms';
-import { TranslateService } from '@ngx-translate/core';
-import { dateToString, dateToTimestamp, stringToTime } from './functions';
-import { AttributeModelResponse } from '../interfaces/model/attributeModelResponse';
-import { DynamoValidators } from './validators';
-import { EqualsFilterModel } from '../interfaces/model/equalsFilterModel';
-import { SearchModel } from '../interfaces/model/searchModel';
-import { PagingModel } from '../interfaces/model/pagingModel';
-import { OrFilterModel } from '../interfaces/model/orFilterModel';
-import { FilterModel } from '../interfaces/model/filterModel';
-import { NotFilterModel } from '../interfaces/model/notFilterModel';
-import { NumberRangeFilterModel } from '../interfaces/model/numberRangeFilterModel';
-import { DateRangeFilterModel } from '../interfaces/model/dateRangeFilterModel';
-import { InstantRangeFilterModel } from '../interfaces/model/instantRangeFilterModel';
-import { LocalDateTimeRangeFilterModel } from '../interfaces/model/localDateTimeRangeFilterModel';
-import { NumberInFilterModel } from '../interfaces/model/numberInFilterModel';
-import { TimeRangeFilterModel } from '../interfaces/model/timeRangeFilterModel';
-import { ElementCollectionFilterModel } from '../interfaces/model/elementCollectionFilterModel';
+import {FormGroup, ValidatorFn, Validators} from '@angular/forms';
+import {TranslateService} from '@ngx-translate/core';
+import {dateToString, dateToTimestamp, stringToTime} from './functions';
+import {AttributeModelResponse} from '../interfaces/model/attributeModelResponse';
+import {DynamoValidators} from './validators';
+import {EqualsFilterModel} from '../interfaces/model/equalsFilterModel';
+import {SearchModel} from '../interfaces/model/searchModel';
+import {PagingModel} from '../interfaces/model/pagingModel';
+import {OrFilterModel} from '../interfaces/model/orFilterModel';
+import {FilterModel} from '../interfaces/model/filterModel';
+import {NotFilterModel} from '../interfaces/model/notFilterModel';
+import {NumberRangeFilterModel} from '../interfaces/model/numberRangeFilterModel';
+import {DateRangeFilterModel} from '../interfaces/model/dateRangeFilterModel';
+import {InstantRangeFilterModel} from '../interfaces/model/instantRangeFilterModel';
+import {NumberInFilterModel} from '../interfaces/model/numberInFilterModel';
+import {TimeRangeFilterModel} from '../interfaces/model/timeRangeFilterModel';
+import {ElementCollectionFilterModel} from '../interfaces/model/elementCollectionFilterModel';
 
 // maximum number of items to display in description of collection
 const MAX_ITEMS = 3;
@@ -263,8 +262,10 @@ export class EntityModelFunctions {
 
   /**
    * Creates the validators for an input component
+   * @param translate translation service
    * @param am the attribute model to base the validators on
    * @param elementCollectionPopup whether the component is inside an element collection popup
+   * @param searchMode whether to create the validators for search mode
    * @returns the array of validators that was created
    */
   public createValidators(
@@ -395,12 +396,11 @@ export class EntityModelFunctions {
     attributeName: string,
     value: any
   ): EqualsFilterModel {
-    let filter: EqualsFilterModel = {
+    return {
       match: 'EQUALS',
       name: attributeName,
       value: value,
     };
-    return filter;
   }
 
   /**
@@ -409,24 +409,22 @@ export class EntityModelFunctions {
    * @returns the filter
    */
   public createOrFilter(filters: FilterModel[]): OrFilterModel {
-    let filter: OrFilterModel = {
+    return {
       match: 'OR',
       orFilters: filters,
     };
-    return filter;
   }
 
   /**
    * Creates a filter for filtering on the negation of the provided filter
-   * @param not the filter to negate
+   * @param filter the filter to negate
    * @returns the filter
    */
   public createNotFilter(filter: FilterModel): NotFilterModel {
-    let notFilter: NotFilterModel = {
+    return {
       match: 'NOT',
       filter: filter,
     };
-    return notFilter;
   }
 
   /**
@@ -441,13 +439,12 @@ export class EntityModelFunctions {
     from: any,
     to: any
   ): NumberRangeFilterModel {
-    let filter: NumberRangeFilterModel = {
+    return {
       match: 'NUMBER_RANGE',
       name: attributeName,
       from: from,
       to: to,
     };
-    return filter;
   }
 
   /**
@@ -465,13 +462,12 @@ export class EntityModelFunctions {
     let dateStrFrom: any = dateToString(from);
     let dateStrTo: any = dateToString(to);
 
-    let filter: DateRangeFilterModel = {
+    return {
       match: 'DATE_RANGE',
       name: attributeName,
       from: dateStrFrom,
       to: dateStrTo,
     };
-    return filter;
   }
 
   /**
@@ -479,6 +475,7 @@ export class EntityModelFunctions {
    * @param attributeName the name of the attribute to filter on
    * @param from the lower value of the range
    * @param to the upper value of the range
+   * @param instant whether the value is an instant (rather than a local time)
    * @returns the filter
    */
   public createTimestampFilter(
@@ -491,21 +488,19 @@ export class EntityModelFunctions {
     let dateStrTo = dateToTimestamp(to, instant);
 
     if (instant) {
-      let filter: InstantRangeFilterModel = {
+      return {
         match: 'INSTANT_RANGE',
         name: attributeName,
         from: dateStrFrom,
         to: dateStrTo,
       };
-      return filter;
     } else {
-      let filter: LocalDateTimeRangeFilterModel = {
+      return {
         match: 'LOCAL_DATE_TIME_RANGE',
         name: attributeName,
         from: dateStrFrom,
         to: dateStrTo,
       };
-      return filter;
     }
   }
 
@@ -612,6 +607,7 @@ export class EntityModelFunctions {
    * Returns a string describing the validation errors for an attribute
    * @param attribute the name of the attribute
    * @param formGroup the form group
+   * @param translate the translation service
    * @return the resulting string
    */
   public getErrorString(
@@ -623,12 +619,12 @@ export class EntityModelFunctions {
       return '';
     }
 
-    let control = formGroup.controls[attribute]!;
+    const control = formGroup.controls[attribute];
     if (!control || !control.errors || !control.touched) {
       return '';
     }
 
-    let errors: string[] = [];
+    const errors: string[] = [];
     if (control.hasError('required')) {
       errors.push(translate.instant('value_required'));
     }

@@ -20,11 +20,11 @@
 import { Injectable } from '@angular/core';
 
 /**
- * A service for passing
+ * A service for passing hidden field values along in a request
  */
-@Injectable({
-  providedIn: 'root',
-})
+@Injectable(
+
+)
 export class HiddenFieldService {
 
   private fieldValues: Map<string, any> = new Map<string, any>();

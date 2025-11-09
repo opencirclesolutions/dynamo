@@ -32,8 +32,8 @@ import { HiddenFieldService } from "../services/hidden-field.service";
 export class HiddenFieldDirective implements OnInit {
   private hiddenFieldService = inject(HiddenFieldService);
 
-  @Input({ required: true }) attributeName!: string;
-  @Input({ required: true }) value!: any;
+  @Input({ required: true }) attributeName: string = '';
+  @Input({ required: true }) value: any = '';
 
   /** Inserted by Angular inject() migration for backwards compatibility */
   constructor(...args: unknown[]);
